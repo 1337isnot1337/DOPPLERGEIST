@@ -32,5 +32,5 @@
       "passed": true
     }
   ],
-  "raw_archive_parts": "Unchanged files; local packaging hashes recorded in artifact-manifest.json. Remote verification is pending."
+  "raw_archive_parts": "Unchanged files; both local packaging SHA256 hashes match GitHub release-asset digests. See release-verification.json."
 }

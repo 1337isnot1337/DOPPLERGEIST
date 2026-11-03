@@ -1,0 +1,86 @@
+{
+  "release_tag": "checkpoint-2026-11-02",
+  "assets": [
+    {
+      "name": "data-source.tar.gz",
+      "bytes": 257168360,
+      "sha256": "0f5e7bf1dc9279b01ff10e2005a777b00b2835a0304aa5366cc333580e5135df",
+      "github_asset_id": 703631033,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/data-source.tar.gz"
+    },
+    {
+      "name": "data-research.tar.gz",
+      "bytes": 283208311,
+      "sha256": "1e8be2cf137052d82d3f9c2fe7ba66c6034e74da10253cf17182debae7ecdcd9",
+      "github_asset_id": 703631030,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/data-research.tar.gz"
+    },
+    {
+      "name": "data-terrain.tar.gz",
+      "bytes": 25353456,
+      "sha256": "852ac2e0e6e9040efb277692d57751d1f7b57ed0538edf9b249fc0ded81fd965",
+      "github_asset_id": 703631029,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/data-terrain.tar.gz"
+    },
+    {
+      "name": "data-synthetic.tar.gz",
+      "bytes": 17606073,
+      "sha256": "c4169ea77a263e0567afd36800a21d131c6976877f4e0bfebfcf15239cdc00e2",
+      "github_asset_id": 703631032,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/data-synthetic.tar.gz"
+    },
+    {
+      "name": "data-adsb-derived.tar.gz",
+      "bytes": 1234649883,
+      "sha256": "1f8a03daf8cd851b33f19a47ae65eb4d20d59ce48956e99d51aac7517302d6a6",
+      "github_asset_id": 703631031,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/data-adsb-derived.tar.gz"
+    },
+    {
+      "name": "results.tar.gz",
+      "bytes": 494947708,
+      "sha256": "3b142f3eb43375c7bd11f9a09e87f295966a1ca6a002c796014f59d822c8a074",
+      "github_asset_id": 703631246,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/results.tar.gz"
+    },
+    {
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.aa",
+      "bytes": 2000000000,
+      "sha256": "c2d4a8ed715d4e39cb137991857a46af6b33c96bf425cdbc66cfcc979d16fdf4",
+      "github_asset_id": 703631372,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/v2026.09.08-planes-readsb-staging-0.tar.aa"
+    },
+    {
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.ab",
+      "bytes": 1874212864,
+      "sha256": "4e73ee4880daf3cc1976c85061213caeeeaf398714438434cea7b2fa6b555f07",
+      "github_asset_id": 703634493,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/v2026.09.08-planes-readsb-staging-0.tar.ab"
+    },
+    {
+      "name": "manifest.json",
+      "bytes": 167376,
+      "sha256": "67556140dc40922b6e569fb44f5fbffb31871f3256483d6c337f906e8bcf5a4d",
+      "github_asset_id": 703634787,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/manifest.json"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 816,
+      "sha256": "3515a81f2b6f8038c65201ba1399eb29b89e7a9385c302ac82f8f15c877fcc44",
+      "github_asset_id": 703634824,
+      "github_digest_matches": true,
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/untagged-4c76a6bf53ddc9e905d4/SHA256SUMS"
+    }
+  ],
+  "video_mp4_included": false
+}
