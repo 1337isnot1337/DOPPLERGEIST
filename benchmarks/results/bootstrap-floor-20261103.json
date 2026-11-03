@@ -1,0 +1,48 @@
+{
+  "recording": "original public MP3, automatic discovery and historical flight indexes",
+  "comparison": "one previously encountered search point, same current scoring code with no fixed floor versus a hypothetical fixed 1.30 floor",
+  "baseline": {
+    "cpu_seconds": 24.1,
+    "elapsed_seconds": 89.65,
+    "associations": 468,
+    "evaluated_trials": 15189
+  },
+  "fixed_floor": {
+    "cpu_seconds": 7.09,
+    "elapsed_seconds": 20.04,
+    "associations": 468,
+    "evaluated_trials": 345
+  },
+  "all_retained_candidates_at_or_above_floor_identical": true,
+  "limitations": "Single loaded-machine observation. This is not a nationwide runtime or a location-accuracy measurement. The production floor must be derived and validated from fully assessed search witnesses, not assumed to be 1.30.",
+  "dense_partition": {
+    "search_code_commit": "1555a12",
+    "conditions": "one complete full-day clock partition with broad-clock singleton filtering, homelab, one process",
+    "baseline": {
+      "cpu_seconds": 294.195,
+      "elapsed_seconds": 296.636,
+      "associations": 17776,
+      "evaluated_trials": 16390
+    },
+    "fixed_floor": {
+      "cpu_seconds": 296.746,
+      "elapsed_seconds": 300.974,
+      "associations": 17776,
+      "evaluated_trials": 16390
+    },
+    "all_retained_candidates_at_or_above_floor_identical": true,
+    "unbounded_candidates": 0,
+    "limitation": "One observation; no speedup in this partition.",
+    "profile": {
+      "total_cpu_seconds": 295.773,
+      "score_candidate_cpu_seconds": 287.637,
+      "score_candidate_calls": 17776,
+      "terrain_sample_cpu_seconds": 0.11,
+      "closest_approach_cpu_seconds": 0.792,
+      "association_cpu_seconds": 0.233,
+      "track_query_cpu_seconds": 3.047,
+      "retention_record_cpu_seconds": 1.616,
+      "note": "Instrumented repeat, timers include nested calls where applicable; not necessarily additive."
+    }
+  }
+}

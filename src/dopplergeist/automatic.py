@@ -71,7 +71,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     sources = {p.name: _digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
     provenance = {"request": request, "operator_configuration_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
                   "source_sha256": _digest(request["audio_path"]), "implementation_files": sources,
-                  "ground_truth_used_by_search": False, "event_selection": "automatic_whole_recording"}
+                  "ground_truth_used_by_search": None if (output / "search/bootstrap.json").exists() else False,
+                  "event_selection": "automatic_whole_recording"}
     if resume:
         recording, events = _load_audio_checkpoint(output, request, config)
         provenance["resumed_from"] = "audio_complete"
@@ -159,6 +160,7 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("failed", "data_unavailable", str(exc))
     state["coverage"] = _coverage(request, search, config)
     provenance["search_run_hash"] = search.get("run_hash")
+    provenance["ground_truth_used_by_search"] = search["ground_truth_used_by_search"]
     progress("refinement", 0.85, **state)
     return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish,
                    lambda: progress("decision", 0.95, **state), recording=recording)

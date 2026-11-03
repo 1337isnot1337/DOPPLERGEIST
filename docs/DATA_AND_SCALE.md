@@ -232,6 +232,37 @@ larger pre-exec high-water mark and should not be compared as measured peaks.
 Search progress counts grid-cell work, not elapsed time or a guarantee that all
 data and model support are complete; dense cells may take much longer to process.
 
+For a stopped search, an optional fixed coarse-search cutoff can be proposed from
+an earlier search's fully assessed tile receipts:
+
+```bash
+PYTHONPATH=src python scripts/prepare_bootstrap.py /path/to/earlier/search \
+  --out /path/to/stopped-new-job/search/bootstrap.json
+```
+
+This prepares candidates only. Before using a cutoff, the new search rebuilds
+exactly `top_k` distinct witness associations from its own flight indexes, grid,
+terrain and full clock window, and scores them again with and without that cutoff.
+The manifest hashes the input, evidence and terrain; changing them requires a new
+search identity. A completed search must retain at least `top_k` fully assessed
+coarse candidates at or above the cutoff. The upload verifier checks the saved
+evidence and this final condition; it does not independently redo the physical fits.
+Bootstrap inputs can contain externally selected locations or flights, so their
+truth-use status is reported as unknown. For a blind evaluation, the operator must
+independently establish that the prior search and witness selection used no truth
+hints. A cutoff preserves the configured coarse top-k search; it does not remove
+the separate grid, model and refinement limitations described below.
+On one real 468-association point, a hypothetical cutoff reduced CPU time from
+24.10 to 7.09 seconds. On a separate 17,776-association full-day clock partition
+using broad-clock singleton filtering, the same cutoff took 296.75 versus 294.19
+CPU seconds without it, with identical retained candidates above the cutoff.
+These are single observations, not a nationwide speedup; see the
+[benchmark receipt](../benchmarks/results/bootstrap-floor-20261103.json).
+An instrumented repeat of the dense partition spent 287.64 of 295.77 CPU
+seconds in candidate scoring, versus 0.11 seconds sampling terrain, 0.79 seconds
+in closest-approach table construction, and 0.23 seconds in association
+enumeration. Those measurements describe this one partition, not every tile.
+
 Source completeness includes an acoustic halo outside observer bounds: a
 CONUS-cropped flight table cannot establish complete border coverage.
 `filters={"association": "subsets"}` delegates bounded event/group subset

@@ -235,6 +235,54 @@ def complete_finite_clock_assessment(assessment, *, allow_legacy=False):
             and assessment.get("empty_clock_domain") is False)
 
 
+def valid_bootstrap_evidence(configuration, finite, document, evidence):
+    """Check bootstrap identities and complete-score witnesses without refitting."""
+    summary = configuration.get("bootstrap")
+    if (not isinstance(summary, dict) or not isinstance(finite, dict)
+            or not isinstance(document, dict) or not isinstance(evidence, dict)):
+        return False
+    try:
+        digest = lambda value: hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+        floor = summary["score_floor"]
+        witnesses = evidence["witnesses"]
+        expected = dict(summary, input_artifact="bootstrap.json", evidence_artifact="bootstrap-evidence.json")
+        if (finite.get("bootstrap") != expected or summary["input_hash"] != digest(document)
+                or summary["evidence_hash"] != digest(evidence) or evidence["score_floor"] != floor
+                or summary["terrain_files"] != evidence["terrain_files"]
+                or summary["terrain_ocean_tiles"] != evidence["terrain_ocean_tiles"]
+                or type(floor) not in (float, int) or not math.isfinite(floor)
+                or type(summary["witness_count"]) is not int
+                or summary["witness_count"] != configuration["budget"]["top_k"]
+                or document.get("schema_version") != 1 or not isinstance(document.get("witnesses"), list)
+                or len(document["witnesses"]) != summary["witness_count"]
+                or not isinstance(witnesses, list) or len(witnesses) != summary["witness_count"]):
+            return False
+        identities, scores = set(), []
+        for requested, item in zip(document["witnesses"], witnesses):
+            if (not isinstance(item, dict) or not isinstance(item.get("witness"), dict)
+                    or not isinstance(requested, dict)
+                    or not complete_finite_clock_assessment(item.get("scoring_assessment"))
+                    or not complete_finite_clock_assessment(item.get("floor_scoring_assessment"))):
+                return False
+            canonical = item["witness"]
+            emissions, wanted = canonical["pass_emission_times_s"], requested["pass_emission_times_s"]
+            if (canonical["position_m"] != requested["position_m"]
+                    or canonical["event_indices"] != requested["event_indices"]
+                    or canonical["flight_ids"] != requested["flight_ids"]
+                    or len(emissions) != len(wanted)
+                    or any(abs(a-b) >= 1e-6 for a, b in zip(emissions, wanted))):
+                return False
+            score, screened = item.get("score"), item.get("score_with_floor")
+            if (type(score) not in (int, float) or type(screened) not in (int, float)
+                    or not math.isfinite(score) or not math.isfinite(screened) or screened < floor or screened != score):
+                return False
+            identities.add(digest(item["witness"]))
+            scores.append(score)
+        return len(identities) == len(witnesses) and floor == math.nextafter(min(scores), -math.inf)
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return False
+
+
 def bounded_finite_clock_assessment(detail, max_groups):
     """Check persisted association ceilings without recomputing physical fits."""
     if not isinstance(detail, dict):
@@ -712,9 +760,10 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
                 "Automatic provenance has a different operator configuration")
         require(provenance.get("source_sha256") == input_record.get("sha256"),
                 "Automatic provenance has a different source hash")
-        require(provenance.get("ground_truth_used_by_search") is False
+        require("ground_truth_used_by_search" in provenance
+                and (provenance["ground_truth_used_by_search"] is False or provenance["ground_truth_used_by_search"] is None)
                 and provenance.get("event_selection") == "automatic_whole_recording",
-                "Automatic event selection and truth separation are not recorded")
+                "Automatic event selection or truth-use status is not recorded")
         interrupted = (final["status"] == "cancelled" or final.get("reason_code") in
                        {"work_limit", "worker_exit", "worker_launch", "processing_error"})
         if not interrupted:
@@ -783,14 +832,20 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
                     "Search manifest, report, and automatic provenance have different run identities")
             require(configuration.get("code") == provenance.get("implementation_files"),
                     "Search manifest identifies a different implementation")
+            if "bootstrap" in configuration:
+                require(valid_bootstrap_evidence(configuration, search.get("finite_search_evidence"),
+                                                 read("search/bootstrap.json"), read("search/bootstrap-evidence.json")),
+                        "Bootstrap witness evidence does not validate")
+                report["stages_verified"].append("bootstrap")
             bounds = wire["search"].get("bounds_wsen", [-125.0, 24.0, -66.0, 50.0])
             require(configuration.get("bounds") == search.get("scope") == bounds,
                     "Search scope differs from the submitted request")
             window = [utc_timestamp(wire["time_window"][key]).timestamp() for key in ("start_utc", "end_utc")]
             require(configuration.get("scoring", {}).get("recording_start_window_s") == window
                     and search.get("scoring_time_is_locked") is True
-                    and search.get("ground_truth_used_by_search") is False,
-                    "Search does not preserve one truth-separated recording clock")
+                    and search.get("ground_truth_used_by_search") is (None if "bootstrap" in configuration else False)
+                    and provenance.get("ground_truth_used_by_search") is (None if "bootstrap" in configuration else False),
+                    "Search does not preserve its recording clock or declare bootstrap truth-use uncertainty")
             indexes = acquisition.get("flight_indexes")
             require(isinstance(indexes, list) and indexes and isinstance(acquisition.get("terrain"), dict)
                     and acquisition["terrain"], "Acquisition lacks flight-index or terrain evidence")
@@ -823,6 +878,17 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
             expected_complete = work_complete and search["data_scope_complete"] and search["all_event_groups_considered"]
             require(search["status"] == ("complete" if expected_complete else "partial"),
                     "Search completion status contradicts its work and coverage evidence")
+            if expected_complete and "bootstrap" in configuration:
+                coarse = search.get("coarse_ranked")
+                floor = configuration["bootstrap"]["score_floor"]
+                require(isinstance(coarse, list) and len(coarse) == configuration["budget"]["top_k"]
+                        and all(isinstance(row, dict) for row in coarse)
+                        and len({row.get("mode_id") for row in coarse}) == len(coarse)
+                        and all(row.get("mode_id") and row.get("core_assessment_complete") is True
+                                and row.get("score_kind") == "matched_group_support_minus_normalized_residual"
+                                and type(row.get("score")) in (int, float) and math.isfinite(row["score"])
+                                and row["score"] >= floor for row in coarse),
+                        "Completed search does not retain enough assessed candidates above the bootstrap floor")
             prepared = configuration["events"]
             groups = [event.get("event_ids", [event["event_id"]]) for event in prepared]
             flattened = [event_id for group in groups for event_id in group]

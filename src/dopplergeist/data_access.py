@@ -496,32 +496,53 @@ class FlightIndex:
         except (OSError, ValueError, KeyError, TypeError) as error:
             raise DataUnavailable(f"Invalid/truncated Parquet: {parquet}: {error}") from error
 
+    def _query_parts(self, bounds, time_range):
+        """Use the same spatial/time predicate for payloads and ID checks."""
+        west, south, east, north = bounds
+        start, end = time_range
+        source = "segments s JOIN spatial r ON s.id=r.id"
+        predicate = "r.west<=? AND r.east>=? AND r.south<=? AND r.north>=? AND s.start<=? AND s.end>=?"
+        params = (east, west, north, south, end, start)
+        current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
+        compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
+        if (not self.report.get("continuous_geometry_bounds") or
+                self.report.get("normalizer_sha256") not in compatible):
+            # Old indexes used sample-only bounds or different derivatives.
+            source, predicate, params = "segments s", "s.start<=? AND s.end>=?", (end, start)
+        return source, predicate, params
+
     def query(self, bounds, time_range):
         """Yield complete segments touching the query, retaining gaps and labels.
 
         Callers expand receiver bounds for acoustic range and event duration.
         An R-tree rectangle can return harmless extra tracks, never clipped ones.
         """
-        west, south, east, north = bounds
-        start, end = time_range
+        source, predicate, params = self._query_parts(bounds, time_range)
         with self.connect() as db:
-            sql = """SELECT s.name,s.payload,s.payload_hash FROM segments s JOIN spatial r ON s.id=r.id
-                WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
-                AND s.start<=? AND s.end>=? ORDER BY s.name"""
-            params = (east, west, north, south, end, start)
-            current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
-            compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
-            if (not self.report.get("continuous_geometry_bounds") or
-                    self.report.get("normalizer_sha256") not in compatible):
-                # Old indexes used sample-only bounds or different derivatives.
-                # Disable unsafe spatial pruning, preserving explicit budgets.
-                sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
-                params = (end, start)
+            sql = f"SELECT s.name,s.payload,s.payload_hash FROM {source} WHERE {predicate} ORDER BY s.name"
             for name, payload, expected in db.execute(sql, params):
                 if hashlib.sha256(payload).hexdigest() != expected:
                     raise DataUnavailable(f"Corrupt flight payload: {name}")
                 frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
                 yield _frame_track(name, frame)
+
+    def matching_names(self, identifiers, bounds, time_range):
+        """Return requested IDs that the ordinary spatial/time query can see."""
+        names = set(identifiers)
+        if any(not isinstance(name, str) or not name for name in names):
+            raise ValueError("Flight lookup requires nonempty string identifiers")
+        names = sorted(names)
+        if not names:
+            return set()
+        source, predicate, params = self._query_parts(bounds, time_range)
+        result = set()
+        with self.connect() as db:
+            for first in range(0, len(names), 400):
+                batch = names[first:first+400]
+                placeholders = ",".join("?" for _ in batch)
+                sql = f"SELECT s.name FROM {source} WHERE {predicate} AND s.name IN ({placeholders})"
+                result.update(name for (name,) in db.execute(sql, (*params, *batch)))
+        return result
 
     def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000):
         """Yield named whole segments without scanning unrelated trajectories.

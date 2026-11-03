@@ -640,6 +640,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         previous = json.loads(manifest.read_text())
         if previous.get("configuration", {}).get("coarse_floor_policy") == "per_tile":
             floor_policy = "per_tile"
+    bootstrap = None
+    bootstrap_file = output / "bootstrap.json"
+    if bootstrap_file.exists():
+        from .bootstrap import validate_bootstrap
+        try:
+            bootstrap_document = json.loads(bootstrap_file.read_text())
+        except (OSError, ValueError) as error:
+            raise DataUnavailable("Cannot read bootstrap witness inputs") from error
+        bootstrap = validate_bootstrap(bootstrap_document, indexes, terrain, events, measurements,
+                                       bounds, time_range_s, budget, parameters, filters, start_window, crs)
     # Include actual acoustic measurements and implementation files in resume
     # identity; a detector/scorer change must never reuse stale tile scores.
     acoustic = []
@@ -663,10 +673,19 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 "coarse_floor_policy": floor_policy,
                 "runtime": {"python": platform.python_version(), "machine": platform.machine(),
                             "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}}
+    if bootstrap is not None:
+        identity["bootstrap"] = {"input_hash": content_hash(bootstrap_document),
+                                 "evidence_hash": content_hash(bootstrap),
+                                 "score_floor": bootstrap["score_floor"],
+                                 "witness_count": len(bootstrap["witnesses"]),
+                                 "terrain_files": bootstrap["terrain_files"],
+                                 "terrain_ocean_tiles": bootstrap["terrain_ocean_tiles"]}
     run_hash = content_hash(identity)
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
+    if bootstrap is not None:
+        write_json(output / "bootstrap-evidence.json", bootstrap)
     mode = parameters.get("mode", "brightness")
     score_kind = ("matched_group_support_minus_normalized_residual" if mode == "robust_ridge" and filters["association"] == "subsets"
                   else {"robust_ridge": "negative_robust_ridge_loss_hz", "ridge": "negative_ridge_rmse_hz",
@@ -703,7 +722,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                     cached = checkpoint
         except (DataUnavailable, ValueError, OSError) as error:
             cached = error
-        return stage, cells, cached, None
+        return stage, cells, cached, None if bootstrap is None else bootstrap["score_floor"]
 
     def requests_for_wave(wave, next_wave):
         nonlocal total
@@ -803,8 +822,11 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                   ledger=ledger, stage=stage,
                                                   anchor_window=anchor,
-                                                  score_floor=(_retained_score_floor(ranked, budget.top_k)
-                                                               if floor_policy == "global_and_per_tile" else None))
+                                                  score_floor=max(filter(lambda value: value is not None,
+                                                      (None if bootstrap is None else bootstrap["score_floor"],
+                                                       _retained_score_floor(ranked, budget.top_k)
+                                                       if floor_policy == "global_and_per_tile" else None)),
+                                                      default=None))
                         else:
                             rows, counts = [], {}
                             ledger.record(stage, [], [], 0)
@@ -848,9 +870,13 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
+    if bootstrap is not None and done == total and not failures:
+        retained_floor = _retained_score_floor(coarse, budget.top_k)
+        if retained_floor is None or retained_floor < bootstrap["score_floor"]:
+            refinement_failure = "Completed coarse search did not retain enough assessed bootstrap-floor candidates"
     refinement_points_searched, refinement_points_skipped = 0, 0
     fine_stages = 0
-    if ranked and budget.refine_spacing_m < budget.spacing_m:
+    if ranked and refinement_failure is None and budget.refine_spacing_m < budget.spacing_m:
         chosen, seen = [], set()
         for row in ranked:
             approach = (tuple(row["flight_ids"]), tuple(round(t) for t in row["pass_emission_times_s"]))
@@ -950,6 +976,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             "source_drift_fraction": e.get("quality", {}).get("source_drift_fraction", .02)}
                            for i, e in enumerate(events)], "assumptions_manifest": "manifest.json",
         "run_hash": run_hash, "source_fit_code_sha256": modules.get("matching.py"), "score_code_sha256": modules["search.py"]}
+    if bootstrap is not None:
+        finite["bootstrap"] = dict(identity["bootstrap"], input_artifact="bootstrap.json",
+                                   evidence_artifact="bootstrap-evidence.json")
     finite["limitations"].append("Clock/frequency/drift are optimized at each fixed receiver/pass-association seed; clock uniqueness is not established.")
     finite["ledger_artifact"] = "retention.sqlite"
     report = {"run_hash": run_hash, "status": "complete" if complete else "partial", "ranked": ranked,
@@ -968,7 +997,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": process_peak_rss_kib() / 1024,
               "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
-              "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
+              "scoring_time_is_locked": True, "ground_truth_used_by_search": None if bootstrap is not None else False,
+              "scope": list(bounds)}
     write_json(output / "search-report.json", report)
     report_search_progress(1.0, force=True)
     return report
