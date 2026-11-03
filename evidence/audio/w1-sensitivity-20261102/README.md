@@ -34,3 +34,12 @@ The earlier14-case experiment used9b9dffa with exactly the configuration now use
 by default; new-default complete synthetic output equivalence is independently
 asserted in default-equivalence.json. No repeat of the same expensive national
 search was run by this audio worker.
+
+After refreshing main85b1260, audio intake/discovery/matching/subset-consumer checks
+pass23 tests in57.27s (`refreshed-consumer-tests.log`). The plotted observed gaps
+are now broken visibly rather than connected by a line. `gap-plots/` contains
+regenerated displays for the frozen3.0-threshold reference ridge data; original
+plots are preserved. The focused render check passes1 test in8.62s, and the16s
+missing span is visually verified. This display correction does not alter event
+JSON or manufacture samples; the product's separate overlays must respect the
+same missing-observation boundary.
