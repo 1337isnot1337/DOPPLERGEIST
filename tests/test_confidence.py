@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pytest
+from pyproj import Geod
 
 from aircraft_geoloc.confidence import DecisionPolicy, decide_location
 from aircraft_geoloc.contracts import validate_result
@@ -66,7 +67,7 @@ def test_insufficient_evidence_abstains(kind, reason):
     elif kind == "drift": diag["e0"]["drift_at_bound"] = True
     elif kind == "altitude_only": diag["sensitivity"]["sources"] = ["altitude"]
     elif kind == "no_alternatives": diag["alternatives_evaluated"] = False
-    elif kind == "wide": candidates[0]["uncertainty"]["radius_m"] = 500
+    elif kind == "wide": candidates[0]["uncertainty"]["radius_m"] = 1500
     elif kind == "boundary": diag["sensitivity"]["boundary_limited"] = True
     elif kind == "no_tracks": candidates = []
     result = decide((events, candidates, coverage, diag))
@@ -81,6 +82,23 @@ def test_distant_tie_and_same_location_different_flights():
     assert result["reason_code"] == "ambiguous_locations"
     alternative.update(lat=40., flight_ids=["x", "y"])
     assert decide((events, candidates + [alternative], coverage, diag))["reason_code"] == "ambiguous_flight_match"
+
+
+@pytest.mark.parametrize("separation_m,score,status", [
+    (60., -1.2, "succeeded"),
+    (90., -1.2, "inconclusive"),
+    (150., -1.2, "inconclusive"),
+    (90., -5., "succeeded"),
+])
+def test_near_tied_locations_fit_the_returned_envelope(separation_m, score, status):
+    events, candidates, coverage, diag = evidence()
+    best = candidates[0]  # The returned radius is 70 m around this point.
+    lon, lat, _ = Geod(ellps="WGS84").fwd(best["lon"], best["lat"], 90., separation_m)
+    alternative = dict(best, lon=lon, lat=lat, score=score)
+    result = decide((events, candidates + [alternative], coverage, diag))
+    assert result["status"] == status
+    if status == "inconclusive":
+        assert result["reason_code"] == "ambiguous_locations"
 
 
 def test_malformed_results_fail_instead_of_masquerading_as_insufficient_evidence():
@@ -98,3 +116,58 @@ def test_w3_vertical_only_profile_is_not_a_100m_confidence_claim():
     diag["sensitivity"] = {"radius_m": 0.0, "kind": "sensitivity", "method": "profiled_relative_altitude_offsets",
                            "complete": True, "boundary_limited": False, "profiles": []}
     assert decide((events, candidates, coverage, diag))["reason_code"] == "uncertainty_not_established"
+
+
+def test_known_clock_single_event_requires_full_trusted_window_sensitivity():
+    from aircraft_geoloc.contracts import utc_timestamp
+    events, candidates, coverage, diag = evidence()
+    events = events[:1]
+    candidates[0].update(event_ids=["e0"], flight_ids=["a"])
+    start = utc_timestamp(candidates[0]["recording_start_utc"]).timestamp()
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "insufficient_independent_events"
+    diag["recording_start_window_s"] = [start-1, start+1]
+    diag["sensitivity"]["settings"] = {"clock_bounds_s": [start, start]}
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "insufficient_independent_events"
+    diag["sensitivity"]["settings"]["clock_bounds_s"] = [start-1, start+1]
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["known_clock_single_event"] is True
+    diag["recording_start_window_s"] = [start+1, start+2]
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "recording_clock_mismatch"
+
+
+def test_explicit_subset_keeps_unconfirmed_proposals_without_forcing_matches():
+    events, candidates, coverage, diag = evidence()
+    extra = deepcopy(events[1])
+    extra.update(event_id="e2", harmonic_group_id="g2")
+    events.append(extra)
+    candidates[0].update(score_kind="matched_group_support_minus_normalized_residual", score=1.8)
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "unexplained_events"
+    diag["unmatched_event_ids"] = ["e2"]
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["unmatched_event_ids"] == ["e2"]
+    diag["supported_event_ids"] = ["e0", "e1", "e2"]
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "unmatched_supported_events"
+    diag["supported_event_ids"] = ["e0", "e1"]
+    alternative = dict(candidates[0], lat=45., event_ids=["e0", "e2"], flight_ids=["a", "c"], score=1.7)
+    assert decide((events, candidates+[alternative], coverage, diag))["reason_code"] == "ambiguous_locations"
+    alternative["score"] = 0.5
+    assert decide((events, candidates+[alternative], coverage, diag))["status"] == "succeeded"
+    extra["harmonic_group_id"] = "g0"
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "incomplete_harmonic_group"
+
+
+def test_all_four_independent_flyovers_are_checked():
+    events, candidates, coverage, diag = evidence()
+    for i in (2, 3):
+        event = deepcopy(events[0])
+        event.update(event_id=f"e{i}", harmonic_group_id=f"g{i}", start_s=i*100, end_s=i*100+20)
+        event["ridge"] = [dict(point, time_s=point["time_s"]+i*100) for point in event["ridge"]]
+        events.append(event)
+        candidates[0]["event_ids"].append(event["event_id"])
+        candidates[0]["flight_ids"].append(f"flight-{i}")
+        diag[event["event_id"]] = deepcopy(diag["e0"])
+    assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
+    diag["e3"]["rmse_hz"] = 8
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "inconsistent_event_match"

@@ -34,6 +34,8 @@ def test_all_outcomes_and_eligibility():
     assert report["summary"]["false_localizations"] == 1
     assert report["summary"]["execution_failures"] == 1
     assert not report["cases"][1]["location_returned"]
+    assert report["cases"][1]["diagnostic_best_candidate_error_m"] > 100
+    assert "location_error_m" not in report["cases"][1]
     assert report["cases"][3]["location_error_m"] > 100
 
 
@@ -45,6 +47,20 @@ def test_case_ids_and_terminal_results_are_required():
         evaluate(cases, {"a": {"status": "running"}}, {})
     with pytest.raises(ValueError, match="no candidate"):
         evaluate(cases, {"a": {"status": "succeeded"}}, {})
+
+
+def test_distance_tiers_keep_abstained_diagnostics_out_of_success_counts():
+    from pyproj import Geod
+    cases = {"cases": [{"case_id": key, "split": "held_out", "scope": "test"} for key in ("accepted", "abstained")]}
+    truth = {key: {"location": [40, -100], "location_accuracy_eligible": True} for key in ("accepted", "abstained")}
+    lon, lat, _ = Geod(ellps="WGS84").fwd(-100, 40, 90, 400)
+    predictions = {"accepted": {"status": "succeeded", "candidates": [{"lat": lat, "lon": lon}]},
+                   "abstained": {"status": "inconclusive", "candidates": [{"lat": 40, "lon": -100}]}}
+    report = evaluate(cases, predictions, truth)
+    assert report["summary"]["successful_locations_by_threshold_m"] == {"100": 0, "500": 1, "1000": 1}
+    assert report["summary"]["false_localizations_by_threshold_m"] == {"100": 1, "500": 0, "1000": 0}
+    assert report["cases"][1]["diagnostic_best_candidate_error_m"] == 0
+    assert report["cases"][1]["location_returned"] is False
 
 
 def test_runner_does_not_require_truth_and_measures_each_process(tmp_path):
@@ -80,7 +96,7 @@ def test_frozen_replay_preserves_all_cases():
     spec.loader.exec_module(module)
     manifest = json.loads((root / "benchmarks/frozen-manifest.json").read_text())
     truth = json.loads((root / "benchmarks/truth/frozen-labels.json").read_text())
-    report = evaluate(manifest, module.frozen_predictions(root), truth)
+    report = evaluate(manifest, module.frozen_predictions(root), truth, threshold_m=100)
     assert len(report["cases"]) == 48
     assert report["summary"]["detection_misses"] == 7
     assert report["summary"]["execution_failures"] == 3
