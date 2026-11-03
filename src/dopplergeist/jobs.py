@@ -134,7 +134,7 @@ class JobManager:
                     self._uploads -= 1
                     self._uploads_changed.notify_all()
 
-    def _run(self, directory):
+    def _run(self, directory, resume=False):
         try:
             with self._serial:
                 with self._mutex:
@@ -143,8 +143,11 @@ class JobManager:
                     env = dict(os.environ)
                     env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1]) + os.pathsep + env.get("PYTHONPATH", "")
                     with (directory / "worker.log").open("ab") as log:
-                        process = subprocess.Popen([sys.executable, "-m", "dopplergeist.jobs", "--execute", str(directory),
-                                                    "--parent-pid", str(os.getpid())],
+                        command = [sys.executable, "-m", "dopplergeist.jobs", "--execute", str(directory),
+                                   "--parent-pid", str(os.getpid())]
+                        if resume:
+                            command.append("--resume")
+                        process = subprocess.Popen(command,
                                                    stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
                     self._processes[directory.name] = process
                 try:
@@ -188,6 +191,30 @@ class JobManager:
                 self._stop(process)
             return result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(self.get(job_id)))
 
+    def resume(self, job_id):
+        """Explicitly continue a stopped job after its complete audio checkpoint."""
+        with self._mutex:
+            directory = self.directory(job_id)
+            current = self.get(job_id)
+            if self._closed:
+                raise ValueError("Service is shutting down")
+            if current["status"] not in {"cancelled", "failed", "inconclusive"}:
+                raise ValueError("Only stopped, failed, or inconclusive jobs can be resumed")
+            if job_id in self._threads:
+                raise ValueError("The previous worker is still stopping; try again")
+            if sum(thread.is_alive() for thread in self._threads.values()) >= self.max_pending:
+                raise OverflowError("Job queue is full; try again after a job finishes")
+            from .automatic import _load_audio_checkpoint
+            _load_audio_checkpoint(directory, read_json(directory / "request.json"), read_json(directory / "operator.json"))
+            write_json(directory / f"result-before-resume-{uuid.uuid4().hex}.json", current)
+            (directory / "cancel").unlink(missing_ok=True)
+            saved_audio = {key: current[key] for key in ("recording", "events") if key in current}
+            queued = result(directory, "queued", stage="queued", progress=0, **saved_audio)
+            thread = threading.Thread(target=self._run, args=(directory, True), daemon=True)
+            self._threads[job_id] = thread
+            thread.start()
+            return queued
+
     def wait(self, job_id):
         thread = self._threads.get(job_id)
         if thread:
@@ -208,7 +235,7 @@ class JobManager:
         self._lockfile.close()
 
 
-def execute(directory, parent_pid=None):
+def execute(directory, parent_pid=None, resume=False):
     # On Linux, an abruptly killed server must not leave an orphan analysis or
     # decoder consuming resources and later overwriting an interrupted result.
     if parent_pid is not None and sys.platform == "linux":
@@ -232,7 +259,7 @@ def execute(directory, parent_pid=None):
 
     try:
         progress("intake", 0.02)
-        final = analyze(request, directory, config, progress)
+        final = analyze(request, directory, config, progress, resume=resume)
         if (directory / "cancel").exists():
             result(directory, "cancelled", message="Cancelled by the user.", **_evidence(read_json(directory / "result.json")))
         else:
@@ -249,5 +276,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--execute", required=True)
     parser.add_argument("--parent-pid", type=int)
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
-    execute(args.execute, args.parent_pid)
+    execute(args.execute, args.parent_pid, resume=args.resume)

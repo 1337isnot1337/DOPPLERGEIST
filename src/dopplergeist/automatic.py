@@ -2,6 +2,7 @@
 from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
+from importlib.metadata import version
 import json
 import math
 from pathlib import Path
@@ -16,18 +17,64 @@ def _digest(path):
         return hashlib.file_digest(source, "sha256").hexdigest()
 
 
-def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: None):
+def _audio_identity(request, config):
+    modules = ("intake.py", "discovery.py", "audio.py", "contracts.py")
+    return {"request": request, "source_sha256": _digest(request["audio_path"]),
+            "discovery_settings": config.get("discovery", {}),
+            "modules": {name: _digest(Path(__file__).parent / name) for name in modules},
+            "packages": {name: version(name) for name in ("numpy", "scipy")}}
+
+
+def _save_audio_checkpoint(output, request, config):
+    files = ("intake/recording.f32", "intake/recording.json", "intake/intake.json", "discovery/discovery.json")
+    identity = _audio_identity(request, config)
+    metadata = json.loads((output / "intake/recording.json").read_text())
+    discovery = json.loads((output / "discovery/discovery.json").read_text())
+    if metadata["source_sha256"] != identity["source_sha256"] or discovery["source_sha256"] != identity["source_sha256"]:
+        raise ValueError("Audio changed while generating the checkpoint")
+    write_json(output / "resume.json", {"version": 1, "stage": "audio_complete",
+               "identity": identity,
+               "files": {name: _digest(output / name) for name in files}})
+
+
+def _load_audio_checkpoint(output, request, config):
+    from .intake import IntakeRecording
+    from .contracts import validate_recording
+    try:
+        checkpoint = json.loads((output / "resume.json").read_text())
+        files = ("intake/recording.f32", "intake/recording.json", "intake/intake.json", "discovery/discovery.json")
+        if checkpoint["version"] != 1 or checkpoint["stage"] != "audio_complete":
+            raise ValueError("Unsupported audio checkpoint")
+        if checkpoint["identity"] != _audio_identity(request, config):
+            raise ValueError("Audio, request, discovery settings, or detector changed")
+        if checkpoint["files"] != {name: _digest(output / name) for name in files}:
+            raise ValueError("Saved audio checkpoint was changed")
+        metadata = validate_recording(json.loads((output / "intake/recording.json").read_text()))
+        diagnostics = json.loads((output / "intake/intake.json").read_text())
+        discovery = json.loads((output / "discovery/discovery.json").read_text())
+        if discovery["source_sha256"] != metadata["source_sha256"]:
+            raise ValueError("Saved detection does not match the recording")
+        events = [validate_event(event) for event in discovery["events"]]
+        return IntakeRecording(output / "intake/recording.f32", metadata, diagnostics), events
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError("A complete, readable audio checkpoint is required to resume") from exc
+
+
+def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: None, *, resume=False):
     request = validate_request(request)
     config = config or {}
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    if (output / "provenance.json").exists():
+    if (output / "provenance.json").exists() and not resume:
         raise FileExistsError("Analysis output exists; use a new directory")
     began = time.monotonic()
     sources = {p.name: _digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
     provenance = {"request": request, "operator_configuration_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
                   "source_sha256": _digest(request["audio_path"]), "implementation_files": sources,
                   "ground_truth_used_by_search": False, "event_selection": "automatic_whole_recording"}
+    if resume:
+        recording, events = _load_audio_checkpoint(output, request, config)
+        provenance["resumed_from"] = "audio_complete"
     write_json(output / "request.json", request)
     write_json(output / "provenance.json", provenance)
     state = {"coverage": {"search_complete": False, "data_status": "unavailable", "limitations": [], "requested_area": request["search"]}}
@@ -62,14 +109,17 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         discovery_settings = DiscoverySettings(**discovery_options)
     except (TypeError, ValueError) as exc:
         return finish("failed", "invalid_configuration", f"Invalid operator discovery settings: {exc}")
-    progress("intake", 0.05)
-    try:
-        recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"))
-    except AudioIntakeError as exc:
-        return finish("failed", exc.code, str(exc))
+    if not resume:
+        progress("intake", 0.05)
+        try:
+            recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"))
+        except AudioIntakeError as exc:
+            return finish("failed", exc.code, str(exc))
+        state["recording"] = recording.metadata
+        progress("discovery", 0.15, recording=recording.metadata)
+        events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
+        _save_audio_checkpoint(output, request, config)
     state["recording"] = recording.metadata
-    progress("discovery", 0.15, recording=recording.metadata)
-    events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
     state["events"] = events
     provenance["discovered_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
     provenance["discovered_ridges"] = len(events)
