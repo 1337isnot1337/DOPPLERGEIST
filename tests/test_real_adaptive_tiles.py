@@ -24,10 +24,11 @@ def _run_interrupted_search(index_path, terrain_root, geoid, events, measurement
                  "recording_start_window_s": [clock, clock]}, workers=2)
 
 
-def test_real_overloaded_tiles_split_and_resume(tmp_path):
+def test_real_overloaded_tiles_split_and_resume(tmp_path, monkeypatch):
     import multiprocessing
     import signal
     import time
+    import dopplergeist.parallel_tiles as parallel_tiles
     source, cache, reference, index_path = (os.environ.get(name) for name in (
         "DOPPLERGEIST_REAL_JOB_ROOT", "DOPPLERGEIST_REAL_CACHE_ROOT",
         "DOPPLERGEIST_REAL_REFERENCE_ROOT", "DOPPLERGEIST_REAL_DEVELOPMENT_INDEX"))
@@ -60,7 +61,21 @@ def test_real_overloaded_tiles_split_and_resume(tmp_path):
     # This fixed clock and bounded region are an engineering replay, not location truth.
     baseline = run("baseline", 20000, 2)
     progress = []
-    split = run("split", 50, 2, progress=progress.append)
+    progress_at_finish = []
+    ordered = parallel_tiles.ordered_tile_results
+
+    def observe_finishes(pool, requests, workers, finish):
+        def observed(stage, cells, future):
+            before = len(progress)
+            result = finish(stage, cells, future)
+            if len(progress) > before:
+                progress_at_finish.append(progress[-1])
+            return result
+        yield from ordered(pool, requests, workers, observed)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(parallel_tiles, "ordered_tile_results", observe_finishes)
+        split = run("split", 50, 2, progress=progress.append)
     keys = ("score", "lat", "lon", "elev_m", "flight_ids", "recording_start_time_s", "event_ids")
     projection = lambda report: [{key: row.get(key) for key in keys} for row in report["ranked"]]
     assert projection(baseline) == projection(split)
@@ -70,6 +85,7 @@ def test_real_overloaded_tiles_split_and_resume(tmp_path):
     assert split["finite_search_evidence"]["pruning_accounted_for"]
     assert progress and progress == sorted(progress) and progress[-1] == 1.0
     assert any(0 < value < .8 for value in progress) and .8 in progress
+    assert progress_at_finish
     resumed = run("split", 50, 1)
     assert resumed["tiles_resumed"] == split["tiles_completed"]
     assert resumed["ranked"] == split["ranked"]
