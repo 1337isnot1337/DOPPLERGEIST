@@ -81,14 +81,15 @@ def bounded_assessment(row):
     if not 0 < unknown == bounded or rejected > bounded:
         return False
     upper = assessment.get("unknown_score_upper_bound")
-    if rejected == bounded:
-        return upper is None
     if assessment["unknown_score_bound_method"] == "group_count_ceiling":
         # This method skips every fit, so only the trivial per-group ceiling is valid.
         return (row.get("score") is None
                 and assessment["evaluated_trials"] == 0 and assessment["rejected_trials"] == 0
                 and unknown == scheduled and assessment["bounded_unknown_rejections"] == 0
-                and upper == len(indices))
+                and isinstance(upper, (int, float)) and not isinstance(upper, bool)
+                and math.isfinite(upper) and upper == len(indices))
+    if rejected == bounded:
+        return upper is None
     return (isinstance(upper, (int, float)) and not isinstance(upper, bool)
             and math.isfinite(upper) and 0 <= upper <= len(indices))
 
