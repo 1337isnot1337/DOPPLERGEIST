@@ -1,0 +1,12 @@
+{
+  "bwrap": "/usr/bin/bwrap",
+  "python_prefix": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python",
+  "python_version": "3.12",
+  "dependency_site_packages": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/lib/python3.12/site-packages",
+  "app_directory": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/app-e5abb62c6691",
+  "app_source_commit": "e6a78249c8bd29bc552e3da4d2803fa6b28565fa",
+  "app_wheel_sha256": "e5abb62c66911ad293b52799d3b7e9aa7069194812a611df1965e19d84d3737d",
+  "fixture_inputs": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/shared-multievent/four-canonical-1f03425/inputs",
+  "prepared_inputs": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/shared-multievent/four-prepared-v1",
+  "scope": "Installed-package smoke of independently tested all-event source and canonical primary fixture. No analysis job or national search submitted."
+}

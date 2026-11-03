@@ -1,0 +1,102 @@
+running bdist_wheel
+running build
+running build_py
+creating build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/intake.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/contracts.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/jobs.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/tracks.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/matching.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/discovery.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/cli.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/terrain.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/data_access.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/pipeline.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/confidence.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/__init__.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/audio.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/evaluation.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/tiled_search.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/search.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/geometry.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/service.py -> build/lib/aircraft_geoloc
+copying src/aircraft_geoloc/automatic.py -> build/lib/aircraft_geoloc
+creating build/lib/aircraft_geoloc/web
+copying src/aircraft_geoloc/web/__init__.py -> build/lib/aircraft_geoloc/web
+running egg_info
+creating src/aircraft_geoloc_reproduction.egg-info
+writing src/aircraft_geoloc_reproduction.egg-info/PKG-INFO
+writing dependency_links to src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt
+writing entry points to src/aircraft_geoloc_reproduction.egg-info/entry_points.txt
+writing requirements to src/aircraft_geoloc_reproduction.egg-info/requires.txt
+writing top-level names to src/aircraft_geoloc_reproduction.egg-info/top_level.txt
+writing manifest file 'src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt'
+reading manifest file 'src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt'
+writing manifest file 'src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt'
+copying src/aircraft_geoloc/web/app.js -> build/lib/aircraft_geoloc/web
+copying src/aircraft_geoloc/web/index.html -> build/lib/aircraft_geoloc/web
+copying src/aircraft_geoloc/web/style.css -> build/lib/aircraft_geoloc/web
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/aircraft_geoloc
+copying build/lib/aircraft_geoloc/intake.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/contracts.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/jobs.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/tracks.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/matching.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/discovery.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/cli.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/terrain.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/data_access.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/pipeline.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/confidence.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/__init__.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/audio.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/evaluation.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/tiled_search.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+creating build/bdist.linux-x86_64/wheel/aircraft_geoloc/web
+copying build/lib/aircraft_geoloc/web/index.html -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc/web
+copying build/lib/aircraft_geoloc/web/style.css -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc/web
+copying build/lib/aircraft_geoloc/web/__init__.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc/web
+copying build/lib/aircraft_geoloc/web/app.js -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc/web
+copying build/lib/aircraft_geoloc/search.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/geometry.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/service.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+copying build/lib/aircraft_geoloc/automatic.py -> build/bdist.linux-x86_64/wheel/./aircraft_geoloc
+running install_egg_info
+Copying src/aircraft_geoloc_reproduction.egg-info to build/bdist.linux-x86_64/wheel/./aircraft_geoloc_reproduction-0.1.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/aircraft_geoloc_reproduction-0.1.0.dist-info/WHEEL
+creating '/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/wheels-e6a7824/.tmp-gx1xn5kw/aircraft_geoloc_reproduction-0.1.0-py3-none-any.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'aircraft_geoloc/__init__.py'
+adding 'aircraft_geoloc/audio.py'
+adding 'aircraft_geoloc/automatic.py'
+adding 'aircraft_geoloc/cli.py'
+adding 'aircraft_geoloc/confidence.py'
+adding 'aircraft_geoloc/contracts.py'
+adding 'aircraft_geoloc/data_access.py'
+adding 'aircraft_geoloc/discovery.py'
+adding 'aircraft_geoloc/evaluation.py'
+adding 'aircraft_geoloc/geometry.py'
+adding 'aircraft_geoloc/intake.py'
+adding 'aircraft_geoloc/jobs.py'
+adding 'aircraft_geoloc/matching.py'
+adding 'aircraft_geoloc/pipeline.py'
+adding 'aircraft_geoloc/search.py'
+adding 'aircraft_geoloc/service.py'
+adding 'aircraft_geoloc/terrain.py'
+adding 'aircraft_geoloc/tiled_search.py'
+adding 'aircraft_geoloc/tracks.py'
+adding 'aircraft_geoloc/web/__init__.py'
+adding 'aircraft_geoloc/web/app.js'
+adding 'aircraft_geoloc/web/index.html'
+adding 'aircraft_geoloc/web/style.css'
+adding 'aircraft_geoloc_reproduction-0.1.0.dist-info/METADATA'
+adding 'aircraft_geoloc_reproduction-0.1.0.dist-info/WHEEL'
+adding 'aircraft_geoloc_reproduction-0.1.0.dist-info/entry_points.txt'
+adding 'aircraft_geoloc_reproduction-0.1.0.dist-info/top_level.txt'
+adding 'aircraft_geoloc_reproduction-0.1.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+aircraft_geoloc_reproduction-0.1.0-py3-none-any.whl
