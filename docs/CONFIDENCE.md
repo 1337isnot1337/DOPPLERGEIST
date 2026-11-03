@@ -14,6 +14,14 @@ execution exceptions remain execution failures, distinct from insufficient
 scientific evidence. Coverage means completion of the requested geographic/time
 scope and availability of requested archives, not capture of every aircraft.
 
+When separately labeled matched groups have strongly overlapping measured
+ridge samples compatible with a rational harmonic ratio within a conservative
+frequency-uncertainty heuristic, the decision is inconclusive. The diagnostic
+records the pair and measured discrepancy; it does not relabel events or assert
+that they came from the same aircraft. The heuristic is uncalibrated and may
+cause false inconclusive outcomes. A missing flag does not establish event
+independence, particularly with missing uncertainties or poorly aligned samples.
+
 ## Default policy and evidence
 
 The current default `DecisionPolicy` is `engineering-v3`; the original v1 receipts
@@ -86,7 +94,7 @@ branch; it does not establish that the real producer has provided such evidence.
 | `search_incomplete` | Requested geographic/time search unfinished |
 | `partial_flight_coverage` | Some required data missing |
 | `no_matching_flights` | No event/track hypothesis |
-| `insufficient_independent_events` | Too few flyovers after harmonic grouping |
+| `insufficient_independent_events` | Too few flyovers, or matched groups may be overlapping harmonics |
 | `inconsistent_harmonic_association` | Harmonics map to different flights |
 | `incomplete_harmonic_group` | Partial association omits a matched event's harmonic |
 | `unexplained_events` | Unmatched proposals lack explicit subset-association evidence |
