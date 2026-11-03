@@ -6,7 +6,6 @@ audio fit is a proposal diagnostic, not a reliable exclusion bound for real trac
 from collections import OrderedDict
 from bisect import bisect_left, bisect_right
 from contextvars import ContextVar
-from copy import deepcopy
 from dataclasses import dataclass
 from functools import wraps
 import hashlib
@@ -108,11 +107,13 @@ class _RidgeFitCache:
         key = (id(track), parameters, observed.digest(), acoustic_key)
         if key in self.entries:
             self.entries.move_to_end(key)
-            return deepcopy(self.entries[key][1])
+            # Core fit diagnostics contain only immutable scalar values. A new
+            # dictionary isolates callers without recursively copying each one.
+            return self.entries[key][1].copy()
         result = _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result)
         # Keep the track alive so a different trajectory cannot reuse its id.
         # The enclosing batch already owns these tracks. Exceptions are not cached.
-        self.entries[key] = (track, deepcopy(result))
+        self.entries[key] = (track, result.copy())
         if len(self.entries) > self.max_entries:
             self.entries.popitem(last=False)
         return result

@@ -98,6 +98,13 @@ def test_real_acoustic_batches_reuse_exact_inputs_and_preserve_fallback(monkeypa
         original_fit = fit_ridge(*arguments, acoustic_result=(factors, emissions))
         assert fit_ridge(*arguments, acoustic_result=(factors.copy(), emissions.copy())) == original_fit
         assert fit_calls == 1
+        # Candidate reports may edit their diagnostics without changing the
+        # next candidate's reused fit for these same real observations.
+        edited = fit_ridge(*arguments, acoustic_result=(factors, emissions))
+        edited["score"] = float("nan")
+        edited["candidate_note"] = "local diagnostic annotation"
+        assert fit_ridge(*arguments, acoustic_result=(factors, emissions)) == original_fit
+        assert fit_calls == 1
         factors[0] *= 1.01  # Fault-inject a changed precomputed input on real observations.
         expected = _fit_ridge_uncached(*arguments, acoustic_result=(factors, emissions))
         assert expected != original_fit

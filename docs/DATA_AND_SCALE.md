@@ -148,10 +148,18 @@ cannot enter Top-K. While fitting a shared-clock trial, validated residuals can
 tighten that ceiling or establish a residual rejection before the remaining
 groups are fitted. Comparisons are strict, so ties remain eligible. Acoustic
 batches for later groups are deferred until a surviving trial needs them.
-For the first event, a measured-ridge loss bound can screen individual clocks;
-the remaining supported clocks are fitted together. Representative batched
-fits are checked against the scalar fitter, with fallback for mismatches or
-unsupported and numerically degenerate batches.
+Measured-ridge loss bounds screen individual clocks. The scorer fits supported
+clocks in batches for the first event and for later events that surviving trials
+reach. Full evaluations also batch each event across its supported clocks.
+The scorer checks representative batched fits against the scalar fitter. Unsupported,
+small or numerically degenerate batches use the ordinary fitter.
+
+Partial-score checks validate each completed event once and reuse its
+contribution. Each addition retains the original upward rounding order, so the
+ceiling remains conservative. Propagation reuses the final Newton geometry when
+the emission time stops changing. A bounded motion-support cache avoids repeated
+interval scans at the same sound speed. Fit diagnostics use independent shallow
+copies because their values are immutable scalars.
 
 When an event's conservative loss bound alone makes the association unable to
 reach the current Top-K floor, the scorer may also skip that clock and retain a
@@ -245,6 +253,136 @@ clock adjustments. The current acceptance target is up to 1,000 m error, with
 100-500 m or closer preferred. The driver reports physical/data/work limits rather
 than converting scores into that accuracy claim.
 
+## Measure scoring throughput
+
+`scripts/benchmark_real_optimization.py` compares source checkouts on actual
+recorded ridges and historical aircraft observations. It measures event
+preparation, trajectory loading and one complete candidate-scoring stage.
+Saved receiver positions and clocks are development hypotheses. This replay
+does not measure nationwide search time or location accuracy.
+
+The benchmark uses fresh processes, one numerical-library thread and alternating
+run order. Three repetitions give separate CPU and wall-time medians. An optional
+profile runs separately and does not enter those medians. Phase timings include
+their child calls and must not be added together.
+
+New-run comparisons require identical workloads, runtime versions, ranked rows,
+assessment counts and all three retention tables. The script stops at the first
+discrepancy. Operation counts distinguish scalar fits, scalar validation calls
+and clocks fitted in batches. A lower scalar-call count alone is not a speedup.
+
+### Measured results: 2026-11-03
+
+The primary replay used 16 measured proposals, 16 independent groups and one
+saved receiver hypothesis. Its aircraft input contained 64,246 observations in
+447 trajectory segments. Both versions evaluated the same 3,921 associations
+over a four-minute recording-start window and retained 100 rows.
+
+| Measurement | Corrected baseline | Optimized | Speedup |
+| --- | ---: | ---: | ---: |
+| Scoring CPU, median of three runs | 62.21 s | 31.92 s | 1.95× |
+| Scoring wall time, median of three runs | 62.25 s | 31.94 s | 1.95× |
+| Complete benchmark subprocess, median wall time | 65.20 s | 34.65 s | 1.88× |
+
+All three pairs reproduced the complete ranked rows, assessment counts and
+retention tables exactly. Baseline CPU times were 62.21, 60.94 and 66.49 seconds.
+Optimized CPU times were 31.20, 31.92 and 39.08 seconds. Each paired run improved,
+despite timing variation. The table reports the ratio of medians.
+
+The timing used Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0 and pandas 2.2.3 on
+Linux x86-64. The benchmark records the remaining runtime versions.
+Scalar fitter calls decreased from 66,337 to 21,894. These totals include
+8,367 and 21,735 scalar validation calls, respectively. Successful batched clock
+fits increased from 90,393 to 244,263. Both versions made 861 acoustic calls
+over 2,121,053 samples.
+
+Batching and reusable partial bounds reduce time while retaining the same search
+workload. These are regional computation measurements from the same real
+recording. They do not establish independent localization accuracy or nationwide
+wall time.
+
+Two further workload comparisons preserved every compared output:
+
+| Workload, one paired run | Baseline CPU | Optimized CPU | Speedup |
+| --- | ---: | ---: | ---: |
+| Fresh discovery: 18 ridges, 16 groups, 3,921 associations | 66.82 s | 39.04 s | 1.71× |
+| Second saved receiver: 16 groups, 4,031 associations | 71.18 s | 41.04 s | 1.73× |
+
+The three primary pairs and fresh-discovery pair preceded the final cache-key
+type guard. Their Python-float sound speeds give the same cache hits with that
+guard. The second-receiver pair used the final guarded source. A final guarded
+primary replay also preserved every output and took 44.78 CPU seconds. This
+slower confirmation remains part of the timing record.
+
+### Arithmetic correction
+
+The performance baseline is
+[`89dc912`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/89dc912737436a5c13504fc06d353dedc8ebc36a).
+It adds the scalar/batch arithmetic correction to `7a8dd27`, before the performance
+changes. Its only production change is `batch_ridge.py`.
+
+One discarded four-group score differed by `4.44e-16` between the old scalar and
+batch paths. The correction makes the batch result equal the scalar result.
+Comparisons against unmodified `7a8dd27` preserve all 100 retained rows,
+assessment counts and bound tables. The corrected baseline isolates the speed
+improvements from that existing numerical defect. The new regression checks
+every clock, including the clock that the representative runtime checks omitted.
+
+### Reproduce the comparison
+
+Restore the real source and derived aircraft inputs through [Artifacts](ARTIFACTS.md).
+Use the same Python environment for both source checkouts. Keep both checkouts
+unchanged during the comparison.
+
+```bash
+git worktree add --detach ../dopplergeist-performance-baseline 89dc912737436a5c13504fc06d353dedc8ebc36a
+
+python scripts/benchmark_real_optimization.py \
+  --baseline ../dopplergeist-performance-baseline \
+  --tracks data/adsb/2026-09-08/reference-region.parquet \
+  --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+  --candidate evidence/results/reference-local/report.json \
+  --clock-radius-s 120 --repeats 3 \
+  --output results/performance-new-run
+```
+
+The output contains `comparison.json`, complete scored results and retention
+databases. The script refuses an existing output directory. The default input
+window extends through the last measured event, with 120 seconds of padding.
+`--recording-duration-s` supplies a longer recording extent when required.
+`--point-file` accepts multiple saved receiver hypotheses.
+
+For a fresh whole-recording discovery, run:
+
+```bash
+python scripts/discover_audio.py data/source/reference-recording.wav \
+  --output results/performance-fresh-discovery
+```
+
+Then use its `discovery/discovery.json` with the same comparison command.
+Use `--recording-duration-s 3600.1845` for this reference WAV.
+Add `--profile` to identify the remaining dominant stage.
+
+### Continue optimization
+
+1. Freeze the real inputs, search settings and source revisions.
+2. Measure the dominant stage before changing its implementation.
+3. Reduce repeated work across clocks, events or candidates.
+4. Compare complete outputs, including discarded-candidate evidence.
+5. Run alternating timing repetitions without competing benchmark processes.
+6. Keep a change only after it improves measured time and passes the comparison.
+
+All independent groups and the shared recording clock remain part of the
+workload. A narrower clock window is useful only with independent time evidence.
+Fewer events, selected flight identities or a truth-derived region change the
+search problem and cannot establish an equivalent speedup.
+
+Existing tile workers can use these faster internals without a new setting.
+One numerical-library thread per worker avoids nested CPU oversubscription.
+Worker count still depends on available CPU, memory and storage throughput.
+Changed source code requires a new search identity and output directory.
+An active job does not adopt these changes automatically.
+
 ## Checks
 
 Use actual recorded observations; do not run the historical generated-data suites.
@@ -252,7 +390,12 @@ Use actual recorded observations; do not run the historical generated-data suite
 ```bash
 DOPPLERGEIST_REAL_CPA_FIXTURE=/path/to/real-cpa-diagnostic.json \
   PYTHONPATH=src python -m pytest -q \
-  tests/test_real_retention_floor.py tests/test_real_score_ceiling_validation.py
+  tests/test_real_retention_floor.py tests/test_real_score_ceiling_validation.py \
+  tests/test_real_batch_ridge.py tests/test_real_acoustic_batch_cache.py \
+  tests/test_real_geometry_reuse.py
+
+DOPPLERGEIST_REAL_REGION_PARQUET=data/adsb/2026-09-08/reference-region.parquet \
+  PYTHONPATH=src python -m pytest -q tests/test_real_batch_rounding.py
 
 PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python scripts/benchmark_acoustic_sieve.py \
   --fixture /path/to/real-cpa-diagnostic.json --baseline 72cdebb \

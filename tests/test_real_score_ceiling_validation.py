@@ -81,6 +81,10 @@ def test_real_partial_residual_ceiling_skips_fits_without_claiming_support(monke
         return original(*args, **kwargs)
 
     monkeypatch.setattr(matching, "_fit_ridge_uncached", counted)
+    from dopplergeist import batch_ridge
+    # Batch validation also calls the scalar oracle through its module binding.
+    # Include that real fit work when comparing screened and complete scoring.
+    monkeypatch.setattr(batch_ridge, "_fit_ridge_uncached", counted)
     baseline = score_candidate(pair, point, tracks, events, measurements, mode="robust_ridge", time_sweep_s=0)
     full_fits = len(calls)
     calls.clear()

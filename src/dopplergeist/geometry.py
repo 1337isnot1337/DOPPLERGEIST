@@ -75,6 +75,7 @@ class Track:
         self._speed_upper = np.maximum.reduce([np.linalg.norm(a, axis=1)
             for a in (v[:-1], middle, v[1:])])
         self._speed_peak = np.full(len(self.time)-1, np.nan)
+        self._motion_support_cache = None
 
     def position(self, t):
         return self.spline(np.asarray(t) - self.origin)
@@ -91,6 +92,12 @@ class Track:
         boundary as unsupported.
         """
         limit = c*(1-1e-10)
+        # Like the cached extrema, this result belongs to the fixed spline.
+        # Keep only the last sound-speed threshold so repeated fits do not
+        # rescan every native interval or grow an unbounded parameter cache.
+        cached = self._motion_support_cache
+        if cached is not None and type(cached[0]) is type(limit) and cached[0] == limit:
+            return cached[1].copy()
         suspicious = np.flatnonzero(self._speed_upper >= limit)
         for i in suspicious:
             dt = self.time[i+1]-self.time[i]
@@ -103,7 +110,9 @@ class Track:
                 samples = [0., 1.] + [float(r.real) for r in roots
                     if abs(r.imag) <= 1e-8 and 0 < r.real < 1]
                 self._speed_peak[i] = max(np.linalg.norm((a*u+b)*u+d) for u in samples)
-        return suspicious[self._speed_peak[suspicious] >= limit]
+        indices = suspicious[self._speed_peak[suspicious] >= limit]
+        self._motion_support_cache = (limit, indices)
+        return indices.copy()
 
     def validate_motion_support(self, c=343.0):
         """Require subsonic motion throughout the source used for CPA proposals.
@@ -198,9 +207,10 @@ class Track:
         initial = self.position(np.clip(t, start, end))
         tau = np.clip(t - np.linalg.norm(initial - observer, axis=-1) / c, start, end)
         for _ in range(10):
-            delta = self.position(tau) - observer
+            relative = tau - self.origin
+            delta = self.spline(relative) - observer
             distance = np.linalg.norm(delta, axis=-1)
-            radial = np.sum(delta * self.speed_vector(tau), axis=-1) / distance
+            radial = np.sum(delta * self.derivative(relative), axis=-1) / distance
             derivative = 1 + radial / c
             if np.any(derivative <= 0):
                 raise AcousticSupportError(self.id, "non_monotone_arrival")
@@ -212,9 +222,13 @@ class Track:
             # even when its unrounded correction exceeds the tolerance.
             if np.max(np.abs(correction)) < _EMISSION_ITERATION_TOLERANCE_S or unchanged:
                 break
-        delta = self.position(tau) - observer
-        distance = np.linalg.norm(delta, axis=-1)
-        radial = np.sum(delta * self.speed_vector(tau), axis=-1) / distance
+        # At an unchanged Newton iterate these are already the final values.
+        # Re-evaluate only when the last update actually changed emission time.
+        if not unchanged:
+            relative = tau - self.origin
+            delta = self.spline(relative) - observer
+            distance = np.linalg.norm(delta, axis=-1)
+            radial = np.sum(delta * self.derivative(relative), axis=-1) / distance
         factor = c / (c + radial)
         self._check_motion_support(t, observer, c)
         arrival_derivative = 1+radial/c
