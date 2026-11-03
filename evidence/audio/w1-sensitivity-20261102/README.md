@@ -34,3 +34,28 @@ The earlier14-case experiment used9b9dffa with exactly the configuration now use
 by default; new-default complete synthetic output equivalence is independently
 asserted in default-equivalence.json. No repeat of the same expensive national
 search was run by this audio worker.
+
+After refreshing main85b1260, audio intake/discovery/matching/subset-consumer checks
+pass23 tests in57.27s (`refreshed-consumer-tests.log`). The plotted observed gaps
+are now broken visibly rather than connected by a line. `gap-plots/` contains
+regenerated displays for the frozen3.0-threshold reference ridge data; original
+plots are preserved. The focused render check passes1 test in8.62s, and the16s
+missing span is visually verified. This display correction does not alter event
+JSON or manufacture samples; the product's separate overlays must respect the
+same missing-observation boundary.
+
+The isolated follow-up starts from main374d1b3 with display patch7d072b5. Its first
+render harness failed before product execution because pytest's custom basetemp
+parent results/ did not exist. The original failure is retained. After mkdir -p
+results, the same focused check with a new output path passes1 test in4.83s
+(isolated-render-check.log). This was a runner setup correction, with no intake
+or detection failure. Discovery settings remain frozen for the new webcam batch.
+
+All-event requirement regression: generated four- and six-episode audio-only
+controls retain every independent group and count each pair of harmonics once.
+Both cases pass in10.20s (all-event-retention-tests.log). Later passes are checked,
+not merely the first2or3. These are deterministic frequency-curve unit controls,
+not independent ADS-B/recording-location fixtures; they do not claim emission-time
+geolocation accuracy or actual four-event upload acceptance. Discovery already
+had no global event-count cap, so no scientific setting or pipeline contract was
+changed. Full physical/upload acceptance remains owned by the integration lane.
