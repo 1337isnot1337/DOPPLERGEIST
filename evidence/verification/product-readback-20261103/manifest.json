@@ -3,6 +3,10 @@
     "bytes": 1302,
     "sha256": "468cdb588e76ac8495fa0953ec88546236dc53cabb8a2315dfa16264fbe25cd8"
   },
+  "shared-candidate-guard-report.json": {
+    "bytes": 1750,
+    "sha256": "25e82acfe9fc393f550c385a441f31324e600ecb154d23262dde7c126f6ae1ae"
+  },
   "installed-code.json": {
     "bytes": 2305,
     "sha256": "477178aaa1affadd5530ad06a062aa06b405a19e221aa83f32491ec07d8bfdee"
@@ -42,5 +46,21 @@
   "mobile-expanded-viewport.png": {
     "bytes": 80532,
     "sha256": "a089a7f42284269192a287b8276a45cfbf7b5b86311a48c2a6c4b2b88d3695eb"
+  },
+  "helper-checks.json": {
+    "bytes": 578,
+    "sha256": "387f6122b6fa41b0be53711831e43cf0984ee861d164915c3abb2dd4bd551b10"
+  },
+  "upload-no-candidate-control/report.json": {
+    "bytes": 3754,
+    "sha256": "9479c2ca233914adbae7a8dd8c7001974c8c179070f886f300b43b54160bc54a"
+  },
+  "upload-no-candidate-control/result.json": {
+    "bytes": 1131,
+    "sha256": "99464667f2284ba87dcc02a128e0837ab51bc840b4c38603476188a92e127139"
+  },
+  "upload-no-candidate-control/browser.json": {
+    "bytes": 627,
+    "sha256": "499b6470694018b3e84f66bdd7c42ba48b65c0d33e2331c9236b54d32ace8469"
   }
 }

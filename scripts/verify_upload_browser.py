@@ -15,6 +15,33 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
 
 
+def verify_candidate_cards(page, candidates):
+    """Check every saved row, including collapsed alternatives and radius units."""
+    cards = page.locator("#candidates .candidate")
+    if cards.count() != len(candidates):
+        raise RuntimeError("UI omitted API candidate rows")
+    initially_visible = sum(card.is_visible() for card in cards.all())
+    if initially_visible != min(5, len(candidates)):
+        raise RuntimeError("UI initial candidate count disagrees with its five-card display")
+    radius_readback = []
+    for index, candidate in enumerate(candidates):
+        text = cards.nth(index).text_content()
+        coordinate = f"{candidate['lat']:.6f}, {candidate['lon']:.6f}"
+        if coordinate not in text or candidate["recording_start_utc"] not in text:
+            raise RuntimeError(f"UI candidate {index} disagrees with API location/clock")
+        if any(flight not in text for flight in candidate["flight_ids"]):
+            raise RuntimeError(f"UI candidate {index} omits a flight")
+        if uncertainty := candidate.get("uncertainty"):
+            shown = page.evaluate("r => r.toFixed(0)", uncertainty["radius_m"])
+            method = uncertainty["method"].replace("_", " ")
+            if f": {shown} m" not in text or method not in text:
+                raise RuntimeError(f"UI candidate {index} changes the reported radius/method")
+            radius_readback.append({"input_index": index, "radius_m": uncertainty["radius_m"],
+                                    "displayed_m": shown, "method": uncertainty["method"]})
+    return {"candidate_count": len(candidates), "initially_visible_candidates": initially_visible,
+            "radius_readback": radius_readback}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", required=True)
@@ -86,6 +113,9 @@ def main():
             if queued["job_id"] not in page.locator("#job-id").inner_text():
                 raise RuntimeError("Reload restored a different job")
             page.wait_for_function("() => document.querySelector('#artifacts').children.length > 0", timeout=15000)
+            candidates = value.get("candidates", [])
+            cards = page.locator("#candidates .candidate")
+            candidate_readback = verify_candidate_cards(page, candidates)
             artifact_count = page.locator("#artifacts > li").count()
             # National jobs retain thousands of tile receipts. Capture the real
             # default collapsed view instead of allocating a giant screenshot.
@@ -97,13 +127,28 @@ def main():
             page.set_viewport_size({"width": 390, "height": 844})
             mobile = page.evaluate("({viewport_width: innerWidth, document_width: document.documentElement.scrollWidth})")
             page.screenshot(path=str(output / "page-mobile.png"), full_page=True)
-            page.set_viewport_size({"width": 1440, "height": 1100})
             if mobile["document_width"] > mobile["viewport_width"]:
                 raise RuntimeError("Mobile result page overflows horizontally")
+            if len(candidates) > 5:
+                details = page.locator("#candidates details")
+                if details.count() != 1 or details.locator("summary").text_content() != f"{len(candidates) - 5} additional hypotheses":
+                    raise RuntimeError("UI additional-candidate summary disagrees with API")
+                details.locator("summary").click()
+                if sum(card.is_visible() for card in cards.all()) != len(candidates):
+                    raise RuntimeError("Expansion did not expose every API candidate")
+            expanded_mobile = page.evaluate("({viewport_width: innerWidth, document_width: document.documentElement.scrollWidth})")
+            page.screenshot(path=str(output / "page-mobile-expanded-viewport.png"))
+            if expanded_mobile["document_width"] > expanded_mobile["viewport_width"]:
+                raise RuntimeError("Expanded mobile candidates overflow horizontally")
+            if len(candidates) > 5:
+                details.locator("summary").click()
+            page.set_viewport_size({"width": 1440, "height": 1100})
             write_json(output / "browser.json", {"browser": browser.version, "url": page.url,
                        "python": sys.version, "playwright": importlib.metadata.version("playwright"),
                        "status": value["status"], "javascript_errors": errors,
                        "reloaded_job_verified": True, "mobile_layout": mobile,
+                       **candidate_readback,
+                       "expanded_visible_candidates": len(candidates), "expanded_mobile_layout": expanded_mobile,
                        "artifact_count": artifact_count, "downloads_expanded": downloads_expanded})
         finally:
             (output / "page.txt").write_text(page.locator("body").inner_text())

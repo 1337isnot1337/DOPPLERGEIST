@@ -226,3 +226,11 @@ PLAYWRIGHT_BROWSERS_PATH=/path/to/browser-cache /path/to/browser-venv/bin/python
 Receipts, source/package hashes and desktop/mobile screenshots are under
 `evidence/verification/product-readback-20261103/`. The full Playwright trace and
 copied job remain local in `results/product-readback-20261103/`.
+
+The upload harness now uses the same `verify_candidate_cards` check for every
+returned row's coordinate, clock, flight IDs and displayed radius/method, and
+clicks the additional-hypotheses summary before checking mobile width again.
+The shared check passed against all 106 frozen rows; a separate actual-form
+timed-noise upload passed with zero candidate rows and the expected
+`inconclusive / no_supported_events` result. These controls prepare the fresh
+canonical four-event browser run without repeating a national search.

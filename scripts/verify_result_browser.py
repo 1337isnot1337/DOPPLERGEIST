@@ -18,6 +18,7 @@ from urllib.parse import quote
 from urllib.request import urlopen
 
 from playwright.sync_api import sync_playwright
+from verify_upload_browser import verify_candidate_cards
 
 
 def digest(path):
@@ -95,22 +96,7 @@ def main():
                     page.wait_for_function("() => document.querySelector('#artifacts').children.length > 0")
                     count = len(expected.get("candidates", []))
                     cards = page.locator("#candidates .candidate")
-                    assert cards.count() == count
-                    visible = sum(card.is_visible() for card in cards.all())
-                    assert visible == min(5, count)
-                    radius_readback = []
-                    for index, candidate in enumerate(expected.get("candidates", [])):
-                        text = cards.nth(index).text_content()
-                        coordinate = f"{candidate['lat']:.6f}, {candidate['lon']:.6f}"
-                        assert coordinate in text, coordinate
-                        uncertainty = candidate.get("uncertainty")
-                        if uncertainty:
-                            # JS toFixed rounds these positive radii; record its
-                            # result directly, without changing scientific units.
-                            shown = page.evaluate("r => r.toFixed(0)", uncertainty["radius_m"])
-                            assert f": {shown} m" in text
-                            assert uncertainty["method"].replace("_", " ") in text
-                            radius_readback.append({"input_index": index, "radius_m": uncertainty["radius_m"], "displayed_m": shown, "method": uncertainty["method"]})
+                    candidate_readback = verify_candidate_cards(page, expected.get("candidates", []))
                     page.screenshot(path=str(output / "desktop.png"), full_page=True)
                     page.set_viewport_size({"width": 390, "height": 844})
                     layout = lambda: page.evaluate("({viewport_width:innerWidth,document_width:document.documentElement.scrollWidth})")
@@ -131,9 +117,9 @@ def main():
                     assert page.locator("#candidates .candidate").count() == count
                     assert not errors, errors
                     report.update(passed=True, browser=browser.version, status=expected["status"], candidate_count=count,
-                                  initially_visible_candidates=visible, expanded_visible_candidates=count,
+                                  **{k: v for k, v in candidate_readback.items() if k != "candidate_count"}, expanded_visible_candidates=count,
                                   mobile_collapsed=collapsed, mobile_expanded=expanded, artifact_count=len(downloads),
-                                  reloaded_job_verified=True, javascript_errors=errors, radius_readback=radius_readback)
+                                  reloaded_job_verified=True, javascript_errors=errors)
                 finally:
                     (output / "page.txt").write_text(page.locator("body").inner_text())
                     context.tracing.stop(path=str(output / "trace.zip"))

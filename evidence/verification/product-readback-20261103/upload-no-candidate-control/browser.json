@@ -1,0 +1,23 @@
+{
+  "browser": "156.0.8078.4",
+  "url": "http://127.0.0.1:57805/?job=715615c49f31448897282c53e3471fbd",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "playwright": "1.64.1",
+  "status": "inconclusive",
+  "javascript_errors": [],
+  "reloaded_job_verified": true,
+  "mobile_layout": {
+    "viewport_width": 390,
+    "document_width": 390
+  },
+  "candidate_count": 0,
+  "initially_visible_candidates": 0,
+  "expanded_visible_candidates": 0,
+  "expanded_mobile_layout": {
+    "viewport_width": 390,
+    "document_width": 390
+  },
+  "radius_readback": [],
+  "artifact_count": 11,
+  "downloads_expanded": true
+}

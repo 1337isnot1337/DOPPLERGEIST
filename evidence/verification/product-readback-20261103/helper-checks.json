@@ -1,0 +1,18 @@
+{
+  "scope": "browser verifier helper checks, no new national search",
+  "shared_candidate_guard": {
+    "candidate_rows": 106,
+    "artifact_downloads": 14,
+    "all_job_bytes_unchanged": true
+  },
+  "real_upload_control": {
+    "status": "inconclusive",
+    "reason_code": "no_supported_events",
+    "candidate_rows": 0,
+    "actual_form": true
+  },
+  "helper_sha256": {
+    "verify_upload_browser.py": "4fda7b736b491c149076922ce565ae3e8ae981275d2ffb60f1fa929e9497d3fd",
+    "verify_result_browser.py": "72075a71a8bf0d1c6ae6555098811656531ff0ff0114a2acbbb1b184a1ad2912"
+  }
+}

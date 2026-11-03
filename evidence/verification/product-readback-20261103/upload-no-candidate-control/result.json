@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "job_id": "715615c49f31448897282c53e3471fbd",
+  "status": "inconclusive",
+  "coverage": {
+    "search_complete": false,
+    "data_status": "unavailable",
+    "limitations": [],
+    "requested_area": {
+      "coverage": "conus"
+    }
+  },
+  "recording": {
+    "source_sha256": "cedc36e2ecddc78e12fc1435d4df96afc7dddf4d918e05aa09011d5165d09505",
+    "duration_s": 45.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": {
+      "start_utc": "2026-09-08T20:00:00Z",
+      "end_utc": "2026-09-08T20:00:00Z",
+      "source": "user",
+      "source_detail": "Explicit acceptance-test recording clock window"
+    }
+  },
+  "events": [],
+  "stage": "complete",
+  "progress": 1,
+  "artifacts": {
+    "provenance": "provenance.json",
+    "request": "request.json",
+    "intake": "intake/intake.json",
+    "recording": "intake/recording.json",
+    "discovery": "discovery/discovery.json",
+    "discovery_plot": "discovery/discovery.png"
+  },
+  "reason_code": "no_supported_events",
+  "message": "No supported moving-tone Doppler events were discovered in the recording."
+}
