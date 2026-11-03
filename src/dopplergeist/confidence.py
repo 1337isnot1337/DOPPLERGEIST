@@ -7,6 +7,7 @@ diagnostics belong in a job artifact, outside the strict JobResult fields.
 from dataclasses import asdict, dataclass
 import math
 
+import numpy as np
 from pyproj import Geod
 
 from .contracts import utc_timestamp, validate_result
@@ -38,6 +39,50 @@ def _near_tied(gap, margin):
     # Decimal policy margins and subtracted scores can differ at roundoff.
     # Equality remains competitive; this small guard cannot create acceptance.
     return gap <= margin or math.isclose(gap, margin, rel_tol=1e-12, abs_tol=1e-12)
+
+
+def _possible_harmonic_overlap(events):
+    """Flag an uncalibrated ambiguity; do not merge ridges or assert identity."""
+    from .discovery import _HARMONIC_RATIOS
+
+    for index, first in enumerate(events):
+        for second in events[index + 1:]:
+            if first.get("harmonic_group_id", first["event_id"]) == second.get("harmonic_group_id", second["event_id"]):
+                continue
+            low, high = first, second
+            a = {point["time_s"]: point["frequency_hz"] for point in low["ridge"]}
+            b = {point["time_s"]: point["frequency_hz"] for point in high["ridge"]}
+            times = sorted(a.keys() & b.keys())
+            if len(times) < 10:
+                continue
+            span = min(low["ridge"][-1]["time_s"] - low["ridge"][0]["time_s"],
+                       high["ridge"][-1]["time_s"] - high["ridge"][0]["time_s"])
+            if span <= 0 or times[-1] - times[0] < 0.6 * span:
+                continue
+            x, y = (np.array([ridge[t] for t in times], dtype=float) for ridge in (a, b))
+            if np.median(x) > np.median(y):
+                low, high, x, y = high, low, y, x
+            with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+                ratio = float(np.median(y / x))
+            if not math.isfinite(ratio):
+                continue
+            harmonic = min((1.0, *_HARMONIC_RATIOS), key=lambda value: abs(value - ratio))
+            def uncertainty(event):
+                quality = event.get("quality", {})
+                return max(0.0, quality.get("frequency_resolution_hz", 0),
+                           quality.get("frequency_uncertainty_hz", 0))
+            low_uncertainty, high_uncertainty = uncertainty(low), uncertainty(high)
+            if low_uncertainty <= 0 or high_uncertainty <= 0:
+                continue
+            with np.errstate(over="ignore", invalid="ignore"):
+                residual = float(np.quantile(np.abs(y - harmonic * x), 0.9))
+                tolerance = 2 * (high_uncertainty + harmonic * low_uncertainty)
+            if math.isfinite(residual) and math.isfinite(tolerance) and residual <= tolerance:
+                return {"event_ids": [low["event_id"], high["event_id"]],
+                        "harmonic_ratio": harmonic, "observed_median_ratio": ratio,
+                        "aligned_samples": len(times), "residual_q90_hz": residual,
+                        "heuristic_tolerance_hz": tolerance}
+    return None
 
 
 def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
@@ -194,6 +239,15 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     known_clock = (interval(window) and interval(tested_clock) and
                    tested_clock[0] <= window[0] and tested_clock[1] >= window[1])
     diagnostics["known_clock_single_event"] = bool(len(groups) == 1 and known_clock)
+    diagnostics["harmonic_overlap_screen"] = (
+        "Uncalibrated aligned-sample heuristic; no flag does not establish independence.")
+    possible_overlap = _possible_harmonic_overlap(matched)
+    if possible_overlap is not None:
+        diagnostics["matched_group_count"] = len(groups)
+        diagnostics["independent_event_groups"] = None
+        diagnostics["possible_harmonic_overlap"] = possible_overlap
+        return result("insufficient_independent_events",
+                      "Overlapping matched ridges may be harmonics of one flyover; independent events are not established.")
     if len(groups) < policy.min_independent_events and not (len(groups) == 1 and
             policy.min_independent_events == 2 and known_clock):
         return result("insufficient_independent_events", "Too few independent flyovers constrain location; harmonics count once.")
