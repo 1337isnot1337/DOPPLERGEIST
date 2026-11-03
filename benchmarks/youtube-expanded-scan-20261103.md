@@ -25,12 +25,16 @@ All 47 proposal-bearing videos received a quick single-reviewer spectrogram
 inspection: five were labeled plausible Doppler-like, five plausible but with
 visible changes or repetition consistent with edits or reused audio, and 37
 ambiguous. These labels do not confirm aircraft identity or event independence.
-The [remaining 26 case notes](youtube-expanded-visual-review-20261103.csv)
-record individual reasons from 0–1000 Hz contact sheets; the previous 21 reviews are retained in the case
-table and local review receipts. None of the three proposals from indoor
-searches has an established indoor aircraft source; all three were visually
-ambiguous. These results do not show whether indoor recording, a phone, or poor
-audio quality succeeds or fails.
+The [visual-review notes](youtube-expanded-visual-review-20261103.csv) now
+contain 27 entries, including one follow-up on an indoor clip; earlier review
+receipts remain in the case table and local storage. None of the three proposals
+from indoor searches has an established indoor aircraft source; all three were
+visually ambiguous. A closer review of the Midtown Manhattan open-window scan
+([Vg1mpD1BICI](https://www.youtube.com/watch?v=Vg1mpD1BICI)) found one scanner
+ridge descending from 110.8 to 94.3 Hz over 64–77 s, alongside a persistent
+band near 100 Hz and no clearly co-moving harmonic family. It remains ambiguous;
+urban tonal sources are plausible. These results do not show whether indoor
+recording, a phone, or poor audio quality succeeds or fails.
 
 The ten plausible leads in the first review came from aircraft-targeted or
 site-named queries. A focused re-review adds one candidate from the outdoor-walk
