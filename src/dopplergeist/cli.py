@@ -3,6 +3,7 @@ import json
 import math
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+import uuid
 
 
 def operator_config(path, online):
@@ -20,6 +21,15 @@ def positive_runtime(value):
     if not math.isfinite(number) or number <= 0:
         raise argparse.ArgumentTypeError("Runtime must be positive and finite")
     return number
+
+
+def job_identifier(value):
+    try:
+        if uuid.UUID(value).hex != value:
+            raise ValueError
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("job_id must be the 32-character job identifier") from error
+    return value
 
 
 def main():
@@ -56,10 +66,10 @@ def main():
     serve.add_argument("--max-runtime",type=positive_runtime,default=3600)
     serve.add_argument("--max-upload-mb",type=int,default=100)
     job=sub.add_parser("job",help="Read a persisted job result without rerunning it")
-    job.add_argument("job_id")
+    job.add_argument("job_id",type=job_identifier)
     job.add_argument("--jobs",default="jobs")
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
-    resume.add_argument("job_id")
+    resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
     resume.add_argument("--max-runtime",type=positive_runtime,default=3600)
     args=parser.parse_args()
@@ -104,19 +114,22 @@ def main():
             manager.close()
     elif args.command=="job":
         from .jobs import read_json
-        import uuid
         try:
-            if uuid.UUID(args.job_id).hex!=args.job_id:
-                raise ValueError
-        except ValueError:
-            parser.error("job_id must be the 32-character job identifier")
-        print(json.dumps(read_json(Path(args.jobs)/args.job_id/"result.json"),indent=2))
+            value = read_json(Path(args.jobs)/args.job_id/"result.json")
+        except (OSError, ValueError) as exc:
+            parser.error(f"Could not read job {args.job_id}: {exc}")
+        print(json.dumps(value,indent=2))
     elif args.command=="resume":
         from .jobs import JobManager
-        manager=JobManager(args.jobs,max_runtime_s=args.max_runtime)
+        try:
+            manager=JobManager(args.jobs,max_runtime_s=args.max_runtime)
+        except (OSError, ValueError) as exc:
+            parser.error(f"Could not open job store: {exc}")
         try:
             manager.resume(args.job_id)
             print(json.dumps(manager.wait(args.job_id),indent=2))
+        except (KeyError, OSError, OverflowError, ValueError) as exc:
+            parser.error(f"Could not resume job {args.job_id}: {exc}")
         finally:
             manager.close()
 
