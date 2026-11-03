@@ -244,7 +244,9 @@ def bounded_finite_clock_assessment(detail, max_groups):
     if (not isinstance(assessment, dict) or detail.get("score_kind") != kind
             or assessment.get("complete") is not False
             or assessment.get("unknown_score_bound_kind") != kind
-            or assessment.get("unknown_score_bound_method") != "nonnegative_loss_and_validated_event_fits"
+            or assessment.get("unknown_score_bound_method") not in
+               ("nonnegative_loss_and_validated_event_fits", "group_count_ceiling",
+                "nonnegative_loss_validated_fits_and_acoustic_dual")
             or not isinstance(indices, list) or not indices
             or any(type(index) is not int or not 0 <= index < max_groups for index in indices)
             or indices != sorted(set(indices))):
@@ -259,7 +261,21 @@ def bounded_finite_clock_assessment(detail, max_groups):
             or assessment.get("empty_clock_domain") is not False
             or assessment["scheduled_trials"] != sum(assessment[name] for name in names[1:4])):
         return False
+    method = assessment["unknown_score_bound_method"]
+    dual = assessment.get("acoustic_bound_rejected_trials", 0)
+    if type(dual) is not int:
+        return False
+    if method == "nonnegative_loss_validated_fits_and_acoustic_dual":
+        if not 0 < dual <= rejected:
+            return False
+    elif dual != 0:
+        return False
     upper = assessment.get("unknown_score_upper_bound")
+    if method == "group_count_ceiling":
+        return (detail.get("finite_best") is False
+                and assessment["evaluated_trials"] == assessment["rejected_trials"] == 0
+                and unknown == assessment["scheduled_trials"] and rejected == 0
+                and type(upper) in (int, float) and math.isfinite(upper) and upper == len(indices))
     return (upper is None if rejected == bounded else
             type(upper) in (int, float) and math.isfinite(upper) and 0 <= upper <= len(indices))
 
