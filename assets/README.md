@@ -58,3 +58,11 @@ rsvg-convert assets/dopplergeist-banner.svg \
   -o assets/dopplergeist-banner-preview.png
 rsvg-convert -w 600 assets/dopplergeist-banner.svg -o /tmp/dopplergeist-banner-600.png
 ```
+
+## Livermore demonstration
+
+`livermore-real-demo.png` shows a real recording and a configured search over
+published flight data. It uses USGS / USDA NAIP imagery and data from Praveen
+Pathak's [Zenodo dataset](https://doi.org/10.5281/zenodo.23424278) (CC BY 4.0).
+[Setup, limitations and rendering instructions](../docs/LIVERMORE_DEMO.md)
+explain the inferred reference and the incomplete model assessment.

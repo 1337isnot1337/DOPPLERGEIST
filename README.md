@@ -98,6 +98,12 @@ Remaining reliability work includes [unsupported trajectory motion and coverage 
 
 ## Experimental results
 
+### A real flyover, with bounded priors
+
+![Spectrogram and scored search grid for a real Livermore aircraft flyover](assets/livermore-real-demo.png)
+
+This configured run combines a real recording with its supplied aircraft track, a narrow time window and a regional search area. Its highest-scoring point is **481 m from a dataset-derived reference**, not surveyed microphone ground truth. The result is inconclusive: model assessment is incomplete and the fitted clock is at the search boundary. [Setup, limitations and reproduction](docs/LIVERMORE_DEMO.md).
+
 The published project artifacts preserve both successful fits and cases where the system could not justify a location. The following are **historical configured replays**, with their original settings and thresholds:
 
 | Experiment | Reported finding | Important qualification |
