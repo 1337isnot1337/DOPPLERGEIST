@@ -91,7 +91,8 @@ function render(value) {
   }
   $('events').replaceChildren();
   if (value.events?.length) {
-    $('events').append(node('h3', `${value.events.length} detected Doppler curves`));
+    const groups = new Set(value.events.map(event => event.harmonic_group_id || event.event_id)).size;
+    $('events').append(node('h3', `${groups} independent acoustic proposals · ${value.events.length} ridge records`));
     for (const event of value.events) $('events').append(node('div', `${event.event_id} · ${event.start_s.toFixed(1)}–${event.end_s.toFixed(1)} s · ${event.band_hz.map(x => x.toFixed(0)).join('–')} Hz${event.harmonic_group_id ? ` · group ${event.harmonic_group_id}` : ''}`, 'event'));
   }
 }
