@@ -49,7 +49,7 @@ Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`.
 ## How it works
 
 1. **Measure the audio.** Decode the recording, identify frequency tracks, and group harmonics that belong to the same flyover.
-2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage.
+2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage. The default source is [ADSB.lol's 2026 historical flight archive](https://github.com/adsblol/globe_history_2026); see [acquisition and cache details](docs/DATA_AND_SCALE.md#acquisition).
 3. **Model the sound.** Predict Doppler frequency and arrival time from aircraft trajectories, receiver geometry, and sound propagation.
 4. **Compare locations.** Search candidate receiver positions, reconcile independent flyovers, and retain competing explanations rather than forcing an answer.
 
