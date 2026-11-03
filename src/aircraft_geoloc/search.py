@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 from .geometry import ecef
 
 
-def cpa_table(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
+def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
     """Vectorized piecewise-linear CPA prefilter; supports repeated local passes.
 
     This is the inexpensive first stage. Final scoring evaluates the interpolated
@@ -20,16 +20,30 @@ def cpa_table(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256)
     for track in tracks:
         t = np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
         pos = track.position(t)
-        delta = np.diff(pos,axis=0)
+        # Prune trajectory segments outside this observer tile before forming a
+        # point-by-segment tensor. Keep original segment endpoints/times so a gap
+        # between retained pieces cannot invent a straight-line flight.
+        lower=observers.min(axis=0)-max_distance
+        upper=observers.max(axis=0)+max_distance
+        keep=np.all((np.minimum(pos[:-1],pos[1:])<=upper)&
+                    (np.maximum(pos[:-1],pos[1:])>=lower),axis=1)
+        if not np.any(keep):
+            continue
+        first,last=pos[:-1][keep],pos[1:][keep]
+        t0,t1=t[:-1][keep],t[1:][keep]
+        delta = last-first
         length2 = np.sum(delta**2,axis=1)
-        supported = np.isfinite(cKDTree(pos).query(observers,
+        endpoints=np.concatenate((first,last))
+        near_box=np.all((observers>=endpoints.min(axis=0)-max_distance)&
+                        (observers<=endpoints.max(axis=0)+max_distance),axis=1)
+        nearby=np.flatnonzero(near_box)
+        supported = np.isfinite(cKDTree(endpoints).query(observers[nearby],
             distance_upper_bound=max_distance+np.sqrt(length2.max()))[0])
-        for base in range(0,len(points),chunk_size):
-            indices = np.flatnonzero(supported[base:base+chunk_size])+base
-            if not len(indices):
-                continue
+        active=nearby[supported]
+        for base in range(0,len(active),chunk_size):
+            indices = active[base:base+chunk_size]
             obs = observers[indices]
-            residual = pos[:-1][None,:,:]-obs[:,None,:]
+            residual = first[None,:,:]-obs[:,None,:]
             fraction = np.clip(-np.einsum("bsi,si->bs",residual,delta)/np.maximum(length2,1e-12),0,1)
             dist2 = np.sum((residual+fraction[:,:,None]*delta[None,:,:])**2,axis=2)
             # A zero-velocity segment or path endpoint is not evidence of a full
@@ -43,7 +57,7 @@ def cpa_table(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256)
                 last_time = -np.inf
                 for k in peaks:
                     distance = np.sqrt(dist2[j,k])
-                    when = t[k]+fraction[j,k]*(t[k+1]-t[k])
+                    when = t0[k]+fraction[j,k]*(t1[k]-t0[k])
                     if distance > max_distance or when-last_time < step_s*1.1:
                         continue
                     last_time = when
@@ -52,6 +66,69 @@ def cpa_table(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256)
                                  "distance_m":distance,
                                  "speed_mps":np.linalg.norm(track.speed_vector(when))})
     return pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
+
+
+def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
+    """Spatial-radius CPA graph, retaining every local pass without dense tensors.
+
+    The radius includes two complete sample steps beyond the audible envelope,
+    so both neighbours of an in-range sampled minimum are present. Each minimum
+    is refined on its two actual adjacent segments. The dense reference above
+    provides an independent regression oracle for this search optimization.
+    """
+    observers=ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
+    point_ids=points.point_id.to_numpy(dtype=int)
+    rows=[]
+    for track in tracks:
+        t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
+        pos=track.position(t)
+        max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
+        near=np.flatnonzero(np.all((observers>=pos.min(axis=0)-max_distance)&
+                                  (observers<=pos.max(axis=0)+max_distance),axis=1))
+        tree=cKDTree(pos)
+        for base in range(0,len(near),chunk_size):
+            chosen=near[base:base+chunk_size]
+            obs=observers[chosen]
+            neighbours=tree.query_ball_point(obs,max_distance+2*max_step,return_sorted=True)
+            counts=np.fromiter((len(a) for a in neighbours),dtype=int,count=len(neighbours))
+            if not counts.sum():continue
+            sample=np.concatenate(neighbours).astype(int)
+            observer_index=np.repeat(np.arange(len(obs)),counts)
+            distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
+            previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
+            following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+            minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
+                    (distance2<np.r_[distance2[1:],np.inf]))
+            indices=np.flatnonzero(minima)
+            if not len(indices):continue
+            k=sample[indices]
+            oi=observer_index[indices]
+            # Project onto both neighbouring polyline edges, never across a
+            # missing interval or between unrelated flight passes.
+            first=np.stack((pos[k-1],pos[k]),axis=1)
+            last=np.stack((pos[k],pos[k+1]),axis=1)
+            delta=last-first
+            residual=first-obs[oi,None,:]
+            fraction=np.clip(-np.sum(residual*delta,axis=2)/np.maximum(np.sum(delta**2,axis=2),1e-12),0,1)
+            d2=np.sum((residual+fraction[:,:,None]*delta)**2,axis=2)
+            edge=np.argmin(d2,axis=1)
+            n=np.arange(len(k))
+            distance=np.sqrt(d2[n,edge])
+            start=np.where(edge==0,k-1,k)
+            when=t[start]+fraction[n,edge]*(t[start+1]-t[start])
+            speed=np.linalg.norm(track.speed_vector(when),axis=1)
+            for j in np.flatnonzero(distance<=max_distance):
+                rows.append({"point_id":int(point_ids[chosen[oi[j]]]),"flight_id":track.id,
+                             "emission_time":float(when[j]),"receive_time":float(when[j]+distance[j]/c),
+                             "distance_m":float(distance[j]),"speed_mps":float(speed[j])})
+    result=pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
+    if not result.empty:
+        # A CPA exactly at a sample can be proposed twice under roundoff.
+        result=result.sort_values(["point_id","flight_id","emission_time"])
+        duplicate=(result.point_id.eq(result.point_id.shift())&result.flight_id.eq(result.flight_id.shift())&
+                   result.emission_time.diff().abs().lt(step_s*1.1))
+        result=result[~duplicate].reset_index(drop=True)
+    return result
 
 
 def filter_event(table, event, time_origin=None, time_tolerance=5.0):

@@ -1,0 +1,21 @@
+{
+  "python": "3.14.8",
+  "platform": "Linux-7.2.10-arch1-1-x86_64-with-glibc2.44",
+  "dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pandas": "2.3.3",
+    "soundfile": "0.14.0",
+    "pyproj": "3.8.0",
+    "rasterio": "1.5.2",
+    "matplotlib": "3.11.2",
+    "requests": "2.34.2",
+    "pyarrow": "26.0.0",
+    "pytest": "9.1.1",
+    "setuptools": "84.0.0"
+  },
+  "ffmpeg": "ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+  "fresh_test_command": ".venv/bin/python -m pytest -q",
+  "fresh_test_result": "11 passed in 1.95s",
+  "date": "2026-11-02"
+}

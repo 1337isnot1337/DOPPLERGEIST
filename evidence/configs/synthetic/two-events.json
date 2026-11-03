@@ -1,0 +1,69 @@
+{
+  "audio": "recording.wav",
+  "tracks": [
+    "tracks.csv"
+  ],
+  "type_database": "types.csv",
+  "terrain": {
+    "constant_m": 120
+  },
+  "grid": {
+    "spacing_m": 200,
+    "scoring_spacing_m": 100,
+    "refine_spacing_m": 25,
+    "refine_pairs": 3
+  },
+  "events": [
+    {
+      "start_s": 65,
+      "end_s": 250,
+      "band_hz": [
+        95,
+        185
+      ],
+      "speed_range_mps": [
+        60,
+        120
+      ],
+      "slant_range_m": [
+        1300,
+        2500
+      ],
+      "f0_range_hz": [
+        132,
+        138
+      ]
+    },
+    {
+      "start_s": 985,
+      "end_s": 1170,
+      "band_hz": [
+        80,
+        155
+      ],
+      "speed_range_mps": [
+        50,
+        105
+      ],
+      "slant_range_m": [
+        1000,
+        2200
+      ],
+      "f0_range_hz": [
+        112,
+        118
+      ]
+    }
+  ],
+  "filters": {
+    "offset_tolerance_s": 6,
+    "silence": {
+      "edge_margin_s": 100
+    }
+  },
+  "scoring": {
+    "mode": "brightness",
+    "time_sweep_s": 3,
+    "time_step_s": 0.5
+  }
+}

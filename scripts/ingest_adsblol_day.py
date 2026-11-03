@@ -12,13 +12,19 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import requests
 
-from aircraft_geoloc.tracks import adsblol_frame
+from aircraft_geoloc.tracks import adsblol_frame,unix_time
 
 parser=argparse.ArgumentParser()
 parser.add_argument("date")
+parser.add_argument("--bounds",type=float,nargs=4,default=[-125,24,-66,50],metavar=("WEST","SOUTH","EAST","NORTH"))
+parser.add_argument("--output",default="conus-prop-unknown.parquet")
+parser.add_argument("--keep-jets",action="store_true",help="Include jet types for the single-event ablation")
+parser.add_argument("--time-range",nargs=2,metavar=("START_UTC","END_UTC"))
 args=parser.parse_args()
 root=Path(__file__).resolve().parents[1]
 directory=root/"data/adsb"/args.date
+west,south,east,north=args.bounds
+time_range=[unix_time(t) for t in args.time_range] if args.time_range else None
 types_path=root/"data/source/icao_aircraft_types.json"
 if not types_path.exists():
     r=requests.get("https://raw.githubusercontent.com/wiedehopf/tar1090-db/master/db/icao_aircraft_types.js",timeout=60)
@@ -66,10 +72,11 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             raw=archive.extractfile(member).read()
             d=json.loads(gzip.decompress(raw) if raw[:2]==b"\x1f\x8b" else raw)
             stats["trace_files"]+=1
-            if engines.get(d.get("t",""))=="Jet":
+            if not args.keep_jets and engines.get(d.get("t",""))=="Jet":
                 stats["known_jets_removed"]+=1
                 continue
-            trace=[p for p in d.get("trace",[]) if p[1] is not None and p[2] is not None and 24<=p[1]<=50 and -125<=p[2]<=-66]
+            trace=[p for p in d.get("trace",[]) if p[1] is not None and p[2] is not None and south<=p[1]<=north and west<=p[2]<=east
+                   and (time_range is None or time_range[0]<=d["timestamp"]+p[0]<=time_range[1])]
             if not trace:
                 stats["no_conus_points"]+=1
                 continue
@@ -81,11 +88,11 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             # aircraft cannot change a later parquet batch's physical type.
             schema=pa.schema([(c,pa.string() if c in ["flight_id","typecode","altitude_basis"] else pa.float64()) for c in frame.columns])
             batch=pa.Table.from_pandas(frame,schema=schema,preserve_index=False)
-            if writer is None:writer=pq.ParquetWriter(directory/"conus-prop-unknown.parquet",schema,compression="zstd")
+            if writer is None:writer=pq.ParquetWriter(directory/args.output,schema,compression="zstd")
             writer.write_table(batch)
             stats["retained_aircraft"]+=1;stats["rows"]+=len(frame)
             stats["barometric_rows"]+=int((frame.altitude_basis=="barometric").sum())
             if stats["retained_aircraft"]%500==0:print(stats,flush=True)
 if writer:writer.close()
-(directory/"ingestion-report.json").write_text(json.dumps(stats,indent=2)+"\n")
+(directory/(Path(args.output).stem+"-ingestion-report.json")).write_text(json.dumps(stats,indent=2)+"\n")
 print(stats,flush=True)

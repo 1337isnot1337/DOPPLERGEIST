@@ -20,7 +20,12 @@ class Terrain:
         for raster in self.rasters:
             transform = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True)
             x, y = transform.transform(lon.ravel(), lat.ravel())
-            values = np.ma.asarray(list(raster.sample(zip(x, y), masked=True)))[:, 0]
+            col,row=(~raster.transform) @ (np.asarray(x),np.asarray(y))
+            col,row=np.floor(col).astype(int),np.floor(row).astype(int)
+            inside=(col>=0)&(col<raster.width)&(row>=0)&(row<raster.height)
+            values=np.ma.masked_all(len(col))
+            data=raster.read(1,masked=True)
+            values[inside]=data[row[inside],col[inside]]
             valid = ~np.ma.getmaskarray(values)
             flat = elevation.ravel()
             flat[valid] = np.asarray(values)[valid]
@@ -33,6 +38,53 @@ class Terrain:
         return elevation
 
 
+class CopernicusTerrain:
+    """Public GLO-90 DSM tiles, cached locally; water-only missing tiles are zero.
+
+    At this CONUS search scope the published tile catalogue covers land. An absent
+    tile is accepted as ocean only when it is absent from that catalogue, not when
+    a network download fails. EGM2008 DSM heights use the configured geoid grid.
+    """
+    def __init__(self,cache,geoid_path=None):
+        import requests
+        self.cache=Path(cache)
+        self.cache.mkdir(parents=True,exist_ok=True)
+        self.session=requests.Session()
+        catalog=self.cache/"tileList.txt"
+        if not catalog.exists():
+            response=self.session.get("https://copernicus-dem-90m.s3.amazonaws.com/tileList.txt",timeout=60)
+            response.raise_for_status();catalog.write_text(response.text)
+        self.catalog=set(catalog.read_text().splitlines())
+        self.geoid=Terrain([geoid_path]) if geoid_path else None
+
+    def sample(self,lat,lon):
+        lat,lon=np.broadcast_arrays(lat,lon)
+        shape=lat.shape
+        lat,lon=lat.ravel(),lon.ravel()
+        degrees=np.column_stack((np.floor(lat).astype(int),np.floor(lon).astype(int)))
+        tiles,inverse=np.unique(degrees,axis=0,return_inverse=True)
+        height=np.zeros(len(lat))
+        for index,(north,east) in enumerate(tiles):
+            tag=f"Copernicus_DSM_COG_30_{'N' if north>=0 else 'S'}{abs(north):02d}_00_{'E' if east>=0 else 'W'}{abs(east):03d}_00_DEM"
+            if tag not in self.catalog and tag+"/" not in self.catalog:
+                continue
+            path=self.cache/(tag+".tif")
+            if not path.exists():
+                import fcntl
+                with path.with_suffix(".lock").open("a") as lock:
+                    fcntl.flock(lock,fcntl.LOCK_EX)
+                    if not path.exists():
+                        url=f"https://copernicus-dem-90m.s3.amazonaws.com/{tag}/{tag}.tif"
+                        r=self.session.get(url,timeout=120);r.raise_for_status()
+                        temporary=path.with_suffix(".part");temporary.write_bytes(r.content);temporary.replace(path)
+            selected=inverse==index
+            sampler=Terrain([path])
+            height[selected]=sampler.sample(lat[selected],lon[selected])
+            for raster in sampler.rasters:raster.close()
+        if self.geoid:height+=self.geoid.sample(lat,lon)
+        return height.reshape(shape)
+
+
 def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=None, time_origin=None):
     """Only materialize grid cells near plausible aircraft segments.
 
@@ -41,6 +93,7 @@ def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=No
     """
     forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
     inverse = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    clipbox=forward.transform_bounds(*bounds,densify_pts=21) if bounds else None
     cells = []
     for track in tracks:
         for event in events:
@@ -67,12 +120,26 @@ def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=No
             # EPSG:5070 grid scale is close to unity over CONUS; 10% padding
             # plus an anchor gap protects corridor coverage under distortion.
             pad = radius * 1.45 + spacing_m
+            if clipbox:
+                left,bottom,right,top=clipbox
+                ax,ay=anchors[:,0]*spacing_m,anchors[:,1]*spacing_m
+                anchors=anchors[(ax>=left-pad)&(ax<=right+pad)&(ay>=bottom-pad)&(ay<=top+pad)]
+            if not len(anchors):
+                continue
             size = int(np.ceil(pad / spacing_m))
             dx, dy = np.meshgrid(np.arange(-size, size+1), np.arange(-size,size+1))
             offsets = np.column_stack((dx.ravel(), dy.ravel()))
             offsets = offsets[np.linalg.norm(offsets, axis=1) * spacing_m <= pad]
+            event_cells=[]
             for anchor in anchors:
-                cells.append(anchor + offsets)
+                expanded=anchor+offsets
+                if clipbox:
+                    ex,ey=expanded[:,0]*spacing_m,expanded[:,1]*spacing_m
+                    expanded=expanded[(ex>=left-spacing_m)&(ex<=right+spacing_m)&
+                                      (ey>=bottom-spacing_m)&(ey<=top+spacing_m)]
+                if len(expanded):event_cells.append(expanded)
+            if event_cells:
+                cells.append(np.unique(np.concatenate(event_cells),axis=0))
     if not cells:
         raise ValueError("No flight segments meet event speed/time bounds")
     cells = np.unique(np.concatenate(cells), axis=0)

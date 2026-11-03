@@ -1,76 +1,89 @@
-# Aircraft-acoustic geolocation reproduction
+# DOPPLERGEIST
 
-This project reconstructs the method in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI):
-measure aircraft Doppler curves, constrain flight geometry, account for sound travel
-time and terrain, and score candidate recording positions against actual ADS-B tracks.
+An independent reconstruction of the aircraft-sound geolocation method described
+in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI). The pipeline
+measures Doppler curves, compares them with historical ADS-B trajectories, accounts
+for terrain and sound travel time, and ranks candidate recording positions.
 
-**Status:** the complete local pipeline is implemented. Independent synthetic
-audio-to-location runs recover the correct flights with 21.9 m error for two events
-with unknown recording start, and 40.9 m error for a known-time one-minute event.
-Real-world location verification is in progress; these synthetic errors do not
-establish the video's real-world or national-search claims.
+**The target product is an MP3 upload followed by automatic event discovery and
+location estimation, with 100 m error counting as success. That product is not
+implemented yet.** The current CLI requires selected event windows, frequency
+bands, flight data, and search configuration. A recording date or bounded time
+window is also needed to select historical flight data; an undated audio file does
+not itself provide that information.
 
-## Run
+## Verified results
 
-Python 3.11+ and `ffmpeg` are required. The current local environment is `.venv/`.
+| Case | Result | Scope |
+| --- | --- | --- |
+| Independent synthetic two-event audio | 21.89 m error; correct flight pair | Unknown recording start; three candidate regions; truth withheld from search |
+| Independent synthetic 60-second event | 40.87 m error; correct flight | Known recording start; manually selected event |
+| Original recording, two events | 43.86 m from published public-platform coordinate | Regional search; source-informed windows and bounds; reference coordinate is not surveyed ground truth |
+| Original recording, faint 60-second event | 357.47 m from the same reference | Regional search; clock borrowed from the two-event result; does not meet the 100 m target |
+| Separate 40-passage acoustic dataset | 33 detections; median speed error 6.85%, slant error 15.37% among detections | Annotation-assisted frequency bands; feature benchmark, not location validation |
+
+The real two-event result has been reproduced with the faster CPA implementation
+at the same winning point and score. No blind nationwide real-audio run has been
+completed. Scores are ranking statistics, not calibrated probabilities.
+
+Start with [the implementation handoff](docs/HANDOFF.md),
+[current evidence](docs/PROGRESS.md), and [the reconstructed methodology](docs/METHODOLOGY.md).
+Readable reports and plots are checked into [evidence/results](evidence/results).
+Large inputs and complete outputs are in the
+[checkpoint release](https://github.com/1337isnot1337/dopplergeist/releases/tag/checkpoint-2026-11-02).
+See [artifact download and verification instructions](docs/ARTIFACTS.md).
+The YouTube MP4 is intentionally excluded.
+
+## Install and run
+
+Python 3.11+ and `ffmpeg` are required. Python 3.14 was used for this checkpoint;
+the recorded dependency versions are in [evidence/runtime.json](evidence/runtime.json).
 
 ```bash
 python -m venv .venv
 .venv/bin/pip install -e . pytest
 .venv/bin/python -m pytest -q
 .venv/bin/python scripts/make_synthetic_cases.py
-.venv/bin/aircraft-geoloc run data/synthetic/two-events.json --output results/two-events
-.venv/bin/aircraft-geoloc run data/synthetic/known-time-minute.json --output results/known-minute
+.venv/bin/aircraft-geoloc run data/synthetic/two-events.json --output results/replay-two-events
+.venv/bin/aircraft-geoloc run data/synthetic/known-time-minute.json --output results/replay-known-minute
 ```
 
-The generator writes truth separately. The search never loads it. Its audio
-renderer transports an oscillator from emission time into receiver time without
-calling the search's propagation model. Three widely separated regions contain
-plausible flights; a known jet tests classification. Results include a ranked list
-of points, the best point per flight combination, measured spectra, physical-model
-overlays, filter counts, input hashes, and timings.
+After restoring the release data, reproduce the real regional case with:
 
-## Inputs and physical model
+```bash
+.venv/bin/aircraft-geoloc run data/source/reproduce-local.json --output results/replay-reference
+```
 
-A JSON configuration identifies an audio/video file, flight-data files, event
-windows/bands, terrain, a projected grid, filter tolerances and scoring settings.
-Event speed, slant-distance and rest-frequency ranges may be set explicitly or
-estimated from the measured curve. The video likewise uses manual event selection
-and generous geometry bounds; fully unattended event discovery is not assumed.
+Use a new output directory to preserve the original evidence. Historical reports
+retain their original paths and implementation hashes; those paths are provenance,
+not requirements for a new checkout. Configuration paths resolve relative to the
+configuration file.
+
+## Inputs and model
 
 Canonical CSV/Parquet columns are `flight_id,time_s,lat,lon,alt_m,typecode`.
-Timestamps are Unix seconds or UTC ISO strings; heights and speeds are SI units.
-Optional `east_mps,north_mps,up_mps` supply actual flight velocity. KML gx:Track
-and readsb/ADSB.lol traces have importers. Gaps are split instead of interpolated
-through. Unknown aircraft types are retained; only positively identified jet types
-are removed. Readsb geometric-altitude fields and barometric fallbacks are labelled.
+Timestamps are Unix seconds or UTC ISO strings; heights and speeds use SI units.
+Optional `east_mps,north_mps,up_mps` provide flight velocity. KML `gx:Track` and
+readsb/ADSB.lol traces have importers. Track gaps are split; extrapolation is
+disallowed. Known-jet exclusion is configurable through the supplied type database.
+The faint reference event requires retaining jets.
 
-For aircraft position **x** at emission time tau and observer **o**, the code solves
+For aircraft position **x** at emission time tau and receiver **o**, the solver uses:
 
 ```
 t_received = tau + norm(x(tau) - o) / c
 frequency = f0 * c / (c + dot(velocity(tau), x(tau)-o)/norm(x(tau)-o))
 ```
 
-Range rate is positive for a receding aircraft. A shared recording-clock adjustment
-is fitted across all events; each event can adjust its rest frequency, but a second
-event cannot shift independently in time. Scoring uses either normalized spectral
-brightness along the predicted curves or residual against a measured ridge.
+Positive range rate means the aircraft is receding. All events share one recording
+clock adjustment; rest frequency is fitted separately for each event. Scoring
+uses either spectrogram contrast along the predicted curves or measured-ridge
+residuals. Terrain and aircraft heights must use a consistent vertical datum;
+the supplied real configurations include a geoid correction.
 
-DEM rasters are sampled in their actual CRS. An optional geoid raster converts
-orthometric ground height to the ellipsoidal datum used by GNSS aircraft heights.
-Without a geoid, both aircraft and observer must use one common height datum.
-Constant terrain is available for explicit controlled tests, not an implied DEM.
+## Sources
 
-## Evidence and next work
-
-- [Current checkpoint](docs/PROGRESS.md)
-- Source video captions, metadata, source frames and audio: `data/source/`
-- Real paired research data: `scripts/fetch_research_data.py`
-- Open historical ADS-B data: `scripts/fetch_adsblol_day.py YYYY-MM-DD`, then
-  `scripts/ingest_adsblol_day.py YYYY-MM-DD`
-- Local reports: `results/synthetic-two-events/` and `results/synthetic-known-minute/`
-
-External recordings and large datasets stay outside Git. Downloaded research data
-is checksum verified. The first real reproduction uses an area identified in the
-video to validate data alignment before attempting a blind national search.
+This is independently written code, not a release from the video author.
+External data retain their own licenses and attribution requirements, described
+in [data provenance](docs/DATA_SOURCES.md). No blanket license for those assets is
+implied by this repository.

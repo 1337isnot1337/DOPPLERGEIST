@@ -1,0 +1,24 @@
+{
+  "lat": 40.03173,
+  "lon": -100.01829,
+  "elev_m": 120.0,
+  "recording_start_time_s": 1790000000.0,
+  "flight_ids": [
+    "true-A",
+    "true-B"
+  ],
+  "f0_hz": [
+    135.0,
+    115.0
+  ],
+  "events": [
+    {
+      "flight_id": "true-A",
+      "center_emission_s": 150.0
+    },
+    {
+      "flight_id": "true-B",
+      "center_emission_s": 1070.0
+    }
+  ]
+}

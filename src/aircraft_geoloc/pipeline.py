@@ -10,7 +10,7 @@ import pandas as pd
 from .audio import measure
 from .geometry import ecef
 from .search import cpa_table,pair_candidates,rank_candidates
-from .terrain import Terrain,corridor_grid,refine_grid
+from .terrain import Terrain,CopernicusTerrain,corridor_grid,refine_grid
 from .tracks import load_tracks,unix_time
 
 
@@ -20,6 +20,11 @@ def dump(path,value):
 
 def run(config_path,output_dir):
     began=time.monotonic()
+    code_root=Path(__file__).resolve().parents[1]
+    code_digest=hashlib.sha256()
+    for source in sorted(code_root.rglob("*.py")):
+        code_digest.update(str(source.relative_to(code_root)).encode())
+        code_digest.update(source.read_bytes())
     config_path=Path(config_path).resolve()
     config=json.loads(config_path.read_text())
     output=Path(output_dir).resolve()
@@ -72,8 +77,9 @@ def run(config_path,output_dir):
     if not tracks:
         raise ValueError("No usable flight trajectories")
     ground=config["terrain"]
-    terrain=Terrain([local(p) for p in ground.get("rasters",[])],ground.get("constant_m"),
-                    local(ground["geoid_raster"]) if ground.get("geoid_raster") else None)
+    geoid=local(ground["geoid_raster"]) if ground.get("geoid_raster") else None
+    terrain=(CopernicusTerrain(local(ground["copernicus_cache"]),geoid) if ground.get("copernicus_cache") else
+             Terrain([local(p) for p in ground.get("rasters",[])],ground.get("constant_m"),geoid))
     grid=config.get("grid",{})
     coarse=grid.get("spacing_m",200)
     crs=grid.get("crs","EPSG:5070")
@@ -136,17 +142,18 @@ def run(config_path,output_dir):
             digest=hashlib.file_digest(f,"sha256").hexdigest()
         provenance.append({"path":str(path.resolve()),"sha256":digest})
     report={"config":config,"measured_events":events,"imports":imports,"sources":provenance,
+            "implementation_sha256":code_digest.hexdigest(),
             "coarse_filter_counts":counts,"scoring_filter_counts":fine_counts,
             "ranked_points":len(ranked),"flight_combinations":len(best_pairs),"best":ranked[0],
             "elapsed_s":time.monotonic()-began,
             "scoring_time_is_locked":True,"ground_truth_used_by_search":False}
     dump(output/"report.json",report)
-    plot_results(output,ranked,tracks,measurements)
+    plot_results(output,ranked,tracks,measurements,c)
     print("Best:",json.dumps(ranked[0]),flush=True)
     return report
 
 
-def plot_results(output,ranked,tracks,measurements):
+def plot_results(output,ranked,tracks,measurements,c=343.0):
     import matplotlib
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
@@ -164,7 +171,7 @@ def plot_results(output,ranked,tracks,measurements):
     for i,(spec,ridge,weight,fit) in enumerate(measurements):
         best=ranked[0]
         track=lookup[best["flight_ids"][i]]
-        factor,_,_=track.acoustic(best["recording_start_time_s"]+spec.time,ecef(best["lat"],best["lon"],best["elev_m"]))
+        factor,_,_=track.acoustic(best["recording_start_time_s"]+spec.time,ecef(best["lat"],best["lon"],best["elev_m"]),c)
         fig,ax=plt.subplots(figsize=(10,4),layout="constrained")
         ax.pcolormesh(spec.time,spec.frequency,spec.contrast,shading="auto",cmap="magma",vmin=0,vmax=6)
         ax.plot(spec.time,best["f0_hz"][i]*factor,color="cyan",lw=1.1,label="Best physical model")
