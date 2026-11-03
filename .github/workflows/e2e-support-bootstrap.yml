@@ -1,0 +1,29 @@
+name: E2E support workspace
+on:
+  push:
+    branches: ["worker/e2e-track-support-20261103"]
+    paths: [".github/workflows/e2e-support-bootstrap.yml"]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download public source and Linux Python dependencies
+        env:
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/doppler-bootstrap/wheels"
+          git clone --mirror https://github.com/1337isnot1337/DOPPLERGEIST.git "$RUNNER_TEMP/doppler-source.git"
+          git -C "$RUNNER_TEMP/doppler-source.git" bundle create "$RUNNER_TEMP/doppler-bootstrap/dopplergeist.bundle" --all
+          python -m pip download --only-binary=:all: --dest "$RUNNER_TEMP/doppler-bootstrap/wheels" numpy scipy pandas soundfile pyproj rasterio matplotlib requests pyarrow pytest setuptools wheel
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e2e-local-workspace
+          path: ${{ runner.temp }}/doppler-bootstrap
+          retention-days: 3
