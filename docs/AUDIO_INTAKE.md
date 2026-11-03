@@ -37,6 +37,14 @@ no_audio_stream, decoder_unavailable, decode_failed, invalid_samples, empty_audi
 and source_changed. Existing output raises FileExistsError. Input parameter and
 shared-contract validation raise ValueError. ffmpeg and ffprobe must be on PATH.
 
+decoder_unavailable also covers executable launch errors and POSIX startup
+statuses126/127, including unavailable runtime dependencies. A valid recording
+must not be labelled corrupt merely because the decoder cannot start. Ordinary
+probe rejection remains invalid_media; a decoder that starts but rejects the
+audio remains decode_failed. Private executable-stub tests cover these paths
+without changing installed binaries, preserve input bytes and leave no finalized
+cache on failure. Historical namespace failures retain their original outcomes.
+
 Verification: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_intake.py`.
 The tests encode a real MP3 with libmp3lame, compare WAV/MP3 burst timings at three
 positions to <=1 ms and duration to one 4000 Hz sample, check 48 kHz stereo channel
