@@ -161,7 +161,11 @@ the result verifier distinguishes these finite ceilings from outright acoustic
 rejections. On one full-day point with 468 real associations, retained candidates
 matched exactly and CPU time changed from 37.77 to 28.23 seconds. The persisted
 bound ledger differs because it accounts for additional skipped trials. This
-single measurement does not establish nationwide runtime or accuracy.
+single measurement does not establish nationwide runtime or accuracy. A separate
+2,443-association full-day clock partition retained the same candidates, with
+CPU time changing from 158.01 to 149.56 seconds in one paired run. Both runs
+reported zero unbounded candidate assessments; their ledgers differed as expected
+for the additional score ceilings.
 
 For association sets of at least 1,000 candidates, repeated acoustic batches
 reuse exact track, receiver, time-array and sound-speed inputs in a per-worker
