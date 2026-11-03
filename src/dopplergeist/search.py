@@ -586,7 +586,7 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     outcomes = [None] * len(starts)
     active = list(range(len(starts)))
     rejected_count = floor_count = 0
-    prefixes = [0.0] * len(starts)
+    prefixes = np.zeros(len(starts), dtype=np.float64)
     limits = [3 * _frequency_scale(event) for event in events] if score_floor is not None else []
     bound_enabled = bool(limits) and all(np.isfinite(value) and value > 0 for value in limits)
     batches = iter(acoustic_batches)
@@ -597,16 +597,17 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
         if use_dual and batch is not None:
             rejected, upper = ridge_trial_rejections(measurement, event, *batch,
                 score_floor=score_floor, group_count=len(events))
-            eligible = []
-            for trial in active:
-                if rejected[trial]:
-                    rejected_count += 1
-                    outcomes[trial] = (None, -np.inf, None)
-                elif np.isfinite(upper[trial]):
-                    floor_count += 1
-                    outcomes[trial] = (None, float(upper[trial]), None)
-                else:
-                    eligible.append(trial)
+            indices = np.asarray(active, dtype=np.intp)
+            rejected = rejected[indices]
+            upper = upper[indices]
+            finite_upper = ~rejected & np.isfinite(upper)
+            rejected_count += int(np.count_nonzero(rejected))
+            floor_count += int(np.count_nonzero(finite_upper))
+            for trial in indices[rejected].tolist():
+                outcomes[trial] = (None, -np.inf, None)
+            for trial, bound in zip(indices[finite_upper].tolist(), upper[finite_upper].tolist()):
+                outcomes[trial] = (None, float(bound), None)
+            eligible = indices[~(rejected | finite_upper)].tolist()
         else:
             eligible = active
         fitted = fitted_ceilings = None
@@ -619,6 +620,38 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
                     *arguments, limits[index], legacy_arithmetic=legacy)
             else:
                 fitted = first_event_fits(*arguments, legacy_arithmetic=legacy)
+        if fitted_ceilings is not None:
+            # Only the unchanged core validator supplies this complete vector.
+            # Custom hooks and numerical policies keep the scalar path below.
+            for trial, fit in zip(eligible, fitted):
+                diagnostics[trial].append(fit)
+            indices = np.asarray(eligible, dtype=np.intp)
+            contributions = np.asarray(fitted_ceilings, dtype=np.float64)
+            rejected = contributions == -np.inf
+            for trial in indices[rejected].tolist():
+                outcomes[trial] = (None, -np.inf, None)
+            indices = indices[~rejected]
+            prefixes[indices] = np.nextafter(prefixes[indices] + contributions[~rejected], np.inf)
+            bounds = prefixes[indices]
+            # From a nonnegative prefix, each remaining +1/upward-rounding
+            # step leaves a bound at least as large as its step count. The
+            # final cap is also >= remaining, so none can fall below this
+            # floor. Check prefixes explicitly to preserve earlier custom fits.
+            if score_floor <= remaining and np.all(bounds >= 0.0):
+                active = indices.tolist()
+                continue
+            # Keep each addition and upward rounding in the scalar order. In
+            # particular, summing losses first or rounding only once is unsafe.
+            for _ in range(remaining):
+                bounds = np.nextafter(bounds + 1.0, np.inf)
+            # Python min(maximum, NaN) retains maximum, including a NaN prefix
+            # supplied by an earlier custom fitter before core validation resumes.
+            np.fmin(float(len(events)), bounds, out=bounds)
+            below_floor = bounds < score_floor
+            for trial, bound in zip(indices[below_floor].tolist(), bounds[below_floor].tolist()):
+                outcomes[trial] = (None, bound, None)
+            active = indices[~below_floor].tolist()
+            continue
         next_active = []
         for fit_index, trial in enumerate(eligible):
             try:
@@ -644,8 +677,8 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
                     # Reuse the already validated prefix. Add unperformed
                     # groups one at a time with the identical outward rounding;
                     # capping a prefix or summing losses first changes the bound.
-                    prefixes[trial] = math.nextafter(prefixes[trial] + contribution, math.inf)
-                    bound = prefixes[trial]
+                    prefixes[trial] = math.nextafter(float(prefixes[trial]) + contribution, math.inf)
+                    bound = float(prefixes[trial])
                     for _ in range(remaining):
                         bound = math.nextafter(bound + 1.0, math.inf)
                     bound = min(float(len(events)), bound)

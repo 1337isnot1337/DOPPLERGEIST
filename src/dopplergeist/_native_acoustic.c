@@ -8,6 +8,10 @@
 #include <fenv.h>
 #include <string.h>
 
+/* Larger calls keep the original all-lane solver instead of allocating
+ * unbounded temporary state or falling back to the Python implementation. */
+#define DG_MAX_STATE_BYTES ((size_t)2 * 1024 * 1024)
+
 /* Compile without contraction or reassociation.  SciPy PPoly uses
  * increasing powers, not Horner evaluation.  Preserve that arithmetic exactly.
  */
@@ -23,10 +27,20 @@ static size_t interval_at(const double *x, size_t m, double value) {
 }
 
 static int evaluate(const double *coefficients, const double *x, size_t m,
-                    size_t width, double origin, double t, double *values) {
+                    size_t width, double origin, double t, double *values,
+                    uint16_t *interval) {
     double relative = t - origin;
     if (!(relative >= x[0] && relative <= x[m])) return 1;
-    size_t i = interval_at(x, m, relative);
+    size_t i = interval == NULL ? m : *interval;
+    /* Newton updates usually stay in one native spline interval. Reuse only
+     * after checking its exact half-open bounds; the last interval owns x[m].
+     * Both spline shapes are bounded to 4096 intervals by the public wrapper.
+     */
+    if (!(i < m && relative >= x[i] &&
+          (relative < x[i+1] || (i+1 == m && relative == x[m])))) {
+        i = interval_at(x, m, relative);
+        if (interval != NULL) *interval = (uint16_t)i;
+    }
     double s = relative - x[i];
     double z = 1.0;
     for (size_t j = 0; j < width; ++j) values[j] = 0.0;
@@ -52,9 +66,9 @@ static double norm3(const double *a) {
 
 static int kinematics(const double *coefficients, const double *x,
                       size_t m, double origin, double tau, const double *observer,
-                      double *distance, double *radial) {
+                      double *distance, double *radial, uint16_t *interval) {
     double values[6], delta[3];
-    if (evaluate(coefficients, x, m, 6, origin, tau, values)) return 1;
+    if (evaluate(coefficients, x, m, 6, origin, tau, values, interval)) return 1;
     for (size_t j = 0; j < 3; ++j) delta[j] = values[j] - observer[j];
     *distance = norm3(delta);
     *radial = (((0.0 + delta[0]*values[3]) + delta[1]*values[4])
@@ -67,12 +81,14 @@ static int dg_acoustic(const double *t, size_t n, const double *observer,
                 const double *packed, const double *packed_x, size_t packed_m,
                 double origin, double start, double end, double c,
                 double arrival_start, double arrival_end,
-                double *factor, double *tau, double *distance) {
+                double *factor, double *tau, double *distance, uint16_t *state) {
     if (n == 0 || m == 0 || m > 4096) return 1;
+    uint16_t initial_interval = (uint16_t)m;
     for (size_t i = 0; i < n; ++i) {
         double position[3], delta[3];
         if (!isfinite(t[i])) return 1;
-        if (evaluate(p, x, m, 3, origin, clip(t[i], start, end), position)) return 1;
+        if (evaluate(p, x, m, 3, origin, clip(t[i], start, end), position,
+                     &initial_interval)) return 1;
         for (size_t j = 0; j < 3; ++j) delta[j] = position[j] - observer[j];
         double initial_distance = norm3(delta);
         if (!isfinite(initial_distance)) return 1;
@@ -80,13 +96,22 @@ static int dg_acoustic(const double *t, size_t n, const double *observer,
         double estimate = t[i] - initial_delay;
         if (!isfinite(initial_delay) || !isfinite(estimate)) return 1;
         tau[i] = clip(estimate, start, end);
+        if (state != NULL) state[i] = (uint16_t)packed_m;
     }
     int unchanged = 0;
+    double fixed_maximum = 0.0;
     for (size_t iteration = 0; iteration < 10; ++iteration) {
         unchanged = 1;
-        double maximum = 0.0;
+        double maximum = fixed_maximum;
         for (size_t i = 0; i < n; ++i) {
-            if (kinematics(packed, packed_x, packed_m, origin, tau[i], observer, distance+i, factor+i)) return 1;
+            /* UINT16_MAX marks an exact floating-point fixed point. Repeating
+             * its polynomial evaluation and update cannot change its values.
+             * Its correction still participates in the global stopping rule:
+             * a clamped unsupported endpoint can have a large correction.
+             */
+            if (state != NULL && state[i] == UINT16_MAX) continue;
+            if (kinematics(packed, packed_x, packed_m, origin, tau[i], observer,
+                           distance+i, factor+i, state == NULL ? NULL : state+i)) return 1;
             double derivative = 1.0 + factor[i]/c;
             if (!isfinite(derivative) || !(derivative > 0.0)) return 1;
             double correction = ((tau[i] - t[i]) + distance[i]/c)/derivative;
@@ -95,6 +120,12 @@ static int dg_acoustic(const double *t, size_t n, const double *observer,
             if (!isfinite(estimate)) return 1;
             double updated = clip(estimate, start, end);
             if (updated != tau[i]) unchanged = 0;
+            else if (state != NULL && (updated != 0.0 || signbit(updated) == signbit(tau[i]))) {
+                /* A signed-zero change compares equal but need not reproduce
+                 * the same polynomial arithmetic on a subsequent iteration. */
+                state[i] = UINT16_MAX;
+                if (fabs(correction) > fixed_maximum) fixed_maximum = fabs(correction);
+            }
             tau[i] = updated;
             double absolute = fabs(correction);
             if (absolute > maximum) maximum = absolute;
@@ -103,7 +134,9 @@ static int dg_acoustic(const double *t, size_t n, const double *observer,
     }
     if (!unchanged) {
         for (size_t i = 0; i < n; ++i) {
-            if (kinematics(packed, packed_x, packed_m, origin, tau[i], observer, distance+i, factor+i)) return 1;
+            if (state != NULL && state[i] == UINT16_MAX) continue;
+            if (kinematics(packed, packed_x, packed_m, origin, tau[i], observer,
+                           distance+i, factor+i, state == NULL ? NULL : state+i)) return 1;
         }
     }
     for (size_t i = 0; i < n; ++i) {
@@ -163,6 +196,8 @@ static int increasing_knots(const Py_buffer *view) {
 static PyObject *solve(PyObject *self, PyObject *args) {
     PyObject *objects[9];
     Py_buffer views[9] = {{0}};
+    uint16_t small_state[64];
+    uint16_t *state = small_state;
     double origin, start, end, c, arrival_start, arrival_end;
     int success = 0;
     if (!PyArg_ParseTuple(args,"OOOOOOddddddOOO",
@@ -182,17 +217,23 @@ static PyObject *solve(PyObject *self, PyObject *args) {
         if (!same_shape(views,views+i)) goto done;
     const double *observer = views[1].buf;
     for (int j = 0; j < 3; ++j) if (!isfinite(observer[j])) goto done;
+    size_t samples = (size_t)(views[0].len/sizeof(double));
+    if (samples > sizeof(small_state)/sizeof(small_state[0])) {
+        state = samples <= DG_MAX_STATE_BYTES/sizeof(*state)
+            ? PyMem_Malloc(samples*sizeof(*state)) : NULL;
+    }
     /* A failed probe must not leak arithmetic flags into the NumPy fallback. */
     fenv_t previous_environment;
     if (fegetenv(&previous_environment) != 0) goto done;
     Py_BEGIN_ALLOW_THREADS
-    success = !dg_acoustic(views[0].buf,(size_t)(views[0].len/sizeof(double)),
+    success = !dg_acoustic(views[0].buf,samples,
         observer,views[2].buf,views[3].buf,(size_t)views[2].shape[1],
         views[4].buf,views[5].buf,(size_t)views[4].shape[1],origin,start,end,c,
-        arrival_start,arrival_end,views[6].buf,views[7].buf,views[8].buf);
+        arrival_start,arrival_end,views[6].buf,views[7].buf,views[8].buf,state);
     if (fesetenv(&previous_environment) != 0) success = 0;
     Py_END_ALLOW_THREADS
 done:
+    if (state != small_state) PyMem_Free(state);
     for (int i = 0; i < 9; ++i) if (views[i].obj) PyBuffer_Release(views+i);
     if (PyErr_Occurred()) PyErr_Clear();
     if (success) ((module_state *)PyModule_GetState(self))->successful_calls++;
