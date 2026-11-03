@@ -57,7 +57,9 @@ def bounded_search(tmp_path):
     checksum = ledger.record("coarse:0_0", rows, rows[:2], len(rows), bounds=certificates)
     ledger.record("global:0_0", rows[:2], rows[:2], 2)
     details = [item["detail"] for item in certificates]
-    payload = {"ranked": rows[:2], "retention_checksum": checksum, "counts": {
+    payload = {"ranked": rows[:2], "grid_points": 5, "tracks": 2, "retention_checksum": checksum, "counts": {
+        "cpa_rows": 5, "candidates": 5, "evaluated_trials": 3, "rejected_trials": 0,
+        "unknown_trials": 2, "unreported_trial_envelopes": 0,
         "unclassified_score_candidates": 2, "bounded_score_candidates": 2, "unbounded_score_candidates": 0,
         "unclassified_candidate_assessments": details, "unsupported_cpa_tracks": []}}
     (directory / "search/tile-0_0.json").write_text(json.dumps(
@@ -148,3 +150,58 @@ def test_clock_bound_certificate_requires_every_unknown_trial(bounded_search, ke
     detail = json.loads(path.read_text())["unclassified_candidate_assessments"][0]
     detail["scoring_assessment"][key] = value
     assert HTTP.bounded_finite_clock_assessment(detail, 1) is False
+
+
+@pytest.mark.parametrize("key", ["unclassified_score_candidates", "unsupported_cpa_tracks",
+    "bounded_score_candidates", "unknown_trials", "unreported_trial_envelopes",
+    "unclassified_candidate_assessments"])
+def test_nonempty_bounded_stage_requires_explicit_support_counts(bounded_search, key):
+    path = bounded_search[0] / "search/tile-0_0.json"
+    value = json.loads(path.read_text())
+    value["payload"]["counts"].pop(key)
+    value["payload_hash"] = content_hash(value["payload"])
+    path.write_text(json.dumps(value))
+    with pytest.raises(ValueError, match="[Cc]oarse"):
+        inspect(bounded_search)
+
+
+@pytest.mark.parametrize("key", ["evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"])
+def test_aggregate_cannot_omit_recorded_coarse_trials(bounded_search, key):
+    path = bounded_search[0] / "search/tile-0_0.json"
+    value = json.loads(path.read_text())
+    value["payload"]["counts"][key] += 1
+    value["payload_hash"] = content_hash(value["payload"])
+    path.write_text(json.dumps(value))
+    with pytest.raises(ValueError, match="totals omit recorded coarse clock trials"):
+        inspect(bounded_search)
+
+
+def test_new_ledger_cannot_select_historical_trial_semantics(bounded_search):
+    assessment = bounded_search[1]["ranked"][0]["scoring_assessment"]
+    assessment.pop("trial_count_semantics")
+    assessment["unknown_reasons"] = {}
+    with pytest.raises(ValueError, match="winner masks missing or unknown clock trials"):
+        inspect(bounded_search)
+
+
+def test_bounds_table_requires_new_summary_fields_even_if_flags_are_removed(bounded_search):
+    _, search, _, refinement = bounded_search
+    for target in (search["finite_search_evidence"], refinement["matching_diagnostics"]["finite_search_evidence"]):
+        for key in ("bounded_unknown_envelopes", "bounded_unknown_rejections", "best_unknown_score_upper_bound"):
+            target.pop(key)
+    search.pop("model_assessment_complete")
+    with pytest.raises(ValueError, match="bound table or aggregate fields"):
+        inspect(bounded_search)
+
+
+@pytest.mark.parametrize("value", [None, True, -1, 1])
+def test_supported_model_cannot_hide_missing_trial_accounting(bounded_search, value):
+    search = deepcopy(bounded_search[1])
+    search["model_support_complete"] = True
+    search["model_support"].update(unclassified_score_candidates=0, unknown_trials=0,
+        bounded_score_candidates=0, unbounded_score_candidates=0)
+    if value is None:
+        search["model_support"].pop("unreported_trial_envelopes")
+    else:
+        search["model_support"]["unreported_trial_envelopes"] = value
+    assert HTTP.model_assessment_accounted_for(search) is False

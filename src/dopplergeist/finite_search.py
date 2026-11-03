@@ -35,13 +35,20 @@ def classified_assessment(row):
     assessment = row.get("scoring_assessment")
     valid = (isinstance(assessment, dict) and assessment.get("complete") is True
             and all(type(assessment.get(k)) is int and assessment[k] >= 0
-                    for k in ("evaluated_trials", "rejected_trials", "unknown_trials"))
+                    for k in ("scheduled_trials", "evaluated_trials", "rejected_trials", "unknown_trials"))
+            and assessment["scheduled_trials"] > 0
+            and assessment["scheduled_trials"] == sum(assessment[k] for k in
+                    ("evaluated_trials", "rejected_trials", "unknown_trials"))
+            and assessment.get("trial_count_semantics") == "disjoint_evaluated_rejected_unknown"
+            and assessment.get("empty_clock_domain") is False
             and assessment["unknown_trials"] == 0)
     if not valid:
         return False
     # No trials is unknown work. A finite best needs an evaluated trial; a
     # wholly rejected envelope cannot have discarded an evaluated finite best.
     score = row.get("score", math.nan)
+    if not isinstance(score, (int, float)) or isinstance(score, bool):
+        return False
     return (assessment["evaluated_trials"] > 0 if math.isfinite(score) else
             score == -math.inf and assessment["evaluated_trials"] == 0 and assessment["rejected_trials"] > 0)
 
