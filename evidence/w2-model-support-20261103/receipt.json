@@ -1,0 +1,60 @@
+{
+  "source_commit": "c97242e",
+  "dependency": "W1 7897f5c (consumed with provenance as84d5877)",
+  "test_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-support-gate-20261103/tests.xml",
+  "test_summary": "241 passed, 6 subtests passed in79.98s; zero failures/skips",
+  "junit_attributes": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "247",
+    "time": "79.985",
+    "timestamp": "2026-11-02T21:31:42.760303-06:00",
+    "hostname": "Asus"
+  },
+  "replay_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python scripts/check_unsupported_tiles.py /home/cinna/dopplergeist-w2-data-scale/results/w2-index-v2-20261102/conus-alltypes.sqlite results/w2-unsupported-tile-replay-20261103",
+  "artifacts": {
+    "tests.log": {
+      "bytes": 364,
+      "sha256": "4dbc39e5a4e614950e2053d1ec5949579b166301c7790ebaac3bb094359da435"
+    },
+    "tests.xml": {
+      "bytes": 31666,
+      "sha256": "aa90b6c36c52eab5f3f4f71b66ae11cb71952dc5350f40710007dfd50d129fc0"
+    },
+    "historical-tile-replay/tile-9_9.json": {
+      "bytes": 7946,
+      "sha256": "e341958ee01dd5a8a7b560fef72e2682c3683fa721af890b21f943581a50d040"
+    },
+    "historical-tile-replay/tile-5_13.json": {
+      "bytes": 9929,
+      "sha256": "56b50912445fa8c0c1e353dcde07d977bb79df2001baac44cf8954ccff91ca94"
+    },
+    "historical-tile-replay/report.json": {
+      "bytes": 4600,
+      "sha256": "1d36aed1905bb5d21e28a74646fba1709a2e1a0bd86bf600c8800100a70c6a5a"
+    },
+    "historical-tile-replay/tile-7_15.json": {
+      "bytes": 1625,
+      "sha256": "4439d67e65d6643a75aa351a653fba13b7ab99997eb925d20aa4b2d905be35ce"
+    },
+    "historical-tile-replay/support/coarse-5_13.json": {
+      "bytes": 728,
+      "sha256": "7d38d777550dda8809004381615f86d83a64ba37380dbc03e01db2d31f00708a"
+    },
+    "historical-tile-replay/support/coarse-7_15.json": {
+      "bytes": 729,
+      "sha256": "ba88cb6114cc6038b36fbd03ae99f6d65f618ad9783aa363fb0ced74a55ef7a2"
+    },
+    "historical-tile-replay/support/coarse-9_9.json": {
+      "bytes": 1358,
+      "sha256": "9872e33ec9a7f6ee293458c539d94f36f3af92b32ac1e31cc9c2a31de64a1e4c"
+    }
+  },
+  "remaining_gates": [
+    "W3 continuous-motion/time-local/convergence guard and real bad-Track outer integration test",
+    "Fresh-source normalization and independent real corpus acceptance",
+    "W4/primary exact-state compatible-subset policy remains conservative"
+  ]
+}

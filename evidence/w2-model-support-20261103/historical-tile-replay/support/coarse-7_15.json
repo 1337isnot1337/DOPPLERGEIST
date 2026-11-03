@@ -1,0 +1,35 @@
+{
+  "stage": "coarse:7_15",
+  "unsupported_cpa_tracks": [],
+  "unclassified_candidate_assessments": [
+    {
+      "point_id": 30,
+      "receiver": {
+        "x": 1240000.0,
+        "y": 2460000.0,
+        "lat": 44.210299887729875,
+        "lon": -80.36510516263883,
+        "elev_m": 0.0
+      },
+      "event_indices": [
+        0
+      ],
+      "flight_ids": [
+        "c01125"
+      ],
+      "pass_emission_times_s": [
+        1788899798.72
+      ],
+      "recording_start_bounds_s": [
+        1788899401.1237295,
+        1788899405.0
+      ],
+      "scoring_assessment": null,
+      "support_failure": {
+        "track_id": "c01125",
+        "reason": "non_monotone_arrival"
+      },
+      "finite_best": false
+    }
+  ]
+}
