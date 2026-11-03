@@ -11,6 +11,7 @@ import sys
 import tarfile
 
 import pandas as pd
+import pyarrow.parquet as pq
 import pytest
 
 
@@ -59,6 +60,8 @@ def test_native_altitude_support_is_normalized_before_row_selection(tmp_path, se
     assert report["barometric_rows"] == 0
     assert report["normalization_scope"] == "full_native_trace_before_segment_selection"
     assert report["selection_max_gap_s"] == 30.0
+    selection_meta = pq.read_schema(day / "new.parquet").metadata[b"dopplergeist.selection.v1"]
+    assert json.loads(selection_meta)["max_gap_s"] == 30.0
     assert all(hashlib.sha256((day / n).read_bytes()).hexdigest() == h for n, h in original.items())
     # Repeating an old output name must preserve its historical bytes.
     artifact = (day / "new.parquet").read_bytes()

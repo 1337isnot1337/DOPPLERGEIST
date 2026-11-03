@@ -71,6 +71,8 @@ if len(paths)<2:raise ValueError("Daily archive download is incomplete")
 stats={"trace_files":0,"known_jets_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
 stats["normalization_scope"]="full_native_trace_before_segment_selection"
 stats["selection_max_gap_s"]=30.0
+selection={"bounds":[west,south,east,north],"time_range_s":time_range,
+           "all_aircraft":args.keep_jets,"max_gap_s":30.0}
 writer=None
 with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
     with tarfile.open(fileobj=stream,mode="r|") as archive:
@@ -99,7 +101,8 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             frame["heading_deg"]=frame.heading_deg.astype(float)
             # Bound schema explicitly so an all-null metadata field in one
             # aircraft cannot change a later parquet batch's physical type.
-            schema=pa.schema([(c,pa.string() if c in ["flight_id","typecode","altitude_basis"] else pa.float64()) for c in frame.columns])
+            schema=pa.schema([(c,pa.string() if c in ["flight_id","typecode","altitude_basis"] else pa.float64()) for c in frame.columns],
+                             metadata={b"dopplergeist.selection.v1":json.dumps(selection,allow_nan=False).encode()})
             batch=pa.Table.from_pandas(frame,schema=schema,preserve_index=False)
             if writer is None:writer=pq.ParquetWriter(output_path,schema,compression="zstd")
             writer.write_table(batch)
