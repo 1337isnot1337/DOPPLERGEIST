@@ -1,4 +1,4 @@
-"""Batched versions of the existing robust first-event ridge fits."""
+"""Batched versions of the existing robust ridge fits."""
 import numpy as np
 
 from .matching import _fit_ridge_uncached, _frequency_scale, _ridge_fit_inputs
@@ -33,13 +33,18 @@ def first_event_fits(measurement, event, factors, emissions):
         if not np.all(np.isfinite(cap) & (cap > 0)) or not np.all(np.isfinite(u)):
             return None
         factor2, u2 = factors**2, u**2
+        # The scalar fitter squares Python floats here. NumPy's array square
+        # can round differently by one ULP, which can change a Top-K cutoff.
+        try:
+            prior = np.asarray([(2 * sigma / float(value))**2 for value in cap])
+        except OverflowError:
+            return None
         effective = np.broadcast_to(w, factors.shape).copy()
         for _ in range(6):
             weighted_factor2, weighted_factor = effective * factor2, effective * factors
             a = np.sum(weighted_factor2, axis=1)
             r = np.sum(weighted_factor * y, axis=1)
             b = np.sum(weighted_factor2 * u, axis=1)
-            prior = (2 * sigma / cap)**2
             d = np.sum(weighted_factor2 * u2, axis=1) + prior
             s = np.sum(weighted_factor * u * y, axis=1)
             determinant = a*d - b*b
@@ -68,7 +73,11 @@ def first_event_fits(measurement, event, factors, emissions):
             residual = factors * (alpha[:, None] + beta[:, None] * u) - y
             effective = w / np.sqrt(1 + (residual / sigma)**2)
         loss = np.average(2 * sigma**2 * (np.sqrt(1 + (residual / sigma)**2) - 1), weights=w, axis=1)
-        penalty = (2 * sigma * beta / cap)**2 / independent
+        try:
+            penalty = np.asarray([(2 * sigma * float(drift) / float(bound))**2 / independent
+                                  for drift, bound in zip(beta, cap)])
+        except OverflowError:
+            return None
         score = -np.sqrt(loss + penalty)
         rmse = np.sqrt(np.average(residual**2, weights=w, axis=1))
         outlier = np.average(np.abs(residual) > 3 * sigma, weights=w, axis=1)
