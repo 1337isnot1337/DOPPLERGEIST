@@ -9,6 +9,10 @@
 - GitHub CLI (`gh`) with access to this repository when
   downloading the checkpoint assets. Local/offline runs do not require GitHub access.
 
+Nix users can enter the development shell first with `nix develop`. It supplies
+Python 3.12, ffmpeg, GitHub CLI, and native build libraries; install the Python
+dependencies into a virtual environment using the commands below.
+
 Create an isolated environment from the repository root:
 
 ```bash
