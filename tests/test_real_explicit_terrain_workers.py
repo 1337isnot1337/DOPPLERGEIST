@@ -8,13 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from dopplergeist.data_access import FlightIndex
+from dopplergeist.data_access import DataUnavailable, FlightIndex
 from dopplergeist.finite_search import RetentionLedger
 from dopplergeist.matching import prepare_events
 from dopplergeist.parallel_tiles import (discard_pending_fine_ledgers, initialize_tile_worker,
                                          score_fine_tile, score_tile)
 from dopplergeist.terrain import Terrain
-from dopplergeist.tiled_search import SearchBudget, _expanded_bounds, _score, _tracks_for_points, tile_points
+from dopplergeist.tiled_search import (SearchBudget, _expanded_bounds, _score, _tracks_for_points,
+                                      search_national, tile_points)
 
 # Published ESID 762 site and a candidate from its saved real-audio search.
 _POINTS = ((30.386361, -98.860931), (30.38874803589124, -98.87993276822816))
@@ -186,3 +187,40 @@ def test_real_fine_piece_matches_spawned_worker(tmp_path):
     assert partial == spawned_partial
     assert fully_excluded["skipped"] == direct["grid_points"]
     assert fully_excluded["grid_points"] == 0 and empty_path is None
+
+
+def test_real_search_cleans_pending_ledgers_after_failed_fine_import(tmp_path, monkeypatch):
+    import dopplergeist.parallel_retention as parallel_retention
+
+    names = ("DOPPLERGEIST_REAL_TERRAIN_DEM", "DOPPLERGEIST_REAL_TERRAIN_GEOID",
+             "DOPPLERGEIST_REAL_TERRAIN_FLIGHT_INDEX", "DOPPLERGEIST_REAL_TILE_JOB")
+    values = [os.environ.get(name) for name in names]
+    if not all(values):
+        pytest.skip("set real terrain, index and ESID 762 job paths to replay a recorded search")
+    dem, geoid, index_path, saved_job = values
+    job = Path(saved_job)
+    config = json.loads((job / "search/manifest.json").read_text())["configuration"]
+    raw = json.loads((job / "discovery/discovery.json").read_text())["events"]
+    events, measurements = prepare_events(raw, c=343.0, max_distance_m=20000.0)
+    terrain = Terrain([dem], geoid_path=geoid)
+    original = parallel_retention.import_retention_stage
+    failed_path = []
+
+    def fail_first_fine(ledger, worker_path, stage, expected_checksum):
+        if stage.startswith("fine:"):
+            failed_path.append(Path(worker_path))
+            raise DataUnavailable("injected fine ledger import failure")
+        return original(ledger, worker_path, stage, expected_checksum)
+
+    monkeypatch.setattr(parallel_retention, "import_retention_stage", fail_first_fine)
+    try:
+        report = search_national([FlightIndex(index_path)], terrain, events, measurements,
+            time_range_s=config["time_range_s"], output_dir=tmp_path / "search", bounds=config["bounds"],
+            budget=SearchBudget(**config["budget"]), scoring=config["scoring"], filters=config["filters"],
+            crs=config["crs"], input_hashes=config["additional_input_hashes"], workers=2)
+    finally:
+        for raster in terrain.rasters + terrain.geoid.rasters:
+            raster.close()
+    assert report["refinement_failure"] == "injected fine ledger import failure"
+    assert len(failed_path) == 1 and failed_path[0].is_file()
+    assert list((tmp_path / "search/.tile-workers").glob("fine-retention-*.sqlite")) == failed_path
