@@ -274,17 +274,32 @@ OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python scripts/benchmark_dem_locality.py \
   --job /path/to/job --cache /path/to/cache --output /path/to/result.json
 ```
 
-Each search worker retains its own bounded cache; scheduling neighboring work
-does not guarantee that it reaches the same worker. Worker affinity remains an
-opportunity requiring a full search and load-balance comparison.
+Each search worker retains its own bounded cache. The parallel driver submits
+tile cores in a deterministic Hilbert walk and yields results in the original
+order; each worker now scores up to two nearby uncached tiles in one task, keeping
+both on the same worker cache. Assignment between pairs remains dynamic. The
+ordered driver materializes the current wave before submitting it, which can
+delay the first task on a heavily resumed run.
+Because the parent checkpoints a pair when its worker task returns, an
+interruption can require recomputing one finished tile from that pair.
 
-The parallel driver now submits tile cores in a deterministic Hilbert walk and
-yields their results in the original order. Nearby work is more likely to reach
-the same worker, but worker affinity is not guaranteed. The ordered driver
-materializes the current wave before submitting it, which can delay the first
-task on a heavily resumed run. Four actual saved full-day no-approach tiles
-reproduced their payloads and retention checksums with two workers. This is a
-correctness check, not a full-run speed measurement.
+A static, equal-duration, 12-worker LRU replay on 115 saved real tiles (234 DEM
+references, 54 rasters) estimated 213 opens for row-major single-tile tasks, 220
+for Hilbert single-tile tasks, and 169 for Hilbert pairs. The paired schedule is
+20.7% fewer modeled opens than row-major. This models cache misses; it does not
+measure executor timing, load balance, or full-search speed. See the
+[replay output](../benchmarks/results/dem-scheduler-locality-model-20261103.json)
+and reproduce it with:
+
+```bash
+PYTHONPATH=src python scripts/benchmark_dem_scheduling_model.py \
+  --search-dir /path/to/job/search --workers 12 \
+  --output /path/to/dem-scheduler-model.json
+```
+
+Four actual saved full-day no-approach tiles also reproduced their payloads and
+retention checksums with two workers. This checks result parity, not full-run
+runtime.
 
 In one separate paired test of a full-day clock partition with 17,776
 associations, the merged scoring optimizations took 94.00 CPU seconds versus
@@ -297,3 +312,8 @@ payload and retention checksum exactly equal. These individual measurements do
 not establish a nationwide runtime.
 The [benchmark receipt](../benchmarks/results/combined-dense-20261103.json)
 records the source revisions and scope.
+
+Isolating the validated-ceiling cache from PR #225 on this same partition took
+105.97 CPU seconds versus 103.41 for the combined source, with the entire payload
+equal. This single observation does not establish a gain for that cache on the
+dense workload; other cache changes in PR #225 are separate.

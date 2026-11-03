@@ -25,5 +25,12 @@
     "associations": 17776,
     "evaluated_trials": 16390,
     "complete_payload_exactly_equal_to_old": true
+  },
+  "ceiling_cache_experiment": {
+    "source": "Validated-ceiling cache isolated from PR #225 at 19d82aa, applied to cb996dc",
+    "cpu_seconds": 105.969596458,
+    "elapsed_seconds": 107.338633364,
+    "complete_payload_exactly_equal_to_combined": true,
+    "result": "No improvement established in this single observation."
   }
 }
