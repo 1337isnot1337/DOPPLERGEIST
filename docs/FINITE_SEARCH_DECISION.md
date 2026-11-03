@@ -1,6 +1,6 @@
 # Proposed finite-search decision evidence
 
-This additive consumer is a proposal for W2/W4/W5 agreement in
+This additive consumer implements the conditional scope agreed in
 [the finite-search topic](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39#discussioncomment-19363838).
 W2 owns computing search/retention evidence, W5 owns stable mode mappings and
 actual assessment completion, and W4 owns this interpretation. It does not change
@@ -34,7 +34,7 @@ W5 forwards W2's object verbatim as `matching_diagnostics.finite_search_evidence
 }
 ```
 
-Every retained spatial/clock/association seed has one unique stable ID. Preserve
+Every retained spatial/clock/event-subset/association seed has one unique stable ID. Preserve
 that ID through its refinement. `event_groups` counts independent flyovers,
 including all supported later events; harmonics/fragments count once.
 `max_event_groups` bounds every retained or discarded evaluated hypothesis.
@@ -47,7 +47,15 @@ maximum higher-is-better score. It is null exactly when no candidate was discard
 Exact duplicate stable IDs merged while retaining their highest score are not
 competing retention drops. Count deduplications separately if needed; association-
 only or approximate spatial collapse cannot be treated as exact duplication.
-It bounds evaluated parameter points only, not unvisited positions or unperformed
+The receiver-grid/pass-association score may be the best over the declared bounded
+clock/frequency/drift evaluations at that same location/association. Its domain
+must be recorded. Every trial must be classified: evaluated admissible rejection
+is distinct from unknown support/model/optimizer work, including all-negative-
+infinite outcomes. Unknown trials cannot be hidden behind one successful trial
+or assigned an optimistic discard bound. W2 exposes completed core seed IDs as
+`core_assessed_mode_ids`; W5 forwards only those classified assessments.
+
+The bound applies to evaluated parameter points only, not unvisited positions or unperformed
 refinements. Missing accounting cannot become zero discards or complete evidence.
 
 ## Assessment mappings
@@ -62,6 +70,15 @@ candidate mappings must resolve. Group counts must agree. At least one returned
 representation must retain or improve each mode's original score, within numerical
 tolerance. These checks prevent a mapping or normalization error from hiding a
 better original grid hypothesis.
+
+For this narrow scope, a completed, fully supported core score at the frozen
+position/shared-clock/association/event subset and declared model counts as an
+assessment. Joint refinement of every retained point is not required. Failed,
+unvisited or unsupported core evaluations are unassessed. Unperformed refinements
+are explicit limitations, not an inferred continuous score bound. The leading
+estimate still needs successful complete measurement/model sensitivity profiles;
+all retained seeds remain in the ambiguity comparison. Do not turn on the old
+exhaustion/refinement boolean using this narrower meaning.
 
 ## Decision interpretation
 
@@ -79,7 +96,33 @@ undergoes the existing position/association near-tie checks against the actual
 returned radius. Full measurement/model sensitivity and optimizer/boundary guards
 remain mandatory.
 
-An accepted finite object records its grid resolutions, counts, bound, limitations
+## Same-association finite envelope
+
+After valid finite accounting and successful complete leading refinement/model
+sensitivity, near-tied same-association points may require a wider honest radius
+than the local leading profile. Keep the fitted point, clock, score, association
+and order fixed. Form the union of those evaluated points and every actually
+reported applicable uncertainty envelope:
+
+`radius = max(leading tested radius, distance to each near-tied point + its reported radius if present)`.
+
+An absent competitor profile contributes only its evaluated point, never an
+imputed profile. Unknown off-grid/profile behavior remains an explicit limitation.
+A different flight/event association still vetoes. Discarded near ties still veto.
+If the union exceeds the precision target, abstain. Incomplete, clipped or failed
+leading profiles cannot be repaired by this enlargement. Calls without the finite
+object keep the original returned-radius containment behavior, including #36.
+
+The hook returns copied `candidates` with the leading uncertainty method
+`finite_mode_and_tested_profile_union`, kind `sensitivity`, and computed radius.
+W5 must preserve that returned array (`setdefault` fallback only). The API/UI must
+read back the computed radius, not overwrite it with the smaller input profile.
+Diagnostics preserve the base profile radius, finite extent, included candidate
+indices/mode IDs and limitations. No test set, fitting parameter or historical
+outcome is revised.
+
+An accepted finite object uses policy version `engineering-v5-finite-envelope` and
+records its grid resolutions, counts, bound, limitations
 and `continuous_space_uniqueness: not established` in the decision artifact. A
 passing result supports only these declared assumptions. There is no new claim
 that an uncalibrated radius guarantees the 1,000 m benchmark target.
