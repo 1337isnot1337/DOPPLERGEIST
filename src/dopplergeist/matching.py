@@ -682,6 +682,20 @@ def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         yield batch
 
 
+def _geographic_refinement_frame(candidate, radius_m, bounds_wsen):
+    west, south, east, north = bounds_wsen
+    lon0, lat0 = candidate["lon"], candidate["lat"]
+    if (not np.isfinite(bounds_wsen).all() or west >= east or south >= north
+            or not west <= lon0 <= east or not south <= lat0 <= north):
+        raise ValueError("Refinement seed must lie within finite, ordered geographic bounds")
+    geod = Geod(ellps="WGS84")
+    lon_scale = geod.inv(lon0, lat0, lon0 + 1, lat0)[2]
+    lat_scale = geod.inv(lon0, lat0, lon0, lat0 + 0.1)[2] * 10
+    limits = [(max(-radius_m, (west-lon0)*lon_scale), min(radius_m, (east-lon0)*lon_scale)),
+              (max(-radius_m, (south-lat0)*lat_scale), min(radius_m, (north-lat0)*lat_scale))]
+    return limits, (lon_scale, lat_scale)
+
+
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
                      crs="EPSG:5070", c=343.0, recording_start_window_s=None,
@@ -715,18 +729,11 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     bounds = [(-radius_m, radius_m), (-radius_m, radius_m)]
     if bounds_wsen is not None:
         west, south, east, north = bounds_wsen
-        if (not np.isfinite(bounds_wsen).all() or west >= east or south >= north
-                or not west <= candidate["lon"] <= east or not south <= candidate["lat"] <= north):
-            raise ValueError("Refinement seed must lie within finite, ordered geographic bounds")
         # Use east/north metre-scaled geographic coordinates so Powell's box
         # constraints intersect the geographic rectangle exactly. A projected
         # x/y rectangle does not align with lines of latitude and longitude.
-        geod = Geod(ellps="WGS84")
         lon0, lat0 = candidate["lon"], candidate["lat"]
-        lon_scale = geod.inv(lon0, lat0, lon0 + 1, lat0)[2]
-        lat_scale = geod.inv(lon0, lat0, lon0, lat0 + 0.1)[2] * 10
-        bounds = [(max(-radius_m, (west-lon0)*lon_scale), min(radius_m, (east-lon0)*lon_scale)),
-                  (max(-radius_m, (south-lat0)*lat_scale), min(radius_m, (north-lat0)*lat_scale))]
+        bounds, (lon_scale, lat_scale) = _geographic_refinement_frame(candidate, radius_m, bounds_wsen)
     initial = np.zeros(2) if fixed_clock else np.array([0.0, 0.0, np.clip(0.0, lower, upper)])
     if not fixed_clock:
         bounds.append((lower, upper))
