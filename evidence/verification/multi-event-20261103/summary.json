@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic multi-event development fixture; discovery only",
+  "generator_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "cases": [
+    {
+      "generated_events": 3,
+      "detected_groups": 3,
+      "true_positives": 3,
+      "misses": 0,
+      "false_alarms": 0,
+      "duration_s": 740.0,
+      "runtime_s": 8.25677030600491,
+      "peak_rss_kib": 343792,
+      "source_sha256": "1fed2fab5b8ee01eed774ad2bc1f82f87db85574100d2d818b6117a230193c61",
+      "source_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+      "truth_read_after_discovery": true,
+      "filesystem_isolation_asserted": false,
+      "location_estimated": false
+    },
+    {
+      "generated_events": 4,
+      "detected_groups": 4,
+      "true_positives": 4,
+      "misses": 0,
+      "false_alarms": 0,
+      "duration_s": 960.0,
+      "runtime_s": 9.296278871013783,
+      "peak_rss_kib": 1648608,
+      "source_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+      "source_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+      "truth_read_after_discovery": true,
+      "filesystem_isolation_asserted": false,
+      "location_estimated": false
+    },
+    {
+      "generated_events": 6,
+      "detected_groups": 6,
+      "true_positives": 6,
+      "misses": 0,
+      "false_alarms": 0,
+      "duration_s": 1400.0,
+      "runtime_s": 13.088294718996622,
+      "peak_rss_kib": 398472,
+      "source_sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee",
+      "source_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+      "truth_read_after_discovery": true,
+      "filesystem_isolation_asserted": false,
+      "location_estimated": false
+    }
+  ],
+  "limits": [
+    "No location or flight-association acceptance is established by detection counts.",
+    "Truth was not passed to discovery, but the discovery process was not filesystem-isolated.",
+    "The four-event peak RSS outlier is preserved as measured; no causal explanation established."
+  ]
+}
