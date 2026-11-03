@@ -53,6 +53,7 @@ jobs:
           python-version: '3.12'
       - name: Install runtime and source-tree extensions
         run: |
+          python -m pip install 'setuptools>=68'
           python -m pip install --editable '.[test]'
           python - <<'PY'
           from dopplergeist import matching, native_acoustic
@@ -193,6 +194,7 @@ jobs:
           python-version: '3.12'
       - name: Install runtime and source-tree extensions
         run: |
+          python -m pip install 'setuptools>=68'
           python -m pip install --editable '.[test]'
           python - <<'PY'
           from dopplergeist import matching, native_acoustic
@@ -332,7 +334,7 @@ jobs:
           python-version: '3.12'
       - name: Install matched runtime
         run: |
-          python -m pip install '.[test]' 'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' 'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
+          python -m pip install 'setuptools>=68' '.[test]' 'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' 'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
           sudo apt-get update
           sudo apt-get install -y ffmpeg
       - name: Restore public recording and observed inputs
