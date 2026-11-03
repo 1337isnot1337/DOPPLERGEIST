@@ -473,7 +473,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 assessment.update(
                     bounded_unknown_trials=len(shifts),
                     bounded_unknown_rejections=0,
-                    unknown_score_upper_bound=len(events),
+                    unknown_score_upper_bound=float(len(events)),
                     unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
                     unknown_score_bound_method="group_count_ceiling")
             else:
