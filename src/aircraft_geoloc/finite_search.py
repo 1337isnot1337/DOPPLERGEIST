@@ -33,10 +33,17 @@ def identify_mode(row):
 
 def classified_assessment(row):
     assessment = row.get("scoring_assessment")
-    return (isinstance(assessment, dict) and assessment.get("complete") is True
+    valid = (isinstance(assessment, dict) and assessment.get("complete") is True
             and all(type(assessment.get(k)) is int and assessment[k] >= 0
                     for k in ("evaluated_trials", "rejected_trials", "unknown_trials"))
             and assessment["unknown_trials"] == 0)
+    if not valid:
+        return False
+    # No trials is unknown work. A finite best needs an evaluated trial; a
+    # wholly rejected envelope cannot have discarded an evaluated finite best.
+    score = row.get("score", math.nan)
+    return (assessment["evaluated_trials"] > 0 if math.isfinite(score) else
+            score == -math.inf and assessment["evaluated_trials"] == 0 and assessment["rejected_trials"] > 0)
 
 
 class RetentionLedger:

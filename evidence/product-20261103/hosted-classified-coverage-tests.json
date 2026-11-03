@@ -1,0 +1,30 @@
+{
+  "source_commit": "f64c89984a51408e914b7728c3de402f180ecbe6",
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41572553663",
+  "command": "python -m pytest -q",
+  "scope": "Full hosted product/classified-scorer/finite-ledger/coverage regression suites; no new acoustic national run or accepted location.",
+  "jobs": [
+    {
+      "python": "3.11",
+      "job_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41572553663/job/125708600093",
+      "conclusion": "success",
+      "passed": 316,
+      "subtests_passed": 6,
+      "skipped": 0,
+      "warnings": 6,
+      "elapsed_s": 38.88,
+      "native_log_sha256": "1e3a104fb03d64f80ad34c24033d5fe470b60dd4d1122a9c12a9637956eb2559"
+    },
+    {
+      "python": "3.14",
+      "job_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41572553663/job/125708599694",
+      "conclusion": "success",
+      "passed": 316,
+      "subtests_passed": 6,
+      "skipped": 0,
+      "warnings": 0,
+      "elapsed_s": 72.72,
+      "native_log_sha256": "a68a26d27a4da723a0b4fadfa1a608f7bbec9b0ae7ba44d67f04fd23abc565b6"
+    }
+  ]
+}

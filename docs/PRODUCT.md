@@ -118,6 +118,17 @@ the operator configuration hash is retained in provenance. This configuration is
 not an upload-request field. A chunk-size comparison must rerun detection and the
 pipeline; it cannot reuse final candidates as if discovery had run again.
 
+Search reports with `model_support_complete` also supply explicit `model_support`
+work counters. Unsupported CPA trajectories, unclassified score candidates or
+unknown clock trials keep product search coverage incomplete. Unreported trial
+envelopes are counted explicitly; zero reported unknown trials cannot establish
+completion when some trial accounting is absent. Missing/malformed
+counters cannot become zero work. Source spatial/time availability remains a
+separate `data_status`; an available archive can still have unassessed trajectory
+models. Coverage limitations expose the work counts, and per-stage support
+artifacts retain affected IDs/reasons and conservative lost-coverage envelopes.
+These counts describe work evaluations, not distinct aircraft.
+
 The automatic path always uses one shared clock inside the supplied start window
 and robust ridge loss. Its default association path considers every proposed
 independent group; harmonics count once and unsupported acoustic proposals remain
