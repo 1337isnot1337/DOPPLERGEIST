@@ -1,5 +1,9 @@
 # Measured pipeline performance
 
+## Combined flight search against main `611dca2`
+
+The [2026-11-03 integration report](FLIGHT_SEARCH_INTEGRATION_2026-11-03.md) covers the combined partition query bound, prepared inputs, native CPA/batch fits, and exact reuse. Three alternating recorded-data pairs measure **34.95 → 18.34 CPU seconds (1.91×)** for query, sieve, CPA, association scoring, and retention. The independent CI comparison of the initial integration measures **1.98×**. Both comparisons preserve exact scored outputs and explain every omitted early diagnostic through the partition time bound. These results use a newer baseline than the historical comparisons below.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
