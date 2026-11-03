@@ -1,0 +1,27 @@
+{
+  "release_url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/six-event-cli-replay-2026-11-03",
+  "release_tag": "six-event-cli-replay-2026-11-03",
+  "prerelease": true,
+  "target_commitish": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "assets": [
+    {
+      "name": "manifest.json",
+      "bytes": 13134,
+      "sha256": "9fb08a1eb570365eb1e54908a9b3cdd3ed7780e4bafdf11bd3cbce1dc1dd2c18",
+      "github_digest_verified": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 183,
+      "sha256": "982f1945f8d4213359591da4e7026001cd14634702f6514caf41e8b71a3705e6",
+      "github_digest_verified": true
+    },
+    {
+      "name": "six-event-cli-replay-20261103.tar.gz",
+      "bytes": 12564160,
+      "sha256": "e801c5d463a2bf7586a4aaae297573b3ad006eaabcf9df6cd88396b4eb6c566e",
+      "github_digest_verified": true
+    }
+  ],
+  "all_remote_sizes_states_and_sha256_digests_verified": true
+}
