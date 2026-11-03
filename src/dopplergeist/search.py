@@ -376,18 +376,6 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             raise ValueError("score_floor must be finite") from error
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
-        # The group-count ceiling is valid only for the normalized score's positive loss scales.
-        from .matching import _frequency_scale
-        for event in events:
-            value = _frequency_scale(event)
-            if isinstance(value, (bool, np.bool_)):
-                raise ValueError("Frequency loss scales must be finite and positive")
-            try:
-                scale = float(value)
-            except (TypeError, ValueError, OverflowError) as error:
-                raise ValueError("Frequency loss scales must be finite and positive") from error
-            if not np.isfinite(scale) or scale <= 0:
-                raise ValueError("Frequency loss scales must be finite and positive")
     observer = ecef(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
@@ -422,6 +410,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
     # Every accepted group contributes at most one; a strict comparison keeps ties eligible.
     floor_pruned = bool(score_floor is not None and len(shifts) > 0 and len(events) < score_floor)
     if floor_pruned:
+        # A ceiling must not turn malformed fit inputs into a successful assessment.
+        from .matching import _frequency_scale, _ridge_fit_inputs
+        for event, measurement in zip(events, measurements):
+            value = _frequency_scale(event)
+            if isinstance(value, (bool, np.bool_)):
+                raise ValueError("Frequency loss scales must be finite and positive")
+            try:
+                scale = float(value)
+            except (TypeError, ValueError, OverflowError) as error:
+                raise ValueError("Frequency loss scales must be finite and positive") from error
+            if not np.isfinite(scale) or scale <= 0 or not np.isfinite(3*scale):
+                raise ValueError("Frequency loss scales must be finite and positive")
+            _ridge_fit_inputs(measurement, scale, event.get("quality", {}).get("source_drift_fraction", 0.02))
         best["score"] = None
         assessment["unknown_trials"] = len(shifts)
         reasons.add("matched_group_count_below_score_floor")
