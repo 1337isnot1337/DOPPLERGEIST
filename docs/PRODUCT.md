@@ -55,7 +55,7 @@ the selected backend remains part of the checkpoint runtime identity.
 The server binds to loopback. It runs one analysis process at a time, accepts up
 to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
-operator limits. Cancellation terminates the analysis process group, including
+operator limits. Service cancellation terminates the analysis process group, including
 decoders. No API credentials or paid service are required by the local service.
 `--online` enables public flight and terrain downloads into `~/.cache/dopplergeist`
 when a job has a defensible recording time. Archives and indexes can take tens of gigabytes or more and hours; no automatic
@@ -72,6 +72,7 @@ dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
 dopplergeist job JOB_ID --jobs jobs
 dopplergeist job JOB_ID --jobs jobs --watch --interval 10
 dopplergeist cancel JOB_ID
+dopplergeist cancel JOB_ID --jobs jobs
 dopplergeist resume JOB_ID --jobs jobs
 # If the upload service still owns the job store:
 dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765
@@ -89,6 +90,12 @@ Ctrl-C stops the watcher without cancelling the analysis.
 `cancel` sends the cancellation request to the local service at
 `http://127.0.0.1:8765`. If `serve` uses a different port, pass its base URL with
 `--server-url`. The service must be running and managing the job directory.
+For a job started by direct `analyze` or `resume --jobs`, use
+`cancel JOB_ID --jobs PATH`. It writes the cooperative cancellation marker
+without opening a second manager; the active worker stops at its next
+cancellation check, so it may finish its current tile first. This path requires
+an active manager to own the job directory. The service API path instead stops
+the worker process group promptly and returns the terminal job result.
 When `serve` owns the job-store lock, use the same `--server-url` option with
 `resume`; it prints the queued result after the service accepts the request.
 Monitor it with `job --watch` and the service's `--jobs` directory. Without

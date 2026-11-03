@@ -215,12 +215,30 @@ Use one interpreter and dependency environment from [SETUP.md](SETUP.md).
 Restore the real inputs from [ARTIFACTS.md](ARTIFACTS.md).
 Use new directories for preparation and results.
 
+These commands reproduce the historical three-pair sources.
+Both arms stay fixed as the current checkout changes.
+The current checkout supplies one common benchmark runner and verifier.
+
+Create both frozen source checkouts:
+
+```bash
+git worktree add --detach ../DOPPLERGEIST-throughput-base \
+  21262e031388b3a5a8dd75979b2dc851608499b2
+git worktree add --detach ../DOPPLERGEIST-throughput-optimized \
+  a21edb95e39e67113b8fcd721aa0f3556919cf9d
+DG_BASELINE_SRC="$(git -C ../DOPPLERGEIST-throughput-base rev-parse --show-toplevel)/src"
+DG_CURRENT_SRC="$(git -C ../DOPPLERGEIST-throughput-optimized rev-parse --show-toplevel)/src"
+```
+
+The optimized public source matches measured local source `4f528cd`.
+The two source pins preserve the original confidence wording and scientific outputs.
+
 From the current repository root, prepare one index, operator file, and complete MP3:
 
 ```bash
 python scripts/restore_artifacts.py \
   --bundle data-source --bundle data-adsb-derived --bundle data-terrain
-PYTHONPATH=src python scripts/prepare_reference_upload.py \
+PYTHONPATH="$DG_CURRENT_SRC" python scripts/prepare_reference_upload.py \
   --data-root data --output results/throughput-inputs
 python - <<'PY'
 import json
@@ -239,21 +257,16 @@ Encoder versions can change MP3 bytes.
 Both implementations receive this same file.
 The reference control requires 17 ridges, 15 groups, and consideration of every group.
 
-Create the frozen baseline checkout:
-
-```bash
-git worktree add --detach ../DOPPLERGEIST-throughput-base \
-  21262e031388b3a5a8dd75979b2dc851608499b2
-DG_BASELINE_SRC="$(git -C ../DOPPLERGEIST-throughput-base rev-parse --show-toplevel)/src"
-DG_CURRENT_SRC="$(pwd)/src"
-```
-
+Build the native extension inside the frozen optimized checkout.
 For the Linux GCC build, run:
 
 ```bash
 python -m pip install 'setuptools>=68'
-CC=gcc LDSHARED='gcc -shared' python setup.py build_ext --inplace
-PYTHONPATH=src python -c \
+(
+  cd "$DG_CURRENT_SRC/.." || exit
+  CC=gcc LDSHARED='gcc -shared' python setup.py build_ext --inplace
+)
+PYTHONPATH="$DG_CURRENT_SRC" DOPPLERGEIST_RIDGE_BACKEND=auto python -c \
   "from dopplergeist.matching import RIDGE_FIT_BACKEND; print(RIDGE_FIT_BACKEND)"
 ```
 
@@ -264,7 +277,7 @@ The runner requires source bytes to match their recorded Git commits.
 ```bash
 DG_CPU=3
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
-taskset -c "$DG_CPU" python scripts/benchmark_real_http_pairs.py \
+DOPPLERGEIST_RIDGE_BACKEND=auto taskset -c "$DG_CPU" python scripts/benchmark_real_http_pairs.py \
   --baseline-source "$DG_BASELINE_SRC" --current-source "$DG_CURRENT_SRC" \
   --audio results/throughput-inputs/reference.mp3 \
   --request benchmarks/reference-regional-upload-request.json \
@@ -304,14 +317,14 @@ The fixture exporter reads archived real ridges and observed flight trajectories
 After preparing the index above, run:
 
 ```bash
-PYTHONPATH=src python scripts/benchmark_prepared_measurements.py prepare \
+PYTHONPATH="$DG_CURRENT_SRC" python scripts/benchmark_prepared_measurements.py prepare \
   --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
   --reference-report evidence/results/reference-local/report.json \
   --index results/throughput-inputs/reference-region.sqlite \
   --clock-half-width-s 120 --max-tracks 5000 --max-samples 1000000 \
   --max-candidates 20000 --top-k 100 \
   --output results/throughput-inputs/real-cpa-full.json
-PYTHONPATH=src DOPPLERGEIST_RIDGE_BACKEND=auto \
+PYTHONPATH="$DG_CURRENT_SRC" DOPPLERGEIST_RIDGE_BACKEND=auto \
   taskset -c "$DG_CPU" python scripts/benchmark_real_native_batches.py \
   results/throughput-inputs/real-cpa-full.json \
   results/throughput-native-batches.json --repeats 3 --rounds 10
