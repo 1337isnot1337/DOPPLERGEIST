@@ -1,0 +1,1054 @@
+{
+  "run_hash": "29d92b56846475c84fd7f45f2787a6213e06e87dd4399808644ad42ba59ed51c",
+  "status": "partial",
+  "ranked": [
+    {
+      "score": 0.8799755558817949,
+      "event_scores": [
+        -0.36007333235461547
+      ],
+      "f0_hz": [
+        110.89963216447714
+      ],
+      "event_diagnostics": [
+        {
+          "score": -0.36007333235461547,
+          "f0_hz": 110.89963216447714,
+          "source_drift_hz": -0.3748571146570709,
+          "source_drift_hz_s": -0.010897963152708062,
+          "drift_bound_hz": 2.2169099031597064,
+          "drift_at_bound": false,
+          "rmse_hz": 0.37356833176863324,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.0
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -0.36007333235461547,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 5,
+      "lat": 40.00442702505588,
+      "lon": -75.00047641019862,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2083000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897698.826528
+      ]
+    },
+    {
+      "score": 0.711827293338994,
+      "event_scores": [
+        -0.8645181199830179
+      ],
+      "f0_hz": [
+        107.79098436877788
+      ],
+      "event_diagnostics": [
+        {
+          "score": -0.8645181199830179,
+          "f0_hz": 107.79098436877788,
+          "source_drift_hz": -0.5674676639653978,
+          "source_drift_hz_s": -0.01606795816665308,
+          "drift_bound_hz": 2.155107864857096,
+          "drift_at_bound": false,
+          "rmse_hz": 1.0275992119810196,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.0
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -0.8645181199830179,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 21,
+      "lat": 40.00878095950013,
+      "lon": -74.99918122864182,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2083500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897700.1761308
+      ]
+    },
+    {
+      "score": 0.6638760277554745,
+      "event_scores": [
+        -1.0083719167335763
+      ],
+      "f0_hz": [
+        113.18789867172568
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.0083719167335763,
+          "f0_hz": 113.18789867172568,
+          "source_drift_hz": -2.2585348982988585,
+          "source_drift_hz_s": -0.06698871915793679,
+          "drift_bound_hz": 2.2585348984790246,
+          "drift_at_bound": true,
+          "rmse_hz": 1.188823262999717,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.013895876246855237
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.0083719167335763,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 245,
+      "lat": 40.00007308643887,
+      "lon": -75.00177143461823,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2082500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897697.4436495
+      ]
+    },
+    {
+      "score": 0.6393963178061846,
+      "event_scores": [
+        -1.0818110465814463
+      ],
+      "f0_hz": [
+        106.74890522340415
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.0818110465814463,
+          "f0_hz": 106.74890522340415,
+          "source_drift_hz": 2.137076394271275,
+          "source_drift_hz_s": 0.059883023323726844,
+          "drift_bound_hz": 2.1370763949367504,
+          "drift_at_bound": true,
+          "rmse_hz": 1.2529428761798715,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.0
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.0818110465814463,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 230,
+      "lat": 39.994741072522885,
+      "lon": -74.99730177004922,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2082000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897702.2379026
+      ]
+    },
+    {
+      "score": 0.6258151053490688,
+      "event_scores": [
+        -1.1225546839527938
+      ],
+      "f0_hz": [
+        106.64851817388619
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.1225546839527938,
+          "f0_hz": 106.64851817388619,
+          "source_drift_hz": -0.9231348401041611,
+          "source_drift_hz_s": -0.02589007313262093,
+          "drift_bound_hz": 2.1314669303076346,
+          "drift_at_bound": false,
+          "rmse_hz": 1.4630431451512165,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.06615495386192981
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.1225546839527938,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 214,
+      "lat": 39.99038718685109,
+      "lon": -74.99859681228081,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2081500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897700.8512964
+      ]
+    },
+    {
+      "score": 0.5483678204365223,
+      "event_scores": [
+        -1.354896538690433
+      ],
+      "f0_hz": [
+        113.73176261084912
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.354896538690433,
+          "f0_hz": 113.73176261084912,
+          "source_drift_hz": -2.262301002285573,
+          "source_drift_hz_s": -0.06744122721461061,
+          "drift_bound_hz": 2.2623010022855734,
+          "drift_at_bound": true,
+          "rmse_hz": 1.7149414092167368,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.028463873091973537
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.354896538690433,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 229,
+      "lat": 39.99571914362429,
+      "lon": -75.0030663019288,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2082000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897696.0441134
+      ]
+    },
+    {
+      "score": 0.4973822851460866,
+      "event_scores": [
+        -1.5078531445617402
+      ],
+      "f0_hz": [
+        104.76731778745682
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.5078531445617402,
+          "f0_hz": 104.76731778745682,
+          "source_drift_hz": -1.7058381875706035,
+          "source_drift_hz_s": -0.0470998462901965,
+          "drift_bound_hz": 2.093496543336104,
+          "drift_at_bound": false,
+          "rmse_hz": 2.2124083371981595,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.13884019269719575
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.5078531445617402,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 37,
+      "lat": 40.01313488979638,
+      "lon": -74.99788588991971,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2084000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897701.5423737
+      ]
+    },
+    {
+      "score": 0.44884001812888796,
+      "event_scores": [
+        -1.653479945613336
+      ],
+      "f0_hz": [
+        105.78290916031641
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.653479945613336,
+          "f0_hz": 105.78290916031641,
+          "source_drift_hz": -2.106522332245487,
+          "source_drift_hz_s": -0.058902001413362,
+          "drift_bound_hz": 2.1065223326557554,
+          "drift_at_bound": true,
+          "rmse_hz": 2.810902001457123,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.1820899433444679
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.653479945613336,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 198,
+      "lat": 39.9860332969188,
+      "lon": -74.99989169742352,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2081000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897699.4313934
+      ]
+    },
+    {
+      "score": 0.3951828472158849,
+      "event_scores": [
+        -1.8144514583523452
+      ],
+      "f0_hz": [
+        112.11690460108272
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.8144514583523452,
+          "f0_hz": 112.11690460108272,
+          "source_drift_hz": -2.223107730847397,
+          "source_drift_hz_s": -0.06583406190056704,
+          "drift_bound_hz": 2.2231077309194633,
+          "drift_at_bound": true,
+          "rmse_hz": 2.9799885262532015,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.25649679257215274
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.8144514583523452,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 213,
+      "lat": 39.99136519658738,
+      "lon": -75.0043610121584,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2081500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897694.6113489
+      ]
+    },
+    {
+      "score": 0.39395418402682647,
+      "event_scores": [
+        -1.8181374479195205
+      ],
+      "f0_hz": [
+        108.61945992143758
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.8181374479195205,
+          "f0_hz": 108.61945992143758,
+          "source_drift_hz": -2.1518369445005336,
+          "source_drift_hz_s": -0.06197285615269994,
+          "drift_bound_hz": 2.151836944500534,
+          "drift_at_bound": true,
+          "rmse_hz": 3.3629964046260885,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.24237754355984475
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.8181374479195205,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 36,
+      "lat": 40.01411294279171,
+      "lon": -75.00365190736062,
+      "elev_m": 50.0,
+      "x": 1762000.0,
+      "y": 2084000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897695.563276
+      ]
+    },
+    {
+      "score": 0.38164699985174166,
+      "event_scores": [
+        -1.855059000444775
+      ],
+      "f0_hz": [
+        112.01938906936856
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.855059000444775,
+          "f0_hz": 112.01938906936856,
+          "source_drift_hz": -2.2202683913669485,
+          "source_drift_hz_s": -0.06576949098188017,
+          "drift_bound_hz": 2.220268391485677,
+          "drift_at_bound": true,
+          "rmse_hz": 3.15214551113555,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.25649679257215274
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.855059000444775,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 20,
+      "lat": 40.009758951090284,
+      "lon": -75.0049469139086,
+      "elev_m": 50.0,
+      "x": 1762000.0,
+      "y": 2083500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897694.147128
+      ]
+    },
+    {
+      "score": 0.37336587397970833,
+      "event_scores": [
+        -1.879902378060875
+      ],
+      "f0_hz": [
+        102.16326037864282
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.879902378060875,
+          "f0_hz": 102.16326037864282,
+          "source_drift_hz": -2.038389852567468,
+          "source_drift_hz_s": -0.05508818929550407,
+          "drift_bound_hz": 2.0383898527255004,
+          "drift_at_bound": true,
+          "rmse_hz": 3.26006761046407,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.16735957256716583
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.879902378060875,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 53,
+      "lat": 40.01748881596946,
+      "lon": -74.9965903940042,
+      "elev_m": 50.0,
+      "x": 1762500.0,
+      "y": 2084500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897702.8420258
+      ]
+    },
+    {
+      "score": 0.35723863684668966,
+      "event_scores": [
+        -1.9282840894599311
+      ],
+      "f0_hz": [
+        100.51450577182838
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.9282840894599311,
+          "f0_hz": 100.51450577182838,
+          "source_drift_hz": -1.7394499001319614,
+          "source_drift_hz_s": -0.046221609154665645,
+          "drift_bound_hz": 2.0094508629107755,
+          "drift_at_bound": false,
+          "rmse_hz": 3.2293315897690325,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.2656355497054841
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.9282840894599311,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 199,
+      "lat": 39.985055084925776,
+      "lon": -74.99412798657265,
+      "elev_m": 50.0,
+      "x": 1763500.0,
+      "y": 2081000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897705.7399065
+      ]
+    },
+    {
+      "score": 0.3516537571005156,
+      "event_scores": [
+        -1.9450387286984532
+      ],
+      "f0_hz": [
+        101.48778326481508
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.9450387286984532,
+          "f0_hz": 101.48778326481508,
+          "source_drift_hz": 2.0389106267878585,
+          "source_drift_hz_s": 0.05456324539950964,
+          "drift_bound_hz": 2.0389106274490163,
+          "drift_at_bound": true,
+          "rmse_hz": 2.926145437755267,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.483697594779565
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.9450387286984532,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 22,
+      "lat": 40.00780270422299,
+      "lon": -74.99341570054033,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2083500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897706.2274122
+      ]
+    },
+    {
+      "score": 0.3511219965846263,
+      "event_scores": [
+        -1.9466340102461213
+      ],
+      "f0_hz": [
+        100.15680937939854
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.9466340102461213,
+          "f0_hz": 100.15680937939854,
+          "source_drift_hz": 1.6161877364481552,
+          "source_drift_hz_s": 0.042737989735425856,
+          "drift_bound_hz": 2.0104831566704533,
+          "drift_at_bound": false,
+          "rmse_hz": 3.0964643233580826,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.4079591024887271
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.9466340102461213,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 215,
+      "lat": 39.98940891349284,
+      "lon": -74.99283276949203,
+      "elev_m": 50.0,
+      "x": 1763500.0,
+      "y": 2081500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897707.113476
+      ]
+    },
+    {
+      "score": 0.3505152985254736,
+      "event_scores": [
+        -1.9484541044235792
+      ],
+      "f0_hz": [
+        105.63783529917121
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.9484541044235792,
+          "f0_hz": 105.63783529917121,
+          "source_drift_hz": 2.143259901789383,
+          "source_drift_hz_s": 0.059536268472965385,
+          "drift_bound_hz": 2.1432599019697167,
+          "drift_at_bound": true,
+          "rmse_hz": 2.874304530475877,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.3259021247991952
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.9484541044235792,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 246,
+      "lat": 39.99909495395894,
+      "lon": -74.99600657070069,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2082500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897703.5875025
+      ]
+    },
+    {
+      "score": 0.33441842759902596,
+      "event_scores": [
+        -1.996744717202922
+      ],
+      "f0_hz": [
+        105.73818087574841
+      ],
+      "event_diagnostics": [
+        {
+          "score": -1.996744717202922,
+          "f0_hz": 105.73818087574841,
+          "source_drift_hz": -2.1002478263930002,
+          "source_drift_hz_s": -0.05900845464132371,
+          "drift_bound_hz": 2.1002478277048793,
+          "drift_at_bound": true,
+          "rmse_hz": 3.9686813712426874,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.24237754355984475
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -1.996744717202922,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 52,
+      "lat": 40.01846693038338,
+      "lon": -75.00235674365524,
+      "elev_m": 50.0,
+      "x": 1762000.0,
+      "y": 2084500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897696.909105
+      ]
+    },
+    {
+      "score": 0.33253767258683953,
+      "event_scores": [
+        -2.0023869822394813
+      ],
+      "f0_hz": [
+        99.37176923682564
+      ],
+      "event_diagnostics": [
+        {
+          "score": -2.0023869822394813,
+          "f0_hz": 99.37176923682564,
+          "source_drift_hz": 1.0087569320082082,
+          "source_drift_hz_s": 0.02648981755282887,
+          "drift_bound_hz": 1.9929593455880577,
+          "drift_at_bound": false,
+          "rmse_hz": 3.2590882467193296,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.4632964442515611
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -2.0023869822394813,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 38,
+      "lat": 40.01215657310055,
+      "lon": -74.99212002967224,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2084000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897707.5436563
+      ]
+    },
+    {
+      "score": 0.3112748846235167,
+      "event_scores": [
+        -2.06617534612945
+      ],
+      "f0_hz": [
+        104.69614751426853
+      ],
+      "event_diagnostics": [
+        {
+          "score": -2.06617534612945,
+          "f0_hz": 104.69614751426853,
+          "source_drift_hz": -2.0794994483412466,
+          "source_drift_hz_s": -0.057908345150630626,
+          "drift_bound_hz": 2.079499449725046,
+          "drift_at_bound": true,
+          "rmse_hz": 4.221478315590327,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.25649679257215274
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -2.06617534612945,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 182,
+      "lat": 39.98167940270123,
+      "lon": -75.00118642550552,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2080500.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897698.0484798
+      ]
+    },
+    {
+      "score": 0.30368398313529144,
+      "event_scores": [
+        -2.0889480505941256
+      ],
+      "f0_hz": [
+        103.60236388134915
+      ],
+      "event_diagnostics": [
+        {
+          "score": -2.0889480505941256,
+          "f0_hz": 103.60236388134915,
+          "source_drift_hz": 2.0844299180629333,
+          "source_drift_hz_s": 0.05692679826692309,
+          "drift_bound_hz": 2.0844299180629338,
+          "drift_at_bound": true,
+          "rmse_hz": 3.231780328891818,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.5418436531678494
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -2.0889480505941256,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 6,
+      "lat": 40.003448831184045,
+      "lon": -74.9947112142071,
+      "elev_m": 50.0,
+      "x": 1763000.0,
+      "y": 2083000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897704.9241269
+      ]
+    }
+  ],
+  "coarse_ranked": [
+    {
+      "score": 0.07855215053972753,
+      "event_scores": [
+        -2.7643435483808174
+      ],
+      "f0_hz": [
+        89.38242213493146
+      ],
+      "event_diagnostics": [
+        {
+          "score": -2.7643435483808174,
+          "f0_hz": 89.38242213493146,
+          "source_drift_hz": -1.7754582050577612,
+          "source_drift_hz_s": -0.042612777303326785,
+          "drift_bound_hz": 1.7754582050577614,
+          "drift_at_bound": true,
+          "rmse_hz": 6.814032530941812,
+          "support_fraction": 1.0,
+          "sample_count": 70,
+          "independent_sample_count": 70,
+          "outlier_fraction": 0.3743050810913714
+        }
+      ],
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "residual_score": -2.7643435483808174,
+      "recording_start_time_s": 1788897630.0,
+      "time_adjustment_s": 0.0,
+      "event_indices": [
+        0
+      ],
+      "event_ids": [
+        "event-0001"
+      ],
+      "unmatched_event_ids": [],
+      "point_id": 1,
+      "lat": 39.97341156558279,
+      "lon": -74.97942975060963,
+      "elev_m": 50.0,
+      "x": 1765000.0,
+      "y": 2080000.0,
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "pass_emission_times_s": [
+        1788897722.4265985
+      ]
+    }
+  ],
+  "tiles_total": 3116,
+  "tiles_completed": 3116,
+  "tiles_resumed": 0,
+  "tile_failures": [],
+  "unsearched_tiles": 0,
+  "grid_points_searched": 1536,
+  "data_coverage": [
+    {
+      "requested_bounds": [
+        -125.0,
+        24.0,
+        -66.0,
+        50.0
+      ],
+      "requested_time_range_s": [
+        1788897533.3333333,
+        1788897800.0
+      ],
+      "source": {
+        "bounds": [
+          -180,
+          -90,
+          180,
+          90
+        ],
+        "time_range_s": [
+          1788897600.0,
+          1788897799.0
+        ],
+        "all_aircraft": true,
+        "population": "synthetic actor; no claim of real-world traffic completeness"
+      },
+      "scope_complete": false,
+      "receiver_completeness_known": false,
+      "input_hash": "a638bbd8f0b100f6ca32bf4ae1254d30281eeac6c9df708924ef74ec13386776"
+    }
+  ],
+  "data_scope_complete": false,
+  "refinement_failure": null,
+  "required_flight_bounds": [
+    -125.66471836238581,
+    23.572727272727274,
+    -65.33528163761419,
+    50.42727272727273
+  ],
+  "candidate_retention_limit": 20,
+  "alternative_modes_exhaustively_assessed": false,
+  "elapsed_s": 110.58612456999253,
+  "process_peak_rss_mib": 286.546875,
+  "bounded_concurrency": 1,
+  "max_grid_points_per_tile": 256,
+  "scoring_time_is_locked": true,
+  "ground_truth_used_by_search": false,
+  "scope": [
+    -125.0,
+    24.0,
+    -66.0,
+    50.0
+  ]
+}

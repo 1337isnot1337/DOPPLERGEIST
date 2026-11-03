@@ -1,0 +1,8 @@
+{
+  "f0_hz": 109.99774144243271,
+  "speed_mps": 80.37398925747642,
+  "cpa_slant_m": 1039.3031259634213,
+  "true_slant_m": 1040.4326023342405,
+  "location_error_m": 0.0,
+  "workdir": "/home/cinna/dopplergeist-w2-data-scale/results/hermes-synthetic-reference-20261102"
+}

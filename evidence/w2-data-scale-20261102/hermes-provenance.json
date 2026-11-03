@@ -1,0 +1,57 @@
+{
+  "request": {
+    "schema_version": 1,
+    "search": {
+      "coverage": "conus"
+    },
+    "time_window": {
+      "start_utc": "2026-09-08T20:00:30Z",
+      "end_utc": "2026-09-08T20:00:30Z",
+      "source": "user",
+      "source_detail": "Synthetic recording start declared by independent generator"
+    },
+    "audio_path": "/home/cinna/dopplergeist-w2-integration-check/results/hermes-upload-20261102/jobs/d6b95239e12147afa053147f17bb392d/input.mp3"
+  },
+  "operator_configuration_sha256": "16ab2a6016ebdbb0427d1b1925d5a95b290febcb252588792cdb9811113165be",
+  "source_sha256": "6237634eea2e80bf5deacc73d71590dbb28b111e261eee89cc5e4f59ac21dbb5",
+  "implementation_files": {
+    "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+    "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "automatic.py": "6b18767522abced365e548ef16a83d9ce50263a3b4e3251a701ce7bafdc529c1",
+    "cli.py": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+    "confidence.py": "b34e41b7db279c8a601adb6eb6b5cd7d5936cadfb43f941523f6c9daaa6c9b79",
+    "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+    "data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+    "discovery.py": "8c5c6e72289ee1db9cd9d70a7eafe60e07587fa0449d880437eda17ad6e8a26d",
+    "evaluation.py": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071",
+    "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+    "jobs.py": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+    "matching.py": "e860c8f00fb01e34789115950bd211a1fc48829a840fbc20238468528195a7a2",
+    "pipeline.py": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+    "search.py": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+    "service.py": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+    "terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+    "tiled_search.py": "4c7dba13a45c7060300a72cd7e61d8676aacea2d368bed1f4487cc4e7fe31218",
+    "tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+  },
+  "ground_truth_used_by_search": false,
+  "event_selection": "automatic_whole_recording",
+  "discovered_events": 1,
+  "search_run_hash": "29d92b56846475c84fd7f45f2787a6213e06e87dd4399808644ad42ba59ed51c",
+  "elapsed_s": 136.61897882900666,
+  "status": "inconclusive",
+  "coverage": {
+    "search_complete": false,
+    "data_status": "partial",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "Search did not complete the full requested area, data interval or refinement.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  }
+}
