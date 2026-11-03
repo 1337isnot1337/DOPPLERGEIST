@@ -40,6 +40,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True, help="Restored data/source directory")
     parser.add_argument("--output", type=Path, required=True, help="New output directory; must not exist")
+    parser.add_argument("--robust-only", action="store_true", help="Replay robust scoring only when baseline receipts already exist")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     root = Path(__file__).resolve().parents[1]
@@ -49,7 +50,8 @@ def main():
     for name, filename, evidence in cases:
         source = args.source_root / filename
         config = absolute_config(source)
-        for mode in (config["scoring"]["mode"], "robust_ridge"):
+        modes = ("robust_ridge",) if args.robust_only else (config["scoring"]["mode"], "robust_ridge")
+        for mode in modes:
             directory = args.output / f"{name}-{mode}"
             directory.mkdir()
             configured = json.loads(json.dumps(config))

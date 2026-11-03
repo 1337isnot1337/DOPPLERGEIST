@@ -1,0 +1,37 @@
+{
+  "original_report_sha256": "b857820c80a40c6443b9c1cb245ae8cd9a11cee5fe2907813c67f9c5720ed30b",
+  "location_ranking_unchanged": true,
+  "source_fit_score_difference": 0.0,
+  "event_diagnostics": [
+    {
+      "score": -0.24647670540372824,
+      "f0_hz": 112.99917629456931,
+      "source_drift_hz": -1.6913915336479446,
+      "source_drift_hz_s": -0.010073607109707798,
+      "source_reference_emission_time_s": 1788900802.4275162,
+      "source_span_s": 167.90326595306396,
+      "drift_bound_hz": 2.254473560907471,
+      "drift_at_bound": false,
+      "rmse_hz": 0.2705283726625158,
+      "support_fraction": 1.0,
+      "sample_count": 711,
+      "independent_sample_count": 711,
+      "outlier_fraction": 0.0
+    },
+    {
+      "score": -0.4595559225763954,
+      "f0_hz": 126.06183527051357,
+      "source_drift_hz": -1.893901622130575,
+      "source_drift_hz_s": -0.02212208883289741,
+      "source_reference_emission_time_s": 1788901715.4284601,
+      "source_span_s": 85.61133790016174,
+      "drift_bound_hz": 2.52,
+      "drift_at_bound": false,
+      "rmse_hz": 0.5055007089777943,
+      "support_fraction": 1.0,
+      "sample_count": 333,
+      "independent_sample_count": 333,
+      "outlier_fraction": 0.0
+    }
+  ]
+}

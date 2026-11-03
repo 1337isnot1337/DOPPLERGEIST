@@ -1,0 +1,303 @@
+{
+  "scope": "manually configured regional development sensitivity; no independent/national acceptance claim",
+  "ground_truth_read": false,
+  "source_search": "/home/cinna/dopplergeist-w3-matching/results/matching-development-20261102-b/two-events-robust_ridge/search",
+  "source_search_implementation_sha256": "85757086799d7e3573fcde072285115d5a77333e7a273a594a3249e53faa1d44",
+  "profile_commit": "41992bee44694b22d90658f48cf3b954b8633d2e",
+  "runner_sha256": "1ba2c9404a03cdf976ced3f177966024771e020093de60f3ee5082aa420a7336",
+  "terrain_sha256": {
+    "/home/cinna/aircraft-audio-geolocation/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d",
+    "/home/cinna/aircraft-audio-geolocation/data/terrain/us_nga_egm96_15.tif": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+  },
+  "measurement_sha256": {
+    "event-1.npz": "1597cb62b25c542f8e0b0c99731acbbd1b295c73472fc48cee9aa389f2ef685b",
+    "event-2.npz": "38fb5e564536848b9151f778666ea16846e00cc4faae78bdf5e27943ad87b62a"
+  },
+  "result": {
+    "score": -0.6891020069700586,
+    "event_scores": [
+      -0.2527469528196745,
+      -0.43635505415038417
+    ],
+    "f0_hz": [
+      112.9659215710764,
+      126.0
+    ],
+    "event_diagnostics": [
+      {
+        "score": -0.2527469528196745,
+        "f0_hz": 112.9659215710764,
+        "source_drift_hz": -1.7372491319410095,
+        "source_drift_hz_s": -0.010344094345942264,
+        "drift_bound_hz": 2.2536116194917635,
+        "drift_at_bound": false,
+        "rmse_hz": 0.2771333018426207,
+        "support_fraction": 1.0,
+        "sample_count": 711,
+        "independent_sample_count": 711,
+        "outlier_fraction": 0.0
+      },
+      {
+        "score": -0.43635505415038417,
+        "f0_hz": 126.0,
+        "source_drift_hz": -1.441390483213895,
+        "source_drift_hz_s": -0.016821018707550806,
+        "drift_bound_hz": 2.52,
+        "drift_at_bound": false,
+        "rmse_hz": 0.4766552940160776,
+        "support_fraction": 1.0,
+        "sample_count": 333,
+        "independent_sample_count": 333,
+        "outlier_fraction": 0.0
+      }
+    ],
+    "score_kind": "negative_robust_ridge_loss_hz",
+    "recording_start_time_s": 1788898650.2501938,
+    "time_adjustment_s": 0.1372380256652832,
+    "point_id": 14,
+    "lat": 40.87593050058524,
+    "lon": -73.524138015083,
+    "elev_m": -31.25569725036621,
+    "x": 1861294.8798458176,
+    "y": 2206232.5307709556,
+    "flight_ids": [
+      "a1dfeb:1",
+      "ace391:3"
+    ],
+    "boundary_limited": false,
+    "position_boundary_limited": false,
+    "clock_boundary_limited": false,
+    "optimizer_success": true,
+    "refinement_clock_bounds_s": [
+      1788898645.4030805,
+      1788898655.4030805
+    ],
+    "sensitivity": {
+      "radius_m": 606.9540624786865,
+      "kind": "sensitivity",
+      "method": "declared_perturbation_profiles",
+      "sources": [
+        "altitude",
+        "clock",
+        "frequency",
+        "sound_speed",
+        "source_frequency"
+      ],
+      "complete": true,
+      "boundary_limited": true,
+      "profiles": [
+        {
+          "source": "nominal",
+          "scenario": "nominal",
+          "lat": 40.87593050058524,
+          "lon": -73.524138015083,
+          "score": -0.6891020069700586,
+          "recording_start_time_s": 1788898650.2501938,
+          "displacement_m": 0.0,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "altitude",
+          "scenario": "height_-1",
+          "lat": 40.87593050058524,
+          "lon": -73.524138015083,
+          "score": -0.6891020069700586,
+          "recording_start_time_s": 1788898650.2501938,
+          "displacement_m": 0.0,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "altitude",
+          "scenario": "height_-1",
+          "lat": 40.875599404080205,
+          "lon": -73.52374839340386,
+          "score": -0.8372074700333303,
+          "recording_start_time_s": 1788898650.4734292,
+          "displacement_m": 49.30074224619682,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "sound_speed",
+          "scenario": "sound_speed_-1",
+          "lat": 40.876080809317415,
+          "lon": -73.52404797978633,
+          "score": -0.67529383532937,
+          "recording_start_time_s": 1788898650.3834748,
+          "displacement_m": 18.33632895574343,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "altitude",
+          "scenario": "height_+1",
+          "lat": 40.87593050058524,
+          "lon": -73.524138015083,
+          "score": -0.6891020069700586,
+          "recording_start_time_s": 1788898650.2501938,
+          "displacement_m": 0.0,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "altitude",
+          "scenario": "height_+1",
+          "lat": 40.87629335659331,
+          "lon": -73.52439590006735,
+          "score": -0.6573904013438394,
+          "recording_start_time_s": 1788898649.9598227,
+          "displacement_m": 45.78509682809881,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "sound_speed",
+          "scenario": "sound_speed_+1",
+          "lat": 40.87600496575355,
+          "lon": -73.52407830709106,
+          "score": -0.8848817777612106,
+          "recording_start_time_s": 1788898649.8514423,
+          "displacement_m": 9.680635000233789,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_0_offset_-1",
+          "lat": 40.87569345835206,
+          "lon": -73.52357610349583,
+          "score": -0.7259935135188442,
+          "recording_start_time_s": 1788898650.2769675,
+          "displacement_m": 54.18861481506035,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_0_offset_+1",
+          "lat": 40.876014895273784,
+          "lon": -73.52432658859932,
+          "score": -0.6662918807852821,
+          "recording_start_time_s": 1788898650.2338216,
+          "displacement_m": 18.452646484884824,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_0_tilt_-1",
+          "lat": 40.87585180207579,
+          "lon": -73.52308398193746,
+          "score": -0.7514792684045966,
+          "recording_start_time_s": 1788898649.978788,
+          "displacement_m": 89.27621574591501,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_0_tilt_+1",
+          "lat": 40.875646966731445,
+          "lon": -73.52419767258334,
+          "score": -0.7555110796506713,
+          "recording_start_time_s": 1788898650.5193245,
+          "displacement_m": 31.88589590309492,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_1_offset_-1",
+          "lat": 40.87629003426074,
+          "lon": -73.52359514550791,
+          "score": -0.8956615167270221,
+          "recording_start_time_s": 1788898650.697546,
+          "displacement_m": 60.729809754312456,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_1_offset_+1",
+          "lat": 40.87560488263285,
+          "lon": -73.52406322547148,
+          "score": -0.6572720937628109,
+          "recording_start_time_s": 1788898650.1191711,
+          "displacement_m": 36.70579477153523,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_1_tilt_-1",
+          "lat": 40.8761138365532,
+          "lon": -73.5245789268347,
+          "score": -0.7387140364392237,
+          "recording_start_time_s": 1788898650.148156,
+          "displacement_m": 42.37690177330252,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "frequency",
+          "scenario": "event_1_tilt_+1",
+          "lat": 40.87596612083216,
+          "lon": -73.52411075017216,
+          "score": -0.6782130801805142,
+          "recording_start_time_s": 1788898650.2717695,
+          "displacement_m": 4.5748552648160965,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "source_frequency",
+          "scenario": "constant_source",
+          "lat": 40.87670520742213,
+          "lon": -73.52471758280593,
+          "score": -0.9777768286132881,
+          "recording_start_time_s": 1788898649.6884804,
+          "displacement_m": 98.93529038020006,
+          "boundary_limited": false,
+          "optimizer_success": true
+        },
+        {
+          "source": "clock",
+          "scenario": "fixed_clock_1788898645.403080",
+          "lat": 40.87988212439204,
+          "lon": -73.52095966161315,
+          "score": -2.5007199334453647,
+          "recording_start_time_s": 1788898645.4030805,
+          "displacement_m": 514.1477339269876,
+          "boundary_limited": true,
+          "optimizer_success": true
+        },
+        {
+          "source": "clock",
+          "scenario": "fixed_clock_1788898655.403080",
+          "lat": 40.87730783508966,
+          "lon": -73.51716978431752,
+          "score": -2.6618451740924254,
+          "recording_start_time_s": 1788898655.4030805,
+          "displacement_m": 606.9540624786865,
+          "boundary_limited": true,
+          "optimizer_success": true
+        }
+      ],
+      "failures": [],
+      "settings": {
+        "altitude_uncertainty_m": 150.0,
+        "sound_speed_uncertainty_mps": 5.0,
+        "frequency_scale_hz": [
+          1.0,
+          1.0
+        ],
+        "clock_bounds_s": [
+          1788898645.4030805,
+          1788898655.4030805
+        ]
+      }
+    }
+  }
+}
