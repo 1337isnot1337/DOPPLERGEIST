@@ -120,11 +120,13 @@ class CheckpointReplayTests(unittest.TestCase):
                 path.write_bytes(b"fixture")
             config = root / "config.json"
             config.write_text(json.dumps({"audio": "audio.wav", "tracks": ["tracks.csv"],
-                "events": [], "terrain": {"copernicus_cache": "cache", "geoid_raster": "geoid.tif"}}))
+                "events": [], "terrain": {"copernicus_cache": "cache", "geoid_raster": "geoid.tif",
+                                           "rasters": ["inactive-and-absent.tif"]}}))
             names = {Path(item["path"]).name for item in REPLAY.config_inputs(config)}
             self.assertIn("tileList.txt", names)
             self.assertIn("geoid.tif", names)
             self.assertNotIn("unrelated.tif", names)
+            self.assertNotIn("inactive-and-absent.tif", names)
 
 
 if __name__ == "__main__":

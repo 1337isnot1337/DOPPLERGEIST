@@ -179,7 +179,8 @@ def config_inputs(config_path):
     if config.get("type_database"):
         paths.append(config_path.parent / config["type_database"])
     terrain = config.get("terrain", {})
-    paths.extend(config_path.parent / path for path in terrain.get("rasters", []))
+    if not terrain.get("copernicus_cache"):
+        paths.extend(config_path.parent / path for path in terrain.get("rasters", []))
     if terrain.get("geoid_raster"):
         paths.append(config_path.parent / terrain["geoid_raster"])
     if terrain.get("copernicus_cache"):

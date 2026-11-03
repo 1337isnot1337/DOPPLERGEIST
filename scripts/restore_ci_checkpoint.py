@@ -53,6 +53,11 @@ def restore_archive(archive: Path, asset: dict, destination: Path) -> int:
                     raise FileExistsError(f"Refusing to overwrite {target}")
                 if not target.resolve().is_relative_to(destination):
                     raise ValueError(f"Target leaves destination: {target}")
+                for parent in target.parents:
+                    if parent == destination:
+                        break
+                    if (parent.exists() or parent.is_symlink()) and not parent.is_dir():
+                        raise FileExistsError(f"Destination parent is not a directory: {parent}")
                 record = expected[member.name]
                 if member.size != record["bytes"]:
                     raise ValueError(f"Member size mismatch: {member.name}")
@@ -81,6 +86,8 @@ def main() -> None:
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", args.repository):
         parser.error("repository must be owner/name")
+    if args.receipt.exists() or args.receipt.is_symlink():
+        raise FileExistsError(f"Refusing to overwrite receipt {args.receipt}")
     args.destination.mkdir(parents=True, exist_ok=True)
     cache = args.destination / ".artifacts-ci"
     cache.mkdir(exist_ok=True)
@@ -115,7 +122,8 @@ def main() -> None:
     finally:
         receipt["elapsed_s"] = time.perf_counter() - started
         args.receipt.parent.mkdir(parents=True, exist_ok=True)
-        args.receipt.write_text(json.dumps(receipt, indent=2) + "\n")
+        with args.receipt.open("x", encoding="utf-8") as output:
+            output.write(json.dumps(receipt, indent=2) + "\n")
 
 
 if __name__ == "__main__":

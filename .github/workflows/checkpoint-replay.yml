@@ -22,7 +22,7 @@ jobs:
   synthetic:
     name: Clean install, tests, and synthetic replay
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -57,6 +57,7 @@ jobs:
             results/ci-environment/
             results/ci-synthetic/
             !results/ci-synthetic/generated/data/synthetic/*.wav
+            !results/ci-synthetic/**/__pycache__/**
           if-no-files-found: error
           retention-days: 30
 
@@ -91,5 +92,6 @@ jobs:
           path: |
             results/ci-restore.json
             results/ci-regional/
+            !results/ci-regional/**/__pycache__/**
           if-no-files-found: error
           retention-days: 30

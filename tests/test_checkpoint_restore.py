@@ -6,6 +6,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/restore_ci_checkpoint.py"
 SPEC = importlib.util.spec_from_file_location("restore_ci_checkpoint", SCRIPT)
@@ -22,7 +23,7 @@ class CheckpointRestoreTests(unittest.TestCase):
         self.destination.mkdir()
         self.archive = self.root / "fixture.tar.gz"
         self.files = {"data/source/input.txt": b"reference fixture\n",
-                      "data/source/settings.json": b"{}\n"}
+                      "data/terrain/settings.json": b"{}\n"}
         with tarfile.open(self.archive, "w:gz") as bundle:
             for name, content in self.files.items():
                 member = tarfile.TarInfo(name)
@@ -55,6 +56,31 @@ class CheckpointRestoreTests(unittest.TestCase):
                                     "sha256": hashlib.sha256(b"").hexdigest()})
         with self.assertRaisesRegex(ValueError, "Missing manifest files"):
             RESTORE.restore_archive(self.archive, self.asset, self.destination)
+        self.assertEqual(list(self.destination.iterdir()), [])
+
+    def test_existing_parent_file_leaves_no_partial_restoration(self):
+        blocker = self.destination / "data/terrain"
+        blocker.parent.mkdir()
+        blocker.write_bytes(b"independent evidence")
+        with self.assertRaises(FileExistsError):
+            RESTORE.restore_archive(self.archive, self.asset, self.destination)
+        self.assertFalse((self.destination / "data/source").exists())
+        self.assertEqual(blocker.read_bytes(), b"independent evidence")
+
+    def test_existing_receipt_is_rejected_before_download_or_restoration(self):
+        receipt = self.root / "prior-receipt.json"
+        receipt.write_bytes(b'{"status": "prior evidence"}\n')
+        argv = [str(SCRIPT), "--destination", str(self.destination),
+                "--manifest", str(self.root / "unused-manifest.json"),
+                "--receipt", str(receipt)]
+        with (patch("sys.argv", argv),
+              patch.object(RESTORE.urllib.request, "urlopen") as download,
+              patch.object(RESTORE, "restore_archive") as restore):
+            with self.assertRaisesRegex(FileExistsError, "receipt"):
+                RESTORE.main()
+        download.assert_not_called()
+        restore.assert_not_called()
+        self.assertEqual(receipt.read_bytes(), b'{"status": "prior evidence"}\n')
         self.assertEqual(list(self.destination.iterdir()), [])
 
 
