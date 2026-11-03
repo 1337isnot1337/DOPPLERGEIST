@@ -1,0 +1,13 @@
+{
+  "wheel": "aircraft_geoloc_reproduction-0.1.0-py3-none-any.whl",
+  "sha256": "6324adc19dfe081c8db06b4509684af7abbdd84366641c6c2e2fabac98988847",
+  "isolated_wheel_imports": true,
+  "actual_encoded_mp3_cli": {
+    "job_id": "f7d76cbaed294619ad4ed63e562c1e7f",
+    "status": "needs_input",
+    "reason_code": "recording_time_required",
+    "discovered_events": 2,
+    "source_sha256": "457f13726e3367e28ff5e329876f67cc167a612cfbbcb738be0ba39eb525cdc0"
+  },
+  "scope": "final built-wheel modules/assets plus actual full MP3 intake/discovery/required-time path; independent real-location accuracy remains unverified"
+}

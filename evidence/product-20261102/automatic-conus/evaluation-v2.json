@@ -1,0 +1,65 @@
+{
+  "scope": "post-search evaluation of an automatic coarse-grid CONUS synthetic MP3 smoke; no independent real localization claim",
+  "status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "truth_separated": true,
+  "all_returned_candidates": [
+    {
+      "rank": 1,
+      "position_error_m": 1790.8556684886773,
+      "score": -3.7979112805911495,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 2,
+      "position_error_m": 1791.0893157849077,
+      "score": -3.7979114433643915,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 3,
+      "position_error_m": 1050769.7713448226,
+      "score": -4.929006952408768,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 4,
+      "position_error_m": 2272.6206322912444,
+      "score": -5.407116690618836,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 5,
+      "position_error_m": 1050109.228696042,
+      "score": -5.85009665809664,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    }
+  ],
+  "affirmative_locations": 0,
+  "false_affirmative_locations": 0
+}

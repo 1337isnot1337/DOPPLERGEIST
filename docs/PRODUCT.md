@@ -112,3 +112,43 @@ location requires the confidence producer's evidence checks, including independe
 events, alternative hypotheses, complete coverage, residuals and measurement/model
 sensitivity. A small altitude-only profile is insufficient. The final decision
 and full candidate/refinement diagnostics are saved as downloadable JSON.
+
+## Verified integration and current limits
+
+Worker 5 ran the full 1180-second independent-renderer synthetic recording as an
+MP3, using all seven flight segments with opaque IDs, the generator's stated
+recording start, and declared CONUS coverage. Neither truth JSON, selected flight
+IDs, manual event bands/windows nor receiver bounds entered analysis. Truth was
+opened only in a separate evaluation after the job terminated. This is a known
+development fixture, not an independently held-out real recording.
+
+| Run | Actual outcome |
+| --- | --- |
+| 10 km coarse integration | Two automatic events; all 819 tiles processed; five hypotheses; leading position error 1790.86 m; inconclusive because source coverage lacks the audible border halo. Search 17.53 s; full job 72.12 s; peak RSS 284.80 MiB. |
+| Normal 2 km / 100 m refinement | Two events; all 4940 tiles processed; 106 hypotheses. **The leading hypothesis is wrong by 1,046,023 m.** The true pair appears fourth, 6.16 m away, at a nearly tied score. The result remains inconclusive. Search 317.54 s; full job 341.24 s; peak RSS 304.41 MiB. |
+| Actual HTTP upload, closed synthetic world | The same full MP3 and all seven opaque tracks, with the simulation's complete world coverage explicitly declared, return `inconclusive / ambiguous_flight_match`. Upload/poll/readback and byte-identical original download pass. This tests real stage orchestration and abstention, not a real-world location success. |
+
+The close fourth-place candidate is **not** a successful location result. All
+returned candidate errors are retained in
+[`evidence/product-20261102/automatic-conus/`](../evidence/product-20261102/automatic-conus/).
+The frozen real API ambiguity result and diagnostic images are in
+[`ambiguity-job/`](../evidence/product-20261102/ambiguity-job/README.md).
+No source MP3, decoded cache, flight index or environment is committed there.
+The normal-grid run pins every recorded Python module hash to `1863d89`; the earlier dirty
+coarse snapshot has a verified base commit plus exact patch.
+
+Real encoded MP3 HTTP tests cover missing time, corrupt media, stationary/no-event
+input, and missing configured data. A real discovery process was cancelled through
+the API in 0.08 s with metadata/original bytes preserved and its process reaped.
+Completed-job restart and six artifact downloads matched their stored SHA256.
+The built wheel includes the browser assets and scientific modules; its actual
+full-MP3 CLI run returns the required-time result with the original hash preserved.
+Independent browser checks cover nine CLI/API/browser control combinations, saved
+job reload, no JavaScript errors, and desktop/mobile layouts; see
+[verification PR #33](https://github.com/1337isnot1337/DOPPLERGEIST/pull/33).
+
+A supported unique location through the actual automatic API, independently
+established real recording truth/time, and nationwide real accuracy near 100 m
+remain unverified. The measured ambiguity and partial-coverage outcomes must not
+be promoted to that acceptance claim. The historical manually configured regional
+result remains separate.
