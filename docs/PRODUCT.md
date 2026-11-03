@@ -1,5 +1,7 @@
 # Local upload workflow
 
+The current location goal accepts up to **1,000 m error**, with **100–500 m or better preferred**. True benchmark error and uncalibrated model sensitivity remain separate. Historical reports below retain their original 100 m thresholds.
+
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
 **sample zero**, and declared CONUS search coverage. Event windows, frequency
@@ -148,7 +150,7 @@ job reload, no JavaScript errors, and desktop/mobile layouts; see
 [verification PR #33](https://github.com/1337isnot1337/DOPPLERGEIST/pull/33).
 
 A supported unique location through the actual automatic API, independently
-established real recording truth/time, and nationwide real accuracy near 100 m
+established real recording truth/time, and nationwide real accuracy at the current 1,000 m acceptance target (100–500 m preferred)
 remain unverified. The measured ambiguity and partial-coverage outcomes must not
 be promoted to that acceptance claim. The historical manually configured regional
 result remains separate.

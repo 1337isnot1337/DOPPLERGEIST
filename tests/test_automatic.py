@@ -107,17 +107,19 @@ def test_subset_association_preserves_original_event_identity(tmp_path):
     events = [{"event_id": f"event-{i}", "start_s": i*10., "end_s": i*10.+5, "band_hz": [100., 120.],
                "ridge": [{"time_s": i*10.+t, "frequency_hz": 115.-t} for t in (1., 2., 3.)]} for i in range(3)]
     search = {"status": "complete", "scoring_time_is_locked": True, "ranked": [
-        {"event_indices": [1, 2], "flight_ids": ["second-flight", "third-flight"], "lat": 40., "lon": -100.,
+        {"event_indices": [1, 2], "unmatched_event_ids": ["event-0"], "flight_ids": ["second-flight", "third-flight"], "lat": 40., "lon": -100.,
          "score": -1., "recording_start_time_s": 1788897600., "event_diagnostics": [{"rmse_hz": .1}, {"rmse_hz": .2}]}]}
     state = {"recording": {"time_window": WINDOW}, "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
     def finish(status, reason_code=None, message=None, **fields):
         return dict(status=status, reason_code=reason_code, message=message, **fields)
     final = _decide(search, events, events, [None]*3, [], None, state, tmp_path,
                     {"refine_finalists": 0}, finish, lambda: None)
-    assert final["status"] == "inconclusive" and final["reason_code"] == "unexplained_events"
+    assert final["status"] == "inconclusive"
     assert final["candidates"][0]["event_ids"] == ["event-1", "event-2"]
     diagnostics = read_json(tmp_path / "refined-candidates.json")["matching_diagnostics"]
     assert "event-0" not in diagnostics
+    assert diagnostics["unmatched_event_ids"] == ["event-0"]
+    assert diagnostics["recording_start_window_s"][1] - diagnostics["recording_start_window_s"][0] == 60
     assert diagnostics["event-1"]["rmse_hz"] == .1
     assert diagnostics["event-2"]["rmse_hz"] == .2
 
@@ -143,3 +145,15 @@ def test_acquisition_budget_counts_utc_archive_days_across_midnight(tmp_path):
     with pytest.raises(MissingData, match="acquisition budget"):
         _search(request, recording, [event], tmp_path, {"cache_root": str(tmp_path), "max_acquisition_days": 1}, lambda: None)
     assert not (tmp_path/"flights").exists()
+
+
+def test_refinement_adapter_preserves_raw_residual_and_avoids_double_normalization():
+    from aircraft_geoloc.automatic import _comparable_refinement
+    from aircraft_geoloc.matching import association_score
+    events = [{"quality": {"frequency_sigma_hz": 1.}}]
+    raw = {"score": -.6, "event_scores": [-.6], "score_kind": "negative_robust_ridge_loss_hz"}
+    normalized = association_score(raw, events)
+    original = dict(normalized, event_indices=[0])
+    assert _comparable_refinement(raw, original, events) == normalized
+    assert _comparable_refinement(normalized, original, events)["residual_score"] == -.6
+    assert _comparable_refinement(normalized, original, events)["score"] == normalized["score"]

@@ -158,11 +158,23 @@ def _coverage(request, search, config):
             "limitations": limitations, "requested_area": request["search"], "missing_data": missing}
 
 
+def _comparable_refinement(candidate, original, prepared_events):
+    """Preserve newer normalized results; adapt only older raw-loss producers."""
+    if (original.get("score_kind") == "matched_group_support_minus_normalized_residual"
+            and candidate.get("score_kind") != "matched_group_support_minus_normalized_residual"):
+        from .matching import association_score
+        chosen = [prepared_events[i] for i in original["event_indices"]]
+        candidate = association_score(candidate, chosen)
+    if not math.isfinite(candidate["score"]):
+        raise ValueError("Refinement no longer supports the matched event association")
+    return candidate
+
+
 def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, decision_progress):
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
-    from .matching import association_score, profile_candidate, refine_candidate
+    from .matching import profile_candidate, refine_candidate
     raw = list(search.get("ranked", []))
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
@@ -173,13 +185,6 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         return (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]),
                 tuple(round(t) for t in row.get("pass_emission_times_s", [])))
 
-    def comparable(candidate, original):
-        if original.get("score_kind") == "matched_group_support_minus_normalized_residual":
-            chosen = [prepared_events[i] for i in original["event_indices"]]
-            candidate = association_score(candidate, chosen)
-        if not math.isfinite(candidate["score"]):
-            raise ValueError("Refinement no longer supports the matched event association")
-        return candidate
 
     seen, track_sets = set(), {}
     best_refined_score = -math.inf
@@ -211,7 +216,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0))
-            candidate = comparable(candidate, row)
+            candidate = _comparable_refinement(candidate, row, prepared_events)
             refined.append(candidate)
             if candidate["score"] > best_refined_score:
                 best_refined_score = candidate["score"]
@@ -227,7 +232,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             profiled = profile_candidate(leading, track_sets[approach(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
                          c=config.get("sound_speed_mps", 343.0))
-            raw.append(comparable(profiled, leading))
+            raw.append(_comparable_refinement(profiled, leading, prepared_events))
             raw.sort(key=order, reverse=True)
         except (ValueError, KeyError) as exc:
             refinement_failures.append(f"Sensitivity profiling: {exc}")
@@ -248,7 +253,10 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         candidates.append(validate_candidate(candidate))
         rows.append(row)
     best = rows[0] if rows else {}
-    diagnostics = {"clock_locked": search.get("scoring_time_is_locked", False), "refinement_failures": refinement_failures,
+    original_ids = {event["event_id"]: event.get("event_ids", [event["event_id"]]) for event in prepared_events}
+    unmatched_groups = best.get("unmatched_event_ids", list(original_ids) if not rows else [])
+    unmatched_ids = [event_id for group in unmatched_groups for event_id in original_ids.get(group, [group])]
+    diagnostics = {"recording_start_window_s": list(start_window), "unmatched_event_ids": unmatched_ids, "clock_locked": search.get("scoring_time_is_locked", False), "refinement_failures": refinement_failures,
                    "refinement_boundary_limited": best.get("sensitivity", {}).get("boundary_limited", True),
                    "sensitivity": best.get("sensitivity", {}),
                    "altitude_basis": best.get("altitude_basis", {}),
