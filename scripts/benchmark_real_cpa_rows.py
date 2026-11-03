@@ -139,18 +139,26 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--iterations", type=int, default=20)
+    parser.add_argument("--points", type=int, nargs="+", default=[1, 32, 128])
+    parser.add_argument("--skip-reuse-comparison", action="store_true",
+                        help="Skip the separate historical preparation-reuse comparison")
     args = parser.parse_args()
     if args.output.exists():
         parser.error("Use a new output path")
     if args.repeats < 1 or args.iterations < 1:
         parser.error("repeats and iterations must be positive")
+    if any(count < 1 for count in args.points):
+        parser.error("points must be positive")
     path = args.baseline_source / "dopplergeist/search.py"
     spec = importlib.util.spec_from_file_location("dopplergeist._cpa_before", path)
     baseline = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = baseline
     spec.loader.exec_module(baseline)
     tracks = recorded_tracks()
-    workloads = {str(count): recorded_points(tracks, count) for count in (1, 32, 128)}
+    workloads = {str(count): recorded_points(tracks, count) for count in args.points}
+    # Recent baselines already support the bounded row path. Comparing their
+    # per-track DataFrames against current rows would remeasure an older change.
+    baseline_row_mode = hasattr(baseline, "_cpa_rows")
     checks = 0
     for points in workloads.values():
         wide_ids = pd.concat([points.iloc[:1], points.iloc[:1]], ignore_index=True)
@@ -175,12 +183,12 @@ def main():
                     search.cpa_table(supported, candidate_points, radius, c, step, chunk_size),
                     check_exact=True)
                 checks += 1
-    timings = []
+    timings, raw_timings = [], []
     for name, points in workloads.items():
         runs = {"baseline": [], "current": []}
         final = None
         for repeat in range(args.repeats):
-            arms = [("baseline", baseline, False), ("current", search, True)]
+            arms = [("baseline", baseline, baseline_row_mode), ("current", search, True)]
             if repeat % 2:
                 arms.reverse()
             for label, module, row_mode in arms:
@@ -194,8 +202,41 @@ def main():
             "unsupported_tracks": len(final[1]), "iterations_per_trial": args.iterations,
             "cpu_s": runs, "median_cpu_s": medians,
             "speedup": medians["baseline"]/medians["current"]})
+        if hasattr(baseline, "_PreparedCPATrack"):
+            observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
+            point_ids = points.point_id.to_numpy(dtype=int)
+            prepared = {"baseline": [], "current": []}
+            for label, module in (("baseline", baseline), ("current", search)):
+                for track in tracks:
+                    try:
+                        if not track.outside_observer_radius(observers, 20000., 343.):
+                            prepared[label].append(module._PreparedCPATrack(track, 343., 2.))
+                    except AcousticSupportError:
+                        pass
+
+            def raw_rows(label):
+                return [row for item in prepared[label]
+                        for row in item.raw_rows(observers, point_ids, 20000.)]
+
+            # Warm each lazy tree once; sampling/tree preparation is included
+            # in the complete-stage timing above, not this loop measurement.
+            old_rows, new_rows = raw_rows("baseline"), raw_rows("current")
+            assert old_rows == new_rows, "Raw CPA proposals or order changed"
+            checks += 1
+            raw_runs = {"baseline": [], "current": []}
+            for repeat in range(args.repeats):
+                for label in (("current", "baseline") if repeat % 2 else ("baseline", "current")):
+                    started = time.process_time()
+                    for _ in range(args.iterations):
+                        raw_rows(label)
+                    raw_runs[label].append(time.process_time()-started)
+            raw_medians = {label: statistics.median(values) for label, values in raw_runs.items()}
+            raw_timings.append({"receiver_points": int(name), "raw_cpa_rows": len(new_rows),
+                "iterations_per_trial": args.iterations, "cpu_s": raw_runs,
+                "median_cpu_s": raw_medians,
+                "speedup": raw_medians["baseline"]/raw_medians["current"]})
     chunked_timings = []
-    for size in (1024, 4096):
+    for size in (() if args.skip_reuse_comparison else (1024, 4096)):
         points = recorded_points(tracks, size)
         before, old_counts = counted_chunked_stage(tracks, points, False)
         after, new_counts = counted_chunked_stage(tracks, points, True)
@@ -223,6 +264,9 @@ def main():
                     "cpu_affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None},
         "observed_samples": sum(len(track.time) for track in tracks),
         "exact_comparisons": checks, "timings": timings,
+        "baseline_row_mode": baseline_row_mode,
+        "raw_rows_scope": "Same sorted spatial query, spline endpoint solves, speed evaluation and row assembly; sampled track and lazy tree already prepared; internal chunks of at most 512 observers",
+        "raw_rows_timings": raw_timings,
         "chunked_comparison": "Same current code and recorded inputs, trajectory/tree reuse disabled versus enabled; normal 100000-row budget",
         "chunked_timings": chunked_timings}
     args.output.parent.mkdir(parents=True, exist_ok=True)

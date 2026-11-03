@@ -40,6 +40,9 @@ else:
     RIDGE_FIT_BACKEND = f"native-c-irls-v2-pairwise:{_native_binary_hash}"
 
 _native_validate_ridge_events = getattr(_native_ridge_module, "valid_ridge_events", None)
+_CANONICAL_NATIVE_EVENT_VALIDATOR = _native_validate_ridge_events
+_native_fit_irls_batch = getattr(_native_ridge_module, "fit_irls_batch", None)
+_CANONICAL_NATIVE_FIT_IRLS = _native_fit_irls
 
 _NATIVE_RIDGE_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
 
@@ -83,10 +86,14 @@ class _RidgeFitCache:
         self.batch_fit_bytes = 0
         self.batch_fit_limit = 4 * 1024 * 1024
         self.batch_fit_function = None
+        self.batch_fit_backends = (None, None)
         self.ceiling_entries = OrderedDict()
         self.screen_entries = OrderedDict()
         self.screen_bytes = 0
         self.screen_limit = 8 * 1024 * 1024
+        self.score_inputs = {}
+        self.score_input_bytes = 0
+        self.score_input_limit = 4 * 1024 * 1024
 
     def prepared_measurement(self, measurement, sigma_hz, drift_fraction, key):
         """Reuse selected samples only after checking their current content key."""
@@ -152,13 +159,17 @@ class _RidgeFitCache:
             return _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result)
         # Measurements may be equivalent copies or modified arrays. Hash the
         # numeric inputs actually used by the fit, without retaining their data.
-        spec, ridge, weight, _ = measurement
-        observed = hashlib.sha256()
-        for values in (spec.time, ridge, weight):
-            values = np.asarray(values, dtype=float)
-            observed.update(repr(values.shape).encode())
-            observed.update(values.tobytes())
-        measurement_key = observed.digest()
+        private = _prepared_score_input(measurement)
+        if private is None:
+            spec, ridge, weight, _ = measurement
+            observed = hashlib.sha256()
+            for values in (spec.time, ridge, weight):
+                values = np.asarray(values, dtype=float)
+                observed.update(repr(values.shape).encode())
+                observed.update(values.tobytes())
+            measurement_key = observed.digest()
+        else:
+            measurement_key = private.measurement_key
         key = (id(track), parameters, measurement_key, acoustic_key)
         if key in self.entries:
             self.entries.move_to_end(key)
@@ -182,7 +193,8 @@ def _cache_ridge_fits(function, *, max_entries=4096):
     Each fit cache has at most 4,096 entries by default. Serialized batch
     snapshots, including validated ceiling vectors, and digest bytes are bounded
     to 4 MiB; Python object/container overhead is additional. Prepared measurements
-    use their own 4 MiB bound and acoustic arrays use 32 MiB. Acoustic screening
+    use their own 4 MiB bound; private immutable scoring inputs have another
+    4 MiB budget, and acoustic arrays use 32 MiB. Acoustic screening
     evidence has an additional 8 MiB budget, including conservatively charged
     keys, arrays and containers. Context-local state prevents
     reuse between concurrent jobs, nested batches or later calls. Cached results
@@ -501,6 +513,10 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
 
 def _ridge_fit_inputs(measurement, sigma_hz, drift_fraction):
     """Validate the same measurement/model domain for fits and score ceilings."""
+    private = _prepared_score_input(measurement)
+    if (private is not None and type(sigma_hz) is float and type(drift_fraction) is float
+            and sigma_hz == private.sigma and drift_fraction == private.fraction):
+        return private.arrays
     spec, ridge, weight, _ = measurement
     times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
     if times.shape != ridge.shape or times.shape != weight.shape or times.ndim != 1:
@@ -532,6 +548,11 @@ class _PreparedRidge:
 
 
 def _prepare_ridge_fit_inputs(measurement, sigma_hz, drift_fraction):
+    private = _prepared_score_input(measurement)
+    if (private is not None and type(sigma_hz) is float and type(drift_fraction) is float
+            and sigma_hz == private.sigma and drift_fraction == private.fraction):
+        # Keep normalization lazy and owned by the existing scalar cache.
+        return _PreparedRidge(*private.selected)
     times, ridge, weight = _ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
     measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
     return _PreparedRidge(times[measured], ridge[measured], weight[measured])
@@ -865,3 +886,20 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                      "clock_bounds_s": [lo, hi]}}
     return dict(nominal, sensitivity=sensitivity)
 
+
+
+# Captured when the module initializes, before callers can install custom hooks.
+_CANONICAL_SCORE_INPUT_FUNCTIONS = (_frequency_scale, _ridge_fit_inputs,
+                                   _prepare_ridge_fit_inputs, _fit_argument_key)
+_CANONICAL_FIT_RIDGE = fit_ridge
+_CANONICAL_SCALAR_FITTER = _fit_ridge_uncached
+_CANONICAL_ACOUSTIC_TRIALS = _iter_acoustic_trials
+_CANONICAL_NATIVE_IRLS = _native_fit_irls
+_CANONICAL_NATIVE_IRLS_BATCH = _native_fit_irls_batch
+_CANONICAL_PREFIX_FUNCTIONS = (
+    fit_ridge, _fit_ridge_uncached, _iter_acoustic_trials, _source_fit,
+    _RidgeFitCache.fit, _RidgeFitCache.acoustic_batch, _native_fit_irls, _native_fit_irls_batch,
+    _native_ridge_module, getattr(_native_ridge_module, "event_fit_reason", None))
+
+from .scoring_inputs import (_prepare_score_inputs, _prepared_score_input,
+                             _prepared_score_token, _prepared_score_tokens)

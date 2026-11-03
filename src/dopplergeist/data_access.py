@@ -18,6 +18,7 @@ import os
 from pathlib import Path
 import pickle
 import sqlite3
+import sys
 import tarfile
 from threading import Lock
 
@@ -136,6 +137,30 @@ def _payload_frame(records):
             return pd.DataFrame(records)
         columns[name] = _IndexColumn(np.asarray(values, dtype=float if numeric else object))
     return _IndexColumns(columns, len(records))
+
+
+_CANONICAL_FRAME_TRACK = _frame_track
+_CANONICAL_PAYLOAD_FRAME = _payload_frame
+_CANONICAL_SEGMENT_VELOCITY = _segment_velocity
+_CANONICAL_TRACK = Track
+_PREPARED_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
+
+
+@lru_cache(maxsize=1)
+def _prepared_track_identity():
+    """Use prepared velocities only with identical normalization and NumPy."""
+    from . import flight_payload
+    try:
+        import numpy._core._multiarray_umath as numpy_core
+    except ImportError:
+        import numpy.core._multiarray_umath as numpy_core
+    files = (Path(__file__), Path(__file__).with_name("tracks.py"),
+             Path(__file__).with_name("geometry.py"), Path(flight_payload.__file__),
+             Path(numpy_core.__file__))
+    return content_hash({"sources": [sha256(path) for path in files],
+                         "numpy": np.__version__,
+                         "pandas": pd.__version__, "python": sys.version,
+                         "cpu": getattr(numpy_core, "__cpu_features__", {})})
 
 
 @lru_cache(maxsize=1)
@@ -494,15 +519,34 @@ class FlightIndex:
         try:
             with self.connect() as db:
                 self.report = json.loads(db.execute("SELECT value FROM metadata").fetchone()[0])
-            if self.report["index_version"] not in (1, INDEX_VERSION):
-                raise DataUnavailable("Flight index version mismatch")
+                if self.report["index_version"] not in (1, INDEX_VERSION):
+                    raise DataUnavailable("Flight index version mismatch")
+                self._prepared_tracks = self._prepared_available(db, self.report)
         except (sqlite3.DatabaseError, TypeError, KeyError, json.JSONDecodeError) as error:
             raise DataUnavailable(f"Invalid flight index: {path}") from error
 
     def connect(self):
         return sqlite3.connect(f"{self.path.resolve().as_uri()}?mode=ro", uri=True)
 
-    def _decode_track(self, name, payload, expected, *, max_samples=None, cache_scan=None):
+    @staticmethod
+    def _prepared_available(db, report=None):
+        # Recheck optional metadata and schema in the actual read snapshot.
+        # The unique integer key must prevent duplicate original segments.
+        try:
+            if report is None:
+                report = json.loads(db.execute("SELECT value FROM metadata").fetchone()[0])
+            prepared = report.get("prepared_tracks") if isinstance(report, dict) else None
+            if (not isinstance(prepared, dict) or prepared.get("version") != 1
+                    or prepared.get("builder") != _prepared_track_identity()):
+                return False
+            columns = [(row[1], row[2].upper(), row[5]) for row in
+                       db.execute("PRAGMA table_info(prepared_tracks)")]
+            return columns == [("id", "INTEGER", 1), ("source_hash", "TEXT", 0),
+                               ("payload", "BLOB", 0), ("payload_hash", "TEXT", 0)]
+        except (sqlite3.DatabaseError, TypeError, KeyError, json.JSONDecodeError):
+            return False
+
+    def _decode_track(self, name, payload, expected, *, max_samples=None, cache_scan=None, prepared=None):
         # Verify every fetched payload, including hits. A cached track must not
         # conceal damage to an index that was changed after the previous query.
         if hashlib.sha256(payload).hexdigest() != expected:
@@ -519,10 +563,26 @@ class FlightIndex:
                     cache_scan["used"].add(key)
         if entry is not None:
             return pickle.loads(cached)
-        frame = _payload_frame(json.loads(gzip.decompress(payload)))
-        if max_samples is not None and len(frame) > max_samples:
-            raise DataUnavailable("Flight lookup sample budget exceeded")
-        track = _frame_track(name, frame)
+        track = None
+        if (prepared is not None and _frame_track is _CANONICAL_FRAME_TRACK
+                and _segment_velocity is _CANONICAL_SEGMENT_VELOCITY
+                and _payload_frame is _CANONICAL_PAYLOAD_FRAME
+                and Track is _CANONICAL_TRACK and np.geterr() == _PREPARED_ERROR_POLICY):
+            source_hash, packed, packed_hash = prepared
+            if source_hash == expected and type(packed) is bytes:
+                from .flight_payload import decode_track
+                # A damaged optional representation cannot replace the verified
+                # original observations. Recompute through the legacy reader.
+                if hashlib.sha256(packed).hexdigest() == packed_hash:
+                    try:
+                        track = decode_track(name, packed, max_samples=max_samples)
+                    except DataUnavailable:
+                        track = None
+        if track is None:
+            frame = _payload_frame(json.loads(gzip.decompress(payload)))
+            if max_samples is not None and len(frame) > max_samples:
+                raise DataUnavailable("Flight lookup sample budget exceeded")
+            track = _frame_track(name, frame)
         if self._track_cache_limit and (cache_scan is None or cache_scan["admit"]):
             # These bytes are produced here, never read from a file/request.
             # Restoring them returns independent arrays and mutable diagnostics,
@@ -551,11 +611,77 @@ class FlightIndex:
                             return track
                         _, (_, previous) = self._track_cache.popitem(last=False)
                         self._track_cache_bytes -= len(previous)
-                    self._track_cache[key] = (len(frame), cached)
+                    self._track_cache[key] = (len(track.time), cached)
                     self._track_cache_bytes += len(cached)
                     if cache_scan is not None:
                         cache_scan["used"].add(key)
         return track
+
+    @staticmethod
+    def _prepare_tracks(db):
+        """Store constructor inputs beside the original observations, once."""
+        from .flight_payload import encode_track
+        db.execute("DROP TABLE IF EXISTS prepared_tracks")
+        db.execute("CREATE TABLE prepared_tracks(id INTEGER PRIMARY KEY, source_hash TEXT, payload BLOB, payload_hash TEXT)")
+        count = size = 0
+        if (_frame_track is not _CANONICAL_FRAME_TRACK
+                or _segment_velocity is not _CANONICAL_SEGMENT_VELOCITY
+                or _payload_frame is not _CANONICAL_PAYLOAD_FRAME
+                or Track is not _CANONICAL_TRACK or np.geterr() != _PREPARED_ERROR_POLICY):
+            return {"version": 1, "builder": None, "tracks": count, "bytes": size}
+        for identifier, name, payload, expected in db.execute(
+                "SELECT id,name,payload,payload_hash FROM segments ORDER BY id"):
+            if hashlib.sha256(payload).hexdigest() != expected:
+                raise DataUnavailable(f"Corrupt flight payload: {name}")
+            # Use the precise values the old reader gets AFTER the index's
+            # JSON serialization and dtype inference, not the staging frame.
+            track = _frame_track(name, _payload_frame(json.loads(gzip.decompress(payload))))
+            try:
+                packed = encode_track(track)
+            except (DataUnavailable, TypeError, ValueError):
+                continue
+            db.execute("INSERT INTO prepared_tracks VALUES(?,?,?,?)",
+                       (identifier, expected, packed, hashlib.sha256(packed).hexdigest()))
+            count += 1
+            size += len(packed)
+        return {"version": 1, "builder": _prepared_track_identity(), "tracks": count, "bytes": size}
+
+    def prepare(self, destination):
+        """Create a new index copy with faster verified track decoding.
+
+        The source stays read-only and the destination must not exist. Coverage,
+        original payloads, spatial bounds and scientific input identity stay
+        unchanged. Old readers ignore the optional numeric representation.
+        """
+        from uuid import uuid4
+        destination = Path(destination)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with cache_lock(destination.with_suffix(".lock")):
+            if destination.exists() or destination.is_symlink():
+                raise FileExistsError(f"Prepared index destination already exists: {destination}")
+            temporary = destination.with_name(destination.name + ".preparing-" + uuid4().hex)
+            db = sqlite3.connect(temporary)
+            try:
+                with self.connect() as source:
+                    source.backup(db)
+                # Copy metadata from the same snapshot as the observations.
+                # The caller's older report object is mutable and may be stale.
+                try:
+                    report = json.loads(db.execute("SELECT value FROM metadata").fetchone()[0])
+                    if report["index_version"] not in (1, INDEX_VERSION):
+                        raise DataUnavailable("Flight index version mismatch")
+                except (sqlite3.DatabaseError, TypeError, KeyError, json.JSONDecodeError) as error:
+                    raise DataUnavailable("Invalid source flight index metadata") from error
+                report["prepared_tracks"] = self._prepare_tracks(db)
+                db.execute("UPDATE metadata SET value=?", (json.dumps(report),))
+                db.commit()
+                db.close()
+                temporary.replace(destination)
+            except BaseException:
+                db.close()
+                temporary.unlink(missing_ok=True)
+                raise
+        return type(self)(destination, track_cache_bytes=self._track_cache_limit)
 
     @classmethod
     def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
@@ -624,6 +750,7 @@ class FlightIndex:
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
                               segments=segments, altitude_basis_counts=dict(altitude), jets_excluded=False,
                               unknown_types_retained=True, geometry_clipped=False, continuous_geometry_bounds=True)
+                report["prepared_tracks"] = cls._prepare_tracks(db)
                 db.execute("INSERT INTO metadata VALUES(?)", (json.dumps(report),))
                 db.commit()
                 db.execute("VACUUM")
@@ -698,10 +825,17 @@ class FlightIndex:
         join, predicate, params = self._query_scope(bounds, time_range)
         cache_scan = {"used": set(), "admit": True}
         with self.connect() as db:
-            sql = ("SELECT s.name,s.payload,s.payload_hash FROM segments s" + join
+            prepared = self._prepared_tracks
+            if prepared:
+                db.execute("BEGIN")
+                prepared = self._prepared_available(db)
+            fields = ",p.source_hash,p.payload,p.payload_hash" if prepared else ""
+            prepared_join = " LEFT JOIN prepared_tracks p ON p.id=s.id" if prepared else ""
+            sql = ("SELECT s.name,s.payload,s.payload_hash" + fields + " FROM segments s" + join + prepared_join
                    + " WHERE " + predicate + " ORDER BY s.name")
-            for name, payload, expected in db.execute(sql, params):
-                yield self._decode_track(name, payload, expected, cache_scan=cache_scan)
+            for row in db.execute(sql, params):
+                yield self._decode_track(*row[:3], cache_scan=cache_scan,
+                                         prepared=row[3:] if prepared else None)
 
     def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000,
                bounds=None, time_range=None):
@@ -730,16 +864,24 @@ class FlightIndex:
             join, predicate, scope_params = self._query_scope(bounds, time_range)
         cache_scan = {"used": set(), "admit": True}
         with self.connect() as db:
+            prepared = self._prepared_tracks
+            if prepared:
+                # Retain one snapshot across the checks and all lookup batches.
+                db.execute("BEGIN")
+                prepared = self._prepared_available(db)
             # Stay below SQLite's conservative bound on bound SQL parameters.
             for first in range(0, len(names), 500):
                 batch = names[first:first+500]
                 placeholders = ",".join("?" for _ in batch)
-                sql = ("SELECT s.name,s.payload,s.payload_hash FROM segments s" + join
+                fields = ",p.source_hash,p.payload,p.payload_hash" if prepared else ""
+                prepared_join = " LEFT JOIN prepared_tracks p ON p.id=s.id" if prepared else ""
+                sql = ("SELECT s.name,s.payload,s.payload_hash" + fields + " FROM segments s" + join + prepared_join
                        + " WHERE s.name IN (" + placeholders + ")"
                        + (" AND " + predicate if predicate else "") + " ORDER BY s.name")
-                for name, payload, expected in db.execute(sql, (*batch, *scope_params)):
-                    track = self._decode_track(name, payload, expected, max_samples=max_samples - samples,
-                                               cache_scan=cache_scan)
+                for row in db.execute(sql, (*batch, *scope_params)):
+                    track = self._decode_track(*row[:3], max_samples=max_samples - samples,
+                                               cache_scan=cache_scan,
+                                               prepared=row[3:] if prepared else None)
                     samples += len(track.time)
                     yield track
 
