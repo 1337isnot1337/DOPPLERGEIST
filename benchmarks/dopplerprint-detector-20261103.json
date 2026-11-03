@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-03",
+  "input_sha256": "674df668c25608ef3e9199bf3b48d760642456d679729c9661ac5cb2a22e179c",
+  "method": "blind full-file MP3 intake and discovery; no plotted diagnostics, event hints, flight IDs, or location",
+  "dopplergeist": {
+    "source_commit": "225bf6b86165ecfd9fce443ae0950f24c404032c",
+    "events": 17,
+    "harmonic_groups": 15,
+    "cpu_s_including_ffmpeg": 31.814294479999994,
+    "elapsed_s": 171.98579495502054,
+    "saved_discovery_exact_match": true,
+    "timing_excludes_imports": true,
+    "repeat": {
+      "cpu_s_including_ffmpeg": 29.395281501999996,
+      "elapsed_s": 134.41332327900454,
+      "initial_vmhwm_kib": 104468,
+      "final_vmhwm_kib": 152528,
+      "excludes_ffmpeg_memory": true,
+      "events_exactly_match_first_run": true
+    }
+  },
+  "dopplerprint": {
+    "wheel_version": "0.1.0",
+    "reviewed_source_commit": "964180276409998a3b9a56bc1d50e0805415e492",
+    "wheel_source_commit_verified": false,
+    "events": 47,
+    "cpu_s": 32.347065,
+    "elapsed_s": 99.7637781429803,
+    "rayon_threads": 2,
+    "timing_includes_cli_startup": true,
+    "repeat": {
+      "cpu_s": 37.89421900000001,
+      "elapsed_s": 72.2897697740118,
+      "sampled_vmhwm_kib": 230928,
+      "sample_interval_s": 0.05,
+      "samples": 1374,
+      "events_exactly_match_first_run": true
+    },
+    "first_run_getrusage_child_kib_unverified": 232176
+  },
+  "limitations": [
+    "Two runs per detector on a shared loaded host; different frequency ranges, algorithms and outputs.",
+    "Broad time-and-band overlap with reference windows is not aircraft identity or detection accuracy.",
+    "DOPPLERGEIST VmHWM excludes FFmpeg; Dopplerprint VmHWM was sampled and is a lower bound.",
+    "The DOPPLERGEIST getrusage peak was already elevated at process startup and is invalid as an actual per-run memory peak."
+  ],
+  "local_receipts": "/home/cinna/.local/state/dopplergeist-dopplerprint-review-20261103"
+}
