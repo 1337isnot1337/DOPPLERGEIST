@@ -53,11 +53,12 @@ dopplergeist resume JOB_ID --jobs jobs
 ```
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
-the upload is queued. `job --watch` reports the number and recent rate of local
-checkpoint pieces on standard error, then writes the final job JSON to standard
-output. Pieces can have different sizes and costs, so their rate is not an ETA;
-remotely staged work appears after it is imported. Pressing Ctrl-C stops the
-watcher without cancelling the analysis.
+the upload is queued. `job --watch` reports overall progress, the number and
+recent rate of local checkpoint pieces, the age of the newest tile checkpoint,
+and the age of the job status file on standard error. It then writes the final
+job JSON to standard output. Pieces can have different sizes and costs, so their
+rate is not an ETA; remotely staged work appears after it is imported. Pressing
+Ctrl-C stops the watcher without cancelling the analysis.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not

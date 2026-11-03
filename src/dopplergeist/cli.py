@@ -131,13 +131,23 @@ def main():
                     parser.error(f"Could not read job {args.job_id}: {exc}")
                 if not args.watch:
                     break
-                count=sum(1 for path in (directory/"search").glob("tile-*.json") if not path.name.endswith(".error.json"))
+                tiles=[path for path in (directory/"search").glob("tile-*.json") if not path.name.endswith(".error.json")]
+                count=len(tiles)
+                wall_now=time.time()
+                progress=value.get("progress")
+                progress_text=(f", {progress:.1%}" if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
+                result_age=max(0.0,wall_now-(directory/"result.json").stat().st_mtime)
+                age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", {(count-previous_count)*60/(now-previous_time):.1f} pieces/min since last check"
-                print(f"{value['status']} ({value.get('stage', 'no stage')}): "
-                      f"{count} local checkpoint pieces{rate}",file=sys.stderr,flush=True)
+                latest=max(tiles,key=lambda path:path.stat().st_mtime,default=None)
+                tile_age=(f", newest tile {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
+                          if latest else "")
+                print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
+                      f"{count} local checkpoint pieces{rate}{tile_age}, "
+                      f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
                 previous_count,previous_time=count,now
