@@ -1,0 +1,48 @@
+{
+  "current_acceptance_m": 1000,
+  "preferred_m": [
+    100,
+    500
+  ],
+  "scope": "Additional threshold accounting only; original frozen evaluations and inconclusive decisions are unchanged. A close non-winning candidate is not pipeline success.",
+  "cases": [
+    {
+      "source_evaluation": "evaluation-v2.json",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "rank1_error_m": 1790.8556684886773,
+      "rank1_correct_flight_pair": true,
+      "rank1_pass_at_m": {
+        "100": false,
+        "500": false,
+        "1000": false
+      },
+      "candidate_counts_at_m": {
+        "100": 0,
+        "500": 0,
+        "1000": 0
+      },
+      "accepted_location": false,
+      "all_candidate_error_count": 5
+    },
+    {
+      "source_evaluation": "evaluation-default-grid-v2.json",
+      "status": "inconclusive",
+      "reason_code": "partial_flight_coverage",
+      "rank1_error_m": 1046023.1493328345,
+      "rank1_correct_flight_pair": false,
+      "rank1_pass_at_m": {
+        "100": false,
+        "500": false,
+        "1000": false
+      },
+      "candidate_counts_at_m": {
+        "100": 4,
+        "500": 25,
+        "1000": 25
+      },
+      "accepted_location": false,
+      "all_candidate_error_count": 106
+    }
+  ]
+}
