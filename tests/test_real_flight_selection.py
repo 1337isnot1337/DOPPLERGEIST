@@ -67,16 +67,18 @@ def test_real_boundary_segments_survive_selection(tmp_path):
     assert old_filter_misses > 0
 
     # Real rows with embedded source limits exercise index-side scope checks.
-    selection = {"bounds": list(bounds), "time_range_s": [0, 4102444800],
+    day_window = [1788825600.0, 1788912000.0]
+    selection = {"bounds": list(bounds), "time_range_s": day_window, "archive_day_utc": "2026-09-08",
                  "all_aircraft": False, "max_gap_s": 30.0}
     table = pa.Table.from_pandas(frames[0], preserve_index=False)
-    table = table.replace_schema_metadata({b"dopplergeist.selection.v1": json.dumps(selection).encode()})
+    table = table.replace_schema_metadata({b"dopplergeist.selection.v2": json.dumps(selection).encode()})
     source_parquet = tmp_path / "real-selected.parquet"
     pq.write_table(table, source_parquet)
-    restricted = dict(coverage, all_aircraft=False)
+    restricted = dict(coverage, all_aircraft=False, time_range_s=day_window)
     FlightIndex.from_parquet(tmp_path / "valid.sqlite", source_parquet, coverage=restricted)
     with pytest.raises(DataUnavailable, match="excluded aircraft"):
-        FlightIndex.from_parquet(tmp_path / "types.sqlite", source_parquet, coverage=coverage)
+        FlightIndex.from_parquet(tmp_path / "types.sqlite", source_parquet,
+                                 coverage=dict(restricted, all_aircraft=True))
     with pytest.raises(DataUnavailable, match="gap limit"):
         FlightIndex.from_parquet(tmp_path / "gap.sqlite", source_parquet, coverage=restricted, max_gap_s=60)
     with pytest.raises(DataUnavailable, match="selection bounds"):
@@ -84,7 +86,17 @@ def test_real_boundary_segments_survive_selection(tmp_path):
                                  coverage=dict(restricted, bounds=[-180, -90, 181, 90]))
     with pytest.raises(DataUnavailable, match="selection time"):
         FlightIndex.from_parquet(tmp_path / "time.sqlite", source_parquet,
-                                 coverage=dict(restricted, time_range_s=[-1, 4102444800]))
+                                 coverage=dict(restricted, time_range_s=[day_window[0] - 1, day_window[1]]))
+    for i, (tag, selected, message) in enumerate((
+        (b"dopplergeist.selection.v1", dict(selection, time_range_s=None), "Legacy selected Parquet"),
+        (b"dopplergeist.selection.v1", dict(selection, time_range_s=[0, 4102444800]), "Legacy selected Parquet"),
+        (b"dopplergeist.selection.v2", dict(selection, time_range_s=None), "selection time"),
+        (b"dopplergeist.selection.v2", dict(selection, time_range_s=[0, 4102444800]), "selection time"),
+    )):
+        malformed = tmp_path / f"malformed-{i}.parquet"
+        pq.write_table(table.replace_schema_metadata({tag: json.dumps(selected).encode()}), malformed)
+        with pytest.raises(DataUnavailable, match=message):
+            FlightIndex.from_parquet(tmp_path / "malformed.sqlite", malformed, coverage=restricted)
     untagged = tmp_path / "real-untagged.parquet"
     pq.write_table(table.replace_schema_metadata(None), untagged)
     FlightIndex.from_parquet(tmp_path / "untagged.sqlite", untagged, coverage=coverage)
@@ -115,5 +127,6 @@ def test_real_boundary_segments_survive_selection(tmp_path):
             env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"))
             completed = subprocess.run(command, env=env, capture_output=True, text=True)
             assert completed.returncode == 0, completed.stderr
-            meta = pq.read_schema(day / (output + ".parquet")).metadata[b"dopplergeist.selection.v1"]
-            assert json.loads(meta)["time_range_s"] == [1788825600.0, 1788912000.0]
+            meta = pq.read_schema(day / (output + ".parquet")).metadata[b"dopplergeist.selection.v2"]
+            assert json.loads(meta)["time_range_s"] == day_window
+            assert json.loads(meta)["archive_day_utc"] == "2026-09-08"

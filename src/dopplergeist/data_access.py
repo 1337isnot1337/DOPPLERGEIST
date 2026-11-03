@@ -335,9 +335,16 @@ class FlightIndex:
             parquet_file = pq.ParquetFile(parquet)
             metadata = parquet_file.schema_arrow.metadata or {}
             if b"dopplergeist.selection.v1" in metadata:
-                selected = json.loads(metadata[b"dopplergeist.selection.v1"])
+                raise DataUnavailable("Legacy selected Parquet lacks archive-day scope; reingest it")
+            if b"dopplergeist.selection.v2" in metadata:
+                selected = json.loads(metadata[b"dopplergeist.selection.v2"])
                 bounds, times = coverage["bounds"], coverage["time_range_s"]
                 box, interval = selected["bounds"], selected["time_range_s"]
+                source_day = date.fromisoformat(selected["archive_day_utc"])
+                if source_day.isoformat() != selected["archive_day_utc"]:
+                    raise DataUnavailable("Invalid Parquet archive day")
+                day_start = datetime.combine(source_day, datetime.min.time(), tzinfo=timezone.utc).timestamp()
+                day_end = day_start + 86400.0
                 if (len(bounds) != 4 or len(box) != 4 or len(times) != 2 or
                         not np.isfinite([*bounds, *box, *times]).all() or
                         type(selected["all_aircraft"]) is not bool or
@@ -345,8 +352,9 @@ class FlightIndex:
                         not (box[0] <= bounds[0] <= bounds[2] <= box[2] and
                              box[1] <= bounds[1] <= bounds[3] <= box[3] and times[0] <= times[1])):
                     raise DataUnavailable("Declared flight coverage exceeds the Parquet selection bounds")
-                if interval is not None and (len(interval) != 2 or not np.isfinite(interval).all() or
-                        not interval[0] <= times[0] <= times[1] <= interval[1]):
+                if (not isinstance(interval, list) or len(interval) != 2 or
+                        not np.isfinite(interval).all() or
+                        not day_start <= interval[0] <= times[0] <= times[1] <= interval[1] <= day_end):
                     raise DataUnavailable("Declared flight coverage exceeds the Parquet selection time")
                 if coverage.get("all_aircraft", False) and selected["all_aircraft"] is not True:
                     raise DataUnavailable("Parquet selection excluded aircraft types")
