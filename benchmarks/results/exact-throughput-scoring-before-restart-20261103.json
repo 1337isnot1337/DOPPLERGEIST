@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "evidence_status": "Reconstructed only from tool outputs observed before an executor reset; original detailed result files and verified archives became inaccessible.",
+  "scope": "Recorded-input regional point scoring; source-informed receiver and clock; no complete-pipeline or location-accuracy claim.",
+  "sources": {
+    "baseline": {
+      "upstream_commit": "0d6a92377af0f00b84dff9fa7966326d0014c20c",
+      "local_commit": "d95a65b0aabb9247a681997a744520c23d3a0786",
+      "tree": "1e0ad6c24ed7ab2a4942f7ec411a5411c382b9e3",
+      "backend": "python-irls-v1"
+    },
+    "optimized": {
+      "runtime_commit": "3847be83f5cee4e9aa357b334eed13dd4dcea7cc",
+      "observed_worktree_commits": [
+        "f9b3652748d14f3c73cb23c3f4a9d2cbb10f9e5a",
+        "de17375d2c86ce8a3526a3183ab930e312a34cc1"
+      ],
+      "runtime_source_diff_from_3847be8": "Empty, verified with git diff --stat 3847be8 HEAD -- src immediately before executor reset.",
+      "backend": "native-c-irls-v2-pairwise:47d5b94728dff393e508d8a1e1bf064ed73b610991cf0bbe9eafda88ff36ac54"
+    }
+  },
+  "environment": {
+    "cpu_affinity": [
+      8
+    ],
+    "numerical_threads": 1,
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "pandas": "2.2.3",
+    "pyarrow": "26.0.1",
+    "pyproj": "3.8.0",
+    "processor": "AMD EPYC 9V74 80-Core Processor",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "method": {
+    "repetitions_per_implementation": 3,
+    "order": [
+      "baseline",
+      "optimized",
+      "optimized",
+      "baseline",
+      "baseline",
+      "optimized"
+    ],
+    "timing_scope": "Scoring only; preparation, imports, input loading, and output comparison excluded.",
+    "comparison": "Exact ranked candidates, all returned counts, workload identity, and ordered SQLite records/bounds/stages.",
+    "benchmark_script_sha256": "5e3837aa6eee76201f61f6bfcd59baa2b62affcd592e8b929467e2e2e3caac55"
+  },
+  "broad": {
+    "status": "All six scoring repetitions and comparisons completed.",
+    "workload": {
+      "proposals": 16,
+      "groups": 16,
+      "points": 1,
+      "tracks": 447,
+      "observations": 64246,
+      "candidates": 3921,
+      "retained": 100,
+      "clock_window_s": [
+        1788898529.6620934,
+        1788898769.6620934
+      ],
+      "track_window_s": [
+        1788898409.6620934,
+        1788902359.1620934
+      ]
+    },
+    "baseline_cpu_s": [
+      12.599948973,
+      12.693338202,
+      13.407259419999999
+    ],
+    "optimized_cpu_s": [
+      10.690197341,
+      12.776516933,
+      12.325117675
+    ],
+    "baseline_wall_s": [
+      12.614479891000883,
+      12.709063902999333,
+      13.431130941000447
+    ],
+    "optimized_wall_s": [
+      10.703376725999988,
+      12.79164169700016,
+      12.344047198001135
+    ],
+    "medians": {
+      "baseline": {
+        "cpu_s": 12.693338202,
+        "wall_s": 12.709063902999333,
+        "process_wall_s": 15.529008723000516
+      },
+      "optimized": {
+        "cpu_s": 12.325117675,
+        "wall_s": 12.344047198001135,
+        "process_wall_s": 15.4539744169997
+      }
+    },
+    "speedup": {
+      "cpu_s": 1.0298756195851086,
+      "wall_s": 1.0295702616121967
+    },
+    "exact_outputs_equal": true,
+    "independent_archive_check": "Canonical JSON and ordered SQLite payload digests matched across all six runs. Every archived file was read back and its SHA-256 checked before deleting only its duplicate original.",
+    "verified_archive_bytes": 4898850,
+    "archive_available_after_reset": false,
+    "interpretation": "The approximately 3% ratio-of-medians improvement is modest relative to trial variation; do not use this workload as evidence of a large additional coarse-scoring gain over already optimized current main."
+  },
+  "narrow": {
+    "status": "Incomplete: five worker timings retrieved; final optimized worker result and completed comparison report were not retrieved.",
+    "workload": {
+      "proposals": 16,
+      "groups": 16,
+      "points": 1,
+      "tracks": 422,
+      "observations": 60711,
+      "candidates": 1055,
+      "retained": 100,
+      "clock_window_s": [
+        1788898639.6620934,
+        1788898659.6620934
+      ],
+      "track_window_s": [
+        1788898519.6620934,
+        1788902249.1620934
+      ]
+    },
+    "baseline_cpu_s": [
+      1.7896288460000003,
+      2.4442153579999997,
+      2.0763241630000002
+    ],
+    "optimized_cpu_s": [
+      1.479403214,
+      1.6879802280000002,
+      null
+    ],
+    "baseline_wall_s": [
+      1.7913878010003828,
+      4.37468717900083,
+      2.079404522999539
+    ],
+    "optimized_wall_s": [
+      1.4844602900011523,
+      3.3815149740003108,
+      null
+    ],
+    "first_two_pairs_exact": true,
+    "final_optimized_result_retrieved": false,
+    "interpretation": "Do not report a completed three-pair median or speedup. The second pair also shows substantial off-CPU wall time."
+  },
+  "recovery_scan": {
+    "visible_files_examined": 21030,
+    "relevant_dopplergeist_assets": 0,
+    "details": "No DOPPLERGEIST paths, reference assets, .parquet, .sqlite, .mp3, or .wav files found under the replacement /workspace/scratch. The 25 discovery.json name matches belonged to unrelated matrix research."
+  }
+}

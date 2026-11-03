@@ -1,0 +1,141 @@
+{
+  "date": "2026-11-03",
+  "scope": "Exact throughput changes beyond main 0d6a923; real recordings and historical aircraft observations only.",
+  "sources": {
+    "starting_main": "1f60cb5e5f03031516015064c384a1e25c8e88d2",
+    "comparison_main": "0d6a92377af0f00b84dff9fa7966326d0014c20c",
+    "measured_local_runtime": "3847be83f5cee4e9aa357b334eed13dd4dcea7cc",
+    "public_equivalent_runtime": "530db8b038ded5962aa2c80d63af8379f030356d"
+  },
+  "before_environment_restart": {
+    "evidence_status": "Completed measurements reconstructed from retrieved tool output after the execution environment discarded its temporary filesystem. No missing measurement is inferred.",
+    "http": {
+      "repetitions": 1,
+      "order": [
+        "starting_main",
+        "comparison_main",
+        "optimized"
+      ],
+      "fresh_runs": true,
+      "resumed": false,
+      "environment": {
+        "python": "3.12.3",
+        "sqlite": "3.45.1",
+        "cpu_affinity": [
+          4
+        ],
+        "numerical_threads": 1,
+        "output_storage": "tmpfs"
+      },
+      "inputs": {
+        "mp3_bytes": 43202925,
+        "mp3_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "bounds_wsen": [
+          -73.545,
+          40.865,
+          -73.505,
+          40.895
+        ],
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "search_workers": 1,
+        "spacing_m": 2000,
+        "refine_spacing_m": 500,
+        "refine_finalists": 3,
+        "detail_plots": false
+      },
+      "timings": {
+        "starting_main": {
+          "wall_s": 170.490804259,
+          "cpu_s": 170.123809,
+          "search_elapsed_s": 88.55973908400028
+        },
+        "comparison_main": {
+          "wall_s": 123.118649094,
+          "cpu_s": 122.871911,
+          "search_elapsed_s": 55.48252014300033
+        },
+        "optimized": {
+          "wall_s": 91.37958356300078,
+          "cpu_s": 91.026956,
+          "search_elapsed_s": 42.56637231899913
+        }
+      },
+      "verification": {
+        "all_full_pipeline_controls_passed": true,
+        "scientific_comparison_against_both_baselines": true,
+        "semantic_differences": 0,
+        "job_json_artifacts": 20,
+        "root_json_artifacts": 3,
+        "sqlite_ledgers": 1,
+        "logical_rows": {
+          "bounds": 29738,
+          "records": 852,
+          "stages": 12,
+          "run": 1
+        },
+        "ridges": 17,
+        "independent_groups": 15,
+        "returned_candidates": 23,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete"
+      },
+      "observed_speedup": {
+        "against_starting_main": 1.8658357403556767,
+        "against_comparison_main": 1.3473714509679353
+      }
+    },
+    "scalar_native_fit": {
+      "fits": 1680,
+      "python_cpu_trials_s": [
+        0.9987031219999998,
+        0.9601682829999998,
+        0.9104015289999996
+      ],
+      "native_cpu_trials_s": [
+        0.1820643959999999,
+        0.17957989499999982,
+        0.1473087770000001
+      ],
+      "median_cpu_speedup": 5.34674710106051,
+      "exact_diagnostic_payload_match": true,
+      "scope": "Fitting only; excludes geometry and input loading."
+    },
+    "packaging": {
+      "gcc_wheel_installed_native": true,
+      "unavailable_compiler_wheel_installed_python": true,
+      "installed_real_fit_payloads_exact": true,
+      "cli_and_browser_assets_passed": true
+    },
+    "ci": [
+      {
+        "name": "Python 3.14 installation and static checks",
+        "status": "completed",
+        "conclusion": "success",
+        "details_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41674902412/job/126052793847"
+      },
+      {
+        "name": "Python 3.11 installation and static checks",
+        "status": "completed",
+        "conclusion": "success",
+        "details_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41674902412/job/126052793358"
+      }
+    ],
+    "interruptions": [
+      {
+        "kind": "setup_error",
+        "scope": "An initial HTTP attempt lacked SciPy on the system interpreter import path; excluded from ratios."
+      },
+      {
+        "kind": "executor_reset",
+        "scope": "The final narrow scoring worker result was not retrieved; no completed narrow median is claimed."
+      }
+    ]
+  },
+  "limitations": [
+    "Regional receiver and clock controls are source-informed development settings.",
+    "Incomplete aircraft coverage prevents an accepted location; runtime parity does not establish location accuracy.",
+    "Component ratios are not multiplied into a workflow speedup.",
+    "Pre-restart single-pair HTTP timing is kept separate from later measurements."
+  ]
+}
