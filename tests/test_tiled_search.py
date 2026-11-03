@@ -103,3 +103,32 @@ def test_ridge_only_adapter_and_exact_recording_clock(tmp_path):
                              scoring={"mode": "ridge", "recording_start_window_s": [origin, origin]})
     assert result["ranked"]
     assert all(row["recording_start_time_s"] == origin for row in result["ranked"])
+
+
+def test_work_limit_does_not_enumerate_unsearched_national_grid(tmp_path):
+    index, _, events, measurements, _, times, origin = scenario(tmp_path)
+    result = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
+                             output_dir=tmp_path / "huge-grid",
+                             budget=SearchBudget(spacing_m=1, tile_cells=32, max_tiles=1, refine_spacing_m=1),
+                             scoring={"mode": "ridge", "time_origin": origin, "time_sweep_s": 0})
+    assert result["status"] == "partial" and result["tiles_completed"] == 1
+    assert result["tiles_total"] > 1000000000
+
+
+def test_subset_matching_keeps_good_events_after_unmatched_proposal(tmp_path):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
+    for i, event in enumerate(events):
+        event["event_id"] = f"supported-{i}"
+    spurious = dict(events[0], event_id="noise-proposal", start_s=20., end_s=40., cpa_receive_s=30.)
+    t = np.linspace(20, 40, 41)
+    measurements = [(SimpleNamespace(time=t), np.full(len(t), 120.), np.ones(len(t)), {})] + measurements
+    result = search_national([index], Terrain(constant_m=0), [spurious] + events, measurements,
+                             time_range_s=times, output_dir=tmp_path / "subsets", bounds=bounds,
+                             budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=1000),
+                             scoring={"mode": "robust_ridge", "recording_start_window_s": [origin, origin], "time_sweep_s": 0},
+                             filters={"association": "subsets", "min_events": 2, "max_events": 2})
+    assert result["ranked"]
+    best = result["ranked"][0]
+    assert best["event_indices"] == [1, 2] and best["unmatched_event_ids"] == ["noise-proposal"]
+    assert best["recording_start_time_s"] == origin
+    assert best["x"] == 0 and best["y"] == 1900000

@@ -63,12 +63,17 @@ def merge_candidates(rows, top_k):
     return sorted(unique.values(), key=lambda row: (-row["score"], _key(row)))[:top_k]
 
 
-def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
-    """Half-open integer-cell cores: each global receiver cell has one owner."""
+def _grid_extent(bounds, spacing_m, crs):
     forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
     left, bottom, right, top = forward.transform_bounds(*bounds, densify_pts=101)
     xmin, ymin = math.floor(left / spacing_m), math.floor(bottom / spacing_m)
     xmax, ymax = math.ceil(right / spacing_m), math.ceil(top / spacing_m)
+    return xmin, ymin, xmax, ymax
+
+
+def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
+    """Half-open integer-cell cores: each global receiver cell has one owner."""
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, spacing_m, crs)
     for iy in range(ymin // tile_cells, ymax // tile_cells + 1):
         for ix in range(xmin // tile_cells, xmax // tile_cells + 1):
             yield f"{ix}_{iy}", (max(xmin, ix * tile_cells), max(ymin, iy * tile_cells),
@@ -221,7 +226,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
     began, ranked, failures, done, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0
-    total = sum(1 for _ in grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs))
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
+    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
     radius = max(e["slant_range_m"][1] for e in events)
     for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
         if budget.max_tiles is not None and number >= budget.max_tiles:
