@@ -20,6 +20,25 @@ def snapshot_size(track):
     return len(pickle.dumps(track, protocol=pickle.HIGHEST_PROTOCOL))
 
 
+def record_track_setup(monkeypatch, prepared):
+    """Count the selected decoder without switching paths after sizing it."""
+    if prepared:
+        from dopplergeist import flight_payload
+        module, name = flight_payload, "decode_track"
+    else:
+        module, name = data_access, "_frame_track"
+    original, calls = getattr(module, name), []
+
+    def decode(identifier, *args, **kwargs):
+        calls.append(identifier)
+        return original(identifier, *args, **kwargs)
+
+    # A custom _frame_track hook intentionally selects the original reader.
+    # Prepared tracks can have different pickle sizes from shared label strings.
+    monkeypatch.setattr(module, name, decode)
+    return calls
+
+
 @pytest.fixture
 def real_index(tmp_path):
     source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
@@ -118,55 +137,58 @@ def test_real_cache_observes_replaced_payload(real_index, monkeypatch):
     assert calls == [expected.id]
 
 
-def test_real_cache_evicts_and_skips_oversized_tracks(real_index, monkeypatch):
+@pytest.mark.parametrize("prepared", (False, True), ids=("original-json", "prepared-numeric"))
+def test_real_cache_evicts_and_skips_oversized_tracks(real_index, monkeypatch, prepared):
     path, coverage = real_index
+    calls = record_track_setup(monkeypatch, prepared)
     tracks = list(FlightIndex(path, track_cache_bytes=0).query(coverage["bounds"], coverage["time_range_s"]))
+    assert calls == [track.id for track in tracks]
+    calls.clear()
     first, second = tracks[:2]
-    sizes = [snapshot_size(track) for track in (first, second)]
-    cached = FlightIndex(path, track_cache_bytes=max(sizes))
-    original, calls = data_access._frame_track, []
-
-    def decode(name, frame):
-        calls.append(name)
-        return original(name, frame)
-
-    monkeypatch.setattr(data_access, "_frame_track", decode)
+    sizes = {track.id: snapshot_size(track) for track in (first, second)}
+    cached = FlightIndex(path, track_cache_bytes=max(sizes.values()))
     for track in (first, second, first):
         assert_tracks_equal(list(cached.lookup([track.id])), [track])
         assert len(cached._track_cache) == 1
-        assert cached._track_cache_bytes <= max(sizes)
+        assert next(iter(cached._track_cache))[0] == track.id
+        assert cached._track_cache_bytes == sizes[track.id]
+        assert cached._track_cache_bytes == sum(len(value[1]) for value in cached._track_cache.values())
+        assert cached._track_cache_bytes <= cached._track_cache_limit
     assert calls == [first.id, second.id, first.id]
-    too_small = FlightIndex(path, track_cache_bytes=min(sizes) - 1)
-    assert_tracks_equal(list(too_small.lookup([first.id])), [first])
+    too_small = FlightIndex(path, track_cache_bytes=min(sizes.values()) - 1)
+    for _ in range(2):
+        assert_tracks_equal(list(too_small.lookup([first.id])), [first])
+    assert calls == [first.id, second.id, first.id, first.id, first.id]
     assert not too_small._track_cache
     assert too_small._track_cache_bytes == 0
 
 
-def test_real_query_larger_than_cache_keeps_a_reusable_subset(real_index, monkeypatch):
+@pytest.mark.parametrize("prepared", (False, True), ids=("original-json", "prepared-numeric"))
+def test_real_query_larger_than_cache_keeps_a_reusable_subset(real_index, monkeypatch, prepared):
     path, coverage = real_index
+    calls = record_track_setup(monkeypatch, prepared)
     expected = list(FlightIndex(path, track_cache_bytes=0).query(coverage["bounds"], coverage["time_range_s"]))
+    assert calls == [track.id for track in expected]
+    calls.clear()
     size = snapshot_size(expected[0])
     cached = FlightIndex(path, track_cache_bytes=size)
-    original, calls = data_access._frame_track, []
     serialize, snapshots = data_access.pickle.dumps, []
-
-    def decode(name, frame):
-        calls.append(name)
-        return original(name, frame)
 
     def snapshot(track, **kwargs):
         snapshots.append(track.id)
         return serialize(track, **kwargs)
 
-    monkeypatch.setattr(data_access, "_frame_track", decode)
     monkeypatch.setattr(data_access.pickle, "dumps", snapshot)
     assert_tracks_equal(list(cached.query(coverage["bounds"], coverage["time_range_s"])), expected)
     assert len(calls) == len(expected)
     assert len(cached._track_cache) == 1
     assert next(iter(cached._track_cache))[0] == expected[0].id
+    assert cached._track_cache_bytes == size
+    assert cached._track_cache_bytes == sum(len(value[1]) for value in cached._track_cache.values())
     assert_tracks_equal(list(cached.query(coverage["bounds"], coverage["time_range_s"])), expected)
     assert len(calls) == 2 * len(expected) - 1
     assert cached._track_cache_bytes == size
+    assert cached._track_cache_bytes == sum(len(value[1]) for value in cached._track_cache.values())
     assert len(snapshots) < len(calls)  # Admission failure avoids work on later misses.
 
 

@@ -1,5 +1,362 @@
 # Measured pipeline performance
 
+## Integrated pipeline acceleration, 2026-11-03
+
+The integrated version reduces dense-search CPU time by **49.66%** and complete regional-upload elapsed time by **15.51%**.
+Both results use three alternating pairs against pinned main revision `ae7721b`.
+The [compact measurement record](../benchmarks/results/integrated-pipeline-20261103.json) contains every pair and its comparison results.
+The implementation is in [PR274](https://github.com/1337isnot1337/DOPPLERGEIST/pull/274).
+
+The branch combines [PR266](https://github.com/1337isnot1337/DOPPLERGEIST/pull/266), including PR256, with [PR262](https://github.com/1337isnot1337/DOPPLERGEIST/pull/262).
+These changes avoid irrelevant flight decoding, reuse exact measurements and rejected prefixes, batch native fits, and reuse terrain and refinement inputs.
+This integration also removes empty-association allocations, resolves the terrain-cache overlap, and preserves the geographic constraints from PR270.
+The corrected benchmark keeps numerical functions unchanged during performance measurements.
+Diagnostic wrappers and profilers cannot produce a production speedup claim.
+
+### Complete regional HTTP workflow
+
+Three alternating pairs reduced median complete HTTP elapsed time from **57.824 seconds to 48.853 seconds**. This is a **1.184× speedup and 15.51% less elapsed time**. Median CPU time decreased from **57.464 seconds to 48.407 seconds**, or **15.76%**. All six fresh runs completed, and all three strict paired comparisons passed.
+
+| Pair | Order | Baseline HTTP seconds | Candidate HTTP seconds | Baseline CPU seconds | Candidate CPU seconds | HTTP speedup |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 1 | Baseline, candidate | 55.824 | 49.987 | 55.532 | 49.711 | 1.117× |
+| 2 | Candidate, baseline | 59.393 | 47.888 | 59.089 | 47.593 | 1.240× |
+| 3 | Baseline, candidate | 57.824 | 48.853 | 57.464 | 48.407 | 1.184× |
+| Median | Three runs per revision | **57.824** | **48.853** | **57.464** | **48.407** | **1.184×** |
+
+The HTTP timer includes service startup, upload, the complete workflow, service shutdown, and evidence verification. Wrapper wall-time medians were 57.832 and 48.862 seconds. Wrapper input checks and imports, external downloads, and prepared-index construction are outside this timed scope. Service startup imports and local acquisition remain part of the workflow.
+
+The separate dense-search control reduced median CPU time from 35.475 to 17.858 seconds: **1.987×**. Its wall-time medians were 35.600 and 18.111 seconds: **1.966×**. The approximately twofold result applies to dense search. The complete HTTP control saved 15.5% of elapsed time.
+
+#### Equality and controls
+
+Baseline revision: `ae7721b7d3099980b884175cde1a3b07fc3fb1b5`.
+Candidate revision: `49c90338f7be87921dcae45119d111efeea68596`.
+Both revisions include the geographic refinement constraint from #270.
+
+Each run used a fresh interpreter, HTTP service, and job. Both revisions used the same prepared SQLite index, dependencies, interpreter, operator configuration, request, and recorded audio. CPU affinity was CPU 0, with one numerical thread.
+
+Both used native ridge fitting and acoustic propagation. The same existing default disabled detail plots. The verifier and comparators came from the candidate checkout for both revisions. Neither revision changed during the six runs.
+
+The MP3 exactly matched the historical recording: 43,202,925 bytes, SHA-256 `707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15`. Every run retained **17 ridges, 15 independent groups, and 23 candidates**. Every result remained **`inconclusive`**, with reason **`search_incomplete`**. These source-informed regional bounds and clock settings measure runtime. They do not establish location accuracy.
+
+Each comparison reported **zero scientific-payload differences and zero array differences**. It compared 20 job JSON artifacts, three root JSON artifacts, and one logical SQLite database. Array verification covered decoded PCM, 17 CSV files, the overview PNG, and intake diagnostics. No scientific score, candidate, trial, retention row, or array was exempted. Normalization covered declared execution metadata only. Every service stopped successfully without forced termination.
+
+The host was shared, with CPU affinity controls. Operating-system file caches were not flushed. One unpinned, read-only JSON extraction lasted 2.44 seconds during the first baseline run. No second numerical workload ran concurrently. All pairs remain in the report.
+
+#### Remaining elapsed time
+
+These approximate stage medians use HTTP transitions observed every 0.25 seconds. All six listed stages were observed in all three runs per revision.
+
+| Stage | Baseline seconds | Candidate seconds |
+| --- | ---: | ---: |
+| Queued | 0.252 | 0.253 |
+| Intake | 7.059 | 7.315 |
+| Discovery | 6.086 | 6.342 |
+| Local acquisition | 0.543 | 0.548 |
+| Search | 25.765 | 20.142 |
+| Refinement | 13.421 | 11.009 |
+
+Search remains the largest stage at approximately 20.14 seconds, followed by refinement at 11.01 seconds. Intake and discovery together account for approximately 13.66 seconds. Stage medians do not sum exactly to the median HTTP duration. The decision stage appeared in only one poll sequence per revision, so it has no three-run estimate.
+
+
+### Dense query and scoring
+
+The integrated version takes **17.85767 seconds of CPU time**, compared with **35.47495 seconds** for pinned main `ae7721b`, on the recorded dense partition.
+This is a **1.98654× CPU speedup** and **49.66% less CPU time**.
+Median elapsed time decreases from **35.60028 to 18.11127 seconds**, a **1.96564× speedup**.
+Both versions process the same 16,101 association candidates and retain the same 100 ranked modes.
+
+The baseline is `ae7721b7d3099980b884175cde1a3b07fc3fb1b5`, including the latest geographic refinement bounds.
+The measured local candidate is `a1859d16aaf3f8b09d564f3218180a672804f843`.
+The public candidate is `49c90338f7be87921dcae45119d111efeea68596`.
+Their complete Git trees are identical. Publication changed commit metadata only.
+
+#### Timed scope and repeated measurements
+
+The timer includes the flight query, conservative distance filter, closest-approach calculations, association scoring, and retention writes.
+It excludes imports, index metadata, event preparation, downloads, index construction, terrain sampling, audio discovery, and refinement.
+The workload uses one source-informed receiver and one association-anchor partition, without a recording-start clock prior.
+The incomplete regional archive cannot establish independent location accuracy, complete daily search, or national completion time.
+
+Each version runs in a fresh process on CPU 0, with one numerical thread.
+The three pairs alternate baseline/candidate, candidate/baseline, then baseline/candidate.
+The runtime uses Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0, pandas 2.2.3, PyArrow 26.0.1, pyproj 3.8.0, and rasterio 1.5.2.
+Both versions use their built native backends and the same prepared SQLite file.
+The timer preserves the original numerical function identities. Numerical wrappers, phase instrumentation, and profilers are absent.
+The harness verifies exact outputs outside the timed region.
+
+| Pair | Order | Baseline CPU | Candidate CPU | Baseline elapsed | Candidate elapsed |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 1 | Baseline, candidate | 35.593029 s | 17.857673 s | 35.783980 s | 18.111270 s |
+| 2 | Candidate, baseline | 35.474948 s | 18.683996 s | 35.600283 s | 18.834998 s |
+| 3 | Baseline, candidate | 35.399849 s | 17.004541 s | 35.543712 s | 17.062545 s |
+| Median | | **35.474948 s** | **17.857673 s** | **35.600283 s** | **18.111270 s** |
+
+| Component | Baseline CPU median | Candidate CPU median |
+| --- | ---: | ---: |
+| Flight query and distance filter | 7.010340 s | 0.119326 s |
+| Closest approaches, associations, scoring, and retention | 28.464538 s | 17.694768 s |
+
+Component medians do not sum to the complete median. Component speedups do not multiply into a pipeline speedup.
+Peak RSS medians through scoring are **456.671875 MiB** and **329.660156 MiB**, respectively.
+These memory measurements include worker imports and input loading. They exclude the parent comparison process and later output serialization.
+The operating-system file cache remains available between runs. Fresh workers do not establish performance with uncached files.
+
+#### Exact outcomes and reduced work
+
+All three pairs preserve exact candidate payloads, ranked modes, trial and support evidence, and logical retention tables.
+Repeated outputs from each version are deterministic.
+Each retention database contains **499 records, 15,777 bounds, and one stage**.
+The outputs preserve **15,777 bounded candidate assessments** and **590,900 unknown trials**.
+
+| Work item | Baseline | Candidate |
+| --- | ---: | ---: |
+| Queried tracks | 4,694 | 197 |
+| Queried samples | 713,100 | 40,690 |
+| Selected tracks | 1,354 | 197 |
+| Closest-approach rows | 944 | 95 |
+| Association work units | 302,818 | 147,985 |
+| Unsupported tracks at closest approach | 62 | 4 |
+| Processed association candidates | 16,101 | 16,101 |
+| Ranked retained modes | 100 | 100 |
+
+The original emission interval is `[1788825600.17, 1788911999.6]`.
+The candidate uses the conservative partition interval `[1788865079.6561337, 1788868750.471493]`.
+The harness verifies that queried tracks form a subset and that early work counts do not increase.
+All **58 removed unsupported tracks** have complete emission intervals outside the feasible partition interval.
+
+The full diagnostic documents differ because those early counts decrease.
+The report therefore sets `identical_results` to false and `identical_scored_candidates_rankings_and_retention` to true.
+Each candidate run records **206,740 successful native fits, 5,111 native acoustic solves, and 63 native closest-approach reductions**.
+
+#### Prepared-index cost and unpartitioned control
+
+One preparation run took **6.422 seconds** to create the reusable numeric index.
+The source index occupies **41,385,984 bytes (39.468750 MiB)**.
+The prepared copy occupies **85,929,984 bytes (81.949219 MiB)**.
+The prepared representation adds **44,544,000 bytes (42.480469 MiB)** to the copy.
+Keeping both files requires **127,315,968 bytes (121.417969 MiB)**.
+The copy preserves the original payloads, source identity, and coverage metadata for compatible baseline readers.
+Preparation is outside the repeated query timer. The measured gain combines preparation, partition filtering, and scoring changes.
+These measurements do not isolate the prepared format's contribution or its separate break-even count.
+
+The unpartitioned control removes only the association anchor and its scope sentence from the same fixture.
+Its candidate limit remains 20,000. Both versions stop with the same error:
+
+```text
+ValueError: Association work/storage budget exceeded; search is incomplete
+```
+
+This control establishes exact budget-error parity. It establishes neither completed full-day output parity nor a full-day speedup.
+
+### Reproduce the dense comparison
+
+Use a Linux host with Python 3.12, GCC, Git, and the GitHub CLI.
+Use separate clean source trees for the two pinned commits.
+Keep other CPU-intensive work outside the measurement interval.
+
+```bash
+git fetch origin
+git worktree add --detach ../dopplergeist-measured \
+  49c90338f7be87921dcae45119d111efeea68596
+git worktree add --detach ../dopplergeist-baseline \
+  ae7721b7d3099980b884175cde1a3b07fc3fb1b5
+cd ../dopplergeist-measured
+
+python3.12 -m venv .venv-performance
+. .venv-performance/bin/activate
+python -m pip install 'setuptools==84.1.0'
+python -m pip install -e '.[test]' \
+  'numpy==2.5.4' 'scipy==1.17.0' 'pandas==2.2.3' \
+  'pyarrow==26.0.1' 'pyproj==3.8.0' 'rasterio==1.5.2'
+CC=gcc python setup.py build_ext --inplace
+(cd ../dopplergeist-baseline && CC=gcc python setup.py build_ext --inplace)
+
+export PYTHONPATH="$PWD/src"
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+export DOPPLERGEIST_RIDGE_BACKEND=auto
+export DOPPLERGEIST_ACOUSTIC_BACKEND=auto
+export DOPPLERGEIST_CPA_BACKEND=auto
+
+python scripts/restore_artifacts.py \
+  --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+PYTHONPATH="$PWD/../dopplergeist-baseline/src" \
+  python scripts/prepare_reference_upload.py \
+    --data-root data --output benchmark-inputs
+```
+
+The restore helper verifies the archived sizes and hashes from `evidence/artifact-manifest.json`.
+The index builder uses the original observed bounds and retains the incomplete-coverage metadata.
+It produces **717,735 source rows and 4,694 segments**.
+The original ingestion excluded known jets. The observed bounds do not establish complete geographic coverage.
+
+Freeze the exact partition fixture and the optional regression fixtures:
+
+```bash
+python scripts/benchmark_prepared_measurements.py prepare \
+  --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+  --reference-report evidence/results/reference-local/report.json \
+  --index benchmark-inputs/reference-region.sqlite \
+  --full-day --max-tracks 2000 --max-samples 500000 --max-candidates 20000 \
+  --anchor-window-s 1788864888.7151732 1788865236.7214916 \
+  --include-track-query --output benchmark-inputs/dense-query.json
+
+for width in 120 10; do
+  python scripts/benchmark_prepared_measurements.py prepare \
+    --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+    --reference-report evidence/results/reference-local/report.json \
+    --index benchmark-inputs/reference-region.sqlite \
+    --clock-half-width-s "$width" --output "benchmark-inputs/point-$width.json"
+done
+
+python scripts/benchmark_prepared_flight_search.py prepare-index \
+  --source src --index benchmark-inputs/reference-region.sqlite \
+  --destination benchmark-inputs/reference-region-prepared.sqlite \
+  --output results/flight-preparation.json
+```
+
+The dense fixture contains **16 independent groups and 724 ridge samples**.
+Its original query traverses **4,694 tracks and 713,100 samples**.
+The original filter retains **1,354 tracks and 357,324 samples**, with **944 closest-approach rows and 62 unsupported tracks**.
+The 120-second and 10-second fixtures support regression checks. They are outside this headline timing series.
+
+Run the canonical harness without diagnostic flags:
+
+```bash
+taskset -c 0 python scripts/benchmark_prepared_measurements.py compare \
+  --fixture benchmark-inputs/dense-query.json \
+  --index benchmark-inputs/reference-region-prepared.sqlite \
+  --baseline-source ../dopplergeist-baseline/src --current-source src \
+  --repeats 3 --timeout-s 600 --output results/integrated-dense \
+  --include-track-query --clock-partition-query \
+  --require-current-native --require-current-native-acoustic \
+  --require-current-native-cpa
+```
+
+The result must report `performance_timing_eligible: true` and exact parity of scored outputs.
+The comparison file also contains the independent proof of reduced work and every timed sample.
+If CPU 0 is unavailable, select one allowed CPU.
+Record that reproduction difference.
+
+
+### Reproduce the complete upload comparison
+
+Use the prepared inputs and activated environment from the preceding procedure.
+Encode the canonical WAV once for both revisions:
+
+```bash
+ffmpeg -nostdin -v error -i data/source/reference-recording.wav \
+  -ac 1 -ar 48000 -c:a libmp3lame -b:a 96k benchmark-inputs/reference.mp3
+
+python - <<'PY'
+import json
+from pathlib import Path
+root = Path('benchmark-inputs')
+operator = json.loads((root / 'operator.json').read_text())
+operator['flight_indexes'] = [str((root / 'reference-region-prepared.sqlite').resolve())]
+operator['search_workers'] = 1
+with (root / 'operator-prepared.json').open('x') as output:
+    json.dump(operator, output, indent=2)
+    output.write('\n')
+PY
+```
+
+Run three fresh pairs in alternating order:
+
+```bash
+set -euo pipefail
+DG_RESULTS=results/integrated-http
+mkdir "$DG_RESULTS"
+DG_COMMON=(
+  --audio benchmark-inputs/reference.mp3
+  --request benchmarks/reference-regional-upload-request.json
+  --operator benchmark-inputs/operator-prepared.json
+  --allow-new-encoding --reference-wav data/source/reference-recording.wav
+  --cpu 0 --threads 1 --timeout-s 900 --poll-interval-s 0.25
+)
+for DG_PAIR in 1 2 3; do
+  DG_ORDER=(baseline current)
+  if [ "$DG_PAIR" = 2 ]; then DG_ORDER=(current baseline); fi
+  for DG_ARM in "${DG_ORDER[@]}"; do
+    DG_SOURCE=../dopplergeist-baseline/src
+    if [ "$DG_ARM" = current ]; then DG_SOURCE=src; fi
+    python scripts/benchmark_real_regional_upload.py \
+      --source "$DG_SOURCE" "${DG_COMMON[@]}" \
+      --output "$DG_RESULTS/pair-$DG_PAIR-$DG_ARM"
+  done
+  python scripts/benchmark_real_regional_upload.py \
+    --compare "$DG_RESULTS/pair-$DG_PAIR-baseline" \
+              "$DG_RESULTS/pair-$DG_PAIR-current" \
+    --output "$DG_RESULTS/pair-$DG_PAIR-comparison.json"
+done
+```
+
+The measured encoder is FFmpeg 6.1.1. Its MP3 digest activates the fixed 17-ridge and 15-group control.
+A different encoder can produce different bytes and event counts.
+The explicit `--allow-new-encoding` declaration permits a new paired control against the canonical WAV.
+Such a control cannot inherit these historical counts or timing claims.
+Every pair must pass both scientific-payload and array comparisons before a speedup claim.
+
+### Regression gates and operating limits
+
+The native gate passed **329 tests and four subtests**, with zero skips, across 36 real-input modules.
+The explicit Python gate passed **71 tests**. One native-only export test skipped because that gate disabled its backend.
+The native gate passed that same test.
+After the PR270 integration, **37 relevant real refinement tests passed**, with zero skips.
+The performance workflow now includes the geographic-boundary module and both association regressions.
+The [installation checks](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41719340040) passed on Python 3.11 and 3.14.
+They cover packaged native backends, source compilation, CLI startup, and browser assets.
+The [independent performance run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41719123985) contains the separate runner results.
+
+The host uses an AMD EPYC 9V74 processor, Linux 6.18.57, and GCC 13.3.0.
+Both timing series use one CPU. They make no multicore scaling claim.
+The explicit local rasters instantiate `Terrain`, which retains the serial search path.
+Increasing `search_workers` alone does not enable parallel execution for that terrain class.
+
+An earlier geometry experiment improved small query slices but slowed the complete 4,694-track query by approximately 3%.
+That experiment is absent from this implementation.
+The retained changes passed the larger workload and the complete upload comparisons.
+
+### Use the optimized implementation
+
+Build the native extensions with `python -m pip install -e .`.
+Prepare a separately named index with `python scripts/prepare_flight_index.py --index ORIGINAL.sqlite --output PREPARED.sqlite`.
+Set `flight_indexes` in the operator configuration to that prepared index.
+The default `auto` backends select compatible native extensions.
+A fresh output directory permits the optimized runtime to establish its own checkpoint identity.
+Existing checkpoint compatibility rules remain documented in the backend section of this guide.
+
+## Prepared flight inputs and exact search reuse
+
+[PR262](https://github.com/1337isnot1337/DOPPLERGEIST/pull/262) adds an optional
+prepared trajectory representation, vectorized conservative trial bounds, and
+exact native acoustic reuse. Against `994d1ee`, which already includes PR258,
+the historical instrumented dense workload falls from
+**33.986 to 26.794 seconds: a 1.268× diagnostic ratio, or 21.16% less elapsed time**.
+Final-runtime CI at `b98a0fa3` records **38.374 to 30.399 seconds,
+or a 1.262× diagnostic ratio / 20.78% less time**, and passes 168 recorded-input and fallback checks.
+All compared scientific outputs and logical retention records remain equal.
+
+The original prepared-flight harness wrapped numerical functions during these
+dense measurements. The wrappers add overhead and can disable optimizations
+guarded by function identity in the combined runtime. These figures retain
+diagnostic and exact-output value. They do not measure canonical production throughput.
+The [historical timing scope](PERFORMANCE_PREPARED_SEARCH.md#historical-timing-scope)
+explains the qualification and the corrected harness controls.
+
+The final implementation also reuses local terrain pixels and profile coordinate
+transforms, and arranges spectral median inputs contiguously. A completed
+intermediate HTTP series improves 9.56%. The final source has two complete exact
+HTTP pairs, both faster, followed by an interrupted third pair. The report keeps
+that incomplete series separate and makes no three-pair final HTTP claim.
+
+The [prepared-search guide](PERFORMANCE_PREPARED_SEARCH.md) gives the complete
+samples, preparation cost, storage tradeoff, HTTP measurements, operator steps,
+and reproduction commands. Its pinned baseline separates these gains from the
+earlier changes documented below. Component speedups are not multiplied.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
@@ -127,7 +484,8 @@ The separate cache-disabled query experiment uses CPU 0 and fresh index objects.
 Operating-system file caches are not purged; “cold” describes the application track cache, not cold storage.
 The host is shared, so CPU affinity does not imply exclusive machine access.
 Separate profiling and native-validator hit-rate diagnostics are excluded from timing medians.
-The comparison harness retains its lightweight operation counters and candidate capture in both timed arms.
+The reported PR258 runs used numerical operation counters and candidate capture in both timed arms.
+Current comparisons preserve numerical function identities; separate diagnostic workers collect wrapped counters, as described below.
 
 The local runtime is Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0, pandas 2.2.3, pyproj 3.8.0, pyarrow 26.0.1, and SQLite 3.53.1 on Linux x86-64.
 Native extensions use GCC with the existing strict floating-point build options.
@@ -166,7 +524,9 @@ taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py co
 
 Check native availability after installation; source updates require rebuilding the extension and restarting a running service.
 The runtime remains usable through its Python fallback, but that fallback does not receive the native evidence-validation saving.
-The comparison requires successful native operations in the measured current arm and refuses to report a speedup if any exact-output comparison fails.
+Current comparisons require the native ridge backend and successful native acoustic operations.
+A separate diagnostic worker verifies successful native ridge execution.
+The harness refuses to report a speedup if any exact-output comparison fails.
 The `Real performance comparison` workflow runs recorded regressions and these paired measurements, and preserves summaries as artifacts.
 
 ## Measured native computation and bounded reuse
@@ -1096,8 +1456,8 @@ requires its validated checkpoint compatibility path before resuming that job.
 
 ## Reproduce the optional native backends
 
-Installation builds the acoustic and ridge extensions when a compatible C compiler is available.
-The package remains usable when either optional extension cannot build.
+Installation builds the acoustic, ridge, and closest-approach (CPA) extensions when a compatible C compiler is available.
+The package remains usable when an optional extension cannot build.
 A source checkout used for timing must contain its own built extensions; an installed copy elsewhere does not establish native use.
 
 ```bash
@@ -1106,25 +1466,36 @@ CC=gcc python -m pip install --editable '.[test]'
 python - <<'PY'
 from dopplergeist.geometry import ACOUSTIC_BACKEND
 from dopplergeist.matching import RIDGE_FIT_BACKEND
+from dopplergeist.native_cpa import CPA_BACKEND
 print("Acoustic:", ACOUSTIC_BACKEND)
 print("Ridge:", RIDGE_FIT_BACKEND)
+print("CPA:", CPA_BACKEND)
 assert ACOUSTIC_BACKEND.startswith("native-c-")
 assert RIDGE_FIT_BACKEND.startswith("native-c-")
+assert CPA_BACKEND.startswith("native-c-")
 PY
 ```
 
 The native acoustic solver retains polynomial evaluation order, global Newton stopping, and Python motion-support diagnostics.
 The ridge extension retains the six IRLS iterations and reduction order.
-Both extensions disable floating-point reassociation and contraction.
+The CPA extension preserves the existing closest-approach selection and arithmetic order.
+All three extensions disable floating-point reassociation and contraction.
 Incompatible numeric representations use the existing Python implementations.
 Acoustic and scalar ridge calls also fall back for unsupported NumPy error policies.
 Batched ridge arithmetic retains its existing ignored-error block and restores the caller's policy for diagnostics.
 The optional ridge implementation is integrated from [PR228](https://github.com/1337isnot1337/DOPPLERGEIST/pull/228).
 
-Set `DOPPLERGEIST_ACOUSTIC_BACKEND=python` and `DOPPLERGEIST_RIDGE_BACKEND=python` before starting a process to force both Python implementations.
+Set all three selectors before starting a process to force the Python implementations:
+
+```bash
+export DOPPLERGEIST_ACOUSTIC_BACKEND=python
+export DOPPLERGEIST_RIDGE_BACKEND=python
+export DOPPLERGEIST_CPA_BACKEND=python
+```
+
 The default for each selector is `auto`; invalid selector values fail explicitly.
-The legacy checkpoint upgrade requires both Python backends and its original runtime and input controls.
-Ordinary checkpoints include the selected native binary identities and reject an implementation mismatch.
+The legacy checkpoint upgrade requires all three Python backends and its original runtime and input controls.
+Ordinary checkpoints include the selected backend and implementation identities and reject an implementation mismatch.
 
 ### Recorded-input scoring comparison
 
@@ -1155,7 +1526,21 @@ done
 
 The comparison alternates arm order in fresh worker processes.
 It compares every candidate, diagnostic, support record, ranking, and logical retention row exactly before reporting a speedup.
-Native success counters must increase inside the timed scoring call.
+Timed runs preserve the original numerical functions so guarded production optimizations remain active.
+Unmeasured scalar and native-ridge call counts are `null`, not zero.
+The native acoustic solver exposes an internal success counter without wrapping its numerical functions.
+Native ridge calls are checked in a separate diagnostic worker:
+
+```bash
+python scripts/benchmark_prepared_measurements.py diagnose \
+  --source src --fixture benchmark-inputs/point-120.json \
+  --instrument-numerics --require-native --require-native-acoustic \
+  --output results/native-scoring-operations
+```
+
+Numerical wrappers can disable guarded caches, so diagnostic counts describe that execution path only.
+Diagnostic timings do not establish a production speedup.
+The workflow checks that this diagnostic worker preserves the canonical worker's complete scientific outputs.
 Input loading is reported separately, and the RSS measurement covers the worker lifetime through scoring.
 
 The complete-fit cache shares its existing 4 MiB digest-key and serialized-payload budget with validated batch ceilings.

@@ -8,7 +8,7 @@ import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
-from .tiled_search import (_expanded_bounds, _sample_tile_terrain, _score, _tile_anchor_window,
+from .tiled_search import (_expanded_bounds, _partition_query_time_range, _sample_tile_terrain, _score, _tile_anchor_window,
                            _tile_coordinates, _tracks_for_points)
 
 
@@ -160,10 +160,14 @@ def score_tile(stage, cells, score_floor=None):
         radius = max(event["slant_range_m"][1] for event in state["events"])
         points = _tile_coordinates(cells, budget.spacing_m, state["bounds"], state["crs"])
         tracks = []
+        anchor = _tile_anchor_window(stage.removeprefix("coarse:"), state["start_window"],
+                                    state["parameters"], state["filters"], state["events"])
+        query_time = _partition_query_time_range(state["time_range"], state["events"], state["parameters"],
+                                                state["filters"], anchor)
         if len(points):
             tracks, points = _tracks_for_points(
                 state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
-                state["time_range"], budget, points, terrain, radius, state["parameters"].get("c", 343.0))
+                query_time, budget, points, terrain, radius, state["parameters"].get("c", 343.0))
         if tracks and "elev_m" not in points:
             points = _sample_tile_terrain(points, terrain)
         sampled = "elev_m" in points
@@ -175,8 +179,6 @@ def score_tile(stage, cells, score_floor=None):
         ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
         if len(points):
             kwargs = {"ledger": ledger, "stage": stage}
-            anchor = _tile_anchor_window(stage.removeprefix("coarse:"), state["start_window"],
-                                         state["parameters"], state["filters"], state["events"])
             if anchor is not None:
                 kwargs["anchor_window"] = anchor
             if score_floor is not None:

@@ -32,11 +32,19 @@ class RecordedBatchCeilings(unittest.TestCase):
         limit = 3 * matching._frequency_scale(event)
         expected = batch_ridge.first_event_fits(measurement, event, factors, emissions)
         expected_ceilings = ceilings(expected, event, limit)
-        calls = []
+        calls = {"scalar_cache": 0, "validation": 0}
+        native = matching._CANONICAL_NATIVE_EVENT_VALIDATOR
+        if native is not None:
+            self.assertTrue(all(native([fit], [fit["score"]], [fit["f0_hz"]], [event]) for fit in expected))
+        expected_calls = ({"scalar_cache": len(expected), "validation": 0} if native is not None else
+                          {"scalar_cache": 0, "validation": len(expected)})
 
         def profile(frame, action, unused):
-            if action == "call" and frame.f_code is search._association_event_ceiling.__code__:
-                calls.append(1)
+            if action == "call":
+                if frame.f_code is search._association_event_ceiling.__code__:
+                    calls["scalar_cache"] += 1
+                elif frame.f_code is search._association_event_ceiling_uncached.__code__:
+                    calls["validation"] += 1
 
         @matching._cache_ridge_fits
         def run():
@@ -49,13 +57,14 @@ class RecordedBatchCeilings(unittest.TestCase):
                 fits, upper = batch_ridge._first_event_fits_with_ceilings(
                     measurement, event, factors, emissions, limit)
                 self.assertEqual((fits, upper), (expected, expected_ceilings))
-                self.assertEqual(len(calls), len(fits))
+                self.assertEqual(calls, expected_calls)
+                self.assertFalse(cache.ceiling_entries)
                 fits[0].clear()
                 upper[0] = -123.
                 again = batch_ridge._first_event_fits_with_ceilings(
                     deepcopy(measurement), deepcopy(event), factors.copy(), emissions.copy(), limit)
                 self.assertEqual(again, (expected, expected_ceilings))
-                self.assertEqual(len(calls), len(expected))
+                self.assertEqual(calls, expected_calls)
                 self.assertEqual(batch_ridge.first_event_fits(measurement, event, factors, emissions), expected)
             finally:
                 sys.setprofile(before)
@@ -66,6 +75,62 @@ class RecordedBatchCeilings(unittest.TestCase):
 
         run()
         self.assertIsNone(matching._ridge_fit_cache.get())
+
+    def test_changed_native_fitter_keeps_public_scalar_path_for_new_vectors(self):
+        measurement, event, factors, emissions = recorded()
+        limit = 3 * matching._frequency_scale(event)
+        expected = batch_ridge.first_event_fits(measurement, event, factors, emissions)
+        expected_ceilings = ceilings(expected, event, limit)
+        hooks = []
+        if matching._native_fit_irls is not None:
+            hooks.append((matching, "_native_fit_irls"))
+        for owner, name in hooks:
+            with self.subTest(hook=name):
+                @matching._cache_ridge_fits
+                def run():
+                    with patch.object(owner, name, wraps=getattr(owner, name)) as hook:
+                        actual = batch_ridge._first_event_fits_with_ceilings(
+                            measurement, event, factors, emissions, limit)
+                        self.assertEqual(actual, (expected, expected_ceilings))
+                        self.assertGreater(hook.call_count, 0)
+                        self.assertEqual(bool(matching._ridge_fit_cache.get().ceiling_entries),
+                                         matching._CANONICAL_NATIVE_EVENT_VALIDATOR is None)
+                        # A complete cached vector retains its original behavior.
+                        self.assertEqual(batch_ridge._first_event_fits_with_ceilings(
+                            measurement, event, factors, emissions, limit), actual)
+                run()
+
+    def test_changed_boolean_aliases_and_export_do_not_reuse_a_ceiling_vector(self):
+        measurement, event, factors, emissions = recorded()
+        limit = 3 * matching._frequency_scale(event)
+        expected = batch_ridge.first_event_fits(measurement, event, factors, emissions)
+        expected_ceilings = ceilings(expected, event, limit)
+        hooks = [(matching, "_native_validate_ridge_events"), (search, "_native_validate_ridge_events")]
+        native_module = matching._native_ridge_module
+        if native_module is not None and hasattr(native_module, "valid_ridge_events"):
+            hooks.append((native_module, "valid_ridge_events"))
+        for owner, name in hooks:
+            with self.subTest(owner=owner.__name__, hook=name):
+                @matching._cache_ridge_fits
+                def run():
+                    previous = batch_ridge._first_event_fits_with_ceilings(
+                        measurement, event, factors, emissions, limit)
+                    self.assertEqual(previous, (expected, expected_ceilings))
+                    original = getattr(owner, name)
+                    def custom(*args):
+                        return False if original is None else original(*args)
+                    with patch.object(owner, name, side_effect=custom) as hook:
+                        for _ in range(2):
+                            fits, upper = batch_ridge._first_event_fits_with_ceilings(
+                                measurement, event, factors, emissions, limit)
+                            self.assertEqual(fits, expected)
+                            self.assertIsNone(upper)
+                            self.assertEqual(ceilings(fits, event, limit), expected_ceilings)
+                        if owner is search:
+                            self.assertGreater(hook.call_count, 0)
+                    self.assertEqual(batch_ridge._first_event_fits_with_ceilings(
+                        measurement, event, factors, emissions, limit), previous)
+                run()
 
     def test_event_limit_and_legacy_changes_keep_exact_scalar_ceilings(self):
         measurement, event, factors, emissions = recorded()

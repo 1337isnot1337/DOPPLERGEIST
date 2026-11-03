@@ -21,4 +21,13 @@ acoustic_extension = Extension(
     libraries=[] if os.name == "nt" else ["m"],
 )
 
-setup(ext_modules=[extension, acoustic_extension])
+cpa_extension = Extension(
+    "dopplergeist._native_cpa",
+    ["src/dopplergeist/_native_cpa.c"],
+    optional=True,
+    extra_compile_args=["/O2", "/fp:strict"] if os.name == "nt" else
+        ["-O3", "-ffp-contract=off", "-fno-fast-math"],
+    libraries=[] if os.name == "nt" else ["m"],
+)
+
+setup(ext_modules=[extension, acoustic_extension, cpa_extension])

@@ -25,6 +25,7 @@ from .finite_search import RetentionLedger, bounded_assessment, classified_asses
 from .resource_usage import process_peak_rss_kib
 from .geometry import ACOUSTIC_BACKEND, AcousticSupportError, ecef
 from .matching import RIDGE_FIT_BACKEND, _cache_ridge_fits
+from .native_cpa import CPA_BACKEND
 from .search import (_CPA_DTYPE, _PreparedCPATrack, _ordered_cpa_rows,
                      filter_association_event, pair_candidates, score_candidate)
 
@@ -383,6 +384,92 @@ def _tile_anchor_window(tile_id, start_window, parameters, filters, events):
     return lo, hi
 
 
+def _partition_query_time_range(time_range, events, parameters, filters, anchor_window):
+    """Bound whole-track queries by an association partition, not a clock prior.
+
+    The first matched passage has an implied start inside ``anchor_window``.
+    Every later matched passage must overlap its clock interval. Expanding by
+    both passages' tolerances therefore contains every participating receive
+    time. Subtract the largest possible acoustic delay to bound emission time.
+    FlightIndex uses these bounds only to select complete original segments.
+    """
+    if (anchor_window is None or parameters.get("mode") != "robust_ridge"
+            or filters.get("association", "subsets") != "subsets" or filters.get("silence")):
+        return time_range
+
+    def finite(value):
+        # Keep unusual scalar/container semantics on the established path.
+        if type(value) not in (int, float):
+            return False
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            return False
+
+    if (not isinstance(anchor_window, (tuple, list)) or len(anchor_window) != 2
+            or not all(finite(value) for value in anchor_window)
+            or anchor_window[0] >= anchor_window[1]
+            or not isinstance(time_range, (tuple, list)) or len(time_range) != 2
+            or not all(finite(value) for value in time_range) or time_range[0] > time_range[1]
+            or not isinstance(events, (tuple, list)) or not events):
+        return time_range
+    c = parameters.get("c", 343.0)
+    offset = filters.get("offset_tolerance_s", 5.0)
+    if not finite(c) or c <= 0 or not finite(offset) or offset < 0:
+        return time_range
+    tolerances, centers, radii = [], [], []
+    for event in events:
+        if not isinstance(event, dict) or not isinstance(event.get("quality", {}), dict):
+            return time_range
+        quality = event.get("quality", {})
+        proposal_tolerances = [quality.get(name, 0) for name in
+                               ("cpa_tolerance_s", "speed_tolerance_mps", "slant_tolerance_m")]
+        # Do not let an empty narrowed query hide a filter_event validation error.
+        if not all(finite(value) and value >= 0 for value in proposal_tolerances):
+            return time_range
+        slant = event.get("slant_range_m")
+        speed = event.get("speed_range_mps")
+        center = event.get("cpa_receive_s")
+        if (not isinstance(slant, (tuple, list)) or len(slant) != 2
+                or not all(finite(value) for value in slant) or not 0 <= slant[0] <= slant[1]
+                or not isinstance(speed, (tuple, list)) or len(speed) != 2
+                or not all(finite(value) for value in speed) or not 0 <= speed[0] <= speed[1]
+                or not finite(center)):
+            return time_range
+        tolerance = proposal_tolerances[0] + offset / 2
+        if not finite(tolerance):
+            return time_range
+        tolerances.append(tolerance)
+        centers.append(center)
+        radii.append(slant[1])
+    if max(radii) <= 0:
+        return time_range
+
+    down = lambda value: math.nextafter(value, -math.inf)
+    up = lambda value: math.nextafter(value, math.inf)
+    # Any event can be the first matched one after unmatched proposals. Use
+    # the maximum tolerance over all events, not the first event in the list.
+    margin = max(tolerances)
+    start_lo, start_hi = down(anchor_window[0] - margin), up(anchor_window[1] + margin)
+    receive_lo, receive_hi = math.inf, -math.inf
+    for center, tolerance in zip(centers, tolerances):
+        implied_lo = down(down(start_lo) - tolerance)
+        implied_hi = up(up(start_hi) + tolerance)
+        receive_lo = min(receive_lo, down(down(implied_lo) + center))
+        receive_hi = max(receive_hi, up(up(implied_hi) + center))
+    # Extra outward steps before inverse operations cover rounded start =
+    # receive - event CPA and receive = emission + distance / c arithmetic.
+    delay = up(max(radii) / c)
+    lower = down(down(receive_lo) - delay)
+    upper = up(receive_hi)
+    if not all(math.isfinite(value) for value in (start_lo, start_hi, receive_lo, receive_hi, delay, lower, upper)):
+        return time_range
+    lower, upper = max(time_range[0], lower), min(time_range[1], upper)
+    # A segment can span two disjoint query windows. Keep the original path
+    # rather than treating their empty intersection as no matching segments.
+    return (lower, upper) if lower <= upper else time_range
+
+
 def _clock_children(tile_id, cells, start_window, parameters, filters, events):
     if len([p for p in tile_id.split("~")[1:] if p.startswith("t")]) >= 24:
         return []
@@ -445,6 +532,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if ledger is not None:
             ledger.record(stage, [], [], 0)
         return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported}
+    if parameters.get("mode") == "robust_ridge":
+        from .matching import _prepare_score_inputs
+        events, measurements = _prepare_score_inputs(events, measurements)
     table = pd.DataFrame({name: np.concatenate([batch[name] for batch in cpa_batches])
                           for name in _CPA_DTYPE.names}, copy=False)
     del cpa_batches, track_batches
@@ -767,6 +857,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         runtime_identity["ridge_fit_backend"] = RIDGE_FIT_BACKEND
     if ACOUSTIC_BACKEND != "python-acoustic-v1":
         runtime_identity["acoustic_backend"] = ACOUSTIC_BACKEND
+    if CPA_BACKEND != "python-cpa-v1":
+        runtime_identity["cpa_backend"] = CPA_BACKEND
     identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": cached_sha256(i.path)} for i in indexes],
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
@@ -925,9 +1017,11 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                     else:
                         points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
                         tracks = []
+                        anchor = _tile_anchor_window(tile_id, start_window, parameters, filters, events)
+                        query_time = _partition_query_time_range(time_range_s, events, parameters, filters, anchor)
                         if len(points):
                             tracks, points = _tracks_for_points(
-                                indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s,
+                                indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), query_time,
                                 budget, points, terrain, radius, parameters.get("c", 343.0))
                         if tracks and "elev_m" not in points:
                             points = _sample_tile_terrain(points, terrain)
@@ -936,7 +1030,6 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             points = pd.DataFrame()
                         if len(points):
                             flush_empty_tiles()
-                            anchor = _tile_anchor_window(tile_id, start_window, parameters, filters, events)
                             rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                   ledger=ledger, stage=stage,
                                                   anchor_window=anchor,

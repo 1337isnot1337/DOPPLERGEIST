@@ -7,6 +7,7 @@ and identical observed inputs. This script generates no audio or trajectories.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from dataclasses import asdict
 import json
 import math
@@ -44,9 +45,15 @@ def canonical(value):
                       allow_nan=True, default=json_scalar)
 
 
-def query_tracks(index, points, events, budget, scoring, bounds, time_range):
+def query_tracks(index, points, events, budget, scoring, bounds, time_range, *,
+                 anchor_window=None, clock_partition_query=False):
     """Count actual index traversal while exercising the production overload path."""
-    from dopplergeist.tiled_search import _tracks_for_points
+    from dopplergeist import tiled_search
+
+    requested_time_range = list(time_range)
+    narrow_query = getattr(tiled_search, "_partition_query_time_range", None)
+    if clock_partition_query and callable(narrow_query):
+        time_range = narrow_query(time_range, events, scoring, {}, anchor_window)
 
     if "elev_m" not in points:
         raise ValueError("The recorded receiver hypothesis must include its elevation")
@@ -63,16 +70,85 @@ def query_tracks(index, points, events, budget, scoring, bounds, time_range):
                 yield track
 
     radius = max(event["slant_range_m"][1] for event in events)
-    tracks, points = _tracks_for_points(
+    tracks, points = tiled_search._tracks_for_points(
         [CountedIndex()], bounds, time_range, budget, points, None, radius,
         scoring.get("c", 343.0))
     accounting = {
+        "requested_time_range_s": requested_time_range,
+        "effective_time_range_s": list(time_range),
+        "clock_partition_time_narrowed": list(time_range) != requested_time_range,
         "queried_track_ids": sorted(inventory),
         "queried_trajectory_samples": sum(inventory.values()),
         "selected_track_ids": [track.id for track in tracks],
         "selected_trajectory_samples": sum(len(track.time) for track in tracks),
     }
     return tracks, points, operations, accounting
+
+
+_PARTITION_WORK_COUNTS = {"cpa_rows", "per_event_survivors", "work_units", "unsupported_cpa_tracks"}
+
+
+def partition_outcomes(payload):
+    """Project only the explicitly allowed early-work diagnostics out of parity.
+
+    Scored candidate payloads, rankings, trial evidence, support during scoring,
+    retention records/bounds/stages, and all other counts remain exact checks.
+    The removed fields receive separate monotonicity and time-exclusion checks.
+    """
+    return {key: ({name: value for name, value in item.items()
+                  if name not in _PARTITION_WORK_COUNTS} if key == "counts" else item)
+            for key, item in payload.items() if key != "track_query_accounting"}
+
+
+def verify_partition_work(baseline, current):
+    """Explain every permitted diagnostic change; reject unexplained omissions."""
+    before, after = (payload["track_query_accounting"] for payload in (baseline, current))
+    if before["requested_time_range_s"] != after["requested_time_range_s"]:
+        raise AssertionError("Partition comparison changed the requested source interval")
+    lower, upper = after["effective_time_range_s"]
+    broad_lower, broad_upper = before["effective_time_range_s"]
+    if not broad_lower <= lower <= upper <= broad_upper:
+        raise AssertionError("Partition query did not conservatively narrow the original query")
+    if not set(after["queried_track_ids"]) <= set(before["queried_track_ids"]):
+        raise AssertionError("Partition query introduced unobserved source tracks")
+    if after["queried_trajectory_samples"] > before["queried_trajectory_samples"]:
+        raise AssertionError("Partition query increased source sample traversal")
+    old_counts, new_counts = baseline["counts"], current["counts"]
+    for field in ("cpa_rows", "work_units"):
+        if new_counts.get(field, 0) > old_counts.get(field, 0):
+            raise AssertionError(f"Partition unexpectedly increased {field}")
+    old_survivors = old_counts.get("per_event_survivors", [])
+    new_survivors = new_counts.get("per_event_survivors", [])
+    if len(old_survivors) != len(new_survivors) or any(
+            new > old for old, new in zip(old_survivors, new_survivors)):
+        raise AssertionError("Partition unexpectedly changed event filtering")
+    old_support = {canonical(item): item for item in old_counts.get("unsupported_cpa_tracks", [])}
+    old_multiplicity = Counter(canonical(item) for item in old_counts.get("unsupported_cpa_tracks", []))
+    new_multiplicity = Counter(canonical(item) for item in new_counts.get("unsupported_cpa_tracks", []))
+    if not new_multiplicity <= old_multiplicity:
+        raise AssertionError("Partition introduced or changed an unsupported-track report")
+    removed = old_multiplicity - new_multiplicity
+    for identity in removed:
+        lo, hi = old_support[identity]["emission_time_range_s"]
+        if lo <= upper and hi >= lower:
+            raise AssertionError("Partition dropped an unsupported track touching the feasible emission interval")
+    return {
+        "requested_time_range_s": before["requested_time_range_s"],
+        "effective_time_range_s": after["effective_time_range_s"],
+        "excluded_unsupported_tracks_proved_outside_time_range": removed.total(),
+        "baseline": {"queried_tracks": len(before["queried_track_ids"]),
+                     "queried_samples": before["queried_trajectory_samples"],
+                     "selected_tracks": len(before["selected_track_ids"]),
+                     "cpa_rows": old_counts["cpa_rows"],
+                     "unsupported_cpa_tracks": old_multiplicity.total(),
+                     "association_work_units": old_counts.get("work_units")},
+        "current": {"queried_tracks": len(after["queried_track_ids"]),
+                    "queried_samples": after["queried_trajectory_samples"],
+                    "selected_tracks": len(after["selected_track_ids"]),
+                    "cpa_rows": new_counts["cpa_rows"],
+                    "unsupported_cpa_tracks": new_multiplicity.total(),
+                    "association_work_units": new_counts.get("work_units")},
+    }
 
 
 def prepare(args):
@@ -182,16 +258,24 @@ def worker(args):
     if Path(dopplergeist.__file__).resolve().parent != source / "dopplergeist":
         raise RuntimeError("Comparison imported a different source tree")
     native_fit = getattr(matching, "_native_fit_irls", None)
+    native_module = getattr(matching, "_native_ridge_module", None)
+    native_statistics = getattr(native_module, "fit_statistics", None)
     ridge_backend = getattr(matching, "RIDGE_FIT_BACKEND", "python-irls-v1")
     acoustic_backend = getattr(geometry, "ACOUSTIC_BACKEND", "python-acoustic-v1")
     try:
         from dopplergeist.native_acoustic import _native as native_acoustic
     except ImportError:
         native_acoustic = None
+    try:
+        from dopplergeist.native_cpa import _native as native_cpa
+    except ImportError:
+        native_cpa = None
     if args.require_native and not callable(native_fit):
         raise RuntimeError("The selected source's native ridge fitter is unavailable")
     if args.require_native_acoustic and native_acoustic is None:
         raise RuntimeError("The selected source's native acoustic solver is unavailable")
+    if args.require_native_cpa and native_cpa is None:
+        raise RuntimeError("The selected source's native CPA reducer is unavailable")
     fixture = json.loads(args.fixture.read_text())
     index = FlightIndex(args.index or fixture["real_index"])
     if index.report["input_hash"] != fixture["index_input_hash"]:
@@ -278,11 +362,17 @@ def worker(args):
         all_rows.append(result)
         return result
 
-    matching._fit_ridge_uncached, Track.acoustic = counted_fit, counted_acoustic
+    if args.instrument_numerics:
+        matching._fit_ridge_uncached, Track.acoustic = counted_fit, counted_acoustic
+    else:
+        for name in ("scalar_fit_calls", "acoustic_calls", "native_fit_calls", "native_fit_successes"):
+            operations[name] = None
     tiled_search.score_candidate = captured_score
-    if callable(native_fit):
+    native_before = native_statistics() if callable(native_statistics) else None
+    if args.instrument_numerics and callable(native_fit) and native_before is None:
         matching._native_fit_irls = counted_native
     native_acoustic_before = native_acoustic.successful_calls() if native_acoustic is not None else 0
+    native_cpa_before = native_cpa.successful_calls() if native_cpa is not None else 0
     query_accounting, query_operations, execution_stages = None, None, {}
     began, cpu = time.perf_counter(), time.process_time()
     try:
@@ -290,20 +380,23 @@ def worker(args):
             query_began, query_cpu = time.perf_counter(), time.process_time()
             tracks, points, query_operations, query_accounting = query_tracks(
                 index, points, events, budget, fixture["scoring"],
-                fixture["query_bounds"], fixture["query_time_s"])
+                fixture["query_bounds"], fixture["query_time_s"],
+                anchor_window=fixture.get("anchor_window_s"),
+                clock_partition_query=args.clock_partition_query)
             execution_stages["track_query_and_distance_sieve"] = {
                 "wall_seconds": time.perf_counter() - query_began,
                 "cpu_seconds": time.process_time() - query_cpu,
             }
-            if query_accounting["selected_track_ids"] != fixture["track_ids"]:
-                raise AssertionError("The real query changed the ordered selected-track inventory")
-            if query_accounting["selected_trajectory_samples"] != fixture["counts"]["trajectory_samples"]:
-                raise AssertionError("The real query changed the selected trajectory sample count")
-            prepared_query = fixture.get("track_query_preparation")
-            if prepared_query is not None:
-                if (len(query_accounting["queried_track_ids"]) != prepared_query["queried_trajectories"]
-                        or query_accounting["queried_trajectory_samples"] != prepared_query["queried_trajectory_samples"]):
-                    raise AssertionError("The real query changed the complete observed-track inventory")
+            if not query_accounting["clock_partition_time_narrowed"]:
+                if query_accounting["selected_track_ids"] != fixture["track_ids"]:
+                    raise AssertionError("The real query changed the ordered selected-track inventory")
+                if query_accounting["selected_trajectory_samples"] != fixture["counts"]["trajectory_samples"]:
+                    raise AssertionError("The real query changed the selected trajectory sample count")
+                prepared_query = fixture.get("track_query_preparation")
+                if prepared_query is not None:
+                    if (len(query_accounting["queried_track_ids"]) != prepared_query["queried_trajectories"]
+                            or query_accounting["queried_trajectory_samples"] != prepared_query["queried_trajectory_samples"]):
+                        raise AssertionError("The real query changed the complete observed-track inventory")
             scoring_began, scoring_cpu = time.perf_counter(), time.process_time()
         partition = ({"anchor_window": fixture["anchor_window_s"]}
                      if "anchor_window_s" in fixture else {})
@@ -321,31 +414,59 @@ def worker(args):
         tiled_search.score_candidate = original_score
         if callable(native_fit):
             matching._native_fit_irls = native_fit
+        if native_before is not None:
+            native_after = native_statistics()
+            delta = {key: native_after[key] - native_before[key] for key in native_before}
+            operations["native_fit_calls"] = delta["scalar_calls"] + delta["batch_rows"]
+            operations["native_fit_successes"] = delta["scalar_successes"] + delta["batch_successful_rows"]
+            operations["native_batch_calls"] = delta["batch_calls"]
+            operations["native_batch_rows"] = delta["batch_rows"]
         if native_acoustic is not None:
             operations["native_acoustic_successes"] = native_acoustic.successful_calls() - native_acoustic_before
+        if native_cpa is not None:
+            operations["native_cpa_successes"] = native_cpa.successful_calls() - native_cpa_before
         for owner, attribute, function in reversed(phase_patches):
             setattr(owner, attribute, function)
     expected_counts = fixture.get("expected_counts")
     if expected_counts is not None:
         actual_counts = {"cpa_rows": counts["cpa_rows"],
                          "associations": counts["candidates"], "retained": len(ranked)}
-        if actual_counts != expected_counts:
+        changed_work_only = (args.clock_partition_query
+            and actual_counts["cpa_rows"] <= expected_counts["cpa_rows"]
+            and all(actual_counts[key] == expected_counts[key] for key in ("associations", "retained")))
+        if actual_counts != expected_counts and not changed_work_only:
             raise AssertionError(f"Recorded workload counts changed: {actual_counts}")
-    # macOS reports bytes and Linux reports KiB. Keep scoring usable where
-    # resource or its unit convention is unavailable, without guessing a value.
+    # Linux ru_maxrss can include the comparison parent's high-water mark
+    # inherited across fork/exec. VmHWM belongs to this worker's address space.
+    # Keep unknown platforms usable without guessing a memory unit or scope.
     peak_rss_mib = None
-    if resource is not None and (sys.platform == "darwin" or sys.platform.startswith("linux")):
-        rss_divisor = 1024 * 1024 if sys.platform == "darwin" else 1024
-        peak_rss_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / rss_divisor
+    peak_rss_method = "Unavailable on this platform"
+    if sys.platform.startswith("linux"):
+        try:
+            for line in Path("/proc/self/status").read_text().splitlines():
+                if line.startswith("VmHWM:"):
+                    fields = line.split()
+                    if len(fields) == 3 and fields[2] == "kB":
+                        peak_rss_mib = int(fields[1]) / 1024
+                        peak_rss_method = "/proc/self/status VmHWM after exec"
+                    break
+        except (OSError, ValueError):
+            pass
+    elif resource is not None and sys.platform == "darwin":
+        peak_rss_mib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (1024 * 1024)
+        peak_rss_method = "resource.getrusage(RUSAGE_SELF).ru_maxrss"
     checksum = ledger.checksum(stage)
     if not ledger.stage_valid(stage, checksum):
         raise AssertionError("The scoring pass produced an invalid retention ledger")
     if not operations["scored_candidates"]:
         raise AssertionError("The benchmark did not score any real associations")
-    if args.require_native and not operations["native_fit_successes"]:
+    if (args.require_native and (args.instrument_numerics or native_before is not None)
+            and not operations["native_fit_successes"]):
         raise AssertionError("No successful native ridge fit occurred inside the timed scoring call")
     if args.require_native_acoustic and not operations["native_acoustic_successes"]:
         raise AssertionError("No successful native acoustic solve occurred inside the timed scoring call")
+    if args.require_native_cpa and not operations.get("native_cpa_successes"):
+        raise AssertionError("No successful native CPA reduction occurred inside the timed scoring call")
     with ledger.connect() as database:
         retention = {name: database.execute(f"SELECT * FROM {name} ORDER BY 1,2").fetchall()
                      for name in ("records", "bounds", "stages")}
@@ -354,11 +475,18 @@ def worker(args):
     if query_accounting is not None:
         results["track_query_accounting"] = query_accounting
     write_new(args.output / "results.json", results)
+    diagnostic = args.instrument_numerics or args.stage_timing or sys.getprofile() is not None
     summary = {"wall_seconds": elapsed, "cpu_seconds": cpu_seconds,
                "load_seconds_excluded": load_seconds, "operations": operations,
+               "numerical_functions_canonical": not (args.instrument_numerics or args.stage_timing),
+               "performance_timing_eligible": not diagnostic,
+               "ridge_execution_check": ("In-module successful-call counters" if native_before is not None else
+                    "Wrapped successful-call counters" if args.instrument_numerics else
+                    "Backend availability; successful-call count unmeasured"),
                "ridge_fit_backend": ridge_backend, "acoustic_backend": acoustic_backend,
                "native_extension_available": callable(native_fit),
                "peak_rss_mib": peak_rss_mib,
+               "peak_rss_measurement": peak_rss_method,
                "peak_rss_scope": ("Worker lifetime through scoring, including imports and input loading"
                                   if peak_rss_mib is not None else "Unavailable on this platform"),
                "retained": len(ranked), "independent_groups": len(events), "scope": fixture["scope"]}
@@ -366,6 +494,7 @@ def worker(args):
         summary["anchor_window_s"] = fixture["anchor_window_s"]
     if args.include_track_query:
         summary["track_query_operations"] = query_operations
+        summary["clock_partition_time_narrowed"] = query_accounting["clock_partition_time_narrowed"]
         summary["execution_stage_seconds"] = execution_stages
         summary["timing_scope"] = (
             "Initial local index traversal and conservative distance sieve, followed by complete "
@@ -384,7 +513,7 @@ def compare(args):
     environment = dict(os.environ)
     for variable in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
         environment[variable] = "1"
-    runs, expected = [], None
+    runs, expected, source_payloads, source_canonical = [], None, {}, {}
     for repetition in range(args.repeats):
         order = ("baseline", "current") if repetition % 2 == 0 else ("current", "baseline")
         for name in order:
@@ -397,16 +526,28 @@ def compare(args):
                 command.append("--stage-timing")
             if args.include_track_query:
                 command.append("--include-track-query")
+            if args.clock_partition_query:
+                command.append("--clock-partition-query")
+            if args.instrument_numerics:
+                command.append("--instrument-numerics")
             if name == "current" and args.require_current_native:
                 command.append("--require-native")
             if name == "current" and args.require_current_native_acoustic:
                 command.append("--require-native-acoustic")
+            if name == "current" and args.require_current_native_cpa:
+                command.append("--require-native-cpa")
             subprocess.run(command, check=True, env=environment, timeout=args.timeout_s)
-            payload = canonical(json.loads((output / "results.json").read_text()))
+            result = json.loads((output / "results.json").read_text())
+            complete = canonical(result)
+            if name in source_canonical and source_canonical[name] != complete:
+                raise AssertionError(f"Repeated source output was not deterministic: {output}")
+            source_canonical[name] = complete
+            source_payloads[name] = result
+            payload = canonical(partition_outcomes(result) if args.clock_partition_query else result)
             if expected is None:
                 expected = payload
             elif payload != expected:
-                raise AssertionError(f"Exact selected-track, candidate, diagnostic, support, or retention mismatch: {output}")
+                raise AssertionError(f"Exact candidate, diagnostic, support, or retention mismatch: {output}")
             summary = json.loads((output / "summary.json").read_text())
             runs.append({"source": name, "repetition": repetition + 1, **summary})
     medians = {}
@@ -415,12 +556,24 @@ def compare(args):
         for metric in ("wall_seconds", "cpu_seconds", "peak_rss_mib"):
             values = [row[metric] for row in runs if row["source"] == name and row[metric] is not None]
             medians[name][metric] = statistics.median(values) if values else None
-    report = {"identical_results": True, "repeats": args.repeats,
+    report = {"identical_results": source_canonical["baseline"] == source_canonical["current"],
+              "identical_scored_candidates_rankings_and_retention": True, "repeats": args.repeats,
               "fixture": str(args.fixture.resolve()),
               "sources": {name: str(path) for name, path in sources.items()}, "medians": medians,
               "speedup": {metric: medians["baseline"][metric] / medians["current"][metric]
                           for metric in ("wall_seconds", "cpu_seconds")},
               "scope": runs[0]["scope"], "runs": runs}
+    if args.clock_partition_query:
+        report["clock_partition_query_verification"] = verify_partition_work(
+            source_payloads["baseline"], source_payloads["current"])
+        report["equality_scope"] = (
+            "Exact scored candidate payloads, rankings, trial/support evidence and retention records. "
+            "Early query/CPA/event/work counts may decrease; every removed unsupported track's "
+            "complete emission interval must miss the proved partition interval.")
+    report["performance_timing_eligible"] = all(row["performance_timing_eligible"] for row in runs)
+    if not report["performance_timing_eligible"]:
+        report["diagnostic_ratio"] = report["speedup"]
+        report["speedup"] = None
     if args.include_track_query:
         report["timing_scope"] = runs[0]["timing_scope"]
         report["track_query_included"] = True
@@ -466,19 +619,28 @@ def main():
                             help="Collect inclusive phase times in a separate diagnostic run")
     comparison.add_argument("--include-track-query", action="store_true",
                             help="Include initial index traversal and the production overload sieve in each timed worker")
+    comparison.add_argument("--clock-partition-query", action="store_true",
+                            help="Exercise the production clock-partition query bound where available; verify exact outcomes and explain reduced work")
+    comparison.add_argument("--instrument-numerics", action="store_true",
+                            help="Diagnostic only: wrap numerical calls for counters; changes execution overhead")
     comparison.add_argument("--require-current-native", action="store_true",
                             help="Require successful native ridge fits inside each current scoring run")
     comparison.add_argument("--require-current-native-acoustic", action="store_true",
                             help="Require successful native acoustic solves inside each current scoring run")
+    comparison.add_argument("--require-current-native-cpa", action="store_true",
+                            help="Require successful native CPA reductions inside each current scoring run")
     internal = commands.add_parser("_worker", help=argparse.SUPPRESS)
     internal.add_argument("--source", required=True, type=Path)
     internal.add_argument("--fixture", required=True, type=Path)
     internal.add_argument("--index", type=Path)
     internal.add_argument("--output", required=True, type=Path)
     internal.add_argument("--stage-timing", action="store_true", help=argparse.SUPPRESS)
+    internal.add_argument("--instrument-numerics", action="store_true", help=argparse.SUPPRESS)
     internal.add_argument("--include-track-query", action="store_true", help=argparse.SUPPRESS)
+    internal.add_argument("--clock-partition-query", action="store_true", help=argparse.SUPPRESS)
     internal.add_argument("--require-native", action="store_true", help=argparse.SUPPRESS)
     internal.add_argument("--require-native-acoustic", action="store_true", help=argparse.SUPPRESS)
+    internal.add_argument("--require-native-cpa", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.command == "prepare":
         if args.clock_half_width_s < 0:
@@ -492,6 +654,10 @@ def main():
     elif args.command == "compare":
         if args.repeats < 1 or args.timeout_s <= 0:
             parser.error("--repeats and --timeout-s must be positive")
+        if args.clock_partition_query:
+            fixture = json.loads(args.fixture.read_text())
+            if not args.include_track_query or "anchor_window_s" not in fixture:
+                parser.error("--clock-partition-query requires --include-track-query and a recorded anchor partition")
         compare(args)
     else:
         worker(args)

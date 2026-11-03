@@ -52,7 +52,7 @@ def upgrade_legacy_job(directory):
     staged batching with the saved first-group arithmetic and fallback checks.
     """
     from .automatic import _audio_identity, _digest
-    from . import geometry, matching
+    from . import geometry, matching, native_cpa
 
     directory = Path(directory)
     search = directory / "search"
@@ -78,6 +78,8 @@ def upgrade_legacy_job(directory):
         raise ValueError("Legacy checkpoint continuation requires the Python ridge fitter")
     if geometry.ACOUSTIC_BACKEND != "python-acoustic-v1":
         raise ValueError("Legacy checkpoint continuation requires the Python acoustic solver")
+    if native_cpa.CPA_BACKEND != "python-cpa-v1":
+        raise ValueError("Legacy checkpoint continuation requires Python closest-approach processing")
     from .provenance import implementation_files
     package_root = Path(__file__).parent
     code = {p.relative_to(package_root).as_posix(): _digest(p)
