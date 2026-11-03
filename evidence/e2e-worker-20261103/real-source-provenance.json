@@ -1,0 +1,30 @@
+{
+  "source_kind": "real_field_recording",
+  "source_url": "https://www.youtube.com/watch?v=4CxVxuMVkMc",
+  "source_artifact_id": 13201030184,
+  "source_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+  "mp3_sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+  "mp3_bytes": 42085293,
+  "ffmpeg_command": [
+    "ffmpeg",
+    "-nostdin",
+    "-v",
+    "error",
+    "-i",
+    "/workspace/scratch/e8a2a58f21d0/real-inputs/data/source/reference-recording.wav",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-map_metadata",
+    "-1",
+    "-codec:a",
+    "libmp3lame",
+    "-q:a",
+    "2",
+    "/workspace/scratch/e8a2a58f21d0/DOPPLERGEIST-integration/results/real-reference-upload-20261103/reference-complete.mp3"
+  ],
+  "selection": "complete recording, no time or frequency selection",
+  "recording_sample_zero_utc": null,
+  "recorder_truth_used": false,
+  "scope": "real whole-recording intake and HTTP response; no location-accuracy claim"
+}

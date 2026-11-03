@@ -110,6 +110,12 @@ historical; they do not satisfy the current validation requirement.
   Do not substitute another simulated success or detection-only fixture for this.
 - Existing unit tests remain software checks, not real-world validation. Do not
   expand them into more fake field data or use their counts as accuracy evidence.
+- Do not launch suites that generate or use synthetic data. This restriction
+  applies to automatic CI and manual checks. Stop active synthetic runs and
+  preserve their interrupted outputs.
+- The planned canonical synthetic three-event baseline and 3/4/6-event sweeps are
+  cancelled. Do not replace them with another synthetic fixture. Preserve existing
+  synthetic code, data and results as historical material.
 
 ## Scientific and product boundaries
 
@@ -142,8 +148,9 @@ historical; they do not satisfy the current validation requirement.
 - Preserve `evidence/` and historical `results/`. Use a new output directory for
   each actual experiment so failures are not overwritten. A short note of the
   source version, settings and result is enough; exhaustive hashes are not required.
-- Standard check: `.venv/bin/python -m pytest -q` after installing the project and
-  pytest. Run additional checks appropriate to the changed behavior.
+- Standard checks cover installation, source compilation, CLI help and packaged
+  assets without generated data. Use real recordings for pipeline verification.
+  Older blanket pytest instructions do not override the real-world data policy.
 - Final PR/task handoff: concrete change, relevant test command/result and remaining
   limits. Link necessary outputs rather than creating another receipt package.
   Do not claim unrun checks.
