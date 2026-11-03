@@ -1,0 +1,526 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "workflow_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41656583534",
+  "job_id": 125988403104,
+  "source_commit": "3725e9d2027d979e579ba9c347fb688ebf0895c3",
+  "baseline_commit": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+  "environment": {
+    "runner": "ubuntu-latest",
+    "os": "Ubuntu 26.04.1",
+    "python": "3.12",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pandas": "3.1.0"
+  },
+  "tests": {
+    "passed": 8,
+    "seconds": 16.51,
+    "files": [
+      "tests/test_real_prepared_measurements.py",
+      "tests/test_real_geometry_kinematics.py",
+      "tests/test_real_batch_scalar_parity.py"
+    ]
+  },
+  "repeats_per_source": 2,
+  "order": [
+    "baseline",
+    "current",
+    "current",
+    "baseline"
+  ],
+  "workloads": {
+    "clock_plus_minus_10_seconds": {
+      "clock_half_width_seconds": 10,
+      "identical_results": true,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 3.7185562825000034,
+          "cpu_seconds": 3.7121624735,
+          "peak_rss_mib": 307.5390625
+        },
+        "current": {
+          "wall_seconds": 2.780230859999989,
+          "cpu_seconds": 2.7627671865,
+          "peak_rss_mib": 305.58984375
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.337499103401801,
+        "cpu_seconds": 1.3436392656026646
+      },
+      "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+      "runs": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "wall_seconds": 3.716933076999993,
+          "cpu_seconds": 3.71052622,
+          "load_seconds_excluded": 0.9306310000000053,
+          "operations": {
+            "scalar_fit_calls": 2456,
+            "acoustic_calls": 53,
+            "scored_candidates": 1055
+          },
+          "peak_rss_mib": 307.296875,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "wall_seconds": 2.8197890319999885,
+          "cpu_seconds": 2.7922890469999997,
+          "load_seconds_excluded": 0.9174293930000204,
+          "operations": {
+            "scalar_fit_calls": 31,
+            "acoustic_calls": 53,
+            "scored_candidates": 1055
+          },
+          "peak_rss_mib": 305.2109375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "wall_seconds": 2.7406726879999894,
+          "cpu_seconds": 2.7332453260000005,
+          "load_seconds_excluded": 0.9199184869999897,
+          "operations": {
+            "scalar_fit_calls": 31,
+            "acoustic_calls": 53,
+            "scored_candidates": 1055
+          },
+          "peak_rss_mib": 305.96875,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "wall_seconds": 3.7201794880000136,
+          "cpu_seconds": 3.7137987269999995,
+          "load_seconds_excluded": 0.9181344309999986,
+          "operations": {
+            "scalar_fit_calls": 2456,
+            "acoustic_calls": 53,
+            "scored_candidates": 1055
+          },
+          "peak_rss_mib": 307.78125,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        }
+      ]
+    },
+    "clock_plus_minus_120_seconds": {
+      "clock_half_width_seconds": 120,
+      "identical_results": true,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 45.1779612145,
+          "cpu_seconds": 45.1466901755,
+          "peak_rss_mib": 366.904296875
+        },
+        "current": {
+          "wall_seconds": 17.331677818499998,
+          "cpu_seconds": 17.302663175,
+          "peak_rss_mib": 355.53515625
+        }
+      },
+      "speedup": {
+        "wall_seconds": 2.606669803559158,
+        "cpu_seconds": 2.6092336028785925
+      },
+      "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+      "runs": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "wall_seconds": 45.202507631,
+          "cpu_seconds": 45.172905578,
+          "load_seconds_excluded": 0.9542231679999986,
+          "operations": {
+            "scalar_fit_calls": 65207,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905
+          },
+          "peak_rss_mib": 366.84765625,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "wall_seconds": 17.328689800999996,
+          "cpu_seconds": 17.300306945,
+          "load_seconds_excluded": 0.9637239040000054,
+          "operations": {
+            "scalar_fit_calls": 72,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905
+          },
+          "peak_rss_mib": 355.10546875,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "wall_seconds": 17.334665836,
+          "cpu_seconds": 17.305019405,
+          "load_seconds_excluded": 0.9546623070000066,
+          "operations": {
+            "scalar_fit_calls": 72,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905
+          },
+          "peak_rss_mib": 355.96484375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "wall_seconds": 45.153414798,
+          "cpu_seconds": 45.120474773,
+          "load_seconds_excluded": 0.9614073959999985,
+          "operations": {
+            "scalar_fit_calls": 65207,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905
+          },
+          "peak_rss_mib": 366.9609375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+        }
+      ]
+    }
+  },
+  "integrated_main_recheck": {
+    "workflow_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41659297200",
+    "job_id": 125997965084,
+    "source_commit": "d6a0c860bd5a64797b3bde29bb1f74c689d0ed52",
+    "upstream_main_commit": "6d3e3f74c5bf896458cc9016f17b42ce8334ffbd",
+    "baseline_commit": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+    "environment": {
+      "runner": "ubuntu-latest",
+      "os": "Ubuntu 26.04.1",
+      "python": "3.12",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "3.1.0"
+    },
+    "tests": {
+      "passed": 8,
+      "seconds": 25.32,
+      "files": [
+        "tests/test_real_prepared_measurements.py",
+        "tests/test_real_geometry_kinematics.py",
+        "tests/test_real_batch_scalar_parity.py"
+      ]
+    },
+    "repeats_per_source": 2,
+    "order": [
+      "baseline",
+      "current",
+      "current",
+      "baseline"
+    ],
+    "workloads": {
+      "clock_plus_minus_10_seconds": {
+        "clock_half_width_seconds": 10,
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 5.6771493924999845,
+            "cpu_seconds": 5.674728616,
+            "peak_rss_mib": 308.34765625
+          },
+          "current": {
+            "wall_seconds": 4.0176339275,
+            "cpu_seconds": 4.0153330055000005,
+            "peak_rss_mib": 306.146484375
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.4130579079494754,
+          "cpu_seconds": 1.4132647549349067
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+        "runs": [
+          {
+            "source": "baseline",
+            "repetition": 1,
+            "wall_seconds": 5.7199138139999945,
+            "cpu_seconds": 5.717348961000001,
+            "load_seconds_excluded": 1.287874199000015,
+            "operations": {
+              "scalar_fit_calls": 2456,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055
+            },
+            "peak_rss_mib": 308.234375,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "current",
+            "repetition": 1,
+            "wall_seconds": 4.006179503999988,
+            "cpu_seconds": 4.003721131000001,
+            "load_seconds_excluded": 1.2751494819999891,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055
+            },
+            "peak_rss_mib": 306.66015625,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "current",
+            "repetition": 2,
+            "wall_seconds": 4.029088351000013,
+            "cpu_seconds": 4.02694488,
+            "load_seconds_excluded": 1.2728110799999968,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055
+            },
+            "peak_rss_mib": 305.6328125,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "baseline",
+            "repetition": 2,
+            "wall_seconds": 5.6343849709999745,
+            "cpu_seconds": 5.632108271,
+            "load_seconds_excluded": 1.292043026000016,
+            "operations": {
+              "scalar_fit_calls": 2456,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055
+            },
+            "peak_rss_mib": 308.4609375,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          }
+        ]
+      },
+      "clock_plus_minus_120_seconds": {
+        "clock_half_width_seconds": 120,
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 69.49676050400001,
+            "cpu_seconds": 69.48799816799999,
+            "peak_rss_mib": 367.59765625
+          },
+          "current": {
+            "wall_seconds": 25.036850319000024,
+            "cpu_seconds": 25.031823208,
+            "peak_rss_mib": 356.361328125
+          }
+        },
+        "speedup": {
+          "wall_seconds": 2.775778886662119,
+          "cpu_seconds": 2.775986295148973
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+        "runs": [
+          {
+            "source": "baseline",
+            "repetition": 1,
+            "wall_seconds": 69.56896296100001,
+            "cpu_seconds": 69.559489628,
+            "load_seconds_excluded": 1.3471314579999785,
+            "operations": {
+              "scalar_fit_calls": 65207,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905
+            },
+            "peak_rss_mib": 367.90234375,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "current",
+            "repetition": 1,
+            "wall_seconds": 25.045435080999994,
+            "cpu_seconds": 25.040473193,
+            "load_seconds_excluded": 1.3714127860000076,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905
+            },
+            "peak_rss_mib": 355.9375,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "current",
+            "repetition": 2,
+            "wall_seconds": 25.028265557000054,
+            "cpu_seconds": 25.023173223,
+            "load_seconds_excluded": 1.351237885000046,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905
+            },
+            "peak_rss_mib": 356.78515625,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          },
+          {
+            "source": "baseline",
+            "repetition": 2,
+            "wall_seconds": 69.424558047,
+            "cpu_seconds": 69.416506708,
+            "load_seconds_excluded": 1.3432170009999709,
+            "operations": {
+              "scalar_fit_calls": 65207,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905
+            },
+            "peak_rss_mib": 367.29296875,
+            "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+            "retained": 100,
+            "independent_groups": 16,
+            "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"
+          }
+        ]
+      }
+    }
+  },
+  "http_integration": {
+    "purpose": "Complete-recording application-path integration. These two different scopes are not a speed comparison or an independent accuracy test.",
+    "audio_bytes": 42085293,
+    "audio_sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+    "clock_provenance": "Source-informed historical fit, not an independently measured recording clock.",
+    "runs": {
+      "full_domain": {
+        "source_commit": "3725e9d2027d979e579ba9c347fb688ebf0895c3",
+        "request": {
+          "schema_version": 1,
+          "search": {
+            "coverage": "conus"
+          },
+          "time_window": {
+            "start_utc": "2026-09-08T20:17:20Z",
+            "end_utc": "2026-09-08T20:17:40Z",
+            "source": "user",
+            "source_detail": "Source-informed development replay around the historical fitted recording start; not independently measured recording time."
+          }
+        },
+        "elapsed_s": 900.1373765550002,
+        "timeout_s": 900.0,
+        "verification_passed": false,
+        "full_pipeline_observed": false,
+        "full_pipeline_requirements_met": false,
+        "implementation_unchanged": true,
+        "status": null,
+        "reason_code": null,
+        "candidate_count": null,
+        "event_count": null,
+        "error": "TimeoutError: HTTP verification exceeded its declared time budget",
+        "supported_decision": false,
+        "location_accuracy_evaluated": false,
+        "timed_out": true,
+        "preserved_job_status": "cancelled",
+        "stages_verified": [],
+        "pipeline_errors": [],
+        "service_exit_code": 0,
+        "forced_kill": false
+      },
+      "bounded_region": {
+        "source_commit": "d6a0c860bd5a64797b3bde29bb1f74c689d0ed52",
+        "request": {
+          "schema_version": 1,
+          "search": {
+            "coverage": "conus",
+            "bounds_wsen": [
+              -73.545,
+              40.865,
+              -73.505,
+              40.895
+            ]
+          },
+          "time_window": {
+            "start_utc": "2026-09-08T20:17:20Z",
+            "end_utc": "2026-09-08T20:17:40Z",
+            "source": "user",
+            "source_detail": "Source-informed integration replay around the historical fitted recording start and benchmark receiver region; not independently measured recording time or a location-accuracy evaluation."
+          }
+        },
+        "elapsed_s": 247.04089488099999,
+        "timeout_s": 600,
+        "verification_passed": true,
+        "full_pipeline_observed": true,
+        "full_pipeline_requirements_met": true,
+        "implementation_unchanged": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 18,
+        "error": null,
+        "supported_decision": false,
+        "location_accuracy_evaluated": false,
+        "timed_out": false,
+        "preserved_job_status": "inconclusive",
+        "stages_verified": [
+          "automatic_provenance",
+          "intake",
+          "discovery",
+          "acquisition",
+          "search",
+          "refinement",
+          "decision"
+        ],
+        "pipeline_errors": [],
+        "service_exit_code": 0,
+        "forced_kill": false
+      }
+    }
+  },
+  "memory_measurement": {
+    "metric": "Reported getrusage(RUSAGE_SELF).ru_maxrss",
+    "scope": "Worker lifetime through scoring, including imports and input loading.",
+    "limitation": "Linux can retain an inherited peak across exec. These runs did not capture separate post-exec VmHWM or parent RSS, so precise memory savings are not established. CPU/wall timing and exact payload comparisons are unaffected."
+  }
+}
