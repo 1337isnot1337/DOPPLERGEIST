@@ -109,7 +109,7 @@ def test_subset_association_preserves_original_event_identity(tmp_path):
     search = {"status": "complete", "scoring_time_is_locked": True, "ranked": [
         {"event_indices": [1, 2], "unmatched_event_ids": ["event-0"], "flight_ids": ["second-flight", "third-flight"], "lat": 40., "lon": -100.,
          "score": -1., "recording_start_time_s": 1788897600., "event_diagnostics": [{"rmse_hz": .1}, {"rmse_hz": .2}]}]}
-    state = {"recording": {"time_window": WINDOW}, "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
+    state = {"recording": {"time_window": {"start_utc": "2026-09-21T14:13:20Z", "end_utc": "2026-09-21T14:14:20Z", "source": "user"}}, "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
     def finish(status, reason_code=None, message=None, **fields):
         return dict(status=status, reason_code=reason_code, message=message, **fields)
     final = _decide(search, events, events, [None]*3, [], None, state, tmp_path,
@@ -157,3 +157,47 @@ def test_refinement_adapter_preserves_raw_residual_and_avoids_double_normalizati
     assert _comparable_refinement(raw, original, events) == normalized
     assert _comparable_refinement(normalized, original, events)["residual_score"] == -.6
     assert _comparable_refinement(normalized, original, events)["score"] == normalized["score"]
+
+
+@pytest.mark.parametrize("second", [{"lat": 41.}, {"recording_start_time_s": 1790000010.}])
+def test_refinement_preserves_same_association_spatial_and_clock_modes(tmp_path, monkeypatch, second):
+    from types import SimpleNamespace
+    from aircraft_geoloc import automatic, matching
+    events = [{"event_id": f"event-{i}", "start_s": i*100., "end_s": i*100.+20., "band_hz": [90., 200.],
+               "ridge": [{"time_s": i*100.+t, "frequency_hz": 140.-t} for t in (0., 10., 20.)]} for i in range(2)]
+    fit = {"rmse_hz": .1, "support_fraction": 1., "outlier_fraction": 0., "drift_at_bound": False}
+    seed = {"lat": 40., "lon": -100., "score": -1., "score_kind": "negative_robust_ridge_loss_hz",
+            "recording_start_time_s": 1790000000., "flight_ids": ["a", "b"],
+            "pass_emission_times_s": [1790000010., 1790000110.], "event_diagnostics": [dict(fit), dict(fit)]}
+    raw = [seed, dict(seed, score=-2., **second)]
+    seen = []
+    def refine(candidate, *args, **kwargs):
+        seen.append((candidate["lat"], candidate["lon"], candidate["recording_start_time_s"]))
+        return dict(candidate, score=candidate["score"]+.1)
+    monkeypatch.setattr(matching, "refine_candidate", refine)
+    monkeypatch.setattr(matching, "profile_candidate", lambda candidate, *args, **kwargs: dict(candidate, sensitivity={"complete": False}))
+    tracks = [SimpleNamespace(id=name, time=[0., 1.], altitude_basis=["ellipsoidal"]) for name in ("a", "b")]
+    index = SimpleNamespace(query=lambda *args: tracks)
+    search = {"ranked": raw, "status": "complete", "scoring_time_is_locked": True, "alternative_modes_exhaustively_assessed": True}
+    state = {"recording": {"time_window": {"start_utc": "2026-09-21T14:13:20Z", "end_utc": "2026-09-21T14:14:20Z", "source": "user"}},
+             "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
+    def finish(status, reason_code=None, message=None, **fields):
+        return dict(status=status, **fields)
+    final = automatic._decide(search, events, events, [None]*2, [index], None, state, tmp_path,
+                              {"refine_finalists": 5}, finish, lambda: None)
+    assert set(seen) == {(row["lat"], row["lon"], row["recording_start_time_s"]) for row in raw}
+    assert final["status"] == "inconclusive"
+    diagnostics = json.loads((tmp_path/"refined-candidates.json").read_text())["matching_diagnostics"]
+    assert diagnostics["retained_hypotheses"] == 2
+    assert diagnostics["refined_hypotheses"] == 2
+
+
+def test_an_explicit_event_cap_is_incomplete_work_not_missing_flight_data():
+    from aircraft_geoloc.automatic import _coverage
+    coverage = _coverage({"search": {"coverage": "conus"}},
+        {"status": "partial", "tiles_total": 2, "tiles_completed": 2, "tile_failures": [],
+         "refinement_failure": None, "data_scope_complete": True, "all_event_groups_considered": False,
+         "event_limit_reason": "Configured limit 3 omits proposed groups from this four-group recording."}, {})
+    assert coverage["search_complete"] is False
+    assert coverage["data_status"] == "available"
+    assert any("limit 3" in message for message in coverage["limitations"])

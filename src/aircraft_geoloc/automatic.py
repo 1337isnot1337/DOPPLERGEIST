@@ -145,9 +145,12 @@ def _search(request, recording, events, output, config, search_progress):
 def _coverage(request, search, config):
     limitations = ["Historical receiver archives may omit aircraft or trajectory samples."]
     search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
-                       and not search.get("tile_failures") and not search.get("refinement_failure"))
+                       and not search.get("tile_failures") and not search.get("refinement_failure")
+                       and search.get("all_event_groups_considered") is not False)
     if not search_complete:
-        limitations.append("Search did not complete the full requested tile work or refinement.")
+        limitations.append("The search did not assess the complete requested scope within its work limits.")
+    if search.get("all_event_groups_considered") is False:
+        limitations.append(search.get("event_limit_reason") or "Not every proposed flyover group was considered within the configured budget.")
     if "constant_m" in config.get("terrain", {}):
         limitations.append("A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.")
     if search.get("alternative_modes_exhaustively_assessed") is not True:
@@ -183,15 +186,16 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
     # Refine global competing approaches with their original whole trajectories.
     # The index iterator is bounded by the same local acoustic support envelope.
-    def approach(row):
+    def mode_key(row):
         return (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]),
-                tuple(round(t) for t in row.get("pass_emission_times_s", [])))
+                tuple(row.get("pass_emission_times_s", [])), row["lat"], row["lon"], row["recording_start_time_s"])
 
-
+    retained_keys = {mode_key(row) for row in raw}
+    refined_keys = set()
     seen, track_sets = set(), {}
     best_refined_score = -math.inf
     for row in raw:
-        key = approach(row)
+        key = mode_key(row)
         if key in seen:
             continue
         seen.add(key)
@@ -220,18 +224,19 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0))
             candidate = _comparable_refinement(candidate, row, prepared_events)
             refined.append(candidate)
+            refined_keys.add(key)
             if candidate["score"] > best_refined_score:
                 best_refined_score = candidate["score"]
-                track_sets = {key: tracks}
+                track_sets = {mode_key(candidate): tracks}
         except (ValueError, KeyError) as exc:
             refinement_failures.append(str(exc))
     raw.extend(refined)
     order = lambda row: (row["score"], bool(row.get("sensitivity", {}).get("complete")), len(row.get("sensitivity", {}).get("sources", [])))
     raw.sort(key=order, reverse=True)
-    if raw and approach(raw[0]) in track_sets:
+    if raw and mode_key(raw[0]) in track_sets:
         leading = raw[0]
         try:
-            profiled = profile_candidate(leading, track_sets[approach(leading)], prepared_events, measurements, terrain,
+            profiled = profile_candidate(leading, track_sets[mode_key(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
                          c=config.get("sound_speed_mps", 343.0))
             # Full profiling updates this exact hypothesis. Its earlier, limited
@@ -268,7 +273,9 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                    "refinement_boundary_limited": best.get("sensitivity", {}).get("boundary_limited", True),
                    "sensitivity": best.get("sensitivity", {}),
                    "altitude_basis": best.get("altitude_basis", {}),
-                   "alternatives_evaluated": search.get("alternative_modes_exhaustively_assessed") is True and search.get("status") == "complete" and not refinement_failures and len(seen) <= config.get("refine_finalists", 5)}
+                   "retained_hypotheses": len(retained_keys), "refined_hypotheses": len(refined_keys),
+                   "unrefined_hypotheses": len(retained_keys-refined_keys),
+                   "alternatives_evaluated": search.get("alternative_modes_exhaustively_assessed") is True and search.get("status") == "complete" and not refinement_failures and not retained_keys-refined_keys}
     matched_events = [prepared_events[i] for i in best.get("event_indices", range(len(prepared_events)))]
     for event, evidence in zip(matched_events, best.get("event_diagnostics", [])):
         for event_id in event.get("event_ids", [event["event_id"]]):

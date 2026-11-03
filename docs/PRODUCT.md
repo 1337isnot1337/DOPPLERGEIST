@@ -90,7 +90,7 @@ This acquires public ADSB.lol all-type daily archives and Copernicus terrain/geo
 inputs, then reuses their indexed cache. It can require substantial disk space and
 time. `offline` defaults to true; online retrieval is an explicit operator choice.
 No hidden account credentials or paid fallback are used. The default acquisition
-window budget is three days (`max_acquisition_days`); wider recording windows need
+budget is three UTC archive dates, including propagation guards and the full recording (`max_acquisition_days`); wider recording windows need
 a narrower defensible input or an explicit operator budget change. Do not put
 credentials in this configuration.
 
@@ -109,7 +109,10 @@ aircraft. Grid finalists undergo jointly constrained position/clock refinement;
 retained approaches prevent an affirmative confidence decision.
 
 The automatic path always uses one shared clock inside the supplied start window
-and robust ridge loss. Every discovered event remains in the diagnostics. A
+and robust ridge loss. Its default association path considers every proposed
+independent group; harmonics count once and unsupported acoustic proposals remain
+explicitly unmatched. A smaller operator event cap is incomplete work and is shown
+in coverage limitations, rather than silently keeping an initial subset. Every discovered event remains in the diagnostics. A
 location requires the confidence producer's evidence checks, including independent
 events, alternative hypotheses, complete coverage, residuals and measurement/model
 sensitivity. A small altitude-only profile is insufficient. The final decision
