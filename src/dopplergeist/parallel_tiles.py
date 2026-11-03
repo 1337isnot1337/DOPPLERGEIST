@@ -6,7 +6,7 @@ import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
-from .tiled_search import _expanded_bounds, _sample_tile_terrain, _score, _tile_coordinates, _tracks
+from .tiled_search import _expanded_bounds, _sample_tile_terrain, _score, _tile_coordinates, _tracks_for_points
 
 
 class TileFailure(DataUnavailable):
@@ -61,9 +61,16 @@ def score_tile(stage, cells, score_floor=None):
     try:
         radius = max(event["slant_range_m"][1] for event in state["events"])
         points = _tile_coordinates(cells, budget.spacing_m, state["bounds"], state["crs"])
-        tracks = (_tracks(state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
-                          state["time_range"], budget) if len(points) else [])
-        points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
+        tracks = []
+        if len(points):
+            tracks, points = _tracks_for_points(
+                state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
+                state["time_range"], budget, points, terrain, radius, state["parameters"].get("c", 343.0))
+        if tracks and "elev_m" not in points:
+            points = _sample_tile_terrain(points, terrain)
+        sampled = "elev_m" in points
+        if not tracks:
+            points = pd.DataFrame()
         with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
                                          dir=state["ledger_directory"], delete=False) as handle:
             path = Path(handle.name)
@@ -77,7 +84,7 @@ def score_tile(stage, cells, score_floor=None):
         else:
             rows, counts = [], {}
             ledger.record(stage, [], [], 0)
-        provenance = observed_terrain() if len(points) else {
+        provenance = observed_terrain() if sampled else {
             "terrain_files": [], "terrain_ocean_tiles": [], "terrain_failures": []}
         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
                    "cells": list(cells), **provenance, "retention_checksum": ledger.checksum(stage)}
