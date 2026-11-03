@@ -6,7 +6,7 @@ import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
-from .tiled_search import _expanded_bounds, _score, _tracks, tile_points
+from .tiled_search import _expanded_bounds, _sample_tile_terrain, _score, _tile_coordinates, _tracks
 
 
 class TileFailure(DataUnavailable):
@@ -60,10 +60,10 @@ def score_tile(stage, cells, score_floor=None):
 
     try:
         radius = max(event["slant_range_m"][1] for event in state["events"])
-        tracks = _tracks(state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
-                         state["time_range"], budget)
-        points = (tile_points(cells, budget.spacing_m, state["bounds"], terrain, state["crs"])
-                  if tracks else pd.DataFrame())
+        points = _tile_coordinates(cells, budget.spacing_m, state["bounds"], state["crs"])
+        tracks = (_tracks(state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
+                          state["time_range"], budget) if len(points) else [])
+        points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
         with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
                                          dir=state["ledger_directory"], delete=False) as handle:
             path = Path(handle.name)
