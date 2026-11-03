@@ -149,18 +149,24 @@ def predict_fitted_ridge(track, observer, receive_times_s, diagnostics, c=343.0)
 
 def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                            time_tolerance_s=5.0, silence=None, min_events=1,
-                           max_events=None, max_candidates=20000):
+                           max_events=None, max_candidates=20000, anchor_window=None):
     """Bounded subset hypotheses, retaining explicitly unmatched proposals.
 
     Default to every independent group. Intersect shared-clock intervals before
     extending a branch; do not materialize impossible Cartesian products. Index
     entries, branch visits and stored assignments share an explicit work budget.
     Exceeding it fails visibly so the outer driver reports incomplete coverage.
+    An optional half-open anchor window selects the first matched passage's
+    implied recording start without clipping the shared-clock fit interval.
     """
     from .search import filter_association_event
     max_events = max(min_events, len(events)) if max_events is None else max_events
     if not 1 <= min_events <= max_events or max_candidates < 1:
         raise ValueError("Invalid association event/candidate budget")
+    if anchor_window is not None and (len(anchor_window) != 2 or
+            np.isnan(anchor_window[0]) or np.isnan(anchor_window[1]) or
+            anchor_window[0] >= anchor_window[1]):
+        raise ValueError("Anchor window must be an increasing half-open interval")
     candidates, examined, work = [], 0, 0
     def reserve(units):
         nonlocal work
@@ -211,7 +217,8 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             continue
         lower, upper = (-np.inf, np.inf) if time_origin is None else (time_origin-time_tolerance_s, time_origin+time_tolerance_s)
         path, used = [], set()
-        frames = [(0, iter(indexed_options(available[0], point_id, lower, upper)), lower, upper, 0)]
+        option_lo, option_hi = anchor_window if anchor_window is not None else (lower, upper)
+        frames = [(0, iter(indexed_options(available[0], point_id, option_lo, option_hi)), lower, upper, 0)]
         while frames:
             cursor, options, lower, upper, depth = frames[-1]
             while len(path) > depth:
@@ -230,6 +237,8 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
                 if identity in used:
                     continue
                 start = row["receive_time"]-events[index]["cpa_receive_s"]
+                if not path and anchor_window is not None and not anchor_window[0] <= start < anchor_window[1]:
+                    continue
                 tolerance = events[index].get("quality", {}).get("cpa_tolerance_s", 0)+offset_tolerance_s/2
                 lo, hi = max(lo, start-tolerance), min(hi, start+tolerance)
                 if lo > hi:
@@ -240,7 +249,8 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             if len(path)+len(available)-following < min_events:
                 continue
             if following < len(available) and len(path) < max_events:
-                frames.append((following, iter(indexed_options(available[following], point_id, lo, hi)), lo, hi, len(path)))
+                option_lo, option_hi = anchor_window if not path and anchor_window is not None else (lo, hi)
+                frames.append((following, iter(indexed_options(available[following], point_id, option_lo, option_hi)), lo, hi, len(path)))
                 continue
             if len(path) < min_events:
                 continue

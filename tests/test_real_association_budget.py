@@ -1,8 +1,10 @@
 """Regression from actual ADS-B CPAs and automatically proposed real-audio groups."""
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from dopplergeist.matching import association_candidates
 
@@ -40,3 +42,32 @@ def test_real_silence_filter_remains_within_work_budget():
                                                  silence={'edge_margin_s': 60})
     assert len(candidates) == 1590
     assert counts['work_units'] <= 400000
+
+
+@pytest.mark.parametrize('silence', [None, {'edge_margin_s': 60}])
+def test_real_anchor_partitions_preserve_candidates_and_clock_intervals(silence):
+    fixture = json.loads((Path(__file__).parent / 'data' / 'reference-cpa-real.json').read_text())
+    events = fixture['events']
+    table = pd.DataFrame(fixture['cpa_rows'])
+    kwargs = dict(offset_tolerance_s=5, max_candidates=20000, silence=silence)
+    baseline, _ = association_candidates(table, events, **kwargs)
+
+    def anchor(candidate):
+        return candidate['passes'][0]['receive_time'] - events[candidate['event_indices'][0]]['cpa_receive_s']
+
+    def records(candidates):
+        return sorted(json.dumps(candidate, sort_keys=True) for candidate in candidates)
+
+    anchors = sorted({anchor(candidate) for candidate in baseline})
+    pivot = anchors[len(anchors) // 2]
+    expected = records(baseline)
+    for boundary in (math.nextafter(pivot, -math.inf), pivot, math.nextafter(pivot, math.inf)):
+        left, _ = association_candidates(table, events, anchor_window=(-math.inf, boundary), **kwargs)
+        right, _ = association_candidates(table, events, anchor_window=(boundary, math.inf), **kwargs)
+        assert all(anchor(candidate) < boundary for candidate in left)
+        assert all(anchor(candidate) >= boundary for candidate in right)
+        assert records(left + right) == expected
+
+    for invalid in ((1, 1), (1, 0), (math.nan, 1)):
+        with pytest.raises(ValueError, match='Anchor window'):
+            association_candidates(table, events, anchor_window=invalid, **kwargs)
