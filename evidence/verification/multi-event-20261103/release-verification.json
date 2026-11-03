@@ -1,0 +1,38 @@
+{
+  "release_url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/multi-event-fixtures-2026-11-03",
+  "target_commitish": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "assets": [
+    {
+      "name": "multi-event-3.tar.gz",
+      "bytes": 25010606,
+      "sha256": "e9da4ba1ec33c0a7a7c855a328a94a3429144bf1a469f27eb90ee57482129640",
+      "github_digest_matches": true
+    },
+    {
+      "name": "multi-event-4.tar.gz",
+      "bytes": 32451015,
+      "sha256": "aaff1ceaa00f07139e7cf9ee477a7183c463d7a59fd276ec46b93c9f98a0b101",
+      "github_digest_matches": true
+    },
+    {
+      "name": "multi-event-6.tar.gz",
+      "bytes": 47353406,
+      "sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+      "github_digest_matches": true
+    },
+    {
+      "name": "manifest.json",
+      "bytes": 5541,
+      "sha256": "2d787ac061014319a5260c5e17a0e76fe362964b6b4385c3a0cb7e89b56ab82c",
+      "github_digest_matches": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 261,
+      "sha256": "759a0836138a9ecc20f2f71c8c3aa3caeaad101ed8660c644db4be38302623f6",
+      "github_digest_matches": true
+    }
+  ],
+  "all_archive_members_verified": true,
+  "source_video_included": false
+}
