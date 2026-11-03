@@ -4,7 +4,7 @@
 
 DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations. The application runs locally; there are no plans for a hosted service.
 
-**Experimental software.** Whole-recording audio intake, automatic event discovery, indexed flight-data acquisition and bounded geographic search are implemented on `main`. The installed CLI runs configured research experiments; the local upload application is still under integration. Independent nationwide accuracy on real recordings has not been established.
+**Experimental software.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not been established.
 
 [Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
 
@@ -16,7 +16,7 @@ DOPPLERGEIST investigates **where an audio recording was made** by comparing the
 | Automatic acoustic discovery | Whole-recording decoding, frequency-track discovery and harmonic grouping without supplied event windows or bands | `scripts/discover_audio.py`; produces event proposals and diagnostics |
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
 | Geographic search | Resumable bounded-memory tiles, joint matching across independent flyovers and disk-backed accounting of candidates discarded by ranking limits | [Search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) on `main` |
-| Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on the integration branch | [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19) remains open; `analyze`, `serve` and `job` are not installed commands on `main` |
+| Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on `main` | `dopplergeist analyze`, `dopplergeist serve` and `dopplergeist job`; see [Local upload workflow](docs/PRODUCT.md) |
 | Independent location validation | Historical regional replays, synthetic controls and real-audio discovery benchmarks | [End-to-end acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [independently timed field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
 
 Start with automatic discovery on a real recording below. Connecting discovery, acquisition, search and a final location decision through the upload application remains a separate integration step. Current validation work prioritizes real recordings, real flight trajectories and independently established recorder locations; new synthetic experiments are stopped, while historical results remain documented.
