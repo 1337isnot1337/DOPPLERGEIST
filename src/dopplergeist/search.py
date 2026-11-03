@@ -376,6 +376,10 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             raise ValueError("score_floor must be finite") from error
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
+        # The group-count ceiling is valid only for the normalized score's positive loss scales.
+        from .matching import _frequency_scale
+        for event in events:
+            _frequency_scale(event)
     observer = ecef(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
