@@ -114,10 +114,13 @@ def content_hash(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 
-def write_json(path, value):
+def write_json(path, value, *, compact=False):
+    """Atomically write JSON, with optional compact encoding for checkpoints."""
     path = Path(path)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
+    temporary.write_text(json.dumps(value, indent=None if compact else 2,
+                                   separators=(",", ":") if compact else None,
+                                   allow_nan=False) + "\n")
     temporary.replace(path)
 
 

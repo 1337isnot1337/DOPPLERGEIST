@@ -57,7 +57,7 @@ class _RidgeFitCache:
         self.measurement_limit = 4 * 1024 * 1024
         self.batch_entries = OrderedDict()
         self.batch_bytes = 0
-        self.batch_limit = 16 * 1024 * 1024
+        self.batch_limit = 32 * 1024 * 1024
         self.ceiling_entries = OrderedDict()
 
     def prepared_measurement(self, measurement, sigma_hz, drift_fraction, key):
@@ -151,9 +151,11 @@ class _RidgeFitCache:
 def _cache_ridge_fits(function, *, max_entries=4096):
     """Reuse fits only while this batch's tracks stay unchanged.
 
-    Each call has at most 4,096 entries by default. Context-local state prevents
-    reuse between concurrent jobs, nested batches or later calls. Cached results
-    are copied so candidate diagnostics remain independently mutable.
+    Scalar fits, batched fits, measurements and validated ceilings each retain
+    at most 4,096 entries by default. Batched fits and stored arrays also have
+    byte limits. Context-local state prevents reuse between concurrent jobs,
+    nested batches or later calls. Cached results are copied so candidate
+    diagnostics remain independently mutable.
     """
     if type(max_entries) is not int or max_entries < 1:
         raise ValueError("Fit-cache capacity must be a positive integer")
