@@ -45,6 +45,11 @@ Use a new output directory for each experiment. Automatic CI checks installation
 
 This scans the complete recording and saves an inspectable job. To permit historical search, add `--start-utc` and `--end-utc` for a defensible recording-start window, `--time-source` describing its evidence, and `--online` for public data acquisition. Missing clock evidence returns `needs_input`. Initial acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
 
+The command prints a job ID when queued. In another terminal, run
+`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow local
+checkpoint pieces and their recent rate. Piece sizes vary, so the rate is not an
+estimate of the remaining time.
+
 ### Discover events in a recording
 
 Automatic discovery scans an entire recording for moving acoustic frequency patterns **without hand-selecting event windows or frequency bands**. Replace `path/to/recording.mp3` with your real recording; this step needs no flight-data download or data-service credentials:
