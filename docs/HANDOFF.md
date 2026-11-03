@@ -82,7 +82,15 @@ The existing source packet also contains the creator's companion-video
 Street View comparison (`data/source/true_camera.png`), which identifies an
 apparent camera location. The public reference remains approximate rather than
 a surveyed microphone coordinate. See the [Dopplerprint comparison](DOPPLERPRINT_REVIEW_2026-11-03.md)
-for another implementation's use of the same reference.
+for another implementation's use of the same reference. The user approved the
+nearby [OspreyWatch Oyster Bay camera listing](https://app.osprey-watch.org/nest/12532)
+with a 1 km radius as a rough evaluation band for this recording. This assumes
+the microphone is near the camera; that offset is unmeasured. Compare the final
+location to the listing only after search, label the distance approximate, and
+do not use the reference or radius as a search bound, candidate filter, or tuning
+target. A location inside the band still needs a supported pipeline decision.
+This does not establish surveyed microphone accuracy or independent field or
+nationwide validation. See the [user's evaluation-only clarification](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39#discussioncomment-19381307).
 The uploaded MP3 has SHA-256
 `674df668c25608ef3e9199bf3b48d760642456d679729c9661ac5cb2a22e179c`.
 The automatic test uses the whole recording, no supplied flight IDs or selected
