@@ -1,0 +1,17 @@
+{
+  "flight_indexes": [
+    "/home/flights.sqlite"
+  ],
+  "offline": true,
+  "terrain": {
+    "constant_m": 120
+  },
+  "search_budget": {
+    "spacing_m": 2000,
+    "tile_cells": 32,
+    "refine_spacing_m": 100,
+    "refine_finalists": 5,
+    "top_k": 30
+  },
+  "refine_finalists": 3
+}

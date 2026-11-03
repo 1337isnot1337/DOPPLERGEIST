@@ -23,7 +23,7 @@ producer. The leading coordinate is **5.5531 m** from synthetic truth. The
 terminal result is **inconclusive / ambiguous_locations**, so `case_passed` is
 false. The verifier first read the separate reference file after terminal job
 completion and artifact downloads. This first run did not hide the host truth
-directory with an OS namespace; the pending namespace check is stronger.
+directory with an OS namespace; the namespace replay below is stronger.
 
 Search runtime was 1064.05 s, with 365.97 MiB process peak RSS. The complete
 HTTP roundtrip, including every artifact download/hash, took 1128.60 s.
@@ -31,6 +31,34 @@ Adjacent `full-synthetic-*` receipts preserve the result, decision, search
 summary and all artifact hashes. The frozen integration also passed **98 tests**
 in 107.82 s. Newer geometry and sensitivity producer fixes are intentionally
 separate from this run; it does not establish their behavior.
+
+## Opaque-ID namespace replay
+
+The stronger replay used immutable integration
+`5291dab37a76e5d935561bbabd8436a4758b824c`, published on
+`worker/e2e-integration-01a19ec6`. Its archived source SHA256 is
+`7648e8600b537cec51478841c04e03d86b3774650dde8bf0a3a3adff9db5c963`.
+All seven trajectories have opaque IDs in a whole-segment v2 index. A Linux
+namespace hides the entire host home and evaluation files; the runtime receives
+only the frozen source, environment, normal operator configuration, index and
+job storage. `blind-v2/isolation-proof.json` records the actual preflight.
+
+The real HTTP job discovered two events, completed all **4,940** coarse tiles,
+and evaluated the union of **5,863** fine cells, skipping **2,542** duplicate
+visits while retaining the finalists. Its leading unaccepted hypothesis is
+**0.6525 m** from synthetic truth. The final decision remains
+**inconclusive / ambiguous_locations**, and the case does not pass. Search took
+112.83 s with 317.56 MiB peak RSS; upload, polling and every artifact download
+completed in 143.45 s. Producer changes confound the runtime comparison with the
+first replay, so this is not an isolated speedup measurement.
+
+The frozen integration passed **157 tests** in 52.64 s. Actual saved-job browser
+readback at desktop and mobile widths displayed the inconclusive decision and
+all 35 hypotheses, downloaded matching original bytes, and produced no page
+JavaScript errors or mobile horizontal overflow. `blind-v2/` preserves the
+complete result, decision, coverage, source/input/index hashes, compressed
+artifact manifest, browser receipts and page screenshots. The original first
+run remains preserved above with its original threshold and scope.
 
 ## Research replay
 
@@ -127,8 +155,6 @@ case cannot by itself establish a nationwide real holdout benchmark.
 
 ## Remaining acceptance work
 
-- Verify newer geometry/sensitivity producers with opaque flight IDs and a
-  search environment where the evaluation truth directory is unavailable.
 - Preserve all misses, alternatives, partial coverage and uncertainty failures.
 - Supply independent real recording-start and microphone-coordinate evidence.
 - Complete the declared national real-audio evaluation before claiming the full

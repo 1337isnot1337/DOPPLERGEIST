@@ -1,0 +1,39 @@
+{
+  "index_version": 2,
+  "sources": [
+    {
+      "path": "/home/cinna/dopplergeist-e2e-01a19ec6/results/e2e-verification-01a19ec6/blind-v2/inputs/opaque-tracks.parquet",
+      "sha256": "05fc1b5c8a7bb3a7a9bb576fc25ccb2f65d0b79ed64fcdd82aa82628e2bf5dd4",
+      "bytes": 38661
+    }
+  ],
+  "coverage": {
+    "bounds": [
+      -180,
+      -90,
+      180,
+      90
+    ],
+    "time_range_s": [
+      1789996400,
+      1790004780
+    ],
+    "all_aircraft": true,
+    "source_note": "Complete finite synthetic world; all seven aircraft retained, opaque labels, ellipsoidal renderer heights. No real coverage claim."
+  },
+  "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+  "classification_map_hash": "74568c2985a7e259e184a673d1643c6ded07e9d2072eb350d87266895958c802",
+  "max_gap_s": 30.0,
+  "max_flight_samples": 250000,
+  "input_hash": "5b97c520f01d9564f6725f5fe9207ff2e1d997a26f3f860fc443fc9c9dc0064a",
+  "rows": 1617,
+  "invalid_rows": 0,
+  "segments": 7,
+  "altitude_basis_counts": {
+    "ellipsoidal": 1617
+  },
+  "jets_excluded": false,
+  "unknown_types_retained": true,
+  "geometry_clipped": false,
+  "continuous_geometry_bounds": true
+}

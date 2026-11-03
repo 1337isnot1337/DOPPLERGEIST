@@ -1,0 +1,23 @@
+{
+  "status": "complete",
+  "tiles_total": 4940,
+  "tiles_completed": 4940,
+  "unsearched_tiles": 0,
+  "tile_failures": [],
+  "data_scope_complete": true,
+  "refinement_failure": null,
+  "refinement_points_searched": 5863,
+  "refinement_points_skipped": 2542,
+  "elapsed_s": 112.82661062301486,
+  "process_peak_rss_mib": 317.5625,
+  "candidate_retention_limit": 30,
+  "alternative_modes_exhaustively_assessed": false,
+  "scoring_time_is_locked": true,
+  "ground_truth_used_by_search": false,
+  "scope": [
+    -125.0,
+    24.0,
+    -66.0,
+    50.0
+  ]
+}

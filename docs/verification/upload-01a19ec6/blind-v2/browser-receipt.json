@@ -1,0 +1,13 @@
+{
+  "job_id": "3cc96c3f92f24985b4681304d539d0e0",
+  "status": "Inconclusive",
+  "candidate_heading": "Location hypotheses \u00b7 result remains inconclusive",
+  "candidate_cards": 35,
+  "events_text": "2 detected Doppler curves\nevent-0001 \u00b7 119.0\u2013196.0 s \u00b7 108\u2013175 Hz \u00b7 group harmonics-0001\nevent-0002 \u00b7 1038.0\u20131121.0 s \u00b7 95\u2013146 Hz \u00b7 group harmonics-0002",
+  "download_sha256": "51732e0015f300144c1fe34f0d5117c18ba595f61b5c9758796b6931f5683d9e",
+  "page_errors": [],
+  "isolated_wayland": "wayland-2",
+  "isolated_compositor": "efb50993780079460b0cbed1363e2166a2de1d9f_1793669937_216462008",
+  "scope": "Readback/render and original download for the actual API-created complete job; no second analysis or fake coordinates.",
+  "mobile_horizontal_overflow": false
+}

@@ -1,0 +1,12 @@
+{
+  "host_home_visible": false,
+  "evaluation_truth_visible": false,
+  "source_module": "/home/work/src/aircraft_geoloc/__init__.py",
+  "mounted_home_entries": [
+    "flights.sqlite",
+    "jobs",
+    "operator.json",
+    "venv",
+    "work"
+  ]
+}

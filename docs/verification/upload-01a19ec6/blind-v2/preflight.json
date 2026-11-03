@@ -1,0 +1,11 @@
+{
+  "source_commit": "5291dab37a76e5d935561bbabd8436a4758b824c",
+  "source_archive_sha256": "7648e8600b537cec51478841c04e03d86b3774650dde8bf0a3a3adff9db5c963",
+  "index_sha256": "f6962261a360ee1c8a2abb33a4f6b9bcf0d8dc17b4daf204f95b9e0a8f92f509",
+  "operator_sha256": "4f79fd6904530ff7601a491834f2fc55d5c74c2c229c9e0e62aff5f6b9570982",
+  "opaque_flights": 7,
+  "rows": 1617,
+  "expected_host_home_visible": false,
+  "expected_truth_visible": false,
+  "scope": "Finite synthetic pipeline experiment with normal defaults; no independent real validation."
+}
