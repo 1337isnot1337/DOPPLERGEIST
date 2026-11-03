@@ -1,0 +1,951 @@
+{
+  "date_utc": "2026-11-03",
+  "scope": "Runtime and result consistency on recorded audio and historical trajectories; no independent location accuracy claim.",
+  "sources": {
+    "original_baseline": "7a8dd27979bd9a984c8675c38a00dfbf98a5b01e",
+    "core_changes": "a2236ac",
+    "core_with_main": "fa19b59492a15ca3f3dd526bed5706b770793a58",
+    "combined_http": "00727d4",
+    "combined_scoring_dependency": "3725e9d2027d979e579ba9c347fb688ebf0895c3"
+  },
+  "runtime": {
+    "numerical_packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "soundfile": "0.14.0"
+    },
+    "numerical_threads": 1,
+    "audio_helpers_search_python": "3.12.14",
+    "cache_empty_tiles_configured_http_python": "3.12.3",
+    "cache_empty_tiles_configured_http_sqlite": "3.45.1"
+  },
+  "inputs": {
+    "wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "wav_duration_s": 3600.1845,
+    "wav_ridges": 18,
+    "wav_independent_groups": 16,
+    "mp3_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+    "mp3_ridges": 17,
+    "mp3_independent_groups": 15,
+    "clock_note": "Historical fitted clock, not independent timing evidence",
+    "coverage_note": "Regional observed archive excludes known jets; complete coverage is not established"
+  },
+  "audio": {
+    "comparison": "Original/new implementation, three alternating pairs; intake and plots excluded",
+    "discovery": {
+      "baseline": {
+        "trials": [
+          {
+            "wall_s": 9.284779882999942,
+            "cpu_s": 9.239130253999999
+          },
+          {
+            "wall_s": 7.356600091000018,
+            "cpu_s": 7.355370614000002
+          },
+          {
+            "wall_s": 6.731685112999912,
+            "cpu_s": 6.730280811
+          }
+        ],
+        "median_wall_s": 7.356600091000018,
+        "median_cpu_s": 7.355370614000002
+      },
+      "current": {
+        "trials": [
+          {
+            "wall_s": 6.414081021000015,
+            "cpu_s": 6.4099143330000015
+          },
+          {
+            "wall_s": 5.961681690000091,
+            "cpu_s": 5.953134779000003
+          },
+          {
+            "wall_s": 6.04402048999998,
+            "cpu_s": 6.043257627000003
+          }
+        ],
+        "median_wall_s": 6.04402048999998,
+        "median_cpu_s": 6.043257627000003
+      },
+      "wall_speedup": 1.217169945596932,
+      "cpu_speedup": 1.2171201474412996,
+      "exact_event_payload_match": true,
+      "ridge_count": 18,
+      "independent_group_count": 16
+    },
+    "configured_ridges": [
+      {
+        "event": 1,
+        "spectrum_shape": [
+          921,
+          713
+        ],
+        "exact_frequency_and_weight_match": true,
+        "baseline": {
+          "trials": [
+            {
+              "wall_s": 0.18297023399998125,
+              "cpu_s": 0.1829722699999934
+            },
+            {
+              "wall_s": 0.17685444400001415,
+              "cpu_s": 0.17680868999999433
+            },
+            {
+              "wall_s": 0.18520073299998785,
+              "cpu_s": 0.18520574200000084
+            }
+          ],
+          "median_wall_s": 0.18297023399998125,
+          "median_cpu_s": 0.1829722699999934
+        },
+        "current": {
+          "trials": [
+            {
+              "wall_s": 0.058338671999990765,
+              "cpu_s": 0.05833744499999938
+            },
+            {
+              "wall_s": 0.06065663100002894,
+              "cpu_s": 0.0606612240000004
+            },
+            {
+              "wall_s": 0.06332199999997101,
+              "cpu_s": 0.06331132200000411
+            }
+          ],
+          "median_wall_s": 0.06065663100002894,
+          "median_cpu_s": 0.0606612240000004
+        },
+        "wall_speedup": 3.016491865496024,
+        "cpu_speedup": 3.0162970335051624
+      },
+      {
+        "event": 2,
+        "spectrum_shape": [
+          721,
+          333
+        ],
+        "exact_frequency_and_weight_match": true,
+        "baseline": {
+          "trials": [
+            {
+              "wall_s": 0.07580405500004872,
+              "cpu_s": 0.07584756099999623
+            },
+            {
+              "wall_s": 0.0735758349999287,
+              "cpu_s": 0.07330923200000683
+            },
+            {
+              "wall_s": 0.0675049259999696,
+              "cpu_s": 0.06750940799999938
+            }
+          ],
+          "median_wall_s": 0.0735758349999287,
+          "median_cpu_s": 0.07330923200000683
+        },
+        "current": {
+          "trials": [
+            {
+              "wall_s": 0.029976841999996395,
+              "cpu_s": 0.02998151999999976
+            },
+            {
+              "wall_s": 0.025200435999977344,
+              "cpu_s": 0.02520547499999992
+            },
+            {
+              "wall_s": 0.025601695999966978,
+              "cpu_s": 0.025605783999999687
+            }
+          ],
+          "median_wall_s": 0.025601695999966978,
+          "median_cpu_s": 0.025605783999999687
+        },
+        "wall_speedup": 2.873865661088375,
+        "cpu_speedup": 2.862995017063634
+      }
+    ]
+  },
+  "helpers": {
+    "scope": "Real observations and archived candidate coordinates; component timings only",
+    "cpu_affinity": [
+      6
+    ],
+    "tracks": 214,
+    "samples": 71571,
+    "independent_decodes_exact": true,
+    "old_new_identity_relation_exact": true,
+    "duplicate_track_geometry_exact": true,
+    "terrain_arrays_exact": true,
+    "candidate_rows": 283,
+    "unique_candidate_coordinates": 274,
+    "identity_digest": {
+      "trials": {
+        "baseline": [
+          {
+            "wall_s": 0.7115346380001029,
+            "cpu_s": 0.7115334740000003
+          },
+          {
+            "wall_s": 0.6816926090000379,
+            "cpu_s": 0.6816836399999993
+          },
+          {
+            "wall_s": 0.7168531109998639,
+            "cpu_s": 0.7168470490000001
+          }
+        ],
+        "current": [
+          {
+            "wall_s": 0.011288004000107321,
+            "cpu_s": 0.011292508000000367
+          },
+          {
+            "wall_s": 0.009811315999968429,
+            "cpu_s": 0.009814100999999908
+          },
+          {
+            "wall_s": 0.010700293999889254,
+            "cpu_s": 0.010702902000000236
+          }
+        ]
+      },
+      "median": {
+        "baseline": {
+          "wall_s": 0.7115346380001029,
+          "cpu_s": 0.7115334740000003
+        },
+        "current": {
+          "wall_s": 0.010700293999889254,
+          "cpu_s": 0.010702902000000236
+        }
+      },
+      "wall_speedup": 66.49673719315255,
+      "cpu_speedup": 66.48042502864968
+    },
+    "duplicate_index_query": {
+      "trials": {
+        "baseline": [
+          {
+            "wall_s": 2.97018349699988,
+            "cpu_s": 2.9699184150000004
+          },
+          {
+            "wall_s": 2.807910829000093,
+            "cpu_s": 2.8075487179999996
+          },
+          {
+            "wall_s": 3.2889418439999645,
+            "cpu_s": 3.288740260999999
+          }
+        ],
+        "current": [
+          {
+            "wall_s": 1.3139952129999983,
+            "cpu_s": 1.3139138050000003
+          },
+          {
+            "wall_s": 1.490499765000095,
+            "cpu_s": 1.490374632
+          },
+          {
+            "wall_s": 1.762300514000117,
+            "cpu_s": 1.7621483060000003
+          }
+        ]
+      },
+      "median": {
+        "baseline": {
+          "wall_s": 2.97018349699988,
+          "cpu_s": 2.9699184150000004
+        },
+        "current": {
+          "wall_s": 1.490499765000095,
+          "cpu_s": 1.490374632
+        }
+      },
+      "wall_speedup": 1.9927433514219242,
+      "cpu_speedup": 1.9927328010236829
+    },
+    "terrain_scalar_queries": {
+      "trials": {
+        "baseline": [
+          {
+            "wall_s": 0.4443265560000782,
+            "cpu_s": 0.44422315499999954
+          },
+          {
+            "wall_s": 0.48182881100001396,
+            "cpu_s": 0.4817972530000034
+          },
+          {
+            "wall_s": 0.49004781799999364,
+            "cpu_s": 0.4900461589999985
+          }
+        ],
+        "current": [
+          {
+            "wall_s": 0.1664448099998026,
+            "cpu_s": 0.1664502170000013
+          },
+          {
+            "wall_s": 0.1315762229999109,
+            "cpu_s": 0.13158169000000086
+          },
+          {
+            "wall_s": 0.1506844049999927,
+            "cpu_s": 0.15069019499999925
+          }
+        ]
+      },
+      "median": {
+        "baseline": {
+          "wall_s": 0.48182881100001396,
+          "cpu_s": 0.4817972530000034
+        },
+        "current": {
+          "wall_s": 0.1506844049999927,
+          "cpu_s": 0.15069019499999925
+        }
+      },
+      "wall_speedup": 3.197602372986357,
+      "cpu_speedup": 3.1972700878116576
+    },
+    "terrain_vector_query": {
+      "trials": {
+        "baseline": [
+          {
+            "wall_s": 0.0019550570000319567,
+            "cpu_s": 0.0019570879999974977
+          },
+          {
+            "wall_s": 0.0018791140000757878,
+            "cpu_s": 0.0018804039999977817
+          },
+          {
+            "wall_s": 0.0031173479999324627,
+            "cpu_s": 0.003119555000001384
+          }
+        ],
+        "current": [
+          {
+            "wall_s": 0.000638515999980882,
+            "cpu_s": 0.0006401309999972682
+          },
+          {
+            "wall_s": 0.00037645799989149964,
+            "cpu_s": 0.0003774209999996003
+          },
+          {
+            "wall_s": 0.0004980270000487508,
+            "cpu_s": 0.0004988109999999324
+          }
+        ]
+      },
+      "median": {
+        "baseline": {
+          "wall_s": 0.0019550570000319567,
+          "cpu_s": 0.0019570879999974977
+        },
+        "current": {
+          "wall_s": 0.0004980270000487508,
+          "cpu_s": 0.0004988109999999324
+        }
+      },
+      "wall_speedup": 3.925604434780806,
+      "cpu_speedup": 3.92350609749537
+    },
+    "terrain_transform_cache": {
+      "hits": 1704,
+      "misses": 2,
+      "maxsize": 32,
+      "currsize": 2
+    }
+  },
+  "empty_tiles": {
+    "scope": "Recorded empty coarse tiles with receiver cells; includes geometry, real index queries, coarse/global stages, checksums and checkpoint writes; excludes progress/resume reads",
+    "tiles": 256,
+    "batch_size": 32,
+    "passes": 3,
+    "runtime": {
+      "python": "3.12.3",
+      "sqlite": "3.45.1"
+    },
+    "timings": {
+      "ordinary": [
+        {
+          "wall_s": 2.1692930350000097,
+          "cpu_s": 1.09747029
+        },
+        {
+          "wall_s": 2.009673713999746,
+          "cpu_s": 1.0613797029999992
+        },
+        {
+          "wall_s": 2.317755713999759,
+          "cpu_s": 1.1247887930000005
+        }
+      ],
+      "batched": [
+        {
+          "wall_s": 0.7647061020002184,
+          "cpu_s": 0.741824603
+        },
+        {
+          "wall_s": 0.7330908949998047,
+          "cpu_s": 0.7171870200000003
+        },
+        {
+          "wall_s": 0.928092106999884,
+          "cpu_s": 0.8675067000000007
+        }
+      ]
+    },
+    "median_wall_s": {
+      "ordinary": 2.1692930350000097,
+      "batched": 0.7647061020002184
+    },
+    "speedup": 2.836767000192435,
+    "all_checkpoints_match_recorded_tiles": true,
+    "all_ledger_tables_match": true,
+    "all_committed_stages_valid": true,
+    "stage_count": 512
+  },
+  "track_cache": {
+    "regional": {
+      "scope": "Repeated real trajectory query; excludes acquisition, audio and scoring",
+      "bounds": [
+        -74.299988,
+        40.100005,
+        -72.700011,
+        41.599964
+      ],
+      "time_range_s": [
+        1788898500.0,
+        1788902400.0
+      ],
+      "passes": {
+        "uncached": [
+          {
+            "wall_s": 1.5943461480001133,
+            "cpu_s": 1.5940993289999998,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 1.5704857300002004,
+            "cpu_s": 1.5702036489999998,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 1.531997720000163,
+            "cpu_s": 1.531999172,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 1.567756417000055,
+            "cpu_s": 1.5673321649999998,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          }
+        ],
+        "cached": [
+          {
+            "wall_s": 1.5197348029996647,
+            "cpu_s": 1.519719695,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 26737306
+          },
+          {
+            "wall_s": 0.104930924999735,
+            "cpu_s": 0.10493462900000061,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 26737306
+          },
+          {
+            "wall_s": 0.10096911500022543,
+            "cpu_s": 0.10097258199999981,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 26737306
+          },
+          {
+            "wall_s": 0.10028485099974205,
+            "cpu_s": 0.1002887260000005,
+            "tracks": 441,
+            "samples": 89504,
+            "geometry_and_labels_sha256": "e82c50a6054bcb7f5646ab11d55ff631069ae5cb6127baaf4f586c019ef80ecc",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 26737306
+          }
+        ]
+      },
+      "same_geometry_and_labels": true,
+      "median_warm_query_s": {
+        "uncached": 1.567756417000055,
+        "cached": 0.10096911500022543
+      },
+      "warm_query_speedup": 15.527088823117394,
+      "first_query_s": {
+        "uncached": 1.5943461480001133,
+        "cached": 1.5197348029996647
+      },
+      "all_query_passes_s": {
+        "uncached": 6.264586015000532,
+        "cached": 1.8259196939993672
+      },
+      "all_passes_speedup_including_cold_cache": 3.4309208863830256,
+      "comparison": "Cache off/on in the same final source, one cold decoded-cache query and three warm queries; operating-system cache is uncontrolled."
+    },
+    "full_day": {
+      "scope": "Repeated real trajectory query; excludes acquisition, audio and scoring",
+      "bounds": [
+        -74.05,
+        40.55,
+        -73.55,
+        41.05
+      ],
+      "time_range_s": [
+        1788825600.0,
+        1788912000.0
+      ],
+      "passes": {
+        "uncached": [
+          {
+            "wall_s": 4.041226284999993,
+            "cpu_s": 4.041035789,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 4.72467777699967,
+            "cpu_s": 4.642505895999998,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 4.651927691999845,
+            "cpu_s": 4.651892911000001,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          },
+          {
+            "wall_s": 4.753316680000353,
+            "cpu_s": 4.751010804,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 0,
+            "serialized_cache_bytes": 0
+          }
+        ],
+        "cached": [
+          {
+            "wall_s": 4.936198077999961,
+            "cpu_s": 4.9358338879999994,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 33430432
+          },
+          {
+            "wall_s": 2.6574560640001437,
+            "cpu_s": 2.65744765,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 33430432
+          },
+          {
+            "wall_s": 2.744923665999977,
+            "cpu_s": 2.7434365110000023,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 33430432
+          },
+          {
+            "wall_s": 3.078974736999953,
+            "cpu_s": 3.0784054989999987,
+            "tracks": 1183,
+            "samples": 287491,
+            "geometry_and_labels_sha256": "b1ec19df74ed40615dfc500abde45420a005d75d7224887ff9032c9f7f916f44",
+            "cached_tracks": 441,
+            "serialized_cache_bytes": 33430432
+          }
+        ]
+      },
+      "same_geometry_and_labels": true,
+      "median_warm_query_s": {
+        "uncached": 4.72467777699967,
+        "cached": 2.744923665999977
+      },
+      "warm_query_speedup": 1.72124195493009,
+      "first_query_s": {
+        "uncached": 4.041226284999993,
+        "cached": 4.936198077999961
+      },
+      "all_query_passes_s": {
+        "uncached": 18.17114843399986,
+        "cached": 13.417552545000035
+      },
+      "all_passes_speedup_including_cold_cache": 1.3542818910570409,
+      "comparison": "Cache off/on in the same final source, one cold decoded-cache query and three warm queries; operating-system cache is uncontrolled."
+    }
+  },
+  "configured_workers": {
+    "scope": "Full configured reference replay using original audio, observations and source-informed event/grid settings; not automatic or independent localization validation",
+    "upstream_parallelism": "PR #210, merged in adbfb3e; final local performance changes active in both controls",
+    "runtime": {
+      "python": "3.12.3",
+      "sqlite": "3.45.1",
+      "blas_threads": 1,
+      "cpu_affinity": {
+        "workers_1": [
+          4
+        ],
+        "workers_4": [
+          4,
+          5,
+          7,
+          8
+        ]
+      }
+    },
+    "measurement_design": "One sequential pair with fresh process/output directories; all scientific settings identical; worker count is the only setting changed",
+    "workers": [
+      1,
+      4
+    ],
+    "process_wall_s": [
+      63.080272204000266,
+      50.85959439999988
+    ],
+    "report_elapsed_s": [
+      60.038204577000215,
+      47.425417169999946
+    ],
+    "process_wall_speedup": 1.240282643779802,
+    "process_wall_reduction_fraction": 0.19373216660319692,
+    "same_scientific_json": true,
+    "same_csv_bytes": true,
+    "excluded_report_metadata": [
+      "elapsed_s",
+      "provenance",
+      "implementation_sha256",
+      "implementation_sources",
+      "config.scoring_workers",
+      "sources entry with roles=[configuration]"
+    ],
+    "ranked_rows": 283,
+    "coarse_points": 2525,
+    "trajectory_segments": 3587,
+    "accepted_location": false,
+    "scientific_json_artifact_count": 16,
+    "csv_artifact_count": 3
+  },
+  "search_architecture_comparison": {
+    "dense": {
+      "case": "previous-fit",
+      "scope": "One separately loaded process per frozen variant; same recorded arrays, query tracks, point, clocks and budgets. No location accuracy claim.",
+      "timings": {
+        "pr212": {
+          "wall_seconds": 16.130660911000177,
+          "cpu_seconds": 16.091403776,
+          "load_seconds_excluded": 1.0451894960001482,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 230.953125,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "exact": {
+          "wall_seconds": 19.287786888000028,
+          "cpu_seconds": 19.256217652,
+          "load_seconds_excluded": 0.9172454069998821,
+          "operations": {
+            "scalar_fit_calls": 6493,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 255.4375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "original": {
+          "wall_seconds": 35.92530473200031,
+          "cpu_seconds": 35.877964218,
+          "load_seconds_excluded": 0.9022394250000616,
+          "operations": {
+            "scalar_fit_calls": 32255,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 241.79296875,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "corrected": {
+          "wall_seconds": 36.8815337570004,
+          "cpu_seconds": 36.826490442,
+          "load_seconds_excluded": 0.840361995999956,
+          "operations": {
+            "scalar_fit_calls": 32255,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 241.58984375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 100,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        }
+      },
+      "exact_variant_equal_original": true,
+      "pr212_equal_corrected_baseline": true,
+      "pr212_retained_equal_original": true,
+      "pr212_accounting_equal_original": true,
+      "original_to_corrected": {
+        "difference_count": 11,
+        "first_differences": [
+          {
+            "path": "$.all_scored_candidates[1079].event_diagnostics[0].f0_hz",
+            "before": 113.02531383265242,
+            "after": 113.02531383265243,
+            "absolute_difference": 1.4210854715202004e-14,
+            "difference_in_ulp_at_before": 1.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].event_diagnostics[0].rmse_hz",
+            "before": 1.6618731136088518,
+            "after": 1.6618731136088511,
+            "absolute_difference": 6.661338147750939e-16,
+            "difference_in_ulp_at_before": 3.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].event_diagnostics[0].score",
+            "before": -1.2918469704343516,
+            "after": -1.2918469704343505,
+            "absolute_difference": 1.1102230246251565e-15,
+            "difference_in_ulp_at_before": 5.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].event_diagnostics[0].source_drift_hz",
+            "before": -1.6022669802499345,
+            "after": -1.6022669802499139,
+            "absolute_difference": 2.0650148258027912e-14,
+            "difference_in_ulp_at_before": 93.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].event_diagnostics[0].source_drift_hz_s",
+            "before": -0.08475750862738778,
+            "after": -0.0847575086273867,
+            "absolute_difference": 1.0824674490095276e-15,
+            "difference_in_ulp_at_before": 78.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].event_scores[0]",
+            "before": -1.2918469704343516,
+            "after": -1.2918469704343505,
+            "absolute_difference": 1.1102230246251565e-15,
+            "difference_in_ulp_at_before": 5.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].f0_hz[0]",
+            "before": 113.02531383265242,
+            "after": 113.02531383265243,
+            "absolute_difference": 1.4210854715202004e-14,
+            "difference_in_ulp_at_before": 1.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].residual_score",
+            "before": -7.66681274669189,
+            "after": -7.666812746691889,
+            "absolute_difference": 8.881784197001252e-16,
+            "difference_in_ulp_at_before": 1.0
+          },
+          {
+            "path": "$.all_scored_candidates[1079].score",
+            "before": 1.4443957511027032,
+            "after": 1.4443957511027037,
+            "absolute_difference": 4.440892098500626e-16,
+            "difference_in_ulp_at_before": 2.0
+          },
+          {
+            "path": "$.retention.records[42][2]",
+            "before": 1.4443957511027032,
+            "after": 1.4443957511027037,
+            "absolute_difference": 4.440892098500626e-16,
+            "difference_in_ulp_at_before": 2.0
+          },
+          {
+            "path": "$.retention.stages[0][1]",
+            "before": "853b303924e0d892b94e0254837f004aa0c937876326d4118deca573394ef45d",
+            "after": "4099f0a939775b98a2fb0c6f1ce807c124d9e36c1ca59238cab8f701233b433b"
+          }
+        ]
+      },
+      "corrected_to_pr212": {
+        "difference_count": 0,
+        "first_differences": []
+      },
+      "original_to_exact": {
+        "difference_count": 0,
+        "first_differences": []
+      },
+      "pr212_cpu_speedup_over_exact": 1.1966773017479218,
+      "pr212_cpu_speedup_over_original": 2.2296354449517484
+    },
+    "sparse": {
+      "case": "offset",
+      "scope": "One separately loaded process per frozen variant; same recorded arrays, query tracks, point, clocks and budgets. No location accuracy claim.",
+      "timings": {
+        "corrected": {
+          "wall_seconds": 3.6900103289999606,
+          "cpu_seconds": 3.683335948,
+          "load_seconds_excluded": 0.9317238620001262,
+          "operations": {
+            "scalar_fit_calls": 2191,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 205.8359375,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 28,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "original": {
+          "wall_seconds": 3.1404853110002477,
+          "cpu_seconds": 3.130182064,
+          "load_seconds_excluded": 0.7733666260000973,
+          "operations": {
+            "scalar_fit_calls": 2191,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 206.23046875,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 28,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "exact": {
+          "wall_seconds": 2.685179932999745,
+          "cpu_seconds": 2.6791283659999996,
+          "load_seconds_excluded": 0.8818394079999052,
+          "operations": {
+            "scalar_fit_calls": 1161,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 225.56640625,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 28,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        },
+        "pr212": {
+          "wall_seconds": 2.034704806999798,
+          "cpu_seconds": 2.030037885,
+          "load_seconds_excluded": 0.7205967680001777,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 203.91015625,
+          "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+          "retained": 28,
+          "independent_groups": 16,
+          "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage."
+        }
+      },
+      "exact_variant_equal_original": true,
+      "pr212_equal_corrected_baseline": true,
+      "pr212_retained_equal_original": true,
+      "pr212_accounting_equal_original": true,
+      "original_to_corrected": {
+        "difference_count": 0,
+        "first_differences": []
+      },
+      "corrected_to_pr212": {
+        "difference_count": 0,
+        "first_differences": []
+      },
+      "original_to_exact": {
+        "difference_count": 0,
+        "first_differences": []
+      },
+      "pr212_cpu_speedup_over_exact": 1.31974303819458,
+      "pr212_cpu_speedup_over_original": 1.5419328314653595
+    }
+  },
+  "verification": {
+    "focused_real_tests": 23,
+    "result": "passed",
+    "elapsed_s": 2.47,
+    "source": "fa19b594",
+    "cli_help": "passed",
+    "synthetic_suites_run": false
+  },
+  "full_workflow": {
+    "status": "in_progress",
+    "fresh_run_speedup": null
+  },
+  "preserved_failures": [
+    "Two original-baseline runs stopped after SQLite retention-database errors under Python 3.12.14 / SQLite 3.53.1. Root cause is unestablished.",
+    "The system-runtime baseline reached the 900-second HTTP timeout. A separate continuation retains its original source and inputs; its cumulative active cost is not a fresh-run timing."
+  ]
+}

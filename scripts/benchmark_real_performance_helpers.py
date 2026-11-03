@@ -78,19 +78,26 @@ def close_terrain(sampler):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--fixture", type=Path, required=True,
-                        help="Real search fixture containing index path and query bounds/time")
+    parser.add_argument("--fixture", type=Path,
+                        help="Optional historical fixture containing index path and query bounds/time")
+    parser.add_argument("--index", type=Path, help="Restored real flight index; overrides the fixture path")
+    parser.add_argument("--bounds", type=float, nargs=4, metavar=("W", "S", "E", "N"))
+    parser.add_argument("--time-range", type=float, nargs=2, metavar=("START", "END"))
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--repeats", type=int, default=3)
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("--repeats must be positive")
-    args.output.mkdir(parents=True, exist_ok=False)
     root = Path(__file__).resolve().parents[1]
-    fixture = json.loads(args.fixture.read_text())
-    index_path = fixture["real_index"]
-    query_args = fixture["query_bounds"], fixture["query_time_s"]
+    fixture = json.loads(args.fixture.read_text()) if args.fixture else {}
+    index_path = args.index or fixture.get("real_index")
+    bounds = args.bounds or fixture.get("query_bounds")
+    time_range = args.time_range or fixture.get("query_time_s")
+    if index_path is None or bounds is None or time_range is None:
+        parser.error("Supply --index, --bounds and --time-range, or a fixture containing those values")
+    query_args = bounds, time_range
+    args.output.mkdir(parents=True, exist_ok=False)
     baseline_tiles = load_module("dopplergeist._reference_helper_tiles",
                                  args.baseline / "src/dopplergeist/tiled_search.py")
     baseline_terrain = load_module("dopplergeist._reference_helper_terrain",
@@ -150,8 +157,10 @@ def main():
             close_terrain(sampler)
 
     summary = {"scope": "Real observations and archived candidate coordinates; component timings only",
-               "fixture": str(args.fixture.resolve()), "baseline": str(args.baseline.resolve()),
-               "cpu_affinity": sorted(os.sched_getaffinity(0)),
+               "fixture": str(args.fixture.resolve()) if args.fixture else None,
+               "index": str(Path(index_path).resolve()), "query_bounds": bounds, "query_time_s": time_range,
+               "baseline": str(args.baseline.resolve()),
+               "cpu_affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
                "threads": {key: os.environ.get(key) for key in
                            ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS")},
                "tracks": len(first), "samples": sum(len(track.time) for track in first),

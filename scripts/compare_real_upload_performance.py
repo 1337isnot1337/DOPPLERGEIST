@@ -4,6 +4,8 @@
 Exit zero requires verified full workflows and exact scientific parity. JSON
 numbers have no tolerance. Search checkpoints and logical retention rows are
 included. The existing verifier owns input and artifact integrity checks.
+An explicit continuation report can qualify a resumed baseline for scientific
+comparison, but its cumulative active cost is never labeled a fresh-run speedup.
 """
 from __future__ import annotations
 
@@ -98,8 +100,10 @@ class Differences:
 
 
 class Run:
-    def __init__(self, directory):
+    def __init__(self, directory, continuation=None):
         self.directory = directory.resolve()
+        if (self.directory / "continuation-start.json").exists() and continuation is None:
+            raise ValueError("This job has a continuation; supply its completed --baseline-continuation report")
         # This receipt is committed after service shutdown and verifier checks.
         # Refuse to inspect any job or SQLite database before it exists.
         receipt = self.directory / "http-verification.json"
@@ -110,7 +114,20 @@ class Run:
             raise ValueError(f"HTTP verification receipt is unfinished: {directory}")
         if self.receipt.get("service", {}).get("returncode") is None:
             raise ValueError(f"Service termination is not established; refusing to inspect its ledger: {directory}")
+        self.continuation = read_json(continuation) if continuation is not None else None
+        if self.continuation is not None:
+            record = self.continuation
+            if (record.get("scope") != "resumed_automatic_baseline_continuation"
+                    or record.get("resumed_baseline") is not True or record.get("fresh_run") is not False
+                    or record.get("job_id") != self.receipt["job_id"]
+                    or Path(record["baseline_directory"]).resolve() != self.directory):
+                raise ValueError("Continuation report does not identify this resumed baseline")
+            if record.get("worker_shutdown_confirmed") is not True:
+                raise ValueError("Continuation worker shutdown is not confirmed; refusing to inspect its ledger")
         self.job = self.directory / "jobs" / self.receipt["job_id"]
+        self.final = read_json(self.job / "result.json")
+        if self.final.get("status") in {"running", "queued"}:
+            raise ValueError("Job is active; refusing to inspect its ledger")
         self.ignored = Counter()
 
     def normalize(self, value, relative, root=False, path=()):
@@ -127,6 +144,10 @@ class Run:
                     reason = "operator configuration digest; full normalized operator.json is compared"
                 elif not root and relative == "search/manifest.json" and here == ("configuration", "code"):
                     reason = "search implementation files"
+                elif not root and relative == "provenance.json" and here == ("resumed_from",):
+                    reason = "explicit resume metadata: resumed_from"
+                elif not root and relative == "search/search-report.json" and here == ("tiles_resumed",):
+                    reason = "explicit resume performance metadata: tiles_resumed"
                 if reason:
                     self.ignored[reason] += 1
                     continue
@@ -145,6 +166,31 @@ class Run:
         return self.normalize(read_json((self.directory if root else self.job) / relative), relative, root)
 
     def full_pipeline(self):
+        if self.continuation is not None:
+            record = self.continuation
+            evidence = record.get("pipeline_evidence", {})
+            segments = record.get("segments", [])
+            timed = (len(segments) >= 2 and all(
+                isinstance(segment.get(key), (int, float)) and not isinstance(segment.get(key), bool)
+                and math.isfinite(segment[key]) and segment[key] >= 0
+                for segment in segments for key in ("wall_s", "cpu_s")))
+            timed = timed and all(math.isclose(record.get(total, -1), sum(segment[key] for segment in segments),
+                                               rel_tol=1e-12, abs_tol=1e-9)
+                                  for key, total in (("wall_s", "cumulative_active_wall_s"),
+                                                     ("cpu_s", "cumulative_cpu_s")))
+            return (all(record.get(key) is True for key in
+                        ("original_http_receipt_unchanged", "implementation_unchanged",
+                         "worker_shutdown_confirmed", "pipeline_evidence_passed",
+                         "full_pipeline_observed", "full_pipeline_requirements_met"))
+                    and timed and segments[-1].get("returncode") == 0
+                    and record.get("final_status") == self.final.get("status")
+                    and record.get("reason_code") == self.final.get("reason_code")
+                    and record.get("candidate_count") == len(self.final.get("candidates", [])) > 0
+                    and record.get("event_count") == len(self.final.get("events", []))
+                    and record.get("source_sha256") == self.receipt.get("source_sha256")
+                    and self.final.get("recording", {}).get("source_sha256") == self.receipt.get("source_sha256")
+                    and evidence.get("passed") is True and evidence.get("full_pipeline_observed") is True
+                    and REQUIRED_STAGES.issubset(evidence.get("stages_verified", [])))
         evidence = read_json(self.directory / "pipeline-evidence.json")
         return (all(self.receipt.get(key) is True for key in
                     ("verification_passed", "http_checks_passed", "pipeline_evidence_passed",
@@ -167,13 +213,20 @@ class Run:
             duration = timestamp(following["observed_utc"]) - timestamp(current["observed_utc"])
             current["until_next_transition_s"] = duration
             totals[current["stage"]] += duration
-        return {"receipt_elapsed_s": self.receipt["elapsed_s"], "poll_records": len(rows),
-                "observed_stage_seconds": dict(totals), "transitions": transitions,
-                "note": "Stage durations use first observed HTTP transitions and include polling uncertainty; unobserved short stages have no inferred duration."}
+        result = {"receipt_elapsed_s": self.receipt["elapsed_s"], "poll_records": len(rows),
+                  "observed_stage_seconds": dict(totals), "transitions": transitions,
+                  "note": "Stage durations use first observed HTTP transitions and include polling uncertainty; unobserved short stages have no inferred duration."}
+        if self.continuation is not None:
+            result["continuation"] = {key: self.continuation[key] for key in
+                                      ("segments", "cumulative_active_wall_s", "cumulative_cpu_s")}
+            result["note"] += " History describes the original HTTP attempt only. Continuation segments exclude idle time between attempts and are not a fresh run."
+        return result
 
 
 def ignored_artifact(relative):
-    return relative in {"resume.json", "intake/intake.json"} or relative.startswith("search/.tile-workers/")
+    return (relative in {"resume.json", "intake/intake.json"}
+            or relative.startswith("search/.tile-workers/")
+            or (relative.startswith("result-before-resume-") and relative.endswith(".json")))
 
 
 def quote_identifier(value):
@@ -222,8 +275,8 @@ def compare_ledger(left, right, relative, differences):
         return {"baseline_rows": counts[0], "current_rows": counts[1]}
 
 
-def compare_runs(baseline, current, max_examples=40):
-    left, right = Run(baseline), Run(current)
+def compare_runs(baseline, current, max_examples=40, baseline_continuation=None):
+    left, right = Run(baseline, baseline_continuation), Run(current)
     differences, checked, ledgers = Differences(max_examples), Counter(), {}
     selected = [{path.relative_to(run.job).as_posix() for path in run.job.rglob("*")
                  if path.is_file() and path.suffix in {".json", ".sqlite"}
@@ -240,6 +293,10 @@ def compare_runs(baseline, current, max_examples=40):
         except (OSError, ValueError, sqlite3.DatabaseError) as error:
             differences.add("job/" + name, ("comparison_error",), str(error), MISSING)
     for name in ROOT_JSON:
+        if name == "result.json" and left.continuation is not None:
+            # The root result is the original HTTP snapshot, possibly absent
+            # after a timeout. The final job/result.json is compared above.
+            continue
         differences.compare("root/" + name, left.json(name, root=True), right.json(name, root=True))
         checked["root_json"] += 1
     differences.compare("HTTP source identity", {key: left.receipt.get(key) for key in ("source_sha256", "source_bytes")},
@@ -247,25 +304,38 @@ def compare_runs(baseline, current, max_examples=40):
     full = {name: run.full_pipeline() for name, run in (("baseline", left), ("current", right))}
     passed = differences.count == 0 and all(full.values())
     timings = {name: run.timing() for name, run in (("baseline", left), ("current", right))}
-    return {"scope": "Exact semantic comparison of completed actual HTTP upload workflows",
+    return {"scope": "Exact semantic comparison of actual upload workflows, with explicit continuation evidence when supplied",
             "baseline": str(left.directory), "current": str(right.directory),
+            "run_kinds": {"baseline": "resumed_baseline" if left.continuation is not None else "fresh_http",
+                          "current": "fresh_http"},
             "passed": passed, "scientific_payloads_exact": differences.count == 0,
             "full_pipeline_verified": full,
             "checked_artifacts": dict(checked), "retention_ledgers": ledgers,
-            "outcomes": {name: {key: run.receipt.get(key) for key in
-                                 ("status", "reason_code", "candidate_count", "event_count", "supported_decision")}
+            "outcomes": {name: {"status": run.final.get("status"), "reason_code": run.final.get("reason_code"),
+                                "candidate_count": len(run.final.get("candidates", [])),
+                                "event_count": len(run.final.get("events", []))}
                          for name, run in (("baseline", left), ("current", right))},
+            "original_http_outcomes": {name: {key: run.receipt.get(key) for key in
+                                              ("status", "reason_code", "verification_passed", "full_pipeline_observed")}
+                                       for name, run in (("baseline", left), ("current", right))},
             "differences": differences.report(), "timings": timings,
-            "verified_full_workflow_speedup": (left.receipt["elapsed_s"] / right.receipt["elapsed_s"] if passed else None),
+            "verified_full_workflow_speedup": (left.receipt["elapsed_s"] / right.receipt["elapsed_s"]
+                                               if passed and left.continuation is None else None),
+            "resumed_active_wall_to_current_receipt_ratio": (
+                left.continuation["cumulative_active_wall_s"] / right.receipt["elapsed_s"]
+                if passed and left.continuation is not None else None),
             "normalization": {"implementation_fields": sorted(IMPLEMENTATION_FIELDS),
                 "performance_fields": sorted(PERFORMANCE_FIELDS),
                 "path_rule": "Only each run directory, job directory and exact job identifier are replaced.",
                 "sqlite_rule": "Compare all logical tables, columns and rows; ignore only run.identity and physical SQLite/index layout.",
-                "excluded_metadata": ["resume.json", "intake/intake.json", "search/.tile-workers/**"],
+                "excluded_metadata": ["resume.json", "intake/intake.json", "search/.tile-workers/**",
+                                      "result-before-resume-*.json", "provenance.json/resumed_from",
+                                      "search/search-report.json/tiles_resumed"],
                 "scope": "Scientific JSON and logical ledger contents. Existing HTTP verification owns integrity checks; real-audio validation separately checks measured arrays.",
                 "observed_ignored_counts": {"baseline": dict(left.ignored), "current": dict(right.ignored)}},
             "limitations": ["Exact parity establishes consistency with the baseline, not geolocation accuracy.",
                             "No withheld-location comparison or synthetic observations are used.",
+                            "A resumed baseline retains its unsuccessful original HTTP receipt. Its cumulative active cost includes restart/replay overhead and is not uninterrupted runtime.",
                             "All semantic differences fail the gate, including floating-point roundoff; examples alone are bounded."]}
 
 
@@ -273,12 +343,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--current", type=Path, required=True)
+    parser.add_argument("--baseline-continuation", type=Path,
+                        help="Explicit completed continuation evidence; never rewrites the original HTTP receipt")
     parser.add_argument("--output", type=Path, required=True, help="New JSON report path")
     parser.add_argument("--max-examples", type=int, default=40)
     args = parser.parse_args()
     if args.max_examples < 1:
         parser.error("--max-examples must be positive")
-    report = compare_runs(args.baseline, args.current, args.max_examples)
+    report = compare_runs(args.baseline, args.current, args.max_examples, args.baseline_continuation)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(report, stream, indent=2, allow_nan=False)
@@ -287,7 +359,9 @@ def main():
                       "scientific_payloads_exact": report["scientific_payloads_exact"],
                       "semantic_differences": report["differences"]["count"],
                       "full_pipeline_verified": report["full_pipeline_verified"],
-                      "verified_full_workflow_speedup": report["verified_full_workflow_speedup"]}))
+                      "run_kinds": report["run_kinds"],
+                      "verified_full_workflow_speedup": report["verified_full_workflow_speedup"],
+                      "resumed_active_wall_to_current_receipt_ratio": report["resumed_active_wall_to_current_receipt_ratio"]}))
     return 0 if report["passed"] else 1
 
 

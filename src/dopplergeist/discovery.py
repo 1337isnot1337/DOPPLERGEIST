@@ -62,20 +62,6 @@ def _spectrum(data, sr, start, settings):
     return Spectrum(t + start, f, db, contrast)
 
 
-def _path_slope(path):
-    """Median of the last seven measured increments, using scalar arithmetic.
-
-    Paths contain Python floats. Converting each short tail to three NumPy
-    arrays at every frame costs more than its at-most-seven differences.
-    Keep the same eight-point window and the same even-count median.
-    """
-    tail = path[-8:]
-    if len(tail) < 3:
-        return 0.0
-    return median((right[1] - left[1]) / (right[0] - left[0])
-                  for left, right in zip(tail, tail[1:]))
-
-
 def _paths(spec, settings):
     """Link local spectral maxima with bounded motion and short missing spans."""
     active, completed = [], []
@@ -105,7 +91,16 @@ def _paths(spec, settings):
             dt = time - last[:, 0]
             delta = frequencies[None, :] - last[:, 1, None]
             speed = delta / dt[:, None]
-            slopes = [_path_slope(path) for path in active]
+            slopes = []
+            for path in active:
+                tail = path[-8:]
+                if len(tail) >= 3:
+                    slopes.append(float(median(
+                        (right[1] - left[1]) / (right[0] - left[0])
+                        for left, right in zip(tail, tail[1:])
+                    )))
+                else:
+                    slopes.append(0.0)
             allowed = (speed >= -np.maximum(8, last[:, 1, None] * 0.08)) & (speed <= np.maximum(1.0, last[:, 1, None] * 0.008))
             predicted_delta = np.asarray(slopes)[:, None] * dt[:, None]
             costs = np.abs(delta - predicted_delta) / np.maximum(1.0, last[:, 1, None] * 0.01)
