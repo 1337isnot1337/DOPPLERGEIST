@@ -83,3 +83,11 @@ numerical precision; [source hashes](corrected-overlay-source.json) identify the
 exact renderer/model. The historical images have not been replaced.
 Independent real holdouts, full uncertainty/alternative assessment and the
 end-to-end 100 m real national acceptance check remain unmet.
+
+After these runs, the user revised the current acceptable point error to 1,000 m,
+with 100–500 m or better preferred. [A separate threshold report](revised-thresholds-20261103.json)
+evaluates all four preserved point estimates at 100/500/1,000 m. Both robust
+points are inside 1 km; the two-event point is inside 500 m. This does not erase
+the before/after regression, establish independent real/national accuracy, or
+turn the boundary-truncated sensitivity into a supported interval. The original
+100 m fields and narrative above remain historical records.
