@@ -394,8 +394,10 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         quality["cpa_tolerance_s"] = max(center - start, end - center)
         # A subsonic source gives f_source = f_received * (1 + v_radial/c).
         # These broad bounds are independent of an unreliable straight-pass fit.
+        # Do not impose a minimum speed or near-sonic maximum on CPA proposals;
+        # motion support and the physical fit determine whether they can score.
         event = dict(reference, start_s=start, end_s=end, cpa_receive_s=center,
-                     speed_range_mps=[1.0, 0.9 * c], slant_range_m=[1.0, max_distance_m],
+                     speed_range_mps=[0.0, c], slant_range_m=[0.0, max_distance_m],
                      f0_range_hz=[float(f.min() * 0.1), float(f.max() * 1.9)], quality=quality)
         event["event_ids"] = [e["event_id"] for e in members]
         settings.append(event)

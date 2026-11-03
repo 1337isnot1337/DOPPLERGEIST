@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+from copy import deepcopy
 
 import pandas as pd
 import pytest
@@ -54,6 +55,13 @@ def test_full_day_cell_clock_partitions_preserve_associations():
     with pytest.raises(ValueError, match="Association candidate budget exceeded"):
         association_candidates(table, events, max_candidates=budget.max_candidates_per_tile, **kwargs)
     baseline, _ = association_candidates(table, events, max_candidates=100000, **kwargs)
+    earlier_events = deepcopy(events)
+    for event in earlier_events:
+        event["speed_range_mps"] = [1., .9 * parameters.get("c", 343.)]
+        event["slant_range_m"][0] = 1.
+    earlier, _ = association_candidates(table, earlier_events, max_candidates=100000, **kwargs)
+    assert (table.speed_mps < 1).any()
+    assert {content_hash(item) for item in earlier} < {content_hash(item) for item in baseline}
     pieces = []
     for i in range(8):
         tile = "-33_51~1~2~0~1~1" + "".join(f"~t{(i >> shift) & 1}" for shift in (2, 1, 0))
@@ -63,7 +71,7 @@ def test_full_day_cell_clock_partitions_preserve_associations():
         pieces.extend(result)
     assert sorted(content_hash(item) for item in pieces) == sorted(content_hash(item) for item in baseline)
     assert unsupported > 0
-    print(f"real cell: {len(baseline)} associations preserved; {unsupported} unsupported tracks")
+    print(f"real cell: {len(earlier)} to {len(baseline)} associations; {unsupported} unsupported tracks")
 
 
 def test_real_clock_partition_restart_and_scores(tmp_path, monkeypatch):
