@@ -88,6 +88,8 @@ Recording-time evidence matters: audio-relative seconds do not identify which da
 
 The automatic search uses conservative score ceilings before completing every fit: incompatible residuals and an established Top-K cutoff can stop further group fitting at a shared clock. It batches eligible clock fits, reuses exact acoustic calculations in dense tiles, and divides overloaded areas or single-cell clock ranges into checkpointed pieces. [Search screening and real-data timing](docs/DATA_AND_SCALE.md#search) describe the bounds and their measured limits.
 
+At one source-informed receiver point, median scoring time fell from **68.92 to 25.59 CPU seconds**, a **2.69×** speedup. All 3,905 associations across 16 event groups matched the scalar-corrected baseline in three alternating pairs. The [performance report](docs/PERFORMANCE.md) describes this bounded test, which does not establish nationwide runtime or independent location accuracy.
+
 Recent search work makes omitted alternatives and failed model evaluations visible. For more detail see [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md).
 
 Missing events, incomplete flight coverage, competing locations or inadequate sensitivity evidence can require an **inconclusive** outcome. See [Decision rules](docs/CONFIDENCE.md).
@@ -163,7 +165,8 @@ their own rights and terms.
 
 ## Notes
 
-Vibecoded with love by Cinna Davis and (ok no other contributors yet but this COULD be YOU, reach out to me)
+Vibecoded with love by Cinna Davis, Henrik Lied, and YOU if you contribute to this repo... which you should do!
+
 Follow me on [X](https://x.com/1337isnot1337) and on [LinkedIn](https://www.linkedin.com/in/cinna-davis/)
 
 ## AI Usage
@@ -183,3 +186,4 @@ Fully vibecoded if it wasn't obvious. Using a series of 6.1 Sol xhigh and Terra 
 - [Implementation handoff](docs/HANDOFF.md), [acceptance issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39) — ongoing work; the handoff includes historical context and is not a current feature inventory
 
 DOPPLERGEIST is an **independent reconstruction** of the approach described in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI), with independently written code. It is not a release by or affiliation with the video's author. External recordings, ADS-B and terrain assets retain their own rights and attribution requirements; see [data provenance](docs/DATA_SOURCES.md). The banner's outlined typography and illustrative model are documented in [asset notes](assets/README.md).
+

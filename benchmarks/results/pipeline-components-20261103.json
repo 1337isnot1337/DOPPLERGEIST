@@ -938,7 +938,25 @@
     "elapsed_s": 2.47,
     "source": "fa19b594",
     "cli_help": "passed",
-    "synthetic_suites_run": false
+    "synthetic_suites_run": false,
+    "upstream_discovery_integration": {
+      "source": "dcddc56",
+      "upstream_discovery_source": "9691807",
+      "full_wav_event_payload_exact": true,
+      "ridges": 18,
+      "independent_groups": 16,
+      "trials": 1,
+      "scope": "Integration parity only; repeated headline timings remain unchanged"
+    },
+    "hosted_installation_and_static_checks": {
+      "source": "f805f6f",
+      "python": [
+        "3.11",
+        "3.14"
+      ],
+      "result": "success",
+      "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41662314741"
+    }
   },
   "full_workflow": {
     "status": "in_progress",
@@ -947,5 +965,23 @@
   "preserved_failures": [
     "Two original-baseline runs stopped after SQLite retention-database errors under Python 3.12.14 / SQLite 3.53.1. Root cause is unestablished.",
     "The system-runtime baseline reached the 900-second HTTP timeout. A separate continuation retains its original source and inputs; its cumulative active cost is not a fresh-run timing."
-  ]
+  ],
+  "published_sources": {
+    "core": {
+      "commit": "f805f6fc6bb72195bdf3c982f359b3201259a5c2",
+      "local_equivalent": "dcddc56fd8ca76d326cdf0fa008299c4bedd092c",
+      "branch": "perf/pipeline-core-20261103",
+      "pull_request": 222
+    },
+    "exact_alternative": {
+      "commit": "c1b7e93ed47ae26beffcf07fdf3ee9ebe639b955",
+      "local_equivalent": "931b1bdb34fa759e4ae0a99ca5560a7ae146ec18",
+      "branch": "perf/pipeline-exact-20261103"
+    },
+    "combined_http": {
+      "commit": "bee7793cf539d4d48fe2fb888f223c1e403a71ef",
+      "local_equivalent": "00727d46aa51691389b453573b6c6644538a9fd5",
+      "branch": "perf/pipeline-combined-20261103"
+    }
+  }
 }

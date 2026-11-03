@@ -7,9 +7,9 @@ The core changes in [PR #222](https://github.com/1337isnot1337/DOPPLERGEIST/pull
 | Revision | Role |
 | --- | --- |
 | `7a8dd27979bd9a984c8675c38a00dfbf98a5b01e` | Unmodified source baseline |
-| Core `a2236ac`, tested with main as `fa19b594` | Core changes described here; public commit `1d045b3664648060071fa6e0799738a3fe74b19a` has the same source tree |
-| `931b1bd` | Separate scoring alternative that preserves the original numerical results exactly |
-| `3725e9d` from [PR #212](https://github.com/1337isnot1337/DOPPLERGEIST/pull/212), combined as `00727d4` | Separate scoring implementation used in the combined HTTP evaluation |
+| Core `a2236ac`, tested with main as `fa19b594` | Initial public commit `1d045b3` has the same tree. Current public [core branch](https://github.com/1337isnot1337/DOPPLERGEIST/tree/perf/pipeline-core-20261103) at `f805f6f` also incorporates upstream PR #221 and portable controls. |
+| Local `931b1bd`, public `c1b7e93` | [Separate scoring alternative](https://github.com/1337isnot1337/DOPPLERGEIST/tree/perf/pipeline-exact-20261103) that preserves the original numerical results exactly |
+| `3725e9d` from [PR #212](https://github.com/1337isnot1337/DOPPLERGEIST/pull/212), combined locally as `00727d4` and publicly as `bee7793` | [Combined implementation](https://github.com/1337isnot1337/DOPPLERGEIST/tree/perf/pipeline-combined-20261103) used in the full HTTP evaluation |
 
 All workloads use actual recordings and observed trajectories. The full WAV produces 18 ridges in 16 independent groups. The common HTTP MP3 produces 17 ridges in 15 groups. Each comparison uses identical input bytes within its pair. These development workloads measure runtime and result consistency. They do not establish location accuracy.
 
@@ -59,7 +59,7 @@ The four-arm comparison loads each frozen variant in a separate process. Each ce
 
 PR #212 is 2.23× and 1.54× faster than the original on these cases. It exactly matches the corrected baseline, including discarded candidates and ledger contents. Retained candidates and accounting also match the original baseline. A separate power-arithmetic correction changes one discarded dense candidate's total score by two units in the last place. Related diagnostics and its ledger checksum also change. The comparison preserves those differences without treating them as exact equivalence.
 
-The exact alternative matches the original results and remains available separately. Its portable scoring workload and paired benchmark are preserved at `931b1bd`, in `docs/verification/REAL_SEARCH_BATCH_PERFORMANCE.md`. Those scoring changes are separate from the core changes here.
+The exact alternative matches the original results and remains available separately. Its portable workload and paired benchmark are in the [scoring methodology](https://github.com/1337isnot1337/DOPPLERGEIST/blob/c1b7e93ed47ae26beffcf07fdf3ee9ebe639b955/docs/verification/REAL_SEARCH_BATCH_PERFORMANCE.md). Those scoring changes are separate from the core changes here.
 
 ## Reproduce the core comparisons
 
@@ -112,7 +112,19 @@ For the dense cache case, substitute bounds `-74.05 40.55 -73.55 41.05`, times `
 
 ## Verification and complete workflows
 
-The merged core revision passed **23 focused real-input checks in 2.47 seconds**, plus CLI help. No synthetic suite ran. Component gates require exact measured arrays, diagnostics, accounting, and logical ledger contents. Numeric differences fail these gates. Event thresholds, harmonic grouping, clock domains, coverage requirements, and unknown-support rules remain unchanged. The regional archive excludes known jets and cannot establish complete coverage. Historical receiver and clock hypotheses do not provide independent accuracy evidence.
+The initial merged core revision passed **23 focused real-input checks in 2.47 seconds**, plus CLI help. No synthetic suite ran. After adopting upstream PR #221, a full-WAV comparison again produces exactly equal event payloads: 18 ridges in 16 groups. This single-pair integration check does not replace the repeated timing measurements. Hosted installation and static checks also pass on Python 3.11 and 3.14 for `f805f6f`. Component gates require exact measured arrays, diagnostics, accounting, and logical ledger contents. Numeric differences fail these gates. Event thresholds, harmonic grouping, clock domains, coverage requirements, and unknown-support rules remain unchanged. The regional archive excludes known jets and cannot establish complete coverage. Historical receiver and clock hypotheses do not provide independent accuracy evidence.
+
+After restoring the terrain bundle, reproduce the 23 cases with:
+
+```bash
+python -m pip install '.[test]'
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  python -m pytest -q tests/test_real_track_cache.py \
+  tests/test_real_retention_batch.py tests/test_real_performance_helpers.py \
+  tests/test_real_index_staging.py
+```
+
+These tests build temporary indexes from committed observations. They do not need the benchmark WAV or regional index. Without the restored terrain files, two cases skip.
 
 Configured scoring with one versus four workers took **63.08 versus 50.86 seconds**, a 1.24× improvement in one sequential pair. This uses upstream [PR #210](https://github.com/1337isnot1337/DOPPLERGEIST/pull/210) from `adbfb3e`, with the same local changes in both arms. All 16 scientific JSON artifacts, three CSV files, and 283 ranked rows match after explicit metadata exclusions. The source-informed configured replay remains unaccepted, with incomplete model support.
 
