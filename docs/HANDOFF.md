@@ -18,6 +18,10 @@ queries with the existing conservative distance sieve. A real overloaded cell
 retained 614 of 1,929 queried tracks, including all 200 unsupported tracks;
 full and filtered scoring had identical results and retention checksums. The
 unsupported motion remains a limitation, not a verified absence of aircraft.
+PR #188 adds resumable clock partitions for single cells that exceed the
+association-count limit. The full-day overloaded cell's 23,136 associations
+were preserved across eight partitions; 142 tracks remained unsupported. See
+[DATA_AND_SCALE](DATA_AND_SCALE.md) for the scope of these checks.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
@@ -47,17 +51,17 @@ At this handoff the upload search is still running; no coordinate has been
 accepted. On the originating machine, the job, `resume.json`, discovery output,
 search checkpoints and archived earlier revisions are under
 `/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
-The active search is pinned to commit `d8679e3` and run hash
-`f9aeb360db3d8f2586b2954b53d32db767e65fc2840c01d1be261eb294413a5b`;
+The active search uses the code merged at `e633fd5` and run hash
+`8b7c3fa51d2d9c54863ee752208d3a2bb29acd22f1213c6c2c671a34de47a773`;
 check its current API/status and source identity before intervening. The separate
 homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. A search checkpoint from different code
 must not be mixed in without a specifically validated migration. The only such
-migration used here accepts strictly empty tiles after checking both identities
-and ledger checksums. Its `checkpoint-migration-42053ae-to-d8679e3.json` record
-lists the 413 verified empty stages, the two revisions and run hashes, and the
-migration-script hash. Check final coverage, unsupported-motion and retention
-evidence before describing any candidate as a localization.
+migration used here accepts strictly empty root tiles after checking both
+identities and ledger checksums. On the switch from `d8679e3` to `e633fd5`, 413
+such tiles were migrated; the preceding search is archived locally as
+`search-before-clock-e633fd5`. Check final coverage, unsupported-motion and
+retention evidence before describing any candidate as a localization.
 
 ## Read first
 
