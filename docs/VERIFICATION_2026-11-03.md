@@ -73,7 +73,7 @@ See the [publisher's record](https://zenodo.org/records/10215080) and the
 [issue #53 screening comment](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53#issuecomment-6594421391).
 Do not try to recover intentionally withheld recorder coordinates.
 
-Further validation can use synthetic inputs or recordings collected with consent
-and known ground truth. Preserve truth separation and all failed or inconclusive
-cases. A close synthetic leading hypothesis and an accepted independently
-validated real localization remain different claims.
+Further validation must use real recordings collected with consent and location
+and time evidence independently established to the scale of the claim. Report
+that evidence's provenance and uncertainty, and preserve failed or inconclusive
+cases. Synthetic inputs do not satisfy the real-world field-validation gate.
