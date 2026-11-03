@@ -379,7 +379,8 @@ def _record_support(output, stage, counts, summary):
 
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
-                    bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None):
+                    bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None,
+                    workers=None):
     """Bounded outer driver using existing physical CPA/locked-event scoring.
 
     `events, measurements` come from `matching.prepare_events`. `time_range_s`
@@ -410,8 +411,28 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     if filters["association"] == "full":
         event_limit = len(events)
     event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
+    import os
+    from contextlib import nullcontext
+    from .data_access import CachedTerrain, _index_pool
+    from .parallel_retention import import_retention_stage
+    from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
+    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
+    available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    if workers is None:
+        workers = max(1, available - 1)
+    if type(workers) is not int or workers < 1:
+        raise ValueError("workers must be a positive integer")
+    workers = min(workers, total, budget.max_tiles or total)
+    parallel = workers > 1 and type(terrain) is CachedTerrain
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    manifest = output / "manifest.json"
+    floor_policy = "per_tile" if parallel else "global_and_per_tile"
+    if not parallel and manifest.exists():
+        previous = json.loads(manifest.read_text())
+        if previous.get("configuration", {}).get("coarse_floor_policy") == "per_tile":
+            floor_policy = "per_tile"
     # Include actual acoustic measurements and implementation files in resume
     # identity; a detector/scorer change must never reuse stale tile scores.
     acoustic = []
@@ -432,10 +453,10 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
                 "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
+                "coarse_floor_policy": floor_policy,
                 "runtime": {"python": platform.python_version(), "machine": platform.machine(),
                             "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}}
     run_hash = content_hash(identity)
-    manifest = output / "manifest.json"
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
@@ -448,50 +469,107 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
                    bounded_score_candidates=0, unbounded_score_candidates=0,
                    evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
-    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
-    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
     radius = max(e["slant_range_m"][1] for e in events)
-    for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
-        if budget.max_tiles is not None and number >= budget.max_tiles:
-            break
-        checkpoint = output / f"tile-{tile_id}.json"
-        stage = f"coarse:{tile_id}"
+
+    def restore_terrain(provenance):
+        if type(terrain) is CachedTerrain:
+            for source in provenance.get("terrain_files", []):
+                terrain.files[Path(source["path"]).name] = source
+            terrain.ocean_tiles.update(provenance.get("terrain_ocean_tiles", []))
+            terrain.failures.extend(provenance.get("terrain_failures", []))
+
+    def tile_requests():
+        for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
+            if budget.max_tiles is not None and number >= budget.max_tiles:
+                break
+            stage = f"coarse:{tile_id}"
+            checkpoint = output / f"tile-{tile_id}.json"
+            cached = None
+            try:
+                if checkpoint.exists():
+                    record = json.loads(checkpoint.read_text())
+                    if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
+                        raise DataUnavailable("Corrupt tile checkpoint")
+                    prior = record["payload"]
+                    for source in prior.get("terrain_files", []):
+                        if sha256(source["path"]) != source["sha256"]:
+                            raise DataUnavailable("Terrain changed since tile checkpoint")
+                    if ledger.stage_valid(stage, prior.get("retention_checksum")):
+                        cached = checkpoint
+            except (DataUnavailable, ValueError, OSError) as error:
+                cached = error
+            yield stage, cells, cached, None
+
+    if parallel:
+        terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
+                           "adopt_existing": terrain.adopt_existing}
+        initargs = ([index.path for index in indexes], terrain.root, terrain_options, events, measurements,
+                    bounds, time_range_s, budget, parameters, filters, start_window, crs,
+                    output / ".tile-workers", run_hash, score_kind)
+        context = _index_pool(workers, initialize_tile_worker, initargs)
+    else:
+        context = nullcontext(None)
+    def finish_tile(stage, cells, future):
+        checkpoint = output / f"tile-{stage[len('coarse:'):]}.json"
+        payload = None
         try:
-            payload = None
-            if checkpoint.exists():
-                record = json.loads(checkpoint.read_text())
-                if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
-                    raise DataUnavailable("Corrupt tile checkpoint")
-                cached = record["payload"]
-                for source in cached.get("terrain_files", []):
-                    if sha256(source["path"]) != source["sha256"]:
-                        raise DataUnavailable("Terrain changed since tile checkpoint")
-                if ledger.stage_valid(stage, cached.get("retention_checksum")):
-                    payload = cached
-                    resumed += 1
-            if payload is None:
-                tracks = _tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
-                points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
-                if len(points):
-                    rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                          ledger=ledger, stage=stage,
-                                          score_floor=_retained_score_floor(ranked, budget.top_k))
-                else:
-                    rows, counts = [], {}
-                    ledger.record(stage, [], [], 0)
-                used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
-                terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
-                payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
-                           "cells": list(cells), "terrain_files": terrain_files,
-                           "retention_checksum": ledger.checksum(stage)}
-                write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
-            done += 1
-            points_searched += payload["grid_points"]
-            _record_support(output, stage, payload["counts"], support)
-            ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
-                                      ledger=ledger, stage=f"global:{tile_id}")
+            payload, worker_path = future.result()
+            import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
+            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+            try:
+                Path(worker_path).unlink()
+            except OSError:
+                pass
+            return checkpoint
         except (DataUnavailable, ValueError, OSError) as error:
-            failures.append({"tile": tile_id, "reason": str(error)})
+            if payload is not None and not isinstance(error, TileFailure):
+                provenance = {key: payload.get(key, []) for key in
+                              ("terrain_files", "terrain_ocean_tiles", "terrain_failures")}
+                return TileFailure(str(error), provenance)
+            return error
+
+    with context as pool:
+        requests = tile_requests()
+        results = (ordered_tile_results(pool, requests, workers, finish_tile) if pool is not None else
+                   ((stage, cells, cached, cached is not None) for stage, cells, cached, _ in requests))
+        for stage, cells, prepared, was_cached in results:
+            tile_id = stage[len("coarse:"):]
+            checkpoint = output / f"tile-{tile_id}.json"
+            try:
+                if isinstance(prepared, BaseException):
+                    raise prepared
+                if prepared is not None:
+                    payload = json.loads(prepared.read_text())["payload"]
+                    if was_cached:
+                        resumed += 1
+                    restore_terrain(payload)
+                else:
+                    tracks = _tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
+                    points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
+                    if len(points):
+                        rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
+                                              ledger=ledger, stage=stage,
+                                              score_floor=(_retained_score_floor(ranked, budget.top_k)
+                                                           if floor_policy == "global_and_per_tile" else None))
+                    else:
+                        rows, counts = [], {}
+                        ledger.record(stage, [], [], 0)
+                    used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
+                    terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
+                    oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if len(points) else []
+                    payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
+                               "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
+                               "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
+                    write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+                done += 1
+                points_searched += payload["grid_points"]
+                _record_support(output, stage, payload["counts"], support)
+                ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
+                                          ledger=ledger, stage=f"global:{tile_id}")
+            except (DataUnavailable, ValueError, OSError) as error:
+                if isinstance(error, TileFailure):
+                    restore_terrain(error.provenance)
+                failures.append({"tile": tile_id, "reason": str(error)})
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
@@ -598,7 +676,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "all_event_groups_considered": not event_limit_applied,
               "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
-              "bounded_concurrency": 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
+              "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
     write_json(output / "search-report.json", report)
     return report
