@@ -108,6 +108,8 @@ The two real-regional winners reproduce in a clean environment. See the [clean r
 
 These experiments used real recordings. The reference replay also used historical flight trajectories and terrain. The NASA tests used measured audio and GPS trajectories. **None established an independently accepted automatic location.**
 
+The [Eclipse Soundscapes field-audio collection](docs/ECLIPSE_FIELD_CORPUS.md) records scanner results for 50 public-site sources, including failures and clips without proposals. Moving tones are not yet verified aircraft or accepted location benchmarks.
+
 | Test and input | Observed result | Qualification |
 | --- | --- | --- |
 | Configured reference replay, installed package and fresh checkout | **43.8585 m** from the public reference; 3,587 trajectory segments, 2,525 coarse grid points and 283 ranked rows | Real audio and flight data, but source-informed event windows, frequency bands and regional bounds. The reference coordinate is not surveyed. `accepted_location=false` and model support remains incomplete. |
