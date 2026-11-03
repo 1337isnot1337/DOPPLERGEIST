@@ -225,3 +225,45 @@ def test_invalid_operator_discovery_configuration_is_explicit(tmp_path, options)
     assert final["status"] == "failed"
     assert final["reason_code"] == "invalid_configuration"
     assert not (tmp_path/"output/intake").exists()
+
+
+@pytest.mark.parametrize("flag,changes,complete", [
+    (True, {}, True),
+    (False, {"unsupported_cpa_track_evaluations": 1}, False),
+    (False, {"unclassified_score_candidates": 2, "unknown_trials": 3}, False),
+    (True, {"unknown_trials": 1}, False),
+    (True, {"unknown_trials": False}, False),
+    (True, {"unknown_trials": None}, False),
+    (None, {}, False),
+])
+def test_model_support_work_is_explicit_in_product_coverage(flag, changes, complete):
+    from aircraft_geoloc.automatic import _coverage
+    support = {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,
+               "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0,
+               "diagnostics_directory": "support", **changes}
+    coverage = _coverage({"search": {"coverage": "conus"}},
+        {"status": "complete", "tiles_total": 2, "tiles_completed": 2, "data_scope_complete": True,
+         "model_support_complete": flag, "model_support": support}, {})
+    assert coverage["search_complete"] is complete
+    assert coverage["data_status"] == "available"
+    assert any("Trajectory model" in item for item in coverage["limitations"]) is (not complete)
+    if type(support["unknown_trials"]) is int and not complete:
+        assert f'unknown clock trials: {support["unknown_trials"]}' in ' '.join(coverage["limitations"])
+    elif not complete:
+        assert "unavailable or malformed" in ' '.join(coverage["limitations"])
+
+
+@pytest.mark.parametrize("missing", ["counters", "flag"])
+def test_missing_model_support_evidence_cannot_become_completed_work(missing):
+    from aircraft_geoloc.automatic import _coverage
+    report = {"tiles_total": 1, "tiles_completed": 1, "data_scope_complete": True,
+              "model_support_complete": True,
+              "model_support": {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,
+                                "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0}}
+    report.pop("model_support" if missing == "counters" else "model_support_complete")
+    coverage = _coverage({"search": {"coverage": "conus"}}, report, {})
+    assert coverage["search_complete"] is False
+    assert coverage["data_status"] == "available"
+    assert "Trajectory model assessment is incomplete" in ' '.join(coverage["limitations"])
+    if missing == "counters":
+        assert "unavailable or malformed" in ' '.join(coverage["limitations"])

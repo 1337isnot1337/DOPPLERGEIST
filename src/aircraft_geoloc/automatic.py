@@ -155,8 +155,23 @@ def _coverage(request, search, config):
     search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
                        and not search.get("tile_failures") and not search.get("refinement_failure")
                        and search.get("all_event_groups_considered") is not False)
+    if "model_support_complete" in search or "model_support" in search:
+        support = search.get("model_support")
+        count_names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",
+                       "evaluated_trials", "rejected_trials", "unknown_trials")
+        valid_counts = (isinstance(support, dict) and
+                        all(type(support.get(name)) is int and support[name] >= 0 for name in count_names))
+        model_complete = (search.get("model_support_complete") is True and valid_counts and
+                          all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials")))
+        if not model_complete:
+            search_complete = False
+            limitations.append("Trajectory model assessment is incomplete; unsupported competitors remain unassessed. See the search support diagnostics.")
+            if valid_counts:
+                limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}. Counts describe work evaluations, not distinct aircraft.")
+            else:
+                limitations.append("Trajectory model support counts are unavailable or malformed; missing work is not treated as zero.")
     if not search_complete:
-        limitations.append("The search did not assess the complete requested scope within its work limits.")
+        limitations.append("The search did not assess the complete requested scope within its work or physical model limits.")
     if search.get("all_event_groups_considered") is False:
         limitations.append(search.get("event_limit_reason") or "Not every proposed flyover group was considered within the configured budget.")
     if "constant_m" in config.get("terrain", {}):
