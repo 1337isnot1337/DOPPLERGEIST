@@ -165,7 +165,8 @@ their own rights and terms.
 
 ## Notes
 
-Vibecoded with love by Cinna Davis and (ok no other contributors yet but this COULD be YOU, reach out to me)
+Vibecoded with love by Cinna Davis, Henrik Lied, and YOU if you contribute to this repo... which you should do!
+
 Follow me on [X](https://x.com/1337isnot1337) and on [LinkedIn](https://www.linkedin.com/in/cinna-davis/)
 
 ## AI Usage
