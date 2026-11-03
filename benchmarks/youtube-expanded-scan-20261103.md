@@ -42,6 +42,16 @@ uploader says it was filmed on an iPhone 8. That is a useful ordinary-equipment
 lead, not evidence of a detection or localization success rate; its recording
 location, clock and aircraft identity remain unverified.
 
+A sample of 12 of the 44 no-proposal, aircraft-targeted excerpts (Python
+random seed 20261103, sampling the ID-sorted case table) was visually checked using 0–1000 Hz spectrograms. None showed an obvious
+sustained descending tone on this quick review; several showed broadband
+bursts, stationary bands, or apparent edits. The
+[case notes](youtube-no-proposal-review-20261103.csv) retain all 12, including
+one 12.54-second file with roughly ten seconds of visible sound. This is not
+ground truth: aircraft identity was not established and a faint tone outside
+the inspected range or obscured in noise could have been missed. These 12 do
+not establish a false-negative rate.
+
 Most scans cover the first 180 seconds, or the full video when shorter. Decoded
 durations ranged from 12.54 to 180.01 seconds; this is not an analysis of entire
 long videos. The shared automatic scanner used 4 kHz audio, 40–1600 Hz frequency
