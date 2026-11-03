@@ -197,7 +197,28 @@ function normalizeBounds(w, s, e, n) {
   return [nw, ns, ne, nn];
 }
 
-let map, rectLayer;
+function normalizeDragBounds(p1, p2) {
+  const s = clampLat(Math.min(p1.lat, p2.lat));
+  const n = clampLat(Math.max(p1.lat, p2.lat));
+  const rawMin = Math.min(p1.lng, p2.lng);
+  const rawMax = Math.max(p1.lng, p2.lng);
+  const width = Math.min(360, Math.max(0.05, rawMax - rawMin));
+
+  let w = wrapLng(rawMin);
+  let e = w + width;
+  if (e > 180) {
+    if (w < 180) {
+      e = 180;
+    } else {
+      w = -180;
+      e = Math.min(180, -180 + width);
+    }
+  }
+  if (e - w < 0.05) e = Math.min(180, w + 0.1);
+  return [w, s, e, n];
+}
+
+let map, rectGroup;
 let currentW = CONUS_BOUNDS[0], currentS = CONUS_BOUNDS[1], currentE = CONUS_BOUNDS[2], currentN = CONUS_BOUNDS[3];
 let isDrawing = false, drawOrigin = null, tempRect = null;
 let isPanning = false, panStart = null;
@@ -251,6 +272,12 @@ function initMap() {
       panStart = null;
       container.style.cursor = '';
     }
+    if (isDrawing && tempRect) {
+      map.removeLayer(tempRect);
+      tempRect = null;
+      isDrawing = false;
+      drawOrigin = null;
+    }
   });
 
   function updateInputs() {
@@ -260,23 +287,28 @@ function initMap() {
     $('bbox-n').value = currentN.toFixed(2);
   }
 
-  function setBounds(w, s, e, n, fit) {
-    [currentW, currentS, currentE, currentN] = normalizeBounds(w, s, e, n);
-    updateInputs();
-    const bounds = [[currentS, currentW], [currentN, currentE]];
-    if (!rectLayer) {
-      rectLayer = L.rectangle(bounds, {
+  function renderRectLayers(w, s, e, n) {
+    if (!rectGroup) {
+      rectGroup = L.layerGroup().addTo(map);
+    }
+    rectGroup.clearLayers();
+    [-720, -360, 0, 360, 720].forEach(offset => {
+      L.rectangle([[s, w + offset], [n, e + offset]], {
         color: '#baf078',
         weight: 2,
         fillColor: '#baf078',
         fillOpacity: 0.18,
         interactive: false
-      }).addTo(map);
-    } else {
-      rectLayer.setBounds(bounds);
-    }
+      }).addTo(rectGroup);
+    });
+  }
+
+  function setBounds(w, s, e, n, fit) {
+    [currentW, currentS, currentE, currentN] = normalizeBounds(w, s, e, n);
+    updateInputs();
+    renderRectLayers(currentW, currentS, currentE, currentN);
     if (fit) {
-      map.fitBounds(bounds, { padding: [20, 20] });
+      map.fitBounds([[currentS, currentW], [currentN, currentE]], { padding: [20, 20] });
     }
   }
 
@@ -300,7 +332,7 @@ function initMap() {
   map.on('mousedown', e => {
     if (e.originalEvent.button !== 0 || e.originalEvent.shiftKey) return;
     isDrawing = true;
-    drawOrigin = e.latlng.wrap();
+    drawOrigin = e.latlng;
     if (tempRect) map.removeLayer(tempRect);
     tempRect = L.rectangle([drawOrigin, drawOrigin], {
       color: '#baf078',
@@ -314,22 +346,17 @@ function initMap() {
 
   map.on('mousemove', e => {
     if (!isDrawing || !drawOrigin || !tempRect) return;
-    const current = e.latlng.wrap();
-    tempRect.setBounds([drawOrigin, current]);
+    tempRect.setBounds([drawOrigin, e.latlng]);
   });
 
   map.on('mouseup', e => {
     if (!isDrawing || !drawOrigin || !tempRect) return;
-    const current = e.latlng.wrap();
+    const current = e.latlng;
     map.removeLayer(tempRect);
     tempRect = null;
     isDrawing = false;
 
-    let s = clampLat(Math.min(drawOrigin.lat, current.lat));
-    let n = clampLat(Math.max(drawOrigin.lat, current.lat));
-    let w = wrapLng(Math.min(drawOrigin.lng, current.lng));
-    let e_coord = wrapLng(Math.max(drawOrigin.lng, current.lng));
-    if (w > e_coord) [w, e_coord] = [e_coord, w];
+    const [w, s, e_coord, n] = normalizeDragBounds(drawOrigin, current);
     drawOrigin = null;
 
     // Only update if dragged area is meaningful (> 0.05 deg)
