@@ -45,6 +45,16 @@ is retained unchanged as a historical artifact. The expanded table reconciles it
 with retries and the separate site-named search, deduplicates by video ID and
 preserves unsuccessful acquisition outcomes and multiple attempts.
 
+## Licensed aircraft-audio scanner sample
+
+The [AeroSonicDB scanner-only report](../benchmarks/aerosonic-scanner-survey-20261103.md)
+records a fixed, stratified random scan of 155 real aircraft and ambient clips
+from a research dataset. Scanner results and limitations are documented
+separately from the dataset's labels and flight metadata. AeroSonicDB is licensed
+CC BY-NC 4.0; no media is copied into this repository. Its public coordinates
+refer to nearby public places rather than exact microphones, so these clips do
+not establish location truth for geolocation evaluation.
+
 ## Candidate index
 
 The [25-row candidate index](../benchmarks/audio-candidate-index-20261103.csv)
