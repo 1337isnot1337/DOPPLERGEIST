@@ -8,8 +8,8 @@ import json
 import resource
 import time
 
-from aircraft_geoloc.data_access import FlightIndex, write_json
-from aircraft_geoloc.tracks import unix_time
+from dopplergeist.data_access import FlightIndex, write_json
+from dopplergeist.tracks import unix_time
 
 
 def main():

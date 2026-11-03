@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from aircraft_geoloc.search import pair_candidates
+from dopplergeist.search import pair_candidates
 
 
 EPOCH = 1_790_000_000.0

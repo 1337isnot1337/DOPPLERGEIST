@@ -17,14 +17,12 @@ git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
 cd DOPPLERGEIST
 python -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
-
-.venv/bin/python scripts/make_synthetic_cases.py
-.venv/bin/aircraft-geoloc run \
-  data/synthetic/known-time-minute.json \
-  --output results/known-time-demo
 ```
 
-This generates deterministic audio and flight tracks, then runs a **configured synthetic localization experiment** with a known recording clock and a selected 60-second event. It needs no external datasets or data-service credentials. Inspect `results/known-time-demo/report.json` for the leading hypothesis, `ranked.json` for alternatives, and the PNG plots for diagnostic comparisons. The historical checkpoint identified the correct flight with **40.87 m error**; this is a synthetic result, not a real-world accuracy claim.
+Start with a real recording using the discovery command below. Current evaluation
+requires real-world audio, defensible recording times and independent location
+references. Synthetic experiments listed in historical results do not satisfy this
+requirement; no further synthetic benchmark work is planned.
 
 Use a new output directory for each experiment. Run the tests with `.venv/bin/python -m pytest -q`. For pinned environments and clean-install evidence, see [Setup](docs/SETUP.md); native Windows execution has not been verified.
 
@@ -51,7 +49,7 @@ The central complication is that the plane **moves while its sound travels**. DO
 
 ## Capabilities and limits
 
-- **Available on `main`:** `aircraft-geoloc run` for configured localization experiments, `measure` for selected acoustic events, and `scripts/discover_audio.py` for whole-recording intake and discovery. Flight indexing, bounded tiled search, multi-flyover matching, physical refinement and conservative decision logic exist as components.
+- **Available on `main`:** `dopplergeist run` for configured localization experiments, `measure` for selected acoustic events, and `scripts/discover_audio.py` for whole-recording intake and discovery. Flight indexing, bounded tiled search, multi-flyover matching, physical refinement and conservative decision logic exist as components.
 - **Under integration:** the local upload interface, persistent jobs and automatic `analyze`, `serve` and `job` commands remain in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19). They are not supported commands on `main`. [Upload verification](https://github.com/1337isnot1337/DOPPLERGEIST/pull/32) and [final acceptance](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) remain separate gates.
 - **Not independently validated:** nationwide geolocation accuracy on real recordings, calibrated location probabilities, and the false-localization rate of the acceptance rules.
 
@@ -88,7 +86,7 @@ Large research inputs live in checksummed release assets. With an authenticated 
 ```bash
 .venv/bin/python scripts/restore_artifacts.py \
   --bundle data-source --bundle data-adsb-derived --bundle data-terrain
-.venv/bin/aircraft-geoloc run \
+.venv/bin/dopplergeist run \
   data/source/reproduce-local.json \
   --output results/my-reference-replay
 ```

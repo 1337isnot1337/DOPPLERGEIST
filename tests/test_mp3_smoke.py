@@ -4,7 +4,7 @@ import subprocess
 import numpy as np
 import soundfile as sf
 
-from aircraft_geoloc.audio import decode
+from dopplergeist.audio import decode
 
 
 def test_mp3_decode_preserves_timing_and_tone(tmp_path):

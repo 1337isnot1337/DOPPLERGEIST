@@ -12,8 +12,8 @@ import subprocess
 
 import numpy as np
 
-from aircraft_geoloc.geometry import ecef
-from aircraft_geoloc.pipeline import run
+from dopplergeist.geometry import ecef
+from dopplergeist.pipeline import run
 
 
 def digest(path):
