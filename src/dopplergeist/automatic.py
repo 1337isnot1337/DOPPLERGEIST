@@ -109,7 +109,9 @@ def _earliest_emission(lo, events, max_distance, c, filters):
         # Candidate association allows half the offset tolerance beyond each
         # event's CPA interval, then the wide-clock scorer allows a 5 s sweep.
         earliest_cpa = min(e["cpa_receive_s"] - e["quality"]["cpa_tolerance_s"] for e in events)
-        earliest_refinement = min(e["start_s"] for e in events) - max_distance / 300 - 120
+        # Round outward relative to the differently grouped Unix-time
+        # calculation in _decide, including floating-point error.
+        earliest_refinement = min(e["start_s"] for e in events) - max_distance / 300 - 121
         candidate = earliest_cpa - offset / 2 - 5 - max_distance / c - 30
         if not all(math.isfinite(x) for x in (earliest_cpa, earliest_refinement, candidate)):
             return original
