@@ -7,6 +7,7 @@ import pytest
 
 from dopplergeist.data_access import DataUnavailable, write_json
 from dopplergeist.finite_search import RetentionLedger
+from dopplergeist.parallel_retention import import_retention_stage
 from dopplergeist.tiled_search import merge_candidates
 
 
@@ -39,6 +40,31 @@ def contents(target):
                 for table in ("run", "stages", "records", "bounds")}
 
 
+@pytest.mark.parametrize("damage", ["score", "missing_record", "sqlite_header"])
+def test_reopened_recorded_stage_rejects_damage(real_tiles, tmp_path, damage):
+    rows = json.loads((Path(__file__).parent / "data/reference-retention-real.json").read_text())["rows"]
+    target = ledger(tmp_path / "damaged.sqlite", real_tiles)
+    stage = "recorded-fits"
+    merge_candidates(rows, 3, ledger=target, stage=stage)
+    expected = target.checksum(stage)
+    assert target.stage_valid(stage, expected)
+    if damage == "sqlite_header":
+        data = target.path.read_bytes()
+        target.path.write_bytes(b"damaged header!!\0" + data[16:])
+    else:
+        with sqlite3.connect(target.path) as db:
+            if damage == "score":
+                db.execute("UPDATE records SET score=score+1 WHERE stage=?", (stage,))
+            else:
+                db.execute("DELETE FROM records WHERE stage=? AND mode_id=("
+                           "SELECT min(mode_id) FROM records WHERE stage=?)", (stage, stage))
+    try:
+        reopened = ledger(target.path, real_tiles)
+        assert not reopened.stage_valid(stage, expected)
+    except DataUnavailable:
+        pass
+
+
 def test_recorded_empty_stage_rows_and_checksums_match_in_batches(real_tiles, tmp_path):
     serial = ledger(tmp_path / "serial.sqlite", real_tiles)
     batched = ledger(tmp_path / "batched.sqlite", real_tiles)
@@ -53,6 +79,22 @@ def test_recorded_empty_stage_rows_and_checksums_match_in_batches(real_tiles, tm
         expected = tile["checkpoint"]["payload"]["retention_checksum"]
         for phase in ("coarse", "global"):
             assert batched.stage_valid(f"{phase}:{tile['tile_id']}", expected)
+
+
+def test_recorded_modes_import_with_complete_checksums(real_tiles, tmp_path):
+    rows = json.loads((Path(__file__).parent / "data/reference-retention-real.json").read_text())["rows"]
+    worker = ledger(tmp_path / "worker.sqlite", real_tiles)
+    parent = ledger(tmp_path / "parent.sqlite", real_tiles)
+    stage = "recorded-fits"
+    merge_candidates(rows, 3, ledger=worker, stage=stage)
+    checksum = worker.checksum(stage)
+    import_retention_stage(parent, worker.path, stage, checksum)
+    assert contents(parent) == contents(worker)
+    with worker.connect() as db:
+        db.execute("UPDATE records SET score=score+1 WHERE stage=?", (stage,))
+    with pytest.raises(DataUnavailable, match="failed its checksum"):
+        import_retention_stage(parent, worker.path, stage, checksum)
+    assert parent.stage_valid(stage, checksum)
 
 
 def test_empty_tile_batches_preserve_previous_real_retained_modes(real_tiles, tmp_path):

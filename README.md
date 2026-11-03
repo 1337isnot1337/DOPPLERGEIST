@@ -4,9 +4,9 @@
 
 DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations.
 
-![Spectrogram and scored search grid for a real Livermore aircraft flyover](assets/livermore-real-demo.png)
+![Automatic MP3 flyover and ranked aircraft search](assets/livermore-automatic-mp3.png)
 
-<sub>From a real aircraft flyover, DOPPLERGEIST’s highest-scoring point landed **481 m from a reference derived from other flight tracks**. This demonstration uses the known aircraft and a bounded time and area; [see the full results and limitations](docs/LIVERMORE_DEMO.md).</sub>
+<sub>From a real MP3, DOPPLERGEIST automatically detected a flyover and searched tracks from 466 aircraft. Its top candidate landed **476 m from an inferred reference**, using a city-sized search area and an approximately 10-second time window; [see the full results and limitations](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
 **This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
 

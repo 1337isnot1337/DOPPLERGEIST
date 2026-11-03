@@ -137,8 +137,8 @@ class RetentionLedger:
                         groups_count INTEGER, detail TEXT, PRIMARY KEY(stage,bound_id));
                     CREATE INDEX IF NOT EXISTS bound_index ON bounds(bound_id);
                 """)
-                if db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
-                    raise DataUnavailable("Corrupt finite retention ledger")
+                # Saved stages are checksum-verified before reuse and evidence.
+                # Opening a national ledger must not scan its entire database.
                 identity = db.execute("SELECT identity,score_kind FROM run").fetchone()
                 if identity is None:
                     db.execute("INSERT INTO run VALUES(?,?)", (run_hash, score_kind))

@@ -52,11 +52,15 @@ jobs:
           assert "site-packages" in package.parts, package
           assert Path(_native_ridge.__file__).resolve().parent == package
           assert callable(getattr(_native_ridge, "event_fit_reason", None)), "Native evidence validator did not build"
+          assert callable(getattr(_native_ridge, "valid_ridge_events", None)), "Native boolean validator did not build"
           fixture = json.loads(Path("tests/data/real-ridge-batch-arithmetic.json").read_text())
           fits = fixture["legacy_diagnostics"]
           assert _native_ridge.event_fit_reason(
               fits, [fit["score"] for fit in fits], [fit["f0_hz"] for fit in fits],
               [fixture["event"]] * len(fits)) == 0
+          assert _native_ridge.valid_ridge_events(
+              fits, [fit["score"] for fit in fits], [fit["f0_hz"] for fit in fits],
+              [fixture["event"]] * len(fits)) is True
           web = resources.files("dopplergeist.web")
           for name in ("index.html", "app.js", "style.css"):
               assert web.joinpath(name).is_file(), name

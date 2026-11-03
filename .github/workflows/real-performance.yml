@@ -4,14 +4,14 @@ on:
     inputs:
       baseline:
         description: Exact baseline commit for both real-input comparisons
-        default: c37128bb08f12b8a68cf1f1cbf86adc2436f60fd
+        default: b4cd00ad46f0299baa716950fabe062d74f019f0
         required: true
       regional:
         description: Also compare the complete regional HTTP workflow
         type: boolean
         default: true
   push:
-    branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103, perf/single-pass-motion-20261103]
+    branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103, perf/single-pass-motion-20261103, perf/prepared-flight-scoring-20261103, perf/flight-sieve-reuse-20261103]
     paths:
       - .github/workflows/real-performance.yml
       - src/dopplergeist/**
@@ -27,6 +27,7 @@ on:
       - pyproject.toml
       - tests/test_real_*.py
       - tests/data/real-ridge-batch-arithmetic.json
+      - tests/data/real-trial-prefix.json
       - tests/data/reference-empty-tiles-real.json
       - tests/data/reference-retention-real.json
 permissions:
@@ -38,7 +39,7 @@ env:
   NUMEXPR_NUM_THREADS: '1'
   CC: gcc
   PYTHONPATH: src
-  BASELINE_REF: ${{ inputs.baseline || 'c37128bb08f12b8a68cf1f1cbf86adc2436f60fd' }}
+  BASELINE_REF: ${{ inputs.baseline || 'b4cd00ad46f0299baa716950fabe062d74f019f0' }}
 jobs:
   compare:
     if: github.event_name != 'push' || github.ref != 'refs/heads/perf/real-pipeline-throughput-20261103'
@@ -53,11 +54,13 @@ jobs:
           python-version: '3.12'
       - name: Install runtime and source-tree extensions
         run: |
+          python -m pip install 'setuptools>=68'
           python -m pip install --editable '.[test]'
           python - <<'PY'
           from dopplergeist import matching, native_acoustic
           assert callable(matching._native_fit_irls), "Native ridge extension did not build"
-          assert callable(getattr(matching._native_ridge_module, "event_fit_reason", None)), "Native evidence validator did not build"
+          assert callable(getattr(matching._native_ridge_module, "event_fit_reason", None)), "Native event_fit_reason did not build"
+          assert callable(matching._native_validate_ridge_events), "Native valid_ridge_events did not build"
           assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
           assert native_acoustic._native is not None, "Native acoustic extension did not build"
           assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
@@ -84,6 +87,13 @@ jobs:
           for width in 120 10; do
             python scripts/benchmark_prepared_measurements.py prepare --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json --index benchmark-inputs/reference-region.sqlite --clock-half-width-s "$width" --output "benchmark-inputs/point-$width.json"
           done
+          python scripts/benchmark_prepared_measurements.py prepare \
+            --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+            --index benchmark-inputs/reference-region.sqlite \
+            --reference-report evidence/results/reference-local/report.json \
+            --full-day --max-tracks 2000 --max-samples 500000 --max-candidates 20000 \
+            --anchor-window-s 1788864888.7151732 1788865236.7214916 \
+            --include-track-query --output benchmark-inputs/dense-query.json
       - name: Export real pipeline objective controls
         env:
           DOPPLERGEIST_RIDGE_BACKEND: python
@@ -94,17 +104,18 @@ jobs:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
           DOPPLERGEIST_REAL_REFERENCE_ROOT: benchmark-inputs/reference-checkout
           DOPPLERGEIST_REAL_REFERENCE_DISCOVERY: evidence/audio/w1-sensitivity-20261102/reference/discovery.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_native_ridge_long.py tests/test_real_native_validation.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py
+        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_native_ridge_long.py tests/test_real_native_validation.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py tests/test_real_scalar_terrain.py tests/test_real_scoring_inputs.py tests/test_real_trial_prefix.py tests/test_real_candidate_setup.py tests/test_real_index_columns.py tests/test_real_track_cache.py tests/test_real_retention_batch.py
       - name: Verify the explicit Python fallback on recorded arithmetic
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
           DOPPLERGEIST_RIDGE_BACKEND: python
           DOPPLERGEIST_ACOUSTIC_BACKEND: python
-        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py
+        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py tests/test_real_scoring_inputs.py tests/test_real_trial_prefix.py tests/test_real_candidate_setup.py
       - name: Compare real CPA preparation
         run: python scripts/benchmark_real_cpa_rows.py --baseline-source "$RUNNER_TEMP/baseline/src" --output results/cpa-rows.json --repeats 5 --iterations 20
       - name: Compare complete payloads and timings
         run: |
+          benchmark_cpu=$(python -c 'import os; print(min(os.sched_getaffinity(0)))')
           native_option=()
           if [ -f src/dopplergeist/_native_ridge.c ]; then
             native_option=(--require-current-native)
@@ -113,11 +124,16 @@ jobs:
             native_option+=(--require-current-native-acoustic)
           fi
           for width in 10 120; do
-            python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 2 --timeout-s 600 --output "results/performance-$width" "${native_option[@]}"
+            taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 3 --timeout-s 600 --output "results/performance-$width" "${native_option[@]}"
           done
+          taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py compare \
+            --fixture benchmark-inputs/dense-query.json --include-track-query \
+            --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src \
+            --repeats 3 --timeout-s 600 --output results/performance-dense-query \
+            "${native_option[@]}"
       - name: Profile remaining point work outside the timing comparison
         run: |
-          python -m cProfile -o results/current-point.prof scripts/benchmark_prepared_measurements.py _worker --source src --fixture benchmark-inputs/point-120.json --output results/current-point-profile --require-native --require-native-acoustic
+          python -m cProfile -o results/current-point.prof scripts/benchmark_prepared_measurements.py diagnose --source src --fixture benchmark-inputs/point-120.json --output results/current-point-profile --require-native --require-native-acoustic
           python - <<'PY'
           import json
           from pathlib import Path
@@ -146,6 +162,17 @@ jobs:
           print(json.dumps({"profile_summary": str(output), "excluded_from_timing_medians": True,
                             "top_10": records[:10]}, indent=2))
           PY
+      - name: Count numerical calls outside the timing comparison
+        run: |
+          python scripts/benchmark_prepared_measurements.py diagnose --source src --fixture benchmark-inputs/point-120.json --output results/current-point-operations --instrument-numerics --require-native --require-native-acoustic
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          canonical = json.loads(Path("results/performance-120/1-current/results.json").read_text())
+          diagnostic = json.loads(Path("results/current-point-operations/results.json").read_text())
+          assert json.dumps(canonical, sort_keys=True) == json.dumps(diagnostic, sort_keys=True), "Numerical instrumentation changed scientific outputs"
+          print("Diagnostic counters preserve outputs; their timings and disabled optimizations are excluded from performance comparisons")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -157,6 +184,7 @@ jobs:
             results/performance-*/*/summary.json
             results/current-point.prof
             results/current-point-profile-stats.json
+            results/current-point-operations/summary.json
           if-no-files-found: ignore
           retention-days: 14
       - uses: actions/upload-artifact@v4
@@ -167,7 +195,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
   regional:
-    if: github.ref == 'refs/heads/perf/single-pass-motion-20261103' || (github.event_name == 'workflow_dispatch' && inputs.regional)
+    if: github.ref == 'refs/heads/perf/single-pass-motion-20261103' || github.ref == 'refs/heads/perf/prepared-flight-scoring-20261103' || (github.event_name == 'workflow_dispatch' && inputs.regional)
     # Keep the reference FFmpeg family; a new encoder can change detected ridges.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -180,11 +208,13 @@ jobs:
           python-version: '3.12'
       - name: Install runtime and source-tree extensions
         run: |
+          python -m pip install 'setuptools>=68'
           python -m pip install --editable '.[test]'
           python - <<'PY'
           from dopplergeist import matching, native_acoustic
           assert callable(matching._native_fit_irls), "Native ridge extension did not build"
-          assert callable(getattr(matching._native_ridge_module, "event_fit_reason", None)), "Native evidence validator did not build"
+          assert callable(getattr(matching._native_ridge_module, "event_fit_reason", None)), "Native event_fit_reason did not build"
+          assert callable(matching._native_validate_ridge_events), "Native valid_ridge_events did not build"
           assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
           assert native_acoustic._native is not None, "Native acoustic extension did not build"
           assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
@@ -320,7 +350,7 @@ jobs:
           python-version: '3.12'
       - name: Install matched runtime
         run: |
-          python -m pip install '.[test]' 'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' 'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
+          python -m pip install 'setuptools>=68' '.[test]' 'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' 'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
           sudo apt-get update
           sudo apt-get install -y ffmpeg
       - name: Restore public recording and observed inputs

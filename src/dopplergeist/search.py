@@ -1,4 +1,5 @@
 """Geometric event filters, silence constraints and locked multi-event scoring."""
+from collections import OrderedDict
 from itertools import product
 import math
 
@@ -8,7 +9,8 @@ from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
-from .geometry import AcousticSupportError, ecef
+from .geometry import AcousticSupportError, _CANONICAL_ECEF, ecef
+from .matching import _CANONICAL_NATIVE_EVENT_VALIDATOR, _native_validate_ridge_events
 
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
 _CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
@@ -322,13 +324,6 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
     return best_frequency(spectrum, times, factor, f0_bounds, frequency_step)
 
 
-_EVENT_FIT_FAILURES = (
-    None, "incomplete_acoustic_support", "nonfinite_fit_evidence", "invalid_fit_evidence",
-    "failed_optimizer", "inconsistent_event_fit_evidence", "fit_outside_declared_frequency_domain",
-    "fit_outside_declared_drift_domain", "inconsistent_source_drift",
-)
-
-
 def _ridge_trial_classification(result, events, association):
     """Classify recorded core fits, without changing their score or rejection rule.
 
@@ -346,43 +341,43 @@ def _ridge_trial_classification(result, events, association):
     if (not isinstance(diagnostics, list) or not isinstance(scores, list) or not isinstance(frequencies, list)
             or not len(diagnostics) == len(scores) == len(frequencies) == len(events)):
         return "unknown", "missing_event_fit_evidence"
-    from .matching import _native_ridge_module
-    validator = getattr(_native_ridge_module, "event_fit_reason", None)
-    reason = None if validator is None else validator(diagnostics, scores, frequencies, events)
-    if reason is not None and reason:
-        return "unknown", _EVENT_FIT_FAILURES[reason]
-    if reason is None:
-        fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
-                  "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
-        for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
-            if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
-                    or diagnostic["support_fraction"] != 1.0):
-                return "unknown", "incomplete_acoustic_support"
-            if (not all(finite(diagnostic.get(name)) for name in fields)
-                    or not finite(score) or not finite(frequency)):
-                return "unknown", "nonfinite_fit_evidence"
-            count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
-            if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
-                    or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
-                    or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
-                    or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
-                return "unknown", "invalid_fit_evidence"
-            if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
-                return "unknown", "failed_optimizer"
-            if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
-                return "unknown", "inconsistent_event_fit_evidence"
-            bounds = event.get("f0_range_hz")
-            fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
-            if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
-                    or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
-                    or not bounds[0] <= frequency <= bounds[1]
-                    or not finite(fraction) or not 0 <= fraction <= 0.1):
-                return "unknown", "fit_outside_declared_frequency_domain"
-            drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
-            if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
-                return "unknown", "fit_outside_declared_drift_domain"
-            if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
-                return "unknown", "inconsistent_source_drift"
+    fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+              "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
+    # The optional native path recognizes only valid evidence in plain core
+    # containers. Invalid or custom inputs retain the exact Python validation
+    # below, including error precedence and subclass/numeric-type behavior.
+    validated = (_native_validate_ridge_events is not None and
+                 _native_validate_ridge_events(diagnostics, scores, frequencies, events))
+    pending = () if validated else zip(diagnostics, scores, frequencies, events)
+    for diagnostic, score, frequency, event in pending:
+        if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
+                or diagnostic["support_fraction"] != 1.0):
+            return "unknown", "incomplete_acoustic_support"
+        if (not all(finite(diagnostic.get(name)) for name in fields)
+                or not finite(score) or not finite(frequency)):
+            return "unknown", "nonfinite_fit_evidence"
+        count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
+        if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
+                or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
+                or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
+                or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
+            return "unknown", "invalid_fit_evidence"
+        if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
+            return "unknown", "failed_optimizer"
+        if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
+            return "unknown", "inconsistent_event_fit_evidence"
+        bounds = event.get("f0_range_hz")
+        fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+        if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
+                or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
+                or not bounds[0] <= frequency <= bounds[1]
+                or not finite(fraction) or not 0 <= fraction <= 0.1):
+            return "unknown", "fit_outside_declared_frequency_domain"
+        drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
+        if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
+            return "unknown", "fit_outside_declared_drift_domain"
+        if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
+            return "unknown", "inconsistent_source_drift"
     if "optimizer_success" in result and result["optimizer_success"] is not True:
         return "unknown", "failed_optimizer"
     residual = float(sum(scores))
@@ -423,6 +418,18 @@ def _association_event_ceiling(diagnostic, score, frequency, event, limit):
     mutation checks while avoiding repeated validation of the same clock fit.
     Noncanonical numeric types retain the original validation and arithmetic.
     """
+    if _native_validate_ridge_events is not _CANONICAL_NATIVE_EVENT_VALIDATOR:
+        # A custom hook can change validity without changing scalar evidence.
+        # Preserve the full classifier and do not reuse an earlier hook's key.
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    if (_native_validate_ridge_events is not None
+            and _ridge_trial_classification is _CANONICAL_CEILING_FUNCTIONS[2]
+            and _association_event_ceiling_uncached is _CANONICAL_CEILING_FUNCTIONS[1]
+            and type(limit) is float and math.isfinite(limit) and limit > 0
+            and _native_validate_ridge_events([diagnostic], [score], [frequency], [event])):
+        if -score > limit:
+            return -np.inf
+        return float(np.nextafter(1 - (-score) / limit, np.inf))
     from .matching import _ridge_fit_cache
     cache = _ridge_fit_cache.get()
     if (cache is None or cache.max_entries <= 0 or type(diagnostic) is not dict
@@ -508,7 +515,9 @@ def _association_trial_bound(result, events):
 
 def _validate_score_ceiling_inputs(events, measurements):
     """Do not hide malformed fit inputs behind an unperformed-fit certificate."""
-    from .matching import _frequency_scale, _ridge_fit_inputs
+    from .matching import _frequency_scale, _prepared_score_tokens, _ridge_fit_inputs
+    if _prepared_score_tokens(measurements, events) is not None:
+        return
     for event, measurement in zip(events, measurements):
         value = _frequency_scale(event)
         if not isinstance(value, (int, float, np.number)) or isinstance(value, (bool, np.bool_)):
@@ -581,6 +590,14 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     from .acoustic_screen import ridge_trial_rejections
     from .batch_ridge import first_event_fits, _first_event_fits_with_ceilings
     from .matching import _frequency_scale, fit_ridge
+    from .trial_prefix import request
+
+    reusable = request(tracks, events, measurements, observer, starts, c, acoustic_batches,
+                       score_floor, use_dual, legacy_first_batch)
+    if reusable is not None:
+        previous = reusable.lookup()
+        if previous is not None:
+            return previous
 
     diagnostics = [[] for _ in starts]
     outcomes = [None] * len(starts)
@@ -590,10 +607,12 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     limits = [3 * _frequency_scale(event) for event in events] if score_floor is not None else []
     bound_enabled = bool(limits) and all(np.isfinite(value) and value > 0 for value in limits)
     batches = iter(acoustic_batches)
+    processed = 0
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
         if not active:
             break
         batch = next(batches)
+        processed = index + 1
         if use_dual and batch is not None:
             rejected, upper = ridge_trial_rejections(measurement, event, *batch,
                 score_floor=score_floor, group_count=len(events))
@@ -656,7 +675,38 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
             else:
                 outcomes[trial] = (_ridge_result(diagnostics[trial]), None, None)
         active = next_active
+    if reusable is not None:
+        reusable.remember(processed, outcomes, rejected_count, floor_count)
     return outcomes, rejected_count, floor_count
+
+
+def _candidate_observer(lat, lon, height):
+    """Reuse the scalar ECEF operation for private, ordinary receiver inputs."""
+    from .matching import _NATIVE_RIDGE_ERROR_POLICY, _ridge_fit_cache
+
+    cache = _ridge_fit_cache.get()
+    if (cache is None or not cache.score_inputs or cache.max_entries < 1
+            or ecef is not _CANONICAL_ECEF
+            or not all(type(value) is float and math.isfinite(value) for value in (lat, lon, height))
+            or not (-90 <= lat <= 90 and -180 <= lon <= 180 and abs(height) <= 1e7)
+            or np.geterr() != _NATIVE_RIDGE_ERROR_POLICY):
+        return ecef(lat, lon, height)
+    entries = getattr(cache, "observer_entries", None)
+    if entries is None:
+        entries = cache.observer_entries = OrderedDict()
+    # Hex preserves signed zero as well as every bit of each finite coordinate.
+    key = lat.hex(), lon.hex(), height.hex()
+    value = entries.get(key)
+    if value is None:
+        result = ecef(lat, lon, height)
+        value = np.frombuffer(result.tobytes(), dtype=result.dtype).reshape(result.shape)
+        entries[key] = value
+    entries.move_to_end(key)
+    while len(entries) > min(cache.max_entries, 256):
+        entries.popitem(last=False)
+    # Each scalar ECEF call used to return a fresh array. Keep that ownership
+    # contract, including for a caller that mutates its observer later.
+    return value.copy()
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
@@ -694,12 +744,20 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
         _validate_score_ceiling_inputs(events, measurements)
-    observer = ecef(point.lat,point.lon,point.elev_m)
+    observer = _candidate_observer(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
     anchor = time_origin if time_origin is not None else candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"]
-    shifts = np.linspace(-time_sweep_s,time_sweep_s,max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1)
-    if mode == "robust_ridge" and "recording_start_bounds_s" in candidate:
+    default_count = max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1
+    bounded_clock = mode == "robust_ridge" and "recording_start_bounds_s" in candidate
+    # The bounded clock below replaces this entire array. Retain its original
+    # arithmetic/validation for unusual scalar types, ranges and error policies.
+    ordinary_clock = (bounded_clock and type(time_sweep_s) in (float, int) and type(time_step_s) in (float, int)
+                      and 0 <= time_sweep_s <= 86400 and 1e-6 <= time_step_s <= 86400
+                      and default_count <= 4096
+                      and np.geterr() == {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"})
+    shifts = None if bounded_clock and ordinary_clock else np.linspace(-time_sweep_s,time_sweep_s,default_count)
+    if bounded_clock:
         lower, upper = candidate["recording_start_bounds_s"]
         # CPA intervals propose a shared clock; the physical model may move it
         # within the same declared sweep used by legacy scoring.

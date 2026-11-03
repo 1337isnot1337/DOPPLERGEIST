@@ -62,3 +62,7 @@ def try_acoustic(track, t, observer, c, start, end, arrival_start, arrival_end, 
         return None
     track._check_motion_support(t, observer, c)
     return output
+
+
+_CANONICAL_NATIVE = _native
+_CANONICAL_SOLVE = getattr(_native, "solve", None)

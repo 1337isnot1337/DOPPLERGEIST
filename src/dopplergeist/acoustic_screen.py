@@ -194,3 +194,7 @@ def _loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, fraction
                        +source_box+drift_box)
         lower = np.maximum(0., value-error)/np.sum(weight)
     return active, valid, lower
+
+
+_CANONICAL_SCREEN_FUNCTIONS = (ridge_trial_rejections, _cached_loss_lower_bounds,
+                             _validated_loss_lower_bounds, _loss_lower_bounds, _frequency_scale)
