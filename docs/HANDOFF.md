@@ -80,7 +80,10 @@ workers and homelab stages with eight. A monitor resumes only the configured
 wall-time timeout after transferring available remote checkpoints; it does not
 resume a user cancellation or another failure. Operator-local cross-host helpers
 and logs are under `/home/cinna/.local/state/dopplergeist-cross-host-parity-20261103/`;
-they are not a portable distributed CLI. A search checkpoint from different
+they are not a portable distributed CLI. The homelab disk guard stops only the
+identified staging process group below 15 GiB free; the coordinator then imports
+its completed checkpoints. The guard and its log are also in homelab's
+`~/.cache/dopplergeist-multicore-20261103/`. A search checkpoint from different
 code must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty root tiles after checking both
 identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
