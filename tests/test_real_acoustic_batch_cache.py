@@ -10,7 +10,8 @@ import pytest
 from dopplergeist.data_access import FlightIndex
 from dopplergeist.geometry import ecef
 from dopplergeist.matching import (_cache_ridge_fits, _ridge_fit_cache,
-                                   batch_acoustic_trials, prepare_events)
+                                   _fit_ridge_uncached, _frequency_scale, batch_acoustic_trials,
+                                   fit_ridge, prepare_events)
 
 
 def test_real_acoustic_batches_reuse_exact_inputs_and_preserve_fallback(monkeypatch):
@@ -81,3 +82,27 @@ def test_real_acoustic_batches_reuse_exact_inputs_and_preserve_fallback(monkeypa
     before = calls
     evicted()
     assert calls == before + 3
+
+    fit_calls = 0
+    def counted_fit(*args, **kwargs):
+        nonlocal fit_calls
+        fit_calls += 1
+        return _fit_ridge_uncached(*args, **kwargs)
+    monkeypatch.setattr("dopplergeist.matching._fit_ridge_uncached", counted_fit)
+
+    @_cache_ridge_fits
+    def supplied_acoustics_are_part_of_fit_input():
+        factors, emissions = (part[0].copy() for part in baseline)
+        arguments = (track, observer, measurement, starts[0], event["f0_range_hz"],
+                     343., _frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02))
+        original_fit = fit_ridge(*arguments, acoustic_result=(factors, emissions))
+        assert fit_ridge(*arguments, acoustic_result=(factors.copy(), emissions.copy())) == original_fit
+        assert fit_calls == 1
+        factors[0] *= 1.01  # Fault-inject a changed precomputed input on real observations.
+        expected = _fit_ridge_uncached(*arguments, acoustic_result=(factors, emissions))
+        assert expected != original_fit
+        assert fit_ridge(*arguments, acoustic_result=(factors, emissions)) == expected
+        assert fit_calls == 2
+        with pytest.raises(ValueError, match="does not match"):
+            fit_ridge(*arguments, acoustic_result=(factors[:-1], emissions))
+    supplied_acoustics_are_part_of_fit_input()
