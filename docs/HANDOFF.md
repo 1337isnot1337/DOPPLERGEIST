@@ -89,7 +89,12 @@ migration used here accepts strictly empty root tiles after checking both
 identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
 zero receiver grid points were migrated; the preceding search is archived locally
 as `search-before-motion-c259f38`. Check final coverage, unsupported-motion and
-retention evidence before describing any candidate as a localization.
+retention evidence before describing any candidate as a localization. Main also
+contains a newer harmonic-ambiguity confidence check from PR #192, which is not
+in the active search process. Its aligned-sample heuristic flagged no pair when
+run over all 17 discovered ridges from this upload; this does not establish that
+the groups are independent. Apply current confidence checks to the final
+matched evidence before accepting a result.
 
 ## Read first
 
