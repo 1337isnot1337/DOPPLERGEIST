@@ -5,6 +5,7 @@ import sqlite3
 
 import pytest
 
+from dopplergeist.data_access import DataUnavailable
 from dopplergeist.finite_search import RetentionLedger
 from dopplergeist.parallel_retention import import_retention_stage
 
@@ -32,6 +33,9 @@ def test_real_retention_stages_survive_worker_import(tmp_path):
     for stage, checksum in (populated, empty, populated):
         import_retention_stage(target, snapshot, stage, checksum)
         assert target.stage_valid(stage, checksum)
+    with pytest.raises(DataUnavailable):
+        import_retention_stage(target, snapshot, populated[0], populated[1] + "0")
+    assert target.stage_valid(*populated)
     with sqlite3.connect(snapshot) as worker, sqlite3.connect(target.path) as parent:
         for stage, _ in (populated, empty):
             for table, column in (("stages", "name"), ("records", "stage"), ("bounds", "stage")):
