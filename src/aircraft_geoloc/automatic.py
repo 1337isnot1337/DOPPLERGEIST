@@ -102,7 +102,10 @@ def _search(request, recording, events, output, config, search_progress):
     lo, hi = (utc_timestamp(window[name]).timestamp() for name in ("start_utc", "end_utc"))
     if not config.get("flight_indexes") and not config.get("cache_root"):
         raise MissingData("Historical flight/terrain data are not configured. The operator must provide cache_root or prebuilt flight indexes with a terrain model.")
-    if not config.get("flight_indexes") and (hi-lo+recording.metadata["duration_s"])/86400 > config.get("max_acquisition_days", 3):
+    first_day = datetime.fromtimestamp(lo-max_distance/300-30, timezone.utc).date()
+    last_day = datetime.fromtimestamp(hi+recording.metadata["duration_s"]+30, timezone.utc).date()
+    acquisition_days = (last_day-first_day).days+1
+    if not config.get("flight_indexes") and acquisition_days > config.get("max_acquisition_days", 3):
         raise MissingData("Recording time window exceeds the configured historical-data acquisition budget. Supply a narrower defensible window.")
     ground = config.get("terrain", {})
     hashes = {"terrain_configuration": ground}

@@ -68,19 +68,25 @@ function render(value) {
   $('candidates').replaceChildren();
   if (value.candidates?.length) {
     $('candidates').append(node('h3', value.status === 'succeeded' ? 'Supported location & alternatives' : 'Location hypotheses · result remains inconclusive'));
+    let additional = null;
     value.candidates.forEach((candidate, i) => {
       const card = node('div', undefined, 'candidate');
       card.append(node('strong', `${i + 1}. ${candidate.lat.toFixed(6)}, ${candidate.lon.toFixed(6)}`));
       if (candidate.uncertainty) {
         const u = candidate.uncertainty;
-        card.append(node('p', `${u.kind === 'calibrated' ? 'Calibrated uncertainty' : 'Sensitivity radius'}: ${u.radius_m.toFixed(0)} m · ${u.method}`));
+        card.append(node('p', `${u.kind === 'calibrated' ? 'Calibrated uncertainty' : 'Sensitivity radius'}: ${u.radius_m.toFixed(0)} m · ${u.method.replaceAll('_', ' ')}`));
         if (u.coverage_probability !== undefined) card.append(node('p', `Calibrated coverage: ${(100 * u.coverage_probability).toFixed(0)}% · ${u.calibration_reference}`));
       } else card.append(node('p', 'Location uncertainty was not established.'));
-      card.append(node('p', `Score ${candidate.score.toPrecision(5)} (${candidate.score_kind}); not a probability.`));
+      card.append(node('p', `Score ${candidate.score.toPrecision(5)} (${candidate.score_kind.replaceAll('_', ' ')}); not a probability.`));
       card.append(node('p', `Flights: ${candidate.flight_ids.join(', ')} · Recording start: ${candidate.recording_start_utc}`));
       const map = node('a', 'View coordinate on OpenStreetMap');
       map.href = `https://www.openstreetmap.org/?mlat=${candidate.lat}&mlon=${candidate.lon}#map=14/${candidate.lat}/${candidate.lon}`;
-      map.target = '_blank'; map.rel = 'noopener noreferrer'; card.append(map); $('candidates').append(card);
+      map.target = '_blank'; map.rel = 'noopener noreferrer'; card.append(map);
+      if (i < 5) $('candidates').append(card);
+      else {
+        if (!additional) { additional = node('details'); additional.append(node('summary', `${value.candidates.length - 5} additional hypotheses`)); $('candidates').append(additional); }
+        additional.append(card);
+      }
     });
   }
   $('events').replaceChildren();

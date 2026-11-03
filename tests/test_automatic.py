@@ -130,3 +130,16 @@ def test_complete_tile_work_is_separate_from_partial_flight_coverage():
     assert coverage["search_complete"] is True
     assert coverage["data_status"] == "partial"
     assert "historical_flight_scope_or_audible_border_region" in coverage["missing_data"]
+
+
+def test_acquisition_budget_counts_utc_archive_days_across_midnight(tmp_path):
+    from types import SimpleNamespace
+    from aircraft_geoloc.automatic import MissingData, _search
+    window = {"start_utc": "2026-09-08T23:59:00Z", "end_utc": "2026-09-08T23:59:00Z", "source": "user"}
+    event = {"event_id": "event-1", "start_s": 0., "end_s": 10., "band_hz": [100., 120.],
+             "ridge": [{"time_s": float(t), "frequency_hz": 115.-t} for t in range(10)]}
+    recording = SimpleNamespace(metadata={"time_window": window, "duration_s": 61.})
+    request = {"schema_version": 1, "audio_path": "unused", "time_window": window, "search": {"coverage": "conus"}}
+    with pytest.raises(MissingData, match="acquisition budget"):
+        _search(request, recording, [event], tmp_path, {"cache_root": str(tmp_path), "max_acquisition_days": 1}, lambda: None)
+    assert not (tmp_path/"flights").exists()
