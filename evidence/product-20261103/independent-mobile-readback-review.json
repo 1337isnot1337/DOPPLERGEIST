@@ -1,0 +1,23 @@
+{
+  "verifier_commit": "0d8cdbc33f8b345440bdecc366b2d54f83f4afbc",
+  "installed_product_commit": "57909c355fb696802ad82f7f65784e92c54e181f",
+  "report_path": "evidence/verification/product-readback-20261103/report.json",
+  "report_sha256": "0669ea5d0673dd1e8ff88f06363267c08e1cb8bed3fabaf8ee7ae7c21ebdce27",
+  "expanded_screenshot_path": "evidence/verification/product-readback-20261103/mobile-expanded-viewport.png",
+  "expanded_screenshot_sha256": "a089a7f42284269192a287b8276a45cfbf7b5b86311a48c2a6c4b2b88d3695eb",
+  "independent_checks": {
+    "candidate_count": 106,
+    "initially_visible": 5,
+    "expanded_visible": 106,
+    "mobile_viewport_px": 390,
+    "collapsed_document_px": 390,
+    "expanded_document_px": 390,
+    "exact_artifact_downloads": 14,
+    "original_job_files_unchanged": true,
+    "reload_passed": true,
+    "javascript_errors": 0,
+    "reported_radius_method_cards_checked": 6
+  },
+  "w5_visual_review": "Expanded 390 px screenshot inspected: long flight IDs and score labels wrap within cards, expansion label is visible and cards remain readable.",
+  "scope": "Unchanged actual terminal ambiguity-job readback only; no scientific rerun, finite-union proof or accepted location."
+}
