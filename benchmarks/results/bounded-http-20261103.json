@@ -1,0 +1,165 @@
+{
+  "scope": "Fresh actual HTTP upload through intake, discovery, search, refinement and decision on an archived four-point real workload. Source-informed region/time and supplied cached inputs; no independent location-accuracy or nationwide-runtime claim.",
+  "baseline_revision": "aa3dff686c989524daa20c081a816b792d9c8890",
+  "optimized_production_revision": "5699a657d57dc4f66b74ef000e20d3ba88f84704",
+  "local_verified_revision": "5952603bbe8f7aaff25c6f8c5f16d6f58da02ad9",
+  "revision_note": "Root verified the published production source is equivalent to the frozen local source used for this run.",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "sqlite": "3.53.1",
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "method": "One fresh baseline followed by one fresh optimized HTTP run, identical original MP3 bytes, request, operator configuration and interpreter. Shared-host wall observations; no whole-workflow process CPU measurement was collected. HTTP receipt elapsed time includes verification overhead.",
+  "request": {
+    "schema_version": 1,
+    "search": {
+      "coverage": "conus",
+      "bounds_wsen": [
+        -73.545,
+        40.865,
+        -73.505,
+        40.895
+      ]
+    },
+    "time_window": {
+      "start_utc": "2026-09-08T20:17:20Z",
+      "end_utc": "2026-09-08T20:17:40Z",
+      "source": "user",
+      "source_detail": "Source-informed integration replay around the historical fitted recording start and benchmark receiver region; not independently measured recording time or a location-accuracy evaluation."
+    }
+  },
+  "operator_settings": {
+    "offline": true,
+    "spacing_m": 2000,
+    "tile_cells": 16,
+    "top_k": 20,
+    "refine_spacing_m": 500,
+    "refine_finalists": 3,
+    "search_workers": 1
+  },
+  "source": {
+    "sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+    "bytes": 42085293
+  },
+  "http_wall_s": {
+    "baseline": 264.80960926900025,
+    "current": 188.32315037399985
+  },
+  "http_wall_speedup": 1.4061447503565139,
+  "http_elapsed_reduction_percent": 28.883566236942528,
+  "search_wall_s": {
+    "baseline": 154.04968578999978,
+    "current": 89.74133267199977
+  },
+  "search_process_peak_rss_mib": {
+    "baseline": 399.6484375,
+    "current": 364.00390625
+  },
+  "observed_stage_seconds": {
+    "baseline": {
+      "queued": 1.0047268867492676,
+      "intake": 11.024419069290161,
+      "discovery": 8.0289888381958,
+      "search": 153.97183418273926,
+      "refinement": 82.41287589073181
+    },
+    "current": {
+      "queued": 1.0018911361694336,
+      "intake": 12.031001806259155,
+      "discovery": 7.043560028076172,
+      "search": 90.870934009552,
+      "refinement": 70.44122910499573
+    }
+  },
+  "stage_timing_note": "Stages use first observed HTTP state transitions with one-second polling uncertainty; unobserved short stages have no inferred duration. Process peak RSS is a worker-process high-water mark, not stage-only memory.",
+  "search_work": {
+    "baseline": {
+      "status": "partial",
+      "tiles_total": 2,
+      "tiles_completed": 2,
+      "grid_points_searched": 4,
+      "bounded_concurrency": 1,
+      "refinement_points_searched": 40,
+      "refinement_points_skipped": 80,
+      "tile_failures": [],
+      "refinement_failure": null
+    },
+    "current": {
+      "status": "partial",
+      "tiles_total": 2,
+      "tiles_completed": 2,
+      "grid_points_searched": 4,
+      "bounded_concurrency": 1,
+      "refinement_points_searched": 40,
+      "refinement_points_skipped": 80,
+      "tile_failures": [],
+      "refinement_failure": null
+    }
+  },
+  "outcomes": {
+    "baseline": {
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "candidate_count": 23,
+      "event_count": 18
+    },
+    "current": {
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "candidate_count": 23,
+      "event_count": 18
+    }
+  },
+  "full_pipeline_verified": {
+    "baseline": true,
+    "current": true
+  },
+  "scientific_json_sqlite_parity": {
+    "passed": true,
+    "semantic_differences": 0,
+    "checked_artifacts": {
+      "json": 23,
+      "sqlite": 1,
+      "root_json": 3
+    },
+    "retention_ledgers": {
+      "search/retention.sqlite": {
+        "baseline_rows": {
+          "bounds": 48226,
+          "records": 958,
+          "run": 1,
+          "stages": 18
+        },
+        "current_rows": {
+          "bounds": 48226,
+          "records": 958,
+          "run": 1,
+          "stages": 18
+        }
+      }
+    }
+  },
+  "intake_array_pixel_parity": {
+    "passed": true,
+    "differences": 0,
+    "checked": {
+      "intake_diagnostics": 1,
+      "decoded_pcm": 1,
+      "csv": 18,
+      "npz": 0,
+      "npz_arrays": 0,
+      "png": 1
+    },
+    "manifest_verified_artifacts": {
+      "baseline": 21,
+      "current": 21
+    },
+    "normalization": "Only the exact input.mp3 path in intake.decode.command is replaced.",
+    "array_rule": "Equal member names, dtype, shape, and element bits; no numerical tolerance. Memory layout does not affect equality."
+  },
+  "excluded_attempts_note": "A dependency-failed startup attempt and interrupted broad-area runs are preserved separately and are not timing or parity arms."
+}
