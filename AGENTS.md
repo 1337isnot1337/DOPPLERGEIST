@@ -7,7 +7,12 @@ is **up to 1,000 m error acceptable, with 100–500 m or better preferred** on s
 real recordings. Report benchmark outcomes at 100, 500 and 1,000 m; preserve old
 reports with their original thresholds. Read
 `docs/AGENT_TASKS.md`, `docs/HANDOFF.md`, the assigned GitHub issue and relevant
-source before editing. The current CLI still requires manual event settings.
+source before editing. The configured research CLI takes manual event settings;
+that does not describe the status of the whole project. Whole-recording intake,
+automatic discovery and bounded tiled search are implemented on `main`. Check
+the README, a pinned source revision and current PR state before describing the
+product integration or an acceptance gate as complete or missing. The
+[2026-11-03 verification note](docs/VERIFICATION_2026-11-03.md) separates these scopes.
 
 ## Coordination
 

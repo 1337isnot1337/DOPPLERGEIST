@@ -150,7 +150,7 @@ def evaluate(manifest, predictions, truth, threshold_m=1000, iou_threshold=0.3):
                 "false_localization_rate": false / len(assessed) if assessed else None,
                 "false_localization_denominator": len(assessed),
                 "successful_locations_by_threshold_m": {str(t): sum(r.get("location_error_m", math.inf) <= t and
-                    r.get("flight_ids_correct") is not False for r in fixes) for t in thresholds},
+                    not false_at(r, t) for r in fixes) for t in thresholds},
                 "false_localizations_by_threshold_m": {str(t): sum(false_at(r, t) for r in assessed) for t in thresholds},
                 "inconclusive_rate": sum(r["status"] == "inconclusive" for r in selected) / n if n else None,
                 "execution_failures": sum(r["status"] in {"failed", "missing"} for r in selected),
