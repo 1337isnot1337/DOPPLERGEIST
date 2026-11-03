@@ -23,6 +23,15 @@ from .geometry import AcousticSupportError
 from .search import cpa_table, filter_event, pair_candidates, score_candidate
 
 
+def _support_error(error):
+    result = {"track_id": error.track_id, "reason": error.reason}
+    for name in ("emission_intervals_s", "receive_intervals_s"):
+        intervals = getattr(error, name, None)
+        if intervals is not None:
+            result[name] = intervals
+    return result
+
+
 @dataclass(frozen=True)
 class SearchBudget:
     spacing_m: float = 2000.0
@@ -157,6 +166,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             # the entire track/stage as explicitly unassessed, and retain rows
             # from other tracks. Never repair or clip the source payload here.
             unsupported.append({"track_id": track.id, "reported_track_id": error.track_id, "reason": error.reason,
+                "reported_intervals": _support_error(error),
                 "emission_time_range_s": [float(track.time[0]), float(track.time[-1])],
                 "receiver_bounds_wsen": [float(points.lon.min()), float(points.lat.min()),
                                          float(points.lon.max()), float(points.lat.max())],
@@ -221,7 +231,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             row = dict(score=-np.inf, **{k: float(getattr(point, k)) for k in ("x", "y", "lat", "lon", "elev_m")},
                        flight_ids=[p["flight_id"] for p in candidate["passes"]],
                        event_indices=candidate.get("event_indices", list(range(len(events)))),
-                       support_failure={"track_id": error.track_id, "reason": error.reason})
+                       support_failure=_support_error(error))
         row["pass_emission_times_s"] = [float(p["emission_time"]) for p in candidate["passes"]]
         known = (classified_assessment(row) if settings.get("mode") == "robust_ridge" else
                  settings.get("time_origin") is not None and settings.get("time_sweep_s", 5) == 0 and math.isfinite(row["score"]))

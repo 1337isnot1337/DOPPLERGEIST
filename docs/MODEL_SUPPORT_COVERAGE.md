@@ -29,7 +29,9 @@ Only `geometry.AcousticSupportError` is isolated. A CPA error conservatively
 excludes that entire track's work for the receiver stage, including partial rows
 from earlier chunks, and keeps valid other-track rows. The diagnostic labels the
 whole track time span and receiver extent as a conservative loss envelope: this
-narrow exception does not identify the exact unsupported interval. Original index
+narrow exception need not identify the exact unsupported interval. Optional
+emission/receive intervals reported by the physical validator are preserved in
+`reported_intervals`; they do not narrow the conservative coverage envelope. Original index
 payloads are retained. Robust scoring classifies typed failures per clock trial;
 the outer handler also preserves other candidates if a legacy scorer raises the
 same typed error. An interrupted scorer's unreported trial count stays unknown.
@@ -40,3 +42,12 @@ This handling does not certify continuous total speed or Newton convergence,
 repair historical missing derivatives or altitude clipping, identify the cause of
 bad observations, or establish complete real-flight coverage. Issue #64 retains
 those open gates and the historical 855/858 result. No old outcome is promoted.
+
+The integrated W3 physical guard validates whole-source continuous motion at both
+actual CPA call sites and time-local motion/convergence in direct acoustic
+scoring. A real constructed indexed source with zero knot speeds and a >700 m/s
+interior peak now reaches this outer typed boundary without a monkeypatch.
+The mixed-source regression preserves the clean candidate identities/scores,
+retains the original malformed source, and reports partial model coverage. This
+verified connection does not repair source observations or establish real-data
+acceptance; W3 documents the numerical support assumptions in MOTION_SUPPORT.md.
