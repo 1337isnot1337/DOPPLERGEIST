@@ -1,0 +1,272 @@
+[
+  {
+    "source": "youtube",
+    "query": "airplane flyover sound field recording",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "propeller aircraft flyby sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "airplane overhead park ambient sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "plane spotting Myrtle Avenue natural sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "plane spotting Gravelly Point natural sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "plane spotting Maho Beach natural sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "plane spotting Imperial Hill natural sound",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "small plane flyby iphone",
+    "category": "aircraft_targeted",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "New York walking tour no music binaural",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "London walking tour natural sound",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "Los Angeles park walk ambient sound",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "Boston walking tour natural sound",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "Seattle park walk binaural",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "Tokyo walking tour rain natural sound",
+    "category": "outdoor_walk",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "bird feeder camera natural sound",
+    "category": "bird_nature",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "backyard bird watching natural sounds",
+    "category": "bird_nature",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "wetland bird watching recording",
+    "category": "bird_nature",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "nature reserve ambience field recording",
+    "category": "bird_nature",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "forest walk no music natural sounds",
+    "category": "bird_nature",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "indoor livestream window open ambient city sound",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "study with me open window real time no music",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "indoor room city ambience recording no music",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "cafe ambient sounds no music real recording",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "airport terminal natural sound ambience",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "home livestream rain open window",
+    "category": "indoor",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "iphone park walk raw footage",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "iphone handheld outdoor video no music",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "windy iphone beach video raw audio",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "shaky phone video city walk",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "gopro bicycle commute raw audio",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "dashcam drive windows down sound",
+    "category": "phone_movement",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "windy outdoor field recording",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "city traffic ambience field recording",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "heavy rain ambience street recording",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "construction site ambient sound recording",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "crowded public park natural sounds",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "youtube",
+    "query": "distant airplane indoors sound",
+    "category": "adverse",
+    "limit": 8
+  },
+  {
+    "source": "freesound",
+    "query": "plane flyover",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "aircraft flyover",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "plane flyby",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "propeller",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "airplane overhead",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "airport landing",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "airplane field recording",
+    "category": "field_aircraft",
+    "pages": 3
+  },
+  {
+    "source": "freesound",
+    "query": "distant plane",
+    "category": "field_aircraft",
+    "pages": 3
+  }
+]
