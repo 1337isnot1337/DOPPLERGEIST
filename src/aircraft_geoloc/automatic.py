@@ -62,7 +62,6 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     progress("discovery", 0.15, recording=recording.metadata)
     events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery")]
     state["events"] = events
-    _event_plots(recording, events, output / "discovery")
     provenance["discovered_events"] = len(events)
     if recording.time_status == "needs_input":
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
@@ -227,28 +226,3 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     reason = fields.pop("reason_code", None)
     message = fields.pop("message", None)
     return finish(status, reason, message, **fields)
-
-
-def _event_plots(recording, events, directory):
-    """Inspectable spectrogram/ridge overlays; display excerpts do not drive DSP."""
-    if not events:
-        return
-    import matplotlib
-    matplotlib.use("Agg")
-    from matplotlib import pyplot as plt
-    import numpy as np
-    from .audio import spectrogram
-    samples = np.memmap(recording.samples_path, dtype="<f4", mode="r")
-    sr = recording.metadata["sample_rate_hz"]
-    for event in events[:12]:
-        start, end = event["start_s"], min(event["end_s"], event["start_s"] + 120)
-        if end - start < 2:
-            continue
-        spec = spectrogram(np.array(samples[int(start*sr):int(end*sr)]), sr, event["band_hz"], start=start)
-        fig, ax = plt.subplots(figsize=(9, 3.5), layout="constrained")
-        ax.pcolormesh(spec.time, spec.frequency, spec.contrast, shading="auto", cmap="magma", vmin=0, vmax=6)
-        ax.plot([p["time_s"] for p in event["ridge"]], [p["frequency_hz"] for p in event["ridge"]], color="cyan", lw=1, label="Automatically traced ridge")
-        ax.set(xlim=(start, end), xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)", title=f"{event['event_id']} · first {end-start:.0f} s of event")
-        ax.legend(fontsize="small")
-        fig.savefig(directory / f"{event['event_id']}-spectrogram.png", dpi=130)
-        plt.close(fig)
