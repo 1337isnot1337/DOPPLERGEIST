@@ -11,8 +11,9 @@ suggested file ownership, dependencies and acceptance checks.
 Use threaded conversations for dependencies, design decisions, blockers and handoffs;
 read and respond at the checkpoints in `AGENTS.md`.
 **Task index and completion tracking:** [issue #1](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
-These are unassigned work packages; agents should claim them when deployed. No
-additional agents have been launched by this planning step.
+Workers are deployed by the user and claim work when launched. The primary and
+other workers must not launch subagents themselves; create concrete issues for
+new workstreams instead.
 
 ## Launch order
 
@@ -46,6 +47,20 @@ The user is launching five workers. This allocation supersedes the earlier
 seven-role suggestion. Do not have several agents independently rewrite
 `audio.py`, `search.py` or `pipeline.py`.
 
+## Additional workstreams for user-deployed workers
+
+| Priority / role | Task | Boundary and deliverable |
+| --- | --- | --- |
+| **Highest: independent field-data acquisition** | [#53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) | Obtain a documented multi-device/environment corpus with independent GPS and sample-zero UTC, plus a sealed holdout. Separate from W4's evaluator. Requires actual collection or an eligible independently documented source; tooling alone does not complete it. |
+| Atmospheric propagation audit | [#49](https://github.com/1337isnot1337/DOPPLERGEIST/issues/49) | Frozen-model falsification with independent wind/temperature/refraction fixtures and a measured error budget. No production changes or reference-case tuning. |
+| Recording robustness audit | [#54](https://github.com/1337isnot1337/DOPPLERGEIST/issues/54) | Measure effects of phone processing, compression, microphone wind noise, reverberation, motion and rate changes. Report failure ranges before proposing correction models. |
+
+These are task assignments, not worker launches. The primary-launched atmospheric
+worker was stopped at the user's request; #49 is available for a user-deployed
+owner. Coordinate all three workstreams on discussion board #39. Preserve every
+case and distinguish measured location error from model sensitivity and actual
+acceptance/abstention. Report outcomes at 100, 500 and 1,000 m.
+
 ## Ready-to-copy assignment prompt
 
 Replace the task/role placeholders with one row above:
@@ -56,6 +71,7 @@ Implement <TASK ISSUE URL>, followed by its next task only when dependencies all
 Read AGENTS.md, docs/AGENT_TASKS.md, docs/HANDOFF.md and the issue before editing.
 Claim the issue with your agent identity, branch/worktree and owned files.
 Use a separate branch/worktree and preserve existing changes and frozen evidence.
+Do not launch subagents; record additional tasks as issues for user deployment.
 Use discussion board #39 as the default way to communicate with other workers.
 Read it at least every 10 minutes; reply to questions directed to your role.
 Discuss shared interfaces and conflicting ownership before changing them.
