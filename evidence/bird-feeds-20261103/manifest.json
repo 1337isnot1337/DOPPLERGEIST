@@ -1,0 +1,126 @@
+{
+  "batch.json": {
+    "bytes": 3332,
+    "sha256": "cb5ccee0f26966c587e59058429a3f8199d55aee86160e57b5a81ec028185c36"
+  },
+  "capture-setup-attempts.json": {
+    "bytes": 2019,
+    "sha256": "fcdf666c4eda038356746882440d32e2cf216130b96b318c1cdce069fe270e6b"
+  },
+  "cornell-feederwatch/audio-quality.json": {
+    "bytes": 155,
+    "sha256": "075e53998cda797c830eef854b080f4c61d9f8b9820db5ea651135b1a300f836"
+  },
+  "cornell-feederwatch/capture.json": {
+    "bytes": 2318,
+    "sha256": "1c959a89f06a015529c12b97d9ec49ce5d2fbbded6f37116fce69c4fcb99f505"
+  },
+  "cornell-feederwatch/clock-audit.json": {
+    "bytes": 1739,
+    "sha256": "dff9d82c9b458e027f7bae60a6008dfcc6448c9c72d91e8a34e4e20f819faa17"
+  },
+  "cornell-feederwatch/clock-frame-001.png": {
+    "bytes": 728135,
+    "sha256": "2fff795f7d535970a137e7d8cd1a38440bcae5928fe1cb707b2578139aa75a92"
+  },
+  "cornell-feederwatch/discovery.json": {
+    "bytes": 1454,
+    "sha256": "752818f852b4685a2ea729bcce14507cc5da04adc5a4b11091e8307dafffbb02"
+  },
+  "cornell-feederwatch/discovery.png": {
+    "bytes": 40757,
+    "sha256": "47a527466a683c7703c043e73a31f47731a6fe5ea6b7b2e0df4fe0c6668c7dc9"
+  },
+  "cornell-feederwatch/first-segment-clock.json": {
+    "bytes": 466,
+    "sha256": "7dd22e99e07a462fb5ebcbed4887558376fcc0177672d082f775e7e74f8ec93b"
+  },
+  "cornell-feederwatch/recording.json": {
+    "bytes": 205,
+    "sha256": "41d0af8f76a3829e846e06026c7f01ed29f88071cee25b0a97c9c475557c3ec4"
+  },
+  "cornell-feederwatch/summary.json": {
+    "bytes": 1011,
+    "sha256": "a753c4b9e577461db8a3d1fd8fbb90be8ac57f0b284657fc81f5de6855843f75"
+  },
+  "executed_capture_prototype.py": {
+    "bytes": 3735,
+    "sha256": "d8845cdb85a630cd023daf48961897b29122f0282120fea8e9baaa3e490ad588"
+  },
+  "hellgate-ospreys/audio-quality.json": {
+    "bytes": 155,
+    "sha256": "b145ed424b23d17572cf370d2ea0f9c9e80d290dc2f21fe22392f9b73ff46ad1"
+  },
+  "hellgate-ospreys/capture.json": {
+    "bytes": 2306,
+    "sha256": "a4b317f2d49bd453fbd3c1df8c565dde564516f5d464c2c576cf6626a64278b5"
+  },
+  "hellgate-ospreys/clock-audit.json": {
+    "bytes": 1736,
+    "sha256": "e4b6322596483abf082f21cc5b876626829eb016d3f7fa93047d70da22ee58b3"
+  },
+  "hellgate-ospreys/clock-frame-001.png": {
+    "bytes": 529822,
+    "sha256": "ac139ababd4fa8631ac42af6909f5f417caf22f1882ce4298a1cef2038d3bf19"
+  },
+  "hellgate-ospreys/discovery.json": {
+    "bytes": 40556,
+    "sha256": "7ab5bcea81de29cd23a751d3a997f7854ca8d604549a21256ebd9cd83d265ef2"
+  },
+  "hellgate-ospreys/discovery.png": {
+    "bytes": 50520,
+    "sha256": "8717b6b2b0157aa053bd22582f0b840996523796f0cf22c0812276e95086517c"
+  },
+  "hellgate-ospreys/event-0001.csv": {
+    "bytes": 1677,
+    "sha256": "8838c40f53cfb5fadffbfa6825087903d7829339f8b0ac44c8b88e9cd3443122"
+  },
+  "hellgate-ospreys/event-0001.png": {
+    "bytes": 69542,
+    "sha256": "87f12b9c9682c9be24220e47a71d64dec0ca7e34ea165105f3424910303f6f77"
+  },
+  "hellgate-ospreys/event-0002.csv": {
+    "bytes": 4677,
+    "sha256": "b4f8008b5991d80443f6cc243e1ace91812c802fa8be2d9a1a5696412200fe9d"
+  },
+  "hellgate-ospreys/event-0002.png": {
+    "bytes": 65610,
+    "sha256": "1b61d6e714fc03650636ec24e01aa93a6f8aa55a244b8ed56dcbe4eea5c025bd"
+  },
+  "hellgate-ospreys/event-0003.csv": {
+    "bytes": 1677,
+    "sha256": "7b6ed747da449788cbe38cf8a1e720ecc62893b61ccf239fadf0e6624f44e91d"
+  },
+  "hellgate-ospreys/event-0003.png": {
+    "bytes": 67321,
+    "sha256": "5761bf0d3325d05bba79e9ffa92a409468221b035e4e33d8438615b9821f14da"
+  },
+  "hellgate-ospreys/event-0004.csv": {
+    "bytes": 1602,
+    "sha256": "4efd96e243f7288c4f0f67f7d3e75def77b676293ae240667dc4cded4b87837b"
+  },
+  "hellgate-ospreys/event-0004.png": {
+    "bytes": 54800,
+    "sha256": "8dd3b5ae669fa374e39519263b62c8d75cd0b5ef466f135ceda6fafbd12f68c9"
+  },
+  "hellgate-ospreys/event-0005.csv": {
+    "bytes": 2352,
+    "sha256": "f4e8e0eab23ea4970cecf474b28c075abd558cdd59b5ac46147431b71cb5590e"
+  },
+  "hellgate-ospreys/event-0005.png": {
+    "bytes": 56002,
+    "sha256": "27ffc8bd7fb37eb792b94cd4148d71b8985797ce995efab8430da7efc64758e0"
+  },
+  "hellgate-ospreys/first-segment-clock.json": {
+    "bytes": 464,
+    "sha256": "f2f50ce3c2b7e2c30bcef61d928b399a19ed607b2f11096fae542023804f82de"
+  },
+  "hellgate-ospreys/recording.json": {
+    "bytes": 205,
+    "sha256": "088a20abf8816184b5d81ee6775b8049cafe0823c9e8bfb49582bd88746ae8fc"
+  },
+  "hellgate-ospreys/summary.json": {
+    "bytes": 3947,
+    "sha256": "54dcb185c378e60d5d853be214430844041a46b51b33a21c4168a1ae9b213ded"
+  }
+}

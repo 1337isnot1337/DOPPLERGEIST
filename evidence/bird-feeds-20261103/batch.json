@@ -1,0 +1,89 @@
+{
+  "scope": "Two fixed ten-minute public bird-feed nighttime discovery tests, unlabelled aircraft identity",
+  "cases": [
+    {
+      "feed": "cornell-feederwatch",
+      "duration_s": 600.0,
+      "audio_sha256": "cbcc964e95f9037eb57880c7b5f26e37a7c8c8d62b22c2aed9ec1d273593e4c1",
+      "events_found": 0,
+      "processing_errors": 0,
+      "runtime_s": 1.8129894896410406,
+      "peak_rss_mib": 152.9375,
+      "time_status": "needs_input",
+      "producer_commit": "0461e9e43903706e26eb93436c418171f56584f9",
+      "producer_code_sha256": "c6a8034375c2448c292372a982434dd9155b6deac9466d1170ba71ef651c3e14",
+      "audio_quality": {
+        "samples": 2400000,
+        "finite": true,
+        "rms_dbfs": -47.430231038073885,
+        "peak_dbfs": -17.76966641378997,
+        "fraction_at_or_above_full_scale": 0.0
+      },
+      "program_first_audio_utc": "2026-11-03T02:05:25.092000+00:00",
+      "source_timezone_assumption": "America/New_York",
+      "camera_minus_program_pts_s": [
+        -1.093911,
+        -1.094,
+        -1.094
+      ],
+      "aircraft_identities_verified": false,
+      "location_error_m": null,
+      "location_thresholds_m": {
+        "100": "not_evaluated",
+        "500": "not_evaluated",
+        "1000": "not_evaluated"
+      },
+      "source_page": "https://www.allaboutbirds.org/cams/cornell-lab-feederwatch/"
+    },
+    {
+      "feed": "hellgate-ospreys",
+      "duration_s": 600.0,
+      "audio_sha256": "f26cf293112382b6103f488e7d120acdf0903c91e12a8b645b36ba15ce59c28e",
+      "events_found": 5,
+      "processing_errors": 0,
+      "runtime_s": 2.6988907153718174,
+      "peak_rss_mib": 183.7421875,
+      "time_status": "needs_input",
+      "producer_commit": "0461e9e43903706e26eb93436c418171f56584f9",
+      "producer_code_sha256": "c6a8034375c2448c292372a982434dd9155b6deac9466d1170ba71ef651c3e14",
+      "audio_quality": {
+        "samples": 2400000,
+        "finite": true,
+        "rms_dbfs": -30.031871118086414,
+        "peak_dbfs": -6.615587001358163,
+        "fraction_at_or_above_full_scale": 0.0
+      },
+      "program_first_audio_utc": "2026-11-03T02:05:23.929000+00:00",
+      "source_timezone_assumption": "America/Denver",
+      "camera_minus_program_pts_s": [
+        -0.940978,
+        -0.941,
+        -0.941
+      ],
+      "aircraft_identities_verified": false,
+      "location_error_m": null,
+      "location_thresholds_m": {
+        "100": "not_evaluated",
+        "500": "not_evaluated",
+        "1000": "not_evaluated"
+      },
+      "source_page": "https://www.allaboutbirds.org/cams/hellgate-ospreys/"
+    }
+  ],
+  "all_cases_reported": true,
+  "settings_tuned_on_these_cases": false,
+  "source_video_saved": false,
+  "small_clock_frames_retained": true,
+  "usual_current_day_adsb_release_check": {
+    "tag": "v2026.11.03-planes-readsb-staging-0",
+    "repo": "adsblol/globe_history_2026",
+    "outcome": "release not found",
+    "other_provider_availability_not_tested": true
+  },
+  "limits": [
+    "No acoustic proposal is yet a verified aircraft.",
+    "No missed-aircraft/false-positive rate can be calculated without independent event labels.",
+    "Source camera calibration, absolute mic position and trusted recording-clock bounds remain separate evidence.",
+    "No localization/search or100/500/1000m accuracy result is established by this batch."
+  ]
+}

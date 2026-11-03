@@ -1,0 +1,40 @@
+{
+  "site_timezone_interpretation": "America/New_York",
+  "timezone_source": "System zoneinfo; site locality from official Cornell page",
+  "program_first_audio_utc": "2026-11-03T02:05:25.092000+00:00",
+  "frames": [
+    {
+      "frame": "clock-frame-001.png",
+      "sha256": "2fff795f7d535970a137e7d8cd1a38440bcae5928fe1cb707b2578139aa75a92",
+      "video_relative_pts_s": 0.00191111,
+      "ocr_datetime": "2026-11-02 21:05:24",
+      "camera_utc_under_site_timezone": "2026-11-03T02:05:24+00:00",
+      "camera_minus_program_pts_s": -1.093911
+    },
+    {
+      "frame": "clock-frame-002.png",
+      "sha256": "7e109f1e5321736d0d1d77b4f25cfef520f17dcaa2f693f29649cb6a0a223c28",
+      "video_relative_pts_s": 120.002,
+      "ocr_datetime": "2026-11-02 21:07:24",
+      "camera_utc_under_site_timezone": "2026-11-03T02:07:24+00:00",
+      "camera_minus_program_pts_s": -1.094
+    },
+    {
+      "frame": "clock-frame-003.png",
+      "sha256": "0ec7533f0d7a81a029baf702151f7d2497a3f72dcc9b4794fe6b364ef8d19617",
+      "video_relative_pts_s": 240.002,
+      "ocr_datetime": "2026-11-02 21:09:24",
+      "camera_utc_under_site_timezone": "2026-11-03T02:09:24+00:00",
+      "camera_minus_program_pts_s": -1.094
+    }
+  ],
+  "camera_clock_accuracy_bound_s": null,
+  "automatic_recording_clock_claim": false,
+  "limits": [
+    "Camera overlay and provider program clock are different evidence sources.",
+    "Site-local timezone interpretation must be retained as an assumption.",
+    "Subsecond overlay rounding, camera clock calibration and absolute microphone position are not established."
+  ],
+  "ocr_method": "Date/time tokens read independently; PSM11 may reorder text regions. Original frames retained.",
+  "display_resolution_s": 1
+}

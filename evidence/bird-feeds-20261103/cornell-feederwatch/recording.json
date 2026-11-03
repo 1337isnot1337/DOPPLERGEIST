@@ -1,0 +1,8 @@
+{
+  "source_sha256": "cbcc964e95f9037eb57880c7b5f26e37a7c8c8d62b22c2aed9ec1d273593e4c1",
+  "duration_s": 600.0,
+  "sample_rate_hz": 4000,
+  "channels": 1,
+  "source_format": "mp3",
+  "time_window": null
+}

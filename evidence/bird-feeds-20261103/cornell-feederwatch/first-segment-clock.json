@@ -1,0 +1,18 @@
+{
+  "first_requested_segments": {
+    "234": {
+      "first_requested_sequence": 4075832,
+      "program_utc": "2026-11-03T02:05:25.092000Z",
+      "duration_s": 5.0
+    },
+    "232": {
+      "first_requested_sequence": 4075832,
+      "program_utc": "2026-11-03T02:05:25.092000Z",
+      "duration_s": 5.0
+    }
+  },
+  "limits": [
+    "The program clock is provider-assigned.",
+    "Camera clock accuracy and timezone interpretation require separate evidence."
+  ]
+}

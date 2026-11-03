@@ -1,0 +1,141 @@
+{
+  "recording": {
+    "source_sha256": "f26cf293112382b6103f488e7d120acdf0903c91e12a8b645b36ba15ce59c28e",
+    "duration_s": 600.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 2.5,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_fragment_gap_s": 20.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 5,
+  "events": [
+    {
+      "event_id": "event-0001",
+      "start_s": 8.0,
+      "end_s": 25.0,
+      "band_hz": [
+        239.15906301140785,
+        268.2946938276291
+      ],
+      "quality": {
+        "median_contrast": 2.817991614341736,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7096774193548387,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 26.26480834186077
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "start_s": 88.5,
+      "end_s": 123.5,
+      "band_hz": [
+        123.97682856954634,
+        136.33778436481953
+      ],
+      "quality": {
+        "median_contrast": 3.5395513772964478,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9253731343283582,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 6.672907222993672
+      }
+    },
+    {
+      "event_id": "event-0003",
+      "start_s": 405.0,
+      "end_s": 420.0,
+      "band_hz": [
+        245.79193904995918,
+        271.61553743481636
+      ],
+      "quality": {
+        "median_contrast": 3.1905417442321777,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8148148148148148,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 19.740878887474537
+      }
+    },
+    {
+      "event_id": "event-0004",
+      "start_s": 482.5,
+      "end_s": 497.5,
+      "band_hz": [
+        41.53015440143645,
+        49.38577089458704
+      ],
+      "quality": {
+        "median_contrast": 3.2698750495910645,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7777777777777778,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 4.446663066744804
+      }
+    },
+    {
+      "event_id": "event-0005",
+      "start_s": 503.5,
+      "end_s": 522.0,
+      "band_hz": [
+        91.75,
+        106.17190000414848
+      ],
+      "quality": {
+        "median_contrast": 3.204730749130249,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9117647058823529,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.0,
+        "frequency_drop_hz": 11.96201881673187
+      }
+    }
+  ],
+  "runtime_s": 2.6988907153718174,
+  "peak_rss_kib": 188152,
+  "code_sha256": "c6a8034375c2448c292372a982434dd9155b6deac9466d1170ba71ef651c3e14",
+  "git_commit": "0461e9e43903706e26eb93436c418171f56584f9",
+  "working_tree": "",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}

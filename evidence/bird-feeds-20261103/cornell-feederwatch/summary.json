@@ -1,0 +1,35 @@
+{
+  "recording": {
+    "source_sha256": "cbcc964e95f9037eb57880c7b5f26e37a7c8c8d62b22c2aed9ec1d273593e4c1",
+    "duration_s": 600.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 2.5,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_fragment_gap_s": 20.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 0,
+  "events": [],
+  "runtime_s": 1.8129894896410406,
+  "peak_rss_kib": 156608,
+  "code_sha256": "c6a8034375c2448c292372a982434dd9155b6deac9466d1170ba71ef651c3e14",
+  "git_commit": "0461e9e43903706e26eb93436c418171f56584f9",
+  "working_tree": "",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}

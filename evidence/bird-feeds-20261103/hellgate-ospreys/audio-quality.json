@@ -1,0 +1,7 @@
+{
+  "samples": 2400000,
+  "finite": true,
+  "rms_dbfs": -30.031871118086414,
+  "peak_dbfs": -6.615587001358163,
+  "fraction_at_or_above_full_scale": 0.0
+}
