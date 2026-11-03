@@ -1,0 +1,14 @@
+{
+  "stage": "post-search only",
+  "truth_accessible_to_search_inputs": false,
+  "reference": "Hermes independent synthetic generator2c3ed20",
+  "top_candidate_error_m": 11.461470671832378,
+  "closest_retained_candidate_error_m": 11.461470671832378,
+  "pipeline_status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "supported_localization": false,
+  "truth_lat_lon": [
+    40.00539592963551,
+    -75.0
+  ]
+}

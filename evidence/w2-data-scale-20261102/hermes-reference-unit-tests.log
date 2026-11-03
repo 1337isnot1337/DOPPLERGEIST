@@ -1,0 +1,11 @@
+test_pure_noise_is_not_reported_as_a_flyover (test_skill.DetectionGateTests.test_pure_noise_is_not_reported_as_a_flyover) ... ok
+test_synthetic_flyover_is_located (test_skill.EndToEndTests.test_synthetic_flyover_is_located) ... ok
+test_model_fit_recovers_parameters (test_skill.PhysicsTests.test_model_fit_recovers_parameters) ... ok
+test_register_discovers_the_skill (test_skill.PluginTests.test_register_discovers_the_skill) ... ok
+test_frontmatter_and_sections (test_skill.SkillFileTests.test_frontmatter_and_sections) ... ok
+test_versions_agree (test_skill.SkillFileTests.test_versions_agree) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 16.824s
+
+OK

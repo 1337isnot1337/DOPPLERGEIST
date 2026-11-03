@@ -63,12 +63,17 @@ def merge_candidates(rows, top_k):
     return sorted(unique.values(), key=lambda row: (-row["score"], _key(row)))[:top_k]
 
 
-def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
-    """Half-open integer-cell cores: each global receiver cell has one owner."""
+def _grid_extent(bounds, spacing_m, crs):
     forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
     left, bottom, right, top = forward.transform_bounds(*bounds, densify_pts=101)
     xmin, ymin = math.floor(left / spacing_m), math.floor(bottom / spacing_m)
     xmax, ymax = math.ceil(right / spacing_m), math.ceil(top / spacing_m)
+    return xmin, ymin, xmax, ymax
+
+
+def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
+    """Half-open integer-cell cores: each global receiver cell has one owner."""
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, spacing_m, crs)
     for iy in range(ymin // tile_cells, ymax // tile_cells + 1):
         for ix in range(xmin // tile_cells, xmax // tile_cells + 1):
             yield f"{ix}_{iy}", (max(xmin, ix * tile_cells), max(ymin, iy * tile_cells),
@@ -140,11 +145,11 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     kwargs = dict(offset_tolerance_s=filters.get("offset_tolerance_s", 5.0),
                   time_origin=parameters.get("time_origin"), time_tolerance_s=filters.get("time_tolerance_s", 5.0),
                   silence=filters.get("silence"))
-    subset = filters.get("association") == "subsets"
+    subset = filters.get("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full") == "subsets"
     if subset:
         from .matching import association_candidates
         candidates, counts = association_candidates(table, events, **kwargs,
-            min_events=filters.get("min_events", 1), max_events=filters.get("max_events", 3),
+            min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)
     else:
         per_event = [filter_event(table, e, kwargs["time_origin"], kwargs["time_tolerance_s"]).groupby("point_id").size().to_dict() for e in events]
@@ -158,17 +163,27 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     track_lookup = {track.id: track for track in tracks}
     for candidate in candidates:
         settings = dict(parameters)
+        scoring_candidate = candidate
         if start_window:
+            if start_window[0] == start_window[1] and settings.get("time_origin") is None:
+                settings["time_origin"] = start_window[0]
             anchor = settings.get("time_origin")
             if anchor is None:
                 anchor_event = candidate.get("event_indices", [0])[0]
                 anchor = candidate["passes"][0]["receive_time"] - events[anchor_event]["cpa_receive_s"]
             sweep = settings.get("time_sweep_s", 5.0)
-            lo, hi = max(anchor - sweep, start_window[0]), min(anchor + sweep, start_window[1])
+            lower, upper = candidate.get("recording_start_bounds_s", (anchor, anchor))
+            lo, hi = max(lower - sweep, start_window[0]), min(upper + sweep, start_window[1])
+            if settings.get("time_origin") is not None:
+                lo, hi = max(lo, anchor-sweep), min(hi, anchor+sweep)
             if lo > hi:
                 continue
-            settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
-        row = score_candidate(candidate, lookup[candidate["point_id"]], track_lookup, events, measurements, **settings)
+            if "event_indices" in candidate:
+                scoring_candidate = dict(candidate, recording_start_bounds_s=[lo, hi])
+                settings.update(time_origin=None, time_sweep_s=0)
+            else:
+                settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
+        row = score_candidate(scoring_candidate, lookup[candidate["point_id"]], track_lookup, events, measurements, **settings)
         row["pass_emission_times_s"] = [float(p["emission_time"]) for p in candidate["passes"]]
         ranked.append(row)
     return merge_candidates(ranked, budget.top_k), dict(counts, cpa_rows=count, candidates=len(candidates))
@@ -192,7 +207,20 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             raise ValueError("Event slant range must be finite and <1000 km")
     parameters = dict(scoring or {})
     start_window = parameters.pop("recording_start_window_s", None)
-    filters = filters or {}
+    if start_window and start_window[0] == start_window[1] and parameters.get("time_origin") is None:
+        parameters["time_origin"] = start_window[0]
+    filters = dict(filters or {})
+    filters.setdefault("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full")
+    if filters["association"] not in ("subsets", "full"):
+        raise ValueError("association must be 'subsets' or 'full'")
+    event_limit = filters.get("max_events")
+    if event_limit is None:
+        event_limit = len(events)
+    if type(event_limit) is not int or event_limit < 1:
+        raise ValueError("max_events must be a positive integer or None for all groups")
+    if filters["association"] == "full":
+        event_limit = len(events)
+    event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     # Include actual acoustic measurements and implementation files in resume
@@ -221,7 +249,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
     began, ranked, failures, done, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0
-    total = sum(1 for _ in grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs))
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
+    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
     radius = max(e["slant_range_m"][1] for e in events)
     for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
         if budget.max_tiles is not None and number >= budget.max_tiles:
@@ -305,8 +334,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     for lo, hi in intervals:
         if lo <= covered_until:
             covered_until = max(covered_until, hi)
-    data_complete = covered_until >= time_range_s[1]
-    complete = done == total and not failures and not refinement_failure and data_complete
+    data_complete = bool(covered_until >= time_range_s[1])
+    complete = done == total and not failures and not refinement_failure and data_complete and not event_limit_applied
     report = {"run_hash": run_hash, "status": "complete" if complete else "partial", "ranked": ranked,
               "coarse_ranked": coarse, "tiles_total": total, "tiles_completed": done, "tiles_resumed": resumed,
               "tile_failures": failures, "unsearched_tiles": total - done, "grid_points_searched": points_searched,
@@ -314,6 +343,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "refinement_points_searched": refinement_points_searched, "refinement_points_skipped": refinement_points_skipped,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,
+              "event_groups_proposed": len(events), "association_event_limit": event_limit,
+              "all_event_groups_considered": not event_limit_applied,
+              "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
               "bounded_concurrency": 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
