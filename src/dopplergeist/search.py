@@ -11,6 +11,11 @@ from scipy.spatial import cKDTree
 from .geometry import AcousticSupportError, ecef
 
 
+# Most national track/receiver chunks are empty; construct their schema once.
+_EMPTY_CPA_TABLE = pd.DataFrame(columns=[
+    "point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"])
+
+
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
     """Vectorized piecewise-linear CPA prefilter; supports repeated local passes.
 
@@ -71,22 +76,31 @@ def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_siz
     return pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
 
 
-def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
+def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _sample_cache=None):
     """Spatial-radius CPA graph, retaining every local pass without dense tensors.
 
     The radius includes two complete sample steps beyond the audible envelope,
     so both neighbours of an in-range sampled minimum are present. Each minimum
     is refined on its two actual adjacent segments. The dense reference above
     provides an independent regression oracle for this search optimization.
+    The private sample cache lives only across one track's bounded tile chunks.
     """
     observers=ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     point_ids=points.point_id.to_numpy(dtype=int)
     rows=[]
     for track in tracks:
         track.validate_motion_support(c)
-        t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
-        pos=track.position(t)
-        max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
+        key = (id(track), step_s)
+        sampled = None if _sample_cache is None else _sample_cache.get(key)
+        if sampled is None:
+            t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
+            pos=track.position(t)
+            max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
+            if _sample_cache is not None:
+                # Retain the track too, so its object ID cannot be reused.
+                _sample_cache[key] = (track, t, pos, max_step)
+        else:
+            _, t, pos, max_step = sampled
         near=np.flatnonzero(np.all((observers>=pos.min(axis=0)-max_distance)&
                                   (observers<=pos.max(axis=0)+max_distance),axis=1))
         if not len(near):continue
@@ -161,6 +175,8 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
                 rows.append({"point_id":int(point_ids[chosen[oi[j]]]),"flight_id":track.id,
                              "emission_time":float(when[j]),"receive_time":float(when[j]+distance[j]/c),
                              "distance_m":float(distance[j]),"speed_mps":float(speed[j])})
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
     result=pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
     if not result.empty:
         # A CPA exactly at a sample can be proposed twice under roundoff.

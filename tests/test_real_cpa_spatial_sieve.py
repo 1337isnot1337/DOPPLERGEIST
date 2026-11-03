@@ -66,15 +66,28 @@ def test_real_multi_point_sieve_does_not_discard_cpas():
     for track in tracks:
         try:
             outside = track.outside_observer_radius(observers, 20000)
+            table = cpa_table([track], points, 20000)
         except AcousticSupportError:
             unsupported += 1
             with pytest.raises(AcousticSupportError):
                 cpa_table([track], points, 20000)
             continue
-        table = cpa_table([track], points, 20000)
         if outside:
             excluded += 1
             assert table.empty
+            if excluded == 1:
+                expected = table.copy()
+                table.drop(columns=["flight_id"], inplace=True)
+                repeated = cpa_table([track], points, 20000)
+                pd.testing.assert_frame_equal(repeated, expected)
         else:
+            if retained_rows == 0 and len(table):
+                cache = {}
+                step = max(1, len(points) // 2)
+                chunks = [cpa_table([track], points.iloc[i:i + step], 20000,
+                                    _sample_cache=cache) for i in range(0, len(points), step)]
+                repeated = pd.concat(chunks, ignore_index=True).sort_values(
+                    ["point_id", "flight_id", "emission_time"]).reset_index(drop=True)
+                pd.testing.assert_frame_equal(repeated, table)
             retained_rows += len(table)
     assert excluded > 0 and retained_rows > 0 and unsupported > 0
