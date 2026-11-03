@@ -84,6 +84,16 @@ class _RidgeFitCache:
         try:
             parameters = tuple(_fit_argument_key(value) for value in
                                (observer, start_time, f0_bounds, c, sigma_hz, drift_fraction))
+            if acoustic_result is None:
+                acoustic_key = None
+            elif (type(acoustic_result) in (tuple, list) and len(acoustic_result) == 2
+                  and all(type(value) is np.ndarray and value.dtype.kind in "biuf" for value in acoustic_result)):
+                acoustic_key = (type(acoustic_result), tuple(
+                    (value.dtype.str, value.shape, hashlib.sha256(value.tobytes()).digest())
+                    for value in acoustic_result))
+            else:
+                # Preserve validation and custom input behavior in the fitter.
+                return _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result)
         except (TypeError, ValueError):
             # Let the fitter handle custom representations and their validation.
             return _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result)
@@ -95,7 +105,7 @@ class _RidgeFitCache:
             values = np.asarray(values, dtype=float)
             observed.update(repr(values.shape).encode())
             observed.update(values.tobytes())
-        key = (id(track), parameters, observed.digest())
+        key = (id(track), parameters, observed.digest(), acoustic_key)
         if key in self.entries:
             self.entries.move_to_end(key)
             return deepcopy(self.entries[key][1])
