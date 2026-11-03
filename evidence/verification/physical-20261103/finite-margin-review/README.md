@@ -41,3 +41,16 @@ This is a narrow stacked repair for W4's finite-evidence proposal, with no chang
 to another worker's branch. Producer retention accounting, stable mode mappings,
 integrated execution and the independent field-data gate remain separate work.
 Historical inconclusive runs, including the four-event CI replay, remain unchanged.
+
+## Verification against the latest published policy base
+
+The repaired branch was subsequently merged with W4's
+`b9e7c904e587c8acad23b44cffc74e20e8cbff11`, which distinguishes the finite-scope
+policy label from the legacy policy and tests each label in its proper fixture.
+The combined frozen source `53fa249bf82d7b3b78209041f7efad22d614b616`
+(tree `370b41588fa98f67993cd756d74243912ac70322`) passes the full suite:
+**176 tests, zero failures/errors/skips**, in 19.98 seconds reported by pytest.
+The same existing pandas future-dtype warning remains. Exact native logs, JUnit,
+commands and source-file hashes are preserved under `current-policy-base/`.
+This closes the review's source-base compatibility gap; it does not test the
+pending retention producer or change any historical scientific decision.

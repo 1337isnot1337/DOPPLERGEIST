@@ -1,0 +1,27 @@
+{
+  "source_commit": "53fa249bf82d7b3b78209041f7efad22d614b616",
+  "source_tree": "370b41588fa98f67993cd756d74243912ac70322",
+  "integrated_base": "b9e7c904e587c8acad23b44cffc74e20e8cbff11",
+  "scope": "Numerical roundoff repair integrated with the latest policy-label-only W4 base. Full suite; no scientific replay or policy relaxation.",
+  "file_sha256": {
+    "src/aircraft_geoloc/confidence.py": "626f8440c9e882935fd860032593b1f1d0a476aeed782ff0a5f1b89f7fa38d82",
+    "tests/test_confidence.py": "953bfa6481a7acf919eb02563cd8a993759178b845854cab1d25e1adeb28e78f",
+    "tests/test_finite_evidence_independent.py": "27b61543817b1f598e29489fa754579282dfe9eae3ce291f762ce63229744a3b"
+  },
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--junitxml=.artifacts/current-policy-base/pytest.xml"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 20.610074593998434,
+  "junit": {
+    "tests": 176,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time_s": 19.981
+  }
+}

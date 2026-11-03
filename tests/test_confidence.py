@@ -36,6 +36,7 @@ def test_complete_fixture_passes_without_probability_and_preserves_inputs():
     before = deepcopy(bundle)
     result = decide(bundle)
     assert result["status"] == "succeeded"
+    assert result["diagnostics"]["policy_version"] == "engineering-v3"
     assert result["diagnostics"]["probability"] is None
     assert result["diagnostics"]["calibration"] == "uncalibrated"
     assert bundle == before
@@ -190,6 +191,7 @@ def test_finite_search_can_pass_without_claiming_continuous_exhaustion():
     bundle = finite_evidence()
     result = decide(bundle)
     assert result["status"] == "succeeded"
+    assert result["diagnostics"]["policy_version"] == "engineering-v4-finite-grid"
     assert result["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
     bundle[3]["sensitivity"]["sources"] = ["altitude"]
     assert decide(bundle)["reason_code"] == "uncertainty_not_established"

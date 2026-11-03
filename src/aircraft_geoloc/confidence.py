@@ -259,6 +259,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
                           "Competing hypotheses fit nearly as well; no unique precise location is supported.")
     finite = evidence.get("finite_search_evidence")
     if finite is not None:
+        diagnostics["policy_version"] = "engineering-v4-finite-grid"
         try:
             counts = [len({lookup[key].get("harmonic_group_id", key) for key in candidate["event_ids"]}) for candidate in candidates]
             reason, details = _finite_search(finite, evidence, candidates, counts, policy)
@@ -296,4 +297,6 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     diagnostics["radius_m"] = uncertainty["radius_m"]
     if uncertainty["radius_m"] > policy.target_radius_m:
         return result("location_uncertainty_too_large", "Spatial sensitivity exceeds the declared precision target.")
-    return result("supported_by_evidence_checks", "Location passes the declared evidence checks; its sensitivity remains uncalibrated.", "succeeded")
+    message = ("Location passes the evaluated finite-grid and sensitivity checks; its uncertainty remains uncalibrated."
+               if finite is not None else "Location passes the declared evidence checks; its sensitivity remains uncalibrated.")
+    return result("supported_by_evidence_checks", message, "succeeded")
