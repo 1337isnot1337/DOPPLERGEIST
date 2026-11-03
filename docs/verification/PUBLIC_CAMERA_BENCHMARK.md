@@ -11,6 +11,11 @@ python scripts/capture_camera_audio.py \
   --output results/public-camera-timesquare-new
 ```
 
+Location benchmarks report errors at 100, 500 and 1,000 m, with up to 1,000 m
+acceptable and 500 m or better preferred under current project requirements.
+The captures below have no established recorder clock or microphone-coordinate
+uncertainty, so they are not eligible location-accuracy cases at any threshold.
+
 The tool uses the page's normal public HLS stream and saves MP3 audio plus a
 capture receipt. It records source/playlist hashes, source segment timing if
 provided, fetch and capture UTC, decoded duration, media hashes, implementation
@@ -71,11 +76,21 @@ coordinate asserted. The corrected full automatic CLI job took 3.88 s and
 band, aircraft identity, map coordinate or guessed recorder clock entered either
 request. The script's earlier 12 s smoke also remains preserved.
 
+The [Statue of Liberty view](https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str)
+captured exactly 300.0 s decoded audio from 01:07:54–01:12:43 UTC, source SHA256
+`ae4b53b35c1afe8b07ca6ca4876661016b9dab1818ba3b12c97b4dbd62f8b949`.
+Its complete automatic job at the same frozen source/settings returned zero
+proposals and `needs_input / recording_time_required`, with no coordinate. It
+took 4.19 s and 161.90 MiB peak RSS; source hash remained unchanged. Its playlist
+also lacks PDT; the provider map reference is 40.67907584445467, -74.01832580566408
+with unknown microphone uncertainty.
+
 The Las Vegas sign camera's public metadata advertises no audio. Its attempted
-capture is recorded as `source_has_no_advertised_audio`, not a detector miss. A
-separate five-minute Statue of Liberty audio capture is in progress; its complete
-outcome will be appended without changing detector settings. Herald Square is
-owned by another coordinated capture worker.
+capture is recorded as `source_has_no_advertised_audio`, not a detector miss.
+Herald Square is owned by another coordinated capture worker. No detector
+parameters were tuned on these clips. There is no event-count cap in this capture
+or verification wrapper; all supported independent proposals are left to the
+shared all-event association/search path.
 
 Machine-readable captures, exact automatic requests/results, discovery summaries,
 provenance and plots are in [the camera receipt directory](public-camera-20261103/).

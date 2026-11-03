@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "source_page": "https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str",
+  "camera": "liberty_str",
+  "requested_duration_s": 300.0,
+  "status": "captured",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "0a1cfa139d16c187e30d416e632615f09cce0d6afe4ed487232f88b582a66806",
+  "page_fetch": {
+    "started_utc": "2026-11-03T01:07:53.748014Z",
+    "finished_utc": "2026-11-03T01:07:53.946856Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:07:53 GMT",
+    "sha256": "e48229702bda0c0d445845ee88899b22484d2d781e3fdb0941eaa40d4244aac3",
+    "bytes": 160159
+  },
+  "camera_name": "Statue of Liberty",
+  "stream_url": "https://videos-3.earthcam.com/fecnetwork/statueoflibertyHD.flv/playlist.m3u8",
+  "stream_url_sha256": "f34c29fd4c8e4891a890b50eee352fcc55e33750ae0447c36c732fb769f91ad4",
+  "provider_map_reference": {
+    "lat": 40.67907584445467,
+    "lon": -74.01832580566408,
+    "kind": "provider_map_marker",
+    "uncertainty_m": null,
+    "source": "https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str",
+    "timezone": "America/New_York"
+  },
+  "playlist_fetch": {
+    "started_utc": "2026-11-03T01:07:53.954788Z",
+    "finished_utc": "2026-11-03T01:07:54.057742Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:07:54 GMT",
+    "sha256": "c20942333f27d95e0a92501f99ea3a9dbe4b0c9d7a6a75d95f0f6d10f32aa3d6",
+    "bytes": 251
+  },
+  "media_playlist_fetch": {
+    "started_utc": "2026-11-03T01:07:54.057992Z",
+    "finished_utc": "2026-11-03T01:07:54.140236Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:07:54 GMT",
+    "sha256": "4b4ef857e26d25961efd3564ed8327fa8c3a0797f9d6e789e9fdab20749c17f8",
+    "bytes": 569
+  },
+  "initial_media_segments": [
+    {
+      "sequence": 42811,
+      "url": "https://videos-3.earthcam.com/fecnetwork/statueoflibertyHD.flv/media_w2107365350_42811.ts",
+      "duration_s": 6.006,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 42812,
+      "url": "https://videos-3.earthcam.com/fecnetwork/statueoflibertyHD.flv/media_w2107365350_42812.ts",
+      "duration_s": 6.006,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 42813,
+      "url": "https://videos-3.earthcam.com/fecnetwork/statueoflibertyHD.flv/media_w2107365350_42813.ts",
+      "duration_s": 6.006,
+      "broadcaster_start_utc": null
+    }
+  ],
+  "broadcaster_segment_clock_present": false,
+  "clock_limitations": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ],
+  "audio_timeline": "source A/V timestamps, rebased together; audio gaps may be padded by aresample",
+  "decoder_command_redacted": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "warning",
+    "-copyts",
+    "-start_at_zero",
+    "-rw_timeout",
+    "15000000",
+    "-user_agent",
+    "Mozilla/5.0",
+    "-headers",
+    "Referer: https://www.earthcam.com/usa/newyork/statueofliberty/?cam=liberty_str\r\n",
+    "-i",
+    "https://videos-3.earthcam.com/fecnetwork/statueoflibertyHD.flv/playlist.m3u8?[query omitted]",
+    "-t",
+    "300.0",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-af",
+    "aresample=async=1:first_pts=0",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "64k",
+    "/home/user/dopplergeist-public-camera-20261103/results/camera-capture-liberty-20261103-0108/audio.mp3",
+    "-t",
+    "300.0",
+    "-map",
+    "0:v:0",
+    "-c:v",
+    "copy",
+    "-an",
+    "-f",
+    "null",
+    "/dev/null"
+  ],
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "capture_started_utc": "2026-11-03T01:07:54.209902Z",
+  "decoder_exit_code": 0,
+  "capture_finished_utc": "2026-11-03T01:12:43.980012Z",
+  "capture_elapsed_s": 289.7701896301005,
+  "audio": {
+    "path": "audio.mp3",
+    "bytes": 2401101,
+    "sha256": "ae4b53b35c1afe8b07ca6ca4876661016b9dab1818ba3b12c97b4dbd62f8b949"
+  },
+  "audio_probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "16000",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "300.096000"
+    }
+  },
+  "decoded_duration_s": 300.0
+}

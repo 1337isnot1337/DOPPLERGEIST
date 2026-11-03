@@ -5,6 +5,12 @@ environment. It supports DG-12 / issue #13. The automatic upload acceptance runn
 is a separate coordinated lane. Successful replays do not complete automatic
 discovery or independent national real-audio validation.
 
+The current project target is up to 1,000 m acceptable and 500 m or better
+preferred. New runner outputs report 100/500/1,000 m point-error thresholds,
+independently of exact-baseline agreement. The frozen receipts and measurements
+below retain their original 100 m labels. Meeting a point-error threshold alone
+does not establish automatic, independent or national acceptance.
+
 The runner requires Python 3.11+, ffmpeg, the installed project, and restored
 inputs. Follow `docs/ARTIFACTS.md` for release acquisition and checksum verification.
 Generate the independent synthetic cases before running them:
