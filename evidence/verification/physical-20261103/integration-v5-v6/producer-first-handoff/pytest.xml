@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="27" time="16.975" timestamp="2026-11-02T23:11:14.345815-04:00" hostname="05c893b10fbb"><testcase classname="tests.test_finite_search" name="test_mode_identity_is_exact_spatial_clock_pass_and_group_seed" time="0.001" /><testcase classname="tests.test_finite_search" name="test_every_retention_stage_contributes_to_distinct_discard_bound" time="0.040" /><testcase classname="tests.test_finite_search" name="test_exact_duplicates_are_not_competing_discarded_modes" time="0.012" /><testcase classname="tests.test_finite_search" name="test_missing_or_corrupt_accounting_cannot_become_zero_discards" time="0.021" /><testcase classname="tests.test_finite_search" name="test_ledger_rejects_wrong_run_or_score_units_and_missing_stages" time="0.011" /><testcase classname="tests.test_finite_search" name="test_a_finite_best_score_does_not_hide_unknown_optimizer_trials" time="0.000" /><testcase classname="tests.test_tiled_search" name="test_tiled_equals_untiled_boundary_and_locked_timing" time="0.658" /><testcase classname="tests.test_tiled_search" name="test_budget_exhaustion_and_source_holes_are_partial" time="0.238" /><testcase classname="tests.test_tiled_search" name="test_merge_is_deterministic_and_preserves_repeat_approaches" time="0.000" /><testcase classname="tests.test_tiled_search" name="test_ridge_only_adapter_and_exact_recording_clock" time="0.192" /><testcase classname="tests.test_tiled_search" name="test_work_limit_does_not_enumerate_unsearched_national_grid" time="0.066" /><testcase classname="tests.test_tiled_search" name="test_subset_matching_keeps_good_events_after_unmatched_proposal" time="0.171" /><testcase classname="tests.test_tiled_search" name="test_default_robust_driver_uses_all_groups_and_refines_them[3]" time="0.854" /><testcase classname="tests.test_tiled_search" name="test_default_robust_driver_uses_all_groups_and_refines_them[4]" time="1.296" /><testcase classname="tests.test_tiled_search" name="test_default_robust_driver_uses_all_groups_and_refines_them[6]" time="4.483" /><testcase classname="tests.test_tiled_search" name="test_explicit_smaller_event_cap_is_partial" time="0.302" /><testcase classname="tests.test_tiled_search" name="test_sixth_event_changes_the_joint_score" time="0.606" /><testcase classname="tests.test_tiled_search" name="test_uncertain_window_keeps_valid_shared_clock_beyond_cpa_anchor" time="0.355" /><testcase classname="tests.test_tiled_search" name="test_narrow_trusted_window_near_sweep_edge_is_not_shrunk_again" time="0.058" /><testcase classname="tests.test_tiled_search" name="test_finite_retention_bound_matches_untiled_and_recovers_missing_ledger" time="1.018" /><testcase classname="tests.test_tiled_search" name="test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound" time="0.239" /><testcase classname="tests.test_tiled_search" name="test_evaluated_acoustic_rejection_is_distinct_from_unknown_support" time="0.035" /><testcase classname="tests.test_tiled_search" name="test_overlapping_refinement_scores_the_complete_grid_union_once" time="0.567" /><testcase classname="" name="test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume" time="0.859"><failure message="assert (False is True)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/work/test_actual_grid_drop_bound_an0')
+
+    def test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume(tmp_path):
+        full, kwargs, budget = execute(tmp_path)
+        narrow_budget = replace(budget, top_k=3)
+        narrow = search_national(**kwargs, budget=narrow_budget, output_dir=tmp_path/"narrow")
+&gt;       check_bound(full, narrow)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': 'f12fcc34c755f80e03c33403190d93ff484906d4fe2a9b2fce9da0e38a7497e1', 'status': 'complete', 'ranked': [{'sc...7912336112, 'source_drift_hz': -1.9700613302748258, 'source_drift_hz_s': -0.031015453900595822, ...}], ...}, ...], ...}
+retained = {'run_hash': 'fcc4f355b27b6398061df4f215f45e8de0ce25fbf3d519ae62b4d2f9330ad91e', 'status': 'complete', 'ranked': [{'sc...99999999999999, 'source_drift_hz': 1.456725384419045e-14, 'source_drift_hz_s': 2.29337884780015e-16, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() &lt;= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+        finite = retained["finite_search_evidence"]
+        assert finite["schema_version"] == 1 and finite["scope"] == "evaluated_finite_grid"
+&gt;       assert finite["complete"] is True and finite["pruning_accounted_for"] is True
+E       assert (False is True)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:42: AssertionError</failure></testcase><testcase classname="" name="test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score" time="2.479"><failure message="assert (False is True)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/work/test_actual_fine_grid_retentio0')
+
+    def test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score(tmp_path):
+        full, kwargs, budget = execute(tmp_path, refine=True)
+        narrow = search_national(**kwargs, budget=replace(budget, top_k=3), output_dir=tmp_path/"narrow")
+        # Both runs select the same single coarse refinement seed. Therefore the
+        # high-retention run is an oracle over the same declared evaluated points.
+        assert identity(full["coarse_ranked"][0]) == identity(narrow["coarse_ranked"][0])
+&gt;       check_bound(full, narrow)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': 'be3b5199be2e034e851e6cdfde29be2d40b9a4364716d4265660e82fca85b5d8', 'status': 'complete', 'ranked': [{'sc...96165722505, 'source_drift_hz': -1.732850555113381, 'source_drift_hz_s': -0.027280917050222637, ...}], ...}, ...], ...}
+retained = {'run_hash': 'bc0f5de4006a4eee61642fb5f0c9cb88c2ffc779b6eaa95266f646e933aea1dc', 'status': 'complete', 'ranked': [{'sc...20016054553669, 'source_drift_hz': -0.47130654396410465, 'source_drift_hz_s': -0.007419965136480613, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() &lt;= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+        finite = retained["finite_search_evidence"]
+        assert finite["schema_version"] == 1 and finite["scope"] == "evaluated_finite_grid"
+&gt;       assert finite["complete"] is True and finite["pruning_accounted_for"] is True
+E       assert (False is True)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:42: AssertionError</failure></testcase><testcase classname="" name="test_event_omission_and_unfinished_tiles_cannot_certify_finite_completion" time="1.218" /><testcase classname="" name="test_nearby_distinct_seeds_are_not_erased_as_exact_duplicates" time="0.000" /></testsuite></testsuites>

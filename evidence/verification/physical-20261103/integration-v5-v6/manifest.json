@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "bytes": 4499,
-    "sha256": "f8c1d359971686d682f25958ff6d8afa66890bf5fa1957d6b6139c7e1943fe5c"
+    "bytes": 6922,
+    "sha256": "c16c5c32dc091a54c26de6a14e98e000ee22c4c325b20d901845dd112048fed9"
   },
   "confidence-only/pytest.log": {
     "bytes": 110,
@@ -19,9 +19,53 @@
     "bytes": 3579,
     "sha256": "e4dbd35fae25c17b5168e9daa0ad01c348be5a7e76401d2f5bf2c382fed49077"
   },
+  "producer-first-handoff/known-score-ledger-audit.json": {
+    "bytes": 2319,
+    "sha256": "d9e80b7147f8ea47d61c8a03f5199d0c472e607c5be9daa968735b245d2e2934"
+  },
+  "producer-first-handoff/physical-grid-native-output-manifest.json": {
+    "bytes": 14068,
+    "sha256": "c54f2581ed5366e79b0e5e83aaa03da9f524cc689aee727fbad4a06763529459"
+  },
+  "producer-first-handoff/physical-grid-native-output.zip": {
+    "bytes": 156877,
+    "sha256": "464cad0d01a42c473ba5519a0d9f3c9abe6988711ba7fd42c8439a2b0d5fbf64"
+  },
+  "producer-first-handoff/pytest.log": {
+    "bytes": 4449,
+    "sha256": "0d7cac0ba283c5345cd49bd519ed7e6f265c39ae87715601e43af1ad94eb9d50"
+  },
+  "producer-first-handoff/pytest.xml": {
+    "bytes": 7662,
+    "sha256": "7e8983a4712439fb8ab90a4255d798186fe490f04608b6f92800d20de0d5c135"
+  },
+  "producer-first-handoff/receipt.json": {
+    "bytes": 1414,
+    "sha256": "a6c498bbf726f5ca6ca7b185b29712552f81dc95751728fb9e169325362b63f1"
+  },
+  "producer-first-handoff/source.json": {
+    "bytes": 1136,
+    "sha256": "45143270f6f46e4593d513a44bf843fdc41f1f8b4abf8e12510519cfc28834bf"
+  },
   "source-and-scope.json": {
     "bytes": 2680,
     "sha256": "c977de482f1cc4586e55e8f3e8144cb03d2d9bcca6fc0bdc8c501c8692e93cb3"
+  },
+  "subset-policy-diagnostic/diagnose.py": {
+    "bytes": 2352,
+    "sha256": "6808de2f923a2cd820c8f9c3fc2a3ed377f9576359bc4cd0f04c959690f28f9d"
+  },
+  "subset-policy-diagnostic/receipt.json": {
+    "bytes": 851,
+    "sha256": "de28961c2a054fe8c14e39498eb91736e55b59fb7f8ea14a24cf5f012c67faa0"
+  },
+  "subset-policy-diagnostic/stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "subset-policy-diagnostic/stdout.json": {
+    "bytes": 3856,
+    "sha256": "483f9cb8fac99af93673f1b81a28a8be3e5d676ae9a60b65528d0d4dc7285687"
   },
   "v5/corrected-collection/pytest.log": {
     "bytes": 357,

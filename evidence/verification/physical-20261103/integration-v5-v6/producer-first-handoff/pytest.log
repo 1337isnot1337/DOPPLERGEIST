@@ -1,0 +1,64 @@
+.......................FF..                                              [100%]
+=================================== FAILURES ===================================
+____ test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume _____
+
+tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/work/test_actual_grid_drop_bound_an0')
+
+    def test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume(tmp_path):
+        full, kwargs, budget = execute(tmp_path)
+        narrow_budget = replace(budget, top_k=3)
+        narrow = search_national(**kwargs, budget=narrow_budget, output_dir=tmp_path/"narrow")
+>       check_bound(full, narrow)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': 'f12fcc34c755f80e03c33403190d93ff484906d4fe2a9b2fce9da0e38a7497e1', 'status': 'complete', 'ranked': [{'sc...7912336112, 'source_drift_hz': -1.9700613302748258, 'source_drift_hz_s': -0.031015453900595822, ...}], ...}, ...], ...}
+retained = {'run_hash': 'fcc4f355b27b6398061df4f215f45e8de0ce25fbf3d519ae62b4d2f9330ad91e', 'status': 'complete', 'ranked': [{'sc...99999999999999, 'source_drift_hz': 1.456725384419045e-14, 'source_drift_hz_s': 2.29337884780015e-16, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() <= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+        finite = retained["finite_search_evidence"]
+        assert finite["schema_version"] == 1 and finite["scope"] == "evaluated_finite_grid"
+>       assert finite["complete"] is True and finite["pruning_accounted_for"] is True
+E       assert (False is True)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:42: AssertionError
+______ test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score ______
+
+tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/work/test_actual_fine_grid_retentio0')
+
+    def test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score(tmp_path):
+        full, kwargs, budget = execute(tmp_path, refine=True)
+        narrow = search_national(**kwargs, budget=replace(budget, top_k=3), output_dir=tmp_path/"narrow")
+        # Both runs select the same single coarse refinement seed. Therefore the
+        # high-retention run is an oracle over the same declared evaluated points.
+        assert identity(full["coarse_ranked"][0]) == identity(narrow["coarse_ranked"][0])
+>       check_bound(full, narrow)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': 'be3b5199be2e034e851e6cdfde29be2d40b9a4364716d4265660e82fca85b5d8', 'status': 'complete', 'ranked': [{'sc...96165722505, 'source_drift_hz': -1.732850555113381, 'source_drift_hz_s': -0.027280917050222637, ...}], ...}, ...], ...}
+retained = {'run_hash': 'bc0f5de4006a4eee61642fb5f0c9cb88c2ffc779b6eaa95266f646e933aea1dc', 'status': 'complete', 'ranked': [{'sc...20016054553669, 'source_drift_hz': -0.47130654396410465, 'source_drift_hz_s': -0.007419965136480613, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() <= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+        finite = retained["finite_search_evidence"]
+        assert finite["schema_version"] == 1 and finite["scope"] == "evaluated_finite_grid"
+>       assert finite["complete"] is True and finite["pruning_accounted_for"] is True
+E       assert (False is True)
+
+../DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py:42: AssertionError
+=========================== short test summary info ============================
+FAILED ::test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume
+FAILED ::test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score
+2 failed, 25 passed in 16.97s

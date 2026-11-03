@@ -1,0 +1,61 @@
+{
+  "scope": "Read-only audit of recorded known finite scores, not an upper bound on unclassified optimizer/model work. No completeness flag is modified.",
+  "runs": [
+    {
+      "report": "work/test_actual_fine_grid_retentio0/narrow/search-report.json",
+      "status": "complete",
+      "ranked": 3,
+      "known_finite_modes": 43,
+      "omitted_known_finite_modes": 40,
+      "largest_omitted_known_finite_score": 1.5158507056568205,
+      "finite_complete": false,
+      "pruning_accounted_for": true,
+      "reported_bound": null,
+      "unclassified_score_candidates": 49,
+      "core_assessed_mode_ids": [],
+      "ledger_sha256": "0d5d019c69c43f76c7df1b91769b071564477f3a8decbd205a398093b7b92708"
+    },
+    {
+      "report": "work/test_actual_fine_grid_retentio0/wide/search-report.json",
+      "status": "complete",
+      "ranked": 43,
+      "known_finite_modes": 43,
+      "omitted_known_finite_modes": 0,
+      "largest_omitted_known_finite_score": null,
+      "finite_complete": false,
+      "pruning_accounted_for": true,
+      "reported_bound": null,
+      "unclassified_score_candidates": 49,
+      "core_assessed_mode_ids": [],
+      "ledger_sha256": "fb84751387c8172710b82adce46966934c069c972331e40ac005fd11f984bd46"
+    },
+    {
+      "report": "work/test_actual_grid_drop_bound_an0/narrow/search-report.json",
+      "status": "complete",
+      "ranked": 3,
+      "known_finite_modes": 9,
+      "omitted_known_finite_modes": 6,
+      "largest_omitted_known_finite_score": 0.9999999999999978,
+      "finite_complete": false,
+      "pruning_accounted_for": true,
+      "reported_bound": null,
+      "unclassified_score_candidates": 9,
+      "core_assessed_mode_ids": [],
+      "ledger_sha256": "2bce4fdda2b254806b5fc99f0552b783c17ff824d4c14da643aa7846693a15de"
+    },
+    {
+      "report": "work/test_actual_grid_drop_bound_an0/wide/search-report.json",
+      "status": "complete",
+      "ranked": 9,
+      "known_finite_modes": 9,
+      "omitted_known_finite_modes": 0,
+      "largest_omitted_known_finite_score": null,
+      "finite_complete": false,
+      "pruning_accounted_for": true,
+      "reported_bound": null,
+      "unclassified_score_candidates": 9,
+      "core_assessed_mode_ids": [],
+      "ledger_sha256": "ff65a61f82cf8c4f542fa21323d999b43241c14988c7a0d6699e356a6ea0fdde"
+    }
+  ]
+}

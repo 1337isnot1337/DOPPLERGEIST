@@ -69,3 +69,44 @@ The memory skip is an environment limitation, not a passed memory test. The
 confidence-only module skip is resolved by running those four controls in V6.
 Native logs and JUnit are preserved byte for byte, including the initial
 collection error and any diagnostic whitespace.
+
+## First published producer: classification remains incomplete
+
+The separate `producer-first-handoff/` receipt records the first published W2
+producer, `5459461d1db4dc574ba5cb8be966a26ab96c68c7`. Its finite/tiled tests and
+the unchanged independent physical oracle at `7fed364` give **25 passed and two
+failures**, with no skips. Both failures are the oracle's early readiness check
+that robust-ridge finite evidence is complete. This source has no W3 trial
+classification, so retaining `complete: false` is correct. The later independent
+bound/resume assertions in those two tests did not execute.
+
+A separate read-only SQLite audit confirms nine distinct known finite coarse
+modes and 43 coarse/fine modes. Keeping three omits six and 40, respectively.
+The largest observed omitted scores are `0.9999999999999978` and
+`1.5158507056568205`. These are maxima over recorded finite scores, **not upper
+bounds on unclassified trials**. The reports preserve a null discard bound,
+empty `core_assessed_mode_ids`, and incomplete finite status. No metadata was
+injected to make these tests pass.
+
+The native two small-grid test directories, including their SQLite ledgers,
+indexes, tile checkpoints and reports, are retained in
+`physical-grid-native-output.zip`, with a verified per-member manifest. This is
+regional accounting evidence, not a national or real-recording benchmark.
+
+## Nested-subset policy diagnostic
+
+The separate `subset-policy-diagnostic/` control keeps the exact V6 consumer
+unchanged. It compares a fully supported N-group candidate of score N with an
+N-1 subset at the same position and clock, with identical assignments for every
+shared event. The normalized score gap is `1/N`. The current 0.2 margin therefore
+accepts the controlled pair for N = 2, 3 and 4, but returns
+`inconclusive / ambiguous_flight_match` for N = 5, 6, 7 and 8. The leading
+candidate alone succeeds for all seven counts.
+
+This diagnostic identifies a structural consequence of the existing policy; it
+does not assert that a nested subset must be accepted. W4 and the primary must
+decide whether this conservatism is intended or whether a future rule should
+distinguish consistent nested explanations from conflicting assignments. The
+different-flight/subset veto remains unchanged. No six-event historical decision
+was rerun or revised. The exact script, native output, source hash and invocation
+are preserved for that discussion.

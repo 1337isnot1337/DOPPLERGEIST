@@ -1,0 +1,13 @@
+{
+  "source_commit": "392ff442f38b41a93060728bcf81915f7f916eb8",
+  "published_same_tree_commit": "6b078f7336f4c1b9b8d5cacef6a12b315d260ca7",
+  "confidence_sha256": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6",
+  "script_sha256": "6808de2f923a2cd820c8f9c3fc2a3ed377f9576359bc4cd0f04c959690f28f9d",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/subset-margin-diagnostic/diagnose.py"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v6/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v6/tests",
+  "exit_code": 0,
+  "claim": "Observed conservative policy behavior, not an assertion that nested subsets must be accepted. Any policy revision needs W4/primary agreement."
+}

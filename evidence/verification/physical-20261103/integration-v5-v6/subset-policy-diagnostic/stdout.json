@@ -1,0 +1,114 @@
+{
+  "scope": "Decision-only structural diagnostic; no acoustic search or new accepted localization",
+  "policy_margin": 0.2,
+  "cases": [
+    {
+      "independent_groups": 2,
+      "leading_score": 2.0,
+      "nested_subset_score": 1.0,
+      "score_gap_per_max_group": 0.5,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "succeeded",
+      "reason_code": "supported_by_evidence_checks",
+      "competing_hypothesis": null
+    },
+    {
+      "independent_groups": 3,
+      "leading_score": 3.0,
+      "nested_subset_score": 2.0,
+      "score_gap_per_max_group": 0.3333333333333333,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "succeeded",
+      "reason_code": "supported_by_evidence_checks",
+      "competing_hypothesis": null
+    },
+    {
+      "independent_groups": 4,
+      "leading_score": 4.0,
+      "nested_subset_score": 3.0,
+      "score_gap_per_max_group": 0.25,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "succeeded",
+      "reason_code": "supported_by_evidence_checks",
+      "competing_hypothesis": null
+    },
+    {
+      "independent_groups": 5,
+      "leading_score": 5.0,
+      "nested_subset_score": 4.0,
+      "score_gap_per_max_group": 0.2,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "competing_hypothesis": {
+        "separation_m": 0.0,
+        "score_gap": 0.2,
+        "gap_units": "support_units_per_group",
+        "same_flight_association": false,
+        "checked_radius_m": 100.0
+      }
+    },
+    {
+      "independent_groups": 6,
+      "leading_score": 6.0,
+      "nested_subset_score": 5.0,
+      "score_gap_per_max_group": 0.16666666666666666,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "competing_hypothesis": {
+        "separation_m": 0.0,
+        "score_gap": 0.16666666666666666,
+        "gap_units": "support_units_per_group",
+        "same_flight_association": false,
+        "checked_radius_m": 100.0
+      }
+    },
+    {
+      "independent_groups": 7,
+      "leading_score": 7.0,
+      "nested_subset_score": 6.0,
+      "score_gap_per_max_group": 0.14285714285714285,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "competing_hypothesis": {
+        "separation_m": 0.0,
+        "score_gap": 0.14285714285714285,
+        "gap_units": "support_units_per_group",
+        "same_flight_association": false,
+        "checked_radius_m": 100.0
+      }
+    },
+    {
+      "independent_groups": 8,
+      "leading_score": 8.0,
+      "nested_subset_score": 7.0,
+      "score_gap_per_max_group": 0.125,
+      "same_point_clock": true,
+      "all_shared_event_flight_assignments_identical": true,
+      "leading_only_status": "succeeded",
+      "with_nested_subset_status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "competing_hypothesis": {
+        "separation_m": 0.0,
+        "score_gap": 0.125,
+        "gap_units": "support_units_per_group",
+        "same_flight_association": false,
+        "checked_radius_m": 100.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "source_commit": "5459461d1db4dc574ba5cb8be966a26ab96c68c7",
+  "source_tree": "843fcf261305d36364a317bf403f9b3b85bf8d0e",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_finite_search.py",
+    "tests/test_tiled_search.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py",
+    "--basetemp=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/work",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/retention-producer-5459461/pytest.xml"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-review/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-review/tests",
+  "oracle_sha256": "8ae91bebbb561946e3470aacd595f563370a081a7ab253ee0e309301646f3e3d",
+  "scope": "Independent physical small-grid retention/resume tests against the first published producer. W3 trial classification is not supplied or faked; any resulting incompleteness remains authoritative."
+}
