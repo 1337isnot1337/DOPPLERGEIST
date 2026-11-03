@@ -1,0 +1,22 @@
+{
+  "source_commit": "f0db844ae2496fa1faf7bf438daf152c55514b00",
+  "command": [
+    "/home/cinna/.cache/dopplergeist/wheel-integration-f0db844/venv/bin/python",
+    "-I",
+    "-m",
+    "aircraft_geoloc.cli",
+    "analyze",
+    "/home/cinna/.cache/dopplergeist/wheel-integration-f0db844/inputs/recording.mp3",
+    "--jobs",
+    "/home/cinna/.cache/dopplergeist/wheel-integration-f0db844/jobs"
+  ],
+  "return_code": 0,
+  "terminal": [
+    {
+      "result_path": "/home/cinna/.cache/dopplergeist/wheel-integration-f0db844/jobs/36cf8866d397496e8d3085650c691d48/result.json",
+      "status": "needs_input",
+      "reason_code": "recording_time_required"
+    }
+  ],
+  "scope": "Installed wheel actual intake/needs-input path only; no national localization acceptance."
+}
