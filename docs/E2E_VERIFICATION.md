@@ -98,6 +98,11 @@ The tagged variant adds `-metadata date=2026-09-08T20:00:00Z`; the ordinary vari
 strips source metadata with `-map_metadata -1`. The invalid bytes are
 `DOPPLERGEIST intentionally invalid media acceptance control` plus newline.
 Original hashes and full result receipts are preserved with each run.
+The reviewable summaries, full result receipts and actual desktop/mobile renders
+are in `evidence/verification/upload-controls-20261102/`. All nine route/control
+combinations passed on integration commit `e39bdc84`; a separate real browser
+submission at `a5ebbb61` additionally passed the 390 px mobile overflow check.
+Both integration commits are retained on the `verify/upload-acceptance` branch.
 
 These controls exercise real intake/discovery and product persistence. Positive
 search/association/decision acceptance depends on the remaining producer
