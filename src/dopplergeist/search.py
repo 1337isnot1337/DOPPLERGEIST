@@ -401,7 +401,7 @@ def _validate_score_ceiling_inputs(events, measurements):
             raise ValueError("Source frequency bounds must be finite, positive and ordered")
 
 
-def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor):
+def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor, first_fit=None):
     """Fit groups until a conservative residual ceiling cannot reach the floor.
 
     Unperformed groups each contribute at most one. The existing validated-fit
@@ -412,7 +412,10 @@ def _screen_association_trial(tracks, events, measurements, observer, start, c, 
     missing = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
         acoustic = None if acoustic_at is None else [acoustic_at(index)]
-        single = score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic)
+        if index == 0 and first_fit is not None:
+            single = {"event_diagnostics": [first_fit]}
+        else:
+            single = score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic)
         diagnostics.extend(single["event_diagnostics"])
         remaining = len(events) - len(diagnostics)
         if remaining:
@@ -513,6 +516,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             batches = []
         else:
             batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
+    first_fits, first_batch_attempted = None, False
     for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -526,9 +530,15 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                            if batches is not None and lazy_batches is None else None)
             try:
                 if association and score_floor is not None:
+                    if not first_batch_attempted and batches is not None and lazy_batches is not None and time_origin is None:
+                        first_batch_attempted = True
+                        acoustic_at(0)
+                        if batches[0] is not None:
+                            from .batch_ridge import first_event_fits
+                            first_fits = first_event_fits(measurements[0], events[0], *batches[0])
                     result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
                                                               anchor+shift, c, acoustic_at if batches is not None else None,
-                                                              score_floor)
+                                                              score_floor, first_fits[trial] if first_fits is not None else None)
                     if result is None:
                         partial_prunes += 1
                         assessment["unknown_trials"] += 1
