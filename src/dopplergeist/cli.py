@@ -79,6 +79,8 @@ def main():
     analyze.add_argument("--start-utc",help="Earliest UTC recording start, including explicit timezone")
     analyze.add_argument("--end-utc",help="Latest UTC recording start; defaults to earliest")
     analyze.add_argument("--time-source",help="How the recording start window was established")
+    analyze.add_argument("--bounds",type=float,nargs=4,metavar=("WEST", "SOUTH", "EAST", "NORTH"),
+                         help="Limit the search to a WGS84 rectangle in decimal degrees")
     analyze.add_argument("--jobs",default="jobs",help="Persistent job directory")
     analyze.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     analyze.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
@@ -131,6 +133,8 @@ def main():
         if args.end_utc and not args.start_utc:
             parser.error("--end-utc requires --start-utc")
         request={"schema_version":1,"search":{"coverage":"conus"}}
+        if args.bounds is not None:
+            request["search"]["bounds_wsen"]=args.bounds
         if args.start_utc:
             request["time_window"]={"start_utc":args.start_utc,"end_utc":args.end_utc or args.start_utc,"source":"user"}
             if args.time_source:
