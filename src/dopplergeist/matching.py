@@ -278,12 +278,14 @@ def association_score(result, events):
 def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     """Adapt contract ridge points to existing search inputs without truth hints.
 
-    Keep every ridge in a harmonic group as evidence for one pass. Integer
-    harmonics are normalized to its lowest observed band; no fundamental needs
-    to be present. Groups with inconsistent ratios must be fixed by discovery.
+    Keep every ridge in a harmonic group as evidence for one pass. Rational
+    harmonic ratios are normalized to its lowest observed band; no fundamental
+    needs to be present. Groups with inconsistent ratios must be fixed by discovery.
     Timing uncertainty spans the observed window, because a curved track need
     not have its geometric CPA at a fitted straight-pass center.
     """
+    from .discovery import _HARMONIC_RATIOS, _overlap
+
     groups = {}
     for event in detected_events:
         key = event.get("harmonic_group_id") or event["event_id"]
@@ -298,13 +300,16 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
             t = np.array([p["time_s"] for p in member["ridge"]], dtype=float)
             f = np.array([p["frequency_hz"] for p in member["ridge"]], dtype=float)
             w = np.array([p.get("weight", 1.0) for p in member["ridge"]], dtype=float)
-            overlapping = (t >= reference_time[0]) & (t <= reference_time[-1])
-            if not overlapping.any():
-                raise ValueError("Harmonic-group ridges must overlap in recording time")
-            ratio = np.median(f[overlapping] / np.interp(t[overlapping], reference_time, reference_frequency))
-            harmonic = max(1, round(ratio))
-            if abs(ratio / harmonic - 1) > 0.05:
-                raise ValueError("Harmonic group does not have consistent integer frequency ratios")
+            harmonic = 1.0
+            if member is not reference:
+                base = np.column_stack((reference_time, reference_frequency))
+                shared = _overlap(base, np.column_stack((t, f)))
+                if shared is None or len(shared[0]) * 0.5 < 0.6 * min(np.ptp(reference_time), np.ptp(t)):
+                    raise ValueError("Harmonic-group ridges lack sufficient shared observations")
+                ratio = shared[2] / shared[1]
+                harmonic = min([1.0, *_HARMONIC_RATIOS], key=lambda value: abs(value - np.median(ratio)))
+                if np.quantile(np.abs(ratio - harmonic) / harmonic, 0.9) >= 0.008:
+                    raise ValueError("Harmonic group does not have a consistent supported frequency ratio")
             times.extend(t)
             frequencies.extend(f / harmonic)
             # Equal aggregate weight per ridge prevents duplicated harmonics

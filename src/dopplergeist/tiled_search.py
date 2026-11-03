@@ -4,6 +4,7 @@ Only the receiver grid is partitioned. Every tile sees all overlapping original
 flight segments and the same event clocks, propagation model and scoring units.
 """
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from importlib.metadata import version
 import itertools
 import json
@@ -100,11 +101,24 @@ def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
                                   min(xmax + 1, (ix + 1) * tile_cells), min(ymax + 1, (iy + 1) * tile_cells))
 
 
+@lru_cache(maxsize=8)
+def _cached_to_geographic(crs):
+    return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+
+
+def _to_geographic(crs):
+    try:
+        hash(crs)
+    except TypeError:
+        return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    return _cached_to_geographic(crs)
+
+
 def tile_points(cells, spacing, bounds, terrain, crs):
     x0, y0, x1, y1 = cells
     x, y = np.meshgrid(np.arange(x0, x1, dtype=np.int64), np.arange(y0, y1, dtype=np.int64))
     x, y = x.ravel() * spacing, y.ravel() * spacing
-    lon, lat = Transformer.from_crs(crs, "EPSG:4326", always_xy=True).transform(x, y)
+    lon, lat = _to_geographic(crs).transform(x, y)
     keep = (lon >= bounds[0]) & (lon <= bounds[2]) & (lat >= bounds[1]) & (lat <= bounds[3])
     x, y, lat, lon = (a[keep] for a in (x, y, lat, lon))
     return pd.DataFrame({"point_id": np.arange(len(x)), "x": x, "y": y, "lat": lat, "lon": lon,
@@ -117,7 +131,7 @@ def _expanded_bounds(cells, spacing, radius, crs):
     # samples and CONUS projection distortion. Full payloads remain unmodified.
     margin = 1.6 * radius + 15000
     box = (x0 * spacing - margin, y0 * spacing - margin, x1 * spacing + margin, y1 * spacing + margin)
-    return Transformer.from_crs(crs, "EPSG:4326", always_xy=True).transform_bounds(*box, densify_pts=101)
+    return _to_geographic(crs).transform_bounds(*box, densify_pts=101)
 
 
 def _tracks(indexes, bounds, time_range, budget):
