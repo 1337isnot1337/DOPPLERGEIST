@@ -1,0 +1,42 @@
+{
+  "reference_commit": "2c3ed20577bcce29058d73422dd4f85392d04c24",
+  "comparison": "Hermes interpolated constant-pass model vs closed form; no code copied",
+  "physics": [
+    {
+      "speed_mps": 70.0,
+      "slant_m": 500.0,
+      "max_abs_difference_hz": 0.00022700818131227152
+    },
+    {
+      "speed_mps": 70.0,
+      "slant_m": 5000.0,
+      "max_abs_difference_hz": 3.1624140603980777e-06
+    },
+    {
+      "speed_mps": 150.0,
+      "slant_m": 500.0,
+      "max_abs_difference_hz": 0.0030125399947422693
+    },
+    {
+      "speed_mps": 150.0,
+      "slant_m": 5000.0,
+      "max_abs_difference_hz": 4.137590300956617e-05
+    },
+    {
+      "speed_mps": 250.0,
+      "slant_m": 500.0,
+      "max_abs_difference_hz": 0.10272150340233566
+    },
+    {
+      "speed_mps": 250.0,
+      "slant_m": 5000.0,
+      "max_abs_difference_hz": 0.6661038642706103
+    }
+  ],
+  "partial_support_control": {
+    "observed_samples": 100,
+    "supported_samples": 5,
+    "hermes_score_hz": 0.0,
+    "dopplergeist_rejects": true
+  }
+}

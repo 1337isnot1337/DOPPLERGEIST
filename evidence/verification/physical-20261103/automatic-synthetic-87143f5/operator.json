@@ -1,0 +1,17 @@
+{
+  "offline": true,
+  "flight_indexes": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-inputs-20261103/flight-index-v2.sqlite"
+  ],
+  "terrain": {
+    "constant_m": 120.0
+  },
+  "refine_finalists": 10,
+  "search_budget": {
+    "tile_cells": 16,
+    "spacing_m": 2000.0,
+    "refine_spacing_m": 100.0,
+    "refine_finalists": 10,
+    "top_k": 100
+  }
+}

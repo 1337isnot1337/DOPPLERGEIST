@@ -1,0 +1,112 @@
+{
+  "integration_commit": "87143f5db99454f14541d736be6e5338b5d2ee76",
+  "job_id": "bb3e96c615d44abaa75bcf75db2cbeb3",
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "complete_pipeline_elapsed_s": 226.10791356200025,
+  "search": {
+    "status": "complete",
+    "tiles_total": 19278,
+    "tiles_completed": 19278,
+    "unsearched_tiles": 0,
+    "tile_failures": [],
+    "data_scope_complete": true,
+    "refinement_failure": null,
+    "elapsed_s": 211.5439934279998,
+    "process_peak_rss_mib": 283.05078125
+  },
+  "association_results": [
+    {
+      "flight_ids": [
+        "f4a942f158fc",
+        "159329fe8c9f"
+      ],
+      "evaluation_labels": [
+        "true-A",
+        "true-B"
+      ],
+      "lat": 40.03172446436919,
+      "lon": -100.01829223577491,
+      "score": -0.1720691034013313,
+      "position_error_m": 0.6435930475006092,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "a996be0c6cc3",
+        "f4463eca673d"
+      ],
+      "evaluation_labels": [
+        "known-jet",
+        "false1-B"
+      ],
+      "lat": 35.00006967965142,
+      "lon": -90.00027149664619,
+      "score": -0.21500379201224734,
+      "position_error_m": 1046002.4644575191,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "c6ffc69306d1",
+        "f4463eca673d"
+      ],
+      "evaluation_labels": [
+        "false1-A",
+        "false1-B"
+      ],
+      "lat": 35.00006967965142,
+      "lon": -90.00027149664619,
+      "score": -0.21500379201224734,
+      "position_error_m": 1046002.4644575191,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "b4703f435dd4",
+        "8c99c17de3e1"
+      ],
+      "evaluation_labels": [
+        "false2-A",
+        "false2-B"
+      ],
+      "lat": 43.000148598782225,
+      "lon": -112.00059067935338,
+      "score": -0.2867113112152857,
+      "position_error_m": 1052044.419284088,
+      "refined": true
+    }
+  ],
+  "candidate_count": 111,
+  "best_candidate_is_not_a_supported_location": true,
+  "matching_diagnostics": {
+    "alternatives_evaluated": false,
+    "refinement_boundary_limited": false,
+    "refinement_failures": []
+  },
+  "decision_diagnostics": {
+    "policy": {
+      "target_radius_m": 100.0,
+      "min_independent_events": 2,
+      "max_event_rmse_hz": 3.0,
+      "max_outlier_fraction": 0.25,
+      "min_support_fraction": 0.95,
+      "near_tie_loss_per_event_hz": 0.5
+    },
+    "policy_version": "engineering-v1",
+    "calibration": "uncalibrated",
+    "probability": null,
+    "limitations": [
+      "Archive availability does not establish capture of every aircraft.",
+      "Sensitivity checks are not a calibrated confidence interval."
+    ],
+    "independent_event_groups": 2,
+    "competing_hypothesis": {
+      "separation_m": 1046002.3322655795,
+      "loss_gap_per_event_hz": 0.02146734430545802,
+      "same_flight_association": false,
+      "checked_radius_m": 42.841986085700775
+    }
+  },
+  "evaluation_note": "Truth and identity mapping read only in post-search evaluation; this is a previously inspected synthetic regression, not an independent real/held-out accuracy result."
+}

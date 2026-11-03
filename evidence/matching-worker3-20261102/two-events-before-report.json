@@ -1,0 +1,204 @@
+{
+  "config": {
+    "audio": "/home/cinna/aircraft-audio-geolocation/data/source/reference-recording.wav",
+    "tracks": [
+      "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/reference-region.parquet"
+    ],
+    "type_database": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/type-database.csv",
+    "max_track_gap_s": 30,
+    "terrain": {
+      "rasters": [
+        "/home/cinna/aircraft-audio-geolocation/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif"
+      ],
+      "geoid_raster": "/home/cinna/aircraft-audio-geolocation/data/terrain/us_nga_egm96_15.tif"
+    },
+    "grid": {
+      "bounds": [
+        -73.59,
+        40.83,
+        -73.47,
+        40.92
+      ],
+      "spacing_m": 200,
+      "scoring_spacing_m": 100,
+      "refine_spacing_m": 25,
+      "refine_pairs": 5
+    },
+    "events": [
+      {
+        "start_s": 2100,
+        "end_s": 2280,
+        "band_hz": [
+          75,
+          190
+        ],
+        "max_slope_hz_s": 4,
+        "max_up_slope_hz_s": 0.5,
+        "speed_range_mps": [
+          130,
+          154
+        ],
+        "slant_range_m": [
+          4300,
+          7800
+        ],
+        "f0_range_hz": [
+          110,
+          116
+        ]
+      },
+      {
+        "start_s": 3040,
+        "end_s": 3125,
+        "band_hz": [
+          95,
+          185
+        ],
+        "max_slope_hz_s": 4,
+        "max_up_slope_hz_s": 0.5,
+        "speed_range_mps": [
+          88,
+          110
+        ],
+        "slant_range_m": [
+          1390,
+          4690
+        ],
+        "f0_range_hz": [
+          126,
+          133
+        ]
+      }
+    ],
+    "filters": {
+      "offset_tolerance_s": 5,
+      "silence": {
+        "edge_margin_s": 100
+      }
+    },
+    "scoring": {
+      "mode": "brightness",
+      "time_sweep_s": 5,
+      "time_step_s": 0.5
+    }
+  },
+  "measured_events": [
+    {
+      "start_s": 2100,
+      "end_s": 2280,
+      "band_hz": [
+        75,
+        190
+      ],
+      "max_slope_hz_s": 4,
+      "max_up_slope_hz_s": 0.5,
+      "speed_range_mps": [
+        130,
+        154
+      ],
+      "slant_range_m": [
+        4300,
+        7800
+      ],
+      "f0_range_hz": [
+        110,
+        116
+      ],
+      "cpa_receive_s": 2155.715465159944
+    },
+    {
+      "start_s": 3040,
+      "end_s": 3125,
+      "band_hz": [
+        95,
+        185
+      ],
+      "max_slope_hz_s": 4,
+      "max_up_slope_hz_s": 0.5,
+      "speed_range_mps": [
+        88,
+        110
+      ],
+      "slant_range_m": [
+        1390,
+        4690
+      ],
+      "f0_range_hz": [
+        126,
+        133
+      ],
+      "cpa_receive_s": 3076.437754489226
+    }
+  ],
+  "imports": [
+    {
+      "rows": 583176,
+      "segments": 3587,
+      "known_jets_excluded": [],
+      "altitude_basis_counts": {
+        "ellipsoidal": 580855,
+        "ellipsoidal_interpolated": 1729,
+        "barometric": 592
+      },
+      "unknown_types_retained": true,
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/reference-region.parquet"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/source/reference-recording.wav",
+      "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+    },
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/reference-region.parquet",
+      "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0"
+    }
+  ],
+  "implementation_sha256": "85757086799d7e3573fcde072285115d5a77333e7a273a594a3249e53faa1d44",
+  "coarse_filter_counts": {
+    "per_event_survivors": [
+      10265,
+      17497
+    ],
+    "pairs_before_silence": 52,
+    "silence_rejected": 0,
+    "survivors": 52
+  },
+  "scoring_filter_counts": {
+    "per_event_survivors": [
+      1657,
+      2141
+    ],
+    "pairs_before_silence": 209,
+    "silence_rejected": 0,
+    "survivors": 209
+  },
+  "ranked_points": 283,
+  "flight_combinations": 1,
+  "best": {
+    "score": 5.608620381268417,
+    "event_scores": [
+      2.62630103588047,
+      2.982319345387947
+    ],
+    "f0_hz": [
+      112.4,
+      126.0
+    ],
+    "recording_start_time_s": 1788898649.6620934,
+    "time_adjustment_s": -0.5,
+    "point_id": 41,
+    "lat": 40.87693175890468,
+    "lon": -73.52498229500986,
+    "elev_m": -31.25569725036621,
+    "x": 1861200.0,
+    "y": 2206325.0,
+    "flight_ids": [
+      "a1dfeb:1",
+      "ace391:3"
+    ]
+  },
+  "elapsed_s": 89.01008657697821,
+  "scoring_time_is_locked": true,
+  "ground_truth_used_by_search": false
+}

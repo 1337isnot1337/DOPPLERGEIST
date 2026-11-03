@@ -1,0 +1,14 @@
+[
+  {
+    "name": "v2026.09.08-planes-readsb-staging-0.tar.aa",
+    "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/raw/v2026.09.08-planes-readsb-staging-0.tar.aa",
+    "sha256": "c2d4a8ed715d4e39cb137991857a46af6b33c96bf425cdbc66cfcc979d16fdf4",
+    "bytes": 2000000000
+  },
+  {
+    "name": "v2026.09.08-planes-readsb-staging-0.tar.ab",
+    "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/raw/v2026.09.08-planes-readsb-staging-0.tar.ab",
+    "sha256": "4e73ee4880daf3cc1976c85061213caeeeaf398714438434cea7b2fa6b555f07",
+    "bytes": 1874212864
+  }
+]
