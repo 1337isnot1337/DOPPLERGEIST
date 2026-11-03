@@ -1,0 +1,2210 @@
+{
+  "scope": "real online field audio; scanner only; no flight matching or localization",
+  "selection": "first eligible distinct sites in Zenodo mostrecent search order; first 600 continuous seconds of UTC-named WAV files on 2024-04-08, selected before audio or scanner results",
+  "source_code_git_head": "ed51e95718d1a4dc3c2331563fdb6c561f7b5f7b",
+  "limits": [
+    "Filename time is a source claim, not a validated recording clock.",
+    "Publisher coordinates are held separately and have unknown accuracy.",
+    "Full publisher WAV hashes were not verified for partially read ZIP members.",
+    "Visual moving-tone proposals are not confirmed aircraft.",
+    "The initial collector version is preserved in the local batch directory; the current collector corrects filename-time labeling and failure reporting."
+  ],
+  "results": [
+    {
+      "site": "846",
+      "record_url": "https://zenodo.org/records/22229306",
+      "source_zip_url": "https://zenodo.org/api/records/22229306/files/ESID_846_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22229306/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T07:12:06+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "affc4ceda066844abb6035d4876d61b56147ed863f2835fee8d1cc8574441ea6",
+      "source_members": [
+        {
+          "name": "ESID_846_2024_04_08/20240408_071206.WAV",
+          "publisher_full_file_sha512": "fe358017124a24cc9352654dbd6f17d5076f9a7e100ed585c590c6e28d4bb0ca0623d2c823f5618b4302ed09f7f7a3aa34fd9abebacceacf066df341e104a9eb",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "712a7c87d939fb8d324e15d89c1890ef9436705528f10980d6d286096359388b",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "849",
+      "record_url": "https://zenodo.org/records/22008871",
+      "source_zip_url": "https://zenodo.org/api/records/22008871/files/ESID_849_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22008871/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:03:44+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "22f11b0c8db075171b8166d22966ee56ca132285f7c322e936ff7e83c8015612",
+      "source_members": [
+        {
+          "name": "ESID_849_2024_04_08/20240408_040344.WAV",
+          "publisher_full_file_sha512": "b9901d8f22be3640c82f8d598c1aa3655632a86106bf0891d08f7e13b7cadb17c1cf29d69fbb6cb6a08d53ba53907008ab267d415722bdbb21a2fde0de42cff4",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f04e72c3a423ec7102cadec812542070604c78e984cda8e8fa2f338a55b3c623",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "724",
+      "record_url": "https://zenodo.org/records/22228212",
+      "source_zip_url": "https://zenodo.org/api/records/22228212/files/ESID_724_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22228212/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:47+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "4b66758166f2734aef38c76309e8500483f9d6ddcd57a4b5f39fbe4b94904c17",
+      "source_members": [
+        {
+          "name": "ESID_724_2024_04_08/20240408_000047.wav",
+          "publisher_full_file_sha512": "7d06420e7768ba545320ccd244c9ffc0b542a1d6fb53f325637f927d288f967d0602c66ec27581527dd4ac1158703304d97aaf1b1f94f6a7b3193f97e51abd13",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bef74d410fd3dfc26eebaac84bdb57813e9d1c3c1824ec65a88da7256cc5b290",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000147.wav",
+          "publisher_full_file_sha512": "a49ec3bb8d2cc85fd576cb35c8ead86b63a98c5d6de72dce4a401e0419f04f911ba9aee6f1a79775400f5f1025ce82617ada5ae6abd6e4330e31fc3e9b899625",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "46b44e00955c6c1a9702771295d38a9670c3230a10cd833916afe606f70a90ea",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000247.wav",
+          "publisher_full_file_sha512": "f04c25530303ee69bd4f9712f6c1633366ff1b839d3a9ac126b63f01db85407f8e28a7c25b4e492a4b718021c79d01e9a538640cc13b98e59ca019bc4d55d8fc",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "76af825af51694c0721f165bf3a617d1dea1b3f7b5802dec91aa3341e4a8ec6c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000347.wav",
+          "publisher_full_file_sha512": "2db517ea8f997921e7270cd0da73e5c51d6981b144ee9fa08796f7ce972f79731c7242d8926e4050bfb0a343f53f4dbea3f21286af3201cf1482943f106af7e7",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a312698f0e9ed8c4069f2244297ad8c679888d9e87e5e0284ceae46301c9602a",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000447.wav",
+          "publisher_full_file_sha512": "0ed4d15a0cf7e16ba827db33f41da8e66221262734a509827477cfe370a570745151343183184a993526858bcafb27981f866d31ac29df3b83d0e14e7bec1766",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "77dc9c52827d9d8e444d2d0f8942b60b6c147b109e3823dd35d1bb707d97f4df",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000547.wav",
+          "publisher_full_file_sha512": "5190c473df5bccab85007909fd934b9a75f80ed5dba22b4b2c1644dc3c32f81a9d95f4de624c0e72449f2a8ff10233fc802f66daf32fbaa6fed9f5723bd36b55",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "531c007ca01dc60d1ebc7260fda914825ef7a4588dc21dad0923be719ace5003",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000647.wav",
+          "publisher_full_file_sha512": "3007201ebda2ef688d63bb9a07ffc51cefbb2bb57233cb88222359225bbf0b07ab0e87f8052b9d36b0e6c601b65dcbbbbefd8959c202552a5b3d9d7413cee6bc",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "4560c47594026a7347a2f413aa2083ef901cf90f5cbaddf58fbb0e4f5b009bd8",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000747.wav",
+          "publisher_full_file_sha512": "1af794452a08948fb8aa9833c22334c93fe365f25404dd3c1f26fd2f6a3edec17d495d8235eb2c97aa4cdcbbffec7964c3d25809cb850f96d5f427595d868041",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "3c32563d8987e70699e8a2f59f20bbfeb3836cafb6e6b723f83c3af25748d37e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000847.wav",
+          "publisher_full_file_sha512": "7a015bc5b5f7ea0ebd5529a8586ff6ee6cf7b3ddb99b0e67303a70282037e77cc5ae5cb2bb9f668edb804a349a2f2663480fc68c8d097c667af6637747b68d23",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f4670660206c32484acd54d877c1207056d6a33d13e574b416a5e9a407ca1f66",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_724_2024_04_08/20240408_000947.wav",
+          "publisher_full_file_sha512": "35414381498b865ca8ab503ce1f05e5a9b782716422b2a693ea7d61bfbd4e403b0803e70331724a891419129158d06631b85dc180dabd022e98148f0bd28cac2",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e1b2bc742ee45a2c36b4cbfdc2d2a0f492e7dea15dc3834d9a29611a3b72e855",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "706",
+      "record_url": "https://zenodo.org/records/22227872",
+      "source_zip_url": "https://zenodo.org/api/records/22227872/files/ESID_706_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22227872/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:16+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "0ce68cebd73d1df8ea0b969074948f35219eaa072d9a13fdd3595ca9e60cdbbf",
+      "source_members": [
+        {
+          "name": "ESID_706_2024_04_08/20240408_000016.wav",
+          "publisher_full_file_sha512": "9bc03cc5a90770e04ac9f59d637285597738b0fc7f9542c403ae5ad34fe3da770e7185b61543ab146a5dea42cf749b1be7cd21047cadf84befbb055422678490",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bfddd69f6b8420cf78f07ed0d9b06c0acdf50fa7529a1adf6893516521db89b1",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000116.wav",
+          "publisher_full_file_sha512": "32a0552462eba418aa40ff08775fe6b4e852b5a749b47a1c5ed5841384c97ad0aabf77ce0e55902b1b448840f474d241b88737140a8a059e6f75fd9a95fd86c9",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "549917fde97ea9e20569231d5239de0377a6d5ef9d53389e87d45ed1595d2195",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000216.wav",
+          "publisher_full_file_sha512": "e98d47138a9fe3ce41c295cb18731565ebb852348ac58899af9df25cd2530bcc6d2acac57f5922397372f0f1e3a86a94adefa6c31e2f9909f9fefb36e07942e8",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "d79574b512e02fb8142801c7fe7e8920cae018268e77fcd0769b9818581aa72c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000316.wav",
+          "publisher_full_file_sha512": "395b8740450ac478020467811c4d5c421516b38d94be7a3b42e33d24eafacf2b912ae7abe0728a6dab6d7ab7bb6da507c7c5ff5102f566a1376e592b27313fc2",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "9d3517dbf5404503f30071f7097c2c67afad2242a1b83b201fc4fcfb613c6ed9",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000416.wav",
+          "publisher_full_file_sha512": "41065e9b8e06d355b4a3d142733bcec84a459d391873285a417cf6829e2e453cc52cd3d61a3cada9a71c580e1e4eaa67c1e557db810a75baa1489127fe49c039",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2f4ff523e2941464cc6cf5cc94542049b5f22db87196493c8fcbdb7b2d9061bc",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000516.wav",
+          "publisher_full_file_sha512": "dbfd42bcaa1bb5be06a3b279688fe2f4cd26f25dbc6b8b1dbe06500f5a5e986e1b45310dd8ce921545acc3d3e8dd652beb3e064e3397878dbb78308511977c81",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "28edf6a1fa4e5030e6e945c737e8de1d38cd6c0e0125a5e1c7a7250ca9d70987",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000616.wav",
+          "publisher_full_file_sha512": "ca2444befbdb1631f002d974d74b251f58c5a4a586063d10159f2a0842890b296fd01421ec0d8681db1b1239d4145b9c8828fa9571a0273e8b79ac243260db58",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "6bb94358138fff9b7faca4d53936e01fa81d56a4e459be455911ba3764a64689",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000716.wav",
+          "publisher_full_file_sha512": "49aadc5575c5317a137f893f4bb3de6f50d1a43864fe92d652089c1a127838351b4ab06fca5c53d49f4a0be05f964bc3a943964bfad1e68216ea120f14cec54e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "08c437514170a52c5ae994a5e64cac01e7cd0ed1e8243ca4ecafc01395994a1e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000816.wav",
+          "publisher_full_file_sha512": "23e797a7c763f7a8341c43258709583590f43a95125b2dc1e0395c452019d2b05ca3062955dc69b022d76177efa1654e312f02b81ee6e5a450c42e7486e21168",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c63f9b6b40d7702a4a167589be8723d22f145bdd61bf06875fa1a8127df649e4",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_706_2024_04_08/20240408_000916.wav",
+          "publisher_full_file_sha512": "cb07c82f54f1ddc8d72303c0da47866d53088b608ab94e3abcbe426b04dde72e0197eabb4d1dc33cd0e68dfa313200dcca25b37fd97961bbf890b3271d16f40a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "77cc3a41abbb53f4f41e1c17129129661795d966969486820f8922aa83dc5a0f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 5,
+      "reviewed_event_id": "event-0004",
+      "visual_review": "descending moving-tone proposal visible; aircraft identity unconfirmed"
+    },
+    {
+      "site": "688",
+      "record_url": "https://zenodo.org/records/22025528",
+      "source_zip_url": "https://zenodo.org/api/records/22025528/files/ESID_688_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22025528/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:10+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "654220edf1997b70c7d9b88ab39aeb5086a38e76e68df29e0b83a956159720c0",
+      "source_members": [
+        {
+          "name": "ESID_688_2024_04_08/20240408_000010.WAV",
+          "publisher_full_file_sha512": "57859d18dc6d892be0555ba0d583b9d2c260f7dacdee8970cdf5bea8be4a8668211859252867d4f677f5631382d4e738e2094ed58ca3be98c6da251e70de691e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c432dcd259e13d8eeac882b5ae1c8e9666369a38554025ab8fed79206e2ec587",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000110.WAV",
+          "publisher_full_file_sha512": "f6cc8d41d9a52d68894e5ff7be72f11a3af75cccd3656668782e3cb6ef13b3e7d62d9d1c8e097a52b3c90398ceebe14330bbc7c99d2e78728f6fec04a4f3a0c0",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5767f5472f877c12ae8ce8a6fc3c4fb51f2fafc85ef4cdf4b29b7cf063d7ba89",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000210.WAV",
+          "publisher_full_file_sha512": "d38ba853cb8803ccd0aea6c24663f2d256133feb08b7de529b5b9ed42e5c7596c4adecb46dbac62722c088244bde7e2facbf065d653238e44a69870c8cc9cca7",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a208bcce42712502cd61478e7b4e92ca866b58ffa3a64d9bfd65d600ab66ff43",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000310.WAV",
+          "publisher_full_file_sha512": "770099468f0fe928ead23f4582de4b0ca7d5d2e519a9ce153621ff3510d1dd79d454a2628260739435e9b4621d3a5beea905348a3bc87c8a86a67319c987932c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "95ee07ae78d7b4c2aa1c0882f2ba19694e6d6c67a8bc2711f720b3358bf0e35f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000410.WAV",
+          "publisher_full_file_sha512": "226a610b4383513c98c75267da99162a33ea4b89de5677a47926e55777a04b08ebc9a35ac884652a3a9fef75e886b34d272fc21051ce61deb886bc20c5f8b934",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "dcdf333996b3b4d23d67f73c25844f4e391acf2e0d9198a9cb30d49af05a8cca",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000510.WAV",
+          "publisher_full_file_sha512": "361e2d215686e79f791797789f0e6b35bb57efce08b974ec90184d50b112c9a295a2bd7e0acf702017f75da6f0e1283320c39c298c73f7ee690476854e84c649",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b1602fda3a688696fc1eff6087bb72fb57206a98686e44e56a55e5c2933235af",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000610.WAV",
+          "publisher_full_file_sha512": "243a29057c8edcaa98e5fa226341474086ab3fb940af01813dc9e81212b16042c5f9f1d3efe11f1b451af7173f5e7ff15e02171db18f344a4a3303deafb69824",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e21076ea52ee892a7e10a0a8c9948f634d64029922f66d97e49d698a507378ff",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000710.WAV",
+          "publisher_full_file_sha512": "6eb7c2becfd5d43a3b878fd41cab3376a0b6c320958e3502dbf988914d5b29b260cff8d6e129b3ee497229baaf0110ca8a0637245f2aea62c9a6ee224d17ea80",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2923cfa5f4359b868466be2f92c6c6232337692216341070a9b38a261fe52905",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000810.WAV",
+          "publisher_full_file_sha512": "21adc838a753f16a898b447ea47d6bbb3aa53385ef12bd561d187728d8b41fc7f3afeb569f221bc092b614ffcdbc014c59c48a4b7bbf7c025818b3724177aba0",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "17722c40f793fca22d5b434761459f39ed97ab959b43e2156f80f144ee1d49f4",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_688_2024_04_08/20240408_000910.WAV",
+          "publisher_full_file_sha512": "d06d4769feca98276331b371ea0f2a833089e125f426ab48a847f087ff1228ab5c86c8ae7c4d98079ee1c1a64d87c93e48e0229ffe8af4384ef19b5c0b1f6fba",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a662e107c5b0164660e9fa8cba4f498863d8556341f67f10acb447c6bb31f724",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 15,
+      "reviewed_event_id": "event-0007",
+      "visual_review": "descending tonal ridge visible; aircraft identity unconfirmed"
+    },
+    {
+      "site": "656",
+      "record_url": "https://zenodo.org/records/22224306",
+      "source_zip_url": "https://zenodo.org/api/records/22224306/files/ESID_656_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22224306/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:28+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "05bce047ab83c1079a6113bc44f70322c986f051b2cbcb51a9c9eb8f559b6ea1",
+      "source_members": [
+        {
+          "name": "ESID_656_2024_04_08/20240408_000028.wav",
+          "publisher_full_file_sha512": "792007ca06f51031ceb1848271af76f49e0cd65626ba5eaf04e2b5b0fc594dad41670fde435c0d6bf3eb67d59bc713752af5740061808da558bee30c471b8c64",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c52301354b8618c08ad4fae94c1cfe6a12700fb2ceb7304c321bdc1d3b7c9e1f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000128.wav",
+          "publisher_full_file_sha512": "f7f5f8e21de9d1b16c19ee2c92efd9d7f3a776b13b6d6db368e681a73b1849f99af5956607ce8893b97552fc9d8f0700e6cd957a24de4ead6c1682fe009886ce",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "4c28b36770a652effe672228a45bc6173384c983bdb1d1ae659a02ba4a3d4d6f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000228.wav",
+          "publisher_full_file_sha512": "0406c16151b4cdbeacdf6ab803cd6f950cabd836abeb8592219e27f21728aaffd8ae8fa30934d47ea4094769f97d9449492f3cd968297094ac7640a76ffe3852",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "fddbc6068816ee38921bf3441896207bae2ef05b68c639a0fc6f5d3baca15f88",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000328.wav",
+          "publisher_full_file_sha512": "6ea9650ad8a9ff0c09f3e139b65c99e6b41ec7d4d261e1f7a7786aa74d72f960b8886693086d82f876dd8b865bd8c94f36ecb54167b21c5a4f0ec2e26bf8a723",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c19ba226e45ae33cb4fd2e896be25785c34fc892df96c37eb8fb3fffbd79ce0c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000428.wav",
+          "publisher_full_file_sha512": "919448c00d08a445718f122c9afd8a11a9476db5cb867236c39f534b2a6dd83c0d1f2fbf4521396c394bde6c6d8ed0f2490bd3bfe117a11c118ac7f321a7aaa6",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "adc6b444f91ed7e308938b0ab96a2af9bec72917ad5fa192625014feb7aa18fb",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000528.wav",
+          "publisher_full_file_sha512": "72618311f608ba57a52365fb9dff1bbd8c7d6d85a6bf6f6f14b6d06c587b6180fdf22f7b1058fab2a455a8029a3824db47456551a1c5bd4a62a3cb0b22520529",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b15d1e834fdc67859c8ee1ab439a3c79250313fac9dc29b2c6429d9e946fed4a",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000628.wav",
+          "publisher_full_file_sha512": "4f387d67ba49dd90b00c25e9fdb60cf67975b4486a368c2dd4397db617218953437110e931c37b4a0e8a067bc0d95cdc3f7e96552cf13cdec7e120beb35cf1b2",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bd90f43210c6f511cbe5b9e2bc7feb7386e69022fcdbba3c0f92cf8e5e74dae0",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000728.wav",
+          "publisher_full_file_sha512": "34385fbdea296ec6f23d9005682b30c15e295de0618a8d6767874c89ec96184993295c78b22b0d02bfa1c44e7d6a28cdd6153bfa46be690c8ed14a4dbd35b46b",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "31a8be11f71495650589d439eac17457dd27789ec1eefa7145385618ed231243",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000828.wav",
+          "publisher_full_file_sha512": "142bec157436cd1cda36a12aedea3b0412ad3bdcb66d69ea2d0e6895cac3849824b753918fe16fba736ca0083daa6e4be5f937b2d8501d3b3c6902e2a4681d58",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "49af69ff4ab823a309643295a2cfed4bb0235bb45809ac11ebe195a4d2588a43",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_656_2024_04_08/20240408_000928.wav",
+          "publisher_full_file_sha512": "601ca6b6c11541ed9fb5bddcd443ee1559273a02fb432bdb26f6deb28d59ad3a8e553a21671b8e79783c7cd6daf346e1d24ea4777019a9ba15fa50596dabdf84",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "cfcf508d2041da69a769c0058de1b26394b5581c1b4535adfc99cfc6ca5f41f7",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001-harmonic-3",
+      "visual_review": "several visible parallel descending tonal bands; aircraft identity unconfirmed"
+    },
+    {
+      "site": "530",
+      "record_url": "https://zenodo.org/records/22224181",
+      "source_zip_url": "https://zenodo.org/api/records/22224181/files/ESID_530_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22224181/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T06:27:20+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "c77e6f933a613916e4bddeaf774f63e94ba3e842864083f276671548968f9332",
+      "source_members": [
+        {
+          "name": "ESID_530_2024_04_08/20240408_062720.WAV",
+          "publisher_full_file_sha512": "fdf72905a0deee4451befa1004534ed10eb193448d254f3ed50df2c58b9db9c2f9087bfc220fe7ac7b555eb5785f87939536368608f93a22025fa556909dd8ba",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "fac77da5808fb351bde788c1befce26750c8a5ea6942c96929494f8e09cf6f5f",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "485",
+      "record_url": "https://zenodo.org/records/22224082",
+      "source_zip_url": "https://zenodo.org/api/records/22224082/files/ESID_485_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22224082/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Needs to be set manually",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:47:16+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "c1185bdd271db380677336484fedb05e0c6ff0aa7646bef3c63b28321b60cd0b",
+      "source_members": [
+        {
+          "name": "ESID_485_2024_04_08/20240408_044716.WAV",
+          "publisher_full_file_sha512": "43d874d28a348787b02628c5d4993c04186ffa9839802fac1c040b68b7bc7e31ec99ebfe57b8e8345a6dc7c85df6034d8c4db24133bbe8f587690326e970b9ef",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "17ae1cb7c7b48805b1493e0cf1bcd73a4239cd29d16bb88b03ee60507c068aed",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "visible descending tonal ridge with an abrupt segment; aircraft identity unconfirmed"
+    },
+    {
+      "site": "426",
+      "record_url": "https://zenodo.org/records/22216455",
+      "source_zip_url": "https://zenodo.org/api/records/22216455/files/ESID_426_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22216455/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T05:23:31+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "7e140a9365f68c283f4b80b44d3d4878d861041f2e36f100c6f8df6ac8c2af02",
+      "source_members": [
+        {
+          "name": "ESID_426_2024_04_08/20240408_052331.WAV",
+          "publisher_full_file_sha512": "48f45aae9987a91b1294a8e5353968a25012f8ae64f1d93e5b9fa24bbedefcb69dbbdfcd4beabd5eca284875e0d0cee6e1d5f33131fbaf7e05f9d96a3375fc99",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "36847ed9241e4615fafb65be788f573ce5cdddf4f7fa484889db49edd06bd31a",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "281",
+      "record_url": "https://zenodo.org/records/22214458",
+      "source_zip_url": "https://zenodo.org/api/records/22214458/files/ESID_281_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22214458/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:25:48+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "b7c197928f2a5e8e9041ddce94228d0ab862448f1790c28c4bd74863b051c73c",
+      "source_members": [
+        {
+          "name": "ESID_281_2024_04_08/20240408_042548.WAV",
+          "publisher_full_file_sha512": "6541a1a7dd118355539e6da015f9b23e063cae583b4e025fc115d2fb6d3157b7c3723c077a000ad31224ec907cef75c6466b83694c062388f6ccca167c32c875",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "74a09398e24ebabfc18c790c99479ed286d513b55a115df1e4bb47a32f978354",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "visible descending tonal ridge; aircraft identity unconfirmed"
+    },
+    {
+      "site": "938",
+      "record_url": "https://zenodo.org/records/22078888",
+      "source_zip_url": "https://zenodo.org/api/records/22078888/files/ESID_938_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22078888/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T06:31:57+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "d467ff4919ede3102625357661a554cd54b5913fd567678a10465eaa6ee39cb4",
+      "source_members": [
+        {
+          "name": "ESID_938_2024_04_08/20240408_063157.WAV",
+          "publisher_full_file_sha512": "ad3c13d0d0bccccb455b84ab03e6cf79e9bd099f830ff32ef2a5ff9dd404193e251d2cedc47855d924171d967dc87cb7edab5a9a4a5d7f9aeea07ab1e5c35f5d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ed6805170c29d86b83c0864b98b1ec011df10888c2849d9b3ac4e4545f431652",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "861",
+      "record_url": "https://zenodo.org/records/22074775",
+      "source_zip_url": "https://zenodo.org/api/records/22074775/files/ESID_861_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22074775/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Needs to be set manually",
+      "filename_timestamp_utc_unverified": "2024-04-08T05:15:20+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "d416c85b38d6cfbf71491a65b21dcfedd31d93577295e6a6ec08eab9dd33d1b6",
+      "source_members": [
+        {
+          "name": "ESID_861_2024_04_08/20240408_051520.WAV",
+          "publisher_full_file_sha512": "484cae404ab28b75368f9b6d53ef4c6784de4b80d401dc8ea03a551269acc9f07e670916c3365865d06c3a09a945a1240351ed292795b5c61f9ba5b8530a0398",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f9c41c82c583bb380dda29c7f84b6a96cb072f177e32ffee2d35f73991f1f484",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "769",
+      "record_url": "https://zenodo.org/records/22073039",
+      "source_zip_url": "https://zenodo.org/api/records/22073039/files/ESID_769_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22073039/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T01:21:05+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "d803736a243688b07299362ecd3a1f9c4449cd17b52b7f52cf13ce9256cd7ed8",
+      "source_members": [
+        {
+          "name": "ESID_769_2024_04_08/20240408_012105.WAV",
+          "publisher_full_file_sha512": "725376bea09189cd942aeffeda81c79f563f7088fb1f21fe9c23ca489d02baf2bb047568fcc7034caec6613b4fdf6a357872ada3ed90ead436ae2c9615b42511",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b99c21ce0684de1928d5ded813ddaf483097b9d66eb24ea354bb04ebd4ed9da5",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "244",
+      "record_url": "https://zenodo.org/records/22067654",
+      "source_zip_url": "https://zenodo.org/api/records/22067654/files/ESID_244_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22067654/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T02:12:23+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "5aa6a2f0dc1874c3af2d782e7591f41610452bab2e125f718e08711717f97653",
+      "source_members": [
+        {
+          "name": "ESID_244_2024_04_08/20240408_021223.WAV",
+          "publisher_full_file_sha512": "9ca9891b80af09bc739a81102a8d93f7e1683f932e6beca710734afe77b45eda4bc70fba040c33b5ad3bac1f0b4969db57528f7da9c99836803673a58a6902ad",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5d81d5311fd1e1d5efbe35690648c4b9a6b88ab5df377187a1be051307da59a7",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "516",
+      "record_url": "https://zenodo.org/records/22062744",
+      "source_zip_url": "https://zenodo.org/api/records/22062744/files/ESID_516_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22062744/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T10:40:27+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "61ca22b976a7ef5b6fde02e36e79f2384ba201a8f02a8f7a96a3a221cd831d81",
+      "source_members": [
+        {
+          "name": "ESID_516_2024_04_08/20240408_104027.WAV",
+          "publisher_full_file_sha512": "5014bb9ca9325465602b8be751bbce04eb48716bb69efa026d1b8d83c0993fffde20aeadb541ec27fa7a50c5b3843c9a9696cc584b4ee7d218e07e88d339995d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "60f38c8fd00c60f9fda9fe0cdff683ff8942440edbac482a110b8d3421a346a8",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 3,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "weak discontinuous energy; moving-tone proposal not visually convincing; aircraft identity unconfirmed"
+    },
+    {
+      "site": "847",
+      "record_url": "https://zenodo.org/records/22059635",
+      "source_zip_url": "https://zenodo.org/api/records/22059635/files/ESID_847_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22059635/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T03:59:26+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "8267a6c707fd1b218b4991e00bd0b4caab31fb2cb2b740a5f1641391269d1dec",
+      "source_members": [
+        {
+          "name": "ESID_847_2024_04_08/20240408_035926.WAV",
+          "publisher_full_file_sha512": "00eaf9f1dbca401167b26967cd22aeaf3a5aeb5e06369f68c3b56198fde816cb091cdfeb8051d39dc08175cfd7adb1728f5167280fd194cb208d225cc240eee4",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "aebfdfe05686bc856cb0c4a9012a468b5dc5022cec0bb255656609824e706503",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "clear descending tonal ridge; aircraft identity unconfirmed"
+    },
+    {
+      "site": "732",
+      "record_url": "https://zenodo.org/records/22053960",
+      "source_zip_url": "https://zenodo.org/api/records/22053960/files/ESID_732_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22053960/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:42+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "84db0452c6f5cb29ad6e279986eafe6da94c8ce500cc5fa65506ac646d78a27d",
+      "source_members": [
+        {
+          "name": "ESID_732_2024_04_08/20240408_000042.wav",
+          "publisher_full_file_sha512": "30c4a561dc7ac67f804cb71167940d6a6a6e3935573e38f4edf0892a081b67f1b785e705e65aed886af2179b1e45445b06f106175df0ddb42524ac3fb7d94625",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "81ca1988838aa2383bb0db798e3607f769db09a67da2a2958c33ec8646068a07",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000142.wav",
+          "publisher_full_file_sha512": "16b08961c34ffe3d82dbfc3047e89fcf44670f377a81b069db37f6654e9b2dca6b2562411a29284c0c69a3612eae089b5594603ebb08807b667c476b38ef356e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "7ed9c76b87830dda9b47e008dc34bf8e67baf98d83fe46577cf0906ae0da472b",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000242.wav",
+          "publisher_full_file_sha512": "f94fee9b9269232ef84ea93d40fed7ec4fcd3257a7da5fc78d58367cbc123a81b6a34c4d16193bfdeac6c395d0a1924074855957d8c1f68d6c83ae36da9d8879",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "94ab621b69239204003461d92cf0e50e4946504144bc7c3eb906a5e1f1dc8517",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000342.wav",
+          "publisher_full_file_sha512": "d453d4b0bdb5684578e1f83e3c0e5ecb1b50c93f2f98f3fede9ca7c6acf4c1ff625a90c0a952f67a451858b6707529b70e980806e656d99ab3f0080da0f8269f",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "66490a529d0c2e24f944aeeded0588794cd72e0e8e25a0518fb196fa74734fbf",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000442.wav",
+          "publisher_full_file_sha512": "da45c27cc529bba2862ebc33ce67388b8c8c4b9de13ce93c0517c4388d3b1a35b0f4bef2326e837937b72cb296dda27c85db9b2f11c09d6df9b1817f5b091050",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "dca576a3bdfbacaac17978addf4c22b4b9df8c056ee0746c50355835aa4f4516",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000542.wav",
+          "publisher_full_file_sha512": "669af9fc5fd95499dbfd692d5f2aa70c222cbcbde7b068e33265421a44732904db094c2eff6563bc457ac9285d280ff5bcee8ab2209f47246463886b33b67e0e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "0d2fa2f56405a2a0f55b3f32fcb2ddb8fe8931fe4f75a9da1d7e0210091a54bd",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000642.wav",
+          "publisher_full_file_sha512": "b89a3c777251492dff855a8c24f34c581037e3970a6190f2cfa756746ef02fa15694e5c603a09f7e649ad54294a72feea8c650b07cff834aecea697fcd4d62b7",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5fb3542c46a1b22b6da6d8e5fefa61101d97e97831e23593e40ca20d3f6ab4f6",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000742.wav",
+          "publisher_full_file_sha512": "e660dfd2047d0039ea22abea7b04805cc79bbae0ba12a93be9565956a3e842f1ea4d0e634e86bc16310fb7dc6b9fd57d1ce66eaa13b14ca1395ee6651649eade",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e5b5461cf94c93bc90f39270f431d71c4c93dbcb610ef38245462ada49fb8b86",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000842.wav",
+          "publisher_full_file_sha512": "4cb28ba037014585e999f782a7a47f565f19d9ad6d70d769d8e5e2311b7ab74e5e33a2caf08174891b8f08742cae652b520355df18df5352fe93c2b2e49262f5",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "109337c6176ed7f4c435d500c16ef0d5ef6b32abf33a28ca476d7a77865b0163",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_732_2024_04_08/20240408_000942.wav",
+          "publisher_full_file_sha512": "68a3ec5bb8b2da5c19e082a17c6cede2a4ca0dcf70bc457ceb40309e8182546c7968287d500b75f3a616cc414b86586c466277038e62a405d1a27f72cc0b5a66",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2fc714284f40fb5c351444e9452e8b6d944a4b374c539c772f7d2761fc87341d",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "172",
+      "record_url": "https://zenodo.org/records/22051591",
+      "source_zip_url": "https://zenodo.org/api/records/22051591/files/ESID_172_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22051591/files/total_eclipse_data.csv/content",
+      "status": "failed",
+      "error": "ValueError: WAV timestamps are not continuous: ESID_172_2024_04_08/20240408_000100.WAV",
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": null,
+      "clip_duration_s": null,
+      "audio_sha256": null,
+      "source_members": [],
+      "proposal_groups": null,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "696",
+      "record_url": "https://zenodo.org/records/22050432",
+      "source_zip_url": "https://zenodo.org/api/records/22050432/files/ESID_696_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22050432/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:55+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "176d96be404f01cd17c94bb7f77501407fd0136f4f2cfd6c843fe29149ac3d83",
+      "source_members": [
+        {
+          "name": "ESID_696_2024_04_08/20240408_000055.wav",
+          "publisher_full_file_sha512": "58d38fe4d185f870aa441d669954c137dd31de5a7d327f5ad6e37f1c15381aea6d1317d0c8d036c37121c975fcfc85e669bcda2937331fb29e16a07515365d67",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ba525128ce67316d526c7e76ad838f81e77d7327377d08d5922ed5d1a69deb85",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000155.wav",
+          "publisher_full_file_sha512": "abf28c4e20a4c0b292720b5d79787f4d361d6602917d549d6dc39deaa1baa6b448bff37cdd774e5128fd2492f31327ae20ae4c4f206e665966cf2f1e27546aa4",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a35f8546d7208effa24877d7ba648e77fc48935f713a963cbcda13fd3eafdedc",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000255.wav",
+          "publisher_full_file_sha512": "97db983af9cdd4f783821b3ad4fe85caa83f5e918e76001e27d6abcd79ad8378fcfc2b91bcad1c76fed55eee94eceb1d7b987abb70e9d5d2f39a481d0c6dacfa",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2188de886265712c9bf4d98031e9442cb152f45966354296f22982669d266339",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000355.wav",
+          "publisher_full_file_sha512": "669fa428a530cf3fe30310f146638603c01bab983a66d9ebb554fdb7e0e147a22b3b2b36ddd87089474f1930abcd8789b492b282a5c192b541f2774b2b592b7c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "6a878c00d25bd17a6acb2ee4eb073c40e73c5ec653ecbf896f6f210a3bb96636",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000455.wav",
+          "publisher_full_file_sha512": "47237d89ba58335af376465e9f5f645f44a721739ac113a5f4dde217c760699c3aaf63d813b109b48932bba1da7020214e5cc8013bb94667df372144a7e12f8a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "9b8836463a1a5380518a0cb4352788c34211817575888de7764fdee6ad48d7f5",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000555.wav",
+          "publisher_full_file_sha512": "ad5f50e1368c63d0841bbe1ed5adbd9c8dfa7c3aa61a1c917b106e03ce028ffbb7de29b78abab6f2b8cdf0aacae82870ec46fc6b85c2563fab1e9f1a5dfaee1e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "599920d2be0ef7cf330d53dc813d4365cdf6fb305b2217248fe4416ba27e72dc",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000655.wav",
+          "publisher_full_file_sha512": "4b0bf821ac47257ae31fca7fdc5711763811f65bb77885f370d6010a386582db5f603710a6e44a504395fcb020b7bf80719d82ae5c59c04a69d3aed19cb47650",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "9ae3782c143c1b493e5c875b57875ba7c69cfc7446d397902ecfdf51926c891f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000755.wav",
+          "publisher_full_file_sha512": "f9600f62051e3116667c1e12b5b756452c48bcc3b1d1d126f2856c41e6031815cda58033cd3efd87f3b9d8072d86b435bdfabc1378480929112401a27b413820",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b8ba1957684847ebd5e4ca88591dd87b8a5d5e150dd520d30bba411f115a8d73",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000855.wav",
+          "publisher_full_file_sha512": "36234d5aa4dbd37b38594f595427342ef0c38ef23ebae6cc0638f81766fe82780e76cf98cde5bf5e058ce7e1f6213fca15a0b7c5f334c8d9ba4d23720a13884a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "136a61897f1b1e6aad0eb1ca3000bd97ebd803145b83d349786cd94283d397dc",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_696_2024_04_08/20240408_000955.wav",
+          "publisher_full_file_sha512": "59ee7834222bb96dcce573277bff416210fb903f693a02805d4b6130d4fb9fffa5a2d1bdb9d556f0911a198daeaafa702643e14f1516f483dd1bc225c05aa2ef",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "73c354bdd8846f95de14f6f7c3bd9178eb4c6e7e7f8df3053c1b1dc61f9e7e99",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 2,
+      "reviewed_event_id": "event-0002",
+      "visual_review": "multiple visible descending tonal bands; aircraft identity unconfirmed"
+    },
+    {
+      "site": "103",
+      "record_url": "https://zenodo.org/records/22049202",
+      "source_zip_url": "https://zenodo.org/api/records/22049202/files/ESID_103_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22049202/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:24:53+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "da4e9c2850c21ffe285e9ae156de31909b1a4362bbe72e039b0dd59dc75e492f",
+      "source_members": [
+        {
+          "name": "ESID_103_2024_04_08/20240408_042453.WAV",
+          "publisher_full_file_sha512": "3a5fc293352b3eecc63b32e971aca9bf1bfcb83af943fa2f68f2c2987f94f85534a7b06f4f4640285286806dd374cd1ed00ea1bff0d36f4ccf83a148fb4e1078",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "335285b7123e838ce4d363ba62d0c22bf9e0778af0b5673bc1fe2cd02819bfc2",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 2,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "clear descending tonal ridge; aircraft identity unconfirmed"
+    },
+    {
+      "site": "681",
+      "record_url": "https://zenodo.org/records/22047233",
+      "source_zip_url": "https://zenodo.org/api/records/22047233/files/ESID_681_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22047233/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:05+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "6bb3979c14621a1c1f2ed88900c815eb050b89f058773436bdd55851a074ab5c",
+      "source_members": [
+        {
+          "name": "ESID_681_2024_04_08/20240408_000005.wav",
+          "publisher_full_file_sha512": "80b2e8b15ace1a49fdfbc9e37d996a39f55eec8d83b390ae927d9de6339a09e36f950a5f100ba286160bd5001d96ec02aa6951f5fcea42095456831d5e842df4",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ac23a427f6ac995bb384c7d73ef8a8a7ac252bd7830c8d7e7a9a57400a78c6d1",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000105.wav",
+          "publisher_full_file_sha512": "8fa8e626a71ceebf4dafd811d7ff09908748236a90323692af7a99acd9a4b6cf572a83abc6b9b958d99c66191b3b466807e32f6fb819889c1be2683d5e370eae",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "38656082ea2502d14965e501d10398ac4d60eaaec4e0458de516b38f736f396e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000205.wav",
+          "publisher_full_file_sha512": "2124741c67c5b5753848f04e1607906461ea1376c5c6fa871361bb6da57bc0e6ad0134369c91197c2cf2b268eb2c34851e5118674d29657a976e15a90c36e462",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "1b13f48ed702b49ffa4311a958e6946faceedaa430b1d7de532958222992ecea",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000305.wav",
+          "publisher_full_file_sha512": "335a607f15d782b8a345e6b4bc72330a71fe7758ec56eabe8d69f71263da7c67236e3a690d81c12a24ed6d7e8dfb7fdc44fd225856dabe366f68395059c2be3c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5bf5e2c4da84bfded9fb0a2abf77d5baaeed656143d154cb8589b9b391012e93",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000405.wav",
+          "publisher_full_file_sha512": "cbf6aaad24dccd50f8cd8556476c4f2665a7fd0ca7d1ebddd75f51d0e354a1a3562cc41855e0367a5284c238127f1b519b21d1f65968b55377499c255ffb016f",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e873f9694f88bfb3f386f1b727dc5f4df7e9632f713da8a69f2b860be7b7c34a",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000505.wav",
+          "publisher_full_file_sha512": "67cf7a2d6e88c7a3e071b0dbd64c3d0908f53b72f942a8720f681c0c9220a0e2a88d2c50139a650b9279b6d9e469227ce8d8d1daeff6c50a9d17ac938039a7ec",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a7099bc4e8536160e13401a180e6272ab2412a5520c256047d25008825fefcb6",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000605.wav",
+          "publisher_full_file_sha512": "b9f343d3c62acbb782b4898823ed000ae3742c1176745cf83143720d2bad5ebe3c866a77b616ce9e31b153934fbe908337dfcaf73c8852f5724d902a409db3c1",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ca3a51a2d68694336df8863ec68b44ad57235dedceb2a503a419f83648f059d9",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000705.wav",
+          "publisher_full_file_sha512": "685d16d05ca4c005e84f91530c15c5b47a3c48418de05b47e73988e9052fdafb0d482a2fa23638fe58bd85d12809bf41d95bc4ea55885019920a1df3cee80701",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "211d790a7b039381839228df4db468d76e3823577c7d32afd9a4ce93c33d2d5a",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000805.wav",
+          "publisher_full_file_sha512": "09bbab4bcb07004133c5ff16efc9d8eb3f77ca2fc4fe987027feb4e72d817fe08cb91f577a263d7c6702575f715b7b12aacf13a2e11069fbb821530cff20385a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "045aac659dc60a2eaf9e30d47964ed91c6496948c13a4eb1fa1a0b7d717e6f95",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_681_2024_04_08/20240408_000905.wav",
+          "publisher_full_file_sha512": "32404fa17b69699b51c72e3fecf4c22fad85f3e26deaf1484da7db3f4a8af7f9f3455373fa7a8b0e610f02c72c9c9190fda5d822edf4d53d53cb735f5a3678ba",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b77564778f639e1134675234d81f084131b39dcacb6acc377da6273a2c7f4e02",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "917",
+      "record_url": "https://zenodo.org/records/22040771",
+      "source_zip_url": "https://zenodo.org/api/records/22040771/files/ESID_917_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22040771/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:36:52+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "58b024d373b0d1178bc5fa05dd8479d8fac89360626c4423783673bfe10b7198",
+      "source_members": [
+        {
+          "name": "ESID_917_2024_04_08/20240408_043652.WAV",
+          "publisher_full_file_sha512": "d8f32734e782c7523adb2c8d878457dc7cad1bcf097f4dcfe471765a8970fec3f652d94f237eb98cf2f92e6f1e59f01ee955b55881e8b5c4268546c8eb48cd33",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "0ad60a9311a0c3ecccea04be4425245e830f7bb1002a55328ec72d090998ee3c",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "517",
+      "record_url": "https://zenodo.org/records/22036986",
+      "source_zip_url": "https://zenodo.org/api/records/22036986/files/ESID_517_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22036986/files/total_eclipse_data.csv/content",
+      "status": "failed",
+      "error": "ValueError: WAV timestamps are not continuous: ESID_517_2024_04_08/20240408_000100.WAV",
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": null,
+      "clip_duration_s": null,
+      "audio_sha256": null,
+      "source_members": [],
+      "proposal_groups": null,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "078",
+      "record_url": "https://zenodo.org/records/22035840",
+      "source_zip_url": "https://zenodo.org/api/records/22035840/files/ESID_078_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22035840/files/total_eclipse_data.csv/content",
+      "status": "failed",
+      "error": "ValueError: WAV timestamps are not continuous: ESID_078_2024_04_08/20240408_000100.WAV",
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": null,
+      "clip_duration_s": null,
+      "audio_sha256": null,
+      "source_members": [],
+      "proposal_groups": null,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "756",
+      "record_url": "https://zenodo.org/records/22030700",
+      "source_zip_url": "https://zenodo.org/api/records/22030700/files/ESID_756_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22030700/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T05:56:00+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "7366f8e24711561d4c4fcbf16b9ac084e73ced259c42356c16330e0c2846976a",
+      "source_members": [
+        {
+          "name": "ESID_756_2024_04_08/20240408_055600.WAV",
+          "publisher_full_file_sha512": "3c2b816195bc6359127aca0e3e2dc925f760131bdc49b6fb0e2ff0bc28d78b3ceb97d840b33447550cf9dbb1f16aece397bfb6bea970a74b8b437e130926ef19",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "4e6ad45e7c74c0d48a10ee4602aa6a009a5821b21c47d8156c5a9ed983ecedef",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 6,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "two clear descending tonal bands; aircraft identity unconfirmed"
+    },
+    {
+      "site": "341",
+      "record_url": "https://zenodo.org/records/22025737",
+      "source_zip_url": "https://zenodo.org/api/records/22025737/files/ESID_341_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22025737/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:22:05+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "45553b8df8951ffc7b135c2fb6c994596656dfd127d2efb19e6ea7fdd03f8339",
+      "source_members": [
+        {
+          "name": "ESID_341_2024_04_08/20240408_042205.WAV",
+          "publisher_full_file_sha512": "c8177f3de71b72ac7fd5189898757e4bb4b23c689e2c9a7ca53c03f44d768dcac158f925cb96fa48d0dd8679bb0d20d12d3a2311a0351f7122236ebe5798a01b",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "fb1adab2f01a4739aa0e100ed1c1b03656d10f9dcb5a9df5a00d47778d85aaf2",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "700",
+      "record_url": "https://zenodo.org/records/22021604",
+      "source_zip_url": "https://zenodo.org/api/records/22021604/files/ESID_700_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22021604/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:26+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "65ecad591ba002158ecfdf82919d5619afcea5b2c26baf259067f283e1cec599",
+      "source_members": [
+        {
+          "name": "ESID_700_2024_04_08/20240408_000026.wav",
+          "publisher_full_file_sha512": "2e9f9f00c8128d1a95b76898159a3b95e635e8c901a84d26eb6bed07acf5a3f29c14c48b0f938bc4b0aa53985c55c99eb8f4deb1533232f8d7017e19dd30061a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "cbc594420a2c4f57676589e5525564c9edb34e6b7a1aeeaedb3bea606872219b",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000126.wav",
+          "publisher_full_file_sha512": "cb81ed53a89cc67272343f835dd2b9afeeb2e8a05825b148301a9fbf2ef3e7bd23348219d10d4cdb93119e35ece766ac79bcbf7ac2ed089716cd58da5b185f28",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "1a6ede1d7070544ea7cecbcc610e014a2394cbff00b94c5377bfd2d69107bb1b",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000226.wav",
+          "publisher_full_file_sha512": "3127e3b898ff90f40bc430ad5949a3057d1ddb9c42010ee9b2212d1f0841cc767ecd9767aa2ac74998d434215ca76cc9c9bd8c3ab7748737d5bca8332edec22a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "9061e92d43f9d0a64988d6097f79b77ed0ddb26ad01e85ce97f038d345ba148e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000326.wav",
+          "publisher_full_file_sha512": "2d00302f5ed5b8f5ca133b77b33be65ce0ecde247117df6967faf38b85351afc856760076c06b3f873e31f184912b0e753775af636a0f0dd4ea23f7f9fcaff6d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "40c6d30900b69530d8c9f23ab53714801769f9ec312cc2fb5841940af5d3e12e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000426.wav",
+          "publisher_full_file_sha512": "0e2c9a44c23b1dc079d010d0f290b45be474f4d20277c0a6d2f560bfa8aa98dd2ec53174cfdf01e89b47cd1dc29361ed9932790f01c19e8e460befbd96f1f04e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "67532e46495fa4794f1d08dfae198957b8f337d2b2a0b916d102d3c277e75e02",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000526.wav",
+          "publisher_full_file_sha512": "103273f1a726091aa5224995e4ccab11e0754f3d1fe541f4ba89da850ed8dd6b72bdc48ce7244790471530686b5e3429ea193308afca69be0706c19f30ea3e19",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "122852f8f0239a3a63b7efe2a5fbf43224c06ea370e74153439322c7d0bd79d2",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000626.wav",
+          "publisher_full_file_sha512": "cb90de45d827063c38bcc22f5283a610c1b280170b0764842e6150ff6cf1ee94e52452b37abd4543c32b7e6fd3654cde68a85d9510422cb509003fe62e58835c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c7d4a9da4a448a54da99594b191c8dc2c94731837fe448ccaafcb167270b2eaa",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000726.wav",
+          "publisher_full_file_sha512": "2d31f896ec0b456022d41485138587b5b0d5a1f852cf3b733f3eb4370c048422fc15aa135595db44baf99d6e577c662b774c0d4d7b966d7393b5cfbcc76b3600",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "048b69c72349039a6cba0e2a7bfb9ba5089a4392273a757313ae1e16a515983d",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000826.wav",
+          "publisher_full_file_sha512": "cf03c4f0b9d9663d67408d690a19db68ebaf53bc3ae90be94a8a797bf702e57270343cf1f1e14b5499b30978dbff5abbcffe3386b0b3a8755af9192a2a0285aa",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "29c1a51073a5ff8a82da7ec793804d50886cc716b6b8dd9af2d7bd55ab7c322f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_700_2024_04_08/20240408_000926.wav",
+          "publisher_full_file_sha512": "cce580154036326b0e26646f1319085369ff5e67a5dd7deab7e0ff4caeda0a349073da94853687af6045d675ec244047f60d132ceb7b5295b7c2e41e9cd54593",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "8bf21809e18478e4a25d7501f8f6eafa94089d37757de4e78d1f86e094b9b852",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "175",
+      "record_url": "https://zenodo.org/records/22020198",
+      "source_zip_url": "https://zenodo.org/api/records/22020198/files/ESID_175_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22020198/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:38:02+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "7d4491a4fd34f067bc370ee2d348a206d63946862b2ecaf59ac096ec31e41e2c",
+      "source_members": [
+        {
+          "name": "ESID_175_2024_04_08/20240408_043802.WAV",
+          "publisher_full_file_sha512": "baad218b367da188d36c69e618279b24dd82c35b78ce709e96df9d7dd2667835144ffd6a5be6b5d7dc08097abb7414fbbbd55766c6f1320a38bcfa8b795af0a8",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "795277ab900e79f7516036d235aae785c1e56f3141c21c5d3278f0447f9ce8fd",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "783",
+      "record_url": "https://zenodo.org/records/22019602",
+      "source_zip_url": "https://zenodo.org/api/records/22019602/files/ESID_783_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22019602/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:38:14+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "a1026724e7c1ec5cfa189df1bce8581124122d9a657456145c256ce256408e92",
+      "source_members": [
+        {
+          "name": "ESID_783_2024_04_08/20240408_043814.WAV",
+          "publisher_full_file_sha512": "70b4a0d73192a01599340cf30f28d8110e3f22a7ce58485a27f865b4bd355e6fd8e34953c16c32f34dc557862d322f6a611df8a7a1105a1576ec6b2fa8f14cf1",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ff4fcba16228e0f0640e6050011e6e71ae3b973487cf4f1506219709c72fe952",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "757",
+      "record_url": "https://zenodo.org/records/22018533",
+      "source_zip_url": "https://zenodo.org/api/records/22018533/files/ESID_757_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22018533/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T05:46:16+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "4eb55bf19e606e54dbc950d33bac03c6dfdb34fc6478af980137143856136c67",
+      "source_members": [
+        {
+          "name": "ESID_757_2024_04_08/20240408_054616.WAV",
+          "publisher_full_file_sha512": "9bbd4797aaf14d553badc54c8d37efd4085055d3e487beb4fc97b1095fd0c979e7b89b676c68685333b6fc7d612a4d1aecae6cd2e7b55868f94903b1bb2dc5f3",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ffd76b914ece236e6ec44660530c2fa86a74cf95abe22751d0bb0a3427ce4cd4",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "787",
+      "record_url": "https://zenodo.org/records/22017476",
+      "source_zip_url": "https://zenodo.org/api/records/22017476/files/ESID_787_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22017476/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T08:13:32+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "7c24cccd9a4d21db4e4407a1f170d8401a6c18af3b0702d6bb6f31ff6f6e7a92",
+      "source_members": [
+        {
+          "name": "ESID_787_2024_04_08/20240408_081332.WAV",
+          "publisher_full_file_sha512": "339b95aaf1abb7d2bdc2132cfefed92f06cfd5778c590182baaa13e47242226d12f5abedca9c2c483eece3b63af8a1ec83f917891092c6ae7f7a172cb603a6cc",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "8c839d49ab12e18912504a12379531ebe19e63b9a96995d60009b55db7d82004",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "920",
+      "record_url": "https://zenodo.org/records/22014438",
+      "source_zip_url": "https://zenodo.org/api/records/22014438/files/ESID_920_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22014438/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T02:41:49+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "127a1d47a62d25f77be9cd66a3e0936df55f9d1619136347ec3d9a68700ea107",
+      "source_members": [
+        {
+          "name": "ESID_920_2024_04_08/20240408_024149.WAV",
+          "publisher_full_file_sha512": "6263532abbbe432b74ec68633eb491930b742767cf5542cd6ceec23762f93964d107fa194a7c94ffb8ac8177f3ff964d504c484a3ae00026d776116e5199a54f",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c4d89947ff4f2a88f7925a8eaae71c9f7403984067f369a92be59902ed0844ec",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 6,
+      "reviewed_event_id": "event-0006-harmonic-2",
+      "visual_review": "two clear descending tonal bands; aircraft identity unconfirmed"
+    },
+    {
+      "site": "922",
+      "record_url": "https://zenodo.org/records/22004441",
+      "source_zip_url": "https://zenodo.org/api/records/22004441/files/ESID_922_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22004441/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:27:50+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "3986dc526ddcd92996b173c8a030a4dc01cd1505ec6081f63545991da067cd5d",
+      "source_members": [
+        {
+          "name": "ESID_922_2024_04_08/20240408_042750.WAV",
+          "publisher_full_file_sha512": "14643e191b185f17c61565670b689cc7d29c97fd188e0294dae958c32b0603090d48b99fa7d5698827c43afee08bd226d802e24273a1ee70ca3996f2bf74dc3d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a8accf956c2a343ac73f9eedc2efaa522c28a47c1b03d480632826618cec35ad",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "712",
+      "record_url": "https://zenodo.org/records/22003692",
+      "source_zip_url": "https://zenodo.org/api/records/22003692/files/ESID_712_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22003692/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:22+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "4e40a53e94b6a2072eeafb7d575ac576cfbf591c9f31bad2388f024ec082d032",
+      "source_members": [
+        {
+          "name": "ESID_712_2024_04_08/20240408_000022.wav",
+          "publisher_full_file_sha512": "fccbea201ebc38c87eaf174197db9d030fabd260958c70cd930d58de5f21dffdf43bcd984546829dd42bea400e559e01b9239993c9f8adb4c7b48650210dbbd3",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c4c4185a6679e1836b3758a9dd6a4d51c8811e452f9a2401d25f1a0a0f30345c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000122.wav",
+          "publisher_full_file_sha512": "14943fbf5143fc109e5f4462d742c405799bcc16a92d49dd0a4e7ad169dd7295ed45a50e024a355077a99e59312fe8c1c96e50f3ddfa6456f42cd51e66a3474a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c69d83c1939a714fc699546958e301fb91ac86c84b50c96cbb2c05e33f04a4be",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000222.wav",
+          "publisher_full_file_sha512": "7a8aca0d682809f629a27db8e9b4a7b930945776af471d0c10bb2d7bccb965c9f2874d26948bb49504deeb07b452c4c54351af6f39c27064273594a7ac3cef9f",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "1f5700d2d853e4a4e7b0d260a52fe55313bbf40d7ea6aee7cc4c67c4ca643d33",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000322.wav",
+          "publisher_full_file_sha512": "502b3a2760fb9d9f8d8c99d2b8679fea6fa7154fe795270dcd19d531922869005a76a2c18a6561cef461a2bad8240ee8ca93bd6bf412a80bc58de4d7724ec773",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5bf3d50eab17c711061b3f273fecd09a9790f0bda648fac5e18099c5a572120f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000422.wav",
+          "publisher_full_file_sha512": "7f71c382117a65e53b48b4e0399117d45da3b7bc762cd08de068195e8e4f972815543b41732a94770f4efeb71682ac543dad9e059f74dd86769f6f6b743b2493",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ce9f27c8ece3347a3935d745bbc6758d8af6f3cb6c800b7dd2d8871d5ccc0513",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000522.wav",
+          "publisher_full_file_sha512": "024ad57834b292bbc17bf6e0c925d3cee5eaf1ef14eaae18a898dd368781a999b7386abc84056beb917676da35f78e54a7cb2c913b3a49d632ae9c602b5d88aa",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "aa9d0be12123250da414e72d00f9a79548fd79042b9791f0e0d8baa607ac9383",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000622.wav",
+          "publisher_full_file_sha512": "73c68321036b89e91dae1ac8b47f109c08dc6661c7c8125867d76f913d3ce96103ee5f6de87a2ffa0664baa4c6dee9d49c3a98c37cd23999658ad5cfc4d35edb",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e5491305bd526441befaf48f4baab26ddcefad4cd5bc23383318a59e941a17d7",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000722.wav",
+          "publisher_full_file_sha512": "d1fd29b40824cea8b095820432bdbfa13b79850144725dca83631982b9d1b2368d39acb932712b7fe9540b1cd68e56f0eceff295d3a25bdf92701c2150a23a71",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a1342fd715f843f91fdbf517e632d145383c0d2efadb3bb110354282242667c8",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000822.wav",
+          "publisher_full_file_sha512": "5a52eb227c0fa358de03a1adda45fa78dc9d3761630aa99430947d550f0a45357f922c4faf9beaf303d3ed41ea6ed60f459d8582eba30be37c796a7a715cc5ef",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "9a0908ba5ac4bd9f4110eecf2c44fbf74e2c7598017d2404d15782649b7df807",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_712_2024_04_08/20240408_000922.wav",
+          "publisher_full_file_sha512": "c8099fef2a753d93cc6b5621afdf3819b8d49594503a1cc9cae84978b5c55f4dfa19a7c020e966ce6a63b67e69838356c80408c3a7c20ecc8f2c41b1a8b58917",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "314a8f3e108536e2b8274007f9ab7668167de28b0d0fdce95b8a1e0a046ecd77",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "962",
+      "record_url": "https://zenodo.org/records/22002491",
+      "source_zip_url": "https://zenodo.org/api/records/22002491/files/ESID_962_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/22002491/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:23+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "42ec047d820119fbe4aaa9dd925392d6f51a16ee5aac1fcb233c197ccf58e85c",
+      "source_members": [
+        {
+          "name": "ESID_962_2024_04_08/20240408_000023.wav",
+          "publisher_full_file_sha512": "2deeae40348acaf17fb695d6ae91f9b4daa17495caeb4d1446c464640c99b3990a5ccfb411bed4016887d03c95db351e928b6b9297788233d4c8527a77e21438",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c5d4393dd3ce3562d27484f632718dbb9608af711f65f8d7d54f0fc351f76862",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000123.wav",
+          "publisher_full_file_sha512": "884d55ab1e1c3daf63bf070722cb989ce575e032dcd48bd33096169fbd40b460b64d84feb0949f39477fe2f14902d480b7664991dd1b10701f19124977aa2279",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "19871910c5100831a2ebf68f306e598909dac8ce5a640498c971a9d18572c02f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000223.wav",
+          "publisher_full_file_sha512": "16a7a723c56fddeaf161f9f8df555464891464d7852d3bc8010e8cb21a2768297b5fbbb70918725c9d9cd5efe52df654ee516e79dbeb7b71ef9362d2c68df020",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "23bf2060bcf789637ffb05620b7d9a8f6e79a30249560bcd1d261c5ea8d1ce7c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000323.wav",
+          "publisher_full_file_sha512": "bf927b210a6d55b30fb8cd0302907f6e669317efa8389e76b26cac7d35d9a1bc4db35114f67d9f0115807b6b49f52d78aa7808fd6ba427a0c21bce810364674b",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "aeb898640f737ed7bd9807b074b631d2cf754d8198f9ef2a485aacb04f749d68",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000423.wav",
+          "publisher_full_file_sha512": "f0a848e9e1ef776943a594dc3424fa07d8a85dd6f36d2a1b3a799a63bd16819b34a40452423ecbfdbbc2dbe924b31823c06acabd480c5c7124158eefd46cbd4d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5a26b3e06741c0e7b9d515c87d4163836a173d01f29b400f9bbe56121f6afa6e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000523.wav",
+          "publisher_full_file_sha512": "030fadd1b0397430a0447c64f78e733acdf97c489eb99ba755ebb357bb7ea334bb98723423b27a57f3ca6947cd726eb9bc63679a5c13038e7b92e471d600a558",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2b9bb8f7eaac08bfebeff85756231057910714d1a8dae6f8e3616b3a6b2d1ccb",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000623.wav",
+          "publisher_full_file_sha512": "8af4dd1a25f89d5cdd237ebbe07448b43dd7dd50bc9b14e0e9f5004cc11469b5de45bffb9d1d3c3e294c75b65b3a29a7c417a1d7e6ab119a56c08f8478afc3ed",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bdfc1f6f59e319857e528495888fa58b892d75c863ca3b097251be6c51b4b23e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000723.wav",
+          "publisher_full_file_sha512": "4dfb1c2b9615b4f169b74853c9b8f4efd50fdf852d5415fc0b99ee91dde46c8f4e33cf8442bfe335b1f297231b968107127242d4e7c4c198fdea4bcc362a726d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ccb0b1288a67ba2992017585d52acb3e29fef72eef702342ada06e77272a834a",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000823.wav",
+          "publisher_full_file_sha512": "4361a03a34c46a10567532f05f1363d9cd8b8fa59e05bbf268d43735d9b4c0a165fe8dd5e0c23bbe460c086f759950a80c999e0d4798d7fdadf1fd43c7eabc13",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bbf4952d6172c09baeeefd475b375e29cd3959579c43861de99da05c3ca8266e",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_962_2024_04_08/20240408_000923.wav",
+          "publisher_full_file_sha512": "87d7bb17ddcdae4d915b79472d733907ceed0462ba16e3718e7b02589ddb5295ebc7158babb5cc073b91637f10e6163350b1af7ea5123d773d5309367563eb3d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "51f16ccb815c16f494acef32764e49fa51a9520db38d004d39c1c46fb3c00586",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 2,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "visible shallow descending tonal band; aircraft identity unconfirmed"
+    },
+    {
+      "site": "665",
+      "record_url": "https://zenodo.org/records/21999916",
+      "source_zip_url": "https://zenodo.org/api/records/21999916/files/ESID_665_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21999916/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:51+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "5925bb0c62aadbecaa2166dab1cdf3f14deebec2040c3f69ebd476b1e18735ea",
+      "source_members": [
+        {
+          "name": "ESID_665_2024_04_08/20240408_000051.wav",
+          "publisher_full_file_sha512": "fe2d73424859b355d607acb3c94692d11ebb8e05b2c80efb964b8ea2fa1930e56720c56c2d0c0d20023bf38101cc3068c3bf44e72106ce14270706d88b377bab",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "bb252cc17542a2b180941b1c1b764d29c6d183cbfd1f51263922b735c4d595bd",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000151.wav",
+          "publisher_full_file_sha512": "f6cc66f4bc9c133686751fdecc447ca971815eb5b9cb4b86df92abf1c939b04ab96bbb573b9c332a32ec4a8f3da303ca681d70e2c7fda14090adca471e02c391",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5040d04c9b6de2af9b0c07342abba017dd5813f56289655e654c5e6d5d3d41ac",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000251.wav",
+          "publisher_full_file_sha512": "137465dce96046ee0ad43e99b1bd699f7d4940d03eb1fef4a3239047984dfb2258ade631a66192e0d1832ff02735fd9f3d382d6fa9a248dac138dd9294b31948",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "d2ecafd99f2f44af112ca8b7e817055ee993bce1290cb9f51ed32b7263508052",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000351.wav",
+          "publisher_full_file_sha512": "8933ef3dcbb72148d94509a6bf5f1ec34210262072441eefa549820fec9dd3bbae68320df73771a2a0720fadcdb6e29eca61628a104c72c87d14d7bbf743b34b",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "3dd82a083c28ed168769d4ed1142edfb45e950b8da7fc6bf8245205782662b88",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000451.wav",
+          "publisher_full_file_sha512": "bd8381e1c44eb6ddbaab99c6c106988122f26a3b997232108c85e977ac6930fb9abe5a380822cdb030c2f93e7f64752d50ce87a416f33d8382cff16dd62f996c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ff635a33dae35bcd1a35c23476131d509c7a3337a500d552b9b44a77d0af281c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000551.wav",
+          "publisher_full_file_sha512": "ca3f853816ec2855279ec02a2d540c432ed69a36e28959d24907d0223a3a4d28de5102e00657c59c10051a254476f5b8a39067de12552a23206e829d123e3192",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "2ec47c7dca2ff28a2c6ad82bfc2e8980934db19a35555f023e5e49eecd7c473f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000651.wav",
+          "publisher_full_file_sha512": "e6fc4e2a0e68f6d8acc669fe8b6fcab31f7b3c3d8dedc9e4302397bf6f7b401ae5abeafdb0f9abf4cc00d1a9618bb72f2bbbc5ca2d9f19d44dd8b80a19255fec",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f126888327d2e78eafa923d1aa94d3b7978651af8b2984625727f6c6786ab25f",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000751.wav",
+          "publisher_full_file_sha512": "bc2a47aa86a6559790c371a730dff83444613a98f8aadfaee048b415efa0724641ac8fae8f1552a618b51529e9999ade5dcbd5dee84e09aa009989a565ac5784",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "0d4b4fdca96c7fbab92cef6e7b42498e80b0760fab54892c1c10ceb0740b8178",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000851.wav",
+          "publisher_full_file_sha512": "b8eec86a2a16b0d6f64a2336fadd04e0d5747227f8d3e964757e3634876ba7f5de08700fac123435b863ac2508f4efc92191ca0978b94d0c96494c9706f9df51",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c32a16091669cd21750ed4f32bfec841861ba33365c02a7eb7cfdf4660834de6",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_665_2024_04_08/20240408_000951.wav",
+          "publisher_full_file_sha512": "302baf20185c4576b864d00f41c5700015e2005628d7e1a74d4e8e571fc512ff75a3ccd585510e251895ed18c31bce75390724daf860a7105c84e5a763fe01f8",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "4cae574fffb1aea320994039f9f1342b0dcde56d5694b37c82314b13f583d0eb",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "visible descending band with a sharper transition; aircraft identity unconfirmed"
+    },
+    {
+      "site": "715",
+      "record_url": "https://zenodo.org/records/21997131",
+      "source_zip_url": "https://zenodo.org/api/records/21997131/files/ESID_715_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21997131/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:11+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "9e067a61171d0508125aeadc184c299958ba3ad68e930bbf21a5bcf94324a1cf",
+      "source_members": [
+        {
+          "name": "ESID_715_2024_04_08/20240408_000011.wav",
+          "publisher_full_file_sha512": "b2c637f696172b84ed71ca4e4a5b8dd74762d946a77de1700607cc129bc4d7c789f4a5309b004751c362bcfb256e6a150407d3389cbb02178a0ced4c7601e746",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "7fc15ff2da3fb19e7a9fb751da7e8bb9b62da84363c733f2965cd690500580c2",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000111.wav",
+          "publisher_full_file_sha512": "e3cc8f9d89847546982e76b7d124b8957f0a39088b1910a1d7956671c630d090bef5be962bfe2a3db25141266480de94ca27b986fac5e95ab66601803048b62f",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "c0b2429a8787f9e934bb73997ac90fb69e17bec59b407b14419052c821271a2d",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000211.wav",
+          "publisher_full_file_sha512": "4e344e876054583674fc1110a9064eba43306659942739c43484f49645c3945c3b11f24c48453e626ea62da5079ba488005c3849b3fbd08f1c65de7a4b413b65",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5459349f7b48ba5e88828f1d3c5e64334c9a3a2cec039767cbf3308e438cd1b1",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000311.wav",
+          "publisher_full_file_sha512": "b3452c5c3cfae0f543507da749a5df11db3bbaf13cb8eb8c586a3354111b776d21740b70c08a56ddcef9d4af5dee7619c92226abc727b4e04d2764b10027472a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "fee7deebe16305a185f18f79df31b308e1b9a87fa0731a3452b3d873f70a6121",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000411.wav",
+          "publisher_full_file_sha512": "fe49a926d104c79fb7f75c75442c9f9cb89461930687ef5ae0ab971eafebf3c22399ee777050e6dea21e31cd82f957a0dd14a36c2f8f415bf62ecbc9aec4a425",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "7a11ca0ef17da69af7331cb350103bb4e877b27308498a1bc64a903804872811",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000511.wav",
+          "publisher_full_file_sha512": "dba0add8c7b57997c00a98dae5299c105527ef1d26d1bcaeb63e7acbfd85ca922c26eb0155b3c1c327bef76762927e095073612207fc5fb802058fa7386ef23a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ac74f7ff206ca42e62e53736b1c9f0fc71749451016a712ee5e3f546b3451025",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000611.wav",
+          "publisher_full_file_sha512": "be50687acff2de38ab4575b9d38d9bf6c6da4a332bc486c9a62f75c0eb0c516392b1f3641a25741bd8ab31e8c0fc37bd23fb025b5a47c1a8e9a6991ebe3f3db5",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a5bdc959ffa61d4504f0f17c77c698fec6000864c77aa0005a425bc34fa62fab",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000711.wav",
+          "publisher_full_file_sha512": "f8db5be7194e7a4506bf5e7e068786d093acfe137f7717e65f0eea38db894d342387158d7411c031e8db55a7c860d53f3fe1089772a62a18b93aeab9549c7110",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "efe8f7136e9744d68ccd03cb48bd795bf1a4128ea0da6600a070cdac14d79874",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000811.wav",
+          "publisher_full_file_sha512": "38bc2f7f78c9a864409f0f89f17b31d63ce610b2ec545f9e3cc45ba0df0a35e20b8ca24bffb706506b84f45c7f18af1c4d28db2cdd23318d283d4e9819e7cc23",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "0c17ffeed2810d5b017390c456290589c64b4913d3d2e1dd61d25b53815818f7",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_715_2024_04_08/20240408_000911.wav",
+          "publisher_full_file_sha512": "f3ff3fe65dbe144408040d705d4cbb59dca5f87fdf65e2ec422d55e733609d5f242da44be3016426996e61105cbae05a342db4ad584c4a5fd1066e04d6639ade",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "4674241105715dbc233195d23f009c561e95fbacb981fdea4cf336800c8e3c1b",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "350",
+      "record_url": "https://zenodo.org/records/21810498",
+      "source_zip_url": "https://zenodo.org/api/records/21810498/files/ESID_350_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21810498/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:43:47+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "045a44dd65a9407fb708cf4e84a3af065f400222f411cec6561b3e1dc926f146",
+      "source_members": [
+        {
+          "name": "ESID_350_2024_04_08/20240408_044347.WAV",
+          "publisher_full_file_sha512": "75d20803795c8c053ccb166d3ac1b6b7647f490fff629f9e0c809cbbe8573ffe525adf67272f489de44e5052c9f10f7f1ee7e02c107ce68bba6cc651cf497c9a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "301c7eebd3b6d16adac72df6be2e4261cce7d01bf48c43153d1f38fba9e1d924",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "371",
+      "record_url": "https://zenodo.org/records/21717105",
+      "source_zip_url": "https://zenodo.org/api/records/21717105/files/ESID_371_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21717105/files/total_eclipse_data.csv/content",
+      "status": "failed",
+      "error": "Error: # channels not specified",
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": null,
+      "clip_duration_s": null,
+      "audio_sha256": null,
+      "source_members": [],
+      "proposal_groups": null,
+      "reviewed_event_id": null,
+      "visual_review": "not scanned: direct source inspection found EOFError while opening the first selected WAV; the original collector reported a secondary output-header error"
+    },
+    {
+      "site": "333",
+      "record_url": "https://zenodo.org/records/21927995",
+      "source_zip_url": "https://zenodo.org/api/records/21927995/files/ESID_333_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21927995/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T07:51:29+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "4c3cae2623e0a4564bf3308e3c91676320f7a57dc469f3ffcaf2333b545b97a5",
+      "source_members": [
+        {
+          "name": "ESID_333_2024_04_08/20240408_075129.WAV",
+          "publisher_full_file_sha512": "41aefa8fe4dd65344770176ede84b2691a383fecc85df24de1f096bf959bec42cb743817d9a69d6281579a469dc329e4fd463eaf803304c970fe7008422a2ddb",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "65dbc5b484c67bdf1133a32469030fd0c253a981e87fbac5a82f842b051fec8a",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "249",
+      "record_url": "https://zenodo.org/records/21833634",
+      "source_zip_url": "https://zenodo.org/api/records/21833634/files/ESID_249_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21833634/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:37:44+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "b6f3a662b9ef6d8a465a5482c62691a30d2f2b44654aeb0cdf2f6d5fa1a48d4e",
+      "source_members": [
+        {
+          "name": "ESID_249_2024_04_08/20240408_043744.WAV",
+          "publisher_full_file_sha512": "1461f38fcf9feb798a8ae739ca968e28da4aea1886c86cdc06d553253e51e9047e05d981189ba48773787d7942e216710f3eebf2dde7cea7f05e6fdda2d82140",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "5d7f93ed71015122ae92f992b3a35ae3514ef9f96a4142ca6d802cd270ba94f2",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "323",
+      "record_url": "https://zenodo.org/records/21832317",
+      "source_zip_url": "https://zenodo.org/api/records/21832317/files/ESID_323_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21832317/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T03:40:19+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "2a3c7a7ec0745e607ee642306d0b4b636d174e347b20d774dcef1a767b95dd71",
+      "source_members": [
+        {
+          "name": "ESID_323_2024_04_08/20240408_034019.WAV",
+          "publisher_full_file_sha512": "8b5f65fbe6f8a7364ee10d33d4e4e99232688e2cd6421ab2e3a5972e94cfe16187df7c25ad6ba1d5694b1ccc6d44138b5b0273906ca7183d909a832416994718",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a7159d4fcf269ceb0b46effbba5cef45ba36dc79a78cc05e79f48975e48a4161",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "805",
+      "record_url": "https://zenodo.org/records/21785544",
+      "source_zip_url": "https://zenodo.org/api/records/21785544/files/ESID_805_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21785544/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T05:16:28+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "9d90e5439a3e3cc40a2135decf1a31385ce70ab09ab2b9c032d7f9fe343c10b4",
+      "source_members": [
+        {
+          "name": "ESID_805_2024_04_08/20240408_051628.WAV",
+          "publisher_full_file_sha512": "a775390df14eb40493c6cde6c1b3eb25a62d5fdd088ab23a540f93f8e8fba6defdc4287e5f63ba5df05cddcccf23f85df70bcfa4ab9c2c8a6729b4cea89d0932",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "d8cb194a74cea3f3678ed1ccb1ca3a94472f95af2f5620594d16c8b086ae3639",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "910",
+      "record_url": "https://zenodo.org/records/21824662",
+      "source_zip_url": "https://zenodo.org/api/records/21824662/files/ESID_910_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21824662/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:15:12+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "1ba9b0dd023b57c1d405bfdd3f6b59c54ffc301f0a26b93878e05e62a88d5085",
+      "source_members": [
+        {
+          "name": "ESID_910_2024_04_08/20240408_001512.WAV",
+          "publisher_full_file_sha512": "158ac8f65945732121e57d3767fde2ea3826dc950fa504bbbed1ff84229f4f2421295c2dea2a1c8a959bed3c1699176a61d52b31992606ae23184c53965919d5",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "59141d95f4f857a6d5465c4dbdcdec811867157f73a6620ef553f11ddec0dcb2",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 11,
+      "reviewed_event_id": "event-0002",
+      "visual_review": "weak discontinuous energy; moving-tone proposal not visually convincing; aircraft identity unconfirmed"
+    },
+    {
+      "site": "762",
+      "record_url": "https://zenodo.org/records/21786378",
+      "source_zip_url": "https://zenodo.org/api/records/21786378/files/ESID_762_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21786378/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:27:49+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "6d40dc1934491c8f6ac445b1b628289e1be50ca22cf60f8497b553d00028dddf",
+      "source_members": [
+        {
+          "name": "ESID_762_2024_04_08/20240408_042749.WAV",
+          "publisher_full_file_sha512": "93fe350fa40e0e0823c68e53e628812583d8a044db2d9d58dbf43f4f3638c08b1fcd0d2ab0a4f014fdce60eb74414607ba55d57b152c423488aa657b4f5d92ea",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "a6808dd757998d53302e44d7d2c92716cd30292f2d09a57698116feb029725ad",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 4,
+      "reviewed_event_id": "event-0002",
+      "visual_review": "clear descending low-frequency band; aircraft identity unconfirmed"
+    },
+    {
+      "site": "710",
+      "record_url": "https://zenodo.org/records/21722091",
+      "source_zip_url": "https://zenodo.org/api/records/21722091/files/ESID_710_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21722091/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T00:00:20+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "0c45a06645ba2327ca1a3dafe7f5ca50063fbd0f037f0a9505614dbd34d72353",
+      "source_members": [
+        {
+          "name": "ESID_710_2024_04_08/20240408_000020.wav",
+          "publisher_full_file_sha512": "8f14656205c71bfbc8247c8bec0480c70c55eb3035336f794fb953893163fd1a57175203888cd56840d1e438bc819d2b24f69bb5e36a94285e70fd8e5c7879b2",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "af347173a7d8d91d4fdae2070c820b94edd07fdc889b21c2e12c78339a2c8497",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000120.wav",
+          "publisher_full_file_sha512": "e903e51962f03b2fb19f96a4d29dee49c0c03a3fbd45465243dda6a59d395c4844ad1dfc7eed50539ddff4d49a6835b5bfb3b5b758a0d5139ad9986a3eb8552e",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "cddad144be533c7f85520531142db0d3e7877656c6f87bf2e051f38189596772",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000220.wav",
+          "publisher_full_file_sha512": "a22ef620571c303d475b3db18746d22ab666bd2336e9029b681f48069b0a4b3a46396f98482002b07f3d9d7270dc18eec15a43794db4a03b0a1d7e30f1a57fb8",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "7abaa776fe7d209aa4da850b3ceccbdb8646dc15e13b219536079ec03231d3b4",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000320.wav",
+          "publisher_full_file_sha512": "d35b64ed56c03183c2d21d737cda68edc3a5cc7091dc6c336464130459c3956c0f74ff3105c496582cc78d59e2257b3d4d896253819798a859aae94ba3295131",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "cb7d27185766dc748435ed9b7016b6be17fdc725656b1d4dabfd4435bc840a1b",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000420.wav",
+          "publisher_full_file_sha512": "43587e94567f6f15f51d7fa44f6680321c8dab5e0716daf4a76b17e41c24551ca6aab4e171cd82c8ea8b5a36fd28a830f1805f8a21a2b189ec7fc4a735680d75",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "b30bf0cf0c0fc3ee8933ca8b0ae457057d8dfefd32fe466e060157dbc513ff4c",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000520.wav",
+          "publisher_full_file_sha512": "5b4c07ff53ecbc93ba6f41be83dbb4dc8787d9508cc28d23a13956ea4610ef5e829a0273e39bb4a3b873f08e29b47ba413412f948c38e926cedc5a6381039514",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "ecee9e158b5fc560290df57c513228426475cbfa9ec33040693784529517feda",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000620.wav",
+          "publisher_full_file_sha512": "640f47a08cd1ab407796c9e00f42f07ebc70fb9da21220f76dd0cfbca0659fa5028eeac632f4d00309f8d7a2d86f30980dc6670aef5fc11c4782455b2521de89",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f75c2741b63971f7804dd297719182a999e4625bc9bfd0ac126022f93d755539",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000720.wav",
+          "publisher_full_file_sha512": "aecef9a1423f350bec57fc62ae6d3616294791079878cb65296a5fcf892077447a969daccc868772bc18907f3aa56b1cf14983bedcf0d9bcc5d95b3c55d98a38",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "418a4d23521673b55e35cbcd659adc3d5e66a7a725d701e62d34e3b1cc0b9055",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000820.wav",
+          "publisher_full_file_sha512": "9031242bfc4e1d64355b013ab1c1d663ccfddb25c9fb463f778c285e5a029e92dd581f681236eb123046a7d2fe8e4de823d79c3a1afa416b053976e07b3ec84a",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "3082b5e77cfedd5c24414476181040c066531b134ea0c4c7ce44f035563f05af",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        },
+        {
+          "name": "ESID_710_2024_04_08/20240408_000920.wav",
+          "publisher_full_file_sha512": "b7eff520cefedc1608205b468785f2d6251b36d4e10d676507ed97dc1b74826134d7a9dac6bff26df8950146eed84359bb80b690696ad9b61a23ddab1ad85db7",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "f93f37c35dda6dae1c4fa9c188f7da9217da7f7d82c4b14e245eacb415efb290",
+          "frames_used": 2880000,
+          "total_frames": 2880000
+        }
+      ],
+      "proposal_groups": 2,
+      "reviewed_event_id": "event-0002",
+      "visual_review": "fragmented and weak descending energy; visual support is limited; aircraft identity unconfirmed"
+    },
+    {
+      "site": "518",
+      "record_url": "https://zenodo.org/records/21831379",
+      "source_zip_url": "https://zenodo.org/api/records/21831379/files/ESID_518_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21831379/files/total_eclipse_data.csv/content",
+      "status": "failed",
+      "error": "RemoteZipError: Invalid Content-Range returned by the server: bytes 18446744073709486841-760/761",
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": null,
+      "clip_duration_s": null,
+      "audio_sha256": null,
+      "source_members": [],
+      "proposal_groups": null,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "505",
+      "record_url": "https://zenodo.org/records/21808323",
+      "source_zip_url": "https://zenodo.org/api/records/21808323/files/ESID_505_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21808323/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:59:56+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "7abf2327b1751a4ba7cc03dcd4ba4645c1caf25ff1d674c908e9b3d80cac6b6b",
+      "source_members": [
+        {
+          "name": "ESID_505_2024_04_08/20240408_045956.WAV",
+          "publisher_full_file_sha512": "d09c8e93e0fd03b373263034a572f110285ada30abfccdca3d490d7ae68c3a0bfb377df6d69db75a980536b01a7d988ce4b566f3500a25708998d2d569e60e2c",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "7fbd0182fd23561f81fa150f89a3345354725df81d582204c7728c0c7f25a93d",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 0,
+      "reviewed_event_id": null,
+      "visual_review": "pending"
+    },
+    {
+      "site": "443",
+      "record_url": "https://zenodo.org/records/21755346",
+      "source_zip_url": "https://zenodo.org/api/records/21755346/files/ESID_443_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21755346/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T04:53:15+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "44a74f083201cf5d5465438b45e31f7fb6d24d27c1b9fa8a4c90a9014fbb7978",
+      "source_members": [
+        {
+          "name": "ESID_443_2024_04_08/20240408_045315.WAV",
+          "publisher_full_file_sha512": "97ea275044e73654caa3c109dd530b6bf708bed7e3ba505c082deee6e032c3c2ce907229499e015c920bca58ff5c8b8ece8cebc80f20d2d8ca3a94ad86befc4d",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "e8e8dccbc2c661fea24dbb31a36e3e99eb15c2edf3b6f064656bf8cfc63d873e",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "visible low-frequency descending band; aircraft identity unconfirmed"
+    },
+    {
+      "site": "445",
+      "record_url": "https://zenodo.org/records/21743960",
+      "source_zip_url": "https://zenodo.org/api/records/21743960/files/ESID_445_2024_04_08.zip/content",
+      "publisher_site_metadata_url": "https://zenodo.org/api/records/21743960/files/total_eclipse_data.csv/content",
+      "status": "scanned",
+      "error": null,
+      "publisher_coordinates_present": true,
+      "publisher_clock_setting": "Set with Automated AudioMoth Time Chime",
+      "filename_timestamp_utc_unverified": "2024-04-08T03:09:15+00:00",
+      "clip_duration_s": 600,
+      "audio_sha256": "ee6fdbdf415e06d241b751df06ce5e82bbef6569c3f7c68beb33a4c02f296551",
+      "source_members": [
+        {
+          "name": "ESID_445_2024_04_08/20240408_030915.WAV",
+          "publisher_full_file_sha512": "70901bd058e9fb3c35ebebfefc90a5ee525b231ebcedf4f7b3f7fbe4c05fc45d2eca32f7dbb5dd83b9403fc0923a21e5515be515e27452a950b263b7ce32f3cd",
+          "publisher_full_file_hash_verified": false,
+          "pcm_prefix_sha256": "cb38c3c01d50ccdc23b0ac05b8e11dcf38ef6c9b0200441d71152c715bf81d80",
+          "frames_used": 28800000,
+          "total_frames": 2147472000
+        }
+      ],
+      "proposal_groups": 1,
+      "reviewed_event_id": "event-0001",
+      "visual_review": "clear descending low-frequency band; aircraft identity unconfirmed"
+    }
+  ],
+  "source_file_sha256": {
+    "scripts/collect_eclipse_audio.py": "821df95579bcea960b24e6b91530340fb20d71bb79dcf7db5415dc80b602fee1",
+    "src/dopplergeist/discovery.py": "b824d7463571a2d4fd8467077b37c2e0953828b7e3eeb396f2bd74296a31e6bc",
+    "src/dopplergeist/intake.py": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781"
+  }
+}
