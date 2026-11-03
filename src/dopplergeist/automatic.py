@@ -476,6 +476,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
+    from .data_access import CONUS
     from .matching import _cache_ridge_fits, profile_candidate, refine_candidate
     # Each finalist and the complete sensitivity profile own an exact-input
     # cache. Profile's internal refinements share its scope; other calls do not.
@@ -485,6 +486,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
+    search_bounds = state["coverage"]["requested_area"].get("bounds_wsen", CONUS)
     finite = search.get("finite_search_evidence")
     assessed_ids = set()
     producer_ids = search.get("core_assessed_mode_ids")
@@ -536,7 +538,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             row = dict(row, altitude_basis={flight: sorted(set(getattr(track, "altitude_basis", ["unspecified"]))) for flight, track in tracks.items()})
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
-                                         recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0))
+                                         recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0),
+                                         bounds_wsen=search_bounds)
             candidate = _comparable_refinement(candidate, row, prepared_events)
             refined.append(candidate)
             refined_keys.add(key)
@@ -553,7 +556,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         try:
             profiled = profile_candidate(leading, track_sets[mode_key(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
-                         c=config.get("sound_speed_mps", 343.0))
+                         c=config.get("sound_speed_mps", 343.0), bounds_wsen=search_bounds)
             # Full profiling updates this exact hypothesis. Its earlier, limited
             # envelope must not compete with incomplete evidence or score roundoff.
             raw[0] = _comparable_refinement(profiled, leading, prepared_events)

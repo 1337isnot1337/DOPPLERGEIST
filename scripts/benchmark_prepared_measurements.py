@@ -45,6 +45,20 @@ def canonical(value):
                       allow_nan=True, default=json_scalar)
 
 
+def timing_instrumentation_active():
+    """Observe profiling/debugging without installing or changing any hooks."""
+    if sys.getprofile() is not None or sys.gettrace() is not None:
+        return True
+    monitoring = getattr(sys, "monitoring", None)
+    if monitoring is None:
+        return False
+    # Python 3.12 cProfile uses monitoring, leaving getprofile() unset. Count
+    # reserved profiler/debugger slots even when events are temporarily paused
+    # or enabled only for individual code objects, not globally.
+    return any(monitoring.get_tool(tool_id) is not None
+               for tool_id in (monitoring.PROFILER_ID, monitoring.DEBUGGER_ID))
+
+
 def query_tracks(index, points, events, budget, scoring, bounds, time_range, *,
                  anchor_window=None, clock_partition_query=False):
     """Count actual index traversal while exercising the production overload path."""
@@ -374,6 +388,7 @@ def worker(args):
     native_acoustic_before = native_acoustic.successful_calls() if native_acoustic is not None else 0
     native_cpa_before = native_cpa.successful_calls() if native_cpa is not None else 0
     query_accounting, query_operations, execution_stages = None, None, {}
+    diagnostic = args.instrument_numerics or args.stage_timing or timing_instrumentation_active()
     began, cpu = time.perf_counter(), time.process_time()
     try:
         if args.include_track_query:
@@ -410,6 +425,7 @@ def worker(args):
             }
     finally:
         elapsed, cpu_seconds = time.perf_counter() - began, time.process_time() - cpu
+        diagnostic = diagnostic or timing_instrumentation_active()
         matching._fit_ridge_uncached, Track.acoustic = original_fit, original_acoustic
         tiled_search.score_candidate = original_score
         if callable(native_fit):
@@ -475,7 +491,6 @@ def worker(args):
     if query_accounting is not None:
         results["track_query_accounting"] = query_accounting
     write_new(args.output / "results.json", results)
-    diagnostic = args.instrument_numerics or args.stage_timing or sys.getprofile() is not None
     summary = {"wall_seconds": elapsed, "cpu_seconds": cpu_seconds,
                "load_seconds_excluded": load_seconds, "operations": operations,
                "numerical_functions_canonical": not (args.instrument_numerics or args.stage_timing),

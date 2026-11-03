@@ -13,7 +13,7 @@ from itertools import chain
 import os
 
 import numpy as np
-from pyproj import Transformer
+from pyproj import Geod, Transformer
 from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
@@ -45,6 +45,7 @@ _native_fit_irls_batch = getattr(_native_ridge_module, "fit_irls_batch", None)
 _CANONICAL_NATIVE_FIT_IRLS = _native_fit_irls
 
 _NATIVE_RIDGE_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
+_CANONICAL_RECEIVE_MESH_UNIQUE = np.unique
 
 
 @dataclass
@@ -79,6 +80,11 @@ class _RidgeFitCache:
         self.acoustic_entries = OrderedDict()
         self.acoustic_bytes = 0
         self.acoustic_limit = 32 * 1024 * 1024
+        self.receive_mesh_entries = OrderedDict()
+        self.receive_mesh_bytes = 0
+        self.receive_mesh_limit = 4 * 1024 * 1024
+        self.receive_mesh_hits = 0
+        self.receive_mesh_misses = 0
         self.measurement_entries = OrderedDict()
         self.measurement_bytes = 0
         self.measurement_limit = 4 * 1024 * 1024
@@ -123,11 +129,45 @@ class _RidgeFitCache:
             self.acoustic_entries.move_to_end(key)
             _, factors, emissions, _ = self.acoustic_entries[key]
             return factors.copy(), emissions.copy()
-        receive = starts[:, None] + times[None, :]
-        unique, inverse = np.unique(receive, return_inverse=True)
+        # The receive-clock mesh is shared by different aircraft. Preserve the
+        # exact typed value keys already computed above, with no time rounding.
+        # Nonstandard layouts and error policies keep their original execution.
+        mesh_key = None
+        if (key is not None and self.max_entries > 0 and self.receive_mesh_limit > 0
+                and np.unique is _CANONICAL_RECEIVE_MESH_UNIQUE
+                and _fit_argument_key is _CANONICAL_SCORE_INPUT_FUNCTIONS[3]
+                and np.geterr() == _NATIVE_RIDGE_ERROR_POLICY
+                and all(type(values) is np.ndarray and values.dtype == np.float64
+                        and values.ndim == 1 and values.strides == (values.itemsize,)
+                        and values.flags.c_contiguous and values.flags.aligned
+                        for values in (starts, times))):
+            mesh_key = key[2:4]
+        mesh = self.receive_mesh_entries.get(mesh_key) if mesh_key is not None else None
+        if mesh is not None:
+            self.receive_mesh_entries.move_to_end(mesh_key)
+            self.receive_mesh_hits += 1
+            # Custom acoustic/indexing hooks still receive fresh writable
+            # arrays, so they cannot mutate a later aircraft's mesh.
+            unique, inverse = mesh[0].copy(), mesh[1].copy()
+            receive_shape = (len(starts), len(times))
+        else:
+            receive = starts[:, None] + times[None, :]
+            unique, inverse = np.unique(receive, return_inverse=True)
+            receive_shape = receive.shape
+            if mesh_key is not None:
+                self.receive_mesh_misses += 1
+                size = unique.nbytes + inverse.nbytes + starts.nbytes + times.nbytes + 1024
+                if size <= self.receive_mesh_limit and np.all(np.isfinite(unique)):
+                    while self.receive_mesh_entries and (
+                            self.receive_mesh_bytes + size > self.receive_mesh_limit
+                            or len(self.receive_mesh_entries) >= self.max_entries):
+                        _, (_, _, removed) = self.receive_mesh_entries.popitem(last=False)
+                        self.receive_mesh_bytes -= removed
+                    self.receive_mesh_entries[mesh_key] = (unique.copy(), inverse.copy(), size)
+                    self.receive_mesh_bytes += size
         factors, emissions, _ = track.acoustic(unique, observer, c)
-        factors = factors[inverse].reshape(receive.shape)
-        emissions = emissions[inverse].reshape(receive.shape)
+        factors = factors[inverse].reshape(receive_shape)
+        emissions = emissions[inverse].reshape(receive_shape)
         size = factors.nbytes + emissions.nbytes + starts.nbytes + times.nbytes + 512
         if key is not None and size <= self.acoustic_limit:
             while self.acoustic_bytes + size > self.acoustic_limit:
@@ -194,7 +234,9 @@ def _cache_ridge_fits(function, *, max_entries=4096):
     snapshots, including validated ceiling vectors, and digest bytes are bounded
     to 4 MiB; Python object/container overhead is additional. Prepared measurements
     use their own 4 MiB bound; private immutable scoring inputs have another
-    4 MiB budget, and acoustic arrays use 32 MiB. Acoustic screening
+    4 MiB budget, and acoustic arrays use 32 MiB. Receive-clock meshes use
+    another 4 MiB for arrays, exact keys and conservative entry charges, also
+    capped by the fit-cache entry limit. Acoustic screening
     evidence has an additional 8 MiB budget, including conservatively charged
     keys, arrays and containers. Context-local state prevents
     reuse between concurrent jobs, nested batches or later calls. Cached results
@@ -703,9 +745,24 @@ def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         yield batch
 
 
+def _geographic_refinement_frame(candidate, radius_m, bounds_wsen):
+    west, south, east, north = bounds_wsen
+    lon0, lat0 = candidate["lon"], candidate["lat"]
+    if (not np.isfinite(bounds_wsen).all() or west >= east or south >= north
+            or not west <= lon0 <= east or not south <= lat0 <= north):
+        raise ValueError("Refinement seed must lie within finite, ordered geographic bounds")
+    geod = Geod(ellps="WGS84")
+    lon_scale = geod.inv(lon0, lat0, lon0 + 1, lat0)[2]
+    lat_scale = geod.inv(lon0, lat0, lon0, lat0 + 0.1)[2] * 10
+    limits = [(max(-radius_m, (west-lon0)*lon_scale), min(radius_m, (east-lon0)*lon_scale)),
+              (max(-radius_m, (south-lat0)*lat_scale), min(radius_m, (north-lat0)*lat_scale))]
+    return limits, (lon_scale, lat_scale)
+
+
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
-                     crs="EPSG:5070", c=343.0, recording_start_window_s=None):
+                     crs="EPSG:5070", c=343.0, recording_start_window_s=None,
+                     bounds_wsen=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
     A vertical offset changes the observer-to-track relative height; it is a
@@ -733,6 +790,13 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
         raise ValueError("Refinement clock bounds do not intersect the recording-start window")
     fixed_clock = lower == upper
     bounds = [(-radius_m, radius_m), (-radius_m, radius_m)]
+    if bounds_wsen is not None:
+        west, south, east, north = bounds_wsen
+        # Use east/north metre-scaled geographic coordinates so Powell's box
+        # constraints intersect the geographic rectangle exactly. A projected
+        # x/y rectangle does not align with lines of latitude and longitude.
+        lon0, lat0 = candidate["lon"], candidate["lat"]
+        bounds, (lon_scale, lat_scale) = _geographic_refinement_frame(candidate, radius_m, bounds_wsen)
     initial = np.zeros(2) if fixed_clock else np.array([0.0, 0.0, np.clip(0.0, lower, upper)])
     if not fixed_clock:
         bounds.append((lower, upper))
@@ -740,8 +804,12 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     for offset in altitude_offsets_m:
         def evaluate(parameters):
             dt = lower if fixed_clock else parameters[2]
-            latlon = inverse.transform(x0 + parameters[0], y0 + parameters[1])
-            lon, lat = latlon
+            if bounds_wsen is None:
+                lon, lat = inverse.transform(x0 + parameters[0], y0 + parameters[1])
+            else:
+                # Clip only roundoff at the closed geographic boundary.
+                lon = float(np.clip(lon0 + parameters[0]/lon_scale, west, east))
+                lat = float(np.clip(lat0 + parameters[1]/lat_scale, south, north))
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
                                   start + dt, c)
@@ -758,7 +826,8 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
         if not np.isfinite(score["score"]):
             continue
         dt = lower if fixed_clock else parameters[2]
-        spatial_boundary = bool(np.any(np.abs(parameters[:2]) >= radius_m * 0.98))
+        spatial_boundary = any(min(value-lo, hi-value) <= radius_m * 0.02
+                               for value, (lo, hi) in zip(parameters[:2], bounds[:2]))
         clock_boundary = bool(not fixed_clock and min(dt-lower, upper-dt) <= (upper-lower)*0.02)
         profiles.append(dict(score, lat=lat, lon=lon, elev_m=elevation,
             recording_start_time_s=float(start + dt), altitude_offset_m=float(offset),
@@ -784,7 +853,7 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                       recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
-                      c=343.0, crs="EPSG:5070"):
+                      c=343.0, crs="EPSG:5070", bounds_wsen=None):
     """Run declared perturbations, retaining failures and boundary limitations.
 
     These finite engineering scenarios are not a calibrated confidence region.
@@ -796,7 +865,7 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
         raise ValueError("Sensitivity ranges must be nonnegative and sound speed must remain positive")
     kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
                   altitude_offsets_m=(0.0,), crs=crs, c=c,
-                  recording_start_window_s=recording_start_window_s)
+                  recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen)
     nominal = refine_candidate(candidate, tracks, events, measurements, terrain, **kwargs)
     scenarios = [("nominal", "nominal", events, measurements, {})]
     for sign in (-1, 1):

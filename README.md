@@ -51,6 +51,11 @@ This scans the complete recording and saves an inspectable job. To permit histor
 
 Initial data acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
 
+To limit the geographic search when you have independent regional context, add
+`--bounds WEST SOUTH EAST NORTH` in decimal degrees, for example
+`--bounds -98.98 30.29 -98.73 30.47`. The bounds are a search prior, and the
+clock window must still be supported by recording metadata or other evidence.
+
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow reported
 progress, checkpoint rate, and the age of the latest tile and job status update.
