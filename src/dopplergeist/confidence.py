@@ -203,7 +203,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     if coverage["data_status"] == "unavailable":
         return result("missing_flight_data", "Historical flight data are unavailable for this recording window.")
     if not coverage["search_complete"]:
-        return result("search_incomplete", "The search did not finish the entire requested area and time window.")
+        return result("search_incomplete", "Search coverage or model assessment is incomplete; ranked candidates may still be available.")
     if coverage["data_status"] != "available" or coverage.get("missing_data"):
         return result("partial_flight_coverage", "Required flight or terrain data are missing from the searched scope.")
     if not candidates:

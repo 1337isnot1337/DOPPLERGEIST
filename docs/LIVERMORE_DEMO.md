@@ -59,6 +59,39 @@ but that does not make the overall search or physical-model assessment complete.
 The run reported 274.5 seconds total and 33.0 seconds in search on the local
 machine. No automatic location was accepted.
 
+## Fresh MP3 ranking with a corrected altitude datum
+
+A second full local HTTP upload replay on source `7565d81` used the same real
+MP3, the published N784MB track converted from EGM96 mean-sea-level heights to
+ellipsoidal heights, the same approximately 10-second clock interval, and a
+Livermore city-area box (`-121.84, 37.65, -121.70, 37.73`). The detector
+selected event groups automatically. The search visited **6 of 6 tiles** and
+1,754 grid points, completed refinement, and returned **105 ranked candidates**.
+The top candidate scored 0.928432 and was **110 m from the inferred reference**;
+the comparison is not a measured microphone-location error.
+
+The table presents the first five candidates in original score order after a
+250 m minimum spacing filter, to avoid listing near-duplicates. Original ranks
+are retained; the scores are uncalibrated fit scores, not probabilities.
+
+| Original rank | Latitude | Longitude | Score | Distance from inferred reference |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 37.662455 | -121.781083 | 0.928432 | 110 m |
+| 12 | 37.661549 | -121.777135 | 0.925876 | 457 m |
+| 13 | 37.662693 | -121.784670 | 0.925206 | 253 m |
+| 20 | 37.663934 | -121.787489 | 0.922637 | 502 m |
+| 52 | 37.661666 | -121.787273 | 0.901400 | 506 m |
+
+The final result remains `inconclusive / search_incomplete`: all geographic
+tiles were visited, but the source index contained only the known aircraft and
+therefore did not establish competing-flight coverage. The scorer recorded
+618 candidate envelopes with 10,434 unclassified clock trials, all with stored
+bounds; `model_assessment_complete` was true, while full model support and data
+scope were not. This is a ranked, prior-constrained development result, not an
+accepted location or proof that the reference is correct. The complete original
+ranking and job artifacts are available locally under
+`/home/cinna/.local/state/dopplergeist-livermore-replay-20261103/`.
+
 ## Reproduce
 
 Install the project as described in the [README](../README.md). Download
