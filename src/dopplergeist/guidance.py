@@ -27,7 +27,7 @@ def guidance(result, decision=None):
         add("recording_time", "The recording start time is not established.",
             "Provide a defensible UTC window for the start of the original recording, then run the analysis again.",
             ["result.json#/reason_code", "result.json#/required_fields"])
-    elif reason in {"no_supported_events", "no_doppler_events"} and result.get("events") == []:
+    if reason in {"recording_time_required", "no_supported_events", "no_doppler_events"} and result.get("events") == []:
         add("no_events", "No supported Doppler events were found.",
             "Try a longer portion of the original recording if available; another independent flyover may provide more evidence.",
             ["result.json#/reason_code", "result.json#/events"])
