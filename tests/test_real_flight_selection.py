@@ -1,8 +1,12 @@
 """Optional integration regression against a local, real ADS-B archive part."""
 import gzip
+import io
 import json
 import os
 from pathlib import Path
+import shutil
+import subprocess
+import sys
 import tarfile
 
 import numpy as np
@@ -20,6 +24,7 @@ def test_real_boundary_segments_survive_selection(tmp_path):
     if not source:
         pytest.skip("set DOPPLERGEIST_REAL_ARCHIVE_PART to a local readsb tar part")
     frames = []
+    first_member = None
     with Path(source).open("rb") as stream, tarfile.open(fileobj=stream, mode="r|") as archive:
         for member in archive:
             if not member.isfile() or "trace_full_" not in member.name:
@@ -29,6 +34,8 @@ def test_real_boundary_segments_survive_selection(tmp_path):
             frame = adsblol_frame(data)
             if len(frame) > 50:
                 frames.append(frame)
+                if first_member is None:
+                    first_member = member.name, raw
             if len(frames) == 10:
                 break
     assert len(frames) == 10
@@ -60,16 +67,18 @@ def test_real_boundary_segments_survive_selection(tmp_path):
     assert old_filter_misses > 0
 
     # Real rows with embedded source limits exercise index-side scope checks.
-    selection = {"bounds": list(bounds), "time_range_s": [0, 4102444800],
+    day_window = [1788825600.0, 1788912000.0]
+    selection = {"bounds": list(bounds), "time_range_s": day_window, "archive_day_utc": "2026-09-08",
                  "all_aircraft": False, "max_gap_s": 30.0}
     table = pa.Table.from_pandas(frames[0], preserve_index=False)
-    table = table.replace_schema_metadata({b"dopplergeist.selection.v1": json.dumps(selection).encode()})
+    table = table.replace_schema_metadata({b"dopplergeist.selection.v2": json.dumps(selection).encode()})
     source_parquet = tmp_path / "real-selected.parquet"
     pq.write_table(table, source_parquet)
-    restricted = dict(coverage, all_aircraft=False)
+    restricted = dict(coverage, all_aircraft=False, time_range_s=day_window)
     FlightIndex.from_parquet(tmp_path / "valid.sqlite", source_parquet, coverage=restricted)
     with pytest.raises(DataUnavailable, match="excluded aircraft"):
-        FlightIndex.from_parquet(tmp_path / "types.sqlite", source_parquet, coverage=coverage)
+        FlightIndex.from_parquet(tmp_path / "types.sqlite", source_parquet,
+                                 coverage=dict(restricted, all_aircraft=True))
     with pytest.raises(DataUnavailable, match="gap limit"):
         FlightIndex.from_parquet(tmp_path / "gap.sqlite", source_parquet, coverage=restricted, max_gap_s=60)
     with pytest.raises(DataUnavailable, match="selection bounds"):
@@ -77,7 +86,47 @@ def test_real_boundary_segments_survive_selection(tmp_path):
                                  coverage=dict(restricted, bounds=[-180, -90, 181, 90]))
     with pytest.raises(DataUnavailable, match="selection time"):
         FlightIndex.from_parquet(tmp_path / "time.sqlite", source_parquet,
-                                 coverage=dict(restricted, time_range_s=[-1, 4102444800]))
+                                 coverage=dict(restricted, time_range_s=[day_window[0] - 1, day_window[1]]))
+    for i, (tag, selected, message) in enumerate((
+        (b"dopplergeist.selection.v1", dict(selection, time_range_s=None), "Legacy selected Parquet"),
+        (b"dopplergeist.selection.v1", dict(selection, time_range_s=[0, 4102444800]), "Legacy selected Parquet"),
+        (b"dopplergeist.selection.v2", dict(selection, time_range_s=None), "selection time"),
+        (b"dopplergeist.selection.v2", dict(selection, time_range_s=[0, 4102444800]), "selection time"),
+    )):
+        malformed = tmp_path / f"malformed-{i}.parquet"
+        pq.write_table(table.replace_schema_metadata({tag: json.dumps(selected).encode()}), malformed)
+        with pytest.raises(DataUnavailable, match=message):
+            FlightIndex.from_parquet(tmp_path / "malformed.sqlite", malformed, coverage=restricted)
     untagged = tmp_path / "real-untagged.parquet"
     pq.write_table(table.replace_schema_metadata(None), untagged)
     FlightIndex.from_parquet(tmp_path / "untagged.sqlite", untagged, coverage=coverage)
+
+    # Exercise the actual ingest CLI with one unmodified September 8 trace.
+    if "2026.09.08" in Path(source).name:
+        project = tmp_path / "real-ingest"
+        (project / "scripts").mkdir(parents=True)
+        shutil.copyfile(Path(__file__).resolve().parents[1] / "scripts/ingest_adsblol_day.py",
+                        project / "scripts/ingest_adsblol_day.py")
+        (project / "data/source").mkdir(parents=True)
+        (project / "data/source/icao_aircraft_types.json").write_text("{}")
+        day = project / "data/adsb/2026-09-08"
+        day.mkdir(parents=True)
+        name, raw = first_member
+        archive_bytes = io.BytesIO()
+        with tarfile.open(fileobj=archive_bytes, mode="w") as archive:
+            member = tarfile.TarInfo(name)
+            member.size = len(raw)
+            archive.addfile(member, io.BytesIO(raw))
+        blob = archive_bytes.getvalue()
+        (day / "real.tar.aa").write_bytes(blob[:len(blob) // 2])
+        (day / "real.tar.ab").write_bytes(blob[len(blob) // 2:])
+        for output, extra in (("whole", []), ("wide", ["--time-range", "2026-09-07T23:00:00Z", "2026-09-09T01:00:00Z"])):
+            command = [sys.executable, str(project / "scripts/ingest_adsblol_day.py"),
+                       "2026-09-08", "--keep-jets", "--bounds", "-180", "-90", "180", "90",
+                       "--output", output + ".parquet", *extra]
+            env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"))
+            completed = subprocess.run(command, env=env, capture_output=True, text=True)
+            assert completed.returncode == 0, completed.stderr
+            meta = pq.read_schema(day / (output + ".parquet")).metadata[b"dopplergeist.selection.v2"]
+            assert json.loads(meta)["time_range_s"] == day_window
+            assert json.loads(meta)["archive_day_utc"] == "2026-09-08"

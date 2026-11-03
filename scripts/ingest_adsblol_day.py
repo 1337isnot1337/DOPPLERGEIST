@@ -1,5 +1,6 @@
 """Stream a split daily tar archive into a CONUS prop/unknown parquet table."""
 import argparse
+from datetime import date, datetime, time, timezone
 import gzip
 import io
 import json
@@ -26,6 +27,11 @@ root=Path(__file__).resolve().parents[1]
 directory=root/"data/adsb"/args.date
 west,south,east,north=args.bounds
 time_range=[unix_time(t) for t in args.time_range] if args.time_range else None
+day_start=datetime.combine(date.fromisoformat(args.date),time.min,tzinfo=timezone.utc).timestamp()
+day_end=day_start+86400
+selected_start=max(day_start,time_range[0]) if time_range else day_start
+selected_end=min(day_end,time_range[1]) if time_range else day_end
+selected_time=[selected_start,selected_end] if selected_start<=selected_end else []
 output_path=directory/args.output
 report_path=directory/(Path(args.output).stem+"-ingestion-report.json")
 if output_path.exists() or report_path.exists():
@@ -71,7 +77,7 @@ if len(paths)<2:raise ValueError("Daily archive download is incomplete")
 stats={"trace_files":0,"known_jets_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
 stats["normalization_scope"]="full_native_trace_before_segment_selection"
 stats["selection_max_gap_s"]=30.0
-selection={"bounds":[west,south,east,north],"time_range_s":time_range,
+selection={"bounds":[west,south,east,north],"time_range_s":selected_time,"archive_day_utc":args.date,
            "all_aircraft":args.keep_jets,"max_gap_s":30.0}
 writer=None
 with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
@@ -102,7 +108,7 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             # Bound schema explicitly so an all-null metadata field in one
             # aircraft cannot change a later parquet batch's physical type.
             schema=pa.schema([(c,pa.string() if c in ["flight_id","typecode","altitude_basis"] else pa.float64()) for c in frame.columns],
-                             metadata={b"dopplergeist.selection.v1":json.dumps(selection,allow_nan=False).encode()})
+                             metadata={b"dopplergeist.selection.v2":json.dumps(selection,allow_nan=False).encode()})
             batch=pa.Table.from_pandas(frame,schema=schema,preserve_index=False)
             if writer is None:writer=pq.ParquetWriter(output_path,schema,compression="zstd")
             writer.write_table(batch)
