@@ -106,15 +106,18 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
             # continuous spline turns strictly inside its adjacent interval.
             # Check the endpoint range-rate signs before optimizing the actual
             # spline; an endpoint alone is not evidence of a complete pass.
+            eligible = np.flatnonzero(counts >= 2)
+            ends = np.cumsum(counts)[eligible]
+            starts = ends - counts[eligible]
             for end in (False, True):
-                if not np.any(sample == (len(t)-1 if end else 0)):
+                edge_indices = ends - 1 if end else starts
+                adjacent = edge_indices - 1 if end else edge_indices + 1
+                mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
+                        & (previous[edge_indices] if end else following[edge_indices])
+                        & (distance2[edge_indices] <= distance2[adjacent]))
+                oi_edge = eligible[mask]
+                if not len(oi_edge):
                     continue
-                mask = ((sample == len(t)-1) & previous & (distance2 <= np.r_[np.inf, distance2[:-1]])
-                        if end else (sample == 0) & following & (distance2 <= np.r_[distance2[1:], np.inf]))
-                edge_indices = np.flatnonzero(mask)
-                if not len(edge_indices):
-                    continue
-                oi_edge = observer_index[edge_indices]
                 lo, hi = (t[-2], t[-1]) if end else (t[0], t[1])
                 endpoints = pos[[-2, -1]] if end else pos[[0, 1]]
                 velocities = track.speed_vector(np.array([lo, hi]))
