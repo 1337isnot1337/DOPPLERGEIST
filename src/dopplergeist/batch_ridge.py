@@ -4,6 +4,7 @@ import pickle
 
 import numpy as np
 
+from . import matching
 from .audio import Spectrum
 from .matching import (RidgeTimes, _fit_argument_key, _fit_ridge_uncached,
                        _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs)
@@ -98,6 +99,7 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
         return None
     y, w = ridge[measured], weights[measured]
     independent = len(np.unique(times[measured]))
+    diagnostic_error_policy = np.geterr()
     with np.errstate(over="ignore", invalid="ignore", divide="ignore", under="ignore"):
         w = w * independent / w.sum()
         span = np.maximum(np.ptp(emissions, axis=1), 1e-9)
@@ -106,6 +108,33 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
         cap = np.clip(np.median(y[None, :] / factors, axis=1), low, high) * fraction
         if not np.all(np.isfinite(cap) & (cap > 0)) or not np.all(np.isfinite(u)):
             return None
+        native = matching._native_fit_irls
+        # Contiguous rows use the native kernel's same pairwise reduction order.
+        # Other layouts and scalar promotion rules retain the vectorized path.
+        # Saved first-group batches must keep their original array powers and
+        # scalar compatibility checks even when the native fitter is installed.
+        if (not legacy_arithmetic and native is not None
+                and all(type(value) is float for value in (sigma, fraction, low, high))
+                and factors.flags.c_contiguous and emissions.flags.c_contiguous
+                and factors.flags.aligned and emissions.flags.aligned):
+            native_rows = []
+            try:
+                for factor, normalized_time, bound in zip(factors, u, cap):
+                    fit = native(factor, normalized_time, y, w, low, high,
+                                 float(bound), sigma, independent)
+                    if fit is None:
+                        break
+                    native_rows.append(fit)
+                if len(native_rows) == len(factors):
+                    score, alpha, beta, rmse, outlier = np.asarray(native_rows, dtype=float).T
+                    if all(np.all(np.isfinite(value)) for value in
+                           (span, reference, score, alpha, beta, rmse, outlier)):
+                        # Metadata is normally assembled after the ignored-error block.
+                        with np.errstate(**diagnostic_error_policy):
+                            return _fit_diagnostics(score, alpha, beta, rmse, outlier,
+                                                    span, reference, cap, len(y), independent)
+            except (BufferError, TypeError, ValueError, OverflowError):
+                pass
         factor2, u2 = factors**2, u**2
         effective = np.broadcast_to(w, factors.shape).copy()
         # The scalar fitter squares Python floats here. NumPy's array square
@@ -163,13 +192,7 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
         outlier = np.average(np.abs(residual) > 3 * sigma, weights=w, axis=1)
     if not all(np.all(np.isfinite(value)) for value in (span, reference, score, rmse, outlier)):
         return None
-    results = [{"score": float(score[i]), "f0_hz": float(alpha[i]),
-             "source_drift_hz": float(beta[i]), "source_drift_hz_s": float(beta[i]/span[i]),
-             "source_reference_emission_time_s": float(reference[i]), "source_span_s": float(span[i]),
-             "drift_bound_hz": float(cap[i]), "drift_at_bound": bool(cap[i] and abs(beta[i]) > 0.99*cap[i]),
-             "rmse_hz": float(rmse[i]), "support_fraction": 1.0, "sample_count": int(len(y)),
-             "independent_sample_count": independent, "outlier_fraction": float(outlier[i])}
-            for i in range(len(alpha))]
+    results = _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, len(y), independent)
     if legacy_arithmetic:
         # Saved searches before the scalar-consistent correction used this
         # array arithmetic and these three fallback checks for the first group.
@@ -180,3 +203,13 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
             if results[i] != scalar:
                 return None
     return results
+
+
+def _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, sample_count, independent):
+    return [{"score": float(score[i]), "f0_hz": float(alpha[i]),
+             "source_drift_hz": float(beta[i]), "source_drift_hz_s": float(beta[i]/span[i]),
+             "source_reference_emission_time_s": float(reference[i]), "source_span_s": float(span[i]),
+             "drift_bound_hz": float(cap[i]), "drift_at_bound": bool(cap[i] and abs(beta[i]) > 0.99*cap[i]),
+             "rmse_hz": float(rmse[i]), "support_fraction": 1.0, "sample_count": int(sample_count),
+             "independent_sample_count": independent, "outlier_fraction": float(outlier[i])}
+            for i in range(len(alpha))]

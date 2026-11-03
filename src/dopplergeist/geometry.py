@@ -12,6 +12,8 @@ from scipy.interpolate import CubicHermiteSpline, PPoly
 from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 
+from .native_acoustic import ACOUSTIC_BACKEND, try_acoustic as _try_native_acoustic
+
 _EMISSION_ITERATION_TOLERANCE_S = 1e-7
 _PACKED_KINEMATICS_MAX_INTERVALS = 4096
 _MOTION_SUPPORT_INTERVAL_BATCH = 1024
@@ -271,6 +273,15 @@ class Track:
         start, end = self.time[[0, -1]]
         arrival_start = start + np.linalg.norm(self.xyz[0] - observer) / c
         arrival_end = end + np.linalg.norm(self.xyz[-1] - observer) / c
+        if (type(self) is Track and len(self.time)-1 <= _PACKED_KINEMATICS_MAX_INTERVALS
+                and Track.position is _NATIVE_POSITION
+                and Track._position_velocity is _NATIVE_POSITION_VELOCITY
+                and "position" not in self.__dict__ and "_position_velocity" not in self.__dict__
+                and _EMISSION_ITERATION_TOLERANCE_S == 1e-7):
+            result = _try_native_acoustic(self, t, observer, c, start, end,
+                arrival_start, arrival_end, _packed_kinematics)
+            if result is not None:
+                return result
         supported = (t >= arrival_start) & (t <= arrival_end)
         initial = self.position(np.clip(t, start, end))
         tau = np.clip(t - np.linalg.norm(initial - observer, axis=-1) / c, start, end)
@@ -345,6 +356,10 @@ class Track:
                                "distance_m": float(distance),
                                "speed_mps": float(np.linalg.norm(self.speed_vector(t)))})
         return sorted(events, key=lambda event: event["emission_time"])
+
+
+_NATIVE_POSITION = Track.position
+_NATIVE_POSITION_VELOCITY = Track._position_velocity
 
 
 def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):

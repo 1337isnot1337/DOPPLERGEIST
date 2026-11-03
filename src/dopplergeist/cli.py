@@ -6,6 +6,8 @@ import sys
 import time
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 import uuid
 
 
@@ -33,6 +35,26 @@ def job_identifier(value):
     except ValueError as error:
         raise argparse.ArgumentTypeError("job_id must be the 32-character job identifier") from error
     return value
+
+
+def post_job_action(server_url, job_id, action, parser):
+    url=server_url.rstrip("/")+f"/api/jobs/{job_id}/{action}"
+    request=Request(url,data=b"",method="POST")
+    try:
+        with urlopen(request,timeout=10) as response:
+            body=response.read()
+    except HTTPError as exc:
+        try:
+            detail=json.loads(exc.read()).get("error",str(exc))
+        except (AttributeError,ValueError):
+            detail=str(exc)
+        parser.error(f"Could not {action} job {job_id}: HTTP {exc.code}: {detail}")
+    except (URLError,ValueError) as exc:
+        parser.error(f"Could not reach job service at {server_url}: {exc}")
+    try:
+        return json.loads(body)
+    except ValueError as exc:
+        parser.error(f"Job service returned invalid JSON when requesting {action} for {job_id}: {exc}")
 
 
 def main():
@@ -73,9 +95,14 @@ def main():
     job.add_argument("--jobs",default="jobs")
     job.add_argument("--watch",action="store_true",help="Watch local checkpoints until the job stops")
     job.add_argument("--interval",type=positive_runtime,default=10,help="Watch interval in seconds")
+    cancel=sub.add_parser("cancel",help="Cancel a job managed by the local upload service")
+    cancel.add_argument("job_id",type=job_identifier)
+    cancel.add_argument("--server-url",default="http://127.0.0.1:8765",
+                        help="Base URL of the service managing this job")
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
+    resume.add_argument("--server-url",help="Base URL of the service managing this job")
     resume.add_argument("--max-runtime",type=positive_runtime,default=3600)
     args=parser.parse_args()
     if args.command in {"analyze", "serve"}:
@@ -156,7 +183,14 @@ def main():
             print("Stopped watching; the job continues.",file=sys.stderr)
             raise SystemExit(130)
         print(json.dumps(value,indent=2))
+    elif args.command=="cancel":
+        value=post_job_action(args.server_url,args.job_id,"cancel",parser)
+        print(json.dumps(value,indent=2))
     elif args.command=="resume":
+        if args.server_url:
+            value=post_job_action(args.server_url,args.job_id,"resume",parser)
+            print(json.dumps(value,indent=2))
+            return
         from .jobs import JobManager
         try:
             manager=JobManager(args.jobs,max_runtime_s=args.max_runtime)

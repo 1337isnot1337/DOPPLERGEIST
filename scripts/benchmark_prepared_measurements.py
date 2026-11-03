@@ -123,7 +123,7 @@ def worker(args):
     sys.path.insert(0, str(source))
     import dopplergeist
     import pandas as pd
-    from dopplergeist import matching, tiled_search
+    from dopplergeist import geometry, matching, tiled_search
     from dopplergeist.data_access import FlightIndex
     from dopplergeist.finite_search import RetentionLedger
     from dopplergeist.geometry import AcousticSupportError, Track
@@ -132,8 +132,15 @@ def worker(args):
         raise RuntimeError("Comparison imported a different source tree")
     native_fit = getattr(matching, "_native_fit_irls", None)
     backend = getattr(matching, "RIDGE_FIT_BACKEND", "python-irls-v1")
+    acoustic_backend = getattr(geometry, "ACOUSTIC_BACKEND", "python-acoustic-v1")
+    try:
+        from dopplergeist.native_acoustic import _native as native_acoustic
+    except ImportError:
+        native_acoustic = None
     if args.require_native and not callable(native_fit):
         raise RuntimeError("The source-tree native fitter is unavailable; build it in place before timing")
+    if args.require_native_acoustic and native_acoustic is None:
+        raise RuntimeError("The source-tree native acoustic solver is unavailable; build it in place before timing")
     fixture = json.loads(args.fixture.read_text())
     index = FlightIndex(args.index or fixture["real_index"])
     if index.report["input_hash"] != fixture["index_input_hash"]:
@@ -152,7 +159,8 @@ def worker(args):
                              "matched_group_support_minus_normalized_residual")
     stage = "coarse:recorded-point"
     operations = {"scalar_fit_calls": 0, "acoustic_calls": 0, "scored_candidates": 0,
-                  "native_fit_calls": 0, "native_fit_successes": 0}
+                  "native_fit_calls": 0, "native_fit_successes": 0,
+                  "native_acoustic_successes": 0}
     all_rows = []
     original_fit, original_acoustic = matching._fit_ridge_uncached, Track.acoustic
     original_score = tiled_search.score_candidate
@@ -186,6 +194,7 @@ def worker(args):
     if callable(native_fit):
         matching._native_fit_irls = counted_native
     tiled_search.score_candidate = captured_score
+    native_acoustic_before = native_acoustic.successful_calls() if native_acoustic is not None else 0
     began, cpu = time.perf_counter(), time.process_time()
     try:
         ranked, counts = tiled_search._score(
@@ -193,6 +202,8 @@ def worker(args):
             start_window=fixture["recording_start_window_s"], ledger=ledger, stage=stage)
     finally:
         elapsed, cpu_seconds = time.perf_counter() - began, time.process_time() - cpu
+        if native_acoustic is not None:
+            operations["native_acoustic_successes"] = native_acoustic.successful_calls() - native_acoustic_before
         matching._fit_ridge_uncached, Track.acoustic = original_fit, original_acoustic
         if callable(native_fit):
             matching._native_fit_irls = native_fit
@@ -216,6 +227,8 @@ def worker(args):
         raise AssertionError("The benchmark did not score any real associations")
     if args.require_native and not operations["native_fit_successes"]:
         raise AssertionError("The native fitter was available but no successful native fit was timed")
+    if args.require_native_acoustic and not operations["native_acoustic_successes"]:
+        raise AssertionError("The native acoustic solver was available but no successful native solve was timed")
     with ledger.connect() as database:
         retention = {name: database.execute(f"SELECT * FROM {name} ORDER BY 1,2").fetchall()
                      for name in ("records", "bounds", "stages")}
@@ -224,6 +237,7 @@ def worker(args):
     summary = {"wall_seconds": elapsed, "cpu_seconds": cpu_seconds,
                "load_seconds_excluded": load_seconds, "operations": operations,
                "ridge_fit_backend": backend, "native_extension_available": callable(native_fit),
+               "acoustic_backend": acoustic_backend,
                "peak_rss_mib": peak_rss_mib,
                "peak_rss_scope": ("Worker lifetime through scoring, including imports and input loading"
                                   if peak_rss_mib is not None else "Unavailable on this platform"),
@@ -249,6 +263,8 @@ def compare(args):
                 command.extend(["--index", str(args.index.resolve())])
             if name == "current" and args.require_current_native:
                 command.append("--require-native")
+            if name == "current" and args.require_current_native_acoustic:
+                command.append("--require-native-acoustic")
             subprocess.run(command, check=True, env=environment, timeout=args.timeout_s)
             payload = canonical(json.loads((output / "results.json").read_text()))
             if expected is None:
@@ -298,12 +314,15 @@ def main():
     comparison.add_argument("--output", required=True, type=Path)
     comparison.add_argument("--require-current-native", action="store_true",
                             help="Fail unless the timed current worker actually uses its native fitter")
+    comparison.add_argument("--require-current-native-acoustic", action="store_true",
+                            help="Fail unless the timed current worker actually uses its native acoustic solver")
     internal = commands.add_parser("_worker", help=argparse.SUPPRESS)
     internal.add_argument("--source", required=True, type=Path)
     internal.add_argument("--fixture", required=True, type=Path)
     internal.add_argument("--index", type=Path)
     internal.add_argument("--output", required=True, type=Path)
     internal.add_argument("--require-native", action="store_true", help=argparse.SUPPRESS)
+    internal.add_argument("--require-native-acoustic", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.command == "prepare":
         if args.clock_half_width_s < 0:

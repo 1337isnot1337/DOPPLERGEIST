@@ -4,7 +4,7 @@ on:
     inputs:
       baseline:
         description: Exact baseline commit for both real-input comparisons
-        default: d9649ee5e369b31072d40c4882a5b7e0a7bfa177
+        default: a4d27b2cacfe53fdcb4dfbce4d533d4c7eb9436d
         required: true
       regional:
         description: Also compare the complete regional HTTP workflow
@@ -17,6 +17,7 @@ on:
       - src/dopplergeist/**
       - scripts/benchmark_prepared_measurements.py
       - scripts/benchmark_real_cpa_rows.py
+      - scripts/export_real_acoustic_controls.py
       - scripts/benchmark_real_regional_upload.py
       - scripts/benchmark_real_bounded_upload.py
       - scripts/prepare_reference_upload.py
@@ -34,8 +35,10 @@ env:
   OPENBLAS_NUM_THREADS: '1'
   OMP_NUM_THREADS: '1'
   MKL_NUM_THREADS: '1'
+  NUMEXPR_NUM_THREADS: '1'
+  CC: gcc
   PYTHONPATH: src
-  BASELINE_REF: ${{ inputs.baseline || 'd9649ee5e369b31072d40c4882a5b7e0a7bfa177' }}
+  BASELINE_REF: ${{ inputs.baseline || 'a4d27b2cacfe53fdcb4dfbce4d533d4c7eb9436d' }}
 jobs:
   compare:
     if: github.event_name != 'push' || github.ref != 'refs/heads/perf/real-pipeline-throughput-20261103'
@@ -49,7 +52,17 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install runtime and source-tree extensions
-        run: python -m pip install --editable '.[test]'
+        run: |
+          python -m pip install --editable '.[test]'
+          python - <<'PY'
+          from dopplergeist import matching, native_acoustic
+          assert callable(matching._native_fit_irls), "Native ridge extension did not build"
+          assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
+          assert native_acoustic._native is not None, "Native acoustic extension did not build"
+          assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
+          print({"ridge_fit_backend": matching.RIDGE_FIT_BACKEND,
+                 "acoustic_backend": native_acoustic.ACOUSTIC_BACKEND})
+          PY
       - name: Restore public recorded observations
         env:
           GH_TOKEN: ${{ github.token }}
@@ -70,7 +83,17 @@ jobs:
       - name: Real-input regression tests
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py
+        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py
+      - name: Verify the explicit Python fallback on recorded arithmetic
+        env:
+          DOPPLERGEIST_RIDGE_BACKEND: python
+          DOPPLERGEIST_ACOUSTIC_BACKEND: python
+        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py
+      - name: Export real pipeline objective controls
+        env:
+          DOPPLERGEIST_RIDGE_BACKEND: python
+          DOPPLERGEIST_ACOUSTIC_BACKEND: python
+        run: python scripts/export_real_acoustic_controls.py --fixture benchmark-inputs/point-120.json --output results/real-acoustic-controls.json
       - name: Compare real CPA preparation
         run: python scripts/benchmark_real_cpa_rows.py --baseline-source "$RUNNER_TEMP/baseline/src" --output results/cpa-rows.json --repeats 5 --iterations 20
       - name: Compare complete payloads and timings
@@ -79,12 +102,15 @@ jobs:
           if [ -f src/dopplergeist/_native_ridge.c ]; then
             native_option=(--require-current-native)
           fi
+          if [ -f src/dopplergeist/_native_acoustic.c ]; then
+            native_option+=(--require-current-native-acoustic)
+          fi
           for width in 10 120; do
             python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 2 --timeout-s 600 --output "results/performance-$width" "${native_option[@]}"
           done
       - name: Profile remaining point work outside the timing comparison
         run: |
-          python -m cProfile -o results/current-point.prof scripts/benchmark_prepared_measurements.py _worker --source src --fixture benchmark-inputs/point-120.json --output results/current-point-profile
+          python -m cProfile -o results/current-point.prof scripts/benchmark_prepared_measurements.py _worker --source src --fixture benchmark-inputs/point-120.json --output results/current-point-profile --require-native --require-native-acoustic
           python - <<'PY'
           import json
           from pathlib import Path
@@ -119,6 +145,7 @@ jobs:
           name: real-performance-summary
           path: |
             results/cpa-rows.json
+            results/real-acoustic-controls.json
             results/performance-*/comparison.json
             results/performance-*/*/summary.json
             results/current-point.prof
@@ -136,7 +163,7 @@ jobs:
     if: github.ref == 'refs/heads/perf/single-pass-motion-20261103' || (github.event_name == 'workflow_dispatch' && inputs.regional)
     # Keep the reference FFmpeg family; a new encoder can change detected ridges.
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -147,6 +174,15 @@ jobs:
       - name: Install runtime and source-tree extensions
         run: |
           python -m pip install --editable '.[test]'
+          python - <<'PY'
+          from dopplergeist import matching, native_acoustic
+          assert callable(matching._native_fit_irls), "Native ridge extension did not build"
+          assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
+          assert native_acoustic._native is not None, "Native acoustic extension did not build"
+          assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
+          print({"ridge_fit_backend": matching.RIDGE_FIT_BACKEND,
+                 "acoustic_backend": native_acoustic.ACOUSTIC_BACKEND})
+          PY
           if ! command -v ffmpeg >/dev/null; then
             sudo apt-get update
             sudo apt-get install -y ffmpeg
@@ -172,12 +208,66 @@ jobs:
           path.write_text(json.dumps(operator, indent=2) + "\n")
           PY
           ffmpeg -nostdin -i data/source/reference-recording.wav -ac 1 -ar 48000 -c:a libmp3lame -b:a 96k benchmark-inputs/reference.mp3
-      - name: Measure both complete HTTP arms
+      - name: Measure three alternating complete HTTP pairs and require exact parity
         run: |
-          python scripts/benchmark_real_regional_upload.py --source "$RUNNER_TEMP/baseline/src" --audio benchmark-inputs/reference.mp3 --request benchmarks/reference-regional-upload-request.json --operator benchmark-inputs/operator.json --output results/regional-baseline --timeout-s 600 --threads 1
-          python scripts/benchmark_real_regional_upload.py --source src --audio benchmark-inputs/reference.mp3 --request benchmarks/reference-regional-upload-request.json --operator benchmark-inputs/operator.json --output results/regional-current --timeout-s 600 --threads 1
-      - name: Require complete scientific parity
-        run: python scripts/benchmark_real_regional_upload.py --compare results/regional-baseline results/regional-current --output results/regional-comparison.json
+          benchmark_cpu=$(python -c 'import os; print(min(os.sched_getaffinity(0)))')
+          for pair in 1 2 3; do
+            arms=(baseline current)
+            if [ "$pair" = 2 ]; then arms=(current baseline); fi
+            for arm in "${arms[@]}"; do
+              source=src
+              if [ "$arm" = baseline ]; then source="$RUNNER_TEMP/baseline/src"; fi
+              python scripts/benchmark_real_regional_upload.py --source "$source" --audio benchmark-inputs/reference.mp3 --request benchmarks/reference-regional-upload-request.json --operator benchmark-inputs/operator.json --output "results/regional-$pair-$arm" --timeout-s 600 --threads 1 --cpu "$benchmark_cpu" --allow-new-encoding --reference-wav data/source/reference-recording.wav
+            done
+            python scripts/benchmark_real_regional_upload.py --compare "results/regional-$pair-baseline" "results/regional-$pair-current" --output "results/regional-pair-$pair.json"
+          done
+      - name: Summarize only complete and exact paired runs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import statistics
+
+          root = Path("results")
+          reports = [json.loads((root / f"regional-pair-{pair}.json").read_text()) for pair in (1, 2, 3)]
+          for report in reports:
+              assert report["passed"] and report["scientific_payloads_exact"]
+              assert report["regional_control"]["passed"] and report["array_comparison"]["passed"]
+              assert all(report["full_pipeline_verified"].values())
+          samples = {arm: [json.loads((root / f"regional-{pair}-{arm}" / "timing.json").read_text())
+                           for pair in (1, 2, 3)] for arm in ("baseline", "current")}
+          shared_keys = ("audio_sha256", "audio_bytes", "request_sha256", "operator_sha256", "python", "sqlite",
+                         "numerical_package_versions", "numerical_threads", "cpu_affinity", "detail_plots_enabled",
+                         "recording_control", "reference_wav_sha256", "ffmpeg_version", "verifier_sha256")
+          common = {key: samples["baseline"][0][key] for key in shared_keys}
+          for arm, runs in samples.items():
+              for run in runs:
+                  assert run["control_passed"] and run["fresh_run"] and not run["resumed"] and run["returncode"] == 0
+                  assert {key: run[key] for key in shared_keys} == common
+                  for key in ("source_revision", "ridge_fit_backend", "acoustic_backend"):
+                      assert run[key] == runs[0][key]
+          medians = {}
+          for arm in ("baseline", "current"):
+              receipts = [report["timings"][arm]["receipt_elapsed_s"] for report in reports]
+              medians[arm] = {"http_receipt_seconds": statistics.median(receipts),
+                              "driver_wall_seconds": statistics.median(run["wall_s"] for run in samples[arm]),
+                              "driver_cpu_seconds": statistics.median(run["cpu_s"] for run in samples[arm])}
+              for run, elapsed in zip(samples[arm], receipts):
+                  run["http_receipt_seconds"] = elapsed
+          summary = {"passed": True, "scientific_payloads_exact": True, "array_payloads_exact": True,
+                     "scope": "Three fresh complete-HTTP pairs from one real recording; source-informed bounds/clock, no location-accuracy claim",
+                     "timing_scope": "Median verified HTTP receipts; driver CPU includes verifier and child processes; profiling excluded",
+                     "pair_order": [["baseline", "current"], ["current", "baseline"], ["baseline", "current"]],
+                     "common_input_and_runtime": common,
+                     "medians": medians,
+                     "speedup": {key: medians["baseline"][key] / medians["current"][key] for key in medians["baseline"]},
+                     "samples": samples, "pairs": reports}
+          output = root / "regional-comparison.json"
+          with output.open("x") as stream:
+              json.dump(summary, stream, indent=2, allow_nan=False)
+              stream.write("\n")
+          print(json.dumps({"passed": True, "pairs": len(reports), "medians": medians, "speedup": summary["speedup"]}, indent=2))
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -187,6 +277,7 @@ jobs:
             results/regional-*/result.json
             results/regional-*/http-verification.json
             results/regional-*/pipeline-evidence.json
+            results/regional-pair-*.json
             results/regional-comparison.json
           if-no-files-found: ignore
           retention-days: 14

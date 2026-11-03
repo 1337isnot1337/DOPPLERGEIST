@@ -33,7 +33,7 @@ def upgrade_legacy_job(directory):
     staged batching with the saved first-group arithmetic and fallback checks.
     """
     from .automatic import _audio_identity, _digest
-    from . import matching
+    from . import geometry, matching
 
     directory = Path(directory)
     search = directory / "search"
@@ -45,6 +45,8 @@ def upgrade_legacy_job(directory):
         return None
     if getattr(matching, "_native_fit_irls", None) is not None:
         raise ValueError("Legacy checkpoint continuation requires the Python ridge fitter")
+    if geometry.ACOUSTIC_BACKEND != "python-acoustic-v1":
+        raise ValueError("Legacy checkpoint continuation requires the Python acoustic solver")
     if (old["scoring"].get("mode") != "robust_ridge" or old.get("coarse_floor_policy") != "per_tile"
             or old["scoring"].get("time_origin") is not None
             or old.get("filters", {}).get("association") != "subsets"):
@@ -70,7 +72,10 @@ def upgrade_legacy_job(directory):
     if events != old["events"]:
         raise ValueError("Prepared events no longer match the saved search")
     current = deepcopy(old)
-    current["code"] = {p.name: _digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    from .provenance import implementation_files
+    package_root = Path(__file__).parent
+    current["code"] = {p.relative_to(package_root).as_posix(): _digest(p)
+                       for p in implementation_files(package_root, recursive=False)}
     current["scoring"]["legacy_first_batch"] = True
     new_hash = content_hash(current)
     suffix = uuid.uuid4().hex[:12]
