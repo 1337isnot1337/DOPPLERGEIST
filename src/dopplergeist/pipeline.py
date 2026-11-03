@@ -25,6 +25,134 @@ def support_failure(error):
             "receive_intervals_s":error.receive_intervals_s}
 
 
+def score_block(candidates,lookup,track_lookup,events,measurements,parameters,origin,progress=None):
+    """Score a block of candidates against one set of events and measurements.
+
+    Module level and side-effect free so a worker process can run it. The scoring loop itself is
+    unchanged from the inline version it replaces; only the artifact writing moved to the caller.
+    """
+    ranked,unknown=[],[]
+    reported=dict(evaluated_trials=0,rejected_trials=0,unknown_trials=0)
+    unreported=0
+    for i,candidate in enumerate(candidates):
+        point=lookup[candidate["point_id"]]
+        failure=None
+        try:
+            row=score_candidate(candidate,point,track_lookup,events,measurements,**parameters)
+        except AcousticSupportError as error:
+            # A legacy scorer can stop before reporting its clock trials.
+            # Do not label that interrupted candidate a known rejection.
+            failure=support_failure(error)
+            row={"score":-np.inf}
+        assessment=row.get("scoring_assessment")
+        counted=(isinstance(assessment,dict) and all(type(assessment.get(key)) is int
+                 and assessment[key]>=0 for key in reported))
+        if counted:
+            for key in reported:
+                reported[key]+=assessment[key]
+        else:
+            unreported+=1
+        known=parameters["mode"]=="robust_ridge" and classified_assessment(row)
+        finite=bool(np.isfinite(row["score"]))
+        pass_times=[float(p["emission_time"]) for p in candidate["passes"]]
+        if not known:
+            anchor=(origin if origin is not None else
+                    candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"])
+            lo,hi=anchor-parameters["time_sweep_s"],anchor+parameters["time_sweep_s"]
+            if parameters["mode"]=="robust_ridge" and "recording_start_bounds_s" in candidate:
+                lower,upper=candidate["recording_start_bounds_s"]
+                lo,hi=lower-parameters["time_sweep_s"],upper+parameters["time_sweep_s"]
+                if origin is not None:
+                    lo,hi=max(lo,origin-parameters["time_sweep_s"]),min(hi,origin+parameters["time_sweep_s"])
+            unknown.append({"point_id":int(point.point_id),
+                "receiver":{key:float(getattr(point,key)) for key in ("x","y","lat","lon","elev_m")},
+                "flight_ids":[p["flight_id"] for p in candidate["passes"]],
+                "event_indices":list(candidate.get("event_indices",range(len(events)))),
+                "pass_emission_times_s":pass_times,"recording_start_domain_s":[float(lo),float(hi)],
+                "clock_domain_kind":"scorer_proposal_not_independent_recording_time",
+                "clock_settings":parameters,"scoring_assessment":assessment,"failure":failure,
+                "finite_best":finite,"finite_score":float(row["score"]) if finite else None,
+                "reason":(failure["reason"] if failure else "unclassified_clock_envelope"),
+                "coverage_envelope":"whole_candidate_clock_domain_conservative"})
+        if finite:
+            row["pass_emission_times_s"]=pass_times
+            row["core_assessment_complete"]=bool(known)
+            ranked.append(row)
+        if progress is not None and i and i%100==0:
+            progress(i,len(candidates))
+    return ranked,unknown,reported,unreported
+
+
+_WORKER_STATE={}
+
+
+def _init_worker(state):
+    _WORKER_STATE.update(state)
+
+
+def _score_chunk(chunk):
+    state=_WORKER_STATE
+    return score_block(chunk,state["lookup"],state["track_lookup"],state["events"],
+                       state["measurements"],state["parameters"],state["origin"])
+
+
+def _validated_scoring_chunk(chunk):
+    """Reject invalid chunk sizes before scoring or producing artifacts."""
+    if type(chunk) is not int or chunk < 1:
+        raise ValueError("scoring_chunk must be a positive integer")
+    return chunk
+
+
+def score_chunks(candidates,chunks,workers,state,progress=None):
+    """Score ``candidates`` in ``chunks`` blocks, optionally in worker processes.
+
+    Candidates are scored independently, so splitting them cannot change a score; results are
+    concatenated in chunk order, which keeps the ranked list (and therefore tie ordering) identical
+    to a serial pass. Workers share the loaded tracks and measurements copy-on-write, which is why
+    this uses ``fork`` and falls back to a serial loop where ``fork`` is unavailable.
+    """
+    chunks=_validated_scoring_chunk(chunks)
+    blocks=[candidates[i:i+chunks] for i in range(0,len(candidates),chunks)] or []
+    results=[]
+    context=None
+    if workers>1 and len(blocks)>1:
+        import multiprocessing as mp
+        if "fork" in mp.get_all_start_methods():
+            context=mp.get_context("fork")
+    if context is None:
+        if progress is None:
+            progress=lambda done,total: print(f"Scored {done}/{total} candidates",flush=True)
+        for block in blocks:
+            results.append(score_block(block,state["lookup"],state["track_lookup"],state["events"],
+                                       state["measurements"],state["parameters"],state["origin"],
+                                       progress=progress))
+        return results
+    done=0
+    with context.Pool(min(workers,len(blocks)),initializer=_init_worker,initargs=(state,)) as pool:
+        for block,result in zip(blocks,pool.imap(_score_chunk,blocks)):
+            results.append(result)
+            done+=len(block)
+            if progress is None:
+                print(f"Scored {done}/{len(candidates)} candidates",flush=True)
+            else:
+                progress(done,len(candidates))
+    return results
+
+
+def merge_blocks(results):
+    """Concatenate per-block scoring results in block order."""
+    ranked,unknown=[],[]
+    reported=dict(evaluated_trials=0,rejected_trials=0,unknown_trials=0)
+    unreported=0
+    for block_ranked,block_unknown,block_reported,block_unreported in results:
+        ranked.extend(block_ranked)
+        unknown.extend(block_unknown)
+        for key in reported:
+            reported[key]+=block_reported[key]
+        unreported+=block_unreported
+    return ranked,unknown,reported,unreported
+
+
 def run(config_path,output_dir):
     began=time.monotonic()
     code_root=Path(__file__).resolve().parents[1]
@@ -160,58 +288,21 @@ def run(config_path,output_dir):
     scoring=config.get("scoring",{})
     parameters=dict(mode=scoring.get("mode","brightness"),time_origin=origin,
         time_sweep_s=scoring.get("time_sweep_s",5),time_step_s=scoring.get("time_step_s",0.5),c=c)
+    workers=config.get("scoring_workers",1)
+    if type(workers) is not int or workers<1:
+        raise ValueError("scoring_workers must be a positive integer")
+    chunk=config.get("scoring_chunk")
+    if chunk is not None:
+        chunk=_validated_scoring_chunk(chunk)
     def rank(candidates,points,stage):
+        # Candidates are scored independently, so the pool cannot change a score; the ranked list is
+        # assembled in candidate order, which keeps the serial ordering (and its tie handling).
         lookup={row.point_id:row for row in points.itertuples()}
-        track_lookup={track.id:track for track in tracks}
-        ranked,unknown=[],[]
-        reported=dict(evaluated_trials=0,rejected_trials=0,unknown_trials=0)
-        unreported=0
-        for i,candidate in enumerate(candidates):
-            point=lookup[candidate["point_id"]]
-            failure=None
-            try:
-                row=score_candidate(candidate,point,track_lookup,events,measurements,**parameters)
-            except AcousticSupportError as error:
-                # A legacy scorer can stop before reporting its clock trials.
-                # Do not label that interrupted candidate a known rejection.
-                failure=support_failure(error)
-                row={"score":-np.inf}
-            assessment=row.get("scoring_assessment")
-            counted=(isinstance(assessment,dict) and all(type(assessment.get(key)) is int
-                     and assessment[key]>=0 for key in reported))
-            if counted:
-                for key in reported:
-                    reported[key]+=assessment[key]
-            else:
-                unreported+=1
-            known=parameters["mode"]=="robust_ridge" and classified_assessment(row)
-            finite=bool(np.isfinite(row["score"]))
-            pass_times=[float(p["emission_time"]) for p in candidate["passes"]]
-            if not known:
-                anchor=(origin if origin is not None else
-                        candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"])
-                lo,hi=anchor-parameters["time_sweep_s"],anchor+parameters["time_sweep_s"]
-                if parameters["mode"]=="robust_ridge" and "recording_start_bounds_s" in candidate:
-                    lower,upper=candidate["recording_start_bounds_s"]
-                    lo,hi=lower-parameters["time_sweep_s"],upper+parameters["time_sweep_s"]
-                    if origin is not None:
-                        lo,hi=max(lo,origin-parameters["time_sweep_s"]),min(hi,origin+parameters["time_sweep_s"])
-                unknown.append({"point_id":int(point.point_id),
-                    "receiver":{key:float(getattr(point,key)) for key in ("x","y","lat","lon","elev_m")},
-                    "flight_ids":[p["flight_id"] for p in candidate["passes"]],
-                    "event_indices":list(candidate.get("event_indices",range(len(events)))),
-                    "pass_emission_times_s":pass_times,"recording_start_domain_s":[float(lo),float(hi)],
-                    "clock_domain_kind":"scorer_proposal_not_independent_recording_time",
-                    "clock_settings":parameters,"scoring_assessment":assessment,"failure":failure,
-                    "finite_best":finite,"finite_score":float(row["score"]) if finite else None,
-                    "reason":(failure["reason"] if failure else "unclassified_clock_envelope"),
-                    "coverage_envelope":"whole_candidate_clock_domain_conservative"})
-            if finite:
-                row["pass_emission_times_s"]=pass_times
-                row["core_assessment_complete"]=bool(known)
-                ranked.append(row)
-            if i and i%100==0:
-                print(f"Scored {i}/{len(candidates)} candidates",flush=True)
+        state=dict(lookup=lookup,track_lookup={track.id:track for track in tracks},events=events,
+                   measurements=measurements,parameters=parameters,origin=origin)
+        size=chunk or max(64,(len(candidates)+4*workers-1)//(4*workers))
+        ranked,unknown,reported,unreported=merge_blocks(
+            score_chunks(candidates,size,workers,state))
         record_support(stage,{"stage":stage,"kind":"scoring","complete":not unknown,
             "candidate_envelopes":len(candidates),"finite_candidates":len(ranked),
             "unknown_candidate_count":len(unknown),"unreported_trial_envelopes":unreported,
