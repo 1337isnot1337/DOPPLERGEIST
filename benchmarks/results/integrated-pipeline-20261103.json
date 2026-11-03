@@ -1,0 +1,461 @@
+{
+  "baseline_commit": "ae7721b7d3099980b884175cde1a3b07fc3fb1b5",
+  "candidate_commit": "49c90338f7be87921dcae45119d111efeea68596",
+  "core_local_commit": "a1859d16aaf3f8b09d564f3218180a672804f843",
+  "local_and_published_tree_identical": true,
+  "tree": "9b538576e2d7d09522f482413afd0fee7d906bae",
+  "date": "2026-11-03",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "compiler": "GCC 13.3.0",
+    "cpu_affinity": [
+      0
+    ],
+    "numerical_threads": 1,
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "soundfile": "0.14.0"
+    },
+    "native_backends_built_for_both_sources": true,
+    "host_scope": "Shared host with CPU affinity; operating-system caches are not flushed.",
+    "measurement_note": "A 2.44-second unpinned read-only JSON extraction overlapped the first HTTP baseline. All pairs are retained."
+  },
+  "index_preparation": {
+    "wall_seconds": 6.422003739,
+    "samples": 1,
+    "source_bytes": 41385984,
+    "prepared_bytes": 85929984,
+    "extra_bytes": 44544000,
+    "tracks": 4694,
+    "source_rows": 717735,
+    "included_in_repeated_timers": false,
+    "same_prepared_file_for_both_sources": true,
+    "input_hash": "a6579818b80887546cd8f89d7b10730e568dfc6b12d90fd693254c37e3577827"
+  },
+  "dense": {
+    "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged.",
+    "timing_scope": "Initial local index traversal and conservative distance sieve, followed by complete CPA/association scoring and retention. Excludes imports, index metadata, event preparation, downloads, terrain sampling, audio discovery, and refinement.",
+    "equality_scope": "Exact scored candidate payloads, rankings, trial/support evidence and retention records. Early query/CPA/event/work counts may decrease; every removed unsupported track's complete emission interval must miss the proved partition interval.",
+    "performance_timing_eligible": true,
+    "identical_results": false,
+    "identical_scored_candidates_rankings_and_retention": true,
+    "medians": {
+      "baseline": {
+        "wall_seconds": 35.6002827730008,
+        "cpu_seconds": 35.474947846,
+        "peak_rss_mib": 456.671875
+      },
+      "current": {
+        "wall_seconds": 18.111270369998238,
+        "cpu_seconds": 17.857673297999998,
+        "peak_rss_mib": 329.66015625
+      }
+    },
+    "speedup": {
+      "wall_seconds": 1.9656425002618005,
+      "cpu_seconds": 1.9865380698824342
+    },
+    "execution_stage_medians": {
+      "baseline": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 7.0589362749997235,
+          "cpu_seconds": 7.010339887000001
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 28.54126522400111,
+          "cpu_seconds": 28.464537943999996
+        }
+      },
+      "current": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 0.20120891699843924,
+          "cpu_seconds": 0.11932567900000013
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 17.76427373000115,
+          "cpu_seconds": 17.694768357999997
+        }
+      }
+    },
+    "clock_partition_query_verification": {
+      "requested_time_range_s": [
+        1788825600.17,
+        1788911999.6
+      ],
+      "effective_time_range_s": [
+        1788865079.6561337,
+        1788868750.471493
+      ],
+      "excluded_unsupported_tracks_proved_outside_time_range": 58,
+      "baseline": {
+        "queried_tracks": 4694,
+        "queried_samples": 713100,
+        "selected_tracks": 1354,
+        "cpa_rows": 944,
+        "unsupported_cpa_tracks": 62,
+        "association_work_units": 302818
+      },
+      "current": {
+        "queried_tracks": 197,
+        "queried_samples": 40690,
+        "selected_tracks": 197,
+        "cpa_rows": 95,
+        "unsupported_cpa_tracks": 4,
+        "association_work_units": 147985
+      }
+    },
+    "pairs": [
+      {
+        "repetition": 1,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "wall_seconds": {
+          "baseline": 35.78397957500056,
+          "current": 18.111270369998238
+        },
+        "cpu_seconds": {
+          "baseline": 35.593028533,
+          "current": 17.857673297999998
+        },
+        "current_native_successes": {
+          "native_fit_calls": 206740,
+          "native_fit_successes": 206740,
+          "native_acoustic_successes": 5111,
+          "native_batch_calls": 4845,
+          "native_batch_rows": 205878,
+          "native_cpa_successes": 63
+        }
+      },
+      {
+        "repetition": 2,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "wall_seconds": {
+          "current": 18.834997592002765,
+          "baseline": 35.6002827730008
+        },
+        "cpu_seconds": {
+          "current": 18.683995778,
+          "baseline": 35.474947846
+        },
+        "current_native_successes": {
+          "native_fit_calls": 206740,
+          "native_fit_successes": 206740,
+          "native_acoustic_successes": 5111,
+          "native_batch_calls": 4845,
+          "native_batch_rows": 205878,
+          "native_cpa_successes": 63
+        }
+      },
+      {
+        "repetition": 3,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "wall_seconds": {
+          "baseline": 35.543712098999094,
+          "current": 17.06254462600191
+        },
+        "cpu_seconds": {
+          "baseline": 35.39984853,
+          "current": 17.004540921
+        },
+        "current_native_successes": {
+          "native_fit_calls": 206740,
+          "native_fit_successes": 206740,
+          "native_acoustic_successes": 5111,
+          "native_batch_calls": 4845,
+          "native_batch_rows": 205878,
+          "native_cpa_successes": 63
+        }
+      }
+    ]
+  },
+  "dense_exact_outcomes": {
+    "scored_candidates": 16101,
+    "retained_ranked_modes": 100,
+    "retention_records": 499,
+    "retention_bounds": 15777,
+    "retention_stages": 1
+  },
+  "unpartitioned_control": {
+    "candidate_budget": 20000,
+    "outcome": "budget_exhausted",
+    "exact_exception_parity": true,
+    "exception": "ValueError: Association work/storage budget exceeded; search is incomplete",
+    "complete_output_parity": null,
+    "performance_claim": null
+  },
+  "whole_upload": {
+    "scope": "Three alternating fresh complete historical-MP3 regional HTTP pairs; no location-accuracy claim",
+    "candidate_commit": "49c90338f7be87921dcae45119d111efeea68596",
+    "fresh_completed_runs": 6,
+    "strict_paired_comparisons_passed": 3,
+    "recording_control": "fixed_counts",
+    "audio_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+    "audio_bytes": 43202925,
+    "final_outcome": {
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "event_count": 17,
+      "independent_groups": 15,
+      "candidate_count": 23
+    },
+    "medians": {
+      "baseline": {
+        "receipt_elapsed_s": 57.8242763010021,
+        "cpu_s": 57.46394,
+        "wall_s": 57.83230471000206
+      },
+      "current": {
+        "receipt_elapsed_s": 48.85262222700112,
+        "cpu_s": 48.406851,
+        "wall_s": 48.86167615600061
+      }
+    },
+    "speedup": {
+      "receipt_elapsed_s": 1.1836473389762545,
+      "cpu_s": 1.1871034535999874,
+      "wall_s": 1.1835923214210036
+    },
+    "timing_scope": {
+      "receipt_elapsed_s": "Service startup, complete HTTP workflow, service shutdown, and evidence verification",
+      "cpu_s": "Wrapper and waited child CPU during HTTP verification/output checks",
+      "wall_s": "Wrapper wall time during HTTP verification/output checks",
+      "excluded": "Wrapper input checks/imports, external artifact downloads/restoration, and one-time prepared-index construction",
+      "file_cache": "Fresh interpreters/jobs; operating-system file caches are not flushed"
+    },
+    "observed_stage_medians": {
+      "baseline": {
+        "acquisition": {
+          "median_s": 0.5428009033203125,
+          "observed_runs": 3
+        },
+        "decision": {
+          "median_s": 0.2851829528808594,
+          "observed_runs": 1
+        },
+        "discovery": {
+          "median_s": 6.086487054824829,
+          "observed_runs": 3
+        },
+        "intake": {
+          "median_s": 7.059269905090332,
+          "observed_runs": 3
+        },
+        "queued": {
+          "median_s": 0.25151491165161133,
+          "observed_runs": 3
+        },
+        "refinement": {
+          "median_s": 13.420761823654175,
+          "observed_runs": 3
+        },
+        "search": {
+          "median_s": 25.765166997909546,
+          "observed_runs": 3
+        }
+      },
+      "current": {
+        "acquisition": {
+          "median_s": 0.5479238033294678,
+          "observed_runs": 3
+        },
+        "decision": {
+          "median_s": 0.2782268524169922,
+          "observed_runs": 1
+        },
+        "discovery": {
+          "median_s": 6.341678142547607,
+          "observed_runs": 3
+        },
+        "intake": {
+          "median_s": 7.31531286239624,
+          "observed_runs": 3
+        },
+        "queued": {
+          "median_s": 0.2529749870300293,
+          "observed_runs": 3
+        },
+        "refinement": {
+          "median_s": 11.009169101715088,
+          "observed_runs": 3
+        },
+        "search": {
+          "median_s": 20.141972064971924,
+          "observed_runs": 3
+        }
+      }
+    },
+    "stage_scope": "First observed HTTP transitions with 0.25s polling; absent short stages are not assigned zero",
+    "runs": [
+      {
+        "pair": 1,
+        "source": "baseline",
+        "receipt_elapsed_s": 55.82446273499954,
+        "cpu_s": 55.531588,
+        "wall_s": 55.83940441999948
+      },
+      {
+        "pair": 1,
+        "source": "current",
+        "receipt_elapsed_s": 49.98666654200133,
+        "cpu_s": 49.711473999999995,
+        "wall_s": 50.00268434999816
+      },
+      {
+        "pair": 2,
+        "source": "current",
+        "receipt_elapsed_s": 47.887873726998805,
+        "cpu_s": 47.593219,
+        "wall_s": 47.895845898001426
+      },
+      {
+        "pair": 2,
+        "source": "baseline",
+        "receipt_elapsed_s": 59.39271977599856,
+        "cpu_s": 59.088989999999995,
+        "wall_s": 59.3990793869998
+      },
+      {
+        "pair": 3,
+        "source": "baseline",
+        "receipt_elapsed_s": 57.8242763010021,
+        "cpu_s": 57.46394,
+        "wall_s": 57.83230471000206
+      },
+      {
+        "pair": 3,
+        "source": "current",
+        "receipt_elapsed_s": 48.85262222700112,
+        "cpu_s": 48.406851,
+        "wall_s": 48.86167615600061
+      }
+    ],
+    "pairs": [
+      {
+        "pair": 1,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "strict_scientific_and_array_parity": true,
+        "semantic_differences": 0,
+        "array_differences": 0,
+        "checked_artifacts": {
+          "json": 20,
+          "sqlite": 1,
+          "root_json": 3
+        },
+        "checked_arrays": {
+          "intake_diagnostics": 1,
+          "decoded_pcm": 1,
+          "csv": 17,
+          "npz": 0,
+          "npz_arrays": 0,
+          "png": 1
+        },
+        "speedup": {
+          "receipt_elapsed_s": 1.1167870673691154,
+          "cpu_s": 1.1170778802495376,
+          "wall_s": 1.1167281346166675
+        }
+      },
+      {
+        "pair": 2,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "strict_scientific_and_array_parity": true,
+        "semantic_differences": 0,
+        "array_differences": 0,
+        "checked_artifacts": {
+          "json": 20,
+          "sqlite": 1,
+          "root_json": 3
+        },
+        "checked_arrays": {
+          "intake_diagnostics": 1,
+          "decoded_pcm": 1,
+          "csv": 17,
+          "npz": 0,
+          "npz_arrays": 0,
+          "png": 1
+        },
+        "speedup": {
+          "receipt_elapsed_s": 1.2402454975258885,
+          "cpu_s": 1.241542203732847,
+          "wall_s": 1.240171841071469
+        }
+      },
+      {
+        "pair": 3,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "strict_scientific_and_array_parity": true,
+        "semantic_differences": 0,
+        "array_differences": 0,
+        "checked_artifacts": {
+          "json": 20,
+          "sqlite": 1,
+          "root_json": 3
+        },
+        "checked_arrays": {
+          "intake_diagnostics": 1,
+          "decoded_pcm": 1,
+          "csv": 17,
+          "npz": 0,
+          "npz_arrays": 0,
+          "png": 1
+        },
+        "speedup": {
+          "receipt_elapsed_s": 1.1836473389762545,
+          "cpu_s": 1.1871034535999874,
+          "wall_s": 1.1835923214210036
+        }
+      }
+    ]
+  },
+  "local_validation": {
+    "native_real_gate": {
+      "modules": 36,
+      "passed": 329,
+      "subtests_passed": 4,
+      "skipped": 0
+    },
+    "python_fallback_gate": {
+      "modules": 5,
+      "passed": 71,
+      "skipped": 1,
+      "skip_reason": "Native-only export intentionally disabled; same case passed in native gate."
+    },
+    "after_geographic_bounds_integration": {
+      "modules": 6,
+      "passed": 37,
+      "skipped": 0
+    }
+  },
+  "limitations": [
+    "One recorded input, one source-informed region, one host, three paired repetitions per timing scope.",
+    "This does not establish independent location accuracy or nationwide completion time.",
+    "Dense timing excludes discovery, terrain and refinement. Whole-upload timing is reported separately.",
+    "Whole-upload status remains inconclusive/search_incomplete.",
+    "Prepared-index construction is separate. No isolated speedup is assigned to preparation alone.",
+    "The local-raster upload uses serial search. This series makes no multicore scaling claim."
+  ]
+}
