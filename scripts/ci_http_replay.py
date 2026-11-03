@@ -108,6 +108,51 @@ def pipeline_artifacts_match(directory, evidence):
     return True
 
 
+def finite_alternatives_verified(search, refinement, decision, evidence, artifacts_unchanged):
+    """Use the independent finite gate only with consistent bound producer/consumer records."""
+    if (evidence.get("passed") is not True or evidence.get("full_pipeline_observed") is not True
+            or evidence.get("scientific_decision_expected") is not True or evidence.get("errors") != []
+            or evidence.get("finite_search_verified") is not True or artifacts_unchanged is not True):
+        return False
+    finite = search.get("finite_search_evidence")
+    matching = refinement.get("matching_diagnostics", {})
+    consumer = decision.get("diagnostics", {})
+    artifacts = evidence.get("artifacts")
+    if (not all(isinstance(value, dict) for value in (finite, matching, consumer, artifacts))
+            or search.get("status") != "complete"
+            or search.get("data_scope_complete") is not True or search.get("all_event_groups_considered") is not True
+            or finite.get("scope") != "evaluated_finite_grid" or finite.get("complete") is not True
+            or finite.get("pruning_accounted_for") is not True
+            or type(finite.get("unclassified_score_candidates")) is not int or finite["unclassified_score_candidates"] != 0
+            or matching.get("finite_search_evidence") != finite or matching.get("core_assessment_mapping_status") != "present"
+            or consumer.get("policy_version") != "engineering-v5-finite-envelope"
+            or finite.get("ledger_artifact") != "retention.sqlite"
+            or "search/retention.sqlite" not in artifacts):
+        return False
+    modes = finite.get("retained_modes")
+    producer, assessed, mapped = (search.get("core_assessed_mode_ids"), matching.get("assessed_mode_ids"),
+                                   matching.get("candidate_mode_ids"))
+    if (not isinstance(modes, list) or not modes
+            or any(not isinstance(mode, dict) for mode in modes)):
+        return False
+    ids = [mode.get("mode_id") for mode in modes]
+    if not all(isinstance(values, list) and values and all(isinstance(value, str) and value.strip() for value in values)
+               for values in (ids, producer, assessed, mapped)):
+        return False
+    rows = refinement.get("ranked")
+    if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
+        return False
+    if (len(set(ids)) != len(ids) or len(set(producer)) != len(producer) or len(set(assessed)) != len(assessed)
+            or set(ids) != set(producer) or set(ids) != set(assessed) or set(ids) != set(mapped)
+            or mapped != [row.get("mode_id") for row in rows]):
+        return False
+    details = consumer.get("finite_search")
+    return (isinstance(details, dict) and details.get("scope") == finite["scope"]
+        and type(details.get("retained_modes")) is int and details["retained_modes"] == len(ids)
+        and all(details.get(key) == finite.get(key) for key in
+                ("spacing_m", "refine_spacing_m", "discarded_count", "best_discarded_score")))
+
+
 def collect_job(product, result, audio, operator, wire, expected_sources, *, helpers=UPLOAD):
     """Use the upload acceptance cross-links for the HTTP verifier's jobs layout."""
     paths = list((product / "jobs").glob("*/result.json"))
@@ -118,6 +163,7 @@ def collect_job(product, result, audio, operator, wire, expected_sources, *, hel
         "all_stage_artifacts_present": all((directory / name).is_file()
             and not (directory / name).is_symlink() for name in helpers.REQUIRED_ARTIFACTS)}
     errors, discovery, profile, search, evidence = [], {}, {}, {}, {}
+    finite_verified = False
     try:
         checks["job_identity_matches"] = result.get("job_id") == directory.name
         checks["http_result_matches_persisted"] = read_json(paths[0]) == result
@@ -141,7 +187,8 @@ def collect_job(product, result, audio, operator, wire, expected_sources, *, hel
         checks["all_discovered_events_retained"] = (len(set(expected_ids)) == len(expected_ids)
             and sorted(discovery["events"], key=lambda event: event["event_id"])
                 == sorted(result.get("events", []), key=lambda event: event["event_id"]))
-        profile = helpers.reported_fit_profile(result, read_json(directory / "refined-candidates.json"))
+        refinement = read_json(directory / "refined-candidates.json")
+        profile = helpers.reported_fit_profile(result, refinement)
         checks["leading_refinement_row_bound"] = profile["leading_row_bound"]
         checks["nominal_joint_fit_recorded"] = profile["nominal_diagnostics_complete"]
         evidence = read_json(product / "pipeline-evidence.json")
@@ -149,6 +196,11 @@ def collect_job(product, result, audio, operator, wire, expected_sources, *, hel
             and evidence.get("full_pipeline_observed") is True
             and evidence.get("scientific_decision_expected") is True and evidence.get("errors") == [])
         checks["scientific_stage_artifacts_unchanged"] = pipeline_artifacts_match(directory, evidence)
+        finite_verified = finite_alternatives_verified(search, refinement, decision, evidence,
+            checks["scientific_stage_artifacts_unchanged"])
+        if "finite_search_evidence" in search and result.get("status") == "succeeded":
+            # Finite evidence takes precedence; a stale legacy flag cannot repair it.
+            checks["alternative_evidence_consistent"] = finite_verified
         checks["evidence_collection_complete"] = True
     except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
         errors.append(f"{type(exc).__name__}: {exc}")
@@ -157,7 +209,8 @@ def collect_job(product, result, audio, operator, wire, expected_sources, *, hel
         "reason_code": result.get("reason_code"), "candidate_count": len(result.get("candidates", [])),
         "event_count": len(result.get("events", [])), "coverage": result.get("coverage"),
         "discovery_settings": discovery.get("settings", {}), "reported_fit_profile": profile,
-        "pipeline_evidence": evidence, "search": {key: search.get(key) for key in SEARCH_FIELDS},
+        "pipeline_evidence": evidence, "finite_search_verified": finite_verified,
+        "search": {key: search.get(key) for key in SEARCH_FIELDS},
         "native_search_memory": {"reported_peak_mib": search.get("process_peak_rss_mib"),
             "mechanism": "Producer resource.getrusage(RUSAGE_SELF).ru_maxrss / 1024 on Linux",
             "scope": "Search worker high-water RSS through search completion; no worker-start baseline is subtracted.",
@@ -178,6 +231,9 @@ def assess_http(result, evaluations, checks, execution, http, stopped, required_
                   or http.get("supported_decision") is True)
     assessment = helpers.assess(result, evaluations, checks, transport, stopped, required_flyovers)
     assessment["http_transport_passed"] = assessment.pop("transport_ui_passed")
+    assessment["http_checks_passed"] = http.get("http_checks_passed") is True
+    assessment["http_expectation_matched"] = http.get("expectation_matched") is True
+    assessment["http_verification_passed"] = http.get("verification_passed") is True
     assessment["producer_reported_success"] = assessment.pop("supported_decision")
     evidence_complete = helpers.REQUIRED_CHECKS <= checks.keys() and all(value is True for value in checks.values())
     assessment["supported_decision"] = (assessment["producer_reported_success"]
@@ -189,6 +245,9 @@ def finish_evaluation(receipt, output, inputs, evaluation, operator, wire, execu
     product = output / "http"
     http, result = read_json(product / "http-verification.json"), read_json(product / "result.json")
     receipt["http_verification"] = http
+    receipt["http_checks_passed"] = http.get("http_checks_passed") is True
+    receipt["http_expectation_matched"] = http.get("expectation_matched") is True
+    receipt["http_verification_passed"] = http.get("verification_passed") is True
     stopped = ready_for_truth(result, execution, http)
     receipt["service_and_workers_stopped"] = stopped
     if not stopped:

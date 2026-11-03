@@ -214,6 +214,79 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
     return float(scores[best]),float(frequencies[best])
 
 
+def _ridge_trial_classification(result, events, association):
+    """Classify recorded core fits, without changing their score or rejection rule.
+
+    Missing support and numerical failures are unknown. A supported finite fit
+    can be rejected only by the existing association residual thresholds.
+    """
+    def finite(value):
+        return (isinstance(value, (int, float, np.integer, np.floating))
+                and not isinstance(value, (bool, np.bool_)) and np.isfinite(value))
+
+    diagnostics = result.get("event_diagnostics")
+    scores, frequencies = result.get("event_scores"), result.get("f0_hz")
+    if (not isinstance(diagnostics, list) or not isinstance(scores, list) or not isinstance(frequencies, list)
+            or not len(diagnostics) == len(scores) == len(frequencies) == len(events)):
+        return "unknown", "missing_event_fit_evidence"
+    fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+              "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
+    for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
+        if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
+                or diagnostic["support_fraction"] != 1.0):
+            return "unknown", "incomplete_acoustic_support"
+        if (not all(finite(diagnostic.get(name)) for name in fields)
+                or not finite(score) or not finite(frequency)):
+            return "unknown", "nonfinite_fit_evidence"
+        count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
+        if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
+                or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
+                or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
+                or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
+            return "unknown", "invalid_fit_evidence"
+        if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
+            return "unknown", "failed_optimizer"
+        if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
+            return "unknown", "inconsistent_event_fit_evidence"
+        bounds = event.get("f0_range_hz")
+        fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+        if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
+                or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
+                or not bounds[0] <= frequency <= bounds[1]
+                or not finite(fraction) or not 0 <= fraction <= 0.1):
+            return "unknown", "fit_outside_declared_frequency_domain"
+        drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
+        if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
+            return "unknown", "fit_outside_declared_drift_domain"
+        if not np.isclose(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"], drift,
+                          rtol=1e-12, atol=1e-12):
+            return "unknown", "inconsistent_source_drift"
+    if "optimizer_success" in result and result["optimizer_success"] is not True:
+        return "unknown", "failed_optimizer"
+    residual = float(sum(scores))
+    if not finite(residual):
+        return "unknown", "nonfinite_residual_score"
+    if not association:
+        if (result.get("score_kind") == "negative_robust_ridge_loss_hz"
+                and finite(result.get("score")) and result["score"] == residual):
+            return "evaluated", None
+        return "unknown", "inconsistent_residual_score"
+    from .matching import _frequency_scale
+    limits = [3 * _frequency_scale(event) for event in events]
+    if (result.get("score_kind") != "matched_group_support_minus_normalized_residual"
+            or not finite(result.get("residual_score")) or result["residual_score"] != residual
+            or not all(finite(v) and v > 0 for v in limits)):
+        return "unknown", "inconsistent_association_evidence"
+    supported = all(-score <= limit for score, limit in zip(scores, limits))
+    if supported:
+        expected = float(sum(1 - (-score) / limit for score, limit in zip(scores, limits)))
+        if finite(result.get("score")) and result["score"] == expected:
+            return "evaluated", None
+    elif result.get("score") == -np.inf:
+        return "rejected", "association_residual_limit"
+    return "unknown", "unexplained_association_score"
+
+
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
                     time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
     association = "event_indices" in candidate
@@ -251,6 +324,11 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         else:
             shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
     best = {"score":-np.inf}
+    # Rejections are a subset of evaluated trials. The schedule reconciles as
+    # evaluated + unknown, including duplicate clocks in the existing schedule.
+    assessment = {"complete": False, "scheduled_trials": len(shifts), "evaluated_trials": 0,
+                  "rejected_trials": 0, "unknown_trials": 0, "unknown_reasons": {},
+                  "empty_clock_domain": len(shifts) == 0}
     for shift in shifts:
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -259,9 +337,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             if association:
                 from .matching import association_score
                 result = association_score(result, events)
+            classification, reason = _ridge_trial_classification(result, events, association)
+            if classification == "unknown":
+                assessment["unknown_trials"] += 1
+                assessment["unknown_reasons"][reason] = assessment["unknown_reasons"].get(reason, 0) + 1
+            else:
+                assessment["evaluated_trials"] += 1
+                if classification == "rejected":
+                    assessment["rejected_trials"] += 1
             if result["score"] > best["score"]:
                 best = dict(result,recording_start_time_s=float(anchor+shift),time_adjustment_s=float(shift))
             continue
+        assessment["unknown_trials"] += 1
+        assessment["unknown_reasons"]["uncertified_legacy_scoring"] = assessment["unknown_reasons"].get("uncertified_legacy_scoring", 0) + 1
         scores,f0s = [],[]
         for event,measurement,flyover in zip(events,measurements,candidate["passes"]):
             spec,ridge,weight,_ = measurement
@@ -273,7 +361,10 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if total>best["score"]:
             best = {"score":total,"event_scores":scores,"f0_hz":f0s,
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
-    return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
+    assessment["complete"] = bool(assessment["scheduled_trials"] > 0 and assessment["unknown_trials"] == 0
+        and assessment["evaluated_trials"] == assessment["scheduled_trials"])
+    return dict(best,**association_fields,scoring_assessment=assessment,
+                point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])
 
 

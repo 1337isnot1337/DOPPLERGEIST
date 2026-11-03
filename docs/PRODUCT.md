@@ -161,6 +161,11 @@ full-MP3 CLI run returns the required-time result with the original hash preserv
 Independent browser checks cover nine CLI/API/browser control combinations, saved
 job reload, no JavaScript errors, and desktop/mobile layouts; see
 [verification PR #33](https://github.com/1337isnot1337/DOPPLERGEIST/pull/33).
+Its later installed-wheel readback of the unchanged 106-hypothesis job verifies
+five initial cards, expansion to all 106, a 390 px document before/after expansion,
+14 byte-identical artifact downloads, six radius/method cards and zero JavaScript
+errors. This checks the actual candidate layout and preserves the inconclusive
+outcome; it does not exercise the newer finite-envelope decision.
 
 A supported unique location through the actual automatic API, independently
 established real recording truth/time, and nationwide real accuracy at the current 1,000 m acceptance target (100–500 m preferred)
@@ -178,8 +183,11 @@ The product relays `finite_search_evidence` unchanged, preserves seed IDs throug
 refinement, and supplies `candidate_mode_ids` parallel to the wire candidates.
 
 For the explicitly declared evaluated-finite-grid scope, `assessed_mode_ids`
-requires an actually completed finite core score with full measured-trajectory
-support at the original seed/model and a valid trusted clock. It does not require
+requires the producer's explicit `core_assessed_mode_ids` mapping plus an actually
+completed finite core score with full measured-trajectory support at the original
+seed/model and a valid trusted clock. A returned fit alone does not establish
+classification of every bounded clock/optimizer trial; missing/malformed mappings
+or producer-omitted IDs remain unassessed. It does not require
 jointly optimizing every retained point. Failed, missing or unsupported core
 records are unassessed. Raw and refined representations retain their original
 mode ID and original-or-improved score; no association-only deduplication is used.

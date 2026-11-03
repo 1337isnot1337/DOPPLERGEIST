@@ -211,6 +211,211 @@ def inspect_job(directory, final, wire, operator, original, implementation):
             "automatic_provenance_verified": True}
 
 
+def inspect_finite_search(artifact, read, search, configuration, refinement):
+    """Audit recorded retention read-only; physical trials are not recomputed."""
+    import sqlite3
+
+    def require(condition, message):
+        if not condition:
+            raise ValueError(message)
+
+    def digest(value):
+        return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+    finite = search["finite_search_evidence"]
+    diagnostics, rows = refinement["matching_diagnostics"], refinement["ranked"]
+    require(isinstance(finite, dict) and finite == diagnostics.get("finite_search_evidence"),
+            "Search and refinement finite evidence differ")
+    require(finite.get("schema_version") == 1 and finite.get("scope") == "evaluated_finite_grid"
+            and finite.get("ledger_artifact") == "retention.sqlite", "Unsupported finite retention evidence")
+    require(finite.get("max_event_groups") == len(configuration["events"]), "Finite group bound differs from search")
+    budget, scoring = configuration["budget"], configuration["scoring"]
+    require(finite.get("spacing_m") == budget["spacing_m"]
+            and finite.get("refine_spacing_m") == min(budget["spacing_m"], budget["refine_spacing_m"]),
+            "Finite resolutions differ from the recorded search budget")
+    domain = finite.get("optimizer_domain", {})
+    require(domain.get("run_hash") == search["run_hash"]
+            and domain.get("source_fit_code_sha256") == configuration["code"].get("matching.py")
+            and domain.get("score_code_sha256") == configuration["code"].get("search.py")
+            and domain.get("clock_window_s") == scoring.get("recording_start_window_s")
+            and domain.get("time_step_s") == scoring.get("time_step_s", .5)
+            and domain.get("declared_sweep_s") == scoring.get("time_sweep_s", 5.),
+            "Finite optimizer domain differs from the recorded source or shared clock")
+    path = artifact("search/retention.sqlite")
+    retained = search.get("ranked")
+    require(isinstance(retained, list), "Finite search lacks its original retained rows")
+    identities = [row.get("mode_id") for row in retained]
+    require(all(isinstance(identity, str) and identity for identity in identities)
+            and len(identities) == len(set(identities)), "Original retained mode IDs are invalid")
+    by_id = dict(zip(identities, retained))
+    totals, names, originals = {}, {}, {}
+    evaluated = discarded = coarse_unknown = 0
+    bound = None
+    db = sqlite3.connect(path.as_uri() + "?mode=ro&immutable=1", uri=True)
+    try:
+        require(db.execute("PRAGMA quick_check").fetchall() == [("ok",)], "Corrupt finite retention ledger")
+        require(db.execute("SELECT identity,score_kind FROM run").fetchall() ==
+                [(search["run_hash"], finite["score_kind"])], "Finite ledger identifies another run or score kind")
+        for name, checksum, occurrences, duplicates, encoded_kept in db.execute(
+                "SELECT name,checksum,occurrences,duplicates,kept FROM stages ORDER BY name"):
+            phase, suffix = name.split(":", 1)
+            require(phase in {"coarse", "global", "fine", "fine-global"} and suffix,
+                    "Unknown finite retention stage")
+            names.setdefault(phase, set()).add(suffix)
+            kept = json.loads(encoded_kept)
+            require(isinstance(kept, list) and all(isinstance(identity, str) for identity in kept)
+                    and len(kept) == len(set(kept)), "Invalid retained IDs in a ledger stage")
+            kept_set, seen_kept, count, stage_digest = set(kept), set(), 0, hashlib.sha256()
+            for record in db.execute("SELECT mode_id,score,groups_count,kind,seed FROM records WHERE stage=? ORDER BY mode_id", (name,)):
+                identity, score, groups, kind, encoded_seed = record
+                seed = json.loads(encoded_seed)
+                require(isinstance(seed, dict) and set(seed) == {"event_indices", "flight_ids",
+                    "pass_emission_times_s", "position", "recording_start_time_s"}
+                    and isinstance(seed["position"], list) and len(seed["position"]) == 5
+                    and isinstance(seed["pass_emission_times_s"], list)
+                    and isinstance(seed["event_indices"], list) and isinstance(seed["flight_ids"], list)
+                    and all(isinstance(flight, str) and flight for flight in seed["flight_ids"])
+                    and all(type(value) in (int, float) and math.isfinite(value)
+                        for value in [*seed["position"], *seed["pass_emission_times_s"], seed["recording_start_time_s"]]),
+                    "Finite ledger seed has invalid physical fields")
+                require(type(score) in (int, float) and math.isfinite(score) and kind == finite["score_kind"],
+                        "Finite ledger contains an invalid score or mixed units")
+                require(type(groups) is int and 1 <= groups <= finite["max_event_groups"]
+                        and groups == len(seed["event_indices"]) == len(seed["flight_ids"]) == len(seed["pass_emission_times_s"])
+                        and all(type(i) is int and 0 <= i < finite["max_event_groups"] for i in seed["event_indices"])
+                        and seed["event_indices"] == sorted(set(seed["event_indices"])),
+                        "Finite ledger group or association counts are inconsistent")
+                require(identity == "mode-" + digest(seed), "Finite mode ID differs from its exact seed")
+                if identity in by_id:
+                    row = by_id[identity]
+                    expected_seed = {"event_indices": row.get("event_indices", list(range(len(row["flight_ids"])))),
+                        "flight_ids": row["flight_ids"], "pass_emission_times_s": row.get("pass_emission_times_s", []),
+                        "position": [float(row.get(key, 0)) for key in ("x", "y", "lat", "lon", "elev_m")],
+                        "recording_start_time_s": float(row["recording_start_time_s"])}
+                    require(seed == row.get("mode_seed") == expected_seed,
+                            "Original retained row differs from its physical seed")
+                stage_digest.update(json.dumps(record, separators=(",", ":"), allow_nan=False).encode() + b"\n")
+                count += 1
+                if identity in kept_set:
+                    seen_kept.add(identity)
+            require(type(occurrences) is int and type(duplicates) is int and occurrences >= count
+                    and duplicates == occurrences-count and seen_kept == kept_set,
+                    "Finite ledger occurrence, duplicate or retained counts differ")
+            stage_digest.update(json.dumps(sorted(kept), separators=(",", ":")).encode())
+            stage_digest.update(json.dumps([occurrences, duplicates]).encode())
+            require(stage_digest.hexdigest() == checksum, "Finite ledger stage checksum differs")
+            total = totals.setdefault(phase, {"stages": 0, "input_occurrences": 0, "exact_duplicates": 0,
+                                             "retained": 0, "discarded": 0})
+            for key, value in (("stages", 1), ("input_occurrences", occurrences), ("exact_duplicates", duplicates),
+                               ("retained", len(kept)), ("discarded", count-len(kept))):
+                total[key] += value
+            if phase == "coarse":
+                tile = read(f"search/tile-{suffix}.json")
+                payload = tile["payload"]
+                require(tile.get("run_hash") == search["run_hash"] and tile.get("payload_hash") == digest(payload)
+                        and payload.get("retention_checksum") == checksum
+                        and sorted(row["mode_id"] for row in payload["ranked"]) == sorted(kept),
+                        "Coarse checkpoint differs from its retention stage")
+                for row in payload["ranked"]:
+                    score, kind, encoded_seed = db.execute(
+                        "SELECT score,kind,seed FROM records WHERE stage=? AND mode_id=?", (name, row["mode_id"])).fetchone()
+                    seed = json.loads(encoded_seed)
+                    physical = {"event_indices": row.get("event_indices", list(range(len(row["flight_ids"])))),
+                        "flight_ids": row["flight_ids"], "pass_emission_times_s": row.get("pass_emission_times_s", []),
+                        "position": [float(row.get(key, 0)) for key in ("x", "y", "lat", "lon", "elev_m")],
+                        "recording_start_time_s": float(row["recording_start_time_s"])}
+                    require(row["score"] == score and row.get("score_kind") == kind
+                            and row.get("mode_seed") == seed == physical,
+                            "Coarse checkpoint score or physical seed differs from its ledger")
+                unknown = payload.get("counts", {}).get("unclassified_score_candidates", 0)
+                require(type(unknown) is int and unknown >= 0, "Invalid coarse unknown-trial count")
+                coarse_unknown += unknown
+        require(db.execute("SELECT count(*) FROM records WHERE stage NOT IN (SELECT name FROM stages)").fetchone()[0] == 0,
+                "Finite ledger contains records without a stage")
+        for identity, score in db.execute("SELECT mode_id,MAX(score) FROM records GROUP BY mode_id"):
+            evaluated += 1
+            if identity in by_id:
+                originals[identity] = score
+            else:
+                discarded += 1
+                bound = score if bound is None else max(bound, score)
+    finally:
+        db.close()
+    require(names.get("coarse", set()) == names.get("global", set())
+            and len(names.get("coarse", set())) == search["tiles_completed"]
+            and names.get("fine", set()) == names.get("fine-global", set()),
+            "Finite ledger stage coverage is incomplete")
+    fine_points = search.get("refinement_points_searched", 0)
+    require(type(fine_points) is int and fine_points >= 0
+            and bool(names.get("fine")) == (fine_points > 0), "Finite refinement stage records are missing")
+    require(finite.get("stages") == totals and set(originals) == set(identities),
+            "Finite stage totals or original retained records differ")
+    require(finite.get("pruning_accounted_for") is True and finite.get("discarded_count") == discarded
+            and finite.get("evaluated_modes") == evaluated, "Finite distinct retention counts differ")
+    unknown = finite.get("unclassified_score_candidates")
+    require(type(unknown) is int and unknown >= coarse_unknown, "Finite unknown-trial count is inconsistent")
+    expected_bound = None if unknown else bound
+    require(finite.get("best_discarded_score") == expected_bound,
+            "Finite discarded score bound differs from all recorded distinct modes")
+    if unknown:
+        require(finite.get("discarded_bound_status") == "unknown_model_or_trial_support",
+                "Unknown trials have no explicit unbounded status")
+    require(type(finite.get("complete")) is bool
+            and finite["complete"] == (search["status"] == "complete" and unknown == 0),
+            "Finite completeness contradicts search or unknown trial evidence")
+    require(finite.get("retained_modes") == [{"mode_id": identity, "score": originals[identity],
+        "event_groups": len(by_id[identity]["mode_seed"]["event_indices"])} for identity in identities],
+        "Finite retained original scores or groups differ")
+    core_ids, assessed, unknown_retained = [], [], 0
+    window = diagnostics["recording_start_window_s"]
+    for identity, row in by_id.items():
+        require(row["score"] == originals[identity] and row.get("score_kind") == finite["score_kind"],
+                "Retained original row has a different score or score kind")
+        assessment = row.get("scoring_assessment", {})
+        known = (isinstance(assessment, dict) and assessment.get("complete") is True
+            and all(type(assessment.get(key)) is int and assessment[key] >= 0
+                    for key in ("scheduled_trials", "evaluated_trials", "rejected_trials", "unknown_trials"))
+            and assessment["scheduled_trials"] == assessment["evaluated_trials"] > 0
+            and assessment["rejected_trials"] <= assessment["evaluated_trials"]
+            and assessment["unknown_trials"] == 0 and assessment.get("unknown_reasons") == {}
+            and assessment.get("empty_clock_domain") is False)
+        require(row.get("core_assessment_complete") is known, "Finite winner masks missing or unknown clock trials")
+        unknown_retained += not known
+        if known:
+            core_ids.append(identity)
+            fits = row.get("event_diagnostics", [])
+            if (window[0] <= row["recording_start_time_s"] <= window[1]
+                    and len(fits) == len(row["flight_ids"]) > 0
+                    and all(isinstance(fit, dict) and type(fit.get("support_fraction")) in (int, float)
+                            and fit["support_fraction"] == 1. and type(fit.get("score")) in (int, float)
+                            and math.isfinite(fit["score"]) for fit in fits)):
+                assessed.append(identity)
+    require(unknown >= unknown_retained, "Finite aggregate omits unclassified retained clock trials")
+    require(search.get("core_assessed_mode_ids") == core_ids
+            and diagnostics.get("core_assessment_mapping_status") == "present"
+            and diagnostics.get("assessed_mode_ids") == sorted(assessed),
+            "Finite assessed IDs differ from supported producer assessments")
+    mapped = [row.get("mode_id") for row in rows]
+    require(diagnostics.get("candidate_mode_ids") == mapped and set(mapped) == set(identities),
+            "Finite wire candidates omit or invent retained modes")
+    for row, identity in zip(rows, mapped):
+        seed = by_id[identity]["mode_seed"]
+        require(row.get("mode_seed") == seed and row.get("event_indices") == seed["event_indices"]
+                and row["flight_ids"] == seed["flight_ids"]
+                and row.get("pass_emission_times_s") == seed["pass_emission_times_s"],
+                "Refinement borrowed another mode's event-to-flight identity")
+    original_fields = ("mode_id", "mode_seed", "pass_emission_times_s", "event_indices", "flight_ids",
+                       "lat", "lon", "recording_start_time_s", "score", "score_kind")
+    for identity, original in by_id.items():
+        require(any(all(row.get(key) == original.get(key) for key in original_fields)
+                    and row.get("elev_m", 0) == original.get("elev_m", 0) for row in rows),
+                "Refinement omitted an original retained physical point")
+    return {"ledger_verified": True, "complete": finite["complete"] and set(assessed) == set(identities),
+            "retained_modes": len(identities), "evaluated_modes": evaluated, "discarded_count": discarded,
+            "best_discarded_score": expected_bound, "unclassified_score_candidates": unknown,
+            "physical_trials_independently_recomputed": False}
+
+
 def inspect_pipeline_evidence(directory, final, wire, operator):
     """Check stage receipts, separately from HTTP success or location accuracy.
 
@@ -360,7 +565,8 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
             require(type(total) is int and type(completed) is int and 0 <= completed <= total and total > 0,
                     "Search tile counts are invalid")
             require(search.get("unsearched_tiles") == total - completed, "Search unsearched-tile count is inconsistent")
-            work_complete = completed == total and not search["tile_failures"] and not search.get("refinement_failure")
+            work_complete = (completed == total and not search["tile_failures"] and not search.get("refinement_failure")
+                             and search["all_event_groups_considered"] is True)
             coverage = final["coverage"]
             require(coverage["search_complete"] == work_complete
                     and coverage["data_status"] == ("available" if search["data_scope_complete"] else "partial")
@@ -381,6 +587,7 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
             candidates, rows = final.get("candidates"), refinement.get("ranked")
             require(isinstance(candidates, list) and isinstance(rows, list) and len(rows) == len(candidates),
                     "Refinement and terminal candidate counts differ")
+            pre_decision_candidates = []
             for row, candidate in zip(rows, candidates):
                 require(all(row.get(key) == candidate[key] for key in ("lat", "lon", "score"))
                         and row.get("score_kind", "negative_robust_ridge_loss_hz") == candidate["score_kind"],
@@ -397,7 +604,11 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
                 sensitivity = row.get("sensitivity", {})
                 uncertainty = ({key: sensitivity[key] for key in ("radius_m", "method", "kind")}
                                if sensitivity.get("complete") and not sensitivity.get("boundary_limited") else None)
-                require(candidate.get("uncertainty") == uncertainty, "Candidate uncertainty differs from its sensitivity evidence")
+                original = dict(candidate)
+                original.pop("uncertainty", None)
+                if uncertainty is not None:
+                    original["uncertainty"] = uncertainty
+                pre_decision_candidates.append(original)
             diagnostics = refinement["matching_diagnostics"]
             require(diagnostics.get("recording_start_window_s") == window
                     and diagnostics.get("clock_locked") == search["scoring_time_is_locked"],
@@ -414,6 +625,11 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
                 require(set(diagnostics.get("unmatched_event_ids", [])) ==
                         {event["event_id"] for event in events} - set(candidates[0]["event_ids"]),
                         "Matching diagnostics do not account for unmatched acoustic proposals")
+            if "finite_search_evidence" in search:
+                report["finite_search"] = inspect_finite_search(artifact, read, search, configuration, refinement)
+                report["finite_search_verified"] = report["finite_search"]["complete"]
+            else:
+                require("finite_search_evidence" not in diagnostics, "Refinement invented finite-search evidence")
             report["stages_verified"].append("refinement")
 
             decision = read("decision.json")
@@ -422,8 +638,9 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
             from aircraft_geoloc import confidence
             require(sha256(confidence.__file__) == provenance["implementation_files"].get("confidence.py"),
                     "Cannot recheck the decision with a different confidence implementation")
-            expected = confidence.decide_location(events, candidates, coverage, matching_diagnostics=diagnostics)
-            require(decision == dict(expected, candidates=candidates),
+            expected = confidence.decide_location(events, pre_decision_candidates, coverage, matching_diagnostics=diagnostics)
+            expected.setdefault("candidates", pre_decision_candidates)
+            require(decision == expected,
                     "Saved scientific evidence does not reproduce the persisted decision")
             report["stages_verified"].append("decision")
             report["full_pipeline_observed"] = True

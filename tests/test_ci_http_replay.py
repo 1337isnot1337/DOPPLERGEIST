@@ -18,6 +18,7 @@ SUPPORT = REPLAY.load_module(ROOT / "tests/test_ci_upload_replay.py", "http_acce
 def http_receipt(result, **changes):
     value = {"job_id": result["job_id"], "status": result["status"], "verification_passed": True,
         "http_checks_passed": True, "pipeline_evidence_passed": True, "full_pipeline_observed": True,
+        "expectation_matched": True,
         "interrupted": False, "interruption_signal": None,
         "supported_decision": result["status"] == "succeeded", "terminal_result_preserved_after_shutdown": True,
         "service": {"shutdown_signal": "SIGINT", "returncode": 0, "forced_kill": False,
@@ -74,6 +75,155 @@ def recorded_job(tmp_path):
 
 def collect(job):
     return REPLAY.collect_job(job.product, job.result, job.audio, job.operator, job.wire, job.sources)
+
+
+def refresh_gate_hashes(job):
+    """Rebind small controls; independent stage/SQLite validation is tested by the verifier."""
+    job.evidence["artifacts"] = {name: {key: REPLAY.file_record(job.directory / name)[key]
+        for key in ("bytes", "sha256")} for name in job.evidence["artifacts"]}
+    REPLAY.write_json(job.product / "pipeline-evidence.json", job.evidence)
+
+
+@pytest.fixture
+def finite_job(recorded_job):
+    """Exercise the consumer of an already verified gate; no real ledger is claimed."""
+    job = recorded_job
+    finite = {"schema_version": 1, "scope": "evaluated_finite_grid", "complete": True,
+        "pruning_accounted_for": True, "unclassified_score_candidates": 0,
+        "score_kind": "matched_group_support_minus_normalized_residual", "spacing_m": 20000,
+        "refine_spacing_m": 1000, "max_event_groups": 4, "ledger_artifact": "retention.sqlite",
+        "retained_modes": [{"mode_id": "mode-control", "score": -0.5, "event_groups": 4}],
+        "discarded_count": 0, "best_discarded_score": None, "limitations": ["Finite control only"]}
+    search = REPLAY.read_json(job.directory / "search/search-report.json")
+    search.update(alternative_modes_exhaustively_assessed=False, finite_search_evidence=finite,
+                  core_assessed_mode_ids=["mode-control"])
+    refinement = REPLAY.read_json(job.directory / "refined-candidates.json")
+    refinement["ranked"][0]["mode_id"] = "mode-control"
+    refinement["matching_diagnostics"].update(finite_search_evidence=deepcopy(finite),
+        core_assessment_mapping_status="present", assessed_mode_ids=["mode-control"],
+        candidate_mode_ids=["mode-control"])
+    decision = REPLAY.read_json(job.directory / "decision.json")
+    decision["diagnostics"] = {"policy_version": "engineering-v5-finite-envelope",
+        "finite_search": {key: finite[key] for key in
+            ("scope", "spacing_m", "refine_spacing_m", "discarded_count", "best_discarded_score")}}
+    decision["diagnostics"]["finite_search"]["retained_modes"] = 1
+    for name, value in (("search/search-report.json", search), ("refined-candidates.json", refinement),
+                        ("decision.json", decision)):
+        REPLAY.write_json(job.directory / name, value)
+    (job.directory / "search/retention.sqlite").write_bytes(b"gate-consumer-control-only")
+    job.evidence.update(finite_search_verified=True)
+    job.evidence["artifacts"]["search/retention.sqlite"] = {}
+    refresh_gate_hashes(job)
+    return job
+
+
+def test_finite_gate_can_certify_alternatives_without_rewriting_legacy_exhaustion(finite_job):
+    job = finite_job
+    report = collect(job)
+    assert report["errors"] == []
+    assert all(report["checks"].values()), report["checks"]
+    assert report["finite_search_verified"] is True
+    assert report["search"]["alternative_modes_exhaustively_assessed"] is False
+    checks = dict(report["checks"], source_snapshot_unchanged=True)
+    outcome = REPLAY.assess_http(job.result, SUPPORT.evaluate(job.result, job.labels, job.mapping), checks,
+                                {"returncode": 0}, http_receipt(job.result), True, 4)
+    assert outcome["supported_decision"] is True
+    assert outcome["passed"] is True
+
+
+@pytest.mark.parametrize("defect", ("incomplete", "unknown", "missing_gate", "null_finite"))
+def test_present_finite_evidence_cannot_fall_back_to_stale_legacy_exhaustion(finite_job, defect):
+    job = finite_job
+    search = REPLAY.read_json(job.directory / "search/search-report.json")
+    refinement = REPLAY.read_json(job.directory / "refined-candidates.json")
+    search["alternative_modes_exhaustively_assessed"] = True
+    if defect in {"incomplete", "unknown"}:
+        key, value = ("complete", False) if defect == "incomplete" else ("unclassified_score_candidates", 1)
+        search["finite_search_evidence"][key] = value
+        refinement["matching_diagnostics"]["finite_search_evidence"][key] = value
+    elif defect == "missing_gate":
+        del job.evidence["finite_search_verified"]
+    else:
+        search["finite_search_evidence"] = None
+        refinement["matching_diagnostics"]["finite_search_evidence"] = None
+    REPLAY.write_json(job.directory / "search/search-report.json", search)
+    REPLAY.write_json(job.directory / "refined-candidates.json", refinement)
+    refresh_gate_hashes(job)
+    report = collect(job)
+    assert report["errors"] == []
+    assert report["search"]["alternative_modes_exhaustively_assessed"] is True
+    assert report["finite_search_verified"] is False
+    assert report["checks"]["alternative_evidence_consistent"] is False
+    outcome = REPLAY.assess_http(job.result, SUPPORT.evaluate(job.result, job.labels, job.mapping),
+        dict(report["checks"], source_snapshot_unchanged=True), {"returncode": 0}, http_receipt(job.result), True, 4)
+    assert outcome["supported_decision"] is False
+    assert outcome["supported_localization_at_m"] == {"100": False, "500": False, "1000": False}
+    assert outcome["passed"] is False
+
+
+@pytest.mark.parametrize("defect", ("missing_finite_gate", "false_finite_gate", "failed_stage_gate",
+    "partial_stage_gate", "unexpected_scientific_decision", "stage_errors", "incomplete_finite",
+    "unaccounted_pruning", "unknown_trial", "boolean_unknown_count", "wrong_consumer_copy",
+    "missing_producer_id", "missing_assessed_id", "missing_mapped_id", "wrong_ranked_id",
+    "wrong_policy", "wrong_consumer_count", "wrong_consumer_bound", "missing_ledger_record",
+    "changed_ledger_bytes", "missing_mapping_status"))
+def test_finite_success_requires_complete_bound_producer_consumer_evidence(finite_job, defect):
+    job = finite_job
+    search = REPLAY.read_json(job.directory / "search/search-report.json")
+    refinement = REPLAY.read_json(job.directory / "refined-candidates.json")
+    decision = REPLAY.read_json(job.directory / "decision.json")
+    finite, matching = search["finite_search_evidence"], refinement["matching_diagnostics"]
+    if defect == "missing_finite_gate":
+        del job.evidence["finite_search_verified"]
+    elif defect == "false_finite_gate":
+        job.evidence["finite_search_verified"] = False
+    elif defect == "failed_stage_gate":
+        job.evidence["passed"] = False
+    elif defect == "partial_stage_gate":
+        job.evidence["full_pipeline_observed"] = False
+    elif defect == "unexpected_scientific_decision":
+        job.evidence["scientific_decision_expected"] = False
+    elif defect == "stage_errors":
+        job.evidence["errors"] = ["unresolved stage evidence"]
+    elif defect in {"incomplete_finite", "unaccounted_pruning", "unknown_trial", "boolean_unknown_count"}:
+        key, value = {"incomplete_finite": ("complete", False), "unaccounted_pruning": ("pruning_accounted_for", False),
+            "unknown_trial": ("unclassified_score_candidates", 1),
+            "boolean_unknown_count": ("unclassified_score_candidates", False)}[defect]
+        finite[key] = matching["finite_search_evidence"][key] = value
+    elif defect == "wrong_consumer_copy":
+        matching["finite_search_evidence"]["spacing_m"] += 1
+    elif defect == "missing_producer_id":
+        search["core_assessed_mode_ids"] = []
+    elif defect in {"missing_assessed_id", "missing_mapped_id"}:
+        matching["assessed_mode_ids" if defect == "missing_assessed_id" else "candidate_mode_ids"] = []
+    elif defect == "wrong_ranked_id":
+        refinement["ranked"][0]["mode_id"] = "other-mode"
+    elif defect == "wrong_policy":
+        decision["diagnostics"]["policy_version"] = "legacy-policy"
+    elif defect == "wrong_consumer_count":
+        decision["diagnostics"]["finite_search"]["retained_modes"] = True
+    elif defect == "wrong_consumer_bound":
+        decision["diagnostics"]["finite_search"]["best_discarded_score"] = 0
+    elif defect == "missing_ledger_record":
+        del job.evidence["artifacts"]["search/retention.sqlite"]
+    elif defect == "missing_mapping_status":
+        del matching["core_assessment_mapping_status"]
+    for name, value in (("search/search-report.json", search), ("refined-candidates.json", refinement),
+                        ("decision.json", decision)):
+        REPLAY.write_json(job.directory / name, value)
+    refresh_gate_hashes(job)
+    if defect == "changed_ledger_bytes":
+        (job.directory / "search/retention.sqlite").write_bytes(b"changed-after-independent-gate")
+    report = collect(job)
+    assert report["finite_search_verified"] is False
+    assert report["checks"]["alternative_evidence_consistent"] is False
+    checks = dict(report["checks"], source_snapshot_unchanged=True)
+    outcome = REPLAY.assess_http(job.result, SUPPORT.evaluate(job.result, job.labels, job.mapping), checks,
+                                {"returncode": 0}, http_receipt(job.result), True, 4)
+    assert outcome["producer_reported_success"] is True
+    assert outcome["supported_decision"] is False
+    assert outcome["supported_localization_at_m"] == {"100": False, "500": False, "1000": False}
+    assert outcome["passed"] is False
 
 
 def test_actual_layout_cross_links_include_gate_and_native_search_fields(recorded_job):
@@ -230,6 +380,20 @@ def test_expected_status_mismatch_allows_post_shutdown_diagnostics():
     result = {"job_id": "1" * 32, "status": "inconclusive"}
     receipt = http_receipt(result, verification_passed=False, expectation_matched=False)
     assert REPLAY.ready_for_truth(result, {"returncode": 1}, receipt) is True
+
+
+def test_raw_http_checks_remain_visible_when_strict_expectation_fails(recorded_job):
+    job = recorded_job
+    result = dict(job.result, status="inconclusive", reason_code="ambiguous_locations")
+    receipt = http_receipt(result, verification_passed=False, expectation_matched=False)
+    outcome = REPLAY.assess_http(result, SUPPORT.evaluate(result, job.labels, job.mapping), complete_checks(),
+                                {"returncode": 1}, receipt, True, 4)
+    assert outcome["http_checks_passed"] is True
+    assert outcome["http_expectation_matched"] is False
+    assert outcome["http_verification_passed"] is False
+    assert outcome["http_transport_passed"] is False
+    assert outcome["supported_decision"] is False
+    assert outcome["passed"] is False
 
 
 @pytest.mark.parametrize("change", ({"interrupted": True}, {"interruption_signal": "SIGTERM"}))

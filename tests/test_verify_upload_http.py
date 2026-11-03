@@ -11,6 +11,8 @@ import subprocess
 import sys
 import threading
 import time
+from copy import deepcopy
+import sqlite3
 
 import numpy as np
 import pytest
@@ -416,6 +418,459 @@ def test_complete_stage_evidence_keeps_inconclusive_decision(stage_evidence):
     assert final["status"] == "inconclusive"
     assert report["location_accuracy_evaluated"] is False
     assert all(name in report["artifacts"] for name in STAGE_FILES)
+
+
+def fixture_digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+
+def write_fixture_ledger(path, run_hash, rows):
+    """Write the documented retention format without calling the verifier or producer."""
+    kind = rows[0]["score_kind"]
+    checksums = {}
+    with sqlite3.connect(path) as db:
+        db.executescript("""
+            CREATE TABLE run(identity TEXT, score_kind TEXT);
+            CREATE TABLE stages(name TEXT PRIMARY KEY, checksum TEXT,
+                occurrences INTEGER, duplicates INTEGER, kept TEXT);
+            CREATE TABLE records(stage TEXT, mode_id TEXT, score REAL,
+                groups_count INTEGER, kind TEXT, seed TEXT, PRIMARY KEY(stage,mode_id));
+        """)
+        db.execute("INSERT INTO run VALUES(?,?)", (run_hash, kind))
+        for stage, values in (("coarse:0_0", rows), ("global:0_0", rows[:2])):
+            records = sorted((row["mode_id"], float(row["score"]), 1, kind,
+                json.dumps(row["mode_seed"], sort_keys=True, separators=(",", ":"))) for row in values)
+            kept = sorted(row["mode_id"] for row in rows[:2])
+            encoded = b"".join(json.dumps(record, separators=(",", ":"), allow_nan=False).encode() + b"\n"
+                               for record in records)
+            encoded += json.dumps(kept, separators=(",", ":")).encode()
+            encoded += json.dumps([len(records), 0]).encode()
+            checksums[stage] = hashlib.sha256(encoded).hexdigest()
+            db.executemany("INSERT INTO records VALUES(?,?,?,?,?,?)", [(stage, *record) for record in records])
+            db.execute("INSERT INTO stages VALUES(?,?,?,?,?)",
+                       (stage, checksums[stage], len(records), 0, json.dumps(kept)))
+    return checksums
+
+
+@pytest.fixture
+def finite_stage_evidence(stage_evidence):
+    """A finite metadata contract fixture, not a physical localization benchmark."""
+    from aircraft_geoloc import confidence
+
+    directory, final, wire, operator = stage_evidence
+    manifest = json.loads((directory / "search/manifest.json").read_text())
+    configuration = manifest["configuration"]
+    configuration["budget"] = {"spacing_m": 1000.0, "refine_spacing_m": 100.0}
+    configuration["scoring"].update(time_step_s=0.5, time_sweep_s=5.0)
+    run_hash = fixture_digest(configuration)
+    manifest["run_hash"] = run_hash
+    save_json(directory / "search/manifest.json", manifest)
+
+    refinement = json.loads((directory / "refined-candidates.json").read_text())
+    window = refinement["matching_diagnostics"]["recording_start_window_s"]
+    sensitivity = {"complete": True, "boundary_limited": False, "radius_m": 50.0,
+        "method": "fixture_full_perturbation", "kind": "sensitivity",
+        "sources": ["frequency", "clock", "altitude", "sound_speed"],
+        "settings": {"clock_bounds_s": window}}
+    rows = []
+    for latitude, score in ((40.0, -1.0), (40.003, -1.1), (45.0, -10.0)):
+        row = deepcopy(refinement["ranked"][0])
+        row.update(lat=latitude, score=score, pass_emission_times_s=[window[0] + 4.0],
+            scoring_assessment={"complete": True, "scheduled_trials": 1, "evaluated_trials": 1,
+                "rejected_trials": 0, "unknown_trials": 0, "unknown_reasons": {}, "empty_clock_domain": False},
+            core_assessment_complete=True)
+        row["event_diagnostics"][0]["score"] = score
+        seed = {"event_indices": [0], "flight_ids": row["flight_ids"], "pass_emission_times_s": [window[0] + 4.0],
+            "position": [0.0, 0.0, latitude, -100.0, 0.0], "recording_start_time_s": window[0]}
+        row.update(mode_seed=seed, mode_id="mode-" + fixture_digest(seed))
+        rows.append(row)
+    rows[0]["sensitivity"] = sensitivity
+    ids = [row["mode_id"] for row in rows[:2]]
+    checksums = write_fixture_ledger(directory / "search/retention.sqlite", run_hash, rows)
+    payload = {"ranked": rows[:2], "counts": {"unclassified_score_candidates": 0},
+               "retention_checksum": checksums["coarse:0_0"]}
+    save_json(directory / "search/tile-0_0.json",
+              {"run_hash": run_hash, "payload": payload, "payload_hash": fixture_digest(payload)})
+    finite = {"schema_version": 1, "scope": "evaluated_finite_grid", "ledger_artifact": "retention.sqlite",
+        "complete": True, "pruning_accounted_for": True, "score_kind": rows[0]["score_kind"],
+        "spacing_m": 1000.0, "refine_spacing_m": 100.0, "max_event_groups": 1,
+        "retained_modes": [{"mode_id": row["mode_id"], "score": row["score"], "event_groups": 1} for row in rows[:2]],
+        "evaluated_modes": 3, "discarded_count": 1, "best_discarded_score": -10.0,
+        "discarded_bound_status": "finite", "unclassified_score_candidates": 0,
+        "stages": {
+            "coarse": {"stages": 1, "input_occurrences": 3, "exact_duplicates": 0, "retained": 2, "discarded": 1},
+            "global": {"stages": 1, "input_occurrences": 2, "exact_duplicates": 0, "retained": 2, "discarded": 0}},
+        "optimizer_domain": {"run_hash": run_hash, "source_fit_code_sha256": configuration["code"]["matching.py"],
+            "score_code_sha256": configuration["code"]["search.py"], "clock_window_s": window,
+            "time_step_s": 0.5, "declared_sweep_s": 5.0},
+        "limitations": ["Finite metadata fixture; no physical trials independently reproduced."]}
+    search = json.loads((directory / "search/search-report.json").read_text())
+    search.update(run_hash=run_hash, ranked=rows[:2], core_assessed_mode_ids=ids,
+                  finite_search_evidence=finite, refinement_points_searched=0)
+    save_json(directory / "search/search-report.json", search)
+    diagnostics = refinement["matching_diagnostics"]
+    diagnostics.update(sensitivity=sensitivity, refinement_boundary_limited=False, alternatives_evaluated=False,
+        finite_search_evidence=finite, core_assessment_mapping_status="present",
+        assessed_mode_ids=sorted(ids), candidate_mode_ids=ids)
+    diagnostics[final["events"][0]["event_id"]] = rows[0]["event_diagnostics"][0]
+    refinement["ranked"] = rows[:2]
+    save_json(directory / "refined-candidates.json", refinement)
+    candidates = []
+    for row in rows[:2]:
+        candidate = dict(final["candidates"][0], lat=row["lat"], score=row["score"])
+        if "sensitivity" in row:
+            candidate["uncertainty"] = {key: row["sensitivity"][key] for key in ("radius_m", "method", "kind")}
+        candidates.append(candidate)
+    decision = confidence.decide_location(final["events"], candidates, final["coverage"], matching_diagnostics=diagnostics)
+    assert decision["status"] == "succeeded", decision
+    final.update({key: value for key, value in decision.items() if key != "diagnostics"})
+    save_json(directory / "decision.json", decision)
+    provenance = json.loads((directory / "provenance.json").read_text())
+    provenance.update(status=final["status"], search_run_hash=run_hash)
+    save_json(directory / "provenance.json", provenance)
+    return directory, final, wire, operator
+
+
+def change_fixture_json(directory, name, change):
+    path = directory / name
+    value = json.loads(path.read_text())
+    change(value)
+    save_json(path, value)
+
+
+def change_finite_claim(directory, change):
+    change_fixture_json(directory, "search/search-report.json", lambda value: change(value["finite_search_evidence"]))
+    change_fixture_json(directory, "refined-candidates.json",
+                        lambda value: change(value["matching_diagnostics"]["finite_search_evidence"]))
+
+
+def test_finite_stage_reconstructs_predecision_union_and_preserves_ledger(finite_stage_evidence):
+    directory, final, wire, operator = finite_stage_evidence
+    ledger = directory / "search/retention.sqlite"
+    before = ledger.read_bytes()
+    decision = json.loads((directory / "decision.json").read_text())
+    assert decision["diagnostics"]["finite_envelope"]["base_reported_radius_m"] == 50.0
+    assert 333.0 < final["candidates"][0]["uncertainty"]["radius_m"] < 334.0
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"], report
+    assert report["full_pipeline_observed"] is True
+    assert report["finite_search_verified"] is True
+    assert report["finite_search"] == {"ledger_verified": True, "complete": True,
+        "retained_modes": 2, "evaluated_modes": 3, "discarded_count": 1,
+        "best_discarded_score": -10.0, "unclassified_score_candidates": 0,
+        "physical_trials_independently_recomputed": False}
+    assert "search/retention.sqlite" in report["artifacts"]
+    assert ledger.read_bytes() == before
+
+
+@pytest.mark.parametrize("kind,error", [
+    ("missing", "search/retention.sqlite"), ("corrupt", "DatabaseError"),
+    ("wrong_run", "another run"), ("checksum", "stage checksum"),
+    ("groups", "group or association"), ("units", "mixed units"),
+])
+def test_finite_stage_rejects_unusable_or_inconsistent_ledger(finite_stage_evidence, kind, error):
+    directory, final, wire, operator = finite_stage_evidence
+    path = directory / "search/retention.sqlite"
+    if kind == "missing":
+        path.unlink()
+    elif kind == "corrupt":
+        path.write_bytes(b"not a sqlite retention database")
+    else:
+        statements = {"wrong_run": ("UPDATE run SET identity=?", ("0" * 64,)),
+            "checksum": ("UPDATE stages SET checksum=?", ("0" * 64,)),
+            "groups": ("UPDATE records SET groups_count=2", ()),
+            "units": ("UPDATE records SET kind=?", ("incompatible_score_units",))}
+        with sqlite3.connect(path) as db:
+            db.execute(*statements[kind])
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert report["full_pipeline_observed"] is False
+    assert error in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("kind,error", [
+    ("extra_field", "invalid physical fields"),
+    ("nonfinite_position", "invalid physical fields"),
+    ("boolean_clock", "invalid physical fields"),
+    ("empty_flight", "invalid physical fields"),
+    ("missing_pass", "group or association counts"),
+])
+def test_finite_stage_validates_discarded_physical_seeds(finite_stage_evidence, kind, error):
+    directory, final, wire, operator = finite_stage_evidence
+    with sqlite3.connect(directory / "search/retention.sqlite") as db:
+        identity, encoded = db.execute(
+            "SELECT mode_id,seed FROM records WHERE stage='coarse:0_0' ORDER BY score LIMIT 1").fetchone()
+        seed = json.loads(encoded)
+        if kind == "extra_field":
+            seed["undeclared_origin"] = "not part of the seed contract"
+        elif kind == "nonfinite_position":
+            seed["position"][2] = float("inf")
+        elif kind == "boolean_clock":
+            seed["recording_start_time_s"] = True
+        elif kind == "empty_flight":
+            seed["flight_ids"] = [""]
+        else:
+            seed["pass_emission_times_s"] = []
+        db.execute("UPDATE records SET seed=? WHERE mode_id=?", (json.dumps(seed), identity))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert error in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("kind", ["score", "score_kind", "physical_point", "copied_seed"])
+def test_finite_coarse_payload_cannot_disagree_with_its_ledger(finite_stage_evidence, kind):
+    directory, final, wire, operator = finite_stage_evidence
+    def corrupt_payload(tile):
+        row = tile["payload"]["ranked"][0]
+        if kind == "score":
+            row["score"] += 0.25
+        elif kind == "score_kind":
+            row["score_kind"] = "matched_group_support_minus_normalized_residual"
+        elif kind == "physical_point":
+            row["lat"] += 0.001
+        else:
+            row["mode_seed"]["position"][2] += 0.001
+        tile["payload_hash"] = fixture_digest(tile["payload"])
+    change_fixture_json(directory, "search/tile-0_0.json", corrupt_payload)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "Coarse checkpoint score or physical seed differs from its ledger" in " ".join(report["errors"])
+
+
+def test_finite_refinement_work_requires_recorded_fine_stages(finite_stage_evidence):
+    directory, final, wire, operator = finite_stage_evidence
+    change_fixture_json(directory, "search/search-report.json", lambda search: search.update(refinement_points_searched=1))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "fine" in " ".join(report["errors"]).lower()
+
+
+@pytest.mark.parametrize("key,value,error", [
+    ("best_discarded_score", -11.0, "discarded score bound"),
+    ("discarded_count", 0, "distinct retention counts"),
+    ("evaluated_modes", 2, "distinct retention counts"),
+    ("max_event_groups", 2, "Finite group bound"),
+    ("score_kind", "matched_group_support_minus_normalized_residual", "another run or score kind"),
+    ("unclassified_score_candidates", 1, "discarded score bound"),
+])
+def test_finite_stage_recomputes_claims_from_recorded_modes(finite_stage_evidence, key, value, error):
+    directory, final, wire, operator = finite_stage_evidence
+    change_finite_claim(directory, lambda finite: finite.__setitem__(key, value))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert error in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("kind,error", [
+    ("retained", "retained original scores or groups"),
+    ("candidate", "wire candidates omit or invent"),
+    ("assessed", "assessed IDs differ"),
+    ("core", "assessed IDs differ"),
+])
+def test_finite_stage_rejects_omitted_mode_identities(finite_stage_evidence, kind, error):
+    directory, final, wire, operator = finite_stage_evidence
+    if kind == "retained":
+        change_finite_claim(directory, lambda finite: finite["retained_modes"].pop())
+    elif kind == "core":
+        change_fixture_json(directory, "search/search-report.json", lambda search: search["core_assessed_mode_ids"].pop())
+    else:
+        key = "candidate_mode_ids" if kind == "candidate" else "assessed_mode_ids"
+        change_fixture_json(directory, "refined-candidates.json",
+                            lambda refinement: refinement["matching_diagnostics"][key].pop())
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert error in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("kind", ["swap_same_association_ids", "change_pass_emission_times"])
+def test_finite_refinement_preserves_its_original_mode_lineage(finite_stage_evidence, kind):
+    directory, final, wire, operator = finite_stage_evidence
+    def change_lineage(refinement):
+        first, second = refinement["ranked"]
+        assert first["flight_ids"] == second["flight_ids"]
+        assert first["event_indices"] == second["event_indices"]
+        if kind == "swap_same_association_ids":
+            first["mode_id"], second["mode_id"] = second["mode_id"], first["mode_id"]
+            refinement["matching_diagnostics"]["candidate_mode_ids"] = [first["mode_id"], second["mode_id"]]
+        else:
+            first["pass_emission_times_s"] = [first["recording_start_time_s"] + 2.0]
+    change_fixture_json(directory, "refined-candidates.json", change_lineage)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "borrowed another mode's event-to-flight identity" in " ".join(report["errors"])
+
+
+def test_finite_refinement_cannot_replace_an_original_point_with_a_shifted_copy(finite_stage_evidence):
+    from aircraft_geoloc import confidence
+
+    directory, final, wire, operator = finite_stage_evidence
+    refinement = json.loads((directory / "refined-candidates.json").read_text())
+    shifted = refinement["ranked"][1]
+    assert shifted["mode_seed"]["position"][2] == 40.003
+    shifted["lat"] = 40.0001
+    save_json(directory / "refined-candidates.json", refinement)
+    candidates = deepcopy(final["candidates"])
+    candidates[1]["lat"] = shifted["lat"]
+    diagnostics = refinement["matching_diagnostics"]
+    candidates[0]["uncertainty"] = {key: diagnostics["sensitivity"][key] for key in ("radius_m", "method", "kind")}
+    decision = confidence.decide_location(final["events"], candidates, final["coverage"], matching_diagnostics=diagnostics)
+    assert decision["status"] == "succeeded", decision
+    assert decision["candidates"][0]["uncertainty"]["radius_m"] == 50.0
+    final.update({key: value for key, value in decision.items() if key != "diagnostics"})
+    save_json(directory / "decision.json", decision)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "omitted an original retained physical point" in " ".join(report["errors"])
+
+
+def test_finite_winner_cannot_mask_an_unknown_scheduled_trial(finite_stage_evidence):
+    directory, final, wire, operator = finite_stage_evidence
+    def add_unknown(search):
+        search["ranked"][0]["scoring_assessment"].update(complete=False, scheduled_trials=2,
+            unknown_trials=1, unknown_reasons={"insufficient_track_support": 1})
+        assert search["ranked"][0]["core_assessment_complete"] is True
+    change_fixture_json(directory, "search/search-report.json", add_unknown)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "winner masks missing or unknown clock trials" in " ".join(report["errors"])
+
+
+def test_finite_aggregate_cannot_omit_an_explicitly_unclassified_retained_mode(finite_stage_evidence):
+    directory, final, wire, operator = finite_stage_evidence
+    def hide_unknown_from_aggregate(search):
+        search["ranked"][0]["scoring_assessment"].update(complete=False, scheduled_trials=2,
+            unknown_trials=1, unknown_reasons={"insufficient_track_support": 1})
+        search["ranked"][0]["core_assessment_complete"] = False
+        search["core_assessed_mode_ids"] = [search["ranked"][1]["mode_id"]]
+        assert search["finite_search_evidence"]["complete"] is True
+        assert search["finite_search_evidence"]["unclassified_score_candidates"] == 0
+    change_fixture_json(directory, "search/search-report.json", hide_unknown_from_aggregate)
+    change_fixture_json(directory, "refined-candidates.json", lambda refinement:
+        refinement["matching_diagnostics"].update(assessed_mode_ids=[refinement["ranked"][1]["mode_id"]]))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "aggregate omits unclassified retained clock trials" in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("change", [
+    {"scheduled_trials": 2},
+    {"evaluated_trials": True},
+    {"rejected_trials": 2},
+    {"unknown_reasons": {"unavailable_model": 1}},
+    {"empty_clock_domain": True},
+])
+def test_finite_known_claim_requires_accounted_nonempty_clock_trials(finite_stage_evidence, change):
+    directory, final, wire, operator = finite_stage_evidence
+    change_fixture_json(directory, "search/search-report.json",
+        lambda search: search["ranked"][0]["scoring_assessment"].update(change))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "winner masks missing or unknown clock trials" in " ".join(report["errors"])
+
+
+def test_honest_unknown_finite_trial_preserves_an_inconclusive_decision(finite_stage_evidence):
+    from aircraft_geoloc import confidence
+
+    directory, final, wire, operator = finite_stage_evidence
+    change_finite_claim(directory, lambda finite: finite.update(complete=False, unclassified_score_candidates=1,
+        best_discarded_score=None, discarded_bound_status="unknown_model_or_trial_support"))
+    search = json.loads((directory / "search/search-report.json").read_text())
+    best = search["ranked"][0]
+    best["scoring_assessment"].update(complete=False, scheduled_trials=2, unknown_trials=1,
+        unknown_reasons={"insufficient_track_support": 1})
+    best["core_assessment_complete"] = False
+    search["core_assessed_mode_ids"] = [search["ranked"][1]["mode_id"]]
+    save_json(directory / "search/search-report.json", search)
+    refinement = json.loads((directory / "refined-candidates.json").read_text())
+    refinement["ranked"][0].update(scoring_assessment=best["scoring_assessment"], core_assessment_complete=False)
+    diagnostics = refinement["matching_diagnostics"]
+    diagnostics["assessed_mode_ids"] = search["core_assessed_mode_ids"]
+    save_json(directory / "refined-candidates.json", refinement)
+    tile = json.loads((directory / "search/tile-0_0.json").read_text())
+    tile["payload"]["ranked"] = search["ranked"]
+    tile["payload"]["counts"]["unclassified_score_candidates"] = 1
+    tile["payload_hash"] = fixture_digest(tile["payload"])
+    save_json(directory / "search/tile-0_0.json", tile)
+    candidates = deepcopy(final["candidates"])
+    candidates[0]["uncertainty"] = {key: diagnostics["sensitivity"][key] for key in ("radius_m", "method", "kind")}
+    decision = confidence.decide_location(final["events"], candidates, final["coverage"], matching_diagnostics=diagnostics)
+    decision.setdefault("candidates", candidates)
+    assert decision["status"] == "inconclusive"
+    assert decision["reason_code"] == "finite_search_incomplete"
+    final.update({key: value for key, value in decision.items() if key != "diagnostics"})
+    save_json(directory / "decision.json", decision)
+    change_fixture_json(directory, "provenance.json", lambda provenance: provenance.update(status=final["status"]))
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"], report
+    assert report["full_pipeline_observed"] is True
+    assert report["finite_search_verified"] is False
+    assert report["finite_search"]["ledger_verified"] is True
+    assert report["finite_search"]["best_discarded_score"] is None
+    assert report["finite_search"]["unclassified_score_candidates"] == 1
+
+
+def test_finite_completeness_cannot_erase_a_coarse_unknown_trial(finite_stage_evidence):
+    directory, final, wire, operator = finite_stage_evidence
+    def add_unknown(tile):
+        tile["payload"]["counts"]["unclassified_score_candidates"] = 1
+        tile["payload_hash"] = fixture_digest(tile["payload"])
+    change_fixture_json(directory, "search/tile-0_0.json", add_unknown)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "unknown-trial count is inconsistent" in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("forged_radius", [50.0, 999.0])
+def test_finite_stage_rejects_forged_union_in_consistent_terminal_copies(finite_stage_evidence, forged_radius):
+    directory, final, wire, operator = finite_stage_evidence
+    final["candidates"][0]["uncertainty"]["radius_m"] = forged_radius
+    def forge(decision):
+        decision["candidates"] = deepcopy(final["candidates"])
+        decision["diagnostics"]["radius_m"] = forged_radius
+        decision["diagnostics"]["finite_envelope"]["radius_m"] = forged_radius
+    change_fixture_json(directory, "decision.json", forge)
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    assert report["passed"] is False
+    assert "does not reproduce the persisted decision" in " ".join(report["errors"])
+
+
+@pytest.mark.parametrize("null_finite", [False, True])
+def test_legacy_supported_stage_evidence_requires_absent_finite_field(finite_stage_evidence, null_finite):
+    from aircraft_geoloc import confidence
+
+    directory, final, wire, operator = finite_stage_evidence
+    search = json.loads((directory / "search/search-report.json").read_text())
+    search.pop("finite_search_evidence")
+    search["alternative_modes_exhaustively_assessed"] = True
+    if null_finite:
+        search["finite_search_evidence"] = None
+    search.pop("core_assessed_mode_ids")
+    search["ranked"] = search["ranked"][:1]
+    save_json(directory / "search/search-report.json", search)
+    refinement = json.loads((directory / "refined-candidates.json").read_text())
+    refinement["ranked"] = refinement["ranked"][:1]
+    diagnostics = refinement["matching_diagnostics"]
+    for key in ("finite_search_evidence", "core_assessment_mapping_status", "candidate_mode_ids", "assessed_mode_ids"):
+        diagnostics.pop(key)
+    diagnostics["alternatives_evaluated"] = True
+    save_json(directory / "refined-candidates.json", refinement)
+    candidate = deepcopy(final["candidates"][0])
+    candidate["uncertainty"] = {key: diagnostics["sensitivity"][key] for key in ("radius_m", "method", "kind")}
+    decision = confidence.decide_location(final["events"], [candidate], final["coverage"], matching_diagnostics=diagnostics)
+    decision.setdefault("candidates", [candidate])
+    assert decision["status"] == "succeeded", decision
+    final.update({key: value for key, value in decision.items() if key != "diagnostics"})
+    save_json(directory / "decision.json", decision)
+    (directory / "search/retention.sqlite").unlink()
+    report = HTTP.inspect_pipeline_evidence(directory, final, wire, operator)
+    if null_finite:
+        assert report["passed"] is False
+        assert "Search and refinement finite evidence differ" in " ".join(report["errors"])
+        return
+    assert report["passed"], report
+    assert report["full_pipeline_observed"] is True
+    assert "finite_search" not in report
+    assert "finite_search_verified" not in report
 
 
 @pytest.mark.parametrize("name", STAGE_FILES)

@@ -66,4 +66,5 @@ jobs:
             results/ci-http-four-events/
             !results/**/__pycache__/**
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 30
