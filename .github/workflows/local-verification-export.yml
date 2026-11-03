@@ -1,23 +1,15 @@
-name: Export regional inputs for local verification
-
+name: Export source provenance metadata
 on:
   push:
     branches: [worker/local-verification-export-7a37d350]
     paths: [.github/workflows/local-verification-export.yml]
   workflow_dispatch:
-
 permissions:
   contents: read
-
-concurrency:
-  group: local-verification-export-${{ github.ref }}
-  cancel-in-progress: false
-
 jobs:
-  regional-inputs:
-    name: Export six unchanged regional real inputs
+  source-metadata:
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -25,120 +17,58 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"
-      - name: Check the release downloader
-        run: |
-          if ! command -v gh >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y gh
-          fi
-          gh --version
-      - name: Restore existing checksummed release assets
+      - name: Restore checksummed source archive and export selected provenance
         env:
           GH_TOKEN: ${{ github.token }}
-          REGIONAL_RESTORATION_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-restoration
-          REGIONAL_EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-export
-        run: |
-          mkdir -p "$REGIONAL_EXPORT_DIRECTORY"
-          python scripts/restore_ci_checkpoint.py \
-            --destination "$REGIONAL_RESTORATION_DIRECTORY" \
-            --repository "${{ github.repository }}" \
-            --manifest evidence/artifact-manifest.json \
-            --receipt "$REGIONAL_EXPORT_DIRECTORY/restoration-receipt.json"
-      - name: Reverify and export only the six declared inputs
-        env:
-          REGIONAL_RESTORATION_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-restoration
-          REGIONAL_EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-export
+          METADATA_WORK_DIRECTORY: ${{ runner.temp }}/dopplergeist-metadata
+          EXPORT_REPOSITORY: ${{ github.repository }}
         run: |
           python - <<'PY'
-          import datetime
-          import hashlib
-          import json
-          import os
+          import hashlib, importlib.util, json, os, shutil, subprocess
           from pathlib import Path
-          import shutil
-          import subprocess
-
-          restored = Path(os.environ["REGIONAL_RESTORATION_DIRECTORY"]).resolve()
-          output = Path(os.environ["REGIONAL_EXPORT_DIRECTORY"]).resolve()
+          spec = importlib.util.spec_from_file_location("restorer", "scripts/restore_artifacts.py")
+          restorer = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(restorer)
+          restorer.REPOSITORY = os.environ["EXPORT_REPOSITORY"]
+          root = Path(os.environ["METADATA_WORK_DIRECTORY"])
+          cache, restored, output = root / "cache", root / "restored", root / "export"
+          for path in (cache, restored, output):
+              path.mkdir(parents=True, exist_ok=False)
           manifest_path = Path("evidence/artifact-manifest.json")
           manifest = json.loads(manifest_path.read_text())
-          selected = (
-              "data/source/reference-recording.wav",
-              "data/source/reproduce-local.json",
-              "data/adsb/2026-09-08/reference-region.parquet",
-              "data/adsb/2026-09-08/type-database.csv",
-              "data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
-              "data/terrain/us_nga_egm96_15.tif",
-          )
-          entries = {}
-          for asset in manifest["assets"]:
-              for entry in asset["files"]:
-                  if entry["path"] in selected:
-                      if entry["path"] in entries:
-                          raise ValueError("Duplicate selected path in release manifest")
-                      entries[entry["path"]] = dict(entry, bundle=asset["name"])
+          asset = next(item for item in manifest["assets"] if item["name"] == "data-source.tar.gz")
+          archive = restorer.download_asset(asset, cache)
+          restoration = restorer.restore_asset(archive, asset, restored)
+          selected = ("data/source/reference-recording.info.json", "data/source/transcript.txt",
+                      "data/source/video.info.json", "data/source/true_camera.png",
+                      "data/source/source-1441.png", "data/source/source_manifest.json")
+          entries = {entry["path"]: entry for entry in asset["files"] if entry["path"] in selected}
           if set(entries) != set(selected):
-              raise ValueError("The release manifest is missing a required regional input")
-
-          def sha256(path):
+              raise ValueError("Required metadata is absent from the release manifest")
+          def digest(path):
               with path.open("rb") as stream:
                   return hashlib.file_digest(stream, "sha256").hexdigest()
-
-          receipt = json.loads((output / "restoration-receipt.json").read_text())
-          if receipt.get("status") != "passed":
-              raise ValueError("Release restoration did not pass")
-          exported = []
           for name in selected:
-              source, destination = restored / name, output / name
+              source, target = restored / name, output / name
               entry = entries[name]
-              if source.is_symlink() or not source.is_file():
-                  raise ValueError(f"Expected a regular restored input: {name}")
-              if source.stat().st_size != entry["bytes"] or sha256(source) != entry["sha256"]:
-                  raise ValueError(f"Restored input no longer matches the release: {name}")
-              destination.parent.mkdir(parents=True, exist_ok=True)
-              os.link(source, destination)
-              if destination.stat().st_size != entry["bytes"] or sha256(destination) != entry["sha256"]:
-                  raise ValueError(f"Exported input differs from the release: {name}")
-              exported.append(entry)
-
-          # Preserve the original configuration and require every file it uses.
-          config_path = output / "data/source/reproduce-local.json"
-          config = json.loads(config_path.read_text())
-          dependencies = [config["audio"], *config["tracks"], config["type_database"],
-                          *config["terrain"]["rasters"], config["terrain"]["geoid_raster"]]
-          dependencies.extend(event["ridge_csv"] for event in config["events"] if event.get("ridge_csv"))
-          required = {config_path.resolve()} | {(config_path.parent / name).resolve() for name in dependencies}
-          if config["terrain"].get("copernicus_cache") or required != {(output / name).resolve() for name in selected}:
-              raise ValueError("The regional configuration requires inputs outside the six-file export")
-          observed = {path.relative_to(output).as_posix() for path in (output / "data").rglob("*") if path.is_file()}
-          if observed != set(selected):
-              raise ValueError("Unexpected file in the exported input tree")
-          shutil.copyfile(manifest_path, output / "release-manifest.json")
-          report = {
-              "schema_version": 1,
-              "status": "passed",
-              "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              if source.is_symlink() or not source.is_file() or source.stat().st_size != entry["bytes"] or digest(source) != entry["sha256"]:
+                  raise ValueError("Restored provenance does not match the release: " + name)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+              if digest(target) != entry["sha256"]:
+                  raise ValueError("Exported provenance changed: " + name)
+          receipt = {"schema_version": 1, "status": "passed", "files": list(entries.values()),
               "checkout_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
-              "release_tag": receipt["release_tag"],
-              "release_manifest_sha256": sha256(manifest_path),
-              "restoration_receipt_sha256": sha256(output / "restoration-receipt.json"),
-              "files": exported,
-              "input_bytes": sum(entry["bytes"] for entry in exported),
-              "unchanged_release_bytes": True,
-              "source_mp4_included": False,
-              "scope": "Configured source-informed regional replay inputs; this export does not establish automatic or independent real-location acceptance.",
-          }
-          (output / "regional-inputs.json").write_text(json.dumps(report, indent=2) + "\n")
-          checksums = [f"{sha256(path)}  {path.relative_to(output).as_posix()}"
-                       for path in sorted(output.rglob("*")) if path.is_file()]
-          (output / "SHA256SUMS").write_text("\n".join(checksums) + "\n")
-          print(json.dumps(report, indent=2))
+              "release_tag": restorer.TAG, "release_asset": asset["name"], "release_asset_sha256": asset["sha256"],
+              "release_manifest_sha256": digest(manifest_path), "restoration": restoration,
+              "source_mp4_included": False, "audio_included": False,
+              "scope": "Unchanged released descriptive metadata and source screenshots; no recorder truth is inferred."}
+          (output / "provenance-export.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, indent=2))
           PY
-      - name: Upload unchanged regional inputs and checksum receipts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: dopplergeist-regional-real-inputs-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/dopplergeist-regional-export/
-          compression-level: 6
+          name: dopplergeist-source-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dopplergeist-metadata/export/
           if-no-files-found: error
           retention-days: 30
