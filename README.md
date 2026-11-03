@@ -1,5 +1,7 @@
 # DOPPLERGEIST
 
+# WORK IN PROGRESS !!! This is NOT done yet. Completion target in the next few hours. 
+
 An independent reconstruction of the aircraft-sound geolocation method described
 in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI). The pipeline
 measures Doppler curves, compares them with historical ADS-B trajectories, accounts
