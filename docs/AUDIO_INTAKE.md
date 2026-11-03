@@ -16,6 +16,14 @@ overlap_s)` returns `(audio_relative_start_s, float32_samples)` from a disk-back
 cache, bounding working memory independently of recording length. Acoustic
 analysis is available before the recording UTC clock is known.
 
+Chunk iteration seeks and reads only the active float32 window. It does not map
+the entire cache into the process: touched memory-map pages otherwise caused
+resident memory to grow with recording length. With fixed 120 s / 60 s chunks,
+synthetic 32 MiB and 128 MiB raw caches formerly added 35.58 MiB / 131.73 MiB
+peak RSS; explicit window reads add 3.63 MiB / 3.67 MiB. These are Linux iterator
+stress checks, not media acquisitions or full-pipeline resource measurements.
+Consumer event/result storage and plotting have separate memory costs.
+
 The shared `time_window` bounds the UTC time of sample zero, including recording
 clock uncertainty and any known trimming. Pass an explicit defensible user
 window or externally verified recording metadata via that contract. Ordinary
@@ -36,3 +44,6 @@ averaging/resampling, overlapping chunk offsets, a 50 ms clip, missing/ambiguous
 UTC, malformed/missing/empty media, hash identity and refusal to overwrite output.
 These tolerances establish behavior for the exercised codec/container versions;
 unknown encoders that omit gapless metadata can retain unknown leading padding.
+The Linux RSS regression reads a synthetic 128 MiB cache with a 32 MiB growth
+budget and verifies end coverage/checksum. Exact canonical six-event detection
+JSON also matches the earlier frozen run after the I/O change.
