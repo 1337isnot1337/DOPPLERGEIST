@@ -15,7 +15,7 @@ Create an isolated environment from the repository root:
 python -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
 .venv/bin/python -m pytest -q
-.venv/bin/aircraft-geoloc --help
+.venv/bin/dopplergeist --help
 ```
 
 Do not use `--system-site-packages` for a clean-install check. The test extra
@@ -51,15 +51,14 @@ destination. The source YouTube MP4 is excluded.
 
 ```bash
 python scripts/restore_artifacts.py --list
-python scripts/restore_artifacts.py --bundle data-synthetic
-.venv/bin/aircraft-geoloc run data/synthetic/known-time-minute.json --output results/new-minute-replay
 ```
 
-For the regional real reference replay:
+Current evaluation uses real recordings. For the historical regional real
+reference replay (which is not independently timed field validation):
 
 ```bash
 python scripts/restore_artifacts.py --bundle data-source --bundle data-adsb-derived --bundle data-terrain
-.venv/bin/aircraft-geoloc run data/source/reproduce-local.json --output results/new-reference-replay
+.venv/bin/dopplergeist run data/source/reproduce-local.json --output results/new-reference-replay
 ```
 
 Use `--cache PATH` to reuse a downloaded asset cache, and `--destination PATH` to

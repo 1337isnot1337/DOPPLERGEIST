@@ -1,7 +1,7 @@
 # Automatic workflow contracts, version 1
 
 Issue: [DG-01 / #2](https://github.com/1337isnot1337/DOPPLERGEIST/issues/2).
-Implementation: `src/aircraft_geoloc/contracts.py`. The wire objects are plain JSON
+Implementation: `src/dopplergeist/contracts.py`. The wire objects are plain JSON
 dictionaries, described by Python `TypedDict` types and explicit validators. They
 do not require a particular HTTP framework, UI library or worker executor.
 
@@ -142,7 +142,7 @@ serving files, including symlink handling. Do not embed huge spectra in job JSON
 
 ## Compatibility and ownership
 
-The existing `aircraft-geoloc run CONFIG --output DIR` and `measure` commands keep
+The existing `dopplergeist run CONFIG --output DIR` and `measure` commands keep
 their current behavior. `event_measure_settings(event)` maps a discovered event to
 the existing measurement-setting field names. It deliberately does not pretend to
 select flights or invent missing event geometry. Re-measuring a discovered window

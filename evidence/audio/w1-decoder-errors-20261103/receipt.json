@@ -1,0 +1,19 @@
+{
+  "scope": "Valid synthetic WAV plus private executable stubs; classification regression, not a new physical or namespace replay",
+  "baseline_commit": "fcbe513",
+  "fixed_commit": "4913fc44668314cdd69bb0a1dd029d27661c4336",
+  "baseline_module_sha256": "15fe2a2823a57fb5856973a4b2cc711444ec5a667c1f6fc0d5e31bb482912d6a",
+  "fixed_module_sha256": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781",
+  "test_sha256": "5599f59700984a0addd16610190b8a68e9b675e6b83add9df7cd5132587d8fc0",
+  "before": {
+    "regressions_failed": 4,
+    "existing_media_controls_passed": 2
+  },
+  "after": {
+    "intake_tests_passed": 11,
+    "full_tests_passed": 225,
+    "subtests_passed": 6
+  },
+  "decoder_settings_changed": false,
+  "system_binaries_changed": false
+}

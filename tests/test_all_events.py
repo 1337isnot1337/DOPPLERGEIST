@@ -6,9 +6,9 @@ import pandas as pd
 import pytest
 from pyproj import Transformer
 
-from aircraft_geoloc.geometry import Track, ecef, straight_doppler
-from aircraft_geoloc.matching import RidgeTimes, association_candidates, refine_candidate
-from aircraft_geoloc.search import score_candidate
+from dopplergeist.geometry import Track, ecef, straight_doppler
+from dopplergeist.matching import RidgeTimes, association_candidates, refine_candidate
+from dopplergeist.search import score_candidate
 
 
 class TonePass:
@@ -118,7 +118,7 @@ def test_explicit_event_cap_and_large_index_are_never_silent():
 @pytest.mark.parametrize("origin", [None, 90])
 def test_temporal_pruning_matches_an_exhaustive_small_oracle(origin):
     from itertools import combinations, product
-    from aircraft_geoloc.search import filter_event
+    from dopplergeist.search import filter_event
     rows = [dict(point_id=p, flight_id=str(i%2), receive_time=t, emission_time=t-5,
                  speed_mps=80, distance_m=1700) for p in (0, 1) for i, t in enumerate((100, 109, 121, 136))]
     table = pd.DataFrame(rows)

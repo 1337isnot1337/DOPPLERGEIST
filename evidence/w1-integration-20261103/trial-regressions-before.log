@@ -1,0 +1,60 @@
+FFFF.F                                                                   [100%]
+=================================== FAILURES ===================================
+_________________ test_all_declared_clock_trials_are_evaluated _________________
+
+    def test_all_declared_clock_trials_are_evaluated():
+        result = score(Model())
+        assert result["score"] == pytest.approx(0)
+>       assert result["scoring_assessment"] == {"complete": True, "evaluated_trials": 3,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "rejected_trials": 0, "unknown_trials": 0, "reasons": []}
+E       KeyError: 'scoring_assessment'
+
+tests/test_scoring_assessment.py:41: KeyError
+______________ test_finite_best_does_not_hide_unknown_clock_trial ______________
+
+    def test_finite_best_does_not_hide_unknown_clock_trial():
+        result = score(Model(last_supported=20))
+        assert np.isfinite(result["score"])
+>       assessment = result["scoring_assessment"]
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'scoring_assessment'
+
+tests/test_scoring_assessment.py:48: KeyError
+____ test_completed_acoustic_rejection_is_classified_without_a_finite_best _____
+
+    def test_completed_acoustic_rejection_is_classified_without_a_finite_best():
+        result = score(Model(), ridge_hz=200, association=True)
+        assert result["score"] == -np.inf
+>       assert result["scoring_assessment"] == {"complete": True, "evaluated_trials": 0,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "rejected_trials": 3, "unknown_trials": 0, "reasons": ["acoustic_loss_exceeds_limit"]}
+E       KeyError: 'scoring_assessment'
+
+tests/test_scoring_assessment.py:57: KeyError
+_ test_typed_emission_failure_stays_unknown_instead_of_losing_candidate_accounting _
+
+    def test_typed_emission_failure_stays_unknown_instead_of_losing_candidate_accounting():
+>       error = geometry.AcousticSupportError("test-flight", "non_monotone_arrival")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'aircraft_geoloc.geometry' has no attribute 'AcousticSupportError'
+
+tests/test_scoring_assessment.py:62: AttributeError
+________ test_empty_clock_domain_is_not_a_vacuous_completed_assessment _________
+
+    def test_empty_clock_domain_is_not_a_vacuous_completed_assessment():
+        result = score(Model(), bounds=[5, 6])
+        assert result["score"] == -np.inf
+>       assert result["scoring_assessment"] == {"complete": False, "evaluated_trials": 0,
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "rejected_trials": 0, "unknown_trials": 1, "reasons": ["no_clock_trials"]}
+E       KeyError: 'scoring_assessment'
+
+tests/test_scoring_assessment.py:78: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_scoring_assessment.py::test_all_declared_clock_trials_are_evaluated
+FAILED tests/test_scoring_assessment.py::test_finite_best_does_not_hide_unknown_clock_trial
+FAILED tests/test_scoring_assessment.py::test_completed_acoustic_rejection_is_classified_without_a_finite_best
+FAILED tests/test_scoring_assessment.py::test_typed_emission_failure_stays_unknown_instead_of_losing_candidate_accounting
+FAILED tests/test_scoring_assessment.py::test_empty_clock_domain_is_not_a_vacuous_completed_assessment
+5 failed, 1 passed in 1.32s

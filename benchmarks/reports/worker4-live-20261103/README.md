@@ -13,6 +13,12 @@ validated real national localization success.
   alternatives_not_assessed`; a local altitude-only sensitivity radius was also
   109.74 m under the original 100 m policy. The bounded retained alternatives were
   not exhaustive. These candidates are not counted as accepted locations.
+  Worker 5's separate normal 2 km / 100 m-grid run is also retained in the receipt:
+  its winning hypothesis was wrong by **1,046,023.15 m**, while the true pair was
+  rank four at 6.1565 m with a near-tied score. That run abstained for partial
+  flight coverage and unresolved alternatives. The nearby lower-ranked candidate
+  is not a pipeline success; it demonstrates why changing resolution cannot be
+  validated from selected close candidates alone.
 - `public-webcam-report.json`: six actual HTTP uploads. The three original usable
   clips and corrected Herald Square clip returned `needs_input /
   recording_time_required`, with zero proposals. Two invalid encoder tails

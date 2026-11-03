@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import sys
 
@@ -6,8 +7,36 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from aircraft_geoloc.contracts import validate_recording
-from aircraft_geoloc.intake import AudioIntakeError, intake_recording, source_hash
+from dopplergeist.contracts import validate_recording
+from dopplergeist.intake import AudioIntakeError, intake_recording, source_hash
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX executable startup failures")
+@pytest.mark.parametrize("decoder", ["ffprobe", "ffmpeg"])
+@pytest.mark.parametrize("failure", ["loader_exit", "not_executable", "media_rejection"])
+def test_decoder_startup_and_media_failures_are_distinct(tmp_path, monkeypatch, decoder, failure):
+    source = tmp_path / "valid.wav"
+    sf.write(source, np.zeros(8000), 8000)
+    digest = source_hash(source)
+    real_probe = shutil.which("ffprobe")
+    assert real_probe
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    if decoder == "ffmpeg":
+        (binaries / "ffprobe").symlink_to(real_probe)
+    executable = binaries / decoder
+    code = 1 if failure == "media_rejection" else 127
+    executable.write_text(f"#!/bin/sh\nprintf 'controlled decoder failure\\n' >&2\nexit {code}\n")
+    executable.chmod(0o644 if failure == "not_executable" else 0o755)
+    monkeypatch.setenv("PATH", str(binaries))
+    with pytest.raises(AudioIntakeError) as error:
+        intake_recording(source, tmp_path / "cache")
+    expected = "decoder_unavailable"
+    if failure == "media_rejection":
+        expected = "invalid_media" if decoder == "ffprobe" else "decode_failed"
+    assert error.value.code == expected
+    assert source_hash(source) == digest
+    assert not (tmp_path / "cache" / "recording.f32").exists()
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="Linux /proc resident-memory accounting")
@@ -19,7 +48,7 @@ def test_chunk_iterator_does_not_retain_recording_sized_rss(tmp_path):
     script = """
 import json, sys
 from pathlib import Path
-from aircraft_geoloc.intake import IntakeRecording
+from dopplergeist.intake import IntakeRecording
 path = Path(sys.argv[1])
 duration = path.stat().st_size / 4 / 4000
 metadata = dict(source_sha256="0" * 64, duration_s=duration, sample_rate_hz=4000,

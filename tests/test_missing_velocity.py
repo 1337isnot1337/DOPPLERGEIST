@@ -13,7 +13,7 @@ import pytest
 from numpy.testing import assert_allclose
 from pyproj import Transformer
 
-from aircraft_geoloc.tracks import adsblol_frame, load_tracks
+from dopplergeist.tracks import adsblol_frame, load_tracks
 
 
 EPOCH = 1_790_000_000.0

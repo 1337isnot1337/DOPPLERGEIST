@@ -4,9 +4,9 @@ import hashlib
 import json
 from pathlib import Path
 
-from aircraft_geoloc.contracts import validate_request, validate_result
-from aircraft_geoloc.discovery import discover_events
-from aircraft_geoloc.intake import intake_recording
+from dopplergeist.contracts import validate_request, validate_result
+from dopplergeist.discovery import discover_events
+from dopplergeist.intake import intake_recording
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
         "artifacts": {"recording": "intake/recording.json", "discovery": "discovery/discovery.json"}})
     (args.output / "result.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
     modules = ("intake.py", "discovery.py", "contracts.py")
-    code = Path(__file__).resolve().parents[1] / "src" / "aircraft_geoloc"
+    code = Path(__file__).resolve().parents[1] / "src" / "dopplergeist"
     provenance = {"source_sha256": recording.metadata["source_sha256"],
                   "code_sha256": {name: hashlib.sha256((code / name).read_bytes()).hexdigest() for name in modules},
                   "adapter_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}

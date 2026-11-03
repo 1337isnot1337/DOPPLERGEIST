@@ -3,8 +3,8 @@ from copy import deepcopy
 import pytest
 from pyproj import Geod
 
-from aircraft_geoloc.confidence import DecisionPolicy, decide_location
-from aircraft_geoloc.contracts import validate_result
+from dopplergeist.confidence import DecisionPolicy, decide_location
+from dopplergeist.contracts import validate_result
 
 
 def evidence():
@@ -36,6 +36,7 @@ def test_complete_fixture_passes_without_probability_and_preserves_inputs():
     before = deepcopy(bundle)
     result = decide(bundle)
     assert result["status"] == "succeeded"
+    assert result["diagnostics"]["policy_version"] == "engineering-v3"
     assert result["diagnostics"]["probability"] is None
     assert result["diagnostics"]["calibration"] == "uncalibrated"
     assert bundle == before
@@ -119,7 +120,7 @@ def test_w3_vertical_only_profile_is_not_a_100m_confidence_claim():
 
 
 def test_known_clock_single_event_requires_full_trusted_window_sensitivity():
-    from aircraft_geoloc.contracts import utc_timestamp
+    from dopplergeist.contracts import utc_timestamp
     events, candidates, coverage, diag = evidence()
     events = events[:1]
     candidates[0].update(event_ids=["e0"], flight_ids=["a"])
@@ -171,3 +172,121 @@ def test_all_four_independent_flyovers_are_checked():
     assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
     diag["e3"]["rmse_hz"] = 8
     assert decide((events, candidates, coverage, diag))["reason_code"] == "inconsistent_event_match"
+
+
+def finite_evidence():
+    events, candidates, coverage, diag = evidence()
+    candidates.append(dict(candidates[0], lat=45., score=-4.))
+    diag.update(alternatives_evaluated=False, assessed_mode_ids=["a", "b"], candidate_mode_ids=["a", "b"],
+                finite_search_evidence={"schema_version": 1, "scope": "evaluated_finite_grid", "complete": True,
+                    "score_kind": candidates[0]["score_kind"], "spacing_m": 1000., "refine_spacing_m": 100.,
+                    "max_event_groups": 2, "retained_modes": [{"mode_id": "a", "score": -1., "event_groups": 2},
+                        {"mode_id": "b", "score": -4., "event_groups": 2}],
+                    "discarded_count": 7, "best_discarded_score": -5., "pruning_accounted_for": True,
+                    "limitations": ["Evaluated grids only; no continuous-space uniqueness."]})
+    return events, candidates, coverage, diag
+
+
+def test_finite_search_can_pass_without_claiming_continuous_exhaustion():
+    bundle = finite_evidence()
+    result = decide(bundle)
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["policy_version"] == "engineering-v5-finite-envelope"
+    assert result["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
+    bundle[3]["sensitivity"]["sources"] = ["altitude"]
+    assert decide(bundle)["reason_code"] == "uncertainty_not_established"
+
+
+@pytest.mark.parametrize("kind,reason", [("discard", "retention_may_hide_alternatives"),
+    ("complete", "finite_search_incomplete"), ("pruning", "finite_search_incomplete"),
+    ("assessed", "finite_modes_not_assessed"), ("mapping", "finite_candidate_mapping_incomplete"),
+    ("lost_score", "finite_candidate_scores_inconsistent")])
+def test_finite_search_cannot_hide_omitted_or_near_tied_modes(kind, reason):
+    bundle = finite_evidence()
+    diag = bundle[3]
+    finite = diag["finite_search_evidence"]
+    diag["alternatives_evaluated"] = True  # Optimistic legacy flag cannot override evidence.
+    if kind == "discard": finite["best_discarded_score"] = -1.2
+    elif kind == "complete": finite["complete"] = False
+    elif kind == "pruning": finite["pruning_accounted_for"] = False
+    elif kind == "assessed": diag["assessed_mode_ids"] = ["a"]
+    elif kind == "mapping": diag["candidate_mode_ids"] = ["a", "a"]
+    elif kind == "lost_score": finite["retained_modes"][1]["score"] = 0.
+    result = decide(bundle)
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == reason
+
+
+def test_finite_retention_bound_uses_declared_subset_units():
+    events, candidates, coverage, diag = finite_evidence()
+    kind = "matched_group_support_minus_normalized_residual"
+    candidates[0].update(score=1.8, score_kind=kind)
+    candidates[1].update(score=0.1, score_kind=kind)
+    finite = diag["finite_search_evidence"]
+    finite.update(score_kind=kind, best_discarded_score=1.5)
+    for mode, score in zip(finite["retained_modes"], (1.8, 0.1)): mode["score"] = score
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "retention_may_hide_alternatives"
+    finite["best_discarded_score"] = 1.2
+    assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
+
+
+def test_malformed_finite_flags_fail_instead_of_looking_like_insufficient_data():
+    bundle = finite_evidence()
+    bundle[3]["finite_search_evidence"]["complete"] = 1
+    result = decide(bundle)
+    assert result["status"] == "failed"
+    assert result["reason_code"] == "invalid_evidence"
+
+
+def near_finite_points(distance_m=90.):
+    from pyproj import Geod
+    bundle = finite_evidence()
+    best, alternative = bundle[1]
+    alternative["lon"], alternative["lat"], _ = Geod(ellps="WGS84").fwd(best["lon"], best["lat"], 90., distance_m)
+    alternative["score"] = -1.2
+    bundle[3]["finite_search_evidence"]["retained_modes"][1]["score"] = -1.2
+    return bundle
+
+
+def test_finite_near_cluster_returns_a_copied_honest_envelope():
+    bundle = near_finite_points()
+    before = deepcopy(bundle)
+    result = decide(bundle)
+    assert result["status"] == "succeeded"
+    returned = result["candidates"]
+    assert 159.999 < returned[0]["uncertainty"]["radius_m"] < 160.001
+    assert returned[0]["uncertainty"]["kind"] == "sensitivity"
+    assert returned[0]["uncertainty"]["method"] == "finite_mode_and_tested_profile_union"
+    assert result["diagnostics"]["finite_envelope"]["included_mode_ids"] == ["a", "b"]
+    for original, candidate in zip(before[1], returned):
+        assert {k: v for k, v in original.items() if k != "uncertainty"} == {k: v for k, v in candidate.items() if k != "uncertainty"}
+    assert bundle == before
+    assert validate_result({"schema_version": 1, "job_id": "finite-envelope", "status": "succeeded",
+                            "events": bundle[0], "coverage": bundle[2], "candidates": returned})["candidates"] == returned
+
+
+def test_finite_union_keeps_distant_and_different_association_vetoes():
+    distant = near_finite_points(2000.)
+    assert decide(distant)["reason_code"] == "ambiguous_locations"
+    different = near_finite_points(30.)
+    different[1][1]["flight_ids"] = ["x", "y"]
+    assert decide(different)["reason_code"] == "ambiguous_flight_match"
+    narrow = near_finite_points()
+    result = decide_location(*narrow[:3], matching_diagnostics=narrow[3], policy=DecisionPolicy(target_radius_m=100.))
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == "ambiguous_locations"
+
+
+@pytest.mark.parametrize("kind,reason", [("incomplete", "uncertainty_not_established"),
+    ("boundary", "refinement_boundary_limited"), ("missing_sources", "uncertainty_not_established"),
+    ("missing_uncertainty", "uncertainty_not_established"), ("ledger", "finite_search_incomplete")])
+def test_union_cannot_repair_missing_or_clipped_leading_evidence(kind, reason):
+    bundle = near_finite_points()
+    if kind == "incomplete": bundle[3]["sensitivity"]["complete"] = False
+    elif kind == "boundary": bundle[3]["sensitivity"]["boundary_limited"] = True
+    elif kind == "missing_sources": bundle[3]["sensitivity"]["sources"] = ["altitude"]
+    elif kind == "missing_uncertainty": bundle[1][0].pop("uncertainty")
+    elif kind == "ledger": bundle[3]["finite_search_evidence"]["complete"] = False
+    result = decide(bundle)
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == reason
