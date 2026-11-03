@@ -5,7 +5,7 @@ Coverage describes the *source query*, never receiver/network completeness.
 """
 from collections import Counter, OrderedDict, deque
 from concurrent.futures import ProcessPoolExecutor
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
@@ -134,6 +134,60 @@ def cache_lock(path):
     with path.open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         yield
+
+
+def _file_stat_identity(info):
+    return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+
+
+def _checked_sha256(path, identity=None):
+    """Hash the opened file, rejecting source mutation or path replacement."""
+    with path.open("rb") as stream:
+        before = _file_stat_identity(os.fstat(stream.fileno()))
+        if identity is not None and before != identity:
+            raise OSError(f"File changed while hashing: {path}")
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        after = _file_stat_identity(os.fstat(stream.fileno()))
+        if before != after or before != _file_stat_identity(path.stat()):
+            raise OSError(f"File changed while hashing: {path}")
+    return digest
+
+
+def cached_sha256(path):
+    """Reuse a stat-validated digest, falling back to hashing read-only inputs.
+
+    Receipt and lock files are optional acceleration. Their I/O failures must
+    not prevent reading an otherwise usable index or weaken source-change checks.
+    """
+    path = Path(path)
+    receipt = path.with_name(path.name + ".sha256.json")
+    lock = receipt.with_name(receipt.name + ".lock")
+    with ExitStack() as stack:
+        try:
+            stack.enter_context(cache_lock(lock))
+        except OSError:
+            return _checked_sha256(path)
+        identity = _file_stat_identity(path.stat())
+        try:
+            saved = json.loads(receipt.read_text())
+            digest = saved.get("sha256")
+            if (saved.get("version") == 1 and saved.get("identity") == identity and
+                    isinstance(digest, str) and len(digest) == 64 and
+                    all(char in "0123456789abcdef" for char in digest)):
+                current_identity = _file_stat_identity(path.stat())
+                if identity == current_identity:
+                    return digest
+                identity = current_identity
+        except (OSError, UnicodeError, AttributeError, json.JSONDecodeError):
+            pass
+        digest = _checked_sha256(path, identity)
+        try:
+            write_json(receipt, {"version": 1, "identity": identity, "sha256": digest})
+        except OSError:
+            # The digest already passed the same source checks. Cache metadata
+            # may be unwritable even when an existing lock could be acquired.
+            pass
+        return digest
 
 
 def download(url, path, *, size=None, digest=None, offline=False, session=None):

@@ -19,11 +19,11 @@ import numpy as np
 import pandas as pd
 from pyproj import Transformer
 
-from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
+from .data_access import CONUS, DataUnavailable, cached_sha256, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
 from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
-from .matching import _cache_ridge_fits
+from .matching import RIDGE_FIT_BACKEND, _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
 
 
@@ -675,13 +675,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             rasters += terrain.geoid.rasters
         terrain_signature = {"constant_m": getattr(terrain, "constant", None),
                              "rasters": {str(r.name): sha256(r.name) for r in rasters}}
-    identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": sha256(i.path)} for i in indexes],
+    runtime_identity = {"python": platform.python_version(), "machine": platform.machine(),
+                        "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}
+    if RIDGE_FIT_BACKEND != "python-irls-v1":
+        runtime_identity["ridge_fit_backend"] = RIDGE_FIT_BACKEND
+    identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": cached_sha256(i.path)} for i in indexes],
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
                 "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
                 "coarse_floor_policy": floor_policy,
-                "runtime": {"python": platform.python_version(), "machine": platform.machine(),
-                            "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}}
+                "runtime": runtime_identity}
     run_hash = content_hash(identity)
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")

@@ -1,0 +1,42 @@
+{
+  "scope": "Repeated digest computation for one restored historical index; excludes acquisition, trajectory decoding and search",
+  "index_input_hash": "0f6749f7b2d358d8b663e67e80920f70888a88e7860063965394ee74538a4614",
+  "file_bytes": 41385984,
+  "passes": 9,
+  "initial_cached_call": {
+    "wall_s": 0.03071991899923887,
+    "cpu_s": 0.030713063000000096
+  },
+  "medians": {
+    "direct": {
+      "wall_s": 0.028796221000447986,
+      "cpu_s": 0.02879935899999997
+    },
+    "warm_cached": {
+      "wall_s": 0.00028991799990762956,
+      "cpu_s": 0.0002901310000000823
+    },
+    "read_only_fallback": {
+      "wall_s": 0.029063945999951102,
+      "cpu_s": 0.02906691699999997
+    }
+  },
+  "warm_digest_wall_speedup": 99.3253989390887,
+  "all_digests_equal_direct_source_hash": true,
+  "read_only_fallback_wrote_no_metadata": true,
+  "environment": {
+    "cpu_affinity": [
+      3
+    ],
+    "numerical_threads": 1,
+    "source_and_temporary_filesystem": "tmpfs"
+  },
+  "regressions": {
+    "real_index_checks_passed": 8,
+    "original_proposal_read_only_result": "PermissionError creating the adjacent receipt lock",
+    "fixed_read_only_result": "Direct verified digest; no metadata writes",
+    "during_hash_mutation_and_replacement": "rejected",
+    "mutation_during_cache_hit": "rehashed current bytes"
+  },
+  "reproduction": "PYTHONPATH=src python scripts/benchmark_real_index_hash_cache.py --index REAL_INDEX.sqlite --output NEW_OUTPUT --passes 9"
+}

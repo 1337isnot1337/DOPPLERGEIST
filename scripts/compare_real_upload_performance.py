@@ -144,6 +144,8 @@ class Run:
                     reason = "operator configuration digest; full normalized operator.json is compared"
                 elif not root and relative == "search/manifest.json" and here == ("configuration", "code"):
                     reason = "search implementation files"
+                elif not root and relative == "search/manifest.json" and here == ("configuration", "runtime", "ridge_fit_backend"):
+                    reason = "ridge fitter implementation identity; all numerical outputs are compared"
                 elif not root and relative == "provenance.json" and here == ("resumed_from",):
                     reason = "explicit resume metadata: resumed_from"
                 elif not root and relative == "search/search-report.json" and here == ("tiles_resumed",):
