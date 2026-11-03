@@ -67,7 +67,7 @@ def test_insufficient_evidence_abstains(kind, reason):
     elif kind == "drift": diag["e0"]["drift_at_bound"] = True
     elif kind == "altitude_only": diag["sensitivity"]["sources"] = ["altitude"]
     elif kind == "no_alternatives": diag["alternatives_evaluated"] = False
-    elif kind == "wide": candidates[0]["uncertainty"]["radius_m"] = 500
+    elif kind == "wide": candidates[0]["uncertainty"]["radius_m"] = 1500
     elif kind == "boundary": diag["sensitivity"]["boundary_limited"] = True
     elif kind == "no_tracks": candidates = []
     result = decide((events, candidates, coverage, diag))
@@ -147,9 +147,27 @@ def test_explicit_subset_keeps_unconfirmed_proposals_without_forcing_matches():
     result = decide((events, candidates, coverage, diag))
     assert result["status"] == "succeeded"
     assert result["diagnostics"]["unmatched_event_ids"] == ["e2"]
+    diag["supported_event_ids"] = ["e0", "e1", "e2"]
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "unmatched_supported_events"
+    diag["supported_event_ids"] = ["e0", "e1"]
     alternative = dict(candidates[0], lat=45., event_ids=["e0", "e2"], flight_ids=["a", "c"], score=1.7)
     assert decide((events, candidates+[alternative], coverage, diag))["reason_code"] == "ambiguous_locations"
     alternative["score"] = 0.5
     assert decide((events, candidates+[alternative], coverage, diag))["status"] == "succeeded"
     extra["harmonic_group_id"] = "g0"
     assert decide((events, candidates, coverage, diag))["reason_code"] == "incomplete_harmonic_group"
+
+
+def test_all_four_independent_flyovers_are_checked():
+    events, candidates, coverage, diag = evidence()
+    for i in (2, 3):
+        event = deepcopy(events[0])
+        event.update(event_id=f"e{i}", harmonic_group_id=f"g{i}", start_s=i*100, end_s=i*100+20)
+        event["ridge"] = [dict(point, time_s=point["time_s"]+i*100) for point in event["ridge"]]
+        events.append(event)
+        candidates[0]["event_ids"].append(event["event_id"])
+        candidates[0]["flight_ids"].append(f"flight-{i}")
+        diag[event["event_id"]] = deepcopy(diag["e0"])
+    assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
+    diag["e3"]["rmse_hz"] = 8
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "inconsistent_event_match"

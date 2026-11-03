@@ -1,5 +1,10 @@
 # Evaluation corpus and separation
 
+Current reports use the updated 1,000 m acceptance target and show the 100, 500
+and 1,000 m tiers separately. Historical runs retain their original 100 m target.
+Uncalibrated sensitivity and diagnostic candidates are distinct from measured
+error of an accepted location.
+
 `inventory.json` pins input hashes from the published checkpoint manifest, source,
 license status, clock evidence and coordinate precision. The 40-passage record is
 CC BY 4.0 (Praveen Pathak). The public reference recording has no independently

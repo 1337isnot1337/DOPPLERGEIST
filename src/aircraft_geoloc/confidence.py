@@ -15,7 +15,7 @@ from .contracts import utc_timestamp, validate_result
 @dataclass(frozen=True)
 class DecisionPolicy:
     """Predeclared engineering limits, not fitted confidence calibration."""
-    target_radius_m: float = 100.0
+    target_radius_m: float = 1000.0
     min_independent_events: int = 2
     max_event_rmse_hz: float = 3.0
     max_outlier_fraction: float = 0.25
@@ -50,7 +50,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     policy = policy or DecisionPolicy()
     if not isinstance(policy, DecisionPolicy):
         raise TypeError("policy must be a DecisionPolicy")
-    diagnostics = {"policy": asdict(policy), "policy_version": "engineering-v2",
+    diagnostics = {"policy": asdict(policy), "policy_version": "engineering-v3",
                    "calibration": "uncalibrated", "probability": None,
                    "limitations": ["Archive availability does not establish capture of every aircraft.",
                                    "Sensitivity checks are not a calibrated confidence interval."]}
@@ -118,6 +118,12 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
             policy.min_independent_events == 2 and known_clock):
         return result("insufficient_independent_events", "Too few independent flyovers constrain location; harmonics count once.")
     unmatched = set(lookup) - set(best["event_ids"])
+    supported = evidence.get("supported_event_ids")
+    if supported is not None:
+        if not isinstance(supported, list) or not all(isinstance(key, str) for key in supported) or set(supported) - set(lookup):
+            return result("invalid_evidence", "Supported-event identifiers must resolve to discovered events.", "failed")
+        if set(supported) - set(best["event_ids"]):
+            return result("unmatched_supported_events", "The hypothesis omits independently supported flyovers.")
     if unmatched:
         declared = evidence.get("unmatched_event_ids")
         if (best["score_kind"] != "matched_group_support_minus_normalized_residual" or

@@ -16,12 +16,15 @@ scope and availability of requested archives, not capture of every aircraft.
 
 ## Default policy and evidence
 
-The current default `DecisionPolicy` is `engineering-v2`; the original v1 receipts
+The current default `DecisionPolicy` is `engineering-v3`; the original v1 receipts
 remain preserved. Development negative controls motivated explicit abstention
 for noise, absent tracks, harmonic duplicates, incomplete coverage, bad residuals
 and multiple plausible hypotheses. The engineering thresholds are deliberately
 simple and predeclared: normally at least two independent flyovers, <=3 Hz event RMSE,
-<=25% outliers, >=95% trajectory support, and 100 m maximum sensitivity radius.
+<=25% outliers and >=95% trajectory support. The current precision target is
+1,000 m, following the updated project acceptance requirement; 100–500 m or better
+remains preferred. Earlier 100 m runs retain their original policy/threshold.
+Sensitivity radius is an engineering envelope, not measured location error.
 For `negative_robust_ridge_loss_hz`, a competing loss within 0.5 Hz per independent
 event is a near tie. The declared subset-support score has a separate
 dimensionless near-tie threshold of 0.2 support units per independent group;
@@ -48,6 +51,12 @@ IDs. Entire harmonic groups must be retained. These omitted proposals remain
 unconfirmed sounds, not labelled aircraft misses or silently deleted evidence.
 Different retained subsets remain comparable only using their declared support
 score and may still trigger flight/location ambiguity. Matching diagnostics
+may also supply `supported_event_ids`: independently supported flyovers must all
+appear in the winning association. Three, four and more matched groups are all
+checked; there is no decision-stage maximum event count. A four-event regression
+ensures the fourth event's inconsistent residual cannot be ignored.
+
+Matching diagnostics
 use event-ID keys with `rmse_hz`, `outlier_fraction`, `support_fraction` and
 `drift_at_bound`. Other required evidence keys are `clock_locked`,
 `refinement_boundary_limited`, `alternatives_evaluated` and `sensitivity`.
@@ -81,6 +90,7 @@ branch; it does not establish that the real producer has provided such evidence.
 | `inconsistent_harmonic_association` | Harmonics map to different flights |
 | `incomplete_harmonic_group` | Partial association omits a matched event's harmonic |
 | `unexplained_events` | Unmatched proposals lack explicit subset-association evidence |
+| `unmatched_supported_events` | The hypothesis omits independently supported flyovers |
 | `recording_clock_mismatch` | Fitted start is outside the trusted original window |
 | `timing_not_established` | Shared clock unverified |
 | `matching_diagnostics_missing` | Event-fit evidence unavailable |
@@ -115,3 +125,9 @@ These public, author-constructed fixture splits verify decision logic only. The
 zero errors and false-localization counts do not estimate audio or real-world
 localization accuracy. The audio controls and the frozen audit remain separate;
 see `benchmarks/README.md` for their evidence limits and real-data gap.
+
+New evaluation reports include successes and false localizations at each of
+100, 500 and 1,000 m, with the active threshold stated separately. The frozen
+historical runner explicitly retains its original 100 m threshold. An abstained
+best candidate may have a diagnostic error at these tiers, but it never counts
+as an accepted localization success.
