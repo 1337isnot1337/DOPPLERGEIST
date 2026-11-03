@@ -1,0 +1,388 @@
+{
+  "source_commit": "f2aa5ec6adf5013940de919554c90660e0d3d866",
+  "source_sha256": {
+    "aircraft_geoloc.matching": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+    "aircraft_geoloc.confidence": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6"
+  },
+  "harness_sha256": "e6cfe8a91e449f7a95aa075d82d668ddf6a270d7f215631785f277ad1de9bf00",
+  "scope": "Abstract perfect-fit policy controls, not detection/search/real accuracy.",
+  "cases": [
+    {
+      "groups": 4,
+      "same_association": false,
+      "discarded": false,
+      "best_score": 4.0,
+      "other_score": 3.0,
+      "normalized_gap": 0.25,
+      "best_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3"
+      },
+      "other_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2"
+      },
+      "status": "succeeded",
+      "reason_code": "supported_by_evidence_checks",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 1000.0,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3.0,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5,
+          "near_tie_support_per_group": 0.2
+        },
+        "policy_version": "engineering-v5-finite-envelope",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": [
+          "Archive availability does not establish capture of every aircraft.",
+          "Sensitivity checks are not a calibrated confidence interval.",
+          "Only the declared finite grids/refinements were compared; continuous-space uniqueness is not established."
+        ],
+        "independent_event_groups": 4,
+        "recording_start_window_s": [
+          1790000000.0,
+          1790000000.0
+        ],
+        "known_clock_single_event": false,
+        "unmatched_event_ids": [],
+        "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+        "finite_search": {
+          "scope": "evaluated_finite_grid",
+          "spacing_m": 2000.0,
+          "refine_spacing_m": 100.0,
+          "retained_modes": 2,
+          "discarded_count": 0,
+          "best_discarded_score": null,
+          "limitations": [
+            "Controlled finite decision evidence; no measured recording."
+          ],
+          "continuous_space_uniqueness": "not established"
+        },
+        "sensitivity_sources": [
+          "frequency",
+          "clock",
+          "altitude",
+          "sound_speed"
+        ],
+        "radius_m": 50.0,
+        "finite_envelope": {
+          "base_profile_radius_m": 50.0,
+          "base_reported_radius_m": 50.0,
+          "finite_point_extent_m": 0.0,
+          "radius_m": 50.0,
+          "included_candidate_indices": [
+            0
+          ],
+          "included_mode_ids": [
+            "all-groups"
+          ],
+          "limitations": [
+            "Union covers evaluated same-association points and actually reported test envelopes.",
+            "Unperformed competitor profiles/refinements remain unbounded; no coverage probability is inferred."
+          ]
+        }
+      }
+    },
+    {
+      "groups": 5,
+      "same_association": false,
+      "discarded": false,
+      "best_score": 5.0,
+      "other_score": 4.0,
+      "normalized_gap": 0.2,
+      "best_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4"
+      },
+      "other_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3"
+      },
+      "status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 1000.0,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3.0,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5,
+          "near_tie_support_per_group": 0.2
+        },
+        "policy_version": "engineering-v5-finite-envelope",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": [
+          "Archive availability does not establish capture of every aircraft.",
+          "Sensitivity checks are not a calibrated confidence interval.",
+          "Only the declared finite grids/refinements were compared; continuous-space uniqueness is not established."
+        ],
+        "independent_event_groups": 5,
+        "recording_start_window_s": [
+          1790000000.0,
+          1790000000.0
+        ],
+        "known_clock_single_event": false,
+        "unmatched_event_ids": [],
+        "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+        "finite_search": {
+          "scope": "evaluated_finite_grid",
+          "spacing_m": 2000.0,
+          "refine_spacing_m": 100.0,
+          "retained_modes": 2,
+          "discarded_count": 0,
+          "best_discarded_score": null,
+          "limitations": [
+            "Controlled finite decision evidence; no measured recording."
+          ],
+          "continuous_space_uniqueness": "not established"
+        },
+        "competing_hypothesis": {
+          "separation_m": 0.0,
+          "score_gap": 0.2,
+          "gap_units": "support_units_per_group",
+          "same_flight_association": false,
+          "checked_radius_m": 50.0
+        }
+      }
+    },
+    {
+      "groups": 6,
+      "same_association": false,
+      "discarded": false,
+      "best_score": 6.0,
+      "other_score": 5.0,
+      "normalized_gap": 0.16666666666666666,
+      "best_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4",
+        "e5": "f5"
+      },
+      "other_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4"
+      },
+      "status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 1000.0,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3.0,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5,
+          "near_tie_support_per_group": 0.2
+        },
+        "policy_version": "engineering-v5-finite-envelope",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": [
+          "Archive availability does not establish capture of every aircraft.",
+          "Sensitivity checks are not a calibrated confidence interval.",
+          "Only the declared finite grids/refinements were compared; continuous-space uniqueness is not established."
+        ],
+        "independent_event_groups": 6,
+        "recording_start_window_s": [
+          1790000000.0,
+          1790000000.0
+        ],
+        "known_clock_single_event": false,
+        "unmatched_event_ids": [],
+        "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+        "finite_search": {
+          "scope": "evaluated_finite_grid",
+          "spacing_m": 2000.0,
+          "refine_spacing_m": 100.0,
+          "retained_modes": 2,
+          "discarded_count": 0,
+          "best_discarded_score": null,
+          "limitations": [
+            "Controlled finite decision evidence; no measured recording."
+          ],
+          "continuous_space_uniqueness": "not established"
+        },
+        "competing_hypothesis": {
+          "separation_m": 0.0,
+          "score_gap": 0.16666666666666666,
+          "gap_units": "support_units_per_group",
+          "same_flight_association": false,
+          "checked_radius_m": 50.0
+        }
+      }
+    },
+    {
+      "groups": 6,
+      "same_association": true,
+      "discarded": false,
+      "best_score": 6.0,
+      "other_score": 6.0,
+      "normalized_gap": 0.0,
+      "best_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4",
+        "e5": "f5"
+      },
+      "other_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4",
+        "e5": "f5"
+      },
+      "status": "succeeded",
+      "reason_code": "supported_by_evidence_checks",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 1000.0,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3.0,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5,
+          "near_tie_support_per_group": 0.2
+        },
+        "policy_version": "engineering-v5-finite-envelope",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": [
+          "Archive availability does not establish capture of every aircraft.",
+          "Sensitivity checks are not a calibrated confidence interval.",
+          "Only the declared finite grids/refinements were compared; continuous-space uniqueness is not established."
+        ],
+        "independent_event_groups": 6,
+        "recording_start_window_s": [
+          1790000000.0,
+          1790000000.0
+        ],
+        "known_clock_single_event": false,
+        "unmatched_event_ids": [],
+        "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+        "finite_search": {
+          "scope": "evaluated_finite_grid",
+          "spacing_m": 2000.0,
+          "refine_spacing_m": 100.0,
+          "retained_modes": 2,
+          "discarded_count": 0,
+          "best_discarded_score": null,
+          "limitations": [
+            "Controlled finite decision evidence; no measured recording."
+          ],
+          "continuous_space_uniqueness": "not established"
+        },
+        "sensitivity_sources": [
+          "frequency",
+          "clock",
+          "altitude",
+          "sound_speed"
+        ],
+        "radius_m": 50.0,
+        "finite_envelope": {
+          "base_profile_radius_m": 50.0,
+          "base_reported_radius_m": 50.0,
+          "finite_point_extent_m": 0.0,
+          "radius_m": 50.0,
+          "included_candidate_indices": [
+            0,
+            1
+          ],
+          "included_mode_ids": [
+            "all-groups",
+            "other"
+          ],
+          "limitations": [
+            "Union covers evaluated same-association points and actually reported test envelopes.",
+            "Unperformed competitor profiles/refinements remain unbounded; no coverage probability is inferred."
+          ]
+        }
+      }
+    },
+    {
+      "groups": 6,
+      "same_association": false,
+      "discarded": true,
+      "best_score": 6.0,
+      "other_score": 5.0,
+      "normalized_gap": 0.16666666666666666,
+      "best_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4",
+        "e5": "f5"
+      },
+      "other_association": {
+        "e0": "f0",
+        "e1": "f1",
+        "e2": "f2",
+        "e3": "f3",
+        "e4": "f4"
+      },
+      "status": "inconclusive",
+      "reason_code": "retention_may_hide_alternatives",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 1000.0,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3.0,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5,
+          "near_tie_support_per_group": 0.2
+        },
+        "policy_version": "engineering-v5-finite-envelope",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": [
+          "Archive availability does not establish capture of every aircraft.",
+          "Sensitivity checks are not a calibrated confidence interval."
+        ],
+        "independent_event_groups": 6,
+        "recording_start_window_s": [
+          1790000000.0,
+          1790000000.0
+        ],
+        "known_clock_single_event": false,
+        "unmatched_event_ids": [],
+        "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+        "finite_search": {
+          "scope": "evaluated_finite_grid",
+          "spacing_m": 2000.0,
+          "refine_spacing_m": 100.0,
+          "retained_modes": 1,
+          "discarded_count": 1,
+          "best_discarded_score": 5.0,
+          "limitations": [
+            "Controlled finite decision evidence; no measured recording."
+          ],
+          "continuous_space_uniqueness": "not established",
+          "discarded_score_gap_per_group": 0.16666666666666666
+        }
+      }
+    }
+  ]
+}
