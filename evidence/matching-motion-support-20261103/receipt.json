@@ -1,0 +1,59 @@
+{
+  "scope": "physical_model_support_and_solver_regressions",
+  "commits": {
+    "radial_only_baseline": "21ad2f0405d091ed701e08dcaa9750edbedd2a8c",
+    "speed_guard": "186fbede433622ef49dd1c9d985236f2e8351959",
+    "convergence_guard": "a1ae3533c77a3b97efffd12377e390c55f820657",
+    "current_main_combined": "294ac495923213f687f61eb9bc2ffd1b19d7f83c"
+  },
+  "code_sha256": {
+    "src/aircraft_geoloc/geometry.py": "1508ff56d9f52f94cd1916db1c77045462dd2271930362883fec6bfd69bda2c9",
+    "src/aircraft_geoloc/search.py": "9ae76b197d2d7a8f03bfee9d379429053dcd565526c8cac6b0b19a1d8eb15830",
+    "tests/test_motion_support.py": "8c5c92c477aa5ac37152be428943f95994133b8246fc47a79eb3510b84619440",
+    "scripts/check_motion_support.py": "5e9c2e6217b03042e65c42b30d383852e019dd31b575a4f339436e6097e8696d",
+    "docs/MOTION_SUPPORT.md": "c0fa8ec8bc3b1ec94845819dda1df5aac6021278dee259d9045f9345d705e8bd"
+  },
+  "full_suites": [
+    {
+      "source": "186fbede433622ef49dd1c9d985236f2e8351959",
+      "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q",
+      "passed": 235,
+      "subtests_passed": 6,
+      "exit_code": 0,
+      "duration_s": 76.83,
+      "log": "speed-guard-full-suite.log"
+    },
+    {
+      "source": "a1ae3533c77a3b97efffd12377e390c55f820657",
+      "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q",
+      "passed": 236,
+      "subtests_passed": 6,
+      "exit_code": 0,
+      "duration_s": 85.1,
+      "log": "convergence-guard-full-suite.log"
+    },
+    {
+      "source": "294ac495923213f687f61eb9bc2ffd1b19d7f83c",
+      "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q",
+      "passed": 243,
+      "subtests_passed": 6,
+      "exit_code": 0,
+      "duration_s": 69.33,
+      "log": "current-main-full-suite.log"
+    }
+  ],
+  "source_guard_comparison": {
+    "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/aircraft-audio-geolocation/.venv/bin/python scripts/check_motion_support.py --output results/motion-support-current-main-20261103",
+    "source": "294ac495923213f687f61eb9bc2ffd1b19d7f83c",
+    "segments_agree": 16,
+    "excluded_native_intervals": 207,
+    "receipt": "source-audit-current-main.json"
+  },
+  "limitations": [
+    "Numerical floating-point extrema, not formal interval arithmetic",
+    "Conservative whole native-interval exclusions; source data and interpolation are not repaired",
+    "Outer isolation and product transport remain separate integration checks",
+    "No audio, receiver truth, localization replay or accuracy result in source-only check",
+    "No real national or independent field acceptance established"
+  ]
+}
