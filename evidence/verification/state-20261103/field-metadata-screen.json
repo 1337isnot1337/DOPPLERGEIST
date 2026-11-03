@@ -1,0 +1,73 @@
+{
+  "record": "https://zenodo.org/api/records/10215080",
+  "doi": "10.5281/zenodo.10215080",
+  "verified_metadata_files": [
+    {
+      "name": "sample_meta.csv",
+      "url": "https://zenodo.org/api/records/10215080/files/sample_meta.csv/content",
+      "bytes": 307055,
+      "md5": "aabd99b1b2efe0895e212232bca07e46",
+      "sha256": "4dced5bcd953bc97a39cf54d2b585a7875ef7d9c43f3660951560869b009090c"
+    },
+    {
+      "name": "README.md",
+      "url": "https://zenodo.org/api/records/10215080/files/README.md/content",
+      "bytes": 13334,
+      "md5": "eae0c8099ca654fc07036292b103e882",
+      "sha256": "cd7ddfbbceccb45978ac0586f84d3082351c66eb9a918e00b3fff763b82f829b"
+    },
+    {
+      "name": "LICENSE.txt",
+      "url": "https://zenodo.org/api/records/10215080/files/LICENSE.txt/content",
+      "bytes": 277,
+      "md5": "31868370effa55c07c76e257c9feb19d",
+      "sha256": "ea32e18bcf1e8eadc961cba90d923d090ad9468e3fa7a2c6636dd79c4292b823"
+    }
+  ],
+  "columns": [
+    "train-test",
+    "fold",
+    "filename",
+    "date",
+    "time",
+    "location",
+    "mic",
+    "class",
+    "subclass",
+    "altitude",
+    "hex_id",
+    "session",
+    "offset",
+    "duration",
+    "file_length",
+    "reg",
+    "airframe",
+    "engtype",
+    "engnum",
+    "shortdesc",
+    "typedesig",
+    "manu",
+    "model",
+    "engmanu",
+    "engmodel",
+    "engfamily",
+    "fueltype",
+    "propmanu",
+    "propmodel",
+    "mtow"
+  ],
+  "rows": 1895,
+  "date_min": "2022-12-08",
+  "date_max": "2023-05-23",
+  "microphone_ids": [
+    "0",
+    "1"
+  ],
+  "location_ids": [
+    "0",
+    "1",
+    "2"
+  ],
+  "audio_downloaded": false,
+  "eligibility": "Not established: intentionally displaced coordinates lack a published distance bound; independent UTC/sample-zero synchronization not established; Australian corpus is outside current CONUS acceptance scope."
+}
