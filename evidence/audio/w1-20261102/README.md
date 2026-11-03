@@ -81,3 +81,21 @@ not calibrated probability. Discovery can miss faint/truncated events, fragment
 ridges, and propose non-aircraft moving tones. No 100 m / automatic nationwide
 localization claim follows from this evidence. Product end-to-end acceptance is
 owned by the integration and verification workers.
+
+## Forty public full WAVs, without supplied bands
+
+`public40-4a49646/` contains every prediction, input manifest/hash and per-case
+resource/proposal counts. Fixed detector `4a49646` processed all 40 complete WAVs
+(3605.323 s total audio): **0 processing errors, 28 recordings with at least one
+proposal, 12 without, 102 proposals total**. Aggregate subprocess runtime321.562 s;
+maximum per-case peak RSS266.902 MiB. The recording list came only from `audio.wav`
+paths; the detector did not read frequency annotations, KML, reference speed/range,
+coordinates or truth. Annotation-assisted historical feature results were not
+used as discovery inputs.
+
+These are proposal counts, **not 28 certified aircraft detections or a 70% true
+event recall**. Multiple proposals may be fragments, other sources or false
+alarms, and annotation/audio clock alignment and harmonic identity have not been
+verified by this check. This corpus lacks independent recorder-coordinate/clock
+proof, so no localization-accuracy claim is possible. The complete per-case
+predictions preserve all additional proposals and misses for later evaluation.
