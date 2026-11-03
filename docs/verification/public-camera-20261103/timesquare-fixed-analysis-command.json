@@ -1,0 +1,23 @@
+{
+  "input_sha256": "6853afb5dd7967209a5c5adc529c48a582e67112a63ef04d3989970a88d781e4",
+  "input_bytes": 2401101,
+  "command": [
+    "/home/user/dopplergeist-e2e-20261102/.venv/bin/python",
+    "-m",
+    "aircraft_geoloc.cli",
+    "analyze",
+    "/home/user/dopplergeist-public-camera-20261103/.artifacts/blind-camera-inputs/6853afb5dd7967209a5c5adc529c48a582e67112a63ef04d3989970a88d781e4.mp3",
+    "--jobs",
+    "/home/user/dopplergeist-public-camera-20261103/results/public-camera-frozen25-fixed-20261103-0106",
+    "--max-runtime",
+    "120"
+  ],
+  "cli_exit_code": 0,
+  "elapsed_s": 3.8849680898711085,
+  "integration_commit": "e227c5db20427f6753a141f369da69a51ab9d4f2",
+  "source_preserved": true,
+  "no_manual_event_inputs": true,
+  "no_reference_coordinate_passed": true,
+  "no_recording_clock_guess": true,
+  "discovery_default_min_contrast": 2.5
+}
