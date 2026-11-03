@@ -130,6 +130,9 @@ trajectory or scoring envelope lacks support, `model_support_complete` stays fal
 `model_support` retains the raw work counts, unknown trials, and reasons. Missing
 or malformed counters cannot become zero work. These counts describe work
 evaluations, not distinct aircraft.
+Unreported trial envelopes are explicit: zero reported unknown trials cannot
+establish completion when any trial accounting is absent, including the legacy
+fully supported path.
 
 If every unknown finite scoring envelope has a validated ceiling or rejection,
 `model_assessment_complete` can be true. An unavailable event fit contributes at

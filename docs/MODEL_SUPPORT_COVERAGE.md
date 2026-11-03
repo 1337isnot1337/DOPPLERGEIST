@@ -69,3 +69,28 @@ The mixed-source regression preserves the clean candidate identities/scores,
 retains the original malformed source, and reports partial model coverage. This
 verified connection does not repair source observations or establish real-data
 acceptance; W3 documents the numerical support assumptions in MOTION_SUPPORT.md.
+
+## Configured research runs
+
+The configured `dopplergeist run` path also isolates `AcousticSupportError` at the
+track and candidate boundaries. A failed CPA track leaves its whole source time
+span and receiver stage unassessed. Other tracks retain their original CPA rows.
+A typed scoring failure leaves that candidate's full proposed clock domain
+unassessed. Generic programming and configuration errors still propagate.
+
+`support/` retains the excluded track IDs, reported physical intervals, receiver
+envelopes, candidate associations, clock domains, and available trial assessments.
+`model-support.json` summarizes those stages. Counts include repeated evaluations
+of the same track or candidate at different resolutions. Missing trial records
+remain unreported work. They do not become zero unknown trials.
+
+Legacy brightness and ridge scoring do not supply complete clock-trial records.
+Their finite scores remain ranked hypotheses with `core_assessment_complete: false`.
+Unsupported or unclassified work makes `model_support_complete` and
+`model_assessment_complete` false. Original input provenance remains in the report.
+The isolation does not repair velocities, observations, or physical model support.
+
+The configured report declares `result_scope: configured_research_ranking` and
+`accepted_location: false`. Empty ranking results retain `best: null` and the
+support diagnostics. This path does not certify source coverage, eliminate missing
+competitors, or make an automatic localization decision.

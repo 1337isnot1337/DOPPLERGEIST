@@ -205,11 +205,11 @@ def _coverage(request, search, config):
     if any(name in search for name in ("model_support_complete", "model_support", "model_assessment_complete")):
         support = search.get("model_support")
         count_names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",
-                       "evaluated_trials", "rejected_trials", "unknown_trials")
+                       "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes")
         valid_counts = (isinstance(support, dict) and
                         all(type(support.get(name)) is int and support[name] >= 0 for name in count_names))
         model_complete = (search.get("model_support_complete") is True and valid_counts and
-                          all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials")))
+                          all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials", "unreported_trial_envelopes")))
         if "model_assessment_complete" in search and search["model_assessment_complete"] is not True:
             model_complete = False
         bounded_assessment = valid_counts and _bounded_model_assessment(search, support)
@@ -220,7 +220,7 @@ def _coverage(request, search, config):
             limitations.append("Some finite acoustic trials lack full trajectory support. Their certified score bounds or rejections are accounted for; the decision still checks whether any bound could compete with the leading location.")
         if not model_complete:
             if valid_counts:
-                limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}. Counts describe work evaluations, not distinct aircraft.")
+                limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}; unreported trial envelopes: {support['unreported_trial_envelopes']}. Counts describe work evaluations, not distinct aircraft.")
             else:
                 limitations.append("Trajectory model support counts are unavailable or malformed; missing work is not treated as zero.")
     if not search_complete:
