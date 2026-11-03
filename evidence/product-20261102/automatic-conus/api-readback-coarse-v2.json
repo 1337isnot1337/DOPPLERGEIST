@@ -1,0 +1,34 @@
+{
+  "job_id": "b6b93dbd48b34b33ba13678bfd220507",
+  "status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "restart_result_unchanged": true,
+  "artifact_inventory_files": 839,
+  "downloads": {
+    "input.mp3": {
+      "bytes": 1180412,
+      "sha256": "457f13726e3367e28ff5e329876f67cc167a612cfbbcb738be0ba39eb525cdc0"
+    },
+    "provenance.json": {
+      "bytes": 3140,
+      "sha256": "b42a8caf1e61c0a87eab31e27fad40af1fdf38a83b88c3da49f1f6851375283e"
+    },
+    "discovery/event-0001.png": {
+      "bytes": 91078,
+      "sha256": "4080d1d4722b3b9c3b6decea60bc3d030ef5ebbb48f81147c61a35ea938ae3f0"
+    },
+    "search/search-report.json": {
+      "bytes": 8337,
+      "sha256": "cdf648995a2bd960f9bbc324fe96cb0b5d6801cc24a0a90dbdc3501f4f096b3f"
+    },
+    "refined-candidates.json": {
+      "bytes": 37096,
+      "sha256": "614350e7a63d4d0674ed43c9189c068148ed61a47a406b6c3302a3ecf342b194"
+    },
+    "decision.json": {
+      "bytes": 2610,
+      "sha256": "32d7acf503dc6c513a5d97634f71e376e2f53206aa6bcaf8587a044696df10ea"
+    }
+  },
+  "scope": "actual completed automatic CONUS job served/read/downloaded through the HTTP API after restart"
+}
