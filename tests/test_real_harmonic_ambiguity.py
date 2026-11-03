@@ -36,3 +36,18 @@ def test_real_unflagged_group_pair_is_not_automatically_rejected():
     assert len({event["harmonic_group_id"] for event in events}) >= 2
     # Absence of a flag is not proof that these are independent aircraft.
     assert _possible_harmonic_overlap(events) is None
+
+
+def test_real_shared_ridge_branch_does_not_establish_independence():
+    source = os.environ.get("DOPPLERGEIST_REAL_SHARED_RIDGE_SCAN")
+    if not source:
+        pytest.skip("set DOPPLERGEIST_REAL_SHARED_RIDGE_SCAN to the real ESID103 scan JSON")
+    events = [validate_event(event) for event in json.loads(Path(source).read_text())["events"]]
+    assert len(events) == 2 and events[0]["harmonic_group_id"] != events[1]["harmonic_group_id"]
+    flag = _possible_harmonic_overlap(events)
+    assert flag and set(flag["event_ids"]) == {event["event_id"] for event in events}
+    assert flag["ambiguity"] == "reused_ridge_observations"
+    assert flag["shared_ridge_samples"] == 8
+    assert flag["shared_run_start_s"] == 367.5
+    assert flag["shared_run_end_s"] == 369.5
+    assert _possible_harmonic_overlap(events[:1]) is None
