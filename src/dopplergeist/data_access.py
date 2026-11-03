@@ -26,6 +26,16 @@ from .tracks import _segment_velocity, adsblol_frame
 CONUS = (-125.0, 24.0, -66.0, 50.0)
 INDEX_VERSION = 2
 
+# These exact source versions differ only in whether the same altitude-offset
+# arrays are allocated once per trace or once per interpolated row.  Keep the
+# mapping keyed by the current complete source hash: any later normalizer edit
+# falls back to the ordinary conservative mismatch behavior.
+_EQUIVALENT_NORMALIZERS = {
+    "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0": (
+        "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    ),
+}
+
 
 def _frame_track(name, frame):
     velocity, inferred = _segment_velocity(frame)
@@ -325,8 +335,10 @@ class FlightIndex:
                 WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
                 AND s.start<=? AND s.end>=? ORDER BY s.name"""
             params = (east, west, north, south, end, start)
+            current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
+            compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
             if (not self.report.get("continuous_geometry_bounds") or
-                    self.report.get("normalizer_sha256") != sha256(Path(__file__).with_name("tracks.py"))):
+                    self.report.get("normalizer_sha256") not in compatible):
                 # Old indexes used sample-only bounds or different derivatives.
                 # Disable unsafe spatial pruning, preserving explicit budgets.
                 sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
@@ -363,6 +375,20 @@ class FlightCache:
         index = directory / f"all-types-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
         if index.exists():
             return FlightIndex(index)
+        for old_hash in _EQUIVALENT_NORMALIZERS.get(normalizer_hash, ()):
+            old_index = directory / f"all-types-v{INDEX_VERSION}-{old_hash[:12]}.sqlite"
+            if old_index.exists():
+                existing = FlightIndex(old_index)
+                start = pd.Timestamp(day.isoformat(), tz="UTC").timestamp()
+                try:
+                    full_day = existing.coverage_for((-180, -90, 180, 90), (start, start + 86400))["scope_complete"]
+                except (KeyError, TypeError, ValueError):
+                    full_day = False
+                if (existing.report.get("index_version") != INDEX_VERSION or
+                        existing.report.get("normalizer_sha256") != old_hash or
+                        existing.report.get("coverage", {}).get("release_tag") != tag or not full_day):
+                    raise DataUnavailable("Compatible flight index metadata mismatch")
+                return existing
         release_path = directory / "release.json"
         if not release_path.exists():
             if self.offline:
