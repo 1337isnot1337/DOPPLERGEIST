@@ -44,7 +44,11 @@ source before editing. The current CLI still requires manual event settings.
   overlapping edits to `audio.py`, `search.py`, `pipeline.py`, `terrain.py` and
   dependency declarations before changing a shared interface.
 - Preserve user/concurrent changes. Do not force-push shared branches or silently
-  replace another agent's implementation. Do not spawn extra agents unless asked.
+  replace another agent's implementation.
+- **Do not launch subagents yourself.** The user controls worker deployment.
+  Record new workstreams as concrete GitHub issues, announce them on the board,
+  and leave them available for workers the user chooses to launch. A proposed
+  independent workstream is not permission to spawn a worker.
 - Keep the worktree clean between checkpoints. Inspect `git status` and the diff
   before every commit; stage only owned files. Never use broad cleanup, hard reset,
   checkout/restore or stash operations to hide or discard someone else's work.
