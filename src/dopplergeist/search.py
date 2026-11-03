@@ -392,12 +392,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                   "empty_clock_domain": len(shifts) == 0}
     reasons = set()
     unknown_bounds = []
-    for shift in shifts:
+    selected_tracks = [tracks[p["flight_id"]] for p in candidate["passes"]] if mode == "robust_ridge" else None
+    batches = None
+    if mode == "robust_ridge" and len(shifts) > 1:
+        from .matching import batch_acoustic_trials
+        batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
+    for trial, shift in enumerate(shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
+            precomputed = ([None if batch is None else (batch[0][trial], batch[1][trial]) for batch in batches]
+                           if batches is not None else None)
             try:
-                result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
-                                      events,measurements,observer,anchor+shift,c)
+                result = score_ridges(selected_tracks, events, measurements, observer, anchor+shift, c,
+                                      acoustic_results=precomputed)
             except AcousticSupportError as error:
                 assessment["unknown_trials"] += 1
                 reasons.add(str(error))
