@@ -43,6 +43,9 @@ incomplete model support. Both are development examples, not automatic or
 independent real-world acceptance. The original Livermore run reported 38.8 seconds; the separate fresh replay used
 for the figure reported 20.7 seconds. Runtime depends on hardware and load.
 
+For the subsequent full-archive MP3 upload and its ranked candidates, see the
+[all-aircraft ranked run](LIVERMORE_RANKED_RUN.md).
+
 ## Separate automatic MP3 upload
 
 The same real recording was also encoded to MP3 and submitted to the local API
