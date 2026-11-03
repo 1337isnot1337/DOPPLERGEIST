@@ -1,0 +1,2653 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-03",
+  "scope": "Exact recorded-input performance comparison, not independent location accuracy or complete national coverage.",
+  "versions": {
+    "baseline": "994d1ee48e25df6d30b23a356bba8f6502d8b7f6",
+    "current_runtime": "ecb1726fb9872d0060265014aa830e598b4dd3b4",
+    "ci_followup": "c0c9e798f47b547ab581fa473912e7218e3b4c3e"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "sqlite": "3.53.1",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "matplotlib": "3.10.7",
+      "pytest": "9.2.0"
+    }
+  },
+  "controls": {
+    "repeats": 3,
+    "arm_order": [
+      "baseline",
+      "current",
+      "current",
+      "baseline",
+      "baseline",
+      "current"
+    ],
+    "fresh_worker_each_arm": true,
+    "numerical_threads": 1,
+    "cpu_affinity_pinned": false,
+    "os_file_caches_flushed": false,
+    "other_team_cpu_benchmarks_paused": true,
+    "unrelated_host_load_controlled": false,
+    "same_prepared_sqlite_file_in_both_arms": true,
+    "track_cache_bytes": 33554432,
+    "both_native_backends_required": true,
+    "speedup_formula": "baseline median / current median; component ratios are never multiplied"
+  },
+  "dense": {
+    "identical_results": true,
+    "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged.",
+    "timing_scope": "Initial local index traversal and conservative distance sieve, followed by complete CPA/association scoring and retention. Excludes imports, index metadata, event preparation, downloads, terrain sampling, audio discovery, and refinement.",
+    "inventory": {
+      "queried_tracks": 4694,
+      "queried_samples": 713100,
+      "selected_tracks": 1354,
+      "selected_samples": 357324,
+      "groups": 16,
+      "scored_candidates": 16101,
+      "retained_candidates": 100,
+      "cpa_rows": 944,
+      "unsupported_cpa_tracks": 62
+    },
+    "budgets": {
+      "max_tracks_per_tile": 2000,
+      "max_track_samples_per_tile": 500000,
+      "max_candidates": 20000
+    },
+    "anchor_window_s": [
+      1788864888.7151732,
+      1788865236.7214916
+    ],
+    "medians": {
+      "baseline": {
+        "wall_seconds": 33.98574584900052,
+        "cpu_seconds": 33.968095634,
+        "peak_rss_mib": 498.13671875
+      },
+      "current": {
+        "wall_seconds": 26.793585724000877,
+        "cpu_seconds": 26.784584445,
+        "peak_rss_mib": 476.04296875
+      }
+    },
+    "speedup": {
+      "wall_seconds": 1.2684284290682724,
+      "cpu_seconds": 1.2681957304116764
+    },
+    "time_reduction_fraction": 0.2116228420277897,
+    "stage_medians": {
+      "baseline": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 6.569945351999195,
+          "cpu_seconds": 6.569565227
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 27.8464946289987,
+          "cpu_seconds": 27.831767171000003
+        }
+      },
+      "current": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 2.2371488729986595,
+          "cpu_seconds": 2.2368126740000003
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 24.05863492000026,
+          "cpu_seconds": 24.049779174
+        }
+      }
+    },
+    "samples": [
+      {
+        "arm": "baseline",
+        "repetition": 1,
+        "wall_seconds": 33.98574584900052,
+        "cpu_seconds": 33.968095634,
+        "peak_rss_mib": 498.13671875,
+        "load_seconds_excluded": 0.011507197001265013,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 6.139177437999024,
+            "cpu_seconds": 6.13626561
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 27.8464946289987,
+            "cpu_seconds": 27.831767171000003
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        }
+      },
+      {
+        "arm": "current",
+        "repetition": 1,
+        "wall_seconds": 26.793585724000877,
+        "cpu_seconds": 26.784584445,
+        "peak_rss_mib": 475.74609375,
+        "load_seconds_excluded": 0.005914667999604717,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.734887880000315,
+            "cpu_seconds": 2.7347506490000004
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 24.05863492000026,
+            "cpu_seconds": 24.049779174
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        }
+      },
+      {
+        "arm": "current",
+        "repetition": 2,
+        "wall_seconds": 28.534357096999884,
+        "cpu_seconds": 28.519066153,
+        "peak_rss_mib": 476.04296875,
+        "load_seconds_excluded": 0.006243297999390052,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.2371488729986595,
+            "cpu_seconds": 2.2368126740000003
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 26.297112620000917,
+            "cpu_seconds": 26.282169083
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        }
+      },
+      {
+        "arm": "baseline",
+        "repetition": 2,
+        "wall_seconds": 38.126688689999355,
+        "cpu_seconds": 38.109146924,
+        "peak_rss_mib": 496.99609375,
+        "load_seconds_excluded": 0.011829244998807553,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 8.304840230999616,
+            "cpu_seconds": 8.304064355000001
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 29.821775589000026,
+            "cpu_seconds": 29.805019916999996
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        }
+      },
+      {
+        "arm": "baseline",
+        "repetition": 3,
+        "wall_seconds": 33.257139856999856,
+        "cpu_seconds": 33.246570509,
+        "peak_rss_mib": 500.4453125,
+        "load_seconds_excluded": 0.012318950999542722,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 6.569945351999195,
+            "cpu_seconds": 6.569565227
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 26.687126532999173,
+            "cpu_seconds": 26.676947045999995
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        }
+      },
+      {
+        "arm": "current",
+        "repetition": 3,
+        "wall_seconds": 25.854370708000715,
+        "cpu_seconds": 25.837310841,
+        "peak_rss_mib": 476.12890625,
+        "load_seconds_excluded": 0.005580028999247588,
+        "stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.172180372999719,
+            "cpu_seconds": 2.172006359
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 23.68214106099913,
+            "cpu_seconds": 23.665264351999998
+          }
+        },
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        }
+      }
+    ],
+    "equality": "Ordered queried/selected track inventory, sample counts, every scored candidate and diagnostic, counts, ranking, complete logical retention rows, physical parameters and source coverage. Exact values, no tolerances."
+  },
+  "preparation": {
+    "wall_seconds": 7.418266117998428,
+    "cpu_seconds": 7.370144021,
+    "original_unchanged": true,
+    "source_bytes": 41385984,
+    "prepared_bytes": 85929984,
+    "records": 4694,
+    "numeric_payload_bytes": 40986623,
+    "index_input_hash": "bba872277ac47cbe4eacf1e7203b0d8f4e84d9641d777dd841cb4c1d6d64c88b",
+    "timing_scope": "One-time index copy, canonical decoding, optional representation and commit; excludes imports and verification.",
+    "cache_scope": "Source integrity verification reads the original index before timing; operating-system file caches are not flushed.",
+    "queries_to_amortize_combined_upgrade": {
+      "wall_seconds": 2,
+      "cpu_seconds": 2
+    },
+    "amortization_scope": "Preparation cost divided by the complete baseline/current query-and-score saving. This includes other code improvements and measures the combined upgrade, not the isolated prepared-format contribution."
+  },
+  "local_checks": {
+    "recorded_input_tests_passed": 70,
+    "skipped": 0,
+    "seconds": 8.51,
+    "source_compilation": true,
+    "cli_help": true
+  },
+  "initial_http": {
+    "repeats": 3,
+    "all_exact_comparisons_passed": true,
+    "wall_seconds_median": {
+      "baseline": 54.020777712999916,
+      "current": 54.85546853100095
+    },
+    "speedup": 0.9847838175417403,
+    "wall_reduction_fraction": -0.015451292138657369,
+    "runs": [
+      {
+        "pair": 1,
+        "source": "baseline",
+        "elapsed_s": 52.955072593000295,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 1,
+        "source": "current",
+        "elapsed_s": 54.85546853100095,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 2,
+        "source": "current",
+        "elapsed_s": 55.33198881700082,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 2,
+        "source": "baseline",
+        "elapsed_s": 54.020777712999916,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 3,
+        "source": "baseline",
+        "elapsed_s": 56.5861993310009,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 3,
+        "source": "current",
+        "elapsed_s": 54.81059836700115,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      }
+    ],
+    "comparisons": [
+      {
+        "pair": 1,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 1,
+        "kind": "arrays",
+        "passed": true
+      },
+      {
+        "pair": 2,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 2,
+        "kind": "arrays",
+        "passed": true
+      },
+      {
+        "pair": 3,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 3,
+        "kind": "arrays",
+        "passed": true
+      }
+    ],
+    "scope": "Fresh bounded regional HTTP uploads, source-informed receiver and clock; expected inconclusive/search_incomplete, no localization accuracy claim.",
+    "timing_scope": "Verifier elapsed time includes workflow and verification; phase observations have one-second polling uncertainty.",
+    "cache_scope": "Fresh service/job per arm, same prepared SQLite and recording; OS file caches not flushed. Preparation measured separately.",
+    "current_runtime": "ecb1726fb9872d0060265014aa830e598b4dd3b4",
+    "stage_medians": {
+      "baseline": {
+        "phases": {
+          "queued": 1.0016720294952393,
+          "intake": 9.018787860870361,
+          "discovery": 5.019791126251221,
+          "search": 23.29321789741516,
+          "refinement": 12.16237998008728
+        },
+        "search_elapsed_s": 22.75859039900024,
+        "peak_rss_mib": 441.1640625
+      },
+      "current": {
+        "phases": {
+          "queued": 1.00130295753479,
+          "intake": 10.016801118850708,
+          "discovery": 6.02326512336731,
+          "search": 23.290322065353394,
+          "refinement": 11.178597927093506
+        },
+        "search_elapsed_s": 22.73883719999867,
+        "peak_rss_mib": 439.68359375
+      }
+    },
+    "interpretation": "No demonstrated end-to-end HTTP speedup in this initial series: current median is 1.55% slower. Dense-search gains must not be extrapolated to this narrow pipeline workload."
+  },
+  "ci": {
+    "head": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+    "performance_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41701995581",
+    "static_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41702011545",
+    "artifact": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41701995581/artifacts/13265745307",
+    "result": "success",
+    "recorded_native_checks": 133,
+    "recorded_fallback_checks": 4,
+    "skips": 0,
+    "static_python_versions": [
+      "3.11",
+      "3.14"
+    ],
+    "controls": {
+      "cpu_affinity_pinned": true,
+      "numerical_threads": 1,
+      "fresh_workers": true,
+      "repeats": 3,
+      "original_index_built_with_baseline": true,
+      "same_prepared_database_in_both_arms": true
+    },
+    "dense": {
+      "identical_results": true,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 38.45129295300001,
+          "cpu_seconds": 38.402129511000005,
+          "peak_rss_mib": 540.84765625
+        },
+        "current": {
+          "wall_seconds": 30.292185330000052,
+          "cpu_seconds": 30.251976326,
+          "peak_rss_mib": 518.78125
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.2693469465512457,
+        "cpu_seconds": 1.2694089502508097
+      },
+      "execution_stage_medians": {
+        "baseline": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 8.23917004100008,
+            "cpu_seconds": 8.232333643
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 30.12539300900005,
+            "cpu_seconds": 30.091703112000005
+          }
+        },
+        "current": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.9753442900000664,
+            "cpu_seconds": 2.9728383999999997
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 27.303982737999945,
+            "cpu_seconds": 27.266257912
+          }
+        }
+      },
+      "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged."
+    },
+    "samples": [
+      {
+        "wall_seconds": 38.58210817500003,
+        "cpu_seconds": 38.542336785,
+        "peak_rss_mib": 540.40234375,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 8.23236331999999,
+            "cpu_seconds": 8.225681731
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 30.349661017000017,
+            "cpu_seconds": 30.316581416
+          }
+        }
+      },
+      {
+        "wall_seconds": 30.223590310999953,
+        "cpu_seconds": 30.189767299,
+        "peak_rss_mib": 518.78125,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.974916381000071,
+            "cpu_seconds": 2.9707423729999993
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 27.24862276400006,
+            "cpu_seconds": 27.218982908
+          }
+        }
+      },
+      {
+        "wall_seconds": 30.292185330000052,
+        "cpu_seconds": 30.251976326,
+        "peak_rss_mib": 518.50390625,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.988152027999945,
+            "cpu_seconds": 2.985676206
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 27.303982737999945,
+            "cpu_seconds": 27.266257912
+          }
+        }
+      },
+      {
+        "wall_seconds": 38.13132899499999,
+        "cpu_seconds": 38.093130244,
+        "peak_rss_mib": 540.84765625,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 8.23917004100008,
+            "cpu_seconds": 8.232333643
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 29.892096907999985,
+            "cpu_seconds": 29.860742860000002
+          }
+        }
+      },
+      {
+        "wall_seconds": 38.45129295300001,
+        "cpu_seconds": 38.402129511000005,
+        "peak_rss_mib": 541.28125,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 0,
+          "prepared_decode_successes": 0
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 8.325838309000005,
+            "cpu_seconds": 8.310372157
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 30.12539300900005,
+            "cpu_seconds": 30.091703112000005
+          }
+        }
+      },
+      {
+        "wall_seconds": 30.343483624999976,
+        "cpu_seconds": 30.301319845,
+        "peak_rss_mib": 518.8359375,
+        "operations": {
+          "scalar_fit_calls": 983,
+          "acoustic_calls": 5731,
+          "scored_candidates": 16101,
+          "native_fit_calls": 228240,
+          "native_fit_successes": 228240,
+          "native_acoustic_successes": 5731,
+          "prepared_decode_calls": 4694,
+          "prepared_decode_successes": 4694
+        },
+        "execution_stage_seconds": {
+          "track_query_and_distance_sieve": {
+            "wall_seconds": 2.9753442900000664,
+            "cpu_seconds": 2.9728383999999997
+          },
+          "cpa_association_scoring_and_retention": {
+            "wall_seconds": 27.368069934999994,
+            "cpu_seconds": 27.328422144999998
+          }
+        }
+      }
+    ],
+    "preparation": {
+      "wall_seconds": 7.78264703100001,
+      "cpu_seconds": 7.7669090810000005,
+      "original_unchanged": true,
+      "source_bytes": 41385984,
+      "prepared_bytes": 85929984,
+      "prepared_tracks": {
+        "version": 1,
+        "builder": "828c57c607adfd4974b0b62f06839d7467c322cf0ca7d2f6e4abae1fc9c35153",
+        "tracks": 4694,
+        "bytes": 40986623
+      }
+    }
+  },
+  "final_runtime": {
+    "published_commit": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868",
+    "measured_local_commit": "3ec61d97c3d938559d278a894cba50fb01cc297b",
+    "runtime_equivalence": "The measured local commit and published commit have identical runtime source. Later changes are documentation and result records only.",
+    "later_runtime_files_sha256": {
+      "src/dopplergeist/matching.py": "8d7c6b8f7bf83f06203640df32136d1dbe625cd558270bc7b4184305f9024826",
+      "src/dopplergeist/terrain.py": "9390f39b25f41ee03e567b3c9c83fce9bf0a0285dc90f842124a39c93e43c8b2",
+      "src/dopplergeist/discovery.py": "0a973a1238b7d0c344efa23383ac42a7a8d5b37a2e975b4fad9ac878cee5b2a0"
+    },
+    "initial_record_scope": "The existing dense, initial_http, preparation and ci sections retain their original source pins and observations. Later series remain separate.",
+    "component_speedups_are_not_multiplied": true
+  },
+  "refinement_profile": {
+    "identical_results": true,
+    "medians": {
+      "baseline": {
+        "cpu_seconds": 9.054331421,
+        "wall_seconds": 9.064264528000422
+      },
+      "current": {
+        "cpu_seconds": 8.174680664,
+        "wall_seconds": 8.177944066999771
+      }
+    },
+    "runs": [
+      {
+        "cpu_seconds": 9.936853516,
+        "geoid_cache_entries": 0,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 1,
+        "profiles": 46,
+        "source": "baseline",
+        "terrain_cache_entries": 0,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 9.949167867000142
+      },
+      {
+        "cpu_seconds": 8.339249527,
+        "geoid_cache_entries": 2,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 1,
+        "profiles": 46,
+        "source": "current",
+        "terrain_cache_entries": 194,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 8.342222172999755
+      },
+      {
+        "cpu_seconds": 8.174680664,
+        "geoid_cache_entries": 2,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 2,
+        "profiles": 46,
+        "source": "current",
+        "terrain_cache_entries": 194,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 8.177944066999771
+      },
+      {
+        "cpu_seconds": 9.054331421,
+        "geoid_cache_entries": 0,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 2,
+        "profiles": 46,
+        "source": "baseline",
+        "terrain_cache_entries": 0,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 9.064264528000422
+      },
+      {
+        "cpu_seconds": 8.310211953,
+        "geoid_cache_entries": 0,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 3,
+        "profiles": 46,
+        "source": "baseline",
+        "terrain_cache_entries": 0,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 8.312028457999986
+      },
+      {
+        "cpu_seconds": 7.143909321000001,
+        "geoid_cache_entries": 2,
+        "hook_calls": [],
+        "mode": "run",
+        "native_acoustic_successes": 36835,
+        "pair": 3,
+        "profiles": 46,
+        "source": "current",
+        "terrain_cache_entries": 194,
+        "timing_scope": "Full profile_candidate with original 46 real scenarios and its exact-fit cache; input loading and initial finalist refinement excluded.",
+        "wall_seconds": 7.146808763000081
+      }
+    ],
+    "speedup": {
+      "cpu_seconds": 1.1076067424717693,
+      "wall_seconds": 1.1083793742949644
+    },
+    "decision": "accepted",
+    "repeats": 3,
+    "baseline_runtime": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+    "current_source_identity": {
+      "base_runtime": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+      "overrides_sha256": {
+        "src/dopplergeist/matching.py": "8d7c6b8f7bf83f06203640df32136d1dbe625cd558270bc7b4184305f9024826",
+        "src/dopplergeist/terrain.py": "9390f39b25f41ee03e567b3c9c83fce9bf0a0285dc90f842124a39c93e43c8b2"
+      },
+      "included_in_final_runtime": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868"
+    },
+    "scope": "Complete sensitivity profiling of one recorded real finalist with source-informed bounds and clock; no independent location-accuracy or full-HTTP claim.",
+    "timing_scope": "Complete profile_candidate and its exact-fit cache; excludes imports, flight lookup, terrain construction, event preparation and initial finalist refinement.",
+    "cache_scope": "Fresh interpreter and terrain per arm; one numerical thread; OS file caches not flushed.",
+    "profiles_and_solves_per_arm": 46,
+    "native_acoustic_successes_per_arm": 36835,
+    "recorded_job_id": "d997a7944e9f470ea9f74500dc6d0316",
+    "portable_fixture": "tests/data/real-refinement-profile.json",
+    "portable_reproduction": "python scripts/benchmark_real_refinement.py compare --baseline-source BASELINE/src --current-source src --index OBSERVED.sqlite --terrain-root RESTORED_ROOT --repeats 3 --require-native --require-native-acoustic --output NEW_OUTPUT",
+    "provider_limit": "Pixel reuse applies to terrain.Terrain local GeoTIFF readers. Online data_access.CachedTerrain remains unchanged.",
+    "nominal_solve_elimination_integrated": false
+  },
+  "http_before_discovery": {
+    "repeats": 3,
+    "all_exact_comparisons_passed": true,
+    "sources": {
+      "baseline_runtime": "994d1ee48e25df6d30b23a356bba8f6502d8b7f6",
+      "current": {
+        "base_runtime": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+        "overrides_sha256": {
+          "src/dopplergeist/matching.py": "8d7c6b8f7bf83f06203640df32136d1dbe625cd558270bc7b4184305f9024826",
+          "src/dopplergeist/terrain.py": "9390f39b25f41ee03e567b3c9c83fce9bf0a0285dc90f842124a39c93e43c8b2"
+        },
+        "included_in_final_runtime": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868"
+      }
+    },
+    "wall_seconds_median": {
+      "baseline": 58.2332760090012,
+      "current": 52.66834938300053
+    },
+    "speedup": 1.1056597879218297,
+    "wall_reduction_fraction": 0.09556265776873851,
+    "runs": [
+      {
+        "pair": 1,
+        "source": "baseline",
+        "elapsed_s": 57.1915735470011,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 1,
+        "source": "current",
+        "elapsed_s": 52.66834938300053,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 2,
+        "source": "current",
+        "elapsed_s": 52.09234037600072,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 2,
+        "source": "baseline",
+        "elapsed_s": 58.2332760090012,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 3,
+        "source": "baseline",
+        "elapsed_s": 63.172859135998806,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      },
+      {
+        "pair": 3,
+        "source": "current",
+        "elapsed_s": 56.75126164999892,
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "full_pipeline_observed": true
+      }
+    ],
+    "comparisons": [
+      {
+        "pair": 1,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 1,
+        "kind": "arrays",
+        "passed": true
+      },
+      {
+        "pair": 2,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 2,
+        "kind": "arrays",
+        "passed": true
+      },
+      {
+        "pair": 3,
+        "kind": "science",
+        "passed": true
+      },
+      {
+        "pair": 3,
+        "kind": "arrays",
+        "passed": true
+      }
+    ],
+    "scope": "Fresh bounded regional HTTP uploads, source-informed receiver and clock; expected inconclusive/search_incomplete, no localization accuracy claim.",
+    "timing_scope": "Verifier elapsed time includes workflow and verification; phase observations have one-second polling uncertainty.",
+    "cache_scope": "Fresh service/job per arm, same prepared SQLite and recording; OS file caches not flushed. Preparation measured separately.",
+    "series_complete": true,
+    "same_inputs_as": "initial_http",
+    "source_scope": "Complete three-pair HTTP series after terrain/transformer reuse and before discovery transpose; not the final integrated runtime series.",
+    "source_and_recording_identities_stable": true,
+    "interpretation": "All three paired current runs were faster and exact. Do not pool with initial or final integrated HTTP samples."
+  },
+  "discovery_normalization": {
+    "scope": "Whole real saved-PCM discovery with normal JSON/CSV/summary PNG; no intake, decoding, or flight search.",
+    "method": "Fresh interpreter per arm; pre-call imports excluded and lazy in-call imports included; no numerical instrumentation in timed workers; three alternating pairs only if first exact pair lowers wall time at least 5%.",
+    "cache_conditions": "OS caches are not flushed; recording already existed; no CPU affinity; team coordinates an exclusive local timing slot, unrelated host load is uncontrolled.",
+    "medians": {
+      "baseline": {
+        "wall_s": 6.15627522000068,
+        "cpu_s": 6.154319575000001,
+        "peak_rss_mib": 159.953125
+      },
+      "current": {
+        "wall_s": 5.760663672999726,
+        "cpu_s": 5.759641037000001,
+        "peak_rss_mib": 165.8828125
+      }
+    },
+    "first_pair_5_percent_gate_passed": true,
+    "wall_speedup": 1.0686746474811901,
+    "cpu_speedup": 1.0685248499801603,
+    "wall_time_reduction_fraction": 0.06426151087522525,
+    "all_event_and_diagnostic_checks_exact": true,
+    "decision": "accepted",
+    "baseline_runtime": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+    "final_runtime": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868",
+    "final_source_sha256": "0a973a1238b7d0c344efa23383ac42a7a8d5b37a2e975b4fad9ac878cee5b2a0",
+    "measured_variant": "Transpose-only implementation before final C-contiguity and canonical-isfinite fallback guards. No overwrite_input optimization.",
+    "measurement_limit": "Stage timing predates the two conservative guard changes. Final guarded source has separate exact full-recording validation and interrupted HTTP observations; no complete final-series speedup is inferred.",
+    "repeats": 3,
+    "runs": [
+      {
+        "pair": 1,
+        "source": "baseline",
+        "wall_s": 6.270634135000364,
+        "cpu_s": 6.267403903,
+        "peak_rss_mib": 162.17578125,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      },
+      {
+        "pair": 1,
+        "source": "current",
+        "wall_s": 5.170469035001588,
+        "cpu_s": 5.1688468,
+        "peak_rss_mib": 164.38671875,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      },
+      {
+        "pair": 2,
+        "source": "current",
+        "wall_s": 5.760663672999726,
+        "cpu_s": 5.759641037000001,
+        "peak_rss_mib": 165.8828125,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      },
+      {
+        "pair": 2,
+        "source": "baseline",
+        "wall_s": 6.098408031999497,
+        "cpu_s": 6.0928283059999995,
+        "peak_rss_mib": 159.953125,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      },
+      {
+        "pair": 3,
+        "source": "baseline",
+        "wall_s": 6.15627522000068,
+        "cpu_s": 6.154319575000001,
+        "peak_rss_mib": 157.5859375,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      },
+      {
+        "pair": 3,
+        "source": "current",
+        "wall_s": 5.764903504999893,
+        "cpu_s": 5.762904493000001,
+        "peak_rss_mib": 166.15234375,
+        "timed_run": true,
+        "event_records": 17,
+        "independent_groups": 15,
+        "exact_events": true,
+        "exact_json_and_csv_bytes": true,
+        "csv_files": 17,
+        "exact_png_pixels": true,
+        "exact_png_file_bytes": true
+      }
+    ],
+    "input": {
+      "source_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+      "sample_count": 14400738,
+      "duration_s": 3600.1845,
+      "settings": {
+        "chunk_s": 120.0,
+        "overlap_s": 60.0,
+        "min_frequency_hz": 40.0,
+        "max_frequency_hz": 1600.0,
+        "window_s": 2.0,
+        "hop_s": 0.5,
+        "min_contrast": 2.5,
+        "min_duration_s": 12.0,
+        "min_support": 0.65,
+        "min_drop_hz": 4.0,
+        "min_fractional_drop": 0.03,
+        "max_gap_s": 2.0,
+        "max_fragment_gap_s": 20.0,
+        "max_peaks_per_frame": 60
+      }
+    },
+    "median_peak_rss_increase_mib": 5.9296875,
+    "final_exact_check": {
+      "event_records": 17,
+      "independent_groups": 15,
+      "exact_events": true,
+      "exact_json_and_csv_bytes": true,
+      "csv_files": 17,
+      "exact_png_pixels": true,
+      "exact_png_file_bytes": true,
+      "spectrum_array_checks": 60,
+      "real_float64_fallback_exact": true,
+      "short_real_prefix_exact": true,
+      "custom_median_fallback_exact": true,
+      "median_axes": [
+        1,
+        0,
+        0
+      ],
+      "real_even_frequency_median_exact": true,
+      "even_median_frequency_bins": 3120,
+      "runtime": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868",
+      "timed_for_performance": false,
+      "array_equality": "Direct byte comparison of time, frequency, db and contrast for all 60 chunks, including dtype, shape, strides, C/F layout and writeability."
+    },
+    "portable_tests": {
+      "file": "tests/test_real_discovery_normalization.py",
+      "passed": 18,
+      "skipped": 0,
+      "seconds": 0.93,
+      "command": "PYTHONPATH=src python -m pytest -q tests/test_real_discovery_normalization.py",
+      "fixture": "tests/fixtures/real_discovery_normalization.json",
+      "fixture_bytes": 171284,
+      "sample_rate_hz": 4000,
+      "sample_format": "<f4",
+      "excerpts": [
+        {
+          "sample_offset": 0,
+          "sample_count": 16000
+        },
+        {
+          "sample_offset": 5586000,
+          "sample_count": 16000
+        }
+      ],
+      "input_policy": "Two unmodified four-second excerpts copied from the real decoded recording; no generated audio or new CI download."
+    },
+    "portable_reproduction": "python scripts/benchmark_real_discovery_normalization.py compare --baseline-source BASELINE/src --current-source src --job SAVED_REAL_JOB --output NEW_OUTPUT --pairs 3",
+    "reproduction_requirement": "Saved-PNG comparisons require the same numerical and plotting runtime as the saved job. Portable tests compare both formulas under the installed runtime."
+  },
+  "rejected_experiments": {
+    "ffmpeg_filter_threads_1": {
+      "all_decoded_bytes_counts_and_peaks_exact": true,
+      "repeats": 3,
+      "medians": {
+        "default": {
+          "wall_seconds": 8.195143001999895,
+          "child_cpu_seconds": 9.354744,
+          "parent_cpu_seconds": 0.49452883799999997
+        },
+        "filter_threads_1": {
+          "wall_seconds": 8.644125889000861,
+          "child_cpu_seconds": 9.535277,
+          "parent_cpu_seconds": 0.585680314
+        }
+      },
+      "speedup": {
+        "wall_seconds": 0.9480591915520029,
+        "child_cpu_seconds": 0.9810668321434185,
+        "parent_cpu_seconds": 0.8443665019616828
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "source": "default",
+          "wall_seconds": 8.004156062999755,
+          "child_cpu_seconds": 8.699381,
+          "child_user_seconds": 4.4430130000000005,
+          "child_system_seconds": 4.256368,
+          "parent_cpu_seconds": 0.49452883799999997,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 1,
+          "source": "filter_threads_1",
+          "wall_seconds": 7.5641798799988464,
+          "child_cpu_seconds": 8.671954,
+          "child_user_seconds": 4.317747,
+          "child_system_seconds": 4.354207000000001,
+          "parent_cpu_seconds": 0.4523724760000001,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 2,
+          "source": "filter_threads_1",
+          "wall_seconds": 8.761962005000896,
+          "child_cpu_seconds": 9.865863999999998,
+          "child_user_seconds": 4.887179,
+          "child_system_seconds": 4.978684999999999,
+          "parent_cpu_seconds": 0.585680314,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 2,
+          "source": "default",
+          "wall_seconds": 9.350226024000222,
+          "child_cpu_seconds": 10.579599,
+          "child_user_seconds": 4.873901999999999,
+          "child_system_seconds": 5.705697000000001,
+          "parent_cpu_seconds": 0.554547125,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 3,
+          "source": "default",
+          "wall_seconds": 8.195143001999895,
+          "child_cpu_seconds": 9.354744,
+          "child_user_seconds": 4.345383999999999,
+          "child_system_seconds": 5.009360000000001,
+          "parent_cpu_seconds": 0.43727025100000017,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 3,
+          "source": "filter_threads_1",
+          "wall_seconds": 8.644125889000861,
+          "child_cpu_seconds": 9.535277,
+          "child_user_seconds": 4.488742000000002,
+          "child_system_seconds": 5.046534999999999,
+          "parent_cpu_seconds": 0.5856815550000003,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        }
+      ],
+      "scope": "Fresh FFmpeg subprocesses on the same real MP3; only global -filter_threads 1 differs. Stream, downmix, rate, codec and pipe output unchanged.",
+      "timing_scope": "Child lifetime with the same bounded intake pipe-reading, finite checks, peak calculation and PCM writes. Exact comparison occurs after timing. CPU is separately reported for the child and reader process.",
+      "cache_scope": "Operating-system file caches were not flushed.",
+      "decision": "rejected",
+      "integrated": false,
+      "reason": "Three-pair median wall time increased.",
+      "input": {
+        "source_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "sample_count": 14400738,
+        "duration_s": 3600.1845
+      }
+    },
+    "ffmpeg_flush_packets_0": {
+      "all_decoded_bytes_counts_and_peaks_exact": true,
+      "repeats": 1,
+      "medians": {
+        "default": {
+          "wall_seconds": 8.44359440199878,
+          "child_cpu_seconds": 8.886451999999998,
+          "parent_cpu_seconds": 0.508536521
+        },
+        "flush_packets_0": {
+          "wall_seconds": 7.7506377789995895,
+          "child_cpu_seconds": 8.328857,
+          "parent_cpu_seconds": 0.09842675899999997
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.0894064001902866,
+        "child_cpu_seconds": 1.0669473614446736,
+        "parent_cpu_seconds": 5.166649051199585
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "source": "default",
+          "wall_seconds": 8.44359440199878,
+          "child_cpu_seconds": 8.886451999999998,
+          "child_user_seconds": 4.406542999999999,
+          "child_system_seconds": 4.479909,
+          "parent_cpu_seconds": 0.508536521,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        },
+        {
+          "pair": 1,
+          "source": "flush_packets_0",
+          "wall_seconds": 7.7506377789995895,
+          "child_cpu_seconds": 8.328857,
+          "child_user_seconds": 4.498238,
+          "child_system_seconds": 3.8306189999999996,
+          "parent_cpu_seconds": 0.09842675899999997,
+          "sample_count": 14400738,
+          "peak_amplitude": 0.05093526840209961,
+          "output_bytes": 57602952,
+          "decoded_bytes_exact": true
+        }
+      ],
+      "scope": "Fresh FFmpeg subprocesses on the same real MP3; only output -flush_packets 0 before pipe:1 differs. Stream, downmix, rate, codec and pipe output unchanged.",
+      "timing_scope": "Child lifetime with the same bounded intake pipe-reading, finite checks, peak calculation and PCM writes. Exact comparison occurs after timing. CPU is separately reported for the child and reader process.",
+      "cache_scope": "Operating-system file caches were not flushed.",
+      "decision": "rejected",
+      "integrated": false,
+      "reason": "One exact pair missed the predeclared 1.10x wall-speedup continuation gate; additional pairs were not run.",
+      "input": {
+        "source_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "sample_count": 14400738,
+        "duration_s": 3600.1845
+      },
+      "continuation_gate": {
+        "minimum_wall_speedup": 1.1,
+        "exact_decoded_output_required": true,
+        "passed": false
+      },
+      "scope_limit": "One paired decoder experiment; no repeated or complete-pipeline speedup claim."
+    },
+    "ffmpeg_direct_file": {
+      "repeats": 1,
+      "all_decoded_bytes_counts_and_peaks_exact": true,
+      "baseline": {
+        "pair": 1,
+        "source": "default",
+        "wall_seconds": 7.688965781999286,
+        "child_cpu_seconds": 8.537036,
+        "child_user_seconds": 4.3588499999999994,
+        "child_system_seconds": 4.178186,
+        "parent_cpu_seconds": 0.474128633,
+        "sample_count": 14400738,
+        "peak_amplitude": 0.05093526840209961,
+        "output_bytes": 57602952,
+        "decoded_bytes_exact": true
+      },
+      "current": {
+        "source": "direct_file",
+        "wall_seconds": 7.914664156998697,
+        "decoder_wall_seconds": 7.904816779999237,
+        "parent_cpu_seconds": 0.010208266999999993,
+        "child_user_seconds": 4.430379,
+        "child_system_seconds": 3.614739,
+        "child_cpu_seconds": 8.045118,
+        "decoded_bytes_exact": true,
+        "sample_count": 14400738,
+        "peak_amplitude": 0.05093526840209961,
+        "output_bytes": 57602952
+      },
+      "speedup": {
+        "wall_seconds": 0.9714835183752134,
+        "child_cpu_seconds": 1.0611449080050783,
+        "parent_cpu_seconds": 46.44555564622284
+      },
+      "scope": "Same real MP3, stream, downmix, rate and codec; output URL changes from pipe:1 to a new regular file. No additional FFmpeg flags.",
+      "timing_scope": "Pipe baseline includes bounded streaming validation/write. Direct-file total includes decoding/writing followed by the same bounded finite/peak/count validation. Exact byte comparison follows timing.",
+      "limitation": "One exploratory pair; direct-file validation occurs after decoding, unlike the existing early-invalid-sample detection.",
+      "decision": "rejected",
+      "integrated": false,
+      "reason": "The single direct-file trial was slower; post-decode validation also changes failure-detection timing.",
+      "input": {
+        "source_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "sample_count": 14400738,
+        "duration_s": 3600.1845
+      },
+      "cache_scope": "Operating-system file caches were not flushed."
+    },
+    "native_irls_fixed_point": {
+      "exact_native_output_bytes": true,
+      "recorded_profile_exact": true,
+      "calls": 36835,
+      "samples": 3002979,
+      "sample_range": [
+        30,
+        225
+      ],
+      "constant_frequency_calls": 2016,
+      "none_results": 0,
+      "capture_array_bytes": 96095328,
+      "capture_native_seconds": 0.2741732249905908,
+      "failure_controls": {
+        "empty": [
+          "raised",
+          "ValueError",
+          "invalid robust ridge-fit inputs"
+        ],
+        "nonfinite-factor": [
+          "returned",
+          null
+        ],
+        "wrong-dtype": [
+          "raised",
+          "TypeError",
+          "expected a native float64 vector"
+        ],
+        "zero-loss-scale": [
+          "raised",
+          "ValueError",
+          "invalid robust ridge-fit inputs"
+        ]
+      },
+      "medians": {
+        "baseline": {
+          "wall_seconds": 0.21232071800113772,
+          "cpu_seconds": 0.2116040849999994
+        },
+        "current": {
+          "wall_seconds": 0.22610714899929008,
+          "cpu_seconds": 0.2259092840000001
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "source": "baseline",
+          "wall_seconds": 0.2172853270003543,
+          "cpu_seconds": 0.21713610099999947
+        },
+        {
+          "pair": 1,
+          "source": "current",
+          "wall_seconds": 0.20597563600131252,
+          "cpu_seconds": 0.2058280700000008
+        },
+        {
+          "pair": 2,
+          "source": "current",
+          "wall_seconds": 0.20248081800127693,
+          "cpu_seconds": 0.20211866999999906
+        },
+        {
+          "pair": 2,
+          "source": "baseline",
+          "wall_seconds": 0.21232071800113772,
+          "cpu_seconds": 0.2116040849999994
+        },
+        {
+          "pair": 3,
+          "source": "baseline",
+          "wall_seconds": 0.20971278800061555,
+          "cpu_seconds": 0.20971082700000032
+        },
+        {
+          "pair": 3,
+          "source": "current",
+          "wall_seconds": 0.23705056799917656,
+          "cpu_seconds": 0.23685633099999848
+        },
+        {
+          "pair": 4,
+          "source": "current",
+          "wall_seconds": 0.22610714899929008,
+          "cpu_seconds": 0.2259092840000001
+        },
+        {
+          "pair": 4,
+          "source": "baseline",
+          "wall_seconds": 0.20093541599999298,
+          "cpu_seconds": 0.20074898999999924
+        },
+        {
+          "pair": 5,
+          "source": "baseline",
+          "wall_seconds": 0.2215409800010093,
+          "cpu_seconds": 0.22101793200000053
+        },
+        {
+          "pair": 5,
+          "source": "current",
+          "wall_seconds": 0.23056815899872163,
+          "cpu_seconds": 0.23037475300000132
+        }
+      ],
+      "speedup": {
+        "wall_seconds": 0.939027000874724,
+        "cpu_seconds": 0.9366772416489059
+      },
+      "scope": "All native ridge calls from one archived 46-scenario refinement profile. Capture, input loading, equality checks and failure controls are excluded from kernel replay timings.",
+      "harness_sha256": "da2776a89ae211e8a7d82fdcf44e3bf938bd2970c630448cef1a2bbe83d398e6",
+      "seed_sha256": "0ec88ac461f316dc70e12f62e0736d572ac6ac07af8a874ee83b97898b73940c",
+      "kernel_sha256": "3da5b79ae55afdbb0e433cc4b77e7de7aeff2bf1ff88816a7b75b1a5d42c30d3",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "numpy": "2.5.4",
+      "numerical_threads": {
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "decision": "rejected",
+      "integrated": false,
+      "reason": "Five-pair kernel median was slower. Captured native fitting occupied only about 0.27 seconds of a complete profile.",
+      "repeats": 5,
+      "baseline_runtime": "c0c9e798f47b547ab581fa473912e7218e3b4c3e",
+      "recorded_job_id": "d997a7944e9f470ea9f74500dc6d0316",
+      "change": "Stop fixed six-iteration native IRLS only when finite fitted parameters repeat with identical double representations, including signed zero.",
+      "failure_controls_scope": "Software compatibility fault controls on captured real calls, not generated field observations."
+    },
+    "raw_stft_overlap_reuse": {
+      "wall_s": 5.738827614999536,
+      "cpu_s": 5.729533409,
+      "phases": {
+        "_spectrum": {
+          "wall_s": 2.824887338996632,
+          "cpu_s": 2.823006729000005,
+          "calls": 60,
+          "fraction_of_total_wall": 0.4922411907988388,
+          "fraction_of_total_cpu": 0.49271145265783806
+        },
+        "_paths": {
+          "wall_s": 2.3293496620080987,
+          "cpu_s": 2.328798285000003,
+          "calls": 60,
+          "fraction_of_total_wall": 0.4058929485736586,
+          "fraction_of_total_cpu": 0.4064551367030877
+        },
+        "_merge_duplicates": {
+          "wall_s": 0.002575802000137628,
+          "cpu_s": 0.0025775420000000437,
+          "calls": 1,
+          "fraction_of_total_wall": 0.0004488376673669847,
+          "fraction_of_total_cpu": 0.0004498694424141447
+        },
+        "_stitch_fragments": {
+          "wall_s": 0.0017526110004837392,
+          "cpu_s": 0.0017544909999998026,
+          "calls": 1,
+          "fraction_of_total_wall": 0.0003053953033722343,
+          "fraction_of_total_cpu": 0.0003062188270416284
+        },
+        "_harmonic_groups": {
+          "wall_s": 0.001685760998952901,
+          "cpu_s": 0.0016877620000004256,
+          "calls": 1,
+          "fraction_of_total_wall": 0.00029374658241115983,
+          "fraction_of_total_cpu": 0.0002945723289350708
+        },
+        "_plot_groups": {
+          "wall_s": 0.45994826199967065,
+          "cpu_s": 0.4550993090000004,
+          "calls": 1,
+          "fraction_of_total_wall": 0.08014672906318128,
+          "fraction_of_total_cpu": 0.07943043115607398
+        },
+        "scipy_signal_spectrogram": {
+          "wall_s": 0.6926139870029147,
+          "cpu_s": 0.6921908900000017,
+          "calls": 60,
+          "fraction_of_total_wall": 0.12068910820611409,
+          "fraction_of_total_cpu": 0.12081104002512705
+        }
+      },
+      "outside_selected_phases_wall_s": 0.11862817799556069,
+      "exact_all_event_fields": true,
+      "event_records": 17,
+      "independent_groups": 15,
+      "source_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+      "sample_count": 14400738,
+      "decoded_bytes": 57602952,
+      "duration_s": 3600.1845,
+      "settings": {
+        "chunk_s": 120.0,
+        "overlap_s": 60.0,
+        "min_frequency_hz": 40.0,
+        "max_frequency_hz": 1600.0,
+        "window_s": 2.0,
+        "hop_s": 0.5,
+        "min_contrast": 2.5,
+        "min_duration_s": 12.0,
+        "min_support": 0.65,
+        "min_drop_hz": 4.0,
+        "min_fractional_drop": 0.03,
+        "max_gap_s": 2.0,
+        "max_fragment_gap_s": 20.0,
+        "max_peaks_per_frame": 60
+      },
+      "spectral_work": {
+        "chunks": 60,
+        "chunk_samples_read": 28560738,
+        "computed_frame_centers": 14100,
+        "unique_frame_centers": 7197,
+        "repeated_frame_centers": 6903,
+        "repeated_fraction": 0.4895744680851064,
+        "ideal_repeated_spectrogram_wall_s": 0.33908612427525675,
+        "interpretation": "Arithmetic upper-bound estimate assuming equal frame cost and perfect reuse; not a measured optimization. Chunk-local whitening/normalization must remain unchanged."
+      },
+      "scope": "Only discover_events with normal JSON/CSV/summary-plot diagnostics on existing real decoded PCM. No intake, new decoding, flight search or generated observations.",
+      "timing_scope": "Fresh interpreter; dependency imports excluded. scipy_signal_spectrogram is nested within _spectrum and must not be added twice. Other selected phases are top-level calls.",
+      "cache_scope": "Operating-system file caches not flushed; decoded file already existed.",
+      "decision": "screened_out_after_profiling",
+      "implemented": false,
+      "reason": "Raw spectrogram time was about 12.1% of discovery. Perfect reuse of repeated transforms has an estimated upper bound near 0.339 seconds; implementation complexity was not justified.",
+      "measurement_limit": "Instrumented phase attribution and arithmetic upper bound, not a measured cache optimization. scipy_signal_spectrogram is nested within _spectrum and must not be added twice."
+    }
+  },
+  "final_http": {
+    "scope": "Only two completed exact pairs from the interrupted final integrated HTTP series. This is not a completed three-pair benchmark.",
+    "planned_pairs": 3,
+    "completed_exact_pairs": 2,
+    "series_complete": false,
+    "speedup": null,
+    "baseline_runtime_commit": "994d1ee48e25df6d30b23a356bba8f6502d8b7f6",
+    "completed_pairs": [
+      {
+        "pair": 1,
+        "order": [
+          "baseline",
+          "current"
+        ],
+        "wall_seconds": {
+          "baseline": 58.38987522699972,
+          "current": 51.99790473900066
+        },
+        "paired_wall_ratio": 1.1229274625599444,
+        "paired_wall_reduction_fraction": 0.10947052829192183,
+        "scientific_and_array_checks_passed": true
+      },
+      {
+        "pair": 2,
+        "order": [
+          "current",
+          "baseline"
+        ],
+        "wall_seconds": {
+          "baseline": 57.15460311800052,
+          "current": 54.00830859300004
+        },
+        "paired_wall_ratio": 1.0582557500311771,
+        "paired_wall_reduction_fraction": 0.055048838647426046,
+        "scientific_and_array_checks_passed": true
+      }
+    ],
+    "all_completed_upload_samples": [
+      {
+        "pair": 1,
+        "source": "baseline",
+        "elapsed_s": 58.38987522699972,
+        "started_utc": "2026-11-03T20:01:06.499706Z",
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "included_in_completed_pair_summary": true
+      },
+      {
+        "pair": 1,
+        "source": "current",
+        "elapsed_s": 51.99790473900066,
+        "started_utc": "2026-11-03T20:02:05.568988Z",
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "included_in_completed_pair_summary": true
+      },
+      {
+        "pair": 2,
+        "source": "current",
+        "elapsed_s": 54.00830859300004,
+        "started_utc": "2026-11-03T20:03:04.588101Z",
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "included_in_completed_pair_summary": true
+      },
+      {
+        "pair": 2,
+        "source": "baseline",
+        "elapsed_s": 57.15460311800052,
+        "started_utc": "2026-11-03T20:03:59.696042Z",
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "included_in_completed_pair_summary": true
+      },
+      {
+        "pair": 3,
+        "source": "baseline",
+        "elapsed_s": 59.61232307499995,
+        "started_utc": "2026-11-03T20:05:03.642260Z",
+        "verification_passed": true,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17,
+        "included_in_completed_pair_summary": false
+      }
+    ],
+    "unfinished_upload": {
+      "pair": 3,
+      "source": "current",
+      "elapsed_s": null,
+      "verified": false
+    },
+    "shared_verified_pair_workload": {
+      "tiles_total": 2,
+      "tiles_completed": 2,
+      "grid_points_searched": 4,
+      "refinement_points_searched": 40,
+      "refinement_points_skipped": 80,
+      "event_groups_proposed": 15,
+      "all_event_groups_considered": true,
+      "status": "partial"
+    },
+    "source_and_recording_identities_stable": true,
+    "limitations": [
+      "The interrupted third current run has no completed verification receipt and is not a timing sample.",
+      "The completed third baseline is preserved but excluded from paired statistics.",
+      "No replacement workload was run.",
+      "All complete results remain inconclusive/search_incomplete; this is not localization accuracy evidence.",
+      "Earlier three-pair terrain HTTP results are a separate source snapshot and are not pooled with these final-source samples."
+    ],
+    "published_runtime_commit": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868",
+    "measured_local_runtime_commit": "3ec61d97c3d938559d278a894cba50fb01cc297b",
+    "runtime_files_sha256": {
+      "src/dopplergeist/matching.py": "8d7c6b8f7bf83f06203640df32136d1dbe625cd558270bc7b4184305f9024826",
+      "src/dopplergeist/terrain.py": "9390f39b25f41ee03e567b3c9c83fce9bf0a0285dc90f842124a39c93e43c8b2",
+      "src/dopplergeist/discovery.py": "0a973a1238b7d0c344efa23383ac42a7a8d5b37a2e975b4fad9ac878cee5b2a0"
+    },
+    "aggregation_policy": "No final-series median or speedup is reported. Keep the two exact pairs separately; exclude the unpaired third baseline and assign no timing to unfinished current.",
+    "interruption": {
+      "observed_utc": "2026-11-03T20:16:33.795490+00:00",
+      "complete": false,
+      "all_three_exact_pairs_verified": false,
+      "speedup": null,
+      "active_benchmark_processes_at_inspection": 0,
+      "last_incomplete_observation": {
+        "observed_utc": "2026-11-03T20:06:42.246944Z",
+        "job_id": "c7010b64001e40938a26e21bd17fce9d",
+        "status": "running",
+        "stage": "refinement",
+        "progress": 0.85
+      },
+      "application_error_evidence": "No error or timeout in runner/worker/service logs; runner and worker logs empty, service log contains startup only.",
+      "cause_assessment": "Observed execution/session interruption; abrupt teardown is consistent with missing controller/verification finalization. OS exit signal and initiating actor are not available.",
+      "preservation": "All original files retained unchanged. Any replacement must use a new output directory and remain explicitly identified."
+    },
+    "stage_observations": {
+      "scope": "Only the two completed exact pairs of the interrupted final series.",
+      "completed_exact_pairs": 2,
+      "series_complete": false,
+      "runs": [
+        {
+          "pair": 1,
+          "source": "baseline",
+          "phases": {
+            "queued": 1.0035209655761719,
+            "intake": 9.017981052398682,
+            "discovery": 5.018327951431274,
+            "acquisition": 1.0153911113739014,
+            "search": 25.352497816085815,
+            "refinement": 13.191997051239014
+          },
+          "search": {
+            "elapsed_s": 25.70715032699991,
+            "process_peak_rss_mib": 427.97265625,
+            "tiles_total": 2,
+            "tiles_completed": 2,
+            "grid_points_searched": 4,
+            "refinement_points_searched": 40,
+            "refinement_points_skipped": 80,
+            "event_groups_proposed": 15,
+            "all_event_groups_considered": true,
+            "status": "partial"
+          }
+        },
+        {
+          "pair": 1,
+          "source": "current",
+          "phases": {
+            "queued": 1.0015931129455566,
+            "intake": 8.014153003692627,
+            "discovery": 6.020272970199585,
+            "search": 23.278563976287842,
+            "refinement": 10.128068923950195
+          },
+          "search": {
+            "elapsed_s": 22.672437142999115,
+            "process_peak_rss_mib": 429.17578125,
+            "tiles_total": 2,
+            "tiles_completed": 2,
+            "grid_points_searched": 4,
+            "refinement_points_searched": 40,
+            "refinement_points_skipped": 80,
+            "event_groups_proposed": 15,
+            "all_event_groups_considered": true,
+            "status": "partial"
+          }
+        },
+        {
+          "pair": 2,
+          "source": "baseline",
+          "phases": {
+            "queued": 1.0018808841705322,
+            "intake": 9.020961999893188,
+            "discovery": 5.021439075469971,
+            "acquisition": 1.0138421058654785,
+            "search": 24.33562397956848,
+            "refinement": 13.151965856552124
+          },
+          "search": {
+            "elapsed_s": 24.943951581000874,
+            "process_peak_rss_mib": 426.60546875,
+            "tiles_total": 2,
+            "tiles_completed": 2,
+            "grid_points_searched": 4,
+            "refinement_points_searched": 40,
+            "refinement_points_skipped": 80,
+            "event_groups_proposed": 15,
+            "all_event_groups_considered": true,
+            "status": "partial"
+          }
+        },
+        {
+          "pair": 2,
+          "source": "current",
+          "phases": {
+            "queued": 1.0016319751739502,
+            "intake": 9.024295091629028,
+            "discovery": 5.023651123046875,
+            "acquisition": 1.0116658210754395,
+            "search": 23.283169984817505,
+            "refinement": 11.160622119903564
+          },
+          "search": {
+            "elapsed_s": 23.166224162998333,
+            "process_peak_rss_mib": 427.1328125,
+            "tiles_total": 2,
+            "tiles_completed": 2,
+            "grid_points_searched": 4,
+            "refinement_points_searched": 40,
+            "refinement_points_skipped": 80,
+            "event_groups_proposed": 15,
+            "all_event_groups_considered": true,
+            "status": "partial"
+          }
+        }
+      ],
+      "phase_scope": "Observed HTTP transitions with one-second polling uncertainty; phase medians are independent and nonadditive. Missing stages have no inferred duration; observation counts are explicit."
+    },
+    "timing_scope": "Verifier elapsed time includes startup, polling, full workflow, shutdown and verification. Observed phases have one-second polling uncertainty and are not additive.",
+    "cache_scope": "Fresh service/job per arm; same prepared index and recording; one numerical thread; OS file caches not flushed."
+  },
+  "final_ci": {
+    "head": "b98a0fa3e9dc8a204ffddf00f0bc411c9206d868",
+    "baseline": "994d1ee48e25df6d30b23a356bba8f6502d8b7f6",
+    "performance_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41708828025",
+    "performance_job": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41708828025/job/126171209782",
+    "static_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41708837646",
+    "artifact": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41708828025/artifacts/13267408075",
+    "result": "success",
+    "recorded_input_checks": 164,
+    "recorded_input_seconds": 67.32,
+    "recorded_fallback_checks": 4,
+    "recorded_fallback_seconds": 23.25,
+    "skips": 0,
+    "static_python_versions": [
+      "3.11",
+      "3.14"
+    ],
+    "workloads": {
+      "point_10s": {
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 1.2396258499999817,
+            "cpu_seconds": 1.2369810060000002,
+            "peak_rss_mib": 315.734375
+          },
+          "current": {
+            "wall_seconds": 1.233738107000022,
+            "cpu_seconds": 1.230986937,
+            "peak_rss_mib": 315.48046875
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.0047722794380376,
+          "cpu_seconds": 1.0048693197464857
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+        "repeats": 3,
+        "arm_order": [
+          "baseline",
+          "current",
+          "current",
+          "baseline",
+          "baseline",
+          "current"
+        ],
+        "samples": [
+          {
+            "pair": 1,
+            "source": "baseline",
+            "wall_seconds": 1.2396258499999817,
+            "cpu_seconds": 1.2369810060000002,
+            "peak_rss_mib": 315.09765625,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          },
+          {
+            "pair": 1,
+            "source": "current",
+            "wall_seconds": 1.2465221120000365,
+            "cpu_seconds": 1.2418734889999996,
+            "peak_rss_mib": 315.8828125,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          },
+          {
+            "pair": 2,
+            "source": "current",
+            "wall_seconds": 1.2229649610000024,
+            "cpu_seconds": 1.2201471070000003,
+            "peak_rss_mib": 315.48046875,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          },
+          {
+            "pair": 2,
+            "source": "baseline",
+            "wall_seconds": 1.2219710009999858,
+            "cpu_seconds": 1.219049718,
+            "peak_rss_mib": 315.734375,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          },
+          {
+            "pair": 3,
+            "source": "baseline",
+            "wall_seconds": 1.2425978800000053,
+            "cpu_seconds": 1.239608724,
+            "peak_rss_mib": 315.7890625,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          },
+          {
+            "pair": 3,
+            "source": "current",
+            "wall_seconds": 1.233738107000022,
+            "cpu_seconds": 1.230986937,
+            "peak_rss_mib": 315.19921875,
+            "operations": {
+              "scalar_fit_calls": 31,
+              "acoustic_calls": 53,
+              "scored_candidates": 1055,
+              "native_fit_calls": 1573,
+              "native_fit_successes": 1573,
+              "native_acoustic_successes": 53
+            }
+          }
+        ],
+        "inventory": {
+          "retained": 100,
+          "independent_groups": 16,
+          "scored_candidates": 1055
+        },
+        "backends": {
+          "ridge": "native-c-irls-v2-pairwise:ab3956fbfbfe39bb279725d2e9072ebc62096b40e040331bb1c2c166f57681a5",
+          "acoustic": "native-c-acoustic-v1:6c47260354fb791d959096e8190cc5631c6d00111380789261cbf99ebd65782d",
+          "native_extension_available": true
+        }
+      },
+      "point_120s": {
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 7.016594963999978,
+            "cpu_seconds": 7.006395568,
+            "peak_rss_mib": 374.07421875
+          },
+          "current": {
+            "wall_seconds": 6.579482516999974,
+            "cpu_seconds": 6.573629795,
+            "peak_rss_mib": 374.3203125
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.0664356878934778,
+          "cpu_seconds": 1.0658336089034353
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+        "repeats": 3,
+        "arm_order": [
+          "baseline",
+          "current",
+          "current",
+          "baseline",
+          "baseline",
+          "current"
+        ],
+        "samples": [
+          {
+            "pair": 1,
+            "source": "baseline",
+            "wall_seconds": 6.996332396000014,
+            "cpu_seconds": 6.989359802999999,
+            "peak_rss_mib": 374.07421875,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          },
+          {
+            "pair": 1,
+            "source": "current",
+            "wall_seconds": 6.579482516999974,
+            "cpu_seconds": 6.573629795,
+            "peak_rss_mib": 373.7734375,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          },
+          {
+            "pair": 2,
+            "source": "current",
+            "wall_seconds": 6.619474466999975,
+            "cpu_seconds": 6.6115569469999995,
+            "peak_rss_mib": 374.41015625,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          },
+          {
+            "pair": 2,
+            "source": "baseline",
+            "wall_seconds": 7.016594963999978,
+            "cpu_seconds": 7.010554336999999,
+            "peak_rss_mib": 374.36328125,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          },
+          {
+            "pair": 3,
+            "source": "baseline",
+            "wall_seconds": 7.022827635999988,
+            "cpu_seconds": 7.006395568,
+            "peak_rss_mib": 373.8046875,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          },
+          {
+            "pair": 3,
+            "source": "current",
+            "wall_seconds": 6.556248279999977,
+            "cpu_seconds": 6.549656897,
+            "peak_rss_mib": 374.3203125,
+            "operations": {
+              "scalar_fit_calls": 72,
+              "acoustic_calls": 850,
+              "scored_candidates": 3905,
+              "native_fit_calls": 38890,
+              "native_fit_successes": 38890,
+              "native_acoustic_successes": 850
+            }
+          }
+        ],
+        "inventory": {
+          "retained": 100,
+          "independent_groups": 16,
+          "scored_candidates": 3905
+        },
+        "backends": {
+          "ridge": "native-c-irls-v2-pairwise:ab3956fbfbfe39bb279725d2e9072ebc62096b40e040331bb1c2c166f57681a5",
+          "acoustic": "native-c-acoustic-v1:6c47260354fb791d959096e8190cc5631c6d00111380789261cbf99ebd65782d",
+          "native_extension_available": true
+        }
+      },
+      "dense_original_payloads": {
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 38.396635705999984,
+            "cpu_seconds": 38.362449631000004,
+            "peak_rss_mib": 540.52734375
+          },
+          "current": {
+            "wall_seconds": 35.520127712999965,
+            "cpu_seconds": 35.488220543,
+            "peak_rss_mib": 540.2578125
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.0809824788987807,
+          "cpu_seconds": 1.0809910737710107
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged.",
+        "repeats": 3,
+        "arm_order": [
+          "baseline",
+          "current",
+          "current",
+          "baseline",
+          "baseline",
+          "current"
+        ],
+        "samples": [
+          {
+            "pair": 1,
+            "source": "baseline",
+            "wall_seconds": 38.396635705999984,
+            "cpu_seconds": 38.362449631000004,
+            "peak_rss_mib": 540.52734375,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.05100385999998,
+                "cpu_seconds": 8.047529071
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 30.345572956000012,
+                "cpu_seconds": 30.314870435
+              }
+            }
+          },
+          {
+            "pair": 1,
+            "source": "current",
+            "wall_seconds": 35.520127712999965,
+            "cpu_seconds": 35.488220543,
+            "peak_rss_mib": 541.23046875,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.137789826000017,
+                "cpu_seconds": 8.131656018
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.38227490899999,
+                "cpu_seconds": 27.356512056
+              }
+            }
+          },
+          {
+            "pair": 2,
+            "source": "current",
+            "wall_seconds": 35.55306625500003,
+            "cpu_seconds": 35.512729207,
+            "peak_rss_mib": 540.2578125,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.197847416000002,
+                "cpu_seconds": 8.191459819
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.355149859999983,
+                "cpu_seconds": 27.321209857000003
+              }
+            }
+          },
+          {
+            "pair": 2,
+            "source": "baseline",
+            "wall_seconds": 38.63615080499994,
+            "cpu_seconds": 38.596481964999995,
+            "peak_rss_mib": 540.484375,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.21897672199998,
+                "cpu_seconds": 8.212742771999999
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 30.41711166700003,
+                "cpu_seconds": 30.383686053999998
+              }
+            }
+          },
+          {
+            "pair": 3,
+            "source": "baseline",
+            "wall_seconds": 38.136635684,
+            "cpu_seconds": 38.104196938,
+            "peak_rss_mib": 540.69921875,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.129581788999985,
+                "cpu_seconds": 8.123943806
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 30.006995957000072,
+                "cpu_seconds": 29.980202678999998
+              }
+            }
+          },
+          {
+            "pair": 3,
+            "source": "current",
+            "wall_seconds": 35.39751395499991,
+            "cpu_seconds": 35.358424793,
+            "peak_rss_mib": 539.72265625,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.104970906000062,
+                "cpu_seconds": 8.100487104
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.29248359999997,
+                "cpu_seconds": 27.257887404999998
+              }
+            }
+          }
+        ],
+        "inventory": {
+          "retained": 100,
+          "independent_groups": 16,
+          "scored_candidates": 16101
+        },
+        "backends": {
+          "ridge": "native-c-irls-v2-pairwise:ab3956fbfbfe39bb279725d2e9072ebc62096b40e040331bb1c2c166f57681a5",
+          "acoustic": "native-c-acoustic-v1:6c47260354fb791d959096e8190cc5631c6d00111380789261cbf99ebd65782d",
+          "native_extension_available": true
+        },
+        "timing_scope": "Initial local index traversal and conservative distance sieve, followed by complete CPA/association scoring and retention. Excludes imports, index metadata, event preparation, downloads, terrain sampling, audio discovery, and refinement.",
+        "anchor_window_s": [
+          1788864888.7151732,
+          1788865236.7214916
+        ]
+      },
+      "dense_prepared_payloads": {
+        "identical_results": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 38.373939594000035,
+            "cpu_seconds": 38.329207568,
+            "peak_rss_mib": 541.41015625
+          },
+          "current": {
+            "wall_seconds": 30.398725480000053,
+            "cpu_seconds": 30.363599419000003,
+            "peak_rss_mib": 518.85546875
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.2623535687128409,
+          "cpu_seconds": 1.262340707341025
+        },
+        "execution_stage_medians": {
+          "baseline": {
+            "track_query_and_distance_sieve": {
+              "wall_seconds": 8.150009777000037,
+              "cpu_seconds": 8.144911515999999
+            },
+            "cpa_association_scoring_and_retention": {
+              "wall_seconds": 30.179884913000024,
+              "cpu_seconds": 30.153397223
+            }
+          },
+          "current": {
+            "track_query_and_distance_sieve": {
+              "wall_seconds": 2.962375444999907,
+              "cpu_seconds": 2.9606358270000004
+            },
+            "cpa_association_scoring_and_retention": {
+              "wall_seconds": 27.415652873,
+              "cpu_seconds": 27.388938108999998
+            }
+          }
+        },
+        "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged.",
+        "repeats": 3,
+        "arm_order": [
+          "baseline",
+          "current",
+          "current",
+          "baseline",
+          "baseline",
+          "current"
+        ],
+        "samples": [
+          {
+            "pair": 1,
+            "source": "baseline",
+            "wall_seconds": 38.373939594000035,
+            "cpu_seconds": 38.329207568,
+            "peak_rss_mib": 541.41015625,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 0,
+              "prepared_decode_successes": 0
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.150009777000037,
+                "cpu_seconds": 8.144911515999999
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 30.22387057600008,
+                "cpu_seconds": 30.184246148
+              }
+            }
+          },
+          {
+            "pair": 1,
+            "source": "current",
+            "wall_seconds": 30.406378263999954,
+            "cpu_seconds": 30.37730433,
+            "peak_rss_mib": 518.109375,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 4694,
+              "prepared_decode_successes": 4694
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 2.990675097999997,
+                "cpu_seconds": 2.988324513
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.415652873,
+                "cpu_seconds": 27.388938108999998
+              }
+            }
+          },
+          {
+            "pair": 2,
+            "source": "current",
+            "wall_seconds": 30.023003539,
+            "cpu_seconds": 29.991734274,
+            "peak_rss_mib": 518.85546875,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 4694,
+              "prepared_decode_successes": 4694
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 2.941392050000104,
+                "cpu_seconds": 2.9395136409999996
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.08155707700007,
+                "cpu_seconds": 27.052174035999997
+              }
+            }
+          },
+          {
+            "pair": 2,
+            "source": "baseline",
+            "wall_seconds": 37.75792779799997,
+            "cpu_seconds": 37.729543474,
+            "peak_rss_mib": 541.38671875,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 0,
+              "prepared_decode_successes": 0
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.096062859999961,
+                "cpu_seconds": 8.09203546
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 29.661806789000025,
+                "cpu_seconds": 29.637458480999996
+              }
+            }
+          },
+          {
+            "pair": 3,
+            "source": "baseline",
+            "wall_seconds": 38.38593006799999,
+            "cpu_seconds": 38.354996566,
+            "peak_rss_mib": 541.6953125,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 0,
+              "prepared_decode_successes": 0
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 8.205987778999997,
+                "cpu_seconds": 8.201550131000001
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 30.179884913000024,
+                "cpu_seconds": 30.153397223
+              }
+            }
+          },
+          {
+            "pair": 3,
+            "source": "current",
+            "wall_seconds": 30.398725480000053,
+            "cpu_seconds": 30.363599419000003,
+            "peak_rss_mib": 519.18359375,
+            "operations": {
+              "scalar_fit_calls": 983,
+              "acoustic_calls": 5731,
+              "scored_candidates": 16101,
+              "native_fit_calls": 228240,
+              "native_fit_successes": 228240,
+              "native_acoustic_successes": 5731,
+              "prepared_decode_calls": 4694,
+              "prepared_decode_successes": 4694
+            },
+            "track_query_operations": {
+              "query_calls": 1,
+              "decoded_track_yields": 4694,
+              "decoded_sample_yields": 713100
+            },
+            "execution_stage_seconds": {
+              "track_query_and_distance_sieve": {
+                "wall_seconds": 2.962375444999907,
+                "cpu_seconds": 2.9606358270000004
+              },
+              "cpa_association_scoring_and_retention": {
+                "wall_seconds": 27.436299501000008,
+                "cpu_seconds": 27.402921475
+              }
+            }
+          }
+        ],
+        "inventory": {
+          "retained": 100,
+          "independent_groups": 16,
+          "scored_candidates": 16101
+        },
+        "backends": {
+          "ridge": "native-c-irls-v2-pairwise:ab3956fbfbfe39bb279725d2e9072ebc62096b40e040331bb1c2c166f57681a5",
+          "acoustic": "native-c-acoustic-v1:6c47260354fb791d959096e8190cc5631c6d00111380789261cbf99ebd65782d",
+          "native_extension_available": true
+        },
+        "timing_scope": "Initial local index traversal and conservative distance sieve, followed by complete CPA/association scoring and retention. Excludes imports, index metadata, event preparation, downloads, terrain sampling, audio discovery, and refinement.",
+        "anchor_window_s": [
+          1788864888.7151732,
+          1788865236.7214916
+        ]
+      }
+    },
+    "preparation": {
+      "wall_seconds": 7.742802288999997,
+      "cpu_seconds": 7.7218106209999995,
+      "input_hash": "ed0ab12af801d1451edea17f1212740758569338dd601f9eb4a82c763b291955",
+      "original_unchanged": true,
+      "source_bytes": 41385984,
+      "prepared_bytes": 85929984,
+      "prepared_tracks": {
+        "version": 1,
+        "builder": "828c57c607adfd4974b0b62f06839d7467c322cf0ca7d2f6e4abae1fc9c35153",
+        "tracks": 4694,
+        "bytes": 40986623
+      },
+      "timing_scope": "One-time index copy, canonical decoding, optional representation and commit; excludes imports and verification.",
+      "cache_scope": "Source integrity verification reads the original index before timing; operating-system file caches are not flushed."
+    },
+    "controls": {
+      "repeats": 3,
+      "arm_order": [
+        "baseline",
+        "current",
+        "current",
+        "baseline",
+        "baseline",
+        "current"
+      ],
+      "fresh_workers": true,
+      "numerical_threads": 1,
+      "cpu_affinity_pinned": true,
+      "os_file_caches_flushed": false,
+      "original_index_built_with_baseline": true,
+      "same_prepared_database_in_prepared_comparison": true,
+      "dense_both_native_backends_required": true,
+      "all_timed_workers_reported_native_successes": true
+    },
+    "runtime": {
+      "python": "3.12.15",
+      "packages": {
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.1.0",
+        "pyarrow": "26.0.1",
+        "pyproj": "3.8.0",
+        "rasterio": "1.5.2",
+        "matplotlib": "3.11.2",
+        "pytest": "9.2.0"
+      }
+    },
+    "regression_warning": {
+      "count": 1,
+      "kind": "Pandas4Warning",
+      "location": "tests/test_real_cpa_spatial_sieve.py",
+      "message": "Existing DataFrame.drop(inplace=...) usage is deprecated; no test failure."
+    },
+    "http_scope": "Regional and bounded-HTTP jobs are intentionally skipped for this branch push. The final local HTTP series is recorded separately."
+  }
+}

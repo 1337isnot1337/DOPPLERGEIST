@@ -6,6 +6,8 @@ recordings, trajectories or location-accuracy cases.
 from copy import deepcopy
 import json
 from pathlib import Path
+from types import SimpleNamespace
+import sys
 import warnings
 
 import numpy as np
@@ -197,3 +199,245 @@ def test_native_ceiling_preserves_numpy_policies_and_custom_classifier(recorded,
     with monkeypatch.context() as patch:
         patch.setattr(search, "_association_event_ceiling_uncached", lambda *args: 0.125)
         assert search._association_event_ceiling(fit, fit["score"], fit["f0_hz"], event, 3.0) == 0.125
+
+
+def load_recorded():
+    fixture = json.loads((Path(__file__).parent / "data/real-ridge-batch-arithmetic.json").read_text())
+    return fixture["legacy_diagnostics"], fixture["event"]
+
+
+def result_for(diagnostics, events, association=False):
+    result = {
+        "score_kind": "negative_robust_ridge_loss_hz",
+        "score": float(sum(fit["score"] for fit in diagnostics)),
+        "event_scores": [fit["score"] for fit in diagnostics],
+        "f0_hz": [fit["f0_hz"] for fit in diagnostics],
+        "event_diagnostics": diagnostics,
+    }
+    return matching.association_score(result, events) if association else result
+
+
+def reason_outcome(function, *args):
+    try:
+        return ("result", function(*args))
+    except Exception as error:
+        return ("error", type(error), str(error))
+
+
+def assert_python_parity(monkeypatch, result, events, association=False):
+    with monkeypatch.context() as patch:
+        patch.setattr(search, "_native_validate_ridge_events", None)
+        expected = reason_outcome(search._ridge_trial_classification, result, events, association)
+    actual = reason_outcome(search._ridge_trial_classification, result, events, association)
+    assert actual == expected
+
+
+@pytest.fixture
+def native_reason():
+    function = getattr(matching._native_ridge_module, "event_fit_reason", None)
+    if function is None:
+        pytest.skip("optional native evidence validator is not installed")
+    return function
+
+
+def test_native_recorded_event_evidence_and_final_score_parity(native_reason, monkeypatch):
+    diagnostics, event = load_recorded()
+    for selected in ([diagnostic] for diagnostic in diagnostics):
+        for association in (False, True):
+            events = [deepcopy(event) for _ in selected]
+            result = result_for(selected, events, association)
+            assert native_reason(result["event_diagnostics"], result["event_scores"], result["f0_hz"], events) == 0
+            assert_python_parity(monkeypatch, result, events, association)
+    # The outer classifier still performs Python's exact score summation and
+    # association arithmetic, including its first failure and optimizer flag.
+    events = [deepcopy(event) for _ in diagnostics]
+    for association in (False, True):
+        result = result_for(diagnostics, events, association)
+        assert_python_parity(monkeypatch, result, events, association)
+        for field in ("score", "residual_score", "score_kind", "optimizer_success"):
+            for value in (None, False, True, -float("inf"), 0.0, "invalid"):
+                changed = dict(result, **{field: value})
+                assert_python_parity(monkeypatch, changed, events, association)
+
+
+def test_native_rechecks_every_recorded_diagnostic_field(native_reason, monkeypatch):
+    diagnostics, event = load_recorded()
+    checked = 0
+    for diagnostic in diagnostics:
+        original = result_for([diagnostic], [event])
+        for field, previous in diagnostic.items():
+            values = (None, False, True, float("nan"), float("inf"), -float("inf"),
+                      0, 0.0, -1.0, 1e200, np.float32(previous), np.float64(previous),
+                      np.longdouble(previous), 2**80)
+            for value in values:
+                changed = deepcopy(original)
+                changed["event_diagnostics"][0][field] = value
+                assert_python_parity(monkeypatch, changed, [event])
+                checked += 1
+            changed = deepcopy(original)
+            del changed["event_diagnostics"][0][field]
+            assert_python_parity(monkeypatch, changed, [event])
+            checked += 1
+        for key in ("event_scores", "f0_hz"):
+            for value in (np.float64(original[key][0]), 0.0, None, True, float("nan")):
+                changed = deepcopy(original)
+                changed[key][0] = value
+                assert_python_parity(monkeypatch, changed, [event])
+                checked += 1
+    assert checked > 800
+
+
+def test_native_recorded_frequency_and_drift_domain_parity(native_reason, monkeypatch):
+    diagnostics, event = load_recorded()
+    for diagnostic in diagnostics:
+        result = result_for([diagnostic], [event])
+        for bounds in (None, [], [0.0, 1.0], [-1.0, 1.0], [1.0, 0.0],
+                       [1.0, float("inf")], [float("nan"), 1000.0], [1, 1000],
+                       np.asarray(event["f0_range_hz"]), tuple(event["f0_range_hz"])):
+            configured = dict(event, f0_range_hz=bounds)
+            assert_python_parity(monkeypatch, result, [configured])
+        for fraction in (None, False, True, -1.0, -0.0, 0.1, 0.2, float("nan"),
+                         float("inf"), np.float32(.02), np.float64(.02), np.longdouble(.02)):
+            configured = dict(event, quality=dict(event["quality"], source_drift_fraction=fraction))
+            assert_python_parity(monkeypatch, result, [configured])
+        for quality in (None, {}, []):
+            assert_python_parity(monkeypatch, result, [dict(event, quality=quality)])
+        without_quality = {key: value for key, value in event.items() if key != "quality"}
+        assert_python_parity(monkeypatch, result, [without_quality])
+
+
+def test_native_reason_order_and_in_place_mutation(native_reason, monkeypatch):
+    diagnostics, event = load_recorded()
+    fit = deepcopy(diagnostics[0])
+    result = result_for([fit], [event])
+    arguments = (result["event_diagnostics"], result["event_scores"], result["f0_hz"], [event])
+    assert native_reason(*arguments) == 0
+    changes = (
+        ("support_fraction", 0.0, 1),
+        ("rmse_hz", float("nan"), 2),
+        ("sample_count", 1, 3),
+        ("optimizer_success", False, 4),
+        ("score", float(np.nextafter(fit["score"], np.inf)), 5),
+        ("source_drift_hz", fit["drift_bound_hz"] + 1.0, 7),
+        ("source_drift_hz_s", fit["source_drift_hz_s"] + 1.0, 8),
+    )
+    for field, value, code in changes:
+        fit.clear()
+        fit.update(diagnostics[0])
+        fit[field] = value
+        assert native_reason(*arguments) == code
+        assert_python_parity(monkeypatch, result, [event])
+    fit.clear()
+    fit.update(diagnostics[0])
+    configured = dict(event, f0_range_hz=[1.0, 2.0])
+    assert native_reason(*arguments[:-1], [configured]) == 6
+    assert_python_parity(monkeypatch, result, [configured])
+    # A later event's invalid data cannot replace the earlier failure reason.
+    fits = deepcopy(diagnostics[:2])
+    fits[0]["support_fraction"] = 0.0
+    fits[1]["rmse_hz"] = -1.0
+    result = result_for(fits, [event, event])
+    assert_python_parity(monkeypatch, result, [event, event])
+
+
+def test_native_source_drift_tolerance_boundary_keeps_python_arithmetic(native_reason, monkeypatch):
+    diagnostics, event = load_recorded()
+    for diagnostic in diagnostics:
+        drift, span = diagnostic["source_drift_hz"], diagnostic["source_span_s"]
+        tolerance = 1e-12 + 1e-12 * abs(drift)
+        for direction in (-1.0, 1.0):
+            edge = (drift + direction * tolerance) / span
+            for rate in (edge, float(np.nextafter(edge, -np.inf)), float(np.nextafter(edge, np.inf))):
+                fit = dict(diagnostic, source_drift_hz_s=rate)
+                result = result_for([fit], [event])
+                assert_python_parity(monkeypatch, result, [event])
+
+
+def test_native_custom_types_and_older_extension_keep_python_fallback(native_reason, monkeypatch):
+    class CustomDict(dict):
+        pass
+
+    class CustomList(list):
+        pass
+
+    class CustomString(str):
+        pass
+
+    diagnostics, event = load_recorded()
+    result = result_for(diagnostics, [event] * len(diagnostics))
+    standard = [diagnostics, result["event_scores"], result["f0_hz"], [event] * len(diagnostics)]
+    cases = []
+    for index in range(4):
+        changed = standard.copy()
+        changed[index] = CustomList(changed[index])
+        cases.append(changed)
+    for altered in (CustomDict(diagnostics[0]),
+                    dict(diagnostics[0], score=np.float64(diagnostics[0]["score"])),
+                    dict(diagnostics[0], sample_count=2**80)):
+        cases.append([[altered] + diagnostics[1:], *standard[1:]])
+    keyed = {CustomString(key): value for key, value in diagnostics[0].items()}
+    cases.append([[keyed] + diagnostics[1:], *standard[1:]])
+    cases.append([*standard[:3], [CustomDict(event)] * len(diagnostics)])
+    cases.append([*standard[:3], [dict(event, quality=CustomDict(event["quality"]))] * len(diagnostics)])
+    for arguments in cases:
+        assert native_reason(*arguments) is None
+        altered_result = dict(result, event_diagnostics=arguments[0], event_scores=arguments[1], f0_hz=arguments[2])
+        assert_python_parity(monkeypatch, altered_result, arguments[3])
+    expected = reason_outcome(search._ridge_trial_classification, result, standard[3])
+    with monkeypatch.context() as patch:
+        patch.setattr(matching, "_native_ridge_module", SimpleNamespace())
+        patch.setattr(search, "_native_validate_ridge_events", None)
+        assert reason_outcome(search._ridge_trial_classification, result, standard[3]) == expected
+
+
+def test_both_native_interfaces_preserve_container_and_integer_fallbacks(recorded, native, native_reason):
+    fits, event = recorded
+    result = search._ridge_result([deepcopy(fits[0])])
+    arguments = (result["event_diagnostics"], result["event_scores"], result["f0_hz"])
+    assert native(*arguments, [event]) is True
+    assert native_reason(*arguments, [event]) == 0
+    assert native(*arguments, (event,)) is False
+    assert native_reason(*arguments, (event,)) == 0
+    # The boolean API retains upstream's platform-sized integer gate. Larger
+    # Python integers must still reach the original unbounded validator.
+    result["event_diagnostics"][0]["sample_count"] = sys.maxsize + 1
+    assert native(*arguments, [event]) is False
+    assert native_reason(*arguments, [event]) is None
+
+
+def test_custom_boolean_validator_preserves_nonfinite_aggregate_ceiling(recorded, monkeypatch):
+    fits, event = recorded
+    fit = dict(fits[0], score=float("nan"))
+    arguments = (fit, fit["score"], fit["f0_hz"], event, 3.0)
+    monkeypatch.setattr(search, "_native_validate_ridge_events", lambda *args: True)
+    expected = outcome(lambda: search._association_event_ceiling_uncached(*arguments))
+    assert expected == (("result", 1.0), [])
+    assert outcome(lambda: search._association_event_ceiling(*arguments)) == expected
+
+
+def test_changed_boolean_validator_does_not_reuse_cached_ceiling(recorded, monkeypatch):
+    fits, event = recorded
+    fit = dict(fits[0], support_fraction=0.0)
+    arguments = (fit, fit["score"], fit["f0_hz"], event, 3.0)
+    calls = []
+
+    def custom_validator(*args):
+        calls.append(args)
+        return True
+
+    @matching._cache_ridge_fits
+    def exercise():
+        cache = matching._ridge_fit_cache.get()
+        assert search._association_event_ceiling(*arguments) == 1.0
+        assert len(cache.ceiling_entries) == 1
+        with monkeypatch.context() as patch:
+            patch.setattr(search, "_native_validate_ridge_events", custom_validator)
+            expected = search._association_event_ceiling_uncached(*arguments)
+            assert expected != 1.0
+            calls.clear()
+            assert search._association_event_ceiling(*arguments) == expected
+            assert len(calls) == 1
+            assert len(cache.ceiling_entries) == 1
+        assert search._association_event_ceiling(*arguments) == 1.0
+
+    exercise()

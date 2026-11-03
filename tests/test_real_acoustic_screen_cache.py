@@ -178,3 +178,32 @@ def test_recorded_underflow_policy_is_not_hidden_by_a_cache_hit(recorded_batches
                 assert calls == before + 1
 
     compare()
+
+
+@pytest.mark.parametrize("changed_field", ["low", "weight", "time", "ridge", "shape"])
+def test_real_screen_cache_revalidates_changed_raw_inputs(recorded_batches, changed_field):
+    """A previously valid cache hit must not hide a now-invalid input."""
+    base = deepcopy(recorded_batches[0])
+    changed = deepcopy(base)
+    if changed_field == "low":
+        changed[1]["f0_range_hz"][0] = float("nan")
+    elif changed_field == "weight":
+        changed[0][2][0] = -1.
+    elif changed_field == "time":
+        changed[0][0].time[0] = float("nan")
+    elif changed_field == "ridge":
+        changed[0][1][0] = float("nan")
+    else:
+        measurement = changed[0]
+        changed = ((measurement[0], measurement[1][1:], measurement[2], measurement[3]),
+                   *changed[1:])
+    options = {"score_floor": .7, "group_count": 1}
+    expected = screen.ridge_trial_rejections(*changed, **options)
+
+    @_cache_ridge_fits
+    def compare():
+        screen.ridge_trial_rejections(*base, **options)
+        assert _ridge_fit_cache.get().screen_entries
+        same(screen.ridge_trial_rejections(*changed, **options), expected)
+
+    compare()
