@@ -52,7 +52,7 @@ def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
 
     from dopplergeist.data_access import FlightIndex, content_hash
     from dopplergeist.matching import prepare_events
-    from dopplergeist.parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_futures, score_tile
+    from dopplergeist.parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results, score_tile
     from dopplergeist.tiled_search import SearchBudget
 
     source = os.environ.get("DOPPLERGEIST_REAL_JOB_ROOT")
@@ -89,12 +89,13 @@ def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
     parallel = []
     with ProcessPoolExecutor(max_workers=2, mp_context=multiprocessing.get_context("spawn"),
                              initializer=initialize_tile_worker, initargs=args) as pool:
-        for stage, cells, cached, future in ordered_tile_futures(pool, jobs, 2):
-            if cached is not None:
-                assert stage == stages[0][0] and cached == serial[0][0] and future is None
+        for stage, cells, result, was_cached in ordered_tile_results(
+                pool, jobs, 2, lambda stage, cells, future: future.result()):
+            if was_cached:
+                assert stage == stages[0][0] and result == serial[0][0]
             else:
                 assert stage == stages[len(parallel)][0] and cells == stages[len(parallel)][1]
-                parallel.append(future.result())
+                parallel.append(result)
     parent = RetentionLedger(tmp_path / "parallel-parent.sqlite", run_hash, score_kind)
     assert sum(p[0]["counts"].get("candidates", 0) for p in serial) > 0
     for (stage, _), (expected, expected_db), (actual, worker_db) in zip(stages, serial, parallel):

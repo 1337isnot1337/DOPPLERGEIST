@@ -1,5 +1,4 @@
 """Isolated coarse-tile workers with private retention ledgers."""
-from collections import deque
 from pathlib import Path
 import tempfile
 
@@ -93,25 +92,38 @@ def score_tile(stage, cells, score_floor=None):
         raise
 
 
-def ordered_tile_futures(pool, jobs, workers):
-    """Prefetch at most two tiles per worker, yielding in search order.
+def ordered_tile_results(pool, jobs, workers, finish):
+    """Persist completed work promptly but yield lightweight handles in order."""
+    from concurrent.futures import FIRST_COMPLETED, wait
 
-    Each job is ``(stage, cells, cached_payload, score_floor)``. Cached
-    payloads require no worker. For other jobs the caller receives a future,
-    imports its verified ledger, and checkpoints it before advancing.
-    """
     if type(workers) is not int or workers < 1:
         raise ValueError("workers must be a positive integer")
-    pending = deque()
-
-    def enqueue(job):
-        stage, cells, cached, floor = job
-        future = None if cached is not None else pool.submit(score_tile, stage, cells, floor)
-        pending.append((stage, cells, cached, future))
-
-    for job in jobs:
-        enqueue(job)
-        if len(pending) >= 2 * workers:
-            yield pending.popleft()
-    while pending:
-        yield pending.popleft()
+    source = iter(jobs)
+    pending, ready = {}, {}
+    assigned = next_result = 0
+    exhausted = False
+    while not exhausted or pending or ready:
+        while not exhausted and len(pending) < 2 * workers and next_result not in ready:
+            try:
+                stage, cells, cached, floor = next(source)
+            except StopIteration:
+                exhausted = True
+                break
+            index = assigned
+            assigned += 1
+            if cached is None:
+                future = pool.submit(score_tile, stage, cells, floor)
+                pending[future] = (index, stage, cells)
+            else:
+                ready[index] = (stage, cells, cached, True)
+        if next_result in ready:
+            yield ready.pop(next_result)
+            next_result += 1
+            continue
+        if pending:
+            completed, _ = wait(pending, return_when=FIRST_COMPLETED)
+            for future in completed:
+                index, stage, cells = pending.pop(future)
+                ready[index] = (stage, cells, finish(stage, cells, future), False)
+        elif exhausted and ready:
+            raise RuntimeError("Tile result ordering is inconsistent")
