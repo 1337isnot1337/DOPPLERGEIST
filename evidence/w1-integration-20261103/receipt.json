@@ -1,0 +1,35 @@
+{
+  "scope": "Current-main plus published W5/W4/W2/audio integration and bounded robust-clock trial classifier; no empirical localization replay",
+  "source_commit": "7897f5cb38f966576b2ee40517ea46b9648a7117",
+  "source_tree": "b4be1b68afcdb5ca91362ae10cde64411721db3e",
+  "baseline_integration": "4e11bd4",
+  "parents": {
+    "main": "8cdb7ae",
+    "product": "f2aa5ec",
+    "finite_producer": "5459461"
+  },
+  "source_sha256": {
+    "src/aircraft_geoloc/geometry.py": "73a5d2846f09fdac592e42b64f34c0fe95577b87edd8ea57718ce1ad582ddde9",
+    "src/aircraft_geoloc/search.py": "53e139fc2de1dde6b49301a1faeb7f747736c9e9474c1508949b463c6c91b414",
+    "src/aircraft_geoloc/finite_search.py": "95fa6eec1a6de4d88f2d56173c6e87c9c45f20786593c3690850a0411dc8e5b0",
+    "src/aircraft_geoloc/tiled_search.py": "f3a90c08de0ad5fbe714935c8a03bbab6c325dba99fcb640f272de72e756e3a6",
+    "src/aircraft_geoloc/automatic.py": "d905f1e8f63b3d57fac247dcb35636e1e8a6d3d58ae1486424e5cd0088cb1ac5",
+    "tests/test_scoring_assessment.py": "d32a9b604a48f99cd9f52ff74a2ff38f831c60b5ae5d427136649b71eb4c6868"
+  },
+  "verification": {
+    "baseline_combined_passed": 300,
+    "baseline_subtests": 6,
+    "before_regressions_failed": 5,
+    "before_existing_control_passed": 1,
+    "focused_after_passed": 7,
+    "scorer_ledger_tiled_passed_before_final_track_control": 29,
+    "full_after_passed": 307,
+    "full_after_subtests": 6,
+    "full_after_seconds": 110.2
+  },
+  "limits": [
+    "No positive synthetic or real scientific replay was performed by this increment.",
+    "Continuous total-speed validity, time-local unsupported coverage and fresh normalization remain #64 work.",
+    "Finite compatible-subset margin policy and independent GPS/sample-zero UTC corpus are unresolved."
+  ]
+}
