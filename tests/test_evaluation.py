@@ -63,6 +63,30 @@ def test_distance_tiers_keep_abstained_diagnostics_out_of_success_counts():
     assert report["cases"][1]["location_returned"] is False
 
 
+def test_distance_tiers_reject_an_eligible_fix_when_abstention_is_required():
+    cases = {"cases": [{"case_id": "ambiguous", "split": "held_out", "scope": "control"}]}
+    truth = {"ambiguous": {"location": [40, -100], "location_accuracy_eligible": True,
+                           "flight_ids": ["flight-a"], "expect_inconclusive": True}}
+    predictions = {"ambiguous": {"status": "succeeded", "candidates": [
+        {"lat": 40, "lon": -100, "flight_ids": ["flight-a"]}]}}
+
+    report = evaluate(cases, predictions, truth)
+
+    # A coincident coordinate and correct flight do not justify accepting an
+    # ambiguous case whose independent labels require an inconclusive result.
+    case = report["cases"][0]
+    assert case["location_error_m"] == 0
+    assert case["within_threshold"] is True
+    assert case["flight_ids_correct"] is True
+    assert case["false_localization"] is True
+    for summary in (report["summary"], report["by_split"]["held_out"], report["by_scope"]["control"]):
+        assert summary["eligible_location_cases"] == 1
+        assert summary["successful_locations_within_threshold"] == 0
+        assert summary["successful_locations_by_threshold_m"] == {"100": 0, "500": 0, "1000": 0}
+        assert summary["false_localizations"] == 1
+        assert summary["false_localizations_by_threshold_m"] == {"100": 1, "500": 1, "1000": 1}
+
+
 def test_runner_does_not_require_truth_and_measures_each_process(tmp_path):
     import hashlib
     module_path = Path(__file__).resolve().parents[1] / "scripts/run_benchmark.py"
