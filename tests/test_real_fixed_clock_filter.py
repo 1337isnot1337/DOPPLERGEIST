@@ -1,4 +1,7 @@
 """Fixed-clock boundary regression using an observed ADS-B passage and audio proposal."""
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -32,3 +35,15 @@ def test_real_passage_is_kept_at_inclusive_clock_endpoints(find_candidates):
                                         offset_tolerance_s=5, time_origin=clock,
                                         time_tolerance_s=3)
         assert bool(candidates) is expected
+
+
+def test_real_two_pass_pair_survives_inclusive_fixed_clock_boundary():
+    fixture = json.loads((Path(__file__).parent / 'data' / 'reference-cpa-real.json').read_text())
+    events = fixture['events'][:2]
+    passages = [fixture['cpa_rows'][0], fixture['cpa_rows'][27]]
+    clock = passages[0]['receive_time'] - events[0]['cpa_receive_s'] - (
+        events[0]['quality']['cpa_tolerance_s'] + 2.5)
+    candidates, _ = pair_candidates(pd.DataFrame(passages), events, offset_tolerance_s=5,
+                                    time_origin=clock, time_tolerance_s=0)
+    assert any([p['flight_id'] for p in item['passes']] == ['06a128', 'ac79b1']
+               for item in candidates)
