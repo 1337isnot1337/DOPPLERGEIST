@@ -165,3 +165,16 @@ def test_index_bounds_include_hermite_excursion_between_samples(tmp_path):
     found = list(index.query([lon-.00001, lat-.00001, lon+.00001, lat+.00001], [4., 6.]))
     assert len(found) == 1
     assert np.allclose(found[0].position(5), oracle.position(5))
+
+
+def test_index_partial_velocity_inference_preserves_measured_zero(tmp_path):
+    frame = pd.DataFrame({"flight_id": ["partial"] * 3, "time_s": [0., 5., 10.],
+                          "lat": [40.] * 3, "lon": [-100., -99.999, -99.998], "alt_m": [1000., 1050., 1100.],
+                          "east_mps": [np.nan] * 3, "north_mps": [np.nan] * 3, "up_mps": [0.] * 3})
+    index = FlightIndex.build(tmp_path / "partial.sqlite", [frame], sources=[], coverage={})
+    track = list(index.query([-101, 39, -99, 41], [0, 10]))[0]
+    lat, lon = np.deg2rad([40., -99.999])
+    vertical = np.array([np.cos(lat)*np.cos(lon), np.cos(lat)*np.sin(lon), np.sin(lat)])
+    assert abs(np.dot(track.speed_vector(5), vertical)) < 1e-9
+    assert np.linalg.norm(track.speed_vector(5)) > 10
+    assert track.velocity_inferred_components["up_mps"] == 0
