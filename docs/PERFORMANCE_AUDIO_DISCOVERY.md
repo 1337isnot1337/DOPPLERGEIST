@@ -31,10 +31,22 @@ low-priority process competing with the national search. In that profile,
 Intake took 218 s, including 204 s inside reads from FFmpeg's output pipe;
 this run does not yet separate decoder CPU from wait time under host load.
 
-The immediate change makes per-event PNGs opt-in while retaining all ridge
+A separate sequential A/B then ran only `discover_events` over the same cached
+decoded Commons audio, with plots disabled. Replacing NumPy allocation/diff/
+median work for each short slope history with `statistics.median` reduced
+discovery from **111.456 s** to **94.616 s** (**1.18x**), kept all 222 ridge
+records, and preserved the exact JSON SHA-256 above. A smaller microbenchmark
+over 2,731 real ridge windows was also numerically identical and took 0.354 s
+with NumPy versus 0.058 s with the standard-library median. These are paired
+measurements on a loaded host, not an isolated steady-state benchmark; the
+CLI's decode-inclusive runtime was not remeasured after this change.
+
+The plot change makes per-event PNGs opt-in while retaining all ridge
 measurements in JSON and CSV. The CLI also makes its summary plot opt-in. The
 library keeps its existing summary-plot default for callers that use the image
-as an inspectable artifact. These changes do not reduce event recall.
+as an inspectable artifact. These changes do not reduce event recall. The
+short-history median change preserves the entire recorded discovery JSON on
+the hour-long real clip.
 
 DOPPLERGEIST's application and detector control flow is Python. NumPy/SciPy
 provide compiled array, FFT and peak-finding kernels; the repository has no
