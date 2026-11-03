@@ -37,6 +37,17 @@ _EQUIVALENT_NORMALIZERS = {
 }
 
 
+def _staging_rows(frame):
+    """Keep pandas' normalized JSON rows without encoding each one twice."""
+    payload = frame.to_json(orient="records", double_precision=15)
+    decoder = json.JSONDecoder()
+    position = 1  # Skip the opening array bracket.
+    while position < len(payload) - 1:
+        row, end = decoder.raw_decode(payload, position)
+        yield str(row["flight_id"]), row["time_s"], payload[position:end]
+        position = end + 1  # Skip the comma (or closing bracket).
+
+
 def _frame_track(name, frame):
     velocity, inferred = _segment_velocity(frame)
     track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
@@ -278,9 +289,8 @@ class FlightIndex:
                     clean["aircraft_class"] = clean.typecode.map(class_map).astype(object).fillna("unclassified") if "typecode" in clean else "unclassified"
                     altitude.update(clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)})
                     # pandas normalizes numpy scalars/NaNs to JSON numbers/null.
-                    records = json.loads(clean.to_json(orient="records", double_precision=15))
-                    db.executemany("INSERT INTO samples VALUES(?,?,?)", [(str(r["flight_id"]), r["time_s"], json.dumps(r)) for r in records])
-                    rows += len(records)
+                    db.executemany("INSERT INTO samples VALUES(?,?,?)", _staging_rows(clean))
+                    rows += len(clean)
                 db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
@@ -321,11 +331,31 @@ class FlightIndex:
     def from_parquet(cls, path, parquet, *, coverage, **kwargs):
         import pyarrow.parquet as pq
         parquet = Path(parquet)
-        source = {"path": str(parquet.resolve()), "sha256": sha256(parquet), "bytes": parquet.stat().st_size}
         try:
-            frames = (batch.to_pandas() for batch in pq.ParquetFile(parquet).iter_batches(batch_size=16384))
+            parquet_file = pq.ParquetFile(parquet)
+            metadata = parquet_file.schema_arrow.metadata or {}
+            if b"dopplergeist.selection.v1" in metadata:
+                selected = json.loads(metadata[b"dopplergeist.selection.v1"])
+                bounds, times = coverage["bounds"], coverage["time_range_s"]
+                box, interval = selected["bounds"], selected["time_range_s"]
+                if (len(bounds) != 4 or len(box) != 4 or len(times) != 2 or
+                        not np.isfinite([*bounds, *box, *times]).all() or
+                        type(selected["all_aircraft"]) is not bool or
+                        not np.isfinite(selected["max_gap_s"]) or selected["max_gap_s"] <= 0 or
+                        not (box[0] <= bounds[0] <= bounds[2] <= box[2] and
+                             box[1] <= bounds[1] <= bounds[3] <= box[3] and times[0] <= times[1])):
+                    raise DataUnavailable("Declared flight coverage exceeds the Parquet selection bounds")
+                if interval is not None and (len(interval) != 2 or not np.isfinite(interval).all() or
+                        not interval[0] <= times[0] <= times[1] <= interval[1]):
+                    raise DataUnavailable("Declared flight coverage exceeds the Parquet selection time")
+                if coverage.get("all_aircraft", False) and selected["all_aircraft"] is not True:
+                    raise DataUnavailable("Parquet selection excluded aircraft types")
+                if selected["max_gap_s"] != kwargs.get("max_gap_s", 30.0):
+                    raise DataUnavailable("Index gap limit differs from the Parquet selection gap")
+            source = {"path": str(parquet.resolve()), "sha256": sha256(parquet), "bytes": parquet.stat().st_size}
+            frames = (batch.to_pandas() for batch in parquet_file.iter_batches(batch_size=16384))
             return cls.build(path, frames, sources=[source], coverage=coverage, **kwargs)
-        except (OSError, ValueError) as error:
+        except (OSError, ValueError, KeyError, TypeError) as error:
             raise DataUnavailable(f"Invalid/truncated Parquet: {parquet}: {error}") from error
 
     def query(self, bounds, time_range):
@@ -552,7 +582,8 @@ class AcquiredInputs:
 
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
-                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None):
+                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None,
+                   latest_emission_s=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
@@ -569,8 +600,17 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     if earliest_emission_s is not None:
         if not np.isfinite(earliest_emission_s):
             raise ValueError("Earliest emission time must be finite")
-        first = max(first, earliest_emission_s)
-    times = (first, end + recording["duration_s"] + 30.0)
+        # The caller's bound covers its actual CPA and refinement queries. It
+        # can be earlier or later than the generic whole-recording estimate.
+        first = earliest_emission_s
+    last = end + recording["duration_s"] + 30.0
+    if latest_emission_s is not None:
+        if not np.isfinite(latest_emission_s):
+            raise ValueError("Latest emission time must be finite")
+        last = max(last, latest_emission_s)
+    if first > last:
+        raise ValueError("Required emission interval must be ordered")
+    times = (first, last)
     root = Path(cache_root)
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]

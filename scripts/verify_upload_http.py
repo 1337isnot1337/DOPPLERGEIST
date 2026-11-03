@@ -211,7 +211,7 @@ def inspect_job(directory, final, wire, operator, original, implementation):
             "automatic_provenance_verified": True}
 
 
-def complete_finite_clock_assessment(assessment):
+def complete_finite_clock_assessment(assessment, *, allow_legacy=False):
     """Validate a finite winner under the recorded trial-count convention."""
     if (not isinstance(assessment, dict) or assessment.get("complete") is not True
             or not all(type(assessment.get(key)) is int and assessment[key] >= 0
@@ -224,7 +224,7 @@ def complete_finite_clock_assessment(assessment):
         return (assessment["scheduled_trials"] == assessment["evaluated_trials"] + assessment["rejected_trials"]
                 and assessment.get("empty_clock_domain") is False
                 and isinstance(reasons, list) and all(isinstance(reason, str) for reason in reasons))
-    if semantics is not None:
+    if semantics is not None or not allow_legacy:
         return False
     # Historical #86 records count rejected trials inside evaluated_trials.
     return (assessment["scheduled_trials"] == assessment["evaluated_trials"]
@@ -268,14 +268,14 @@ def model_assessment_accounted_for(search):
         return True  # Historical reports predate this separate coverage contract.
     support = search.get("model_support")
     names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",
-             "evaluated_trials", "rejected_trials", "unknown_trials")
+             "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes")
     if (not isinstance(support, dict)
             or not all(type(support.get(name)) is int and support[name] >= 0 for name in names)):
         return False
     if "model_assessment_complete" in search and search["model_assessment_complete"] is not True:
         return False
     if search.get("model_support_complete") is True:
-        return not any(support[name] for name in (names[0], names[1], "unknown_trials"))
+        return not any(support[name] for name in (names[0], names[1], "unknown_trials", "unreported_trial_envelopes"))
     finite = search.get("finite_search_evidence")
     bounded_names = ("bounded_score_candidates", "unbounded_score_candidates", "unreported_trial_envelopes")
     return (search.get("model_support_complete") is False and search.get("model_assessment_complete") is True
@@ -328,10 +328,11 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
     by_id = dict(zip(identities, retained))
     totals, names, originals = {}, {}, {}
     evaluated = discarded = coarse_unknown = 0
+    coarse_trials = dict(evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
     bounded_count = bounded_rejections = 0
     bound = unknown_bound = None
     bound_fields = ("bounded_unknown_envelopes", "bounded_unknown_rejections", "best_unknown_score_upper_bound")
-    bound_contract = any(name in finite for name in bound_fields)
+    bound_contract = any(name in finite for name in bound_fields) or "model_assessment_complete" in search
     support_totals = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
         bounded_score_candidates=0, unbounded_score_candidates=0, unknown_trials=0, unreported_trial_envelopes=0)
     db = sqlite3.connect(path.as_uri() + "?mode=ro&immutable=1", uri=True)
@@ -340,6 +341,7 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
         require(db.execute("SELECT identity,score_kind FROM run").fetchall() ==
                 [(search["run_hash"], finite["score_kind"])], "Finite ledger identifies another run or score kind")
         has_bounds = db.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='bounds'").fetchone()[0] == 1
+        bound_contract = bound_contract or has_bounds
         require(not bound_contract or (has_bounds and all(name in finite for name in bound_fields)),
                 "Finite bound evidence lacks its persisted bound table or aggregate fields")
         for name, checksum, occurrences, duplicates, encoded_kept in db.execute(
@@ -450,7 +452,29 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                     require(row["score"] == score and row.get("score_kind") == kind
                             and row.get("mode_seed") == seed == physical,
                             "Coarse checkpoint score or physical seed differs from its ledger")
-                unknown = payload.get("counts", {}).get("unclassified_score_candidates", 0)
+                counts = payload.get("counts", {})
+                if bound_contract:
+                    require("counts" in payload and isinstance(counts, dict), "Missing coarse model-support counts")
+                    empty_tile = (counts == {} and payload.get("grid_points") == 0 and count == 0
+                                  and not payload["ranked"] and not stage_bounds)
+                    empty_cpa = (type(counts.get("cpa_rows")) is int and counts["cpa_rows"] == 0
+                                 and type(counts.get("candidates")) is int and counts["candidates"] == 0
+                                 and count == 0 and not payload["ranked"] and not stage_bounds)
+                    if not empty_tile:
+                        require(isinstance(counts.get("unsupported_cpa_tracks"), list)
+                                and all(isinstance(item, dict) for item in counts["unsupported_cpa_tracks"]),
+                                "Missing coarse unsupported-track diagnostics")
+                    if not (empty_tile or empty_cpa):
+                        require(all(type(counts.get(key)) is int and counts[key] >= 0 for key in
+                                    ("cpa_rows", "candidates", "unclassified_score_candidates",
+                                     "bounded_score_candidates", "unbounded_score_candidates", *coarse_trials))
+                                and isinstance(counts.get("unclassified_candidate_assessments"), list),
+                                "Coarse scoring work lacks explicit model-support counts")
+                    for key in coarse_trials:
+                        value = counts.get(key, 0)
+                        require(type(value) is int and value >= 0, "Invalid coarse clock-trial count")
+                        coarse_trials[key] += value
+                unknown = counts.get("unclassified_score_candidates", 0)
                 require(type(unknown) is int and unknown >= 0, "Invalid coarse unknown-trial count")
                 coarse_unknown += unknown
             if bound_contract and phase in {"coarse", "fine"}:
@@ -527,6 +551,9 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                 for key, value in support_totals.items()) and unknown == support_totals["unclassified_score_candidates"]
                 and finite.get("unsupported_cpa_track_evaluations") == support_totals["unsupported_cpa_track_evaluations"],
                 "Finite model-support totals differ from persisted candidate assessments")
+        require(all(type(support.get(key)) is int and support[key] >= value
+                    for key, value in coarse_trials.items()),
+                "Search model-support totals omit recorded coarse clock trials")
         all_unknown_accounted = model_assessment_accounted_for(search)
         require(type(search.get("model_assessment_complete")) is bool
                 and search["model_assessment_complete"] == all_unknown_accounted,
@@ -549,7 +576,7 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
         require(row["score"] == originals[identity] and row.get("score_kind") == finite["score_kind"],
                 "Retained original row has a different score or score kind")
         assessment = row.get("scoring_assessment", {})
-        known = complete_finite_clock_assessment(assessment)
+        known = complete_finite_clock_assessment(assessment, allow_legacy=not bound_contract)
         require(row.get("core_assessment_complete") is known, "Finite winner masks missing or unknown clock trials")
         unknown_retained += not known
         if known:
