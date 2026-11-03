@@ -672,12 +672,16 @@ class CachedTerrain:
         if path.name in self.files:
             return path
         receipt = path.with_name(path.name + ".sha256.json")
-        if path.exists() and not receipt.exists() and self.adopt_existing:
-            if raster:
-                import rasterio
-                with rasterio.open(path) as dataset:
-                    dataset.read(1, window=((0, 1), (0, 1)))
-            write_json(receipt, {"sha256": sha256(path), "origin": "operator-supplied-cache", "url": url})
+        if self.adopt_existing:
+            # Adoption and download share the same file lock, so workers cannot
+            # race while creating the receipt for an existing terrain file.
+            with cache_lock(path.with_name(path.name + ".lock")):
+                if path.exists() and not receipt.exists():
+                    if raster:
+                        import rasterio
+                        with rasterio.open(path) as dataset:
+                            dataset.read(1, window=((0, 1), (0, 1)))
+                    write_json(receipt, {"sha256": sha256(path), "origin": "operator-supplied-cache", "url": url})
         result = download(url, path, offline=self.offline)
         if raster:
             import rasterio
