@@ -96,6 +96,14 @@ documentation that asks for exhaustive receipts, hashes or audit packages.
 
 ## Scientific and product boundaries
 
+- **Real-world validation only.** The user directed: "NO MORE SYNTHETIC DATA!!"
+  and "I want REAL WORLD tests, audio recordings, geolocations." Stop new synthetic
+  data generation, benchmark experiments and replay runs, including active runs
+  owned by your worker; preserve their existing outputs and honest status. Use
+  actual recorded aircraft audio and independently established recorder locations
+  and defensible UTC evidence for validation. Existing synthetic results remain
+  historical and cannot satisfy the real-geolocation acceptance gate. Discovery
+  on real audio alone is also insufficient to establish location accuracy.
 - Audio-relative seconds and absolute UTC are distinct. File modification/upload
   times do not establish a recording clock. Ask the product user for a defensible
   date/time window when metadata do not supply one.
