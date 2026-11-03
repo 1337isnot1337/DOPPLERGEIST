@@ -230,9 +230,13 @@ class JobManager:
                         else:
                             result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.", **_evidence(current))
         except Exception as exc:
-            with self._mutex:
-                if self.get(directory.name)["status"] not in TERMINAL:
-                    result(directory, "failed", reason_code="worker_launch", message=f"Could not run analysis: {exc}", **_evidence(self.get(directory.name)))
+            with self._mutex, _control_lock(directory):
+                current = self.get(directory.name)
+                if current["status"] not in TERMINAL:
+                    if (directory / "cancel").exists():
+                        result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(current))
+                    else:
+                        result(directory, "failed", reason_code="worker_launch", message=f"Could not run analysis: {exc}", **_evidence(current))
         finally:
             with self._mutex:
                 self._processes.pop(directory.name, None)

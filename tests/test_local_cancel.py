@@ -175,3 +175,30 @@ def test_cancel_request_and_exit_do_not_leave_failed_result(tmp_path, monkeypatc
             request_thread.join(timeout=8)
         manager.close()
         thread.join(timeout=8)
+
+
+def test_cancel_while_worker_launch_fails_is_cancelled(tmp_path, monkeypatch):
+    manager = JobManager(tmp_path, max_runtime_s=60)
+    job_id, directory = make_running_job(tmp_path)
+    launching, allow_failure = threading.Event(), threading.Event()
+
+    def fail_launch(*args, **kwargs):
+        launching.set()
+        assert allow_failure.wait(8)
+        raise OSError("simulated process launch failure")
+
+    monkeypatch.setattr(subprocess, "Popen", fail_launch)
+    thread = threading.Thread(target=manager._run, args=(directory,))
+    manager._threads[job_id] = thread
+    thread.start()
+    try:
+        assert launching.wait(5)
+        assert request_local_cancel(tmp_path, job_id)["cancellation_requested"]
+        allow_failure.set()
+        thread.join(timeout=8)
+        assert not thread.is_alive()
+        assert read_json(directory / "result.json")["status"] == "cancelled"
+    finally:
+        allow_failure.set()
+        manager.close()
+        thread.join(timeout=8)
