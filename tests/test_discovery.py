@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import soundfile as sf
 
 from aircraft_geoloc.contracts import validate_event
@@ -102,3 +103,17 @@ def test_ambiguous_fragment_continuations_remain_separate():
     assert len(_stitch_fragments([first, second, competitor], DiscoverySettings())) == 3
     assert len(_stitch_fragments([first, second], DiscoverySettings())) == 1
     assert len(_stitch_fragments([first, path(50, 80)], DiscoverySettings())) == 2
+
+
+@pytest.mark.parametrize("count", [4, 6])
+def test_all_independent_flyovers_are_retained(tmp_path, count):
+    centers = [65 + 100 * i for i in range(count)]
+    frequencies = [120, 170, 230, 140, 260, 190]
+    recording = _audio(tmp_path, [(center, frequency, [1, 2])
+                                 for center, frequency in zip(centers, frequencies)],
+                       duration=100 * count + 30)
+    events = discover_events(recording)
+    assert len(events) == count
+    for center, event in zip(centers, events):
+        assert event["start_s"] < center < event["end_s"]
+        assert event["quality"]["harmonic_count"] >= 2

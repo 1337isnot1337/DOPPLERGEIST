@@ -104,15 +104,15 @@ def evaluate(name, report):
         result["clock_error_s"] = best["recording_start_time_s"] - truth["recording_start_time_s"]
         expected_flights = truth["flight_ids"][:len(best["flight_ids"])]
         result["flight_ids_correct"] = best["flight_ids"] == expected_flights
-        result["within_100_m"] = result["position_error_m"] <= 100
         result["reference_kind"] = "independent synthetic renderer truth"
     else:
         # PROGRESS.md explicitly labels this as a public-platform coordinate,
         # not surveyed ground truth or an independent recording-clock source.
         result["reference_coordinate"] = {"lat": 40.8766, "lon": -73.5247}
         result["position_error_m"] = distance_m(best, result["reference_coordinate"])
-        result["within_100_m"] = result["position_error_m"] <= 100
         result["reference_kind"] = "published public-platform coordinate; physical uncertainty unquantified"
+    for threshold in (100, 500, 1000):
+        result[f"within_{threshold}_m"] = result["position_error_m"] <= threshold
     result["baseline_reproduced"] = bool(
         displacement <= 2 and result["baseline_flight_ids_match"]
         and abs(result["baseline_score_delta"]) <= 1e-4
@@ -198,9 +198,11 @@ def main(argv=None):
     output.mkdir(parents=True, exist_ok=False)
     summary = {"schema_version": 1, "started_utc": datetime.now(timezone.utc).isoformat(),
                "runtime": runtime(), "cases": [], "automatic_upload_goal_verified": False,
+               "accuracy_policy": {"report_thresholds_m": [100, 500, 1000],
+                                   "acceptable_error_m": 1000, "preferred_error_m": 500},
                "limitations": ["Manual event settings remain search inputs in these replays.",
                                "Synthetic and regional reference replays do not establish national real-audio accuracy.",
-                               "The faint reference case is an expected localization failure at the 100 m target.",
+                               "The historical faint reference missed 100 m; new point-error metrics also report 500/1000 m without rewriting its original outcome.",
                                "Evaluation inputs are read after search; filesystem sandboxing is not asserted."]}
     for name in dict.fromkeys(args.cases or CASES):
         receipt = verify_case(name, output / name, args.timeout_s)

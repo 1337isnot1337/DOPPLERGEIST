@@ -310,7 +310,7 @@ def discover_events(recording, *, output_dir=None, settings=None):
                        "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
                        "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"}
         (output / "discovery.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
-        _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"])
+        _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
         for event, group in zip(events, groups):
             np.savetxt(output / f"{event['event_id']}.csv", group[0], delimiter=",",
                        header="time_s,frequency_hz,weight", comments="")
@@ -318,15 +318,17 @@ def discover_events(recording, *, output_dir=None, settings=None):
     return events
 
 
-def _plot_groups(groups, path, duration):
+def _plot_groups(groups, path, duration, max_gap_s=2.0):
     import matplotlib
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
     fig, ax = plt.subplots(figsize=(12, 5), layout="constrained")
     for index, group in enumerate(groups):
         for harmonic, points in enumerate(group):
-            ax.plot(points[:, 0], points[:, 1], lw=0.8, alpha=0.8,
-                    label=f"Event {index + 1}" if harmonic == 0 else None)
+            segments = np.split(points, np.flatnonzero(np.diff(points[:, 0]) > max_gap_s) + 1)
+            for segment_index, segment in enumerate(segments):
+                ax.plot(segment[:, 0], segment[:, 1], color=f"C{index % 10}", lw=0.8, alpha=0.8,
+                        label=f"Event {index + 1}" if harmonic == 0 and segment_index == 0 else None)
     ax.set(xlim=(0, duration), xlabel="Recording-relative time (s)", ylabel="Measured frequency (Hz)",
            title="Automatic whole-recording moving-tone proposals (harmonics grouped)")
     if groups:
@@ -348,7 +350,8 @@ def _plot_event(recording, group, event, settings, path):
     ax.pcolormesh(spec.time, spec.frequency, spec.contrast, shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
-        ax.plot(points[:, 0], points[:, 1], color="cyan", lw=0.9)
+        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > settings.max_gap_s) + 1):
+            ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=0.9)
     low = min(points[:, 1].min() for points in group)
     high = max(points[:, 1].max() for points in group)
     ax.set(xlim=(first, last), ylim=(max(settings.min_frequency_hz, low * 0.9), high * 1.1),
