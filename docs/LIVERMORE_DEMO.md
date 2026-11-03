@@ -12,11 +12,13 @@ score in this visualization.
 
 The highest-scoring point is **481 m from an inferred reference**, not surveyed
 microphone ground truth. That reference was reconstructed from published flight
-tracks and reported closest-track offsets across the same dataset; the dataset
-does not publish an exact microphone coordinate. The search region was chosen
-with that inferred site in mind, so this separation is **not an independent
-measurement of location accuracy**. The candidate is within 500 m and 1,000 m
-of the inferred reference, but not 100 m; the unknown reference error prevents
+tracks and reported closest-track offsets across the same dataset. The fit excludes
+the target passage, rejects three of the remaining 39 cases with residuals above
+150 m, and has a 4.76 m RMS residual on the remaining 36. This is a model-derived
+common-site reference, not a surveyed microphone coordinate. The search used a
+Livermore city-area prior chosen before the reference was calculated. This
+separation is **not an independent measurement of location accuracy**. The
+candidate is within 500 m and 1,000 m of the inferred reference, but not 100 m; the unknown reference error prevents
 those figures from establishing those accuracy thresholds.
 
 The configured run supplied one aircraft's track, the recording's full 0–85 s
@@ -38,7 +40,7 @@ plot does not rule them out.
 A separate fresh configured two-flyover replay on the same code placed its
 leading candidate 43.86 m from an approximate public reference, also with
 incomplete model support. Both are development examples, not automatic or
-independent real-world acceptance. The Livermore run took 20.7 seconds on the
+independent real-world acceptance. The Livermore run reported 38.8 seconds on the
 local machine; runtime depends on hardware and load.
 
 ## Reproduce
@@ -56,6 +58,14 @@ PYTHONPATH=src python scripts/prepare_livermore_demo.py \
   data/terrain/us_nga_egm96_15.tif results/livermore-prepared
 PYTHONPATH=src python -m dopplergeist.cli run \
   results/livermore-prepared/config.json --output results/livermore-run
+```
+
+To reproduce the inferred reference, extract all four dataset ZIPs under
+`path/to/dataset/extracted/` with their category directories intact, then run:
+
+```bash
+PYTHONPATH=src python scripts/compare_livermore_reference.py \
+  path/to/dataset results/livermore-run
 ```
 
 The imagery in the figure comes from [USGS The National Map / USDA NAIP](https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/ImageServer).
