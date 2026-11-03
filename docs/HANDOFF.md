@@ -30,6 +30,10 @@ its CPU time changed from 76.05 to 74.60 seconds. A complete 19,341-association
 partition also preserved its payload and checksum, with CPU time changing from
 276.99 to 250.88 seconds. Neither measurement predicts nationwide runtime or
 establishes a location.
+PR #196 removes the automatic CPA filter's unsupported minimum speed and
+near-sonic maximum. On one real cell, five passes below 1 m/s admitted 1,166
+additional associations while retaining all 23,136 earlier associations. The
+finite emitted-frequency range remains a separate modeling prior.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
@@ -59,8 +63,8 @@ At this handoff the upload search is still running; no coordinate has been
 accepted. On the originating machine, the job, `resume.json`, discovery output,
 search checkpoints and archived earlier revisions are under
 `/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
-The active search uses the code merged at `23c9d4a` and run hash
-`e8cd6dc88f03a228047766dc97d2650655a7bd4ffd68fe54623e93bafd766545`;
+The active search uses the code merged at `c259f38` and run hash
+`b5f83ebb72f3cf03e4b1d10a9b48f5112800568b5fa1f2181f18418a8c9139c5`;
 check its current API/status and source identity before intervening. The separate
 homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. The local search is configured for 12
@@ -69,9 +73,9 @@ wall-time timeout after transferring available remote checkpoints; it does not
 resume a user cancellation or another failure. A search checkpoint from different
 code must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty root tiles after checking both
-identities and ledger checksums. On the switch to `23c9d4a`, 413 such tiles were
-migrated; the preceding search is archived locally as
-`search-before-dense-23c9d4a`. Check final coverage, unsupported-motion and
+identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
+zero receiver grid points were migrated; the preceding search is archived locally
+as `search-before-motion-c259f38`. Check final coverage, unsupported-motion and
 retention evidence before describing any candidate as a localization.
 
 ## Read first
