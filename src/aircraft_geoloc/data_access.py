@@ -394,7 +394,8 @@ class FlightCache:
         class_map = {}
         for code, value in types.items():
             description = value.get("desc", "") if isinstance(value, dict) else (value[2] if len(value) > 2 else "")
-            class_map[code] = {"J": "jet", "T": "turboprop", "P": "piston"}.get(description[-1:], "unclassified")
+            # ICAO T also covers helicopter turboshafts; keep the family label broad.
+            class_map[code] = {"J": "jet", "T": "turbine", "P": "piston"}.get(description[-1:], "unclassified")
         return FlightIndex.build(index, archive_frames([s["path"] for s in sources]), sources=sources + [type_source],
                                  coverage=coverage, class_map=class_map)
 
