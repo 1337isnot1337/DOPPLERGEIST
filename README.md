@@ -4,6 +4,10 @@
 
 DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations.
 
+![Spectrogram and scored search grid for a real Livermore aircraft flyover](assets/livermore-real-demo.png)
+
+<sub>From a real aircraft flyover, DOPPLERGEIST’s highest-scoring point landed **481 m from a reference derived from other flight tracks**. This demonstration uses the known aircraft and a bounded time and area; [see the full results and limitations](docs/LIVERMORE_DEMO.md).</sub>
+
 **This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
 
 [Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
@@ -97,12 +101,6 @@ Missing events, incomplete flight coverage, competing locations or inadequate se
 Remaining reliability work includes [unsupported trajectory motion and coverage #64](https://github.com/1337isnot1337/DOPPLERGEIST/issues/64), complete measurement/model sensitivity, and independent field evaluation with recorder coordinates and a justified recording clock. The [trajectory investigation](research/trajectory-motion/README.md) documents input-motion failures. Neither a close synthetic candidate nor passing software tests establishes nationwide real-recording accuracy or a calibrated false-localization rate.
 
 ## Experimental results
-
-### A real flyover, with bounded priors
-
-![Spectrogram and scored search grid for a real Livermore aircraft flyover](assets/livermore-real-demo.png)
-
-This configured run combines a real recording with its supplied aircraft track, a narrow time window and a regional search area. Its highest-scoring point is **481 m from a dataset-derived reference**, not surveyed microphone ground truth. The result is inconclusive: model assessment is incomplete and the fitted clock is at the search boundary. [Setup, limitations and reproduction](docs/LIVERMORE_DEMO.md).
 
 The published project artifacts preserve both successful fits and cases where the system could not justify a location. The following are **historical configured replays**, with their original settings and thresholds:
 
