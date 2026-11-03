@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "source_commit": "db9e5bd1233c7eb518571ebcc7b2be2a28e9c567",
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41557059642",
+  "run_id": 41557059642,
+  "job_id": 125658395623,
+  "source_identity": {
+    "previous_commit": "068c84c1d77cd44199443a4b1d40dce23f8022b9",
+    "identical_python_files": 50,
+    "only_changed_path": ".github/workflows/automatic-replay.yml",
+    "new_independent_case": false,
+    "fresh_random_flight_ids_and_order": true
+  },
+  "tests": {
+    "passed": 139,
+    "subtests_passed": 8,
+    "warnings": 1,
+    "elapsed_s": 30.93
+  },
+  "outcome": {
+    "status": "inconclusive",
+    "reason_code": "ambiguous_flight_match",
+    "accepted": false,
+    "event_count": 2,
+    "final_candidate_count": 106,
+    "top_ranked_candidate_error_m": 1046023.7708583066,
+    "highest_ranked_correct_candidate": {
+      "rank": 4,
+      "error_m": 5.5421237626251205,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100,
+      "meets_threshold": true,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    "all_provenance_checks_passed": true,
+    "elapsed_s": 164.40236848199999
+  },
+  "search": {
+    "tiles_total": 4940,
+    "tiles_completed": 4940,
+    "unsearched_tiles": 0,
+    "grid_points_searched": 26624,
+    "tile_failure_count": 0,
+    "data_scope_complete": true,
+    "alternative_modes_exhaustively_assessed": false,
+    "elapsed_s": 144.222855738,
+    "worker_peak_rss_mib": 372.47265625
+  },
+  "artifact": {
+    "id": 13195232875,
+    "size_in_bytes": 20589616,
+    "digest": "sha256:46258648e88015251de0223c9becfd6c60cda68e01e196342e35945eeb5b050a",
+    "expires_at": "2026-12-03T01:06:58Z",
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41557059642/artifacts/13195232875"
+  },
+  "receipt_extraction": "Acceptance JSON transcribed from the workflow's verbatim marked output. Stage summaries are bounded logged summaries, not the complete original stage files. Artifact ZIP digest is GitHub-reported and was not rehashed locally.",
+  "resource_caveat": "The outer automatic-cli RSS sampler recorded 20,807,680 bytes; it must not be interpreted as the full worker peak. The search process's self-reported high-water mark at search completion is recorded separately.",
+  "limitations": [
+    "This is the complete generated synthetic fixture, not independent real audio.",
+    "The offline trajectory index describes the generated universe only; real ADS-B receiver completeness is not established.",
+    "The fixed 120 m synthetic terrain model does not establish real elevation or vertical-datum accuracy.",
+    "The real automatic CLI and job subprocesses are exercised; HTTP upload and browser display are not exercised.",
+    "Data are prepared offline; live historical flight and terrain acquisition are not exercised.",
+    "Truth and legacy event settings are not pipeline inputs. Filesystem access to generator source and evaluation artifacts is not sandboxed.",
+    "Candidate error below 100 m is diagnostic unless the actual decision also reports succeeded."
+  ],
+  "distance_threshold_readout": {
+    "original_acceptance_threshold_m": 100,
+    "recorded_decision_recomputed": false,
+    "current_project_target_m": 1000,
+    "source": "AGENTS.md at af05dad5e762235da29284ac83551c5bb36c72c3",
+    "results": [
+      {
+        "threshold_m": 100,
+        "top_ranked_candidate_within_threshold": false,
+        "retained_correct_pair_records_within_threshold": 4,
+        "recorded_supported_localizations": 0
+      },
+      {
+        "threshold_m": 500,
+        "top_ranked_candidate_within_threshold": false,
+        "retained_correct_pair_records_within_threshold": 26,
+        "recorded_supported_localizations": 0
+      },
+      {
+        "threshold_m": 1000,
+        "top_ranked_candidate_within_threshold": false,
+        "retained_correct_pair_records_within_threshold": 26,
+        "recorded_supported_localizations": 0
+      }
+    ]
+  }
+}

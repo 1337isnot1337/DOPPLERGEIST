@@ -1,0 +1,1220 @@
+{
+  "schema_version": 1,
+  "source_run_id": 41557059642,
+  "kind": "bounded_workflow_printed_summaries",
+  "summaries": {
+    "result": {
+      "job_id": "8b010e7e03c24f4ca302946bc3889f65",
+      "status": "inconclusive",
+      "stage": "complete",
+      "progress": 1,
+      "reason_code": "ambiguous_flight_match",
+      "message": "Competing hypotheses fit nearly as well; no unique precise location is supported.",
+      "coverage": {
+        "search_complete": true,
+        "data_status": "available",
+        "limitations": {
+          "count": 2,
+          "first": [
+            "Historical receiver archives may omit aircraft or trajectory samples.",
+            "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+          ]
+        },
+        "requested_area": {
+          "coverage": "conus"
+        },
+        "missing_data": {
+          "count": 0,
+          "first": []
+        }
+      },
+      "event_count": 2,
+      "first_events": [
+        {
+          "event_id": "event-0001",
+          "harmonic_group_id": "harmonics-0001",
+          "start_s": 143,
+          "end_s": 180.5,
+          "band_hz": {
+            "count": 2,
+            "first": [
+              111.99467682885006,
+              155.68746435642242
+            ]
+          },
+          "quality": {
+            "median_contrast": 3.4144855737686157,
+            "harmonic_count": 1,
+            "support_fraction": 0.8611111111111112,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_drop_hz": 32.862367110326886
+          },
+          "ridge_span": {
+            "point_count": 62,
+            "finite_time_count": 62,
+            "first_time_s": 144,
+            "last_time_s": 179.5,
+            "frequency_range_hz": [
+              112.99467682885006,
+              154.68746435642242
+            ]
+          }
+        },
+        {
+          "event_id": "event-0002",
+          "harmonic_group_id": "harmonics-0002",
+          "start_s": 1038.5,
+          "end_s": 1112,
+          "band_hz": {
+            "count": 2,
+            "first": [
+              95.9132932946086,
+              145.5446667931974
+            ]
+          },
+          "quality": {
+            "median_contrast": 3.5375540256500244,
+            "harmonic_count": 1,
+            "support_fraction": 0.8472222222222222,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_drop_hz": 44.28374514821917
+          },
+          "ridge_span": {
+            "point_count": 122,
+            "finite_time_count": 122,
+            "first_time_s": 1039.5,
+            "last_time_s": 1111,
+            "frequency_range_hz": [
+              96.9132932946086,
+              144.5446667931974
+            ]
+          }
+        }
+      ],
+      "candidate_count": 106,
+      "first_candidates": [
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 115.0019628501904,
+            "method": "declared_perturbation_profiles",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 114.99850648419873,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-ca79927f414ab4fb7898e05668c237fd",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 114.99850648419873,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 40.03171547474506,
+          "lon": -100.01822787942201,
+          "score": -0.17373829502931443,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-4f129110420b89ee5e606b291e904b27",
+              "flight-6cce98f8109bf9657a79415c5ea669ae"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 109.82852229386498,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 43.000129825445,
+          "lon": -112.0000786187618,
+          "score": -0.18599611423334134,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+              "flight-34b02f895d683231ac565035c08290ee"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 118.55972573580782,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        }
+      ]
+    },
+    "search": {
+      "run_hash": "b2036458be4eecf6d08ae4fe92b16d03c63e125beb0a67b7cc094958984aef41",
+      "status": "complete",
+      "scope": {
+        "count": 4,
+        "first": [
+          -125,
+          24,
+          -66,
+          50
+        ]
+      },
+      "required_flight_bounds": {
+        "count": 4,
+        "first": [
+          -125.66471836238581,
+          23.572727272727274,
+          -65.33528163761419,
+          50.42727272727273
+        ]
+      },
+      "tiles_total": 4940,
+      "tiles_completed": 4940,
+      "tiles_resumed": 0,
+      "unsearched_tiles": 0,
+      "grid_points_searched": 26624,
+      "data_scope_complete": true,
+      "refinement_failure": null,
+      "candidate_retention_limit": 100,
+      "alternative_modes_exhaustively_assessed": false,
+      "scoring_time_is_locked": true,
+      "elapsed_s": 144.222855738,
+      "process_peak_rss_mib": 372.47265625,
+      "tile_failures": {
+        "count": 0,
+        "first": []
+      },
+      "data_coverage": {
+        "count": 1,
+        "first": [
+          {
+            "requested_bounds": {
+              "count": 4,
+              "first": [
+                -125,
+                24,
+                -66,
+                50
+              ]
+            },
+            "requested_time_range_s": {
+              "count": 2,
+              "first": [
+                1789999903.3333333,
+                1790001210
+              ]
+            },
+            "source": {
+              "bounds": {
+                "count": 4
+              },
+              "time_range_s": {
+                "count": 2
+              },
+              "all_aircraft": true,
+              "synthetic": true,
+              "source_note": "Complete seven-track generated simulation only, including every distractor and aircraft class. No additional aircraft exist in this declared synthetic source envelope; this is not real receiver coverage."
+            },
+            "scope_complete": true,
+            "receiver_completeness_known": false,
+            "input_hash": "487f6931b1c2c4342aa46b9d653fdcd8dd4a30eb8dee7a766e055845a8c8c0cd"
+          }
+        ]
+      },
+      "candidate_count": 100,
+      "first_candidates": [
+        {
+          "lat": 40.03156939118181,
+          "lon": -100.01843863537528,
+          "score": -0.24252868892896837,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-4f129110420b89ee5e606b291e904b27",
+              "flight-6cce98f8109bf9657a79415c5ea669ae"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.12117181949199783,
+                "f0_hz": 135.11535687214766,
+                "source_drift_hz": -0.19440363153202317,
+                "source_drift_hz_s": -0.0057515995601582935,
+                "drift_bound_hz": 2.7021479696066435,
+                "drift_at_bound": false,
+                "rmse_hz": 0.1217975573848574,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.12135686943697054,
+                "f0_hz": 115.1681172116562,
+                "source_drift_hz": 0.14664459436812538,
+                "source_drift_hz_s": 0.0020114850286823012,
+                "drift_bound_hz": 2.3032330880630276,
+                "drift_at_bound": false,
+                "rmse_hz": 0.12141681852933753,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          }
+        },
+        {
+          "lat": 43.000340301288176,
+          "lon": -111.99985571667271,
+          "score": -0.2862088926677433,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+              "flight-34b02f895d683231ac565035c08290ee"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.13222982392572405,
+                "f0_hz": 135.05598014943035,
+                "source_drift_hz": 0.7445074150023032,
+                "source_drift_hz_s": 0.02202007227216075,
+                "drift_bound_hz": 2.7015399191961205,
+                "drift_at_bound": false,
+                "rmse_hz": 0.11276406646163534,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.15397906874201925,
+                "f0_hz": 114.49424994924708,
+                "source_drift_hz": 0.10301461007333587,
+                "source_drift_hz_s": 0.001404996118210757,
+                "drift_bound_hz": 2.2904346720326827,
+                "drift_at_bound": false,
+                "rmse_hz": 0.1550745862874987,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          }
+        },
+        {
+          "lat": 43.00019029518254,
+          "lon": -112.00107148245839,
+          "score": -0.4084501706860918,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+              "flight-34b02f895d683231ac565035c08290ee"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.20173873002921047,
+                "f0_hz": 136.41409341271284,
+                "source_drift_hz": -0.9789996550560148,
+                "source_drift_hz_s": -0.02923885272408489,
+                "drift_bound_hz": 2.727394911578991,
+                "drift_at_bound": false,
+                "rmse_hz": 0.18569647509657425,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.2067114406568813,
+                "f0_hz": 114.68324897750017,
+                "source_drift_hz": 1.0405226982716018,
+                "source_drift_hz_s": 0.014214166176240923,
+                "drift_bound_hz": 2.298204476286687,
+                "drift_at_bound": false,
+                "rmse_hz": 0.1914435246626936,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          }
+        },
+        {
+          "lat": 34.99966943153726,
+          "lon": -90.00049375178413,
+          "score": -0.42706391882847883,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.14683738649143954,
+                "f0_hz": 135.58225488439078,
+                "source_drift_hz": -0.6691468678989626,
+                "source_drift_hz_s": -0.019865935871755815,
+                "drift_bound_hz": 2.709659957946418,
+                "drift_at_bound": false,
+                "rmse_hz": 0.13487042726958193,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.28022653233703926,
+                "f0_hz": 115.27891059206328,
+                "source_drift_hz": 0.5761210517104562,
+                "source_drift_hz_s": 0.007909288394336392,
+                "drift_bound_hz": 2.3053193277967767,
+                "drift_at_bound": false,
+                "rmse_hz": 0.2819831795734148,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          }
+        },
+        {
+          "lat": 34.99966943153726,
+          "lon": -90.00049375178413,
+          "score": -0.42706391882847883,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-ca79927f414ab4fb7898e05668c237fd",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.14683738649143954,
+                "f0_hz": 135.58225488439078,
+                "source_drift_hz": -0.6691468678989626,
+                "source_drift_hz_s": -0.019865935871755815,
+                "drift_bound_hz": 2.709659957946418,
+                "drift_at_bound": false,
+                "rmse_hz": 0.13487042726958193,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.28022653233703926,
+                "f0_hz": 115.27891059206328,
+                "source_drift_hz": 0.5761210517104562,
+                "source_drift_hz_s": 0.007909288394336392,
+                "drift_bound_hz": 2.3053193277967767,
+                "drift_at_bound": false,
+                "rmse_hz": 0.2819831795734148,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "refinement": {
+      "matching_diagnostics": {
+        "clock_locked": true,
+        "refinement_failures": {
+          "count": 0,
+          "first": []
+        },
+        "refinement_boundary_limited": false,
+        "altitude_basis": {
+          "flight-5a36d15129d26e945c32f84bed05f002": {
+            "count": 1,
+            "first": [
+              "ellipsoidal"
+            ]
+          },
+          "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": {
+            "count": 1,
+            "first": [
+              "ellipsoidal"
+            ]
+          }
+        },
+        "alternatives_evaluated": false
+      },
+      "candidate_count": 106,
+      "first_candidates": [
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "altitude_basis": {
+            "flight-5a36d15129d26e945c32f84bed05f002": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            },
+            "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            }
+          },
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.1093347648418314,
+                "f0_hz": 135.06806353855043,
+                "source_drift_hz": 0.26558746483287254,
+                "source_drift_hz_s": 0.007855466594280432,
+                "drift_bound_hz": 2.7015940949188293,
+                "drift_at_bound": false,
+                "rmse_hz": 0.10721838079875143,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.06341709226905372,
+                "f0_hz": 114.86845004099091,
+                "source_drift_hz": 0.11664608588414668,
+                "source_drift_hz_s": 0.001595955278923251,
+                "drift_bound_hz": 2.2975886732110076,
+                "drift_at_bound": false,
+                "rmse_hz": 0.06283876496809447,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          },
+          "sensitivity": {
+            "radius_m": 115.0019628501904,
+            "kind": "sensitivity",
+            "method": "declared_perturbation_profiles",
+            "sources": {
+              "count": 5,
+              "first": [
+                "altitude",
+                "clock",
+                "frequency",
+                "sound_speed",
+                "source_frequency"
+              ]
+            },
+            "complete": true,
+            "boundary_limited": false,
+            "failures": {
+              "count": 0,
+              "first": []
+            },
+            "settings": {
+              "altitude_uncertainty_m": 150,
+              "sound_speed_uncertainty_mps": 5,
+              "frequency_scale_hz": {
+                "count": 2,
+                "first": [
+                  1,
+                  1
+                ]
+              },
+              "clock_bounds_s": {
+                "count": 2,
+                "first": [
+                  1790000000,
+                  1790000000
+                ]
+              }
+            },
+            "profile_count": 17
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "altitude_basis": {
+            "flight-5a36d15129d26e945c32f84bed05f002": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            },
+            "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            }
+          },
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.1093347648418314,
+                "f0_hz": 135.06806353855043,
+                "source_drift_hz": 0.26558746483287254,
+                "source_drift_hz_s": 0.007855466594280432,
+                "drift_bound_hz": 2.7015940949188293,
+                "drift_at_bound": false,
+                "rmse_hz": 0.10721838079875143,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.06341709226905372,
+                "f0_hz": 114.86845004099091,
+                "source_drift_hz": 0.11664608588414668,
+                "source_drift_hz_s": 0.001595955278923251,
+                "drift_bound_hz": 2.2975886732110076,
+                "drift_at_bound": false,
+                "rmse_hz": 0.06283876496809447,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          },
+          "sensitivity": {
+            "radius_m": 114.99850648419873,
+            "kind": "sensitivity",
+            "method": "profiled_relative_altitude_offsets",
+            "complete": true,
+            "boundary_limited": false,
+            "profile_count": 3
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-ca79927f414ab4fb7898e05668c237fd",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "altitude_basis": {
+            "flight-ca79927f414ab4fb7898e05668c237fd": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            },
+            "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            }
+          },
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.1093347648418314,
+                "f0_hz": 135.06806353855043,
+                "source_drift_hz": 0.26558746483287254,
+                "source_drift_hz_s": 0.007855466594280432,
+                "drift_bound_hz": 2.7015940949188293,
+                "drift_at_bound": false,
+                "rmse_hz": 0.10721838079875143,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.06341709226905372,
+                "f0_hz": 114.86845004099091,
+                "source_drift_hz": 0.11664608588414668,
+                "source_drift_hz_s": 0.001595955278923251,
+                "drift_bound_hz": 2.2975886732110076,
+                "drift_at_bound": false,
+                "rmse_hz": 0.06283876496809447,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          },
+          "sensitivity": {
+            "radius_m": 114.99850648419873,
+            "kind": "sensitivity",
+            "method": "profiled_relative_altitude_offsets",
+            "complete": true,
+            "boundary_limited": false,
+            "profile_count": 3
+          }
+        },
+        {
+          "lat": 40.03171547474506,
+          "lon": -100.01822787942201,
+          "score": -0.17373829502931443,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-4f129110420b89ee5e606b291e904b27",
+              "flight-6cce98f8109bf9657a79415c5ea669ae"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "altitude_basis": {
+            "flight-4f129110420b89ee5e606b291e904b27": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            },
+            "flight-6cce98f8109bf9657a79415c5ea669ae": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            }
+          },
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.11097831453629134,
+                "f0_hz": 134.90680757067167,
+                "source_drift_hz": 0.1714048286974841,
+                "source_drift_hz_s": 0.0050634838834282755,
+                "drift_bound_hz": 2.6981345291694243,
+                "drift_at_bound": false,
+                "rmse_hz": 0.1110923125089846,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.06275998049302309,
+                "f0_hz": 115.01339780058616,
+                "source_drift_hz": -0.04144256928865961,
+                "source_drift_hz_s": -0.0005677382714357686,
+                "drift_bound_hz": 2.3002616382290824,
+                "drift_at_bound": false,
+                "rmse_hz": 0.06275950606244275,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          },
+          "sensitivity": {
+            "radius_m": 109.82852229386498,
+            "kind": "sensitivity",
+            "method": "profiled_relative_altitude_offsets",
+            "complete": true,
+            "boundary_limited": false,
+            "profile_count": 3
+          }
+        },
+        {
+          "lat": 43.000129825445,
+          "lon": -112.0000786187618,
+          "score": -0.18599611423334134,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+              "flight-34b02f895d683231ac565035c08290ee"
+            ]
+          },
+          "recording_start_time_s": 1790000000,
+          "altitude_basis": {
+            "flight-34b02f895d683231ac565035c08290ee": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            },
+            "flight-646b4c2a38c7de0ad0c8dae1ed36264c": {
+              "count": 1,
+              "first": [
+                "ellipsoidal"
+              ]
+            }
+          },
+          "event_diagnostics": {
+            "count": 2,
+            "first": [
+              {
+                "score": -0.11449740354018302,
+                "f0_hz": 135.25158572144804,
+                "source_drift_hz": 0.33753798606747065,
+                "source_drift_hz_s": 0.009997540508983471,
+                "drift_bound_hz": 2.7052468775325043,
+                "drift_at_bound": false,
+                "rmse_hz": 0.1106518683357295,
+                "support_fraction": 1,
+                "sample_count": 62,
+                "independent_sample_count": 62,
+                "outlier_fraction": 0
+              },
+              {
+                "score": -0.07149871069315833,
+                "f0_hz": 114.71802466611567,
+                "source_drift_hz": 0.3084916600084265,
+                "source_drift_hz_s": 0.004215229058495104,
+                "drift_bound_hz": 2.295043003044105,
+                "drift_at_bound": false,
+                "rmse_hz": 0.06734483523621465,
+                "support_fraction": 1,
+                "sample_count": 122,
+                "independent_sample_count": 122,
+                "outlier_fraction": 0
+              }
+            ]
+          },
+          "sensitivity": {
+            "radius_m": 118.55972573580782,
+            "kind": "sensitivity",
+            "method": "profiled_relative_altitude_offsets",
+            "complete": true,
+            "boundary_limited": false,
+            "profile_count": 3
+          }
+        }
+      ]
+    },
+    "discovery": {
+      "source_sha256": "b18246df5090f5fecb547ab88047b9ff5c9849988fb2e256de21325b6a01e3b5",
+      "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed",
+      "settings": {
+        "chunk_s": 120,
+        "overlap_s": 60,
+        "min_frequency_hz": 40,
+        "max_frequency_hz": 1600,
+        "window_s": 2,
+        "hop_s": 0.5,
+        "min_contrast": 3,
+        "min_duration_s": 12,
+        "min_support": 0.65,
+        "min_drop_hz": 4,
+        "min_fractional_drop": 0.03,
+        "max_gap_s": 2,
+        "max_peaks_per_frame": 60
+      },
+      "ridge_count": 2,
+      "event_count": 2,
+      "chunk_count": 19,
+      "harmonic_group_count": 2,
+      "first_events": [
+        {
+          "event_id": "event-0001",
+          "harmonic_group_id": "harmonics-0001",
+          "start_s": 143,
+          "end_s": 180.5,
+          "band_hz": {
+            "count": 2,
+            "first": [
+              111.99467682885006,
+              155.68746435642242
+            ]
+          },
+          "quality": {
+            "median_contrast": 3.4144855737686157,
+            "harmonic_count": 1,
+            "support_fraction": 0.8611111111111112,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_drop_hz": 32.862367110326886
+          },
+          "ridge_span": {
+            "point_count": 62,
+            "finite_time_count": 62,
+            "first_time_s": 144,
+            "last_time_s": 179.5,
+            "frequency_range_hz": [
+              112.99467682885006,
+              154.68746435642242
+            ]
+          }
+        },
+        {
+          "event_id": "event-0002",
+          "harmonic_group_id": "harmonics-0002",
+          "start_s": 1038.5,
+          "end_s": 1112,
+          "band_hz": {
+            "count": 2,
+            "first": [
+              95.9132932946086,
+              145.5446667931974
+            ]
+          },
+          "quality": {
+            "median_contrast": 3.5375540256500244,
+            "harmonic_count": 1,
+            "support_fraction": 0.8472222222222222,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_drop_hz": 44.28374514821917
+          },
+          "ridge_span": {
+            "point_count": 122,
+            "finite_time_count": 122,
+            "first_time_s": 1039.5,
+            "last_time_s": 1111,
+            "frequency_range_hz": [
+              96.9132932946086,
+              144.5446667931974
+            ]
+          }
+        }
+      ],
+      "first_harmonic_groups": [
+        {
+          "group_index": 0,
+          "member_count": 1,
+          "first_members": [
+            {
+              "point_count": 62,
+              "finite_time_count": 62,
+              "first_time_s": 144,
+              "last_time_s": 179.5,
+              "frequency_range_hz": [
+                112.99467682885006,
+                154.68746435642242
+              ]
+            }
+          ]
+        },
+        {
+          "group_index": 1,
+          "member_count": 1,
+          "first_members": [
+            {
+              "point_count": 122,
+              "finite_time_count": 122,
+              "first_time_s": 1039.5,
+              "last_time_s": 1111,
+              "frequency_range_hz": [
+                96.9132932946086,
+                144.5446667931974
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "decision": {
+      "status": "inconclusive",
+      "reason_code": "ambiguous_flight_match",
+      "message": "Competing hypotheses fit nearly as well; no unique precise location is supported.",
+      "diagnostics": {
+        "policy": {
+          "target_radius_m": 100,
+          "min_independent_events": 2,
+          "max_event_rmse_hz": 3,
+          "max_outlier_fraction": 0.25,
+          "min_support_fraction": 0.95,
+          "near_tie_loss_per_event_hz": 0.5
+        },
+        "policy_version": "engineering-v1",
+        "calibration": "uncalibrated",
+        "probability": null,
+        "limitations": {
+          "count": 2,
+          "first": [
+            "Archive availability does not establish capture of every aircraft.",
+            "Sensitivity checks are not a calibrated confidence interval."
+          ]
+        },
+        "independent_event_groups": 2,
+        "competing_hypothesis": {
+          "separation_m": 0,
+          "loss_gap_per_event_hz": 0,
+          "same_flight_association": false
+        }
+      },
+      "event_count": 0,
+      "first_events": [],
+      "candidate_count": 106,
+      "first_candidates": [
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 115.0019628501904,
+            "method": "declared_perturbation_profiles",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-5a36d15129d26e945c32f84bed05f002",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 114.99850648419873,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 35.000055642529574,
+          "lon": -89.99999785216757,
+          "score": -0.17275185711088512,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-ca79927f414ab4fb7898e05668c237fd",
+              "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 114.99850648419873,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 40.03171547474506,
+          "lon": -100.01822787942201,
+          "score": -0.17373829502931443,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-4f129110420b89ee5e606b291e904b27",
+              "flight-6cce98f8109bf9657a79415c5ea669ae"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 109.82852229386498,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        },
+        {
+          "lat": 43.000129825445,
+          "lon": -112.0000786187618,
+          "score": -0.18599611423334134,
+          "score_kind": "negative_robust_ridge_loss_hz",
+          "flight_ids": {
+            "count": 2,
+            "first": [
+              "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+              "flight-34b02f895d683231ac565035c08290ee"
+            ]
+          },
+          "event_ids": {
+            "count": 2,
+            "first": [
+              "event-0001",
+              "event-0002"
+            ]
+          },
+          "recording_start_utc": "2026-09-21T14:13:20Z",
+          "uncertainty": {
+            "radius_m": 118.55972573580782,
+            "method": "profiled_relative_altitude_offsets",
+            "kind": "sensitivity"
+          }
+        }
+      ]
+    }
+  }
+}
