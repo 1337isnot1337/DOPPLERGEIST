@@ -56,7 +56,7 @@ def generate(output, seed=502013):
             for j in range(len(relative)):
                 rows.append({"flight_id": identity, "time_s": epoch+center+shift+relative[j],
                              "lat": lat[j], "lon": lon[j], "alt_m": h[j]+truth["elev_m"],
-                             "altitude_basis": "synthetic_geometric_wgs84", "typecode": "C172"})
+                             "altitude_basis": "ellipsoidal", "typecode": "C172"})
             if region:
                 continue
             emission = np.arange(-40*sr, 40*sr) / sr

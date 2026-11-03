@@ -23,7 +23,15 @@ coordinate and expected associations occur only in `truth/labels.json` and must
 be unavailable to the upload backend. The global search grid remains independent
 of the recorder. This is a development case, not a new held-out real recording.
 
-Measured generation output is local at `results/w4-four-event-20261103`.
+The initial generation is preserved at `results/w4-four-event-20261103`.
+Use `results/w4-four-event-v2-20261103` for the current matching fixture: its
+canonical `altitude_basis=ellipsoidal` matches the actual WGS84 renderer. The MP3
+bytes are identical to v1; no detector parameters or waveform changed. The local
+`operator/config.json` indexes all twelve trajectories and supplies constant
+122 m ground plus a zero geoid in the simulated common datum. These two tiny
+rasters are synthetic fixtures, not Earth terrain/geoid data. No receiver
+coordinate or geographic search box is supplied to the operator.
+
 The actual W1 discovery adapter ran with both truth directories masked under
 bubblewrap, using the approved unchanged defaults. Post-run evaluation found
 **4/4 events, 0 misses, 0 false alarms**, with four distinct harmonic groups. Full
