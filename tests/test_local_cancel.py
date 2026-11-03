@@ -6,6 +6,7 @@ import time
 
 import pytest
 
+from dopplergeist import jobs
 from dopplergeist.jobs import JobManager, read_json, request_local_cancel, result
 
 
@@ -56,11 +57,82 @@ def test_local_cancel_requires_live_manager_and_preserves_terminal_jobs(tmp_path
     with pytest.raises(ValueError, match="No active job manager"):
         request_local_cancel(tmp_path, job_id)
     assert not (directory / "cancel").exists()
-
     previous = result(directory, "inconclusive", reason_code="no_events", message="No events.")
     assert request_local_cancel(tmp_path, job_id) == previous
     assert not (directory / "cancel").exists()
 
+
+def test_startup_recovery_honors_existing_cancellation(tmp_path):
+    job_id, directory = make_running_job(tmp_path)
+    (directory / "cancel").touch()
+    manager = JobManager(tmp_path)
+    try:
+        assert manager.get(job_id)["status"] == "cancelled"
+    finally:
+        manager.close()
+
+
+def test_startup_recovery_keeps_interrupted_and_terminal_behavior(tmp_path):
+    job_id, directory = make_running_job(tmp_path)
+    finished_id, finished_directory = make_running_job(tmp_path)
+    previous = result(finished_directory, "inconclusive", reason_code="no_events", message="No events.")
+    manager = JobManager(tmp_path)
+    try:
+        interrupted = manager.get(job_id)
+        assert interrupted["status"] == "failed" and interrupted["reason_code"] == "interrupted"
+        assert manager.get(finished_id) == previous
+        assert not (finished_directory / ".control.lock").exists()
+    finally:
+        manager.close()
+
+
+def test_cancel_request_during_startup_recovery_is_consistent(tmp_path, monkeypatch):
+    job_id, directory = make_running_job(tmp_path)
+    recovery_read = threading.Event()
+    allow_recovery = threading.Event()
+    original_read = jobs.read_json
+    managers, responses, errors = [], [], []
+
+    def pause_recovery(path):
+        value = original_read(path)
+        if threading.current_thread().name == "recovery-test" and path == directory / "result.json":
+            recovery_read.set()
+            assert allow_recovery.wait(8)
+        return value
+
+    monkeypatch.setattr(jobs, "read_json", pause_recovery)
+
+    def recover():
+        try:
+            managers.append(JobManager(tmp_path))
+        except Exception as error:
+            errors.append(error)
+
+    recovery = threading.Thread(target=recover, name="recovery-test")
+    recovery.start()
+    cancel = None
+    try:
+        assert recovery_read.wait(5)
+        cancel = threading.Thread(target=lambda: responses.append(request_local_cancel(tmp_path, job_id)))
+        cancel.start()
+        cancel.join(timeout=0.5)
+        allow_recovery.set()
+        recovery.join(timeout=8)
+        cancel.join(timeout=8)
+        assert not recovery.is_alive() and not cancel.is_alive() and not errors
+        final = original_read(directory / "result.json")
+        if responses[0].get("cancellation_requested"):
+            assert final["status"] == "cancelled"
+        else:
+            assert responses[0] == final
+            assert final["status"] == "failed" and final["reason_code"] == "interrupted"
+    finally:
+        allow_recovery.set()
+        recovery.join(timeout=8)
+        if cancel is not None:
+            cancel.join(timeout=8)
+        for manager in managers:
+            manager.close()
 
 def test_local_cancel_stops_unresponsive_worker_and_preserves_checkpoint(tmp_path, monkeypatch):
     # Exercise the control plane with a real process that never reports progress;

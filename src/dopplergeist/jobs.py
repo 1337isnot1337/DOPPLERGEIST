@@ -114,9 +114,15 @@ class JobManager:
         self._closed = False
         # Preserve terminal outputs. An interrupted process is never silently replayed.
         for path in self.root.glob("*/result.json"):
-            old = read_json(path)
-            if old["status"] not in TERMINAL:
-                result(path.parent, "failed", reason_code="interrupted", message="Service stopped before completion; submit a new job to retry.", **_evidence(old))
+            if read_json(path)["status"] in TERMINAL:
+                continue
+            with _control_lock(path.parent):
+                old = read_json(path)
+                if old["status"] not in TERMINAL:
+                    if (path.parent / "cancel").exists():
+                        result(path.parent, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(old))
+                    else:
+                        result(path.parent, "failed", reason_code="interrupted", message="Service stopped before completion; submit a new job to retry.", **_evidence(old))
 
     def directory(self, job_id):
         try:
