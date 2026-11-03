@@ -4,7 +4,7 @@ Scores are penalized residuals, never probabilities. Geometry from a straight-pa
 audio fit is a proposal diagnostic, not a reliable exclusion bound for real tracks.
 """
 from dataclasses import dataclass
-from itertools import combinations, product
+from itertools import chain
 
 import numpy as np
 from pyproj import Transformer
@@ -68,54 +68,92 @@ def predict_fitted_ridge(track, observer, receive_times_s, diagnostics, c=343.0)
 
 def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                            time_tolerance_s=5.0, silence=None, min_events=1,
-                           max_events=3, max_candidates=20000):
+                           max_events=None, max_candidates=20000):
     """Bounded subset hypotheses, retaining explicitly unmatched proposals.
 
-    Every subset within the declared maximum is considered; exceeding the work
-    budget fails explicitly so the outer search records incomplete coverage.
-    Geometry only proposes hypotheses. Acoustic scoring must reject poor fits.
+    Default to every independent group. Intersect shared-clock intervals before
+    extending a branch; do not materialize impossible Cartesian products. Index
+    entries, branch visits and stored assignments share an explicit work budget.
+    Exceeding it fails visibly so the outer driver reports incomplete coverage.
     """
     from .search import filter_event
+    max_events = max(min_events, len(events)) if max_events is None else max_events
     if not 1 <= min_events <= max_events or max_candidates < 1:
         raise ValueError("Invalid association event/candidate budget")
-    filtered = [filter_event(table, e, time_origin, time_tolerance_s) for e in events]
-    grouped = [{p: frame.to_dict("records") for p, frame in f.groupby("point_id")} for f in filtered]
+    candidates, examined, work = [], 0, 0
+    def reserve(units):
+        nonlocal work
+        work += units
+        if work > max_candidates*20:
+            raise ValueError("Association work/storage budget exceeded; search is incomplete")
+    reserve(len(table))
+    table = table.reset_index(drop=True)
+    records = table.to_dict("records")
+    grouped, survivors = [], []
+    for event in events:
+        frame = filter_event(table, event, time_origin, time_tolerance_s)
+        reserve(len(frame))
+        survivors.append(len(frame))
+        grouped.append({p: [records[i] for i in group.index] for p, group in frame.groupby("point_id")})
     by_point = {p: frame for p, frame in table.groupby("point_id")}
-    candidates, examined = [], 0
-    for count in range(min(max_events, len(events)), min_events-1, -1):
-        for indices in combinations(range(len(events)), count):
-            common = set.intersection(*(set(grouped[i]) for i in indices))
-            for point_id in sorted(common):
-                for passes in product(*(grouped[i][point_id] for i in indices)):
-                    examined += 1
-                    if examined > max_candidates * 20:
-                        raise ValueError("Association work budget exceeded; search is incomplete")
-                    if len({(p["flight_id"], p["emission_time"]) for p in passes}) < count:
-                        continue
-                    starts = [p["receive_time"]-events[i]["cpa_receive_s"] for p, i in zip(passes, indices)]
-                    tolerance = [events[i].get("quality", {}).get("cpa_tolerance_s", 0)+offset_tolerance_s/2 for i in indices]
-                    lower = max(t-d for t, d in zip(starts, tolerance))
-                    upper = min(t+d for t, d in zip(starts, tolerance))
-                    if time_origin is not None:
-                        lower, upper = max(lower, time_origin-time_tolerance_s), min(upper, time_origin+time_tolerance_s)
-                    if lower > upper:
-                        continue
-                    if silence and count > 1:
-                        frame = by_point[point_id]
-                        margin = silence.get("edge_margin_s", 60)
-                        distance = max(p["distance_m"] for p in passes)*silence.get("distance_multiplier", 1)
-                        between = frame[(frame.receive_time > passes[0]["receive_time"]+margin) &
-                                        (frame.receive_time < passes[-1]["receive_time"]-margin) &
-                                        (frame.distance_m <= distance)]
-                        selected = {(p["flight_id"], p["emission_time"]) for p in passes}
-                        if any((r.flight_id, r.emission_time) not in selected for r in between.itertuples()):
-                            continue
-                    if len(candidates) >= max_candidates:
-                        raise ValueError("Association candidate budget exceeded; search is incomplete")
-                    candidates.append({"point_id": point_id, "passes": passes, "event_indices": list(indices),
-                                       "recording_start_bounds_s": [float(lower), float(upper)]})
-    return candidates, {"per_event_survivors": [len(f) for f in filtered], "survivors": len(candidates),
-                        "hypotheses_examined": examined, "max_matched_events": max_events,
+    for point_id in sorted(set().union(*(g.keys() for g in grouped))):
+        available = [i for i, group in enumerate(grouped) if point_id in group]
+        if len(available) < min_events:
+            continue
+        lower, upper = (-np.inf, np.inf) if time_origin is None else (time_origin-time_tolerance_s, time_origin+time_tolerance_s)
+        path, used = [], set()
+        frames = [(0, iter(chain(grouped[available[0]][point_id], [None])), lower, upper, 0)]
+        while frames:
+            cursor, options, lower, upper, depth = frames[-1]
+            while len(path) > depth:
+                _, old = path.pop()
+                used.remove((old["flight_id"], old["emission_time"]))
+            try:
+                row = next(options)
+            except StopIteration:
+                frames.pop()
+                continue
+            reserve(1)
+            lo, hi = lower, upper
+            index = available[cursor]
+            if row is not None:
+                identity = (row["flight_id"], row["emission_time"])
+                if identity in used:
+                    continue
+                start = row["receive_time"]-events[index]["cpa_receive_s"]
+                tolerance = events[index].get("quality", {}).get("cpa_tolerance_s", 0)+offset_tolerance_s/2
+                lo, hi = max(lo, start-tolerance), min(hi, start+tolerance)
+                if lo > hi:
+                    continue
+                path.append((index, row))
+                used.add(identity)
+            following = cursor+1
+            if len(path)+len(available)-following < min_events:
+                continue
+            if following < len(available) and len(path) < max_events:
+                frames.append((following, iter(chain(grouped[available[following]][point_id], [None])), lo, hi, len(path)))
+                continue
+            if len(path) < min_events:
+                continue
+            examined += 1
+            passes = tuple(row for _, row in path)
+            if silence and len(path) > 1:
+                frame = by_point[point_id]
+                reserve(len(frame))
+                margin = silence.get("edge_margin_s", 60)
+                distance = max(p["distance_m"] for p in passes)*silence.get("distance_multiplier", 1)
+                between = frame[(frame.receive_time > passes[0]["receive_time"]+margin) &
+                                (frame.receive_time < passes[-1]["receive_time"]-margin) & (frame.distance_m <= distance)]
+                if any((r.flight_id, r.emission_time) not in used for r in between.itertuples()):
+                    continue
+            if len(candidates) >= max_candidates:
+                raise ValueError("Association candidate budget exceeded; search is incomplete")
+            reserve(len(path))
+            candidates.append({"point_id": point_id, "passes": passes, "event_indices": [i for i, _ in path],
+                               "recording_start_bounds_s": [float(lo), float(hi)]})
+    return candidates, {"per_event_survivors": survivors, "survivors": len(candidates),
+                        "hypotheses_examined": examined, "work_units": work, "max_matched_events": max_events,
+                        "event_cap_limited": max_events < len(events),
                         "unmatched_proposals_allowed": True}
 
 

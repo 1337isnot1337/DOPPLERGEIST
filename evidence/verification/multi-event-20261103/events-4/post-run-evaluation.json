@@ -1,0 +1,15 @@
+{
+  "generated_events": 4,
+  "detected_groups": 4,
+  "true_positives": 4,
+  "misses": 0,
+  "false_alarms": 0,
+  "duration_s": 960.0,
+  "runtime_s": 9.296278871013783,
+  "peak_rss_kib": 1648608,
+  "source_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "source_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "truth_read_after_discovery": true,
+  "filesystem_isolation_asserted": false,
+  "location_estimated": false
+}

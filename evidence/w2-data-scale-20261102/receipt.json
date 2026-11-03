@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "scope": "Worker2 historical data, bounded national driver, independent synthetic HTTP integration",
+  "source_commit_final_checks": "3d8f30c",
+  "source_commit_scale_v2": "f0b8ba7",
+  "source_commit_http_integration": "f580b3da3d758c02a374877b5fb0b144fec56f2a",
+  "source_commit_hermes": "2c3ed20577bcce29058d73422dd4f85392d04c24",
+  "tests": [
+    {
+      "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-final-checks-20261102.xml",
+      "passed": 100,
+      "skipped": 0,
+      "failed": 0,
+      "elapsed_s": 24.62,
+      "source": "3d8f30c",
+      "receipt": "final-tests.xml"
+    },
+    {
+      "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q",
+      "passed": 124,
+      "skipped": 0,
+      "failed": 0,
+      "elapsed_s": 174.39,
+      "source": "f580b3da3d758c02a374877b5fb0b144fec56f2a",
+      "scope": "producer integration snapshot; tool-observed completion"
+    },
+    {
+      "command": "/home/cinna/aircraft-audio-geolocation/.venv/bin/python -m unittest discover -s tests -v",
+      "passed": 6,
+      "failed": 0,
+      "elapsed_s": 16.824,
+      "source": "2c3ed20577bcce29058d73422dd4f85392d04c24",
+      "receipt": "hermes-reference-unit-tests.log"
+    }
+  ],
+  "runtime": {
+    "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+    "platform": "Linux-7.2.10-arch1-1-x86_64-with-glibc2.44",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "2.3.3",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "pyarrow": "26.0.0",
+      "requests": "2.34.2",
+      "soundfile": "0.14.0",
+      "pytest": "9.1.1"
+    },
+    "ffmpeg": "ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "limitations": [
+    "National scale trials are analytic-ridge computational fixtures, not localization accuracy evaluations",
+    "Legacy source Parquet imputed missing velocities as zero; indexv2 cannot recover them",
+    "Three final scale tiles failed the subsonic model and flight scope lacks acoustic border halo",
+    "Synthetic HTTP top candidate is near truth but final decision remains inconclusive",
+    "No independent national real-recording 100m acceptance established"
+  ],
+  "files": {
+    "final-tests.log": {
+      "bytes": 181,
+      "sha256": "6be63de08c636e7780ee2dcfc24280ac9fcc15052a366c69896dc85b6c02f1b6"
+    },
+    "final-tests.xml": {
+      "bytes": 12701,
+      "sha256": "2292b45dd77268aa2727309ff39f0679d62b8a4f263743408a8a116206c1d0a4"
+    },
+    "hermes-decision.json": {
+      "bytes": 8094,
+      "sha256": "5f59fb00f7fbebe8a30afa1b4d9a4d57b8c0d51b9c1c0363f7f0693a22d7cfd9"
+    },
+    "hermes-http-receipt.json": {
+      "bytes": 1254,
+      "sha256": "f4b76cbd2d9beb02c9b319e698a8417fe25f38ca33bbe4a572591a3a557064e8"
+    },
+    "hermes-http-run.py": {
+      "bytes": 3476,
+      "sha256": "f3c6b95f2060ed5ccf7fc51b672c23ccadd79e4b7c381b5c44102c74d0cb0ddf"
+    },
+    "hermes-operator-configuration.json": {
+      "bytes": 458,
+      "sha256": "41317946d5e220ea5882006e31426967db4aad7e594f6b9fa5c58d1d8f734b48"
+    },
+    "hermes-post-search-evaluation.json": {
+      "bytes": 420,
+      "sha256": "cb49f8bbef1b9508f5c6cd81eb1ad7d1889b8b16c11f83e17c42c74de7d77ddf"
+    },
+    "hermes-provenance.json": {
+      "bytes": 3064,
+      "sha256": "6c14db81b463c72374c992b034c56f1c3a7a694b53e7dfbd0c91c14dff532307"
+    },
+    "hermes-reference-selftest.json": {
+      "bytes": 269,
+      "sha256": "4f3a92c94246a405787f6432c715d61aaaaee63f32f92af53e965cea08e83f7c"
+    },
+    "hermes-reference-unit-tests.log": {
+      "bytes": 703,
+      "sha256": "c7d06f0d8195489eaa968f344af4a6895736b112a59789fd19a1213382734844"
+    },
+    "hermes-request.json": {
+      "bytes": 422,
+      "sha256": "43677a5d3df789659ef900b883ce890b2a2b27dd8530674dcd5bb2673e276acc"
+    },
+    "hermes-search-report.json": {
+      "bytes": 28386,
+      "sha256": "4e3b83a4ee8feec1a56c6698aafc1770da8a98f0dfda43ab34f34dc04e81602d"
+    },
+    "index-v1-report.json": {
+      "bytes": 1132,
+      "sha256": "a086747c6ea6faac0bfd6c7dcce5fc45984d6d03bc26975120348fe445501810"
+    },
+    "index-v2-report.json": {
+      "bytes": 1368,
+      "sha256": "4b66722662f4bc0bdd37873d9deead54ac303b030878e4ba100b01a2d94b2f29"
+    },
+    "regional-query-v2.json": {
+      "bytes": 418,
+      "sha256": "497dd23f15ba2c907f4b32c09041d19b1532540b89937f96c5c085683dd7afff"
+    },
+    "scale-v1-manifest.json": {
+      "bytes": 2814,
+      "sha256": "b74860c5ce4cef3389f32b96526698ba5769f482cf1cc2457fe3b52bf325b039"
+    },
+    "scale-v1-report.json": {
+      "bytes": 103431,
+      "sha256": "d97338b591e591d0673ae750d725d3555a40dba7116a6c4ab7dcbafa7608999e"
+    },
+    "scale-v2-manifest.json": {
+      "bytes": 2990,
+      "sha256": "0190e933bb9eadd82c1e88842a7d4cdcd5ae2e485f94ac3c74b59ae5306abeae"
+    },
+    "scale-v2-report.json": {
+      "bytes": 103663,
+      "sha256": "b58ff33664ada8be7982a8c0ed2bf9ba2ae4a561a42c6ac12848323d59247aad"
+    },
+    "terrain-boundary-network.json": {
+      "bytes": 1651,
+      "sha256": "0f3266869899350a84a3e5394b6d9a056831ffdf0b10bacc347aa2925a57bcbe"
+    },
+    "terrain-first-failure.log": {
+      "bytes": 977,
+      "sha256": "42c9e3a66bb33b20a21c81ac401821eddb39cd52951437a4fc759a95473c956d"
+    },
+    "terrain-offline-replay.json": {
+      "bytes": 1529,
+      "sha256": "3de20260e488a962f366988a656e06614b6350ea53b441754ea3fea68235aac9"
+    },
+    "terrain-window-offline.json": {
+      "bytes": 1570,
+      "sha256": "fae46f934f95449e53b08c5d1c202a4dff11a8719a56cd11b2db2da68cf9090b"
+    }
+  }
+}
