@@ -87,6 +87,7 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
         max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
         near=np.flatnonzero(np.all((observers>=pos.min(axis=0)-max_distance)&
                                   (observers<=pos.max(axis=0)+max_distance),axis=1))
+        if not len(near):continue
         tree=cKDTree(pos)
         for base in range(0,len(near),chunk_size):
             chosen=near[base:base+chunk_size]
