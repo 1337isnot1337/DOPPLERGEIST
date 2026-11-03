@@ -316,7 +316,8 @@ def test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound(
                              output_dir=tmp_path / "unknown", bounds=bounds,
                              budget=SearchBudget(spacing_m=1000, tile_cells=4, top_k=1, refine_spacing_m=1000),
                              scoring={"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0})
-    assert result["ranked"] and result["status"] == "complete"
+    assert result["ranked"] and result["status"] == "partial"
+    assert not result["model_support_complete"]
     finite = result["finite_search_evidence"]
     assert not finite["complete"] and finite["unclassified_score_candidates"] > 0
     assert finite["best_discarded_score"] is None and finite["discarded_count"] > 0
@@ -330,7 +331,7 @@ def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path,
 
     def rejected(*args, **kwargs):
         result = original(*args, **kwargs)
-        result.update(score=-np.inf, scoring_assessment={"complete": True, "evaluated_trials": 1,
+        result.update(score=-np.inf, scoring_assessment={"complete": True, "evaluated_trials": 0,
                       "rejected_trials": 1, "unknown_trials": 0, "reasons": ["test_admissible_rejection"]})
         return result
 
@@ -340,5 +341,3 @@ def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path,
                             {"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0}, {})
     assert not ranked and counts["evaluated_rejections"] == counts["candidates"] > 0
     assert counts["unclassified_score_candidates"] == 0
-
-
