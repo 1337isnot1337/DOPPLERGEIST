@@ -56,9 +56,9 @@ jobs:
           import json
           from pathlib import Path
           import sys
-          import aircraft_geoloc
-          from aircraft_geoloc.provenance import implementation_provenance
-          package = Path(aircraft_geoloc.__file__).resolve().parent
+          import dopplergeist
+          from dopplergeist.provenance import implementation_provenance
+          package = Path(dopplergeist.__file__).resolve().parent
           assert "site-packages" in package.parts, package
           expected = implementation_provenance(Path("src"))
           observed = implementation_provenance(package.parent)

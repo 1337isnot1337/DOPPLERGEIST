@@ -12,7 +12,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import requests
 
-from aircraft_geoloc.tracks import adsblol_frame,unix_time
+from dopplergeist.tracks import adsblol_frame,unix_time
 
 parser=argparse.ArgumentParser()
 parser.add_argument("date")

@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 from pyproj import Transformer
 
-from aircraft_geoloc.geometry import Track,ecef,straight_doppler
+from dopplergeist.geometry import Track,ecef,straight_doppler
 
 
 def straight_track(epoch=0.0):
@@ -37,7 +37,7 @@ def test_cpa_and_no_extrapolation():
 
 def test_vectorized_cpa_matches_independent_continuous_minimum():
     import pandas as pd
-    from aircraft_geoloc.search import cpa_table
+    from dopplergeist.search import cpa_table
     track,observer,slant=straight_track(1_790_000_000)
     points=pd.DataFrame({"point_id":[0,1],"lat":[40,30],"lon":[-100,-80],"elev_m":[100,0]})
     table=cpa_table([track],points,5000)
@@ -48,7 +48,7 @@ def test_vectorized_cpa_matches_independent_continuous_minimum():
 
 def test_repeated_flyovers_are_not_collapsed_to_one_global_cpa():
     import pandas as pd
-    from aircraft_geoloc.search import cpa_table
+    from dopplergeist.search import cpa_table
     observer=ecef(40,-100,100)
     t=np.arange(-20,100.1,0.5)
     xyz=observer+np.column_stack((4000*np.sin(2*np.pi*t/80),np.full(len(t),1300),np.full(len(t),700)))
@@ -63,7 +63,7 @@ def test_repeated_flyovers_are_not_collapsed_to_one_global_cpa():
 
 def test_sparse_cpa_graph_agrees_with_dense_reference_on_curved_track():
     import pandas as pd
-    from aircraft_geoloc.search import cpa_table,cpa_table_dense
+    from dopplergeist.search import cpa_table,cpa_table_dense
     observer=ecef(40,-100,100)
     t=np.arange(-80,81,0.5)
     xyz=observer+np.column_stack((90*t+0.03*t*t,1200+0.1*t*t,900+0.5*t))

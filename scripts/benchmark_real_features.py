@@ -13,8 +13,8 @@ import numpy as np
 import pandas as pd
 import soundfile as sf
 
-from aircraft_geoloc.audio import measure,fit_flyover
-from aircraft_geoloc.tracks import unix_time
+from dopplergeist.audio import measure,fit_flyover
+from dopplergeist.tracks import unix_time
 
 root=Path(__file__).resolve().parents[1]
 source=root/"data/research/zenodo-23424278"

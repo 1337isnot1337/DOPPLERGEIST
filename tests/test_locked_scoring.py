@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import numpy as np
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.search import score_candidate
+from dopplergeist.audio import Spectrum
+from dopplergeist.search import score_candidate
 
 
 class Flyover:

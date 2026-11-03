@@ -7,10 +7,10 @@ import subprocess
 
 import numpy as np
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.matching import profile_candidate
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tracks import load_tracks, unix_time
+from dopplergeist.audio import Spectrum
+from dopplergeist.matching import profile_candidate
+from dopplergeist.terrain import Terrain
+from dopplergeist.tracks import load_tracks, unix_time
 
 
 class CachedRaster:

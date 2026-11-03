@@ -3,8 +3,8 @@ from copy import deepcopy
 import pytest
 from pyproj import Geod
 
-from aircraft_geoloc.confidence import DecisionPolicy, decide_location
-from aircraft_geoloc.contracts import validate_result
+from dopplergeist.confidence import DecisionPolicy, decide_location
+from dopplergeist.contracts import validate_result
 
 
 def evidence():
@@ -120,7 +120,7 @@ def test_w3_vertical_only_profile_is_not_a_100m_confidence_claim():
 
 
 def test_known_clock_single_event_requires_full_trusted_window_sensitivity():
-    from aircraft_geoloc.contracts import utc_timestamp
+    from dopplergeist.contracts import utc_timestamp
     events, candidates, coverage, diag = evidence()
     events = events[:1]
     candidates[0].update(event_ids=["e0"], flight_ids=["a"])

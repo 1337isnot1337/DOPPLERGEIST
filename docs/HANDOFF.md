@@ -42,8 +42,8 @@ The real regional replay requires source, ADS-B-derived and terrain bundles:
 
 ```bash
 .venv/bin/python -m pytest -q
-.venv/bin/aircraft-geoloc run data/source/reproduce-local.json --output results/replay-reference
-.venv/bin/aircraft-geoloc run data/source/reproduce-faint-alltypes-local.json --output results/replay-faint
+.venv/bin/dopplergeist run data/source/reproduce-local.json --output results/replay-reference
+.venv/bin/dopplergeist run data/source/reproduce-faint-alltypes-local.json --output results/replay-faint
 .venv/bin/python scripts/benchmark_real_features.py
 ```
 

@@ -3,9 +3,9 @@ import sqlite3
 
 import pytest
 
-from aircraft_geoloc.data_access import DataUnavailable
-from aircraft_geoloc.finite_search import RetentionLedger, classified_assessment, identify_mode
-from aircraft_geoloc.tiled_search import merge_candidates
+from dopplergeist.data_access import DataUnavailable
+from dopplergeist.finite_search import RetentionLedger, classified_assessment, identify_mode
+from dopplergeist.tiled_search import merge_candidates
 
 
 KIND = "matched_group_support_minus_normalized_residual"
