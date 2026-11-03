@@ -32,15 +32,27 @@ def test_real_search_sieve_preserves_candidates_and_support(monkeypatch):
 
     # This is an existing regional development point, not an evaluation search
     # or a claim about the microphone's location. The baseline calls the same
-    # CPA table and scoring code but disables this one spatial prefilter.
+    # CPA table and scoring code but disables supported-track distance pruning.
+    # Unsupported tracks retain the existing Bezier-hull exclusion proof in
+    # both arms; disabling that proof also changes their support accounting.
     original = Track.outside_observer_radius
-    monkeypatch.setattr(Track, "outside_observer_radius", lambda *args, **kwargs: False)
+    supported = set()
+
+    def without_supported_sieve(track, observers, radius, c=343.0):
+        try:
+            track.validate_motion_support(c)
+        except AcousticSupportError:
+            return original(track, observers, radius, c)
+        supported.add(id(track))
+        return False
+
+    monkeypatch.setattr(Track, "outside_observer_radius", without_supported_sieve)
     before = _score(points, tracks, events, measurements, **options)
     excluded = []
 
     def counting(track, *args, **kwargs):
         result = original(track, *args, **kwargs)
-        if result:
+        if result and id(track) in supported:
             excluded.append(track.id)
         return result
 
