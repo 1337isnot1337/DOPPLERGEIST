@@ -1,0 +1,27 @@
+{
+  "source_commit": "5459461d1db4dc574ba5cb8be966a26ab96c68c7",
+  "test_sha256": "540a8b8636ecbcce9937b3b5064156dac9cf74d875290d49963ad73821e621e8",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py",
+    "--basetemp=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/work",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/pytest.xml"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-review/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-review/tests",
+  "exit_code": 1,
+  "elapsed_s": 1.5724308780008869,
+  "scope": "Actual propagation/robust-scorer classification controls. No mocked trial results or completion metadata; readiness failures expected until the typed/classified scorer is published.",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "4",
+    "skipped": "0",
+    "tests": "4",
+    "time": "1.159",
+    "timestamp": "2026-11-02T23:16:48.114716-04:00",
+    "hostname": "05c893b10fbb"
+  }
+}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="1.159" timestamp="2026-11-02T23:16:48.114716-04:00" hostname="05c893b10fbb"><testcase classname="tests.test_scoring_assessment_independent" name="test_actual_supported_fixed_clock_is_classified" time="0.096"><failure message="AssertionError: Every bounded robust scoring call needs trial accounting&#10;assert False&#10; +  where False = isinstance(None, dict)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/work/test_actual_supported_fixed_cl0')
+
+    def test_actual_supported_fixed_clock_is_classified(tmp_path):
+        row = score(tmp_path)
+        assert math.isfinite(row["score"]) and row["score"] &gt; 1.99
+&gt;       result = assessment(row)
+                 ^^^^^^^^^^^^^^^
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'score': 1.9999999999999967, 'event_scores': [-3.366857735764653e-15, -6.734499228146642e-15], 'f0_hz': [119.99999999...119.99999999999997, 'source_drift_hz': -2.913789873798645e-14, 'source_drift_hz_s': -4.587291664904009e-16, ...}], ...}
+
+    def assessment(row):
+        result = row.get("scoring_assessment")
+&gt;       assert isinstance(result, dict), "Every bounded robust scoring call needs trial accounting"
+E       AssertionError: Every bounded robust scoring call needs trial accounting
+E       assert False
+E        +  where False = isinstance(None, dict)
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:34: AssertionError</failure></testcase><testcase classname="tests.test_scoring_assessment_independent" name="test_actual_finite_winner_cannot_hide_unsupported_clock_trials" time="0.031"><failure message="AssertionError: Every bounded robust scoring call needs trial accounting&#10;assert False&#10; +  where False = isinstance(None, dict)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/work/test_actual_finite_winner_cann0')
+
+    def test_actual_finite_winner_cannot_hide_unsupported_clock_trials(tmp_path):
+        # Each real trajectory spans 300 seconds. The center clock fits; the two
+        # +/-200-second trials place all ridge samples outside trajectory support.
+        row = score(tmp_path, sweep_s=200.)
+        assert math.isfinite(row["score"]) and row["score"] &gt; 1.99
+&gt;       result = assessment(row)
+                 ^^^^^^^^^^^^^^^
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'score': 1.9999999999999967, 'event_scores': [-3.366857735764653e-15, -6.734499228146642e-15], 'f0_hz': [119.99999999...119.99999999999997, 'source_drift_hz': -2.913789873798645e-14, 'source_drift_hz_s': -4.587291664904009e-16, ...}], ...}
+
+    def assessment(row):
+        result = row.get("scoring_assessment")
+&gt;       assert isinstance(result, dict), "Every bounded robust scoring call needs trial accounting"
+E       AssertionError: Every bounded robust scoring call needs trial accounting
+E       assert False
+E        +  where False = isinstance(None, dict)
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:34: AssertionError</failure></testcase><testcase classname="tests.test_scoring_assessment_independent" name="test_actual_all_unsupported_trials_are_not_admissible_rejections" time="0.025"><failure message="AssertionError: Every bounded robust scoring call needs trial accounting&#10;assert False&#10; +  where False = isinstance(None, dict)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/work/test_actual_all_unsupported_tr0')
+
+    def test_actual_all_unsupported_trials_are_not_admissible_rejections(tmp_path):
+        row = score(tmp_path, offset_s=200.)
+        assert row["score"] == -math.inf
+&gt;       result = assessment(row)
+                 ^^^^^^^^^^^^^^^
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'score': -inf, 'event_indices': [0, 1], 'event_ids': ['0', '1'], 'unmatched_event_ids': [], ...}
+
+    def assessment(row):
+        result = row.get("scoring_assessment")
+&gt;       assert isinstance(result, dict), "Every bounded robust scoring call needs trial accounting"
+E       AssertionError: Every bounded robust scoring call needs trial accounting
+E       assert False
+E        +  where False = isinstance(None, dict)
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:34: AssertionError</failure></testcase><testcase classname="tests.test_scoring_assessment_independent" name="test_actual_supported_acoustic_loss_rejection_is_classified" time="0.025"><failure message="AssertionError: Every bounded robust scoring call needs trial accounting&#10;assert False&#10; +  where False = isinstance(None, dict)">tmp_path = PosixPath('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/scoring-assessment-oracle-5459461/work/test_actual_supported_acoustic0')
+
+    def test_actual_supported_acoustic_loss_rejection_is_classified(tmp_path):
+        # Positive-frequency observations deliberately disagree with the bounded
+        # source model. Geometry is supported; the actual association loss rejects.
+        row = score(tmp_path, incompatible_ridges=True)
+        assert row["score"] == -math.inf
+&gt;       result = assessment(row)
+                 ^^^^^^^^^^^^^^^
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'score': -inf, 'event_indices': [0, 1], 'event_ids': ['0', '1'], 'unmatched_event_ids': [], ...}
+
+    def assessment(row):
+        result = row.get("scoring_assessment")
+&gt;       assert isinstance(result, dict), "Every bounded robust scoring call needs trial accounting"
+E       AssertionError: Every bounded robust scoring call needs trial accounting
+E       assert False
+E        +  where False = isinstance(None, dict)
+
+../DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py:34: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,18 @@
+{
+  "README.md": {
+    "bytes": 1851,
+    "sha256": "2fbddf27fd67684f62fbb7874cd5772ba890a59bd013c31e7d308c0e798b163e"
+  },
+  "pytest.log": {
+    "bytes": 6214,
+    "sha256": "7cfc2823a262ba526da7469dcb47ae4f1411a04f1256f5810de6a76f2d0564ec"
+  },
+  "pytest.xml": {
+    "bytes": 6592,
+    "sha256": "96e95e5018056755719700f374941daf1e45f81cdf9b4c473acd26faf246aa6f"
+  },
+  "receipt.json": {
+    "bytes": 1288,
+    "sha256": "87090029afd28de355bf7219d2c7d2c5cf123c607d041b44f0fb39a42535fa33"
+  }
+}
