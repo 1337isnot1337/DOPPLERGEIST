@@ -227,10 +227,16 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             profiled = profile_candidate(leading, track_sets[approach(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
                          c=config.get("sound_speed_mps", 343.0))
-            raw.append(comparable(profiled, leading))
-            raw.sort(key=order, reverse=True)
+            # Full profiling updates this exact hypothesis. Its earlier, limited
+            # envelope must not compete with incomplete evidence or score roundoff.
+            raw[0] = comparable(profiled, leading)
         except (ValueError, KeyError) as exc:
             refinement_failures.append(f"Sensitivity profiling: {exc}")
+            raw[0] = dict(leading, sensitivity={"complete": False, "sources": [],
+                         "failures": [{"source": "profiling", "reason": str(exc)}]})
+        # Preserve other modes; a different leader must satisfy its own full
+        # sensitivity gate, without borrowing this hypothesis's profile.
+        raw.sort(key=order, reverse=True)
     candidates, rows = [], []
     for row in raw:
         event_ids, flight_ids = [], []
