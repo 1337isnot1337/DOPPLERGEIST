@@ -48,8 +48,16 @@ dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
   --start-utc "$RECORDING_START_UTC_MIN" --end-utc "$RECORDING_START_UTC_MAX" \
   --time-source 'Your evidence for this recording time'
 dopplergeist job JOB_ID --jobs jobs
+dopplergeist job JOB_ID --jobs jobs --watch --interval 10
 dopplergeist resume JOB_ID --jobs jobs
 ```
+
+`analyze` prints the job ID and a monitor command to standard error as soon as
+the upload is queued. `job --watch` reports the number and recent rate of local
+checkpoint pieces on standard error, then writes the final job JSON to standard
+output. Pieces can have different sizes and costs, so their rate is not an ETA;
+remotely staged work appears after it is imported. Pressing Ctrl-C stops the
+watcher without cancelling the analysis.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not

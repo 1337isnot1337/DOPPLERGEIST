@@ -1,6 +1,9 @@
 import argparse
 import json
 import math
+import shlex
+import sys
+import time
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 import uuid
@@ -68,6 +71,8 @@ def main():
     job=sub.add_parser("job",help="Read a persisted job result without rerunning it")
     job.add_argument("job_id",type=job_identifier)
     job.add_argument("--jobs",default="jobs")
+    job.add_argument("--watch",action="store_true",help="Watch local checkpoints until the job stops")
+    job.add_argument("--interval",type=positive_runtime,default=10,help="Watch interval in seconds")
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
@@ -109,15 +114,37 @@ def main():
         try:
             with audio.open("rb") as source:
                 queued=manager.submit(request,source,audio.stat().st_size,suffix=audio.suffix)
+            print(f"Job {queued['job_id']} started. Monitor: dopplergeist job {queued['job_id']} "
+                  f"--jobs {shlex.quote(str(args.jobs))} --watch",file=sys.stderr,flush=True)
             print(json.dumps(manager.wait(queued["job_id"]),indent=2))
         finally:
             manager.close()
     elif args.command=="job":
         from .jobs import read_json
+        directory=Path(args.jobs)/args.job_id
+        previous_count=previous_time=None
         try:
-            value = read_json(Path(args.jobs)/args.job_id/"result.json")
-        except (OSError, ValueError) as exc:
-            parser.error(f"Could not read job {args.job_id}: {exc}")
+            while True:
+                try:
+                    value = read_json(directory/"result.json")
+                except (OSError, ValueError) as exc:
+                    parser.error(f"Could not read job {args.job_id}: {exc}")
+                if not args.watch:
+                    break
+                count=sum(1 for path in (directory/"search").glob("tile-*.json") if not path.name.endswith(".error.json"))
+                now=time.monotonic()
+                rate=""
+                if previous_count is not None and count >= previous_count and now > previous_time:
+                    rate=f", {(count-previous_count)*60/(now-previous_time):.1f} pieces/min since last check"
+                print(f"{value['status']} ({value.get('stage', 'no stage')}): "
+                      f"{count} local checkpoint pieces{rate}",file=sys.stderr,flush=True)
+                if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
+                    break
+                previous_count,previous_time=count,now
+                time.sleep(args.interval)
+        except KeyboardInterrupt:
+            print("Stopped watching; the job continues.",file=sys.stderr)
+            raise SystemExit(130)
         print(json.dumps(value,indent=2))
     elif args.command=="resume":
         from .jobs import JobManager
