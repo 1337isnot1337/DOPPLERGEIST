@@ -82,10 +82,14 @@ event offsets and score units are identical in every tile. One shared clock is
 constrained to the supplied recording-start window. Coarse tiles use separate
 worker processes for the built-in cached-terrain provider, automatically choosing
 one fewer worker than the available logical CPUs, with a minimum of one. Custom
-terrain providers use serial execution. Hard limits on grid cells, tracks, samples, CPA rows and
-candidate combinations bound each worker's allocations; total memory grows with
-the worker count. An overloaded tile is reported as missing work. Reducing
-`tile_cells` trades scheduling overhead for smaller working sets.
+terrain providers use serial execution. Hard limits on grid cells, tracks, samples,
+CPA rows and candidate combinations bound each worker's allocations; total memory
+grows with the worker count. When a tile exceeds a per-tile capacity limit, the
+search divides it into smaller nonoverlapping grid rectangles and checkpoints
+each completed piece. Fine search also divides overloaded rectangles. A capacity
+failure at a single grid cell, missing data, and other errors remain visible as
+incomplete work. Reducing `tile_cells` trades scheduling overhead for smaller
+working sets.
 
 Workers retain private score ledgers. The parent verifies their identities and
 checksums before importing a completed tile, and merges rankings in deterministic
@@ -110,6 +114,10 @@ cannot enter Top-K. While fitting a shared-clock trial, validated residuals can
 tighten that ceiling or establish a residual rejection before the remaining
 groups are fitted. Comparisons are strict, so ties remain eligible. Acoustic
 batches for later groups are deferred until a surviving trial needs them.
+For the first event, a measured-ridge loss bound can screen individual clocks;
+the remaining supported clocks are fitted together. Representative batched
+fits are checked against the scalar fitter, with fallback for mismatches or
+unsupported and numerically degenerate batches.
 
 Unperformed trials remain unknown with explicit conservative bounds in the
 retention ledger. A competitive candidate receives full evaluation, preserving
@@ -130,6 +138,12 @@ about 8–28% wall time across paired runs under varying machine load; operation
 counts were stable. These measurements do not predict nationwide runtime. The
 group-count ceiling alone did not show a reliable speedup on the existing cache.
 
+With the acoustic screen enabled in both runs, one full-day replay of a single
+real grid point and 468 associations took 56.28 CPU seconds using scalar
+first-event fits and 7.72 seconds when fitting only eligible clocks in batches.
+The complete tile payload and retention checksum matched. This is one point,
+not a nationwide runtime estimate or an independent location validation.
+
 Manifest and tile receipts hash configuration, input index files, event
 measurements, implementation and terrain files. Interrupted jobs reuse completed
 tiles with the same identity. Changed inputs require a new output directory.
@@ -138,6 +152,8 @@ Reports distinguish complete/partial computation, source scope, missing tiles,
 refinement failure, runtime and Linux process peak RSS. A complete tile is never
 labelled a complete national search. The product/confidence workers translate
 this internal report to the shared coverage and result contracts.
+Search progress counts grid-cell work, not elapsed time or a guarantee that all
+data and model support are complete; dense cells may take much longer to process.
 
 Source completeness includes an acoustic halo outside observer bounds: a
 CONUS-cropped flight table cannot establish complete border coverage.
