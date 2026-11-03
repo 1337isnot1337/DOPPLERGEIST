@@ -32,11 +32,11 @@ def import_retention_stage(ledger, worker_path, stage, expected_checksum):
             records = db.execute(
                 "SELECT mode_id, score, groups_count, kind, seed FROM worker.records WHERE stage=? ORDER BY mode_id",
                 (stage,),
-            ).fetchall()
+            )
             bounds = db.execute(
                 "SELECT bound_id, upper_score, groups_count, detail FROM worker.bounds WHERE stage=? ORDER BY bound_id",
                 (stage,),
-            ).fetchall()
+            )
             if ledger._checksum(records, json.loads(stage_row[1]), stage_row[2], stage_row[3], bounds) != expected_checksum:
                 raise DataUnavailable("Worker retention stage failed its checksum")
             for table in ("records", "bounds"):
