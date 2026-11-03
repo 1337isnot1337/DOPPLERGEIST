@@ -26,8 +26,11 @@ python scripts/scan_enf_signal.py recording.mp3 \
 
 The default uses the same 4 kHz mono decoding path already used by DOPPLERGEIST.
 The 4-second window and 1-second hop are screening settings, not a calibrated
-ENF extractor. A future timestamp estimator needs longer-window and
-multi-harmonic comparisons against real references, plus held-out tests.
+ENF extractor. A future timestamp estimator should test each usable band against
+real references. One sufficiently strong line can be evaluated at its known or
+hypothesized harmonic order; additional harmonics are optional corroboration,
+not an acceptance requirement. Longer windows and held-out real recordings are
+still needed to validate frequency precision and false-match risk.
 
 ## First real-audio screen (2026-11-03)
 
@@ -43,20 +46,22 @@ in at least 80% of its complete 4-second windows (1-second hop). This is only
 a spectral peak threshold; it does not distinguish grid frequency from a
 motor, power supply, interference or other sound.
 
-| Real-audio group | Recordings | Persistent tone candidate | Two harmonics at one nominal base |
+| Real-audio group | Recordings | Persistent tone candidate | Two harmonics at one nominal base (descriptive) |
 | --- | ---: | ---: | ---: |
 | Publisher-site-labelled corpus | 24 | 2 | 0 |
 | Unknown exact microphone point | 5 | 0 | 0 |
 | AeroSonic recordings | 20 | 0 | 0 |
 | Active one-hour upload | 1 | 0 | 0 |
 
-The two single-band candidates were `site-914.mp3` (50 Hz fundamental and a
-separate 120 Hz band) and `site-919.mp3` (50 Hz fundamental). Neither showed a
-second persistent harmonic at the same 50/60 Hz base. The one-hour upload had
-no band meeting the persistence threshold. No reference matching or UTC
-estimate was attempted. These results show only that isolated narrowband tones
-are uncommon under this screening rule; they do not establish ENF availability
-or timestamp recovery rates.
+Two recordings had at least one persistent tone candidate: `site-914.mp3` (a
+50 Hz fundamental and a separate 120 Hz band) and `site-919.mp3` (a 50 Hz
+fundamental). No recording had two persistent bands at one nominal base. That
+last column is descriptive only: one coherent line remains eligible for a
+future reference match, and the lack of a second harmonic is not grounds to
+reject it. The one-hour upload had no band meeting this screen's persistence
+threshold; that does not prove its audio lacks a weaker or longer-window ENF
+trace. No reference matching or UTC estimate was attempted, so this screen
+establishes neither ENF availability nor timestamp recovery rates.
 
 Full per-window traces, summaries and SHA-256 receipts are preserved locally
 at `/home/cinna/.local/state/dopplergeist-enf-screening-20261103/corpus-v1`.
@@ -94,10 +99,13 @@ Only consider passing an ENF-derived time window into the existing aircraft
 pipeline after real recordings with independently established sample-zero UTC
 have been matched to a genuine historical grid reference. Keep extraction
 quality, reference provenance, clock-rate drift, alternative timestamp peaks
-and match separation in the result. A missing reference, absent harmonic,
-non-unique peak, clock drift outside tolerance or weak audio must return the
-existing `needs_input`/inconclusive path. ENF region identification is at most
-coarse interconnection evidence; it is not an observer coordinate.
+and match separation in the result. Do not require multiple harmonics: one
+well-tracked line can support a timestamp when its independent reference match
+is unique and strong enough under the measured uncertainty. Other harmonics
+can strengthen that evidence when present. If no usable line exists, the
+reference is missing, or the match remains ambiguous, return the existing
+`needs_input`/inconclusive path. ENF region identification is at most coarse
+interconnection evidence; it is not an observer coordinate.
 
 The initial screen must run on DOPPLERGEIST's real audio only. Do not synthesize
 hum, fill missing reference intervals, tune the matcher on the recording under
