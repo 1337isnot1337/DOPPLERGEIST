@@ -146,3 +146,21 @@ def test_joint_refinement_uses_nonparallel_passes_and_profiles_altitude():
     assert result["sensitivity"]["radius_m"] > 0
     assert result["sensitivity"]["kind"] == "sensitivity"
     assert result["sensitivity"]["complete"]
+
+
+@pytest.mark.parametrize("window", [(0.0, 0.0), (0.0, 0.25)])
+def test_refinement_cannot_move_a_trusted_clock_outside_its_window(window):
+    seed = dict(lat=40, lon=-100, recording_start_time_s=0.0, flight_ids=["a"])
+    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    event = dict(f0_range_hz=[119, 121], quality={"source_drift_fraction": 0})
+    # A freely fitted clock would move +2 seconds; the request forbids that.
+    result = refine_candidate(seed, {"a": Flyover(32)}, [event], [measurement()], terrain,
+                              altitude_offsets_m=(0.0,), recording_start_window_s=window)
+    assert window[0] <= result["recording_start_time_s"] <= window[1]
+    assert result["refinement_clock_bounds_s"] == list(window)
+    if window[0] == window[1]:
+        assert result["recording_start_time_s"] == 0
+        assert not result["clock_boundary_limited"]
+    with pytest.raises(ValueError, match="do not intersect"):
+        refine_candidate(seed, {"a": Flyover()}, [event], [measurement()], terrain,
+                         recording_start_window_s=(100, 101))
