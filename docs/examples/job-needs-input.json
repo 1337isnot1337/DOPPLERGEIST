@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "job_id": "illustrative-job",
+  "status": "needs_input",
+  "stage": "intake",
+  "reason_code": "recording_time_required",
+  "message": "Supply the recording date or a bounded UTC window for the recording start.",
+  "required_fields": [
+    "time_window"
+  ]
+}
