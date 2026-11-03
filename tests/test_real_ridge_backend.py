@@ -5,6 +5,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+from dopplergeist import matching
+
 
 _RECORDED_FITS = """
 import json
@@ -33,7 +35,8 @@ print(json.dumps({'backend': matching.RIDGE_FIT_BACKEND,
 def _run_backend(choice, program=_RECORDED_FITS):
     root = Path(__file__).resolve().parents[1]
     environment = os.environ.copy()
-    environment["PYTHONPATH"] = os.pathsep.join((str(root / "src"), environment.get("PYTHONPATH", "")))
+    package_parent = Path(matching.__file__).resolve().parents[1]
+    environment["PYTHONPATH"] = os.pathsep.join((str(package_parent), environment.get("PYTHONPATH", "")))
     if choice is None:
         environment.pop("DOPPLERGEIST_RIDGE_BACKEND", None)
     else:
@@ -53,6 +56,7 @@ def test_python_backend_selector_preserves_recorded_fits_and_identity():
     assert default == automatic
     assert python["backend"] == "python-irls-v1"
     assert python["native"] is False
+    assert automatic["native"] is (matching._native_fit_irls is not None)
     assert automatic["native"] == automatic["backend"].startswith("native-c-irls-v2-pairwise:")
     assert automatic["fits"] == python["fits"]
     assert automatic["legacy"] is python["legacy"] is None
