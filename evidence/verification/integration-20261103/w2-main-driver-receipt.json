@@ -1,0 +1,27 @@
+{
+  "tested_commit": "c91de8214f4064ee5be4c2a24f29802949a9e812",
+  "tested_tree": "90fcd48ea41f683841a0c5d6650a60158dd32037",
+  "worker_head": "5adc13e6138a0c926cc453ec475fa7d4dbddbd25",
+  "python": "3.14.8",
+  "system_site_packages": false,
+  "pytest_summary": {
+    "passed": 218,
+    "subtests_passed": 6,
+    "skipped": 0,
+    "elapsed_s": 51.94
+  },
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "224",
+    "time": "51.942",
+    "timestamp": "2026-11-02T20:21:10.667680-06:00",
+    "hostname": "Asus"
+  },
+  "junit_sha256": "4e2d3cad0d14f5d9b03217b3dd50ab6529d4771da91fbd5a23a50ea2a139a557",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 <clean-py314>/bin/python -m pytest -q --junitxml=<receipt>",
+  "conflict_resolution": "Preserved both appended test sets; tiled/index source and tests are byte-identical to separately tested product combination401b2e7.",
+  "scope": "Main-based all-event driver integration, not accepted localization or completion of trajectory integrity #64."
+}
