@@ -1,0 +1,68 @@
+{
+  "integration_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+  "job_id": "d25c32b468cf461ab22743bd45fd540a",
+  "source_unchanged": true,
+  "source_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+  "implementation_unchanged_after_run": true,
+  "files": {
+    "decision.json": {
+      "sha256": "22de72c2b07f3024b30f99ff3d46bf9c53a195b08e6fba093b37336630b96248",
+      "bytes": 43234
+    },
+    "discovery.json": {
+      "sha256": "e96be7db9912517fcc0ca1b86ed784be046d08057b432ccf8a2997cd20602af5",
+      "bytes": 45990
+    },
+    "index-report.json": {
+      "sha256": "b26d838fb65abbb08002adadea600202a2a310d260d26dd7e8c12418bc5631e3",
+      "bytes": 1208
+    },
+    "intake.json": {
+      "sha256": "74179e7bf0d80edc482cf959e517e22e19abac7447819da8c72d6f139b11d532",
+      "bytes": 911
+    },
+    "operator.json": {
+      "sha256": "3c82098cda1c04e416bd4a5387dfc11c64587ee7c4bc6101c862fac8496dd6da",
+      "bytes": 384
+    },
+    "post-search-evaluation.json": {
+      "sha256": "b5829de5638d24d327deab1a3a1aeb7e511f598503b0fd95c8891784a82195e9",
+      "bytes": 2972
+    },
+    "provenance.json": {
+      "sha256": "30526b9efd6405a016bde75c77b7100db5f1c0120210b4e226d2f719faa330e1",
+      "bytes": 3005
+    },
+    "recording.json": {
+      "sha256": "fa1388f39f44dffdd215836f142c81bcea36a83e83828f18c5308186203aa89d",
+      "bytes": 414
+    },
+    "refined-candidates.json": {
+      "sha256": "522ec41e95fe96ea7d7257ccb8198f882eda47af1dcf373387e3ded19aaa3847",
+      "bytes": 250712
+    },
+    "request.json": {
+      "sha256": "42f0e95d7f7a73f9c9f844f7c92f4718ea0d505e8927ba3089f46cb62300750b",
+      "bytes": 449
+    },
+    "result.json": {
+      "sha256": "65f8e2d94159b38297fa81624aaac69c6ddb07914d7425c3671575da9bd133c5",
+      "bytes": 69752
+    },
+    "run-input-receipt.json": {
+      "sha256": "e9cc7fcd393237a191240add4666bef07c210a12001da125ac56a01e0557fff4",
+      "bytes": 1010
+    },
+    "search-report.json": {
+      "sha256": "5a0fb50e8ab1cce1b4c4de60a289ad85a8e43fb6e2b318fb01e63e931ee2da54",
+      "bytes": 207019
+    }
+  },
+  "pipeline_executed": true,
+  "supported_localization": false,
+  "independent_real_accuracy_validation": false,
+  "reason": "The entire automatic path ran; correctly abstained on near-tied distant synthetic alternatives. The truth-matching candidate is not the selected supported result.",
+  "published_source_commit": "e1134427a5255def32444363d90669c473df68f7",
+  "executed_and_published_tree": "043eec047e89cbf546d95a463faebab982e785a9",
+  "source_commit_note": "The published commit has the exact same Git tree as local integration98081e7; parent/commit metadata differ."
+}
