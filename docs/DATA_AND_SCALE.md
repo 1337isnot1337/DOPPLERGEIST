@@ -206,6 +206,13 @@ association to the matching worker and preserves unmatched proposals.
 `alternative_modes_exhaustively_assessed` remains false because coarse-grid and
 top-k retention do not establish exhaustive alternative-mode recall.
 
+Automatic CPA proposals retain speeds from zero through the sound speed and
+distances from zero through the configured maximum; unsupported motion is still
+reported rather than silently treated as valid. In one real full-day cell, five
+passes below the former 1 m/s minimum added 1,166 associations, retaining all
+23,136 previous associations. These are proposals, not confirmed aircraft sounds.
+The separately defined finite emitted-frequency range remains a modeling prior.
+
 The normal `robust_ridge` path defaults to subset association over **all prepared
 independent groups**. There is no default maximum of two or three matched events.
 Harmonics/fragments are grouped by the audio/matching producers before this
