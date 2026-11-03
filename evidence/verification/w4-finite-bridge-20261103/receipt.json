@@ -1,0 +1,43 @@
+{
+  "scope": "Actual retention-ledger/product/decision boundary controls; not scientific replay",
+  "runtime_commit": "c845c48bc0c2bcf0b17da7ac5d5abfa6b3bffc98",
+  "consumer_commit": "ef1c6ea2c9b36ea46365386e2a9ff57d248bd715",
+  "producer_commit": "5459461",
+  "classified_trial_reference": "cc3286c7224d75a1ba5c5001c5a18e179b6a5819",
+  "source_equivalence": [
+    "finite_search.py and tiled_search.py are byte-identical between W2 5459461 and 2893f9c",
+    "search.py and geometry.py are byte-identical between runtime c845c48 and W1 cc3286c"
+  ],
+  "focused": {
+    "passed": 4
+  },
+  "full": {
+    "passed": 311,
+    "subtests_passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_s": 90.95
+  },
+  "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+  "checks": [
+    "160 m finite envelope reaches returned candidates and saved decision unchanged",
+    "unassessed retained mode remains inconclusive",
+    "near-tied distinct discarded mode remains inconclusive",
+    "corrupt retention stage remains inconclusive",
+    "inputs unchanged"
+  ],
+  "limitations": [
+    "Synthetic full-profile inputs; physical profiling and audio discovery are outside this control.",
+    "HTTP readback is verified separately; browser rendering is unverified.",
+    "Nested subset interpretation unchanged; no historic outcome promoted."
+  ],
+  "sha256": {
+    "tests/test_finite_bridge_independent.py": "1bb8584a69e165956a408d994bd75980546fab1ecabf1c6d85f73576cdef10f8",
+    "evidence/verification/w4-finite-bridge-20261103/focused.log": "3eb09d4c3fa045f82ab1c1943ae50972ceaaacf969fcf0d554d8b715f8ab13d9",
+    "evidence/verification/w4-finite-bridge-20261103/full.log": "932f0734087d48904fd38dc832f15dade407aef6d5178b919fda54ad12b52e5b",
+    "evidence/verification/w4-finite-bridge-20261103/focused.xml": "f1612cb68e7c72834287540304aa16c98ed6c860679dd67bbd5d816c40b15f93",
+    "evidence/verification/w4-finite-bridge-20261103/full.xml": "08eeeae74c7da1fd3a4964739071dc69219e708d0d8704c21d2c4a8d20757127",
+    "evidence/verification/w4-finite-bridge-20261103/http-receipt.json": "d0fceaf88b5f879be513e8541531fb26da9210c1b92b48730b35e19c5995d329",
+    "evidence/verification/w4-finite-bridge-20261103/check_http_readback.py": "a8518bfd967a1ef02c0eafedb414c1e8a19f591232751aaa422cc53fb4a1440a"
+  }
+}
