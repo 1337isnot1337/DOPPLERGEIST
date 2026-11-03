@@ -133,9 +133,14 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
 
 def filter_event(table, event, time_origin=None, time_tolerance=5.0):
     speed, distance = event["speed_range_mps"],event["slant_range_m"]
-    keep = table.speed_mps.between(*speed) & table.distance_m.between(*distance)
+    quality = event.get("quality", {})
+    dv, dd = quality.get("speed_tolerance_mps", 0), quality.get("slant_tolerance_m", 0)
+    dt = quality.get("cpa_tolerance_s", 0)
+    if not all(np.isfinite(v) and v >= 0 for v in (dv, dd, dt)):
+        raise ValueError("Proposal tolerances must be finite and nonnegative")
+    keep = table.speed_mps.between(max(0, speed[0]-dv), speed[1]+dv) & table.distance_m.between(max(0, distance[0]-dd), distance[1]+dd)
     if time_origin is not None:
-        keep &= np.abs(table.receive_time-(time_origin+event["cpa_receive_s"])) <= time_tolerance
+        keep &= np.abs(table.receive_time-(time_origin+event["cpa_receive_s"])) <= time_tolerance + dt
     return table.loc[keep]
 
 
@@ -151,8 +156,12 @@ def pair_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
     for point_id in sorted(common):
         for combination in product(*(list(g[point_id].to_dict("records")) for g in group)):
             anchor = combination[0]["receive_time"]
-            if any(abs((row["receive_time"]-anchor)-(events[i]["cpa_receive_s"]-events[0]["cpa_receive_s"]))
-                   > offset_tolerance_s for i,row in enumerate(combination[1:],1)):
+            starts = np.array([row["receive_time"]-event["cpa_receive_s"] for row,event in zip(combination,events)])
+            tolerance = np.array([event.get("quality", {}).get("cpa_tolerance_s", 0) for event in events]) + offset_tolerance_s/2
+            lower, upper = float(np.max(starts-tolerance)), float(np.min(starts+tolerance))
+            if time_origin is not None:
+                lower, upper = max(lower,time_origin-time_tolerance_s), min(upper,time_origin+time_tolerance_s)
+            if lower > upper:
                 continue
             if len(combination)>1 and len({(r["flight_id"],round(r["emission_time"],1)) for r in combination})<len(combination):
                 continue
@@ -166,10 +175,15 @@ def pair_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                                   (between.distance_m<=threshold)]
                 # Only the selected actual passes are excluded, not every future
                 # pass by an aircraft with the same flight ID.
+                for selected in combination:
+                    is_selected = (between.flight_id.eq(selected["flight_id"]) &
+                                   between.emission_time.eq(selected["emission_time"]))
+                    between = between.loc[~is_selected]
                 if len(between):
                     rejected += 1
                     continue
-            candidates.append({"point_id":point_id,"passes":combination})
+            candidates.append({"point_id":point_id,"passes":combination,
+                               "recording_start_bounds_s":[lower,upper]})
     return candidates,{"per_event_survivors":[len(f) for f in filtered],
                        "pairs_before_silence":before,"silence_rejected":rejected,"survivors":len(candidates)}
 
@@ -202,13 +216,52 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
                     time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
+    association = "event_indices" in candidate
+    association_fields = {}
+    if association:
+        if mode != "robust_ridge":
+            raise ValueError("Partial-event association requires robust_ridge scoring")
+        indices = candidate["event_indices"]
+        if not indices or indices != sorted(set(indices)) or any(i < 0 or i >= len(events) for i in indices):
+            raise ValueError("Association event indices must be unique, ordered and in range")
+        association_fields = {"event_indices": indices,
+            "event_ids": [events[i].get("event_id", str(i)) for i in indices],
+            "unmatched_event_ids": [e.get("event_id", str(i)) for i, e in enumerate(events) if i not in indices]}
+        events, measurements = [events[i] for i in indices], [measurements[i] for i in indices]
+    if not events or len(events) != len(measurements) or len(events) != len(candidate["passes"]):
+        raise ValueError("Need exactly one pass and measurement for each event")
+    if mode not in ("brightness", "ridge", "robust_ridge"):
+        raise ValueError(f"Unknown scoring mode: {mode}")
+    if time_step_s <= 0 or time_sweep_s < 0:
+        raise ValueError("Need positive clock step and nonnegative sweep")
     observer = ecef(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
     anchor = time_origin if time_origin is not None else candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"]
     shifts = np.linspace(-time_sweep_s,time_sweep_s,max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1)
+    if mode == "robust_ridge" and "recording_start_bounds_s" in candidate:
+        lower, upper = candidate["recording_start_bounds_s"]
+        # CPA intervals propose a shared clock; the physical model may move it
+        # within the same declared sweep used by legacy scoring.
+        lower, upper = lower-time_sweep_s, upper+time_sweep_s
+        if time_origin is not None:
+            lower, upper = max(lower,anchor-time_sweep_s), min(upper,anchor+time_sweep_s)
+        if lower > upper:
+            shifts = []
+        else:
+            shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
     best = {"score":-np.inf}
     for shift in shifts:
+        if mode == "robust_ridge":
+            from .matching import score_ridges
+            result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
+                                  events,measurements,observer,anchor+shift,c)
+            if association:
+                from .matching import association_score
+                result = association_score(result, events)
+            if result["score"] > best["score"]:
+                best = dict(result,recording_start_time_s=float(anchor+shift),time_adjustment_s=float(shift))
+            continue
         scores,f0s = [],[]
         for event,measurement,flyover in zip(events,measurements,candidate["passes"]):
             spec,ridge,weight,_ = measurement
@@ -220,7 +273,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if total>best["score"]:
             best = {"score":total,"event_scores":scores,"f0_hz":f0s,
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
-    return dict(best,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
+    return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])
 
 

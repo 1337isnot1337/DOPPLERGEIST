@@ -1,0 +1,9 @@
+{
+  "source_sha256": "9d3ecde95b024dc3ab246249669c74c832fe6db0c035bbc0022fd2ba13634ef0",
+  "code_sha256": {
+    "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+    "discovery.py": "8c5c6e72289ee1db9cd9d70a7eafe60e07587fa0449d880437eda17ad6e8a26d",
+    "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+  },
+  "adapter_sha256": "a1982c2e465aa0c40c57cf9e22327ba7749e4073ee470a6f55823e55862e9b5a"
+}
