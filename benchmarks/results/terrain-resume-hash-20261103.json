@@ -1,0 +1,17 @@
+{
+  "raster_name": "us_nga_egm08_25.tif",
+  "bytes": 80585622,
+  "repeats": 4,
+  "sha256": "4191d471eefebf24091b56dbc604353cb3b8cf8cc70e448bb9ae56a272bef17a",
+  "ordinary": {
+    "cpu_s": 0.467821013,
+    "elapsed_s": 4.075744799978565,
+    "full_hash_reads": 4
+  },
+  "reused": {
+    "cpu_s": 0.11279131700000011,
+    "elapsed_s": 0.12048817300819792,
+    "full_hash_reads": 1
+  },
+  "limitation": "Single-raster hash timing, not a complete resume or search benchmark."
+}

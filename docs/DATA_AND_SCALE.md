@@ -222,6 +222,18 @@ Manifest and tile receipts hash configuration, input index files, event
 measurements, implementation and terrain files. Interrupted jobs reuse completed
 tiles with the same identity. Changed inputs require a new output directory.
 Failed tiles are retried on resume; `max_tiles` is a fixed configuration budget.
+Within one search process, terrain receipt validation reuses up to 256 verified
+file digests while device, inode, size, modification time and change time remain
+unchanged. A changed signature causes a full rehash; a file that changes during
+hashing fails the tile check. This avoids re-reading the same geoid for every
+saved tile. The reuse relies on filesystem metadata identifying changes; it
+cannot detect content changes that leave the entire signature unchanged. It does
+not make checkpoints from a different implementation automatically compatible.
+On the real 80,585,622-byte geoid, four hash checks took 0.468 CPU seconds with
+four full reads versus 0.113 seconds with one read; this single-raster test is
+not a complete resume or nationwide timing. See the
+[measurement](../benchmarks/results/terrain-resume-hash-20261103.json) and
+`scripts/benchmark_terrain_resume_hash.py`.
 Reports distinguish complete/partial computation, source scope, missing tiles,
 refinement failure, runtime and Linux process peak RSS. A complete tile is never
 labelled a complete national search. The product/confidence workers translate

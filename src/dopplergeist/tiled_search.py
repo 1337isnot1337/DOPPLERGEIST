@@ -4,6 +4,7 @@ Every tile sees all overlapping original flight segments and the same event
 clocks, propagation model and scoring units. Overloaded single cells may also
 partition association anchors without narrowing the physical fit intervals.
 """
+from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from functools import lru_cache
 from importlib.metadata import version
@@ -25,6 +26,29 @@ from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
+
+
+def _verified_terrain_hash(path, cache):
+    """Reuse a digest only while the same file identity and timestamps hold."""
+    path = Path(path)
+
+    def identity():
+        stat = path.stat()
+        return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns
+
+    before = identity()
+    entry = cache.get(path)
+    if entry is not None and entry[0] == before:
+        cache.move_to_end(path)
+        return entry[1]
+    digest = sha256(path)
+    if identity() != before:
+        raise DataUnavailable(f"Terrain changed while hashing: {path}")
+    cache[path] = (before, digest)
+    cache.move_to_end(path)
+    if len(cache) > 256:
+        cache.popitem(last=False)
+    return digest
 
 
 def _support_error(error):
@@ -709,6 +733,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
     from .checkpoint_resume import compatible_checkpoint_runs
     compatible_runs = compatible_checkpoint_runs(output, run_hash)
+    terrain_hash_cache = OrderedDict()
     mode = parameters.get("mode", "brightness")
     score_kind = ("matched_group_support_minus_normalized_residual" if mode == "robust_ridge" and filters["association"] == "subsets"
                   else {"robust_ridge": "negative_robust_ridge_loss_hz", "ridge": "negative_ridge_rmse_hz",
@@ -739,7 +764,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                     raise DataUnavailable("Corrupt tile checkpoint")
                 prior = record["payload"]
                 for source in prior.get("terrain_files", []):
-                    if sha256(source["path"]) != source["sha256"]:
+                    if _verified_terrain_hash(source["path"], terrain_hash_cache) != source["sha256"]:
                         raise DataUnavailable("Terrain changed since tile checkpoint")
                 if ledger.stage_valid(stage, prior.get("retention_checksum")):
                     cached = checkpoint
