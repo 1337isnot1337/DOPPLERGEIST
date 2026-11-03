@@ -1,0 +1,23 @@
+{
+  "integration_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+  "source_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+  "index_file_sha256": "d161687f8a08917ab4ff61f0c8a44e44fd3f43f2ce65104b6e0aac5bb0be548f",
+  "operator_configuration": {
+    "offline": true,
+    "flight_indexes": [
+      "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-inputs-20261103/flight-index-v2.sqlite"
+    ],
+    "terrain": {
+      "constant_m": 120.0
+    },
+    "refine_finalists": 10,
+    "search_budget": {
+      "tile_cells": 16,
+      "spacing_m": 2000.0,
+      "refine_spacing_m": 100.0,
+      "refine_finalists": 10,
+      "top_k": 100
+    }
+  },
+  "scope_note": "All seven independently generated synthetic trajectories are indexed under opaque IDs. Full CONUS is searched. This is synthetic integration evidence, not real nationwide accuracy. No event window, band, observer coordinate, truth file, or true flight identity is provided to the product request."
+}

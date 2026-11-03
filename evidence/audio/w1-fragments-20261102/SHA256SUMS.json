@@ -1,0 +1,23 @@
+{
+  "README.md": "d413a85dfe9f4d20cb7312f6e2342d30d863d1525763940e2179fa21d3d6084f",
+  "dg02-provenance.json": "4679b6a3ac1fc0b36e6d6e82984b00686588e6526bb735734c9556ac8ca00b08",
+  "dg02-regression-predictions.json": "785fc064c4a7f57054788d73129deccfb23c7df81d54f462995ea30f668b0a39",
+  "dg02-regression-report.json": "49bb5bc372fdf8f4197889dc23d426c75d0f44f638e5a98b851d4e7471f46671",
+  "hermes-tests.log": "cddbb3959c5fd633c648a371ec39e73d4951ac01aca3446d041fa378bf5ecbd8",
+  "reference-discovery/discovery.json": "19880e4285b5cb3faf6df5e9b561758155e75ea382ae1b5741343dffd49ed553",
+  "reference-discovery/discovery.png": "6534681ba0db3850eec2f3364a8381caca81e2e9a330435f620e26bea736216a",
+  "reference-discovery/event-0001.csv": "3c000cf9c149693003b84425c8d853a9cd634579178d5417f6beeb459fac41f8",
+  "reference-discovery/event-0001.png": "cbf50a4baf482889fffd507f383677da20f4e6367ec1ed4532de4b85c183bd40",
+  "reference-discovery/event-0002.csv": "6a9f75e4a28c3bacf938cc0ab7d292bd5e3aa3147fac97529eaaa848334eb25d",
+  "reference-discovery/event-0002.png": "e483e2cdaaffeaa1df0596617905cb205728ccc27c14437fce8a05da747487f4",
+  "reference-discovery/event-0003.csv": "7c160278e35ce1ba3cda97a8c04008b36f2149de8e4ee99f871666e6abae57eb",
+  "reference-discovery/event-0003.png": "890346dd1a69ff1fae9ae345306eb296ab5145e6133f283e274033f8af18919d",
+  "reference-discovery/event-0004.csv": "eea18779f9e3e8441ed751307cd4197864818dee75baa32c8020d1f0e00b5dfb",
+  "reference-discovery/event-0004.png": "4e86c98f17f5177c74d2c15a4ab92d4060c2de0c89f5c31a2366096d86adddc9",
+  "reference-discovery/event-0005.csv": "37202b38d5f50eda3b3871c6e6a08a9051f1c621e6bc7940f69a6dfd00f70200",
+  "reference-discovery/event-0005.png": "828936e75af395b9471c97faa14cb7a6a5819cba89f13401ab792197aee515a4",
+  "reference-discovery/event-0006.csv": "eea389779579f443c51220a2256ee38db0c808f668da3b164fd958477ed72eb4",
+  "reference-discovery/event-0006.png": "78f3ec5876c899a0df4057b9f8381832bc2b53997aefeb5cfa3fb8689e00858d",
+  "reference-summary.json": "f9eb39e191a6bed2841d30ec75ca11e7429f46e278d4d355a201b2e8db749340",
+  "tests.log": "1058f2b191d1a7d05e28c144c557a14d918c7981a55719feded5b43d0f495374"
+}

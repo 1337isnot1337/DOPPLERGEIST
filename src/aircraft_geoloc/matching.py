@@ -8,9 +8,9 @@ from itertools import combinations, product
 
 import numpy as np
 from pyproj import Transformer
-from scipy.optimize import lsq_linear, minimize
+from scipy.optimize import minimize
 
-from .geometry import ecef
+from .geometry import Track, ecef
 
 
 @dataclass
@@ -22,6 +22,38 @@ def _frequency_scale(event):
     quality = event.get("quality", {})
     return quality.get("frequency_loss_scale_hz", quality.get("frequency_sigma_hz",
                        max(1.0, quality.get("frequency_uncertainty_hz", 1.0))))
+
+
+def _source_fit(factor, u, y, weight, bounds, cap, scale):
+    """Exact two-variable box least squares; avoid iterative bounded solves."""
+    a = np.sum(weight*factor**2)
+    r = np.sum(weight*factor*y)
+    if not cap:
+        return np.array([np.clip(r/a, *bounds), 0.0])
+    b = np.sum(weight*factor**2*u)
+    prior = (2*scale/cap)**2
+    d = np.sum(weight*factor**2*u**2)+prior
+    s = np.sum(weight*factor*u*y)
+    determinant = a*d-b*b
+    unconstrained = np.array([(r*d-s*b)/determinant, (s*a-r*b)/determinant])
+    if bounds[0] <= unconstrained[0] <= bounds[1] and abs(unconstrained[1]) <= cap:
+        return unconstrained
+    # A convex quadratic's constrained minimum lies on one of these four edges.
+    candidates = np.array([[f, np.clip((s-b*f)/d, -cap, cap)] for f in bounds] +
+                          [[np.clip((r-b*drift)/a, *bounds), drift] for drift in (-cap, cap)])
+    residuals = factor*(candidates[:, :1]+candidates[:, 1:]*u)-y
+    costs = np.sum(weight*residuals**2, axis=1)+prior*candidates[:, 1]**2
+    return candidates[np.argmin(costs)]
+
+
+def _altitude_bias(track, bias_m):
+    """Shift one geodetic trajectory while preserving its measured derivatives."""
+    displacement = ecef(track.lat, track.lon, track.altitude+bias_m)-track.xyz
+    velocity = track.speed_vector(track.time)+np.gradient(displacement, track.relative_time, axis=0)
+    shifted = Track(track.id, track.time, track.lat, track.lon, track.altitude+bias_m,
+                    track.typecode, velocity)
+    shifted.altitude_basis = getattr(track, "altitude_basis", ["unspecified"]*len(track.time))
+    return shifted
 
 
 def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
@@ -134,7 +166,7 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         start, end = min(e["start_s"] for e in members), max(e["end_s"] for e in members)
         center = float(reference.get("cpa_receive_s", (start + end) / 2))
         quality = dict(reference.get("quality", {}))
-        quality.setdefault("frequency_loss_scale_hz", _frequency_scale(reference))
+        quality.setdefault("frequency_loss_scale_hz", max(1.0, _frequency_scale(reference)))
         quality["cpa_tolerance_s"] = max(center - start, end - center)
         # A subsonic source gives f_source = f_received * (1 + v_radial/c).
         # These broad bounds are independent of an unreliable straight-pass fit.
@@ -177,21 +209,15 @@ def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
     span = max(float(np.ptp(emission)), 1e-9)
     u = (emission - (emission.min() + emission.max()) / 2) / span
     cap = float(np.clip(np.median(y / factor), *f0_bounds)) * drift_fraction
-    design = np.column_stack((factor, factor * u)) if cap else factor[:, None]
-    bounds = ([f0_bounds[0], -cap], [f0_bounds[1], cap]) if cap else ([f0_bounds[0]], [f0_bounds[1]])
     effective = w.copy()
     for _ in range(6):
-        matrix, target = design * np.sqrt(effective[:, None]), y * np.sqrt(effective)
-        if cap:
-            matrix = np.vstack((matrix, [0, 2 * sigma_hz / cap]))
-            target = np.r_[target, 0.0]
-        fit = lsq_linear(matrix, target, bounds=bounds, tol=1e-8)
-        residual = design @ fit.x - y
+        fit = _source_fit(factor, u, y, effective, f0_bounds, cap, sigma_hz)
+        residual = factor*(fit[0]+fit[1]*u)-y
         effective = w / np.sqrt(1 + (residual / sigma_hz) ** 2)
     loss = np.average(2 * sigma_hz**2 * (np.sqrt(1 + (residual / sigma_hz)**2) - 1), weights=w)
-    drift = float(fit.x[1]) if cap else 0.0
+    drift = float(fit[1])
     penalty = (2 * sigma_hz * drift / cap)**2 / independent_samples if cap else 0.0
-    return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit.x[0]),
+    return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit[0]),
             "source_drift_hz": drift, "source_drift_hz_s": drift / span,
             "drift_bound_hz": float(cap), "drift_at_bound": bool(cap and abs(drift) > 0.99 * cap),
             "rmse_hz": float(np.sqrt(np.average(residual**2, weights=w))),
@@ -291,4 +317,110 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
                 sensitivity={"radius_m": radius, "kind": "sensitivity",
                     "method": "profiled_relative_altitude_offsets",
                     "profiles": profiles, "boundary_limited": any(p["boundary_limited"] for p in profiles),
-                    "complete": len(profiles) == len(altitude_offsets_m)})
+                    "complete": len(profiles) == len(altitude_offsets_m) and all(p["optimizer_success"] for p in profiles)})
+
+
+def profile_candidate(candidate, tracks, events, measurements, terrain, *,
+                      recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
+                      altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
+                      c=343.0, crs="EPSG:5070"):
+    """Run declared perturbations, retaining failures and boundary limitations.
+
+    These finite engineering scenarios are not a calibrated confidence region.
+    Frequency offsets and tilts vary each matched ridge separately. Shared-clock
+    endpoints, relative height, sound speed and constant-source alternatives are
+    reoptimized; no scenario may leave the trusted recording-start window.
+    """
+    if altitude_uncertainty_m < 0 or not 0 <= sound_speed_uncertainty_mps < c:
+        raise ValueError("Sensitivity ranges must be nonnegative and sound speed must remain positive")
+    kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
+                  altitude_offsets_m=(0.0,), crs=crs, c=c,
+                  recording_start_window_s=recording_start_window_s)
+    nominal = refine_candidate(candidate, tracks, events, measurements, terrain, **kwargs)
+    scenarios = [("nominal", "nominal", events, measurements, {})]
+    for sign in (-1, 1):
+        scenarios.append(("altitude", f"height_{sign:+d}", events, measurements,
+                          {"altitude_offsets_m": (0.0, sign*altitude_uncertainty_m)}))
+        scenarios.append(("sound_speed", f"sound_speed_{sign:+d}", events, measurements,
+                          {"c": c+sign*sound_speed_uncertainty_mps}))
+    indices = candidate.get("event_indices", list(range(len(events))))
+    altitude_provenance, provenance_failures = {}, []
+    terrain_ellipsoidal = (getattr(terrain, "vertical_datum", None) == "ellipsoidal" or
+                          getattr(terrain, "geoid", None) is not None or getattr(terrain, "geoid_path", None) is not None)
+    if not terrain_ellipsoidal:
+        provenance_failures.append({"source": "altitude", "scenario": "terrain",
+            "reason": "Ellipsoidal terrain datum is not established"})
+    for identity in sorted(set(candidate["flight_ids"])):
+        track = tracks[identity]
+        basis = getattr(track, "altitude_basis", ["unspecified"])
+        basis = [basis] if isinstance(basis, str) else list(basis)
+        basis = [str(value) for value in basis]
+        altitude_provenance[identity] = sorted(set(basis))
+        if not basis or not set(basis) <= {"ellipsoidal", "ellipsoidal_interpolated"}:
+            provenance_failures.append({"source": "altitude", "scenario": identity,
+                "reason": "Common-datum geometric flight altitude is not established"})
+        for sign in (-1, 1):
+            scenarios.append(("altitude", f"flight_{identity}_{sign:+d}", events, measurements,
+                              {"track_altitude_bias": (identity, sign*altitude_uncertainty_m)}))
+    for index in indices:
+        spec, ridge, weight, fit = measurements[index]
+        times = np.asarray(spec.time)
+        tilt = 2*(times-(times.min()+times.max())/2)/max(float(np.ptp(times)), 1e-9)
+        scale = _frequency_scale(events[index])
+        for pattern, shape in (("offset", np.ones_like(times)), ("tilt", tilt)):
+            for sign in (-1, 1):
+                changed = list(measurements)
+                changed[index] = (spec, np.asarray(ridge)+sign*scale*shape, weight, fit)
+                scenarios.append(("frequency", f"event_{index}_{pattern}_{sign:+d}", events, changed, {}))
+    constant = [dict(e, quality=dict(e.get("quality", {}), source_drift_fraction=0.0)) for e in events]
+    scenarios.append(("source_frequency", "constant_source", constant, measurements, {}))
+    lo, hi = nominal["refinement_clock_bounds_s"]
+    # A trusted point window is tested exactly; it is never perturbed outward.
+    for when in sorted(set((lo, hi))):
+        scenarios.append(("clock", f"fixed_clock_{when:.6f}", events, measurements,
+                          {"recording_start_window_s": (when, when)}))
+    profiles, failures = [], list(provenance_failures)
+    center = ecef(nominal["lat"], nominal["lon"], 0)
+    radius = 0.0
+    boundary = False
+    for source, label, scenario_events, scenario_measurements, overrides in scenarios:
+        try:
+            options = dict(kwargs, **overrides)
+            flight_bias = options.pop("track_altitude_bias", None)
+            scenario_tracks = tracks
+            if flight_bias is not None:
+                identity, bias = flight_bias
+                scenario_tracks = dict(tracks)
+                if bias:
+                    scenario_tracks[identity] = _altitude_bias(tracks[identity], bias)
+            row = nominal if source == "nominal" else refine_candidate(
+                candidate, scenario_tracks, scenario_events, scenario_measurements, terrain, **options)
+            # Height scenarios return a nominal plus the perturbed-height fit;
+            # retain the latter rather than silently measuring the nominal twice.
+            variants = row["sensitivity"]["profiles"] if source == "altitude" else [row]
+            for variant in variants:
+                displacement = float(np.linalg.norm(ecef(variant["lat"], variant["lon"], 0)-center))
+                radius = max(radius, displacement)
+                boundary |= variant["boundary_limited"]
+                profiles.append({"source": source, "scenario": label,
+                    "lat": variant["lat"], "lon": variant["lon"], "score": variant["score"],
+                    "recording_start_time_s": variant["recording_start_time_s"],
+                    "displacement_m": displacement, "boundary_limited": variant["boundary_limited"],
+                    "flight_altitude_bias": None if flight_bias is None else {"flight_id": flight_bias[0], "bias_m": flight_bias[1]},
+                    "observer_altitude_offset_m": variant.get("altitude_offset_m", 0.0),
+                    "optimizer_success": variant["optimizer_success"]})
+            if not row["sensitivity"]["complete"]:
+                failures.append({"source": source, "scenario": label, "reason": "Missing altitude scenario support"})
+        except ValueError as exc:
+            failures.append({"source": source, "scenario": label, "reason": str(exc)})
+    sensitivity = {"radius_m": radius, "kind": "sensitivity", "method": "declared_perturbation_profiles",
+        "sources": sorted({s[0] for s in scenarios if s[0] != "nominal"}),
+        "complete": not failures and all(p["optimizer_success"] for p in profiles),
+        "boundary_limited": bool(boundary), "profiles": profiles, "failures": failures,
+        "altitude_basis": altitude_provenance,
+        "terrain_vertical_datum": "ellipsoidal" if terrain_ellipsoidal else "unestablished",
+        "settings": {"altitude_uncertainty_m": altitude_uncertainty_m,
+                     "sound_speed_uncertainty_mps": sound_speed_uncertainty_mps,
+                     "frequency_scale_hz": [_frequency_scale(events[i]) for i in indices],
+                     "clock_bounds_s": [lo, hi]}}
+    return dict(nominal, sensitivity=sensitivity)
