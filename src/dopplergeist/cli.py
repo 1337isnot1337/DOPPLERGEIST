@@ -75,7 +75,6 @@ def main():
         finally:
             manager.close()
     elif args.command=="job":
-        from pathlib import Path
         from .jobs import read_json
         import uuid
         try:
