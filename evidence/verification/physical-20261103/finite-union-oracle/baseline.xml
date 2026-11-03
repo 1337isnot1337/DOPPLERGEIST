@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="4" time="0.081" timestamp="2026-11-02T22:55:30.513676-04:00" hostname="05c893b10fbb"><testcase classname="tests.test_finite_union_independent" name="test_union_contains_a_displaced_reported_profile_not_just_its_center" time="0.001"><failure message="AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}&#10;assert 'inconclusive' == 'succeeded'&#10;  &#10;  - succeeded&#10;  + inconclusive">def test_union_contains_a_displaced_reported_profile_not_just_its_center():
+        case = bundle()
+        shifted(case, 600.0, score=1.75, radius_m=300.0)
+        # A 300 m profile about a point 600 m from the unchanged return center
+        # needs 900 m. max(600, 300, 100) would understate the declared union.
+&gt;       check_successful_union(case, 900.0)
+
+tests/test_finite_union_independent.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = ([{'event_id': 'event-0', 'start_s': 0.0, 'end_s': 20.0, 'band_hz': [90.0, 200.0], ...}, {'event_id': 'event-1', 'star...rue, 'boundary_limited': False, 'radius_m': 100.0, 'sources': ['frequency', 'clock', 'altitude', 'sound_speed']}, ...})
+expected_radius_m = 900.0
+
+    def check_successful_union(case, expected_radius_m):
+        before = deepcopy(case)
+        result = decide(case)
+&gt;       assert result["status"] == "succeeded", result
+E       AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}
+E       assert 'inconclusive' == 'succeeded'
+E         
+E         - succeeded
+E         + inconclusive
+
+tests/test_finite_union_independent.py:35: AssertionError</failure></testcase><testcase classname="tests.test_finite_union_independent" name="test_a_nearby_point_can_have_a_reported_profile_exceeding_the_target" time="0.001" /><testcase classname="tests.test_finite_union_independent" name="test_raw_and_refined_states_sharing_one_seed_id_both_enter_the_union" time="0.001"><failure message="AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}&#10;assert 'inconclusive' == 'succeeded'&#10;  &#10;  - succeeded&#10;  + inconclusive">def test_raw_and_refined_states_sharing_one_seed_id_both_enter_the_union():
+        case = bundle()
+        case[1][0]["score"] = 1.95
+        shifted(case, 600.0, score=1.8, mode_id="seed-a")
+        assert case[3]["candidate_mode_ids"] == ["seed-a", "seed-a"]
+        assert len(case[3]["finite_search_evidence"]["retained_modes"]) == 1
+        # Refinement preserves the seed's original score record and its raw state.
+        # Grouping the returned array by mode ID would lose the distant raw point.
+&gt;       check_successful_union(case, 600.0)
+
+tests/test_finite_union_independent.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = ([{'event_id': 'event-0', 'start_s': 0.0, 'end_s': 20.0, 'band_hz': [90.0, 200.0], ...}, {'event_id': 'event-1', 'star...rue, 'boundary_limited': False, 'radius_m': 100.0, 'sources': ['frequency', 'clock', 'altitude', 'sound_speed']}, ...})
+expected_radius_m = 600.0
+
+    def check_successful_union(case, expected_radius_m):
+        before = deepcopy(case)
+        result = decide(case)
+&gt;       assert result["status"] == "succeeded", result
+E       AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}
+E       assert 'inconclusive' == 'succeeded'
+E         
+E         - succeeded
+E         + inconclusive
+
+tests/test_finite_union_independent.py:35: AssertionError</failure></testcase><testcase classname="tests.test_finite_union_independent" name="test_an_unprofiled_finite_point_does_not_borrow_the_leading_profile" time="0.001"><failure message="AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}&#10;assert 'inconclusive' == 'succeeded'&#10;  &#10;  - succeeded&#10;  + inconclusive">def test_an_unprofiled_finite_point_does_not_borrow_the_leading_profile():
+        case = bundle()
+        shifted(case, 150.0, score=1.75)
+        # The scope contains this evaluated point. Its unperformed profile remains
+        # unbounded; no extra 100 m profile can be invented from the leading one.
+&gt;       check_successful_union(case, 150.0)
+
+tests/test_finite_union_independent.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = ([{'event_id': 'event-0', 'start_s': 0.0, 'end_s': 20.0, 'band_hz': [90.0, 200.0], ...}, {'event_id': 'event-1', 'star...rue, 'boundary_limited': False, 'radius_m': 100.0, 'sources': ['frequency', 'clock', 'altitude', 'sound_speed']}, ...})
+expected_radius_m = 150.0
+
+    def check_successful_union(case, expected_radius_m):
+        before = deepcopy(case)
+        result = decide(case)
+&gt;       assert result["status"] == "succeeded", result
+E       AssertionError: {'status': 'inconclusive', 'reason_code': 'ambiguous_locations', 'message': 'Competing hypotheses fit nearly as well; ...er_fraction': 0.25, ...}, 'policy_version': 'engineering-v3', 'calibration': 'uncalibrated', 'probability': None, ...}}
+E       assert 'inconclusive' == 'succeeded'
+E         
+E         - succeeded
+E         + inconclusive
+
+tests/test_finite_union_independent.py:35: AssertionError</failure></testcase></testsuite></testsuites>

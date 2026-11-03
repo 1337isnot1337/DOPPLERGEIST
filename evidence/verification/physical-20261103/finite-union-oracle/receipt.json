@@ -1,0 +1,41 @@
+{
+  "scope": "Predeclared decision-contract controls for the Primary-approved finite-point/reported-profile union. Expected readiness failures against the earlier consumer; not localization failures.",
+  "production_source_commit": "27a2f87aa106f908a1143d2314ee07b7f4dff947",
+  "production_source_tree": "abd85dd85d3171b0d57c359cc608375bd0578d0d",
+  "test_overlay": "tests/test_finite_union_independent.py",
+  "file_sha256": {
+    "tests/test_finite_union_independent.py": "e4dbd35fae25c17b5168e9daa0ad01c348be5a7e76401d2f5bf2c382fed49077",
+    "tests/test_finite_evidence_independent.py": "27b61543817b1f598e29489fa754579282dfe9eae3ce291f762ce63229744a3b",
+    "src/aircraft_geoloc/confidence.py": "626f8440c9e882935fd860032593b1f1d0a476aeed782ff0a5f1b89f7fa38d82"
+  },
+  "python": "Python 3.12.14",
+  "command": "PYTHONPATH=<worktree>/src:<worktree>/tests /workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python -m pytest -q tests/test_finite_union_independent.py --junitxml=.artifacts/finite-union-baseline.xml",
+  "exit_code": 1,
+  "junit": {
+    "tests": 4,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0
+  },
+  "junit_time_s": 0.081,
+  "cases": [
+    {
+      "name": "test_union_contains_a_displaced_reported_profile_not_just_its_center",
+      "status": "failed"
+    },
+    {
+      "name": "test_a_nearby_point_can_have_a_reported_profile_exceeding_the_target",
+      "status": "passed"
+    },
+    {
+      "name": "test_raw_and_refined_states_sharing_one_seed_id_both_enter_the_union",
+      "status": "failed"
+    },
+    {
+      "name": "test_an_unprofiled_finite_point_does_not_borrow_the_leading_profile",
+      "status": "failed"
+    }
+  ],
+  "pipeline_run_performed": false,
+  "production_changes": false
+}
