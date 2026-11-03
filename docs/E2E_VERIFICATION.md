@@ -47,14 +47,64 @@ environment. The checked-in codec receipt is
 
 ## Automatic workflow acceptance
 
-The actual CLI/API/upload acceptance depends on the producer implementations in
-issues #4–#11. It must invoke real intake, discovery, acquisition, association,
-search and decision code; inspectable output alone does not establish a successful
-location. An undated file must retain `needs_input`; unsupported audio/coverage
-must retain failed/inconclusive distinctions. Manual event windows/bands, true
-flight IDs and truth-derived bounds are not normal automatic inputs.
+The `product` command invokes the actual automatic CLI, starts the real local
+service, uploads through HTTP, and drives the bundled form in Chromium. It never
+intercepts a request or substitutes a scientific stage. It checks the shared
+result contract, the expected status/reason, recording hashes, byte-for-byte
+original download, browser JavaScript errors, and saved-job reload. It records
+requests, responses, progress history, commands, code hashes, screenshots and a
+Playwright trace. Each mode submits its own job.
 
-No automatic location or national validation is established by the codec results
-above. Final acceptance remains open until the integrated upload path is executed
-and the real benchmark outcomes, time/location uncertainty and searched coverage
-are reported.
+Install the optional browser tooling separately from the scientific environment:
+
+```bash
+uv venv --python 3.12 .artifacts/browser-venv
+uv pip install --python .artifacts/browser-venv/bin/python playwright
+PLAYWRIGHT_BROWSERS_PATH=.artifacts/browser-cache \
+  .artifacts/browser-venv/bin/python -m playwright install chromium
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/.artifacts/browser-cache"
+```
+
+With the producer components installed, check an MP3 whose recording clock is
+unknown:
+
+```bash
+.venv/bin/python scripts/verify_methodology.py product \
+  --audio recording.mp3 --output results/upload-untimed-new \
+  --browser-python .artifacts/browser-venv/bin/python \
+  --expect-status needs_input --expect-reason recording_time_required
+```
+
+Supply `--start-utc`, `--end-utc`, `--time-source` and `--operator-config` for a
+timed localization run. `--via cli`, `--via api` and `--via browser` can select
+individual routes when repeating all three would be expensive. The default is
+all three. The browser currently accepts whole-second UTC field values.
+`--expect-status succeeded` additionally requires recording/event evidence and
+complete declared coverage; it still does not measure location error. Ground
+truth belongs in the separate evaluation runner, never in this request.
+
+Three actual negative-path controls pass all three routes on the isolated
+integration of main intake, W1 discovery `4a49646` and W5 product `bda6c91`:
+
+| Real encoded input | Expected actual outcome |
+| --- | --- |
+| 45 s Gaussian-noise MP3, date tag, no recording clock | `needs_input / recording_time_required` |
+| Same noise MP3, explicit 2026-09-08 20:00–20:05 UTC start window | `inconclusive / no_supported_events` |
+| Deliberately invalid `.mp3` bytes | `failed / invalid_media` |
+
+The noise source is deterministic: NumPy `default_rng(60721).normal(0, 0.05,
+4000*45)`, SoundFile float WAV at 4 kHz, ffmpeg/libmp3lame at mono 16 kHz / 32 kbps.
+The tagged variant adds `-metadata date=2026-09-08T20:00:00Z`; the ordinary variant
+strips source metadata with `-map_metadata -1`. The invalid bytes are
+`DOPPLERGEIST intentionally invalid media acceptance control` plus newline.
+Original hashes and full result receipts are preserved with each run.
+
+These controls exercise real intake/discovery and product persistence. Positive
+search/association/decision acceptance depends on the remaining producer
+integration. Manual event windows/bands, true flight IDs and truth-derived bounds
+are not normal automatic inputs.
+
+No automatic location or national validation is established by the codec or
+negative-path results above. Final acceptance remains open until supported
+localization passes the integrated upload path and the real benchmark outcomes,
+time/location uncertainty and searched coverage are reported.

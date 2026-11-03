@@ -8,13 +8,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import importlib.metadata
 import json
 from pathlib import Path
 import platform
+import socket
 import subprocess
 import sys
 import time
+from urllib.request import urlopen
 
 import numpy as np
 from scipy import signal
@@ -35,6 +38,9 @@ def write_json(path, value):
 
 def provenance():
     sources = list((ROOT / "src").rglob("*.py")) + [Path(__file__)]
+    browser_helper = Path(__file__).with_name("verify_upload_browser.py")
+    if browser_helper.is_file():
+        sources.append(browser_helper)
     return {
         "git_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
@@ -182,14 +188,210 @@ def codec_audit(output):
     return 0 if report["passed"] else 1
 
 
+def get_json(url):
+    with urlopen(url, timeout=10) as response:
+        return json.load(response)
+
+
+def inspect_result(result, audio_hash, expected_status, expected_reason=None):
+    from aircraft_geoloc.contracts import validate_result
+
+    result = validate_result(result)
+    if result["status"] != expected_status:
+        raise ValueError(f"Expected {expected_status}, received {result['status']}: {result.get('reason_code')}")
+    if expected_reason and result.get("reason_code") != expected_reason:
+        raise ValueError(f"Expected reason {expected_reason}, received {result.get('reason_code')}")
+    if result.get("recording", {}).get("source_sha256", audio_hash) != audio_hash:
+        raise ValueError("Intake recording hash differs from submitted audio")
+    if result["status"] == "succeeded":
+        if not result.get("recording") or not result.get("events"):
+            raise ValueError("Supported-location result lacks recording/event evidence")
+        coverage = result.get("coverage", {})
+        if not coverage.get("search_complete") or coverage.get("data_status") != "available":
+            raise ValueError("Supported-location result lacks complete declared coverage")
+    return result
+
+
+def wait_job(base, job_id, deadline, history_path):
+    previous = None
+    with history_path.open("w") as history:
+        while time.monotonic() < deadline:
+            value = get_json(f"{base}/api/jobs/{job_id}")
+            signature = (value["status"], value.get("stage"), value.get("progress"))
+            if signature != previous:
+                history.write(json.dumps({"monotonic_s": time.monotonic(), "result": value}) + "\n")
+                history.flush()
+                previous = signature
+            if value["status"] in {"needs_input", "inconclusive", "succeeded", "failed", "cancelled"}:
+                return value
+            time.sleep(0.25)
+    raise TimeoutError(f"Job {job_id} did not terminate within the acceptance budget")
+
+
+def product_audit(args):
+    """Exercise real entry points. Expected abstention is not location success."""
+    from aircraft_geoloc.contracts import validate_request
+
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    audio = args.audio.resolve(strict=True)
+    audio_hash = sha256(audio)
+    request = {"schema_version": 1, "audio_path": str(audio), "search": {"coverage": "conus"}}
+    if args.start_utc:
+        request["time_window"] = {"start_utc": args.start_utc,
+                                  "end_utc": args.end_utc or args.start_utc, "source": "user",
+                                  "source_detail": args.time_source}
+    elif args.end_utc:
+        raise ValueError("--end-utc requires --start-utc")
+    request = validate_request(request)
+    wire_request = {k: v for k, v in request.items() if k != "audio_path"}
+    write_json(output / "upload-request.json", wire_request)
+    modes = list(dict.fromkeys(args.via or ["cli", "api", "browser"]))
+    report = {"schema_version": 1, "scope": "automatic_product_acceptance",
+              "location_accuracy_evaluated": False, "input_sha256": audio_hash,
+              "request": wire_request, "provenance": provenance(), "modes": [],
+              "operator_config_sha256": sha256(args.operator_config) if args.operator_config else None}
+    base_command = [sys.executable, "-m", "aircraft_geoloc.cli"]
+    config = ["--config", str(args.operator_config.resolve())] if args.operator_config else []
+    began = time.monotonic()
+    server = None
+    server_log = None
+    try:
+        if "cli" in modes:
+            directory = output / "cli"
+            directory.mkdir()
+            command = base_command + ["analyze", str(audio), "--jobs", str(directory / "jobs"),
+                                      "--max-runtime", str(args.timeout), *config]
+            if args.start_utc:
+                window = request["time_window"]
+                command += ["--start-utc", window["start_utc"], "--end-utc", window["end_utc"],
+                            "--time-source", args.time_source]
+            run_command(command, directory, "analyze")
+            value = json.loads((directory / "analyze.stdout").read_text())
+            write_json(directory / "result.json", value)
+            result = inspect_result(value, audio_hash, args.expect_status, args.expect_reason)
+            job_directory = directory / "jobs" / value["job_id"]
+            input_record = json.loads((job_directory / "input.json").read_text())
+            original = job_directory / input_record["path"]
+            if original.parent != job_directory or sha256(original) != audio_hash or input_record["sha256"] != audio_hash:
+                raise ValueError("CLI did not preserve the exact uploaded bytes")
+            report["modes"].append({"mode": "cli", "result": result, "original_hash_verified": True})
+        if any(mode in modes for mode in ("api", "browser")):
+            with socket.socket() as reserved:
+                reserved.bind(("127.0.0.1", 0))
+                port = reserved.getsockname()[1]
+            base = f"http://127.0.0.1:{port}"
+            server_command = base_command + ["serve", "--jobs", str(output / "http-jobs"),
+                                            "--port", str(port), "--max-runtime", str(args.timeout), *config]
+            write_json(output / "server-command.json", server_command)
+            server_log = (output / "server.log").open("wb")
+            server = subprocess.Popen(server_command, stdout=server_log, stderr=subprocess.STDOUT)
+            ready_deadline = time.monotonic() + 20
+            while True:
+                if server.poll() is not None:
+                    raise RuntimeError("Upload service exited during startup; see server.log")
+                try:
+                    capabilities = get_json(base + "/api/capabilities")
+                    write_json(output / "capabilities.json", capabilities)
+                    break
+                except OSError:
+                    if time.monotonic() >= ready_deadline:
+                        raise TimeoutError("Upload service did not become ready")
+                    time.sleep(0.1)
+            for mode in modes:
+                if mode == "cli":
+                    continue
+                directory = output / mode
+                directory.mkdir()
+                if mode == "api":
+                    connection = http.client.HTTPConnection("127.0.0.1", port, timeout=30)
+                    try:
+                        with audio.open("rb") as stream:
+                            connection.request("POST", "/api/jobs", body=stream, headers={
+                                "Content-Type": "application/octet-stream",
+                                "Content-Length": str(audio.stat().st_size),
+                                "X-Filename": "input" + audio.suffix,
+                                "X-Dopplergeist-Request": json.dumps(wire_request),
+                            })
+                            response = connection.getresponse()
+                            queued = json.loads(response.read())
+                            if response.status != 202:
+                                raise RuntimeError(f"Upload HTTP {response.status}: {queued}")
+                    finally:
+                        connection.close()
+                    write_json(directory / "submission.json", queued)
+                    value = wait_job(base, queued["job_id"], time.monotonic() + args.timeout + 30,
+                                     directory / "history.jsonl")
+                else:
+                    if not args.browser_python:
+                        raise ValueError("Browser acceptance requires --browser-python with Playwright installed")
+                    # Preserve the venv interpreter path: resolving its symlink
+                    # would silently execute the base Python without Playwright.
+                    run_command([str(args.browser_python.absolute()), str(ROOT / "scripts/verify_upload_browser.py"),
+                                 "--base-url", base, "--audio", str(audio),
+                                 "--request", str(output / "upload-request.json"),
+                                 "--output", str(directory), "--timeout", str(args.timeout + 30)],
+                                directory, "browser")
+                    value = json.loads((directory / "result.json").read_text())
+                write_json(directory / "result.json", value)
+                result = inspect_result(value, audio_hash, args.expect_status, args.expect_reason)
+                listing = get_json(f"{base}/api/jobs/{value['job_id']}/artifacts")
+                write_json(directory / "artifacts.json", listing)
+                originals = [row for row in listing["artifacts"]
+                             if row["path"] == "input" + audio.suffix.lower()]
+                if len(originals) != 1:
+                    raise ValueError("Artifact API did not expose one preserved original")
+                target = directory / "downloaded-original.bin"
+                with urlopen(f"{base}/api/jobs/{value['job_id']}/artifacts/{originals[0]['path']}", timeout=30) as response, target.open("wb") as stream:
+                    while block := response.read(1024 * 1024):
+                        stream.write(block)
+                if sha256(target) != audio_hash:
+                    raise ValueError("Artifact API returned different original bytes")
+                report["modes"].append({"mode": mode, "result": result, "original_hash_verified": True})
+                write_json(output / "report.json", report)
+        report["passed"] = True
+    except Exception as exc:
+        report.update(passed=False, error=f"{type(exc).__name__}: {exc}")
+    finally:
+        if server is not None:
+            server.terminate()
+            try:
+                server.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                server.kill()
+                server.wait()
+        if server_log is not None:
+            server_log.close()
+        report["elapsed_s"] = time.monotonic() - began
+        write_json(output / "report.json", report)
+    print(json.dumps({"report": str(output / "report.json"), "passed": report["passed"],
+                      "error": report.get("error"), "modes_completed": len(report["modes"])}))
+    return 0 if report["passed"] else 1
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     codec = subparsers.add_parser("codec", help="Measure independent MP3 sample timing pilots")
     codec.add_argument("--output", type=Path, required=True)
+    product = subparsers.add_parser("product", help="Exercise actual CLI, HTTP upload and browser form")
+    product.add_argument("--audio", type=Path, required=True)
+    product.add_argument("--output", type=Path, required=True)
+    product.add_argument("--operator-config", type=Path)
+    product.add_argument("--start-utc")
+    product.add_argument("--end-utc")
+    product.add_argument("--time-source", default="Explicit acceptance-test recording clock window")
+    product.add_argument("--via", action="append", choices=["cli", "api", "browser"])
+    product.add_argument("--browser-python", type=Path)
+    product.add_argument("--timeout", type=float, default=600)
+    product.add_argument("--expect-status", required=True,
+                         choices=["succeeded", "needs_input", "inconclusive", "failed"])
+    product.add_argument("--expect-reason")
     args = parser.parse_args()
     if args.command == "codec":
         return codec_audit(args.output.resolve())
+    if args.command == "product":
+        return product_audit(args)
 
 
 if __name__ == "__main__":
