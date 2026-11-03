@@ -3,9 +3,11 @@
 The source data's spatial/time availability and the model's usable support are
 separate. The search report retains `data_scope_complete` for the former and adds
 `model_support_complete` for the latter. Any typed unsupported CPA trajectory or
-unclassified scoring envelope makes model support false, search status partial
-and finite-search evidence incomplete. Its unknown competitors have no optimistic
-maximum discarded score. A completed tile does not establish complete evidence.
+unclassified scoring envelope makes model support false. Separately,
+`model_assessment_complete` records whether every finite scoring envelope is
+evaluated, rejected, or covered by a validated score bound. Unsupported CPA
+trajectories, unreported clock trials, and unbounded alternatives keep the search
+partial. A completed tile does not establish complete evidence.
 
 The additive `model_support` report contains these integer work counts:
 
@@ -16,6 +18,22 @@ The additive `model_support` report contains these integer work counts:
   reported by robust scorer assessments.
 - `unreported_trial_envelopes`: interrupted or missing/malformed trial accounting;
   its unknown trial count must not be inferred as zero.
+- `bounded_score_candidates`, `unbounded_score_candidates`: the partition of
+  unclassified scoring envelopes by whether every scheduled clock trial has a
+  validated score ceiling or a supported-event rejection.
+
+For the normalized subset score, an unknown event contributes at most one unit
+because its robust loss is nonnegative. A validated complete event can tighten
+that ceiling; an event exceeding its unchanged residual limit rejects that
+association at that clock. The maximum bound across every scheduled clock is
+persisted separately from measured scores. Raw missing-support diagnostics remain
+unchanged. See [the finite-search decision](FINITE_SEARCH_DECISION.md).
+
+The product accepts this accounting only when the raw counts, persisted bound
+counts, completion flags, and combined discarded-score bound agree. It still
+defers competitive bounds to the existing confidence decision. No bound repairs
+missing flight coverage, invalid motion, omitted tiles, event caps, or an
+incomplete sensitivity profile.
 
 `diagnostics_directory` points to `support/`. Per-stage JSON files preserve every
 affected track ID/reason and every unclassified candidate's receiver, event/flight
@@ -51,3 +69,28 @@ The mixed-source regression preserves the clean candidate identities/scores,
 retains the original malformed source, and reports partial model coverage. This
 verified connection does not repair source observations or establish real-data
 acceptance; W3 documents the numerical support assumptions in MOTION_SUPPORT.md.
+
+## Configured research runs
+
+The configured `dopplergeist run` path also isolates `AcousticSupportError` at the
+track and candidate boundaries. A failed CPA track leaves its whole source time
+span and receiver stage unassessed. Other tracks retain their original CPA rows.
+A typed scoring failure leaves that candidate's full proposed clock domain
+unassessed. Generic programming and configuration errors still propagate.
+
+`support/` retains the excluded track IDs, reported physical intervals, receiver
+envelopes, candidate associations, clock domains, and available trial assessments.
+`model-support.json` summarizes those stages. Counts include repeated evaluations
+of the same track or candidate at different resolutions. Missing trial records
+remain unreported work. They do not become zero unknown trials.
+
+Legacy brightness and ridge scoring do not supply complete clock-trial records.
+Their finite scores remain ranked hypotheses with `core_assessment_complete: false`.
+Unsupported or unclassified work makes `model_support_complete` and
+`model_assessment_complete` false. Original input provenance remains in the report.
+The isolation does not repair velocities, observations, or physical model support.
+
+The configured report declares `result_scope: configured_research_ranking` and
+`accepted_location: false`. Empty ranking results retain `best: null` and the
+support diagnostics. This path does not certify source coverage, eliminate missing
+competitors, or make an automatic localization decision.

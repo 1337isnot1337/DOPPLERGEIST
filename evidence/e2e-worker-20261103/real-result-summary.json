@@ -1,0 +1,50 @@
+{
+  "scope": "Compact extraction from existing real-input artifacts; no experiment or model rerun.",
+  "full_result_local_path": "/workspace/scratch/e8a2a58f21d0/DOPPLERGEIST-integration/results/real-reference-upload-20261103/http/result.json",
+  "full_discovery_local_path": "/workspace/scratch/e8a2a58f21d0/DOPPLERGEIST-integration/results/real-reference-upload-20261103/http/jobs/dcf5816d3d0f4a1a9a551b7269f27ec8/discovery/discovery.json",
+  "job_id": "dcf5816d3d0f4a1a9a551b7269f27ec8",
+  "status": "needs_input",
+  "reason_code": "recording_time_required",
+  "required_fields": [
+    "time_window"
+  ],
+  "message": "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.",
+  "recording": {
+    "source_sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+    "duration_s": 3600.1845,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": null
+  },
+  "coverage": {
+    "search_complete": false,
+    "data_status": "unavailable",
+    "limitations": [],
+    "requested_area": {
+      "coverage": "conus"
+    }
+  },
+  "discovery": {
+    "event_count": 16,
+    "chunk_count": 60,
+    "ridge_count": 18,
+    "settings": {
+      "chunk_s": 120.0,
+      "overlap_s": 60.0,
+      "min_frequency_hz": 40.0,
+      "max_frequency_hz": 1600.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "min_contrast": 2.5,
+      "min_duration_s": 12.0,
+      "min_support": 0.65,
+      "min_drop_hz": 4.0,
+      "min_fractional_drop": 0.03,
+      "max_gap_s": 2.0,
+      "max_fragment_gap_s": 20.0,
+      "max_peaks_per_frame": 60
+    },
+    "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"
+  }
+}

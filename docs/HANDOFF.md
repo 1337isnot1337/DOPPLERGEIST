@@ -41,7 +41,6 @@ Install as in the README and restore release assets using [ARTIFACTS.md](ARTIFAC
 The real regional replay requires source, ADS-B-derived and terrain bundles:
 
 ```bash
-.venv/bin/python -m pytest -q
 .venv/bin/dopplergeist run data/source/reproduce-local.json --output results/replay-reference
 .venv/bin/dopplergeist run data/source/reproduce-faint-alltypes-local.json --output results/replay-faint
 .venv/bin/python scripts/benchmark_real_features.py
@@ -72,9 +71,10 @@ files are sufficient. The original source MP4 is not uploaded, at the user's req
 - `search.cpa_table_dense` is a retained test oracle. The production sparse CPA
   path must retain multiple local approaches and match the reference on small cases.
 - Event clocks remain locked together. Independent shifts can manufacture a match.
-- The configured research pipeline raises on an empty candidate set. This legacy
-  behavior does not establish the outcome of the separate automatic job workflow;
-  inspect that workflow's actual result and decision artifacts.
+- The configured research pipeline preserves supported rankings across typed
+  acoustic-support failures and reports excluded work. An empty candidate set
+  produces a report without a best hypothesis. This research report does not
+  establish an accepted automatic location; inspect its explicit coverage limits.
 - The 40-passage dataset supplies helpful frequency annotations but lacks the
   explicit recorder-coordinate/audio-clock evidence needed here for location tests.
 
