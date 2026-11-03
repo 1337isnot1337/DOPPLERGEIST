@@ -1,10 +1,66 @@
 """Batched robust ridge fits with the scalar model's arithmetic order."""
+import hashlib
+import pickle
+
 import numpy as np
 
-from .matching import _frequency_scale, _ridge_fit_inputs
+from .matching import _fit_argument_key, _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs
+
+
+def _batch_fit_key(measurement, event, factors, emissions):
+    """Identify a complete batch without retaining its input arrays.
+
+    Reduction layout is part of the input: equal values with different strides
+    need not follow the same floating-point summation order.
+    """
+    if type(measurement) not in (tuple, list) or len(measurement) != 4:
+        raise TypeError("Uncached custom measurement container")
+    digest = hashlib.sha256()
+    settings = tuple(_fit_argument_key(value) for value in
+        (_frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02),
+         event["f0_range_hz"]))
+    digest.update(pickle.dumps(settings, protocol=5))
+    for array in (measurement[0].time, measurement[1], measurement[2], factors, emissions):
+        if type(array) is not np.ndarray or array.dtype.kind not in "biuf":
+            raise TypeError("Uncached custom batch input")
+        layout = (array.dtype.str, array.shape, array.strides, array.flags.aligned)
+        digest.update(pickle.dumps(layout, protocol=5))
+        digest.update(array.tobytes(order="C"))
+    return digest.digest()
 
 
 def first_event_fits(measurement, event, factors, emissions):
+    """Reuse an identical complete fit batch within the current scoring call."""
+    cache = _ridge_fit_cache.get()
+    if cache is None or cache.max_entries < 1 or cache.batch_fit_limit <= 0:
+        return _first_event_fits_uncached(measurement, event, factors, emissions)
+    try:
+        key = _batch_fit_key(measurement, event, factors, emissions)
+    except (TypeError, ValueError, KeyError, AttributeError):
+        return _first_event_fits_uncached(measurement, event, factors, emissions)
+    entries = cache.batch_fit_entries
+    if key in entries:
+        entries.move_to_end(key)
+        # Only snapshots produced below from our own scalar-valued diagnostics
+        # enter this private memory cache. No files or external pickles are read.
+        return pickle.loads(entries[key])
+    result = _first_event_fits_uncached(measurement, event, factors, emissions)
+    if result is not None:
+        snapshot = pickle.dumps(result, protocol=5)
+        size = len(key) + len(snapshot)
+        if size <= cache.batch_fit_limit:
+            while entries and (cache.batch_fit_bytes + size > cache.batch_fit_limit
+                               or len(entries) >= cache.max_entries):
+                old_key, old_snapshot = entries.popitem(last=False)
+                cache.batch_fit_bytes -= len(old_key) + len(old_snapshot)
+            entries[key] = snapshot
+            cache.batch_fit_bytes += size
+    # None fallbacks and exceptions are never cached. The first caller also
+    # owns its diagnostics: later mutations cannot change the stored bytes.
+    return result
+
+
+def _first_event_fits_uncached(measurement, event, factors, emissions):
     """Fit supported clocks together, or return None for the ordinary fitter.
 
     This uses the same six iterations, box constraints, and diagnostics as the
