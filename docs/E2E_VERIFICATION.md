@@ -143,3 +143,15 @@ The combined producer snapshot passed 98 tests with one skipped automatic-search
 test: its national-search module was not part of this snapshot. There was one
 pandas future-dtype warning. Historical and failed harness-development outputs
 remain preserved separately. Positive localization acceptance remains open.
+
+## Installed wheel
+
+A fresh CPython 3.12 virtual environment installed the built wheel rather than
+the editable checkout. All 19 installed Python files matched the build source,
+and all three bundled web assets were present. With `PYTHONPATH` explicitly
+unset, actual CLI/API/browser submissions of timed noise passed as
+`inconclusive / no_supported_events`, including source-byte download, saved-job
+reload and the mobile overflow check. Wheel/source hashes and full results are
+in `evidence/verification/installed-wheel-20261102/`. This packaging check used
+the isolated producer snapshot plus packaging PR #29; it does not cover the
+national-search module, which was not yet in that snapshot.
