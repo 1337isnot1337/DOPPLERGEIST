@@ -305,6 +305,18 @@ lanes hit 133/280 (47.5%). Bounding-box DEM prediction covered the recorded DEM
 set for all 130 terrain-using tiles; mean per-tile precision was 90.6%, with
 three predicted DEM footprints on otherwise empty tiles. These cache figures
 are simulated from saved payload footprints, not timed worker measurements;
-they do not establish a search runtime gain or load balance. The active saved
-search must be migrated through its checkpoint compatibility path before this
-source-hash change can be used on it.
+they do not establish search runtime or load balance.
+
+A real worker replay used six contiguous saved tiles with 1,024 grid points each,
+sampled twice through two workers. Both the shared pool and affinity scheduler
+started two worker processes, and all elevation hashes matched. The affinity
+scheduler reduced DEM raster opens from 43 to 38, decoded-cache misses from 27 to
+23, and increased cache hits from 11 to 15. Summed terrain-sampler CPU fell from
+4.19 to 3.89 seconds (1.08x) in this single replay. Wall time was not treated as
+a result because it was one run under changing host load. Reproduce with
+[`benchmark_dem_worker_affinity.py`](../scripts/benchmark_dem_worker_affinity.py);
+the [run record](../benchmarks/results/dem-worker-affinity-20261103.json) is
+terrain-stage evidence, not a full-search speed estimate.
+
+Applying this scheduler to a saved search changes the package identity and
+requires its validated checkpoint compatibility path before resuming that job.
