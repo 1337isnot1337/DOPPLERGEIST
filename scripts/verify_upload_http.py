@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
+from importlib.machinery import EXTENSION_SUFFIXES
 import http.client
 import json
 import math
@@ -29,6 +30,13 @@ import uuid
 import dopplergeist
 from dopplergeist.contracts import utc_timestamp, validate_recording, validate_request, validate_result
 from dopplergeist.jobs import TERMINAL, write_json
+
+
+def _implementation_files(package):
+    """Independently cover Python sources, native C, and loaded-format binaries."""
+    return sorted(path for path in package.iterdir()
+                  if path.is_file() and (path.suffix in {".py", ".c"}
+                      or any(path.name.endswith(suffix) for suffix in EXTENSION_SUFFIXES)))
 
 
 def sha256(path):
@@ -921,7 +929,7 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
     write_json(output / "upload-request.json", wire)
     write_json(output / "operator.json", operator)
     package = Path(dopplergeist.__file__).resolve().parent
-    implementation = {path.name: sha256(path) for path in sorted(package.glob("*.py"))}
+    implementation = {path.relative_to(package).as_posix(): sha256(path) for path in _implementation_files(package)}
     began, process, final, log = time.monotonic(), None, None, None
     deadline = began + timeout_s
     receipt = {"schema_version": 1, "scope": "actual_local_http_upload_verification",
@@ -1006,7 +1014,7 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
                     termination.interruptible = True
                     termination.raise_if_interrupted()
                     receipt["implementation_unchanged"] = implementation == {
-                        path.name: sha256(path) for path in sorted(package.glob("*.py"))}
+                        path.relative_to(package).as_posix(): sha256(path) for path in _implementation_files(package)}
                     if final is not None:
                         directory = output / "jobs" / final["job_id"]
                         receipt["terminal_result_preserved_after_shutdown"] = json.loads((directory / "result.json").read_text()) == final

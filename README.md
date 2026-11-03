@@ -37,6 +37,8 @@ python -m venv .venv
 
 To install the CLI without keeping a checkout, create a virtual environment and run `.venv/bin/python -m pip install "git+https://github.com/1337isnot1337/DOPPLERGEIST.git"`.
 
+Installation builds optional acoustic and ridge acceleration when a compatible C compiler is available. Python fallbacks remain available. See [native backend checks and reproducible timing](docs/PERFORMANCE.md#reproduce-the-optional-native-backends) to verify which implementations are active and compare complete recorded-input jobs.
+
 Native Windows execution is unverified.
 
 ### Analyze from the command line
@@ -100,6 +102,8 @@ The target is a supported location estimate within **1,000 m**, preferably **100
 Recording-time evidence matters: audio-relative seconds do not identify which day's flights to search. A defensible start time or bounded UTC window is needed; file modification and upload times do not establish the recording clock. The robust search considers all prepared independent flyover groups under one shared clock, with no default two- or three-event cap. Harmonics count once and unconfirmed proposals may remain unmatched. Explicit event, tile or candidate budgets can leave a search incomplete.
 
 The automatic search uses conservative score ceilings before completing every fit: incompatible residuals and an established Top-K cutoff can stop further group fitting at a shared clock. It batches eligible clock fits, reuses exact acoustic calculations in dense tiles, and divides overloaded areas or single-cell clock ranges into checkpointed pieces. [Search screening and real-data timing](docs/DATA_AND_SCALE.md#search) describe the bounds and their measured limits.
+
+The optional native backends and bounded calculation reuse completed the full regional HTTP replay in **62.03 → 37.19 seconds**, a **1.67× speedup with 40.05% less elapsed time**, across three alternating pairs. Broad-clock point scoring improved **1.81×**. Scientific outputs matched exactly; both HTTP arms retained 17 ridge records, 15 independent groups, 23 candidates, and `inconclusive / search_incomplete`. These measurements compare `41d0646` with the already optimized main baseline `fec518e5`. See [the measured results and reproduction instructions](docs/PERFORMANCE.md#measured-native-computation-and-bounded-reuse) for the source pins, runtime, memory tradeoff, and scope. The earlier results below use different sources and environments.
 
 The integrated implementation [`66146714`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/66146714c6c22a448a7a54830a82d31034c2be44) completed a fresh bounded HTTP comparison in **78.38 → 54.18 wall seconds**, an observed **1.45×** speedup over baseline `aa3dff6`. This is **30.88% less elapsed time** in one sequential pair on the same CI runner. Both arms used one shared fresh encoding of the complete published recording, with the same flight data, terrain, and budgets. Both returned 16 event records and 23 candidates with `inconclusive / search_incomplete`. Scientific JSON, the logical retention ledger, decoded audio, CSV values, and PNG pixels matched exactly after the declared metadata normalization. All **38 selected real-input tests passed**, with no skips; standard Python 3.11 and 3.14 CI also passed. The [integrated measurement record](benchmarks/results/integrated-http-20261103.json) and [performance report](docs/PERFORMANCE.md#integration-with-main-verified) preserve the source pins, runtime, scope, and comparisons.
 

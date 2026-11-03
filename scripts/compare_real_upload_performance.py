@@ -144,6 +144,10 @@ class Run:
                     reason = "operator configuration digest; full normalized operator.json is compared"
                 elif not root and relative == "search/manifest.json" and here == ("configuration", "code"):
                     reason = "search implementation files"
+                elif not root and relative == "search/manifest.json" and here in {
+                        ("configuration", "runtime", "ridge_fit_backend"),
+                        ("configuration", "runtime", "acoustic_backend")}:
+                    reason = "search native implementation metadata:" + key
                 elif not root and relative == "provenance.json" and here == ("resumed_from",):
                     reason = "explicit resume metadata: resumed_from"
                 elif not root and relative == "search/search-report.json" and here == ("tiles_resumed",):
@@ -325,6 +329,8 @@ def compare_runs(baseline, current, max_examples=40, baseline_continuation=None)
                 left.continuation["cumulative_active_wall_s"] / right.receipt["elapsed_s"]
                 if passed and left.continuation is not None else None),
             "normalization": {"implementation_fields": sorted(IMPLEMENTATION_FIELDS),
+                "native_backend_metadata": ["search/manifest.json/configuration/runtime/ridge_fit_backend",
+                                            "search/manifest.json/configuration/runtime/acoustic_backend"],
                 "performance_fields": sorted(PERFORMANCE_FIELDS),
                 "path_rule": "Only each run directory, job directory and exact job identifier are replaced.",
                 "sqlite_rule": "Compare all logical tables, columns and rows; ignore only run.identity and physical SQLite/index layout.",
