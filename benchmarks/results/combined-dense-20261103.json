@@ -1,0 +1,11 @@
+{
+  "scope": "One full-day clock partition from the original public MP3 search, with two-event minimum and all 15 automatically discovered independent groups",
+  "old_source": "1555a120f43d503df05ccd97158db4fc8bcf261b",
+  "new_scoring_source": "708f81a6fc9f2e7ee8695b646aa3bc6f9a0b9a04",
+  "old": {"cpu_seconds": 243.288448234, "elapsed_seconds": 248.371958930, "associations": 17776, "evaluated_trials": 16390},
+  "new": {"cpu_seconds": 94.001947431, "elapsed_seconds": 99.612360493, "associations": 17776, "evaluated_trials": 16390},
+  "ranked_candidates_exactly_equal": true,
+  "retention_checksum": "54681acc3db08cefdbdfe37d8a4a7552419e033f28e90f8e51850d67c8d89a1d",
+  "only_payload_difference": "The old version adds the minimum_matched_events diagnostic field; all other payload and count fields match exactly.",
+  "limitations": "One paired real-data measurement on homelab, not a nationwide runtime, full upload test, independent location accuracy, or guarantee of exact parity on all tiles."
+}

@@ -274,7 +274,23 @@ OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python scripts/benchmark_dem_locality.py \
   --job /path/to/job --cache /path/to/cache --output /path/to/result.json
 ```
 
-Each search worker retains its own bounded cache; row-major tile scheduling does
-not guarantee that neighboring work reaches the same worker. Grouping work by
-geography remains a separate scheduling opportunity requiring a full search and
-load-balance comparison.
+Each search worker retains its own bounded cache; scheduling neighboring work
+does not guarantee that it reaches the same worker. Worker affinity remains an
+opportunity requiring a full search and load-balance comparison.
+
+The parallel driver now submits tile cores in a deterministic Hilbert walk and
+yields their results in the original order. Nearby work is more likely to reach
+the same worker, but worker affinity is not guaranteed. The ordered driver
+materializes the current wave before submitting it, which can delay the first
+task on a heavily resumed run. Four actual saved full-day no-approach tiles
+reproduced their payloads and retention checksums with two workers. This is a
+correctness check, not a full-run speed measurement.
+
+In one separate paired test of a full-day clock partition with 17,776
+associations, the merged scoring optimizations took 94.00 CPU seconds versus
+243.29 seconds for the earlier two-event-filtering version. All 100 retained
+candidates, retention checksum, and shared count fields matched exactly. The
+older version also emitted a `minimum_matched_events` diagnostic, now retained
+by this branch. This single measurement does not establish a nationwide runtime.
+The [benchmark receipt](../benchmarks/results/combined-dense-20261103.json)
+records the source revisions and scope.

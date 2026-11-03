@@ -102,7 +102,13 @@ not a likelihood, probability or calibrated false-match test. Different score
 kinds must not be mixed in a ranking. Confidence must still consider competing
 locations, matched group count, omitted proposals, source coverage and residual
 diagnostics. Single-event candidates remain available for a defensible known
-clock, and do not by themselves establish a supported location.
+clock, and do not by themselves establish a supported location. In the tiled
+automatic search, when multiple events were detected, singleton scoring is
+skipped by default if the trusted start window is absent or wider than 10 s
+(refinement checks at most +/-5 s around each candidate); such a window cannot
+pass the known-clock single-event gate. Set `filters.min_events=1` to retain
+singleton diagnostics. Per-event survivor counts remain available, and every
+multi-event subset remains eligible without a maximum event-count cap.
 
 ## Full sensitivity scenarios
 
