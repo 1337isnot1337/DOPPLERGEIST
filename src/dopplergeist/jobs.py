@@ -1,5 +1,6 @@
 """Persistent local jobs; each analysis has its own cancellable process group."""
 import argparse
+from contextlib import contextmanager
 import fcntl
 import hashlib
 import json
@@ -39,6 +40,17 @@ def _evidence(value):
     return {key: value[key] for key in ("recording", "events", "candidates", "coverage", "artifacts") if key in value}
 
 
+@contextmanager
+def _control_lock(directory):
+    """Serialize a local cancel request with the manager's final result."""
+    with (directory / ".control.lock").open("a") as lockfile:
+        fcntl.flock(lockfile, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lockfile, fcntl.LOCK_UN)
+
+
 def request_local_cancel(root, job_id):
     """Request cancellation through an active manager's cooperative marker."""
     root = Path(root).resolve()
@@ -51,27 +63,28 @@ def request_local_cancel(root, job_id):
     result_path = directory / "result.json"
     if not result_path.is_file():
         raise KeyError("Unknown job")
-    current = read_json(result_path)
-    if current["status"] in TERMINAL:
-        return current
-    lock_path = root / ".manager.lock"
-    try:
-        with lock_path.open("rb") as lockfile:
-            try:
-                fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError:
-                manager_active = True
-            else:
-                fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
-                manager_active = False
-    except FileNotFoundError:
-        manager_active = False
-    if not manager_active:
-        raise ValueError("No active job manager owns this job directory")
-    (directory / "cancel").touch(mode=0o600, exist_ok=True)
-    return {"job_id": job_id, "status": current["status"], "stage": current.get("stage"),
-            "cancellation_requested": True,
-            "message": "The job will stop at its next cancellation check."}
+    with _control_lock(directory):
+        current = read_json(result_path)
+        if current["status"] in TERMINAL:
+            return current
+        lock_path = root / ".manager.lock"
+        try:
+            with lock_path.open("rb") as lockfile:
+                try:
+                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except BlockingIOError:
+                    manager_active = True
+                else:
+                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
+                    manager_active = False
+        except FileNotFoundError:
+            manager_active = False
+        if not manager_active:
+            raise ValueError("No active job manager owns this job directory")
+        (directory / "cancel").touch(mode=0o600, exist_ok=True)
+        return {"job_id": job_id, "status": current["status"], "stage": current.get("stage"),
+                "cancellation_requested": True,
+                "message": "The job will stop at its next cancellation check."}
 
 
 class JobManager:
@@ -201,13 +214,21 @@ class JobManager:
                             break
                         if time.monotonic() >= deadline:
                             self._stop(process)
-                            with self._mutex:
-                                if self.get(directory.name)["status"] not in TERMINAL:
-                                    result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.", **_evidence(self.get(directory.name)))
+                            with self._mutex, _control_lock(directory):
+                                current = self.get(directory.name)
+                                if current["status"] not in TERMINAL:
+                                    if (directory / "cancel").exists():
+                                        result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(current))
+                                    else:
+                                        result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.", **_evidence(current))
                             break
-                with self._mutex:
-                    if self.get(directory.name)["status"] not in TERMINAL:
-                        result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.", **_evidence(self.get(directory.name)))
+                with self._mutex, _control_lock(directory):
+                    current = self.get(directory.name)
+                    if current["status"] not in TERMINAL:
+                        if (directory / "cancel").exists():
+                            result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(current))
+                        else:
+                            result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.", **_evidence(current))
         except Exception as exc:
             with self._mutex:
                 if self.get(directory.name)["status"] not in TERMINAL:
