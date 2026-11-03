@@ -1,6 +1,6 @@
 """Worker initialization against operator-supplied real terrain, without a search."""
 
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Future, ProcessPoolExecutor
 from multiprocessing import get_context
 import json
 import os
@@ -8,14 +8,34 @@ from pathlib import Path
 
 import pytest
 
+from dopplergeist.data_access import DataUnavailable, FlightIndex
+from dopplergeist.finite_search import RetentionLedger
 from dopplergeist.matching import prepare_events
-from dopplergeist.parallel_tiles import initialize_tile_worker, score_tile
+from dopplergeist.parallel_tiles import (discard_pending_fine_ledgers, initialize_tile_worker,
+                                         score_fine_tile, score_tile)
 from dopplergeist.terrain import Terrain
-from dopplergeist.tiled_search import SearchBudget
+from dopplergeist.tiled_search import (SearchBudget, _expanded_bounds, _score, _tracks_for_points,
+                                      search_national, tile_points)
 
 # Published ESID 762 site and a candidate from its saved real-audio search.
 _POINTS = ((30.386361, -98.860931), (30.38874803589124, -98.87993276822816))
 _barrier = None
+
+
+def test_aborted_fine_search_cleans_only_unconsumed_ledgers(tmp_path):
+    orphan = tmp_path / "unconsumed.sqlite"
+    orphan.touch()
+    failed_import = tmp_path / "failed-import.sqlite"
+    failed_import.touch()
+    completed = Future()
+    completed.set_result(({}, str(orphan)))
+    failed = Future()
+    failed.set_exception(ValueError("piece failed"))
+    empty = Future()
+    empty.set_result(({}, None))
+    discard_pending_fine_ledgers([((), "failed", failed), ((), "done", completed), ((), "empty", empty)])
+    assert not orphan.exists()
+    assert failed_import.exists()
 
 
 def _initialize(args, barrier):
@@ -35,6 +55,10 @@ def _score_one(task):
     _barrier.wait(timeout=30)
     payload, _ = score_tile(*task)
     return os.getpid(), payload
+
+
+def _score_fine_one(task):
+    return score_fine_tile(*task)[0]
 
 
 def test_real_explicit_dem_reopened_in_two_workers(tmp_path, capfd):
@@ -100,3 +124,103 @@ def test_real_explicit_tiles_match_direct_scoring(tmp_path):
     assert len({pid for pid, _ in workers}) == 2
     assert all(payload["grid_points"] > 0 and payload["ranked"] for payload in direct)
     assert direct == [payload for _, payload in workers]
+
+
+def test_real_fine_piece_matches_spawned_worker(tmp_path):
+    names = ("DOPPLERGEIST_REAL_TERRAIN_DEM", "DOPPLERGEIST_REAL_TERRAIN_GEOID",
+             "DOPPLERGEIST_REAL_TERRAIN_FLIGHT_INDEX", "DOPPLERGEIST_REAL_TILE_JOB")
+    values = [os.environ.get(name) for name in names]
+    if not all(values):
+        pytest.skip("set real terrain, index and ESID 762 job paths to replay a recorded piece")
+    dem, geoid, index, saved_job = values
+    job = Path(saved_job)
+    config = json.loads((job / "search/manifest.json").read_text())["configuration"]
+    raw = json.loads((job / "discovery/discovery.json").read_text())["events"]
+    events, measurements = prepare_events(raw, c=343.0, max_distance_m=20000.0)
+    budget = SearchBudget(**config["budget"])
+    parameters = dict(config["scoring"])
+    window = parameters.pop("recording_start_window_s")
+    options = {"paths": [dem], "constant_m": None, "geoid_path": geoid}
+
+    def args(directory):
+        return ([index], None, options, events, measurements, config["bounds"], config["time_range_s"],
+                budget, parameters, config["filters"], window, config["crs"], tmp_path / directory,
+                "real-fine-replay", "matched_group_support_minus_normalized_residual", "explicit")
+
+    report = json.loads((job / "search/search-report.json").read_text())
+    row = report["coarse_ranked"][0]
+    spacing = budget.refine_spacing_m
+    x, y = round(row["x"] / spacing), round(row["y"] / spacing)
+    task = ("fine:0:real", (x, y, x + 2, y + 2), spacing, [], None)
+    terrain = Terrain([dem], geoid_path=geoid)
+    try:
+        points = tile_points(task[1], spacing, config["bounds"], terrain, config["crs"])
+        radius = max(event["slant_range_m"][1] for event in events)
+        tracks, points = _tracks_for_points(
+            [FlightIndex(index)], _expanded_bounds(task[1], spacing, radius, config["crs"]),
+            config["time_range_s"], budget, points, terrain, radius, parameters.get("c", 343.0))
+        ledger = RetentionLedger(tmp_path / "serial.sqlite", "real-fine-replay",
+                                 "matched_group_support_minus_normalized_residual")
+        rows, counts = _score(points, tracks, events, measurements, budget, parameters, config["filters"], window,
+                              ledger=ledger, stage=task[0], score_floor=None)
+    finally:
+        for raster in terrain.rasters + terrain.geoid.rasters:
+            raster.close()
+    initialize_tile_worker(*args("direct-fine"))
+    direct, _ = score_fine_tile(*task)
+    partial_task = (task[0] + ":partial", task[1], spacing, [(x, y, x + 1, y + 2)], None)
+    partial, _ = score_fine_tile(*partial_task)
+    fully_excluded, empty_path = score_fine_tile(task[0] + ":excluded", task[1], spacing,
+                                                 [(x, y, x + 2, y + 2)], None)
+    with ProcessPoolExecutor(max_workers=1, mp_context=get_context("spawn"),
+                             initializer=initialize_tile_worker, initargs=args("worker-fine")) as pool:
+        spawned = pool.submit(_score_fine_one, task).result(timeout=120)
+        spawned_partial = pool.submit(_score_fine_one, partial_task).result(timeout=120)
+    assert direct["grid_points"] > 0
+    assert direct["grid_points"] == len(points)
+    assert direct["ranked"] == rows
+    assert direct["counts"] == counts
+    assert direct["retention_checksum"] == ledger.checksum(task[0])
+    assert direct == spawned
+    assert partial["grid_points"] == len(points[points.x >= (x + 1) * spacing])
+    assert partial["skipped"] + partial["grid_points"] == direct["grid_points"]
+    assert partial == spawned_partial
+    assert fully_excluded["skipped"] == direct["grid_points"]
+    assert fully_excluded["grid_points"] == 0 and empty_path is None
+
+
+def test_real_search_cleans_pending_ledgers_after_failed_fine_import(tmp_path, monkeypatch):
+    import dopplergeist.parallel_retention as parallel_retention
+
+    names = ("DOPPLERGEIST_REAL_TERRAIN_DEM", "DOPPLERGEIST_REAL_TERRAIN_GEOID",
+             "DOPPLERGEIST_REAL_TERRAIN_FLIGHT_INDEX", "DOPPLERGEIST_REAL_TILE_JOB")
+    values = [os.environ.get(name) for name in names]
+    if not all(values):
+        pytest.skip("set real terrain, index and ESID 762 job paths to replay a recorded search")
+    dem, geoid, index_path, saved_job = values
+    job = Path(saved_job)
+    config = json.loads((job / "search/manifest.json").read_text())["configuration"]
+    raw = json.loads((job / "discovery/discovery.json").read_text())["events"]
+    events, measurements = prepare_events(raw, c=343.0, max_distance_m=20000.0)
+    terrain = Terrain([dem], geoid_path=geoid)
+    original = parallel_retention.import_retention_stage
+    failed_path = []
+
+    def fail_first_fine(ledger, worker_path, stage, expected_checksum):
+        if stage.startswith("fine:"):
+            failed_path.append(Path(worker_path))
+            raise DataUnavailable("injected fine ledger import failure")
+        return original(ledger, worker_path, stage, expected_checksum)
+
+    monkeypatch.setattr(parallel_retention, "import_retention_stage", fail_first_fine)
+    try:
+        report = search_national([FlightIndex(index_path)], terrain, events, measurements,
+            time_range_s=config["time_range_s"], output_dir=tmp_path / "search", bounds=config["bounds"],
+            budget=SearchBudget(**config["budget"]), scoring=config["scoring"], filters=config["filters"],
+            crs=config["crs"], input_hashes=config["additional_input_hashes"], workers=2)
+    finally:
+        for raster in terrain.rasters + terrain.geoid.rasters:
+            raster.close()
+    assert report["refinement_failure"] == "injected fine ledger import failure"
+    assert len(failed_path) == 1 and failed_path[0].is_file()
+    assert list((tmp_path / "search/.tile-workers").glob("fine-retention-*.sqlite")) == failed_path

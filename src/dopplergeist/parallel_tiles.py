@@ -4,12 +4,13 @@ from pathlib import Path
 import tempfile
 from threading import Lock
 
+import numpy as np
 import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
 from .tiled_search import (_expanded_bounds, _partition_query_time_range, _sample_tile_terrain, _score, _tile_anchor_window,
-                           _tile_coordinates, _tracks_for_points)
+                           _tile_coordinates, _tracks_for_points, tile_points)
 
 
 class TileFailure(DataUnavailable):
@@ -193,6 +194,71 @@ def score_tile(stage, cells, score_floor=None):
         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
                    "cells": list(cells), **provenance, "retention_checksum": ledger.checksum(stage)}
         return payload, str(path)
+    except (DataUnavailable, ValueError, OSError) as error:
+        if path is not None:
+            path.unlink(missing_ok=True)
+        raise TileFailure(str(error), observed_terrain()) from error
+    except BaseException:
+        if path is not None:
+            path.unlink(missing_ok=True)
+        raise
+
+
+def discard_pending_fine_ledgers(inflight):
+    """Remove successful worker ledgers that were not consumed after an abort."""
+    for _, _, future in inflight:
+        try:
+            _, path = future.result()
+        except BaseException:
+            continue
+        if path is not None:
+            try:
+                Path(path).unlink()
+            except OSError:
+                pass
+
+
+def score_fine_tile(stage, cells, spacing, exclusions, score_floor=None):
+    """Score one fine-grid piece in a worker with its own retention ledger."""
+    if _worker is None:
+        raise RuntimeError("Tile worker was not initialized")
+    state = _worker
+    terrain = state["terrain"]
+    terrain.last_sample_files = set()
+    terrain.last_sample_ocean_tiles = set()
+    failures_before = len(getattr(terrain, "failures", ()))
+    path = None
+
+    def observed_terrain():
+        files = getattr(terrain, "files", {})
+        return {"terrain_files": [files[name] for name in sorted(terrain.last_sample_files) if name in files],
+                "terrain_ocean_tiles": sorted(terrain.last_sample_ocean_tiles),
+                "terrain_failures": getattr(terrain, "failures", [])[failures_before:]}
+
+    try:
+        points = tile_points(cells, spacing, state["bounds"], terrain, state["crs"])
+        keep = np.ones(len(points), dtype=bool)
+        for left, bottom, right, top in exclusions:
+            keep &= ~((points.x >= left * spacing) & (points.x < right * spacing)
+                      & (points.y >= bottom * spacing) & (points.y < top * spacing))
+        skipped = int((~keep).sum())
+        points = points[keep]
+        if not len(points):
+            return {"skipped": skipped, "grid_points": 0, **observed_terrain()}, None
+        radius = max(event["slant_range_m"][1] for event in state["events"])
+        tracks, points = _tracks_for_points(
+            state["indexes"], _expanded_bounds(cells, spacing, radius, state["crs"]),
+            state["time_range"], state["budget"], points, terrain, radius,
+            state["parameters"].get("c", 343.0))
+        with tempfile.NamedTemporaryFile(prefix="fine-retention-", suffix=".sqlite",
+                                         dir=state["ledger_directory"], delete=False) as handle:
+            path = Path(handle.name)
+        ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
+        rows, counts = _score(points, tracks, state["events"], state["measurements"], state["budget"],
+                              state["parameters"], state["filters"], state["start_window"],
+                              ledger=ledger, stage=stage, score_floor=score_floor)
+        return {"ranked": rows, "counts": counts, "grid_points": len(points), "skipped": skipped,
+                "retention_checksum": ledger.checksum(stage), **observed_terrain()}, str(path)
     except (DataUnavailable, ValueError, OSError) as error:
         if path is not None:
             path.unlink(missing_ok=True)

@@ -1104,48 +1104,102 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             fine = budget.refine_spacing_m
             width = math.ceil(budget.spacing_m / fine)
             completed_rectangles = []
-            for seed_index, row in enumerate(chosen):
-                # Subdivide the refinement square as well, retaining hard grid limits.
-                cx, cy = round(row["x"] / fine), round(row["y"] / fine)
-                for y0 in range(cy - width, cy + width + 1, budget.tile_cells):
-                    for x0 in range(cx - width, cx + width + 1, budget.tile_cells):
-                        root = (x0, y0, min(cx + width + 1, x0 + budget.tile_cells),
-                                min(cy + width + 1, y0 + budget.tile_cells))
-                        pending = [root]
-                        while pending:
-                            cells = pending.pop()
-                            points = tile_points(cells, fine, bounds, terrain, crs)
-                            keep = np.ones(len(points), dtype=bool)
-                            for left, bottom, right, top in completed_rectangles:
-                                keep &= ~((points.x >= left * fine) & (points.x < right * fine)
-                                          & (points.y >= bottom * fine) & (points.y < top * fine))
-                            skipped = int((~keep).sum())
-                            points = points[keep]
-                            if not len(points):
+            if parallel:
+                from collections import deque
+                from .data_access import _index_pool
+                from .parallel_tiles import discard_pending_fine_ledgers, score_fine_tile
+
+                with _index_pool(workers, initialize_tile_worker, initargs) as fine_pool:
+                    for seed_index, row in enumerate(chosen):
+                        cx, cy = round(row["x"] / fine), round(row["y"] / fine)
+                        pending = deque((x0, y0, min(cx + width + 1, x0 + budget.tile_cells),
+                                         min(cy + width + 1, y0 + budget.tile_cells))
+                                        for y0 in range(cy - width, cy + width + 1, budget.tile_cells)
+                                        for x0 in range(cx - width, cx + width + 1, budget.tile_cells))
+                        inflight = deque()
+                        try:
+                            while pending or inflight:
+                                while pending and len(inflight) < workers:
+                                    cells = pending.popleft()
+                                    stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
+                                    # The currently retained floor is conservative for every
+                                    # submitted piece, even if later merges raise it.
+                                    floor = _retained_score_floor(ranked, budget.top_k)
+                                    future = fine_pool.submit(score_fine_tile, stage, cells, fine,
+                                                              tuple(completed_rectangles), floor)
+                                    inflight.append((cells, stage, future))
+                                cells, stage, future = inflight.popleft()
+                                try:
+                                    payload, worker_path = future.result()
+                                except (DataUnavailable, ValueError, OSError) as error:
+                                    if isinstance(error, TileFailure):
+                                        restore_terrain(error.provenance)
+                                    parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
+                                    if not parts:
+                                        raise
+                                    pending.extendleft(reversed(parts))
+                                    continue
+                                restore_terrain(payload)
+                                refinement_points_skipped += payload["skipped"]
+                                if worker_path is None:
+                                    continue
+                                import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
+                                try:
+                                    Path(worker_path).unlink()
+                                except OSError:
+                                    pass
+                                _record_support(output, stage, payload["counts"], support)
+                                fine_stages += 1
+                                refinement_points_searched += payload["grid_points"]
+                                ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
+                                                          ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
+                        finally:
+                            discard_pending_fine_ledgers(inflight)
+                        completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
+                        report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
+            else:
+                for seed_index, row in enumerate(chosen):
+                    # Subdivide the refinement square as well, retaining hard grid limits.
+                    cx, cy = round(row["x"] / fine), round(row["y"] / fine)
+                    for y0 in range(cy - width, cy + width + 1, budget.tile_cells):
+                        for x0 in range(cx - width, cx + width + 1, budget.tile_cells):
+                            root = (x0, y0, min(cx + width + 1, x0 + budget.tile_cells),
+                                    min(cy + width + 1, y0 + budget.tile_cells))
+                            pending = [root]
+                            while pending:
+                                cells = pending.pop()
+                                points = tile_points(cells, fine, bounds, terrain, crs)
+                                keep = np.ones(len(points), dtype=bool)
+                                for left, bottom, right, top in completed_rectangles:
+                                    keep &= ~((points.x >= left * fine) & (points.x < right * fine)
+                                              & (points.y >= bottom * fine) & (points.y < top * fine))
+                                skipped = int((~keep).sum())
+                                points = points[keep]
+                                if not len(points):
+                                    refinement_points_skipped += skipped
+                                    continue
+                                try:
+                                    tracks, points = _tracks_for_points(
+                                        indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
+                                        budget, points, terrain, radius, parameters.get("c", 343.0))
+                                    stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
+                                    rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
+                                                          ledger=ledger, stage=stage,
+                                                          score_floor=_retained_score_floor(ranked, budget.top_k))
+                                except (DataUnavailable, ValueError, OSError) as error:
+                                    parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
+                                    if not parts:
+                                        raise
+                                    pending.extend(reversed(parts))
+                                    continue
                                 refinement_points_skipped += skipped
-                                continue
-                            try:
-                                tracks, points = _tracks_for_points(
-                                    indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
-                                    budget, points, terrain, radius, parameters.get("c", 343.0))
-                                stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
-                                rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                                      ledger=ledger, stage=stage,
-                                                      score_floor=_retained_score_floor(ranked, budget.top_k))
-                            except (DataUnavailable, ValueError, OSError) as error:
-                                parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
-                                if not parts:
-                                    raise
-                                pending.extend(reversed(parts))
-                                continue
-                            refinement_points_skipped += skipped
-                            _record_support(output, stage, counts, support)
-                            fine_stages += 1
-                            refinement_points_searched += len(points)
-                            ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
-                                                      ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
-                completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
-                report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
+                                _record_support(output, stage, counts, support)
+                                fine_stages += 1
+                                refinement_points_searched += len(points)
+                                ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
+                                                          ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
+                    completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
+                    report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
         except (DataUnavailable, ValueError, OSError) as error:
             refinement_failure = str(error)
     coverage = [i.coverage_for(bounds, time_range_s) for i in indexes]
