@@ -113,3 +113,33 @@ No automatic location or national validation is established by the codec or
 negative-path results above. Final acceptance remains open until supported
 localization passes the integrated upload path and the real benchmark outcomes,
 time/location uncertainty and searched coverage are reported.
+
+## Full real-recording MP3 upload
+
+The restored one-hour reference WAV was encoded to mono 16 kHz / 32 kbps MP3
+with libmp3lame, without supplying event windows, frequency bands, flight IDs,
+receiver coordinates or a recording clock. At integration `b953d74d`, all three
+routes produced the same nine acoustic proposals (identical event JSON hashes)
+and `needs_input / recording_time_required`. The complete check took 41.24 s.
+The browser displayed actual discovery plots and restored the saved job on reload;
+its 390 px mobile page had no horizontal overflow or JavaScript errors.
+
+These are acoustic proposals, not nine verified aircraft. The frozen WAV detector
+had eight proposals; the MP3 adds a short proposal near 495 s and changes some
+fragment boundaries. Proposals cover the source's two prominent passes but remain
+fragmented; the known faint 1250–1310 s event remains missed. These observations
+are post-run comparisons and never enter the automatic request.
+
+Independent post-run comparison of the actual intake samples with ffmpeg-decoded
+WAV snippets at 120, 2156 and 3076 s has correlations 0.9982–0.9991. Interpolated
+offsets are at most 0.00168 ms; decoded sample resolution is 0.25 ms. The 3600.18425 s
+MP3 intake differs from the decoded WAV reference by one 4 kHz sample. This tests
+relative codec timing and does not establish recorder UTC.
+
+The input/code-hashed result, timing comparison, mobile render and test log are in
+`evidence/verification/reference-hour-upload-20261102/`. Full local artifacts are
+`/home/cinna/DOPPLERGEIST-upload-acceptance/results/reference-hour-upload-v1/`.
+The combined producer snapshot passed 98 tests with one skipped automatic-search
+test: its national-search module was not part of this snapshot. There was one
+pandas future-dtype warning. Historical and failed harness-development outputs
+remain preserved separately. Positive localization acceptance remains open.
