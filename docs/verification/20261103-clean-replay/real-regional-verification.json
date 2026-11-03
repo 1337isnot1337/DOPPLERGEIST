@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "started_utc": "2026-11-03T00:28:35.362038+00:00",
+  "runtime": {
+    "git_commit": "472a668df89720b3d05e5e1558705a922eb38fd2",
+    "git_status": "",
+    "python": "3.12.3 (main, Jul 15 2026, 23:46:41) [GCC 13.3.0]",
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "3.1.0",
+      "soundfile": "0.14.0",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "matplotlib": "3.11.2",
+      "requests": "2.34.2",
+      "pyarrow": "26.0.0"
+    },
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "sources": [
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/__init__.py",
+        "bytes": 50,
+        "sha256": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/audio.py",
+        "bytes": 8315,
+        "sha256": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/cli.py",
+        "bytes": 1127,
+        "sha256": "591b4f6b6f08fb649acd0003f432bbd4f01ab3f9f8858b094245c54b9260ac00"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/contracts.py",
+        "bytes": 15115,
+        "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/geometry.py",
+        "bytes": 5992,
+        "sha256": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/pipeline.py",
+        "bytes": 9438,
+        "sha256": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/search.py",
+        "bytes": 13400,
+        "sha256": "79c84c0792184d6cd394f7ba3f5d73229b4ec338304284a87477206178143d40"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/terrain.py",
+        "bytes": 8519,
+        "sha256": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+      },
+      {
+        "path": "/home/user/dopplergeist-e2e-20261102/src/aircraft_geoloc/tracks.py",
+        "bytes": 5864,
+        "sha256": "9af648eaa1f7880ba00bead2a66cd7b05fb98f6a5d6045d506cf3276604ae6e3"
+      }
+    ],
+    "runner": {
+      "path": "/home/user/dopplergeist-e2e-20261102/scripts/verify_pipeline_replay.py",
+      "bytes": 10395,
+      "sha256": "3ee65830927ef823f84b6f4ec5481cdd1bac29e5602b5469f66a73f8e3b1fb77"
+    }
+  },
+  "cases": [
+    {
+      "case": "reference-local",
+      "scope": "real; source-informed event windows/bands and regional bounds",
+      "status": "passed",
+      "search_inputs": [
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/adsb/2026-09-08/reference-region.parquet",
+          "bytes": 32823780,
+          "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/adsb/2026-09-08/type-database.csv",
+          "bytes": 47916,
+          "sha256": "e862edbce353514bea97e2d819988f408009edd3cfcb47199ebc648d9a5b600f"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/source/reference-recording.wav",
+          "bytes": 691235466,
+          "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/source/reproduce-local.json",
+          "bytes": 1450,
+          "sha256": "d397fa1102d33af564f1414141a879d8394be7a1d04b941e3b9e88915646b541"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+          "bytes": 15806993,
+          "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/terrain/us_nga_egm96_15.tif",
+          "bytes": 2710815,
+          "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+        }
+      ],
+      "command": [
+        "/home/user/dopplergeist-e2e-20261102/.venv/bin/python",
+        "-m",
+        "aircraft_geoloc.cli",
+        "run",
+        "/home/user/dopplergeist-e2e-20261102/data/source/reproduce-local.json",
+        "--output",
+        "/home/user/dopplergeist-e2e-20261102/results/clean-real-regional-20261103-0029/reference-local/pipeline"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_s": 99.10697764600627,
+      "resource_usage": {
+        "max_rss_kib": 830232.0,
+        "user_cpu_s": 90.16,
+        "system_cpu_s": 5.28
+      },
+      "report": {
+        "path": "/home/user/dopplergeist-e2e-20261102/results/clean-real-regional-20261103-0029/reference-local/pipeline/report.json",
+        "bytes": 4305,
+        "sha256": "331ef37ebb5bf11cadf376ebab697ce2777dedb46c5ca021cde5fdbd9e891677"
+      },
+      "evaluation": {
+        "evaluation_inputs": [
+          {
+            "path": "/home/user/dopplergeist-e2e-20261102/evidence/results/reference-local-fast/report.json",
+            "bytes": 4310,
+            "sha256": "f9e934416c79f6c020cd34bdb815b0c42c3aed2fe32b2e6716b473176976a84c"
+          }
+        ],
+        "baseline_displacement_m": 0.0,
+        "baseline_flight_ids_match": true,
+        "baseline_score_delta": 0.0,
+        "baseline_clock_delta_s": 0.0,
+        "reference_coordinate": {
+          "lat": 40.8766,
+          "lon": -73.5247
+        },
+        "position_error_m": 43.85847078233993,
+        "within_100_m": true,
+        "reference_kind": "published public-platform coordinate; physical uncertainty unquantified",
+        "baseline_reproduced": true
+      }
+    },
+    {
+      "case": "reference-faint",
+      "scope": "real; manual faint event window/band; regional; clock from two-event result",
+      "status": "passed",
+      "search_inputs": [
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+          "bytes": 68141282,
+          "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/source/reference-recording.wav",
+          "bytes": 691235466,
+          "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/source/reproduce-faint-alltypes-local.json",
+          "bytes": 1056,
+          "sha256": "49256b88aa7e9bbbc9d8df714a101bc8814946098e2236eb1024061085890608"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+          "bytes": 15806993,
+          "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+        },
+        {
+          "path": "/home/user/dopplergeist-e2e-20261102/data/terrain/us_nga_egm96_15.tif",
+          "bytes": 2710815,
+          "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+        }
+      ],
+      "command": [
+        "/home/user/dopplergeist-e2e-20261102/.venv/bin/python",
+        "-m",
+        "aircraft_geoloc.cli",
+        "run",
+        "/home/user/dopplergeist-e2e-20261102/data/source/reproduce-faint-alltypes-local.json",
+        "--output",
+        "/home/user/dopplergeist-e2e-20261102/results/clean-real-regional-20261103-0029/reference-faint/pipeline"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_s": 208.72888747393154,
+      "resource_usage": {
+        "max_rss_kib": 516064.0,
+        "user_cpu_s": 202.22,
+        "system_cpu_s": 3.54
+      },
+      "report": {
+        "path": "/home/user/dopplergeist-e2e-20261102/results/clean-real-regional-20261103-0029/reference-faint/pipeline/report.json",
+        "bytes": 3423,
+        "sha256": "130658072e77ebba32caa1df2942407b33e8e1282c70d839b490d34dc670f7ae"
+      },
+      "evaluation": {
+        "evaluation_inputs": [
+          {
+            "path": "/home/user/dopplergeist-e2e-20261102/evidence/results/reference-faint-alltypes-local/report.json",
+            "bytes": 3429,
+            "sha256": "25ad9c88a0ba4b8e3e00e9c3443fb7dd7f7e11545c35b6592414e0369573092d"
+          }
+        ],
+        "baseline_displacement_m": 0.0,
+        "baseline_flight_ids_match": true,
+        "baseline_score_delta": 0.0,
+        "baseline_clock_delta_s": 0.0,
+        "reference_coordinate": {
+          "lat": 40.8766,
+          "lon": -73.5247
+        },
+        "position_error_m": 357.4686768823865,
+        "within_100_m": false,
+        "reference_kind": "published public-platform coordinate; physical uncertainty unquantified",
+        "baseline_reproduced": true
+      }
+    }
+  ],
+  "automatic_upload_goal_verified": false,
+  "limitations": [
+    "Manual event settings remain search inputs in these replays.",
+    "Synthetic and regional reference replays do not establish national real-audio accuracy.",
+    "The faint reference case is an expected localization failure at the 100 m target.",
+    "Evaluation inputs are read after search; filesystem sandboxing is not asserted."
+  ],
+  "baseline_replays_passed": true
+}

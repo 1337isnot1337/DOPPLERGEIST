@@ -3,8 +3,14 @@ from contextlib import redirect_stderr, redirect_stdout
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
+import selectors
+import signal
+import subprocess
+import sys
 import tempfile
+import textwrap
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -17,6 +23,86 @@ SPEC.loader.exec_module(REPLAY)
 
 
 class CheckpointReplayTests(unittest.TestCase):
+    def test_rss_visits_all_thread_children_and_counts_each_process_once(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            def process(pid, resident_pages, threads):
+                directory = root / str(pid)
+                directory.mkdir()
+                (directory / "statm").write_text(f"100 {resident_pages} 0 0 0 0 0\n")
+                for tid, children in threads.items():
+                    task = directory / "task" / str(tid)
+                    task.mkdir(parents=True)
+                    if children is not None:
+                        (task / "children").write_text(children)
+            # A disappearing task/process and a duplicate observed PID must not
+            # hide siblings or count the same process more than once.
+            process(1000, 3, {1000: "2000 9000", 1001: None, 1002: "3000 2000"})
+            process(2000, 5, {2000: "", 2001: "4000"})
+            process(3000, 7, {3000: ""})
+            process(4000, 11, {4000: ""})
+            def proc_path(value):
+                return root / Path(value).relative_to("/proc")
+            with patch.object(REPLAY, "Path", side_effect=proc_path), \
+                 patch.object(REPLAY.sys, "platform", "linux"):
+                actual = REPLAY.sampled_tree_rss(1000)
+            self.assertEqual(actual, (3 + 5 + 7 + 11) * os.sysconf("SC_PAGE_SIZE"))
+
+    @unittest.skipUnless(sys.platform == "linux" and Path("/proc/thread-self/children").is_file(),
+                         "Requires Linux per-thread /proc children interfaces")
+    def test_rss_includes_child_spawned_by_background_thread(self):
+        child_program = """import time
+memory = bytearray(64 * 1024 * 1024)
+for offset in range(0, len(memory), 4096):
+    memory[offset] = 1
+print('ready', flush=True)
+time.sleep(30)
+"""
+        controller_program = textwrap.dedent(f"""
+            import json, subprocess, sys, threading
+            stop = threading.Event()
+            def worker():
+                child = subprocess.Popen([sys.executable, '-c', {child_program!r}],
+                    stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, text=True)
+                try:
+                    assert child.stdout.readline().strip() == 'ready'
+                    print(json.dumps({{'child_pid': child.pid, 'thread_id': threading.get_native_id()}}), flush=True)
+                    stop.wait(20)
+                finally:
+                    child.terminate()
+                    child.wait(timeout=5)
+                    child.stdout.close()
+            thread = threading.Thread(target=worker)
+            thread.start()
+            try:
+                sys.stdin.read(1)
+            finally:
+                stop.set()
+                thread.join()
+        """)
+        controller = subprocess.Popen([sys.executable, "-c", controller_program],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, start_new_session=True)
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(controller.stdout, selectors.EVENT_READ)
+                self.assertTrue(selector.select(timeout=10), "Threaded child did not become ready")
+                identity = json.loads(controller.stdout.readline())
+            parent, child, thread = controller.pid, identity["child_pid"], identity["thread_id"]
+            leader_children = Path(f"/proc/{parent}/task/{parent}/children").read_text().split()
+            worker_children = Path(f"/proc/{parent}/task/{thread}/children").read_text().split()
+            self.assertNotIn(str(child), leader_children)
+            self.assertIn(str(child), worker_children)
+            child_rss = REPLAY.sampled_tree_rss(child)
+            self.assertGreater(child_rss, 48 * 1024 * 1024)
+            self.assertGreaterEqual(REPLAY.sampled_tree_rss(parent), child_rss)
+        finally:
+            try:
+                controller.communicate(input="\n", timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(controller.pid, signal.SIGKILL)
+                controller.communicate(timeout=5)
+
     def run_orchestration(self, first_failure=None):
         """Fake child results isolate sequencing and fail-closed receipt behavior."""
         attempts = []

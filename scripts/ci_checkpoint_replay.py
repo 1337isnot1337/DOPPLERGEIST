@@ -126,10 +126,19 @@ def sampled_tree_rss(pid):
         seen.add(current)
         try:
             total += int(Path(f"/proc/{current}/statm").read_text().split()[1]) * os.sysconf("SC_PAGE_SIZE")
-            children = Path(f"/proc/{current}/task/{current}/children").read_text().split()
-            pending.extend(int(child) for child in children)
         except (OSError, ValueError, IndexError):
             continue
+        # A child belongs to the thread that spawned it. Count process RSS once,
+        # then inspect every task, including nonleader threads used by JobManager.
+        try:
+            tasks = list(Path(f"/proc/{current}/task").iterdir())
+        except OSError:
+            continue
+        for task in tasks:
+            try:
+                pending.extend(int(child) for child in (task / "children").read_text().split())
+            except (OSError, ValueError):
+                continue
     return total
 
 

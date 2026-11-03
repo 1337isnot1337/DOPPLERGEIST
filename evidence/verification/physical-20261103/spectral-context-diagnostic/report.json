@@ -1,0 +1,257 @@
+{
+  "protocol": {
+    "time_expansion_each_side_s": 120.0,
+    "band_rule": "[0.5 * detected_low, 2 * detected_high], clipped to 40..1600 Hz",
+    "spectral_window_s": 2.0,
+    "spectral_hop_s": 0.25,
+    "excluded_core_guard_s": 2.0,
+    "sideband_offsets_hz": [
+      -10.0,
+      -5.0,
+      5.0,
+      10.0
+    ],
+    "score": "predicted-curve contrast minus mean sideband contrast; equal event weighting",
+    "sample_support": "identical bins with valid trajectories and all spectral samples for every association",
+    "nuisance_parameters": "frozen original f0 and linear emission-time drift; no validation refit",
+    "candidate_selection": "best original core-fit row for every retained event/flight association",
+    "bootstrap": "2000 paired resamples of 10 s blocks within each event; descriptive only",
+    "no_truth_read": true,
+    "scope": "development diagnostic on an already inspected synthetic recording; not independent acceptance"
+  },
+  "association_count": 4,
+  "retained_rows_considered": 110,
+  "ranking": [
+    {
+      "rank": 1,
+      "candidate_id": "A03",
+      "flight_ids": [
+        "f4a942f158fc",
+        "159329fe8c9f"
+      ],
+      "core_fit_score": -0.1748357878204711,
+      "weak_support_score": 1.6231193989565542,
+      "winner_minus_candidate": 0.0,
+      "descriptive_block_interval_95": [
+        0.0,
+        0.0
+      ],
+      "lat": 40.03171548893152,
+      "lon": -100.01822776178045
+    },
+    {
+      "rank": 2,
+      "candidate_id": "A01",
+      "flight_ids": [
+        "a996be0c6cc3",
+        "f4463eca673d"
+      ],
+      "core_fit_score": -0.1741169135403465,
+      "weak_support_score": 1.235845419492883,
+      "winner_minus_candidate": 0.38727397946367126,
+      "descriptive_block_interval_95": [
+        0.22811448576520277,
+        0.552009320320402
+      ],
+      "lat": 35.00005583999889,
+      "lon": -89.99999816990483
+    },
+    {
+      "rank": 3,
+      "candidate_id": "A02",
+      "flight_ids": [
+        "c6ffc69306d1",
+        "f4463eca673d"
+      ],
+      "core_fit_score": -0.1741169135403465,
+      "weak_support_score": 1.235845419492883,
+      "winner_minus_candidate": 0.38727397946367126,
+      "descriptive_block_interval_95": [
+        0.22811448576520277,
+        0.552009320320402
+      ],
+      "lat": 35.00005583999889,
+      "lon": -89.99999816990483
+    },
+    {
+      "rank": 4,
+      "candidate_id": "A04",
+      "flight_ids": [
+        "b4703f435dd4",
+        "8c99c17de3e1"
+      ],
+      "core_fit_score": -0.18741277066036577,
+      "weak_support_score": 0.7569736655093454,
+      "winner_minus_candidate": 0.8661457334472088,
+      "descriptive_block_interval_95": [
+        0.6105220230716648,
+        1.124233965466379
+      ],
+      "lat": 43.000130162360975,
+      "lon": -112.00007927622752
+    }
+  ],
+  "events": [
+    {
+      "event_id": "event-0001",
+      "detected_core_s": [
+        143.0,
+        180.5
+      ],
+      "expanded_window_s": [
+        23.0,
+        300.5
+      ],
+      "expanded_band_hz": [
+        55.99613071116619,
+        311.37215679883957
+      ],
+      "common_validation_samples": 767,
+      "common_validation_seconds": 191.75,
+      "common_validation_extent_s": [
+        64.0,
+        297.25
+      ],
+      "pre_samples": 308,
+      "post_samples": 459,
+      "scores": [
+        {
+          "candidate_id": "A01",
+          "on_curve_mean": 0.48662905640068704,
+          "sideband_mean": -0.20256377903955639,
+          "contrast_excess_mean": 0.6891928354402435,
+          "pre_core_excess": 0.3553742037943042,
+          "post_core_excess": 0.9131931372854487
+        },
+        {
+          "candidate_id": "A02",
+          "on_curve_mean": 0.48662905640068704,
+          "sideband_mean": -0.20256377903955639,
+          "contrast_excess_mean": 0.6891928354402435,
+          "pre_core_excess": 0.3553742037943042,
+          "post_core_excess": 0.9131931372854487
+        },
+        {
+          "candidate_id": "A03",
+          "on_curve_mean": 1.1285415295324446,
+          "sideband_mean": -0.19982778574582544,
+          "contrast_excess_mean": 1.32836931527827,
+          "pre_core_excess": 1.0508126464170588,
+          "post_core_excess": 1.5146164917690175
+        },
+        {
+          "candidate_id": "A04",
+          "on_curve_mean": 0.1363320925794537,
+          "sideband_mean": -0.12998924969333572,
+          "contrast_excess_mean": 0.2663213422727894,
+          "pre_core_excess": 0.10897384096587101,
+          "post_core_excess": 0.37190528650488286
+        }
+      ]
+    },
+    {
+      "event_id": "event-0002",
+      "detected_core_s": [
+        1038.5,
+        1112.0
+      ],
+      "expanded_window_s": [
+        918.5,
+        1180.0
+      ],
+      "expanded_band_hz": [
+        47.95625101402402,
+        291.08864914625883
+      ],
+      "common_validation_samples": 477,
+      "common_validation_seconds": 119.25,
+      "common_validation_extent_s": [
+        982.25,
+        1179.0
+      ],
+      "pre_samples": 217,
+      "post_samples": 260,
+      "scores": [
+        {
+          "candidate_id": "A01",
+          "on_curve_mean": 1.5404428115891655,
+          "sideband_mean": -0.24205519195635558,
+          "contrast_excess_mean": 1.7824980035455213,
+          "pre_core_excess": 1.6379900407893058,
+          "post_core_excess": 1.9031065724612855
+        },
+        {
+          "candidate_id": "A02",
+          "on_curve_mean": 1.5404428115891655,
+          "sideband_mean": -0.24205519195635558,
+          "contrast_excess_mean": 1.7824980035455213,
+          "pre_core_excess": 1.6379900407893058,
+          "post_core_excess": 1.9031065724612855
+        },
+        {
+          "candidate_id": "A03",
+          "on_curve_mean": 1.6808199378699455,
+          "sideband_mean": -0.23704954476489123,
+          "contrast_excess_mean": 1.9178694826348368,
+          "pre_core_excess": 1.7664462212023417,
+          "post_core_excess": 2.0442496662150345
+        },
+        {
+          "candidate_id": "A04",
+          "on_curve_mean": 1.0477170497503232,
+          "sideband_mean": -0.1999089389955779,
+          "contrast_excess_mean": 1.247625988745901,
+          "pre_core_excess": 1.1461732778954639,
+          "post_core_excess": 1.3322999820326122
+        }
+      ]
+    }
+  ],
+  "implementation_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+  "implementation_sources": {
+    "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "matching.py": "a9b8267b488c1f96625a844f465e872aab1a4ae3c526e151e0e89d22e286c9aa",
+    "data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218"
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/input.mp3",
+      "sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/intake/recording.f32",
+      "sha256": "733c8831016f16092ee339021de7e7af029c82411fc1c396427f691d7c81eb5b"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/intake/recording.json",
+      "sha256": "fa1388f39f44dffdd215836f142c81bcea36a83e83828f18c5308186203aa89d"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/discovery/discovery.json",
+      "sha256": "e96be7db9912517fcc0ca1b86ed784be046d08057b432ccf8a2997cd20602af5"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/refined-candidates.json",
+      "sha256": "522ec41e95fe96ea7d7257ccb8198f882eda47af1dcf373387e3ded19aaa3847"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/operator.json",
+      "sha256": "3c82098cda1c04e416bd4a5387dfc11c64587ee7c4bc6101c862fac8496dd6da"
+    },
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-inputs-20261103/flight-index-v2.sqlite",
+      "sha256": "d161687f8a08917ab4ff61f0c8a44e44fd3f43f2ce65104b6e0aac5bb0be548f"
+    }
+  ],
+  "script_sha256": "f4ba12e1d939a7d2a7d5b6775fec9a939247166387a8ebc13a0e7c29e05f326f",
+  "elapsed_s": 1.1148189420000563,
+  "limits": [
+    "Settings were fixed for this one experiment after inspecting a development failure.",
+    "Candidate parameters and locations were not refitted on validation samples.",
+    "Linear source drift is extrapolated beyond its core fitting interval.",
+    "Common-support restriction is symmetric but conditional on the retained candidate set.",
+    "Block intervals are descriptive and are not calibrated localization confidence.",
+    "No ground-truth file was opened; no real-world accuracy or national-coverage acceptance is claimed."
+  ]
+}

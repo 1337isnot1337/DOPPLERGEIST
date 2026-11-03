@@ -1,0 +1,71 @@
+{
+  "recording": {
+    "source_sha256": "372912c008ed61a49de647cd9a5cd1651d1ce952e4690a2fe6c1da0cd641140a",
+    "duration_s": 1180.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "wav",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 3.0,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 2,
+  "events": [
+    {
+      "event_id": "event-0001",
+      "start_s": 143.0,
+      "end_s": 180.5,
+      "band_hz": [
+        111.99223451316357,
+        155.68605805933475
+      ],
+      "quality": {
+        "median_contrast": 3.413748264312744,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8611111111111112,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 32.86233859322965
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "start_s": 1038.5,
+      "end_s": 1112.0,
+      "band_hz": [
+        95.91251226514578,
+        145.54424856603146
+      ],
+      "quality": {
+        "median_contrast": 3.5242397785186768,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8611111111111112,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 44.93811209127307
+      }
+    }
+  ],
+  "runtime_s": 7.236591024993686,
+  "peak_rss_kib": 238044,
+  "code_sha256": "d0a9d9b4ba99c819529f11e0db71a65af37b1b5be97092cd7d4311ce16f27006",
+  "git_commit": "9538c466766aa1830b8a48cc6946cc45539a5e80",
+  "working_tree": "?? scripts/discover_audio.py\n?? src/aircraft_geoloc/discovery.py\n?? tests/test_discovery.py",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}
