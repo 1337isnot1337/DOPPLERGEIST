@@ -10,11 +10,14 @@ source in a clean Python 3.14 environment. No system site packages were enabled.
 | Fragment discovery, national tiled driver, full perturbation profiles | 104 passed | 57.49 s | `afec84d2526c1eeaf016b94e466bc4b510908e37` |
 | Per-flight altitude profiles, codec/replay verifiers, benchmark-clock regressions | 121 passed | 62.24 s | `1d74fcd880ce5a9873b5661428575e2954064b76` |
 | All-event matcher, canonical renderer, refinement-grid union, confidence/evaluation and preserved real/synthetic evidence | 175 passed | 66.39 s | `e3d1952b497e16d3d5066e6bbbe5ff05c8e0310f` |
+| All-event tiled driver, trusted-window edges, acquisition controls and raw-motion audit | 218 passed + 6 subtests | 51.94 s | `c91de8214f4064ee5be4c2a24f29802949a9e812` |
+| Main-based bounded chunk reader and Linux live-RSS regression | 219 passed + 6 subtests | 51.61 s | `848c190699d17fee6f7528e310b457ecc973cfea` |
 
 The command was `PYTHONPATH=src <clean-venv>/bin/python -m pytest -q
 --junitxml=<receipt>`. The final run also set `OPENBLAS_NUM_THREADS=1` and
-`OMP_NUM_THREADS=1`. Each run emitted one pandas future-dtype warning from the
-index aircraft-class fallback; there were no failures or skips. Machine-readable
+`OMP_NUM_THREADS=1`. Earlier runs emitted one pandas future-dtype warning from the index
+aircraft-class fallback; W2’s explicit object conversion removes it in the218-test
+increment. There were no failures or skips. Machine-readable
 [receipts and JUnit reports](../../evidence/verification/integration-20261103/receipt.json)
 record the exact source objects and environment. The [175-test receipt](../../evidence/verification/integration-20261103/all-events-receipt.json)
 and JUnit XML preserve the latest frozen combination. The published W4 follow-up
@@ -51,3 +54,20 @@ Current real-data evidence is deliberately narrower:
 The source YouTube MP4 is excluded. Earlier experiments and failed outcomes have
 not been overwritten. See [the coordination board](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39)
 for active integration dependencies and worker replies.
+
+The [main-based driver receipt](../../evidence/verification/integration-20261103/w2-main-driver-receipt.json)
+preserves the combined all-event increment and native JUnit. Its sole merge
+conflict was independent appended tiled tests, both retained. This source uses all
+prepared groups by default, keeps explicitly capped work partial, and preserves
+the unsupported-motion/coverage limits measured in [the raw audit](../../research/trajectory-motion/README.md).
+Product integration and independent real acceptance remain separate gates.
+
+A separate [product-review combination](../../evidence/verification/integration-20261103/product-modes-receipt.json)
+passes254 tests plus14 subtests at401b2e7. It includes actual service and independent
+decision controls, but remains a separate source from main and does not certify an
+accepted location. The [main chunk-memory receipt](../../evidence/verification/integration-20261103/intake-memory-main-receipt.json)
+records219 plus6, with no skips. W1’s
+[window-reader experiment](../../evidence/audio/w1-cache-memory-20261103/README.md)
+uses live process RSS and exact canonical six-event equivalence. This fixes mapped
+whole-file residency; it does not identify the cause of the earlier1.6GiB outlier
+or bound total search/browser memory.

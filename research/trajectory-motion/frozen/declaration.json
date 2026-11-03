@@ -1,0 +1,42 @@
+{
+  "ids": [
+    "a6cc10",
+    "ae8b78",
+    "ae05a8",
+    "c01125"
+  ],
+  "window_s": [
+    1788899400.0,
+    1788900300.0
+  ],
+  "gap_s": 30.0,
+  "sound_speed_mps": 343.0,
+  "scope": "Targeted data-quality audit, not an acoustic localization benchmark",
+  "sources": [
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+      "bytes": 68141282,
+      "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154"
+    },
+    {
+      "path": "/home/cinna/dopplergeist-w2-data-scale/results/w2-index-v2-20261102/conus-alltypes.sqlite",
+      "bytes": 58740736,
+      "sha256": "1e3365524bae3b98c668adbf05358d5ba1a0cba895521c7e2135055c0415962c"
+    },
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/v2026.09.08-planes-readsb-staging-0.tar.aa",
+      "bytes": 2000000000,
+      "sha256": "c2d4a8ed715d4e39cb137991857a46af6b33c96bf425cdbc66cfcc979d16fdf4"
+    },
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/v2026.09.08-planes-readsb-staging-0.tar.ab",
+      "bytes": 1874212864,
+      "sha256": "4e73ee4880daf3cc1976c85061213caeeeaf398714438434cea7b2fa6b555f07"
+    }
+  ],
+  "code": {
+    "/home/cinna/dopplergeist-trajectory-audit-20261103/scripts/audit_trajectory_motion.py": "e3b12f3fabbda55dfb667388d9d24cb0372fc39090ed7fb5ba4767710e2e5e42",
+    "/home/cinna/dopplergeist-trajectory-audit-20261103/src/aircraft_geoloc/tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "/home/cinna/dopplergeist-trajectory-audit-20261103/src/aircraft_geoloc/geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+  }
+}

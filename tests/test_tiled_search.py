@@ -106,6 +106,64 @@ def test_ridge_only_adapter_and_exact_recording_clock(tmp_path):
     assert all(row["recording_start_time_s"] == origin for row in result["ranked"])
 
 
+def test_overlapping_refinement_scores_the_complete_grid_union_once(tmp_path, monkeypatch):
+    from aircraft_geoloc import tiled_search
+
+    index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
+    # A translated alternative flight pair produces a competing location whose
+    # refinement overlaps the first pair. Both associations must be retained.
+    forward = Transformer.from_crs("EPSG:4326", "EPSG:5070", always_xy=True)
+    inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
+    frames = []
+    for track in list(tracks):
+        x, y = forward.transform(track.lon, track.lat)
+        lon, lat = inverse.transform(x + 1000, y)
+        alternative = Track("alternative-" + track.id, track.time, lat, lon, track.altitude)
+        tracks.append(alternative)
+        for item in (track, alternative):
+            frames.append(pd.DataFrame({"flight_id": item.id, "time_s": item.time,
+                                        "lat": item.lat, "lon": item.lon, "alt_m": item.altitude,
+                                        "altitude_basis": "ellipsoidal"}))
+    index = FlightIndex.build(tmp_path / "alternatives.sqlite", frames, sources=[],
+                              coverage=index.report["coverage"])
+    terrain = Terrain(constant_m=0)
+    budget = SearchBudget(spacing_m=1000, tile_cells=4, top_k=200,
+                          refine_spacing_m=500, refine_finalists=4)
+    settings = {"mode": "ridge", "time_origin": origin, "time_sweep_s": 0}
+    requested, evaluated = [], []
+    fine_phase = False
+
+    def observe_points(cells, spacing, *args):
+        nonlocal fine_phase
+        fine_phase = spacing == budget.refine_spacing_m
+        points = tile_points(cells, spacing, *args)
+        if fine_phase:
+            requested.append(points.copy())
+        return points
+
+    def observe_score(points, *args, **kwargs):
+        if fine_phase:
+            evaluated.extend(zip(points.x, points.y))
+        return _score(points, *args, **kwargs)
+
+    monkeypatch.setattr(tiled_search, "tile_points", observe_points)
+    monkeypatch.setattr(tiled_search, "_score", observe_score)
+    result = search_national([index], terrain, events, measurements, time_range_s=times,
+                             output_dir=tmp_path / "overlap", bounds=bounds, budget=budget, scoring=settings)
+    all_points = pd.concat(requested, ignore_index=True)
+    union = all_points.drop_duplicates(["x", "y"]).copy()
+    assert len(all_points) > len(union), "Fixture must include overlapping refinement rectangles"
+    assert len(evaluated) == len(set(evaluated))
+    assert set(evaluated) == set(zip(union.x, union.y))
+    assert result["refinement_points_searched"] == len(union)
+    assert result["refinement_points_skipped"] == len(all_points) - len(union)
+    union["point_id"] = np.arange(len(union))
+    expected, _ = _score(union, tracks, events, measurements, budget, settings, {})
+    expected = merge_candidates(result["coarse_ranked"] + expected, budget.top_k)
+    assert len({tuple(row["flight_ids"]) for row in expected}) >= 2
+    assert compact(result["ranked"]) == compact(expected)
+
+
 def test_work_limit_does_not_enumerate_unsearched_national_grid(tmp_path):
     index, _, events, measurements, _, times, origin = scenario(tmp_path)
     result = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
@@ -284,59 +342,3 @@ def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path,
     assert counts["unclassified_score_candidates"] == 0
 
 
-def test_overlapping_refinement_scores_the_complete_grid_union_once(tmp_path, monkeypatch):
-    from aircraft_geoloc import tiled_search
-
-    index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
-    # A translated alternative flight pair produces a competing location whose
-    # refinement overlaps the first pair. Both associations must be retained.
-    forward = Transformer.from_crs("EPSG:4326", "EPSG:5070", always_xy=True)
-    inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
-    frames = []
-    for track in list(tracks):
-        x, y = forward.transform(track.lon, track.lat)
-        lon, lat = inverse.transform(x + 1000, y)
-        alternative = Track("alternative-" + track.id, track.time, lat, lon, track.altitude)
-        tracks.append(alternative)
-        for item in (track, alternative):
-            frames.append(pd.DataFrame({"flight_id": item.id, "time_s": item.time,
-                                        "lat": item.lat, "lon": item.lon, "alt_m": item.altitude,
-                                        "altitude_basis": "ellipsoidal"}))
-    index = FlightIndex.build(tmp_path / "alternatives.sqlite", frames, sources=[],
-                              coverage=index.report["coverage"])
-    terrain = Terrain(constant_m=0)
-    budget = SearchBudget(spacing_m=1000, tile_cells=4, top_k=200,
-                          refine_spacing_m=500, refine_finalists=4)
-    settings = {"mode": "ridge", "time_origin": origin, "time_sweep_s": 0}
-    requested, evaluated = [], []
-    fine_phase = False
-
-    def observe_points(cells, spacing, *args):
-        nonlocal fine_phase
-        fine_phase = spacing == budget.refine_spacing_m
-        points = tile_points(cells, spacing, *args)
-        if fine_phase:
-            requested.append(points.copy())
-        return points
-
-    def observe_score(points, *args, **kwargs):
-        if fine_phase:
-            evaluated.extend(zip(points.x, points.y))
-        return _score(points, *args, **kwargs)
-
-    monkeypatch.setattr(tiled_search, "tile_points", observe_points)
-    monkeypatch.setattr(tiled_search, "_score", observe_score)
-    result = search_national([index], terrain, events, measurements, time_range_s=times,
-                             output_dir=tmp_path / "overlap", bounds=bounds, budget=budget, scoring=settings)
-    all_points = pd.concat(requested, ignore_index=True)
-    union = all_points.drop_duplicates(["x", "y"]).copy()
-    assert len(all_points) > len(union), "Fixture must include overlapping refinement rectangles"
-    assert len(evaluated) == len(set(evaluated))
-    assert set(evaluated) == set(zip(union.x, union.y))
-    assert result["refinement_points_searched"] == len(union)
-    assert result["refinement_points_skipped"] == len(all_points) - len(union)
-    union["point_id"] = np.arange(len(union))
-    expected, _ = _score(union, tracks, events, measurements, budget, settings, {})
-    expected = merge_candidates(result["coarse_ranked"] + expected, budget.top_k)
-    assert len({tuple(row["flight_ids"]) for row in expected}) >= 2
-    assert compact(result["ranked"]) == compact(expected)

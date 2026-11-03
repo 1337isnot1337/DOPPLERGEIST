@@ -83,11 +83,13 @@ class IntakeRecording:
         size, overlap = int(round(chunk_s * sr)), int(round(overlap_s * sr))
         if size <= overlap:
             raise ValueError("Chunk step must be at least one sample")
-        data = np.memmap(self.samples_path, dtype="<f4", mode="r")
-        for first in range(0, len(data), size - overlap):
-            yield first / sr, np.array(data[first:first + size])
-            if first + size >= len(data):
-                break
+        count = self.samples_path.stat().st_size // 4
+        with self.samples_path.open("rb", buffering=0) as data:
+            for first in range(0, count, size - overlap):
+                data.seek(first * 4)
+                yield first / sr, np.fromfile(data, dtype="<f4", count=min(size, count - first))
+                if first + size >= count:
+                    break
 
 
 def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=4000):
