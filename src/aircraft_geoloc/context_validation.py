@@ -234,6 +234,15 @@ def validate_context(recording, candidates, tracks, events, measurements, *,
 
     def finish():
         report["elapsed_s"] = time.monotonic() - began
+        # Measure inside this process: an external timer around a pid namespace
+        # can otherwise report only the small namespace launcher.
+        try:
+            import resource
+            import sys
+            peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            report["process_peak_rss_mib"] = peak / (1024**2 if sys.platform == "darwin" else 1024)
+        except ImportError:
+            report["process_peak_rss_mib"] = None
         if output is not None:
             _dump(output / "report.json", report)
         return report
