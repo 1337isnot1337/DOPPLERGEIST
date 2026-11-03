@@ -1,5 +1,105 @@
 # Measured pipeline performance
 
+## Prepared inputs and prefix reuse: final live-pipeline results
+
+Three alternating pairs show **14.91% less wall time for the complete regional HTTP control**.
+The public baseline is [`b4cd00a`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/b4cd00ad46f0299baa716950fabe062d74f019f0).
+The public candidate is [`5eaee3a`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/5eaee3a43120af13c9bc16ef7f03b782251cdac0).
+Their local measurement revisions are `a7519de` and `1c19aa6`, respectively.
+The baseline already includes the native kernels and indexed-query improvements described in the historical sections.
+
+The [compact record](../benchmarks/results/prepared-prefix-20261103.json) contains all 18 local executions, ranges, load times, RSS measurements, controls, and complete source mappings.
+
+| Local scope and timer | Baseline median | Candidate median | Ratio of medians | Time reduction |
+| --- | ---: | ---: | ---: | ---: |
+| Complete regional HTTP control, wall | 59.681 s | 50.781 s | 1.175× | 14.91% |
+| Broad point, preloaded scoring CPU | 6.405 s | 4.993 s | 1.283× | 22.04% |
+| Dense partition, preloaded scoring CPU | 26.397 s | 21.167 s | 1.247× | 19.81% |
+
+Ratios divide the baseline median by the candidate median.
+Point pair 1 regressed: **5.577 → 6.109 CPU seconds**.
+The other point pairs improved, and every dense and HTTP pair improved.
+HTTP CPU medians are **59.417 → 50.378 seconds**, or **15.21% less CPU time**.
+
+### Method and implementation
+
+Local scoring timers cover CPA preparation, associations, scoring, ranking, and retention after input and track loading.
+The record reports excluded load times separately.
+The outer HTTP wall and CPU timers include fresh service startup, original MP3 upload, completion, artifact checks, shutdown, and output assessment.
+They exclude input preflight and parent imports.
+The receipt timer starts after initial verifier setup and source inventory.
+It ends after shutdown and evidence checks, before output assessment.
+
+Each arm uses a fresh process, CPU affinity 8, one numerical thread, identical inputs, and unchanged budgets.
+Pair order is baseline/candidate, candidate/baseline, then baseline/candidate.
+The shared host can introduce variation.
+Timed runs retain the original numerical function identities.
+Profiling and instrumented diagnostics remain outside the medians.
+
+Private immutable copies reuse selected samples and invariant cache-key data.
+Prefix reuse skips repeated prefixes that already eliminate every clock, with the same logical coverage counters.
+General reuse keys retain the exact score floor and total group count.
+Residual-only reuse additionally requires stored all-`-inf` outcomes and zero finite-floor prunes.
+For prefix length `k` and total group count `n`, both source and target require `k < n` and `n - k >= floor`.
+Finite contributions are nonnegative, so the upward-rounded finite prefix bound cannot fall below the floor in this domain.
+Also, `n - floor >= k >= 1` disables the dual finite-floor screen.
+These restrictions preserve the residual elimination path and the original bounded-unknown labels.
+Native evidence checks share interned keys and module state.
+Unsupported representations and custom hooks retain the original validation and scoring paths.
+The fit arithmetic, iteration counts, thresholds, clock intervals, and optimizer settings are unchanged.
+
+The first live profile recorded zero prefix lookups.
+Live discovery retains `numpy.float64` support metadata in 13 of 15 prepared groups.
+The copy guard rejected these immutable scalars and accepted only 2 of 15 groups.
+JSON fixtures converted the scalars to Python floats and hid this gap.
+The correction retains the exact scalar type and bits and accepts **15 of 15 live groups**.
+
+A separate diagnostic recorded **20,578 lookups**, **16,313 hits**, and **8,652 residual hits**.
+Reusing existing outcomes avoided **21,198 event steps** and **433,729 clock traversals**, with exact science, arrays, and ledger outputs.
+All scheduled clock grid points retain their original outcomes.
+Its timing is ineligible for the performance comparison.
+A separate refinement-snapshot experiment preserved complete decision outputs but ran slower, so it remains excluded.
+
+Private scoring inputs have a **4 MiB** budget per scope.
+The prefix cache has an **8 MiB / 4,096-entry** limit per scoring scope.
+Terrain pixels and masks have a **4 MiB / 256-block** limit per sampler, with a separate geoid sampler.
+Terrain reuse checks source files before cache hits.
+These individual cache limits do not bound total process RSS.
+The record reports observed RSS separately, including its worker-lifetime and maximum-single-process scopes.
+
+### Independent CI and limits
+
+[Real-performance run 41705416119](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41705416119) passed both jobs and exact paired comparisons.
+Its HTTP workflow encodes the real reference WAV to MP3.
+Its dense case includes the initial query and a different inventory, so these results remain separate from local preloaded scoring.
+
+| Independent CI scope | Baseline median | Candidate median | Time reduction |
+| --- | ---: | ---: | ---: |
+| Complete HTTP control, wall | 52.213 s | 44.475 s | 14.82% |
+| Initial query and dense scoring, CPU | 36.750 s | 29.984 s | 18.41% |
+
+Runtime-candidate CI passed **198 real tests and 4 subtests**.
+Forced Python mode passed **71 tests**, with **one native-only skip**.
+Installed-package checks passed on **Python 3.11 and 3.14**.
+Every pair preserves the compared scientific outputs without numerical tolerances.
+HTTP parity includes the logical ledger, PCM and CSV bytes, and decoded PNG pixels under the declared run-metadata normalization.
+The comparator also checks NPZ member names, dtypes, shapes, and element bytes when present; the local runs produced no NPZ files.
+
+The upload decision remains **`inconclusive / search_incomplete`**.
+These source-informed regional controls do not establish independent location accuracy, complete national coverage, or a universal speedup.
+
+### Reproduction
+
+1. Select the candidate branch in the [real-performance workflow](../.github/workflows/real-performance.yml).
+2. Set `baseline` to `b4cd00ad46f0299baa716950fabe062d74f019f0`.
+3. Set `regional=true` and run the workflow.
+
+The workflow restores recorded inputs, builds both versions, and runs three alternating pairs.
+The canonical scripts are [benchmark_prepared_measurements.py](../scripts/benchmark_prepared_measurements.py) and [benchmark_real_regional_upload.py](../scripts/benchmark_real_regional_upload.py).
+For local preloaded scoring, omit `--include-track-query` from the scoring comparison.
+The CI dense comparison includes that option.
+The HTTP script's `--compare` mode checks each complete pair.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
