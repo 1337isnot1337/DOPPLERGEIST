@@ -32,10 +32,18 @@ searches has an established indoor aircraft source; all three were visually
 ambiguous. These results do not show whether indoor recording, a phone, or poor
 audio quality succeeds or fails.
 
-All ten visually plausible leads came from aircraft-targeted or site-named
-queries; proposals in the indoor, outdoor-walk, bird/nature, adverse and
-phone-movement query groups were visually ambiguous. The grouping reflects
-search terms, not verified recording equipment or conditions. One
+The ten plausible leads in the first review came from aircraft-targeted or
+site-named queries. A focused re-review adds one candidate from the outdoor-walk
+query category: [wc3nFzQnbbc](https://www.youtube.com/watch?v=wc3nFzQnbbc), a 4K
+walking-tour recording from Venice Canals, Los Angeles. Its existing scan has
+three co-trending harmonic-group ridges descending about 105 to 97 Hz, 206 to
+181 Hz, and 314 to 268 Hz from 81 to 112.5 seconds; another ridge near 402 to
+366 Hz overlaps. Aircraft identity is unconfirmed and the walking microphone
+moves, so this is not eligible for fixed-point geolocation or the unknown-point
+benchmark. The current review labels are six plausible Doppler-like, five with
+edits or repetition, and 36 ambiguous. Proposals in the indoor, bird/nature,
+adverse and phone-movement query groups remain visually ambiguous. The grouping
+reflects search terms, not verified recording equipment or conditions. One
 [small-plane clip](https://www.youtube.com/watch?v=MEwEWurF2Ck), categorized
 under an aircraft-targeted query, has a plausible descending trace and its
 uploader says it was filmed on an iPhone 8. That is a useful ordinary-equipment
