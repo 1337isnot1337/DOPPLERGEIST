@@ -226,4 +226,3 @@ PLAYWRIGHT_BROWSERS_PATH=/path/to/browser-cache /path/to/browser-venv/bin/python
 Receipts, source/package hashes and desktop/mobile screenshots are under
 `evidence/verification/product-readback-20261103/`. The full Playwright trace and
 copied job remain local in `results/product-readback-20261103/`.
-
