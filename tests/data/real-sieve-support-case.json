@@ -1,0 +1,42 @@
+{
+  "event_indices": [
+    0,
+    1
+  ],
+  "candidate": {
+    "point_id": 0,
+    "passes": [
+      {
+        "point_id": 0,
+        "flight_id": "a4b49c",
+        "emission_time": 1788900119.4732366,
+        "receive_time": 1788900122.4422321,
+        "distance_m": 1018.3654934201973,
+        "speed_mps": 91.48369766782308
+      },
+      {
+        "point_id": 0,
+        "flight_id": "ac5e01",
+        "emission_time": 1788900280.7354364,
+        "receive_time": 1788900308.51846,
+        "distance_m": 9529.577109906993,
+        "speed_mps": 108.41172287358417
+      }
+    ],
+    "event_indices": [
+      0,
+      1
+    ],
+    "recording_start_bounds_s": [
+      1788899811.4422321,
+      1788899818.51846
+    ]
+  },
+  "clock": 1788899814.9803462,
+  "point": {
+    "point_id": 0,
+    "lat": 33.0,
+    "lon": -97.0,
+    "elev_m": 200.0
+  }
+}
