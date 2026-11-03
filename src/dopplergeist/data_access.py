@@ -3,7 +3,8 @@
 These are internal data adapters, not a second pipeline request/result contract.
 Coverage describes the *source query*, never receiver/network completeness.
 """
-from collections import Counter, OrderedDict
+from collections import Counter, OrderedDict, deque
+from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -12,6 +13,8 @@ import gzip
 import hashlib
 import io
 import json
+import multiprocessing
+import os
 from pathlib import Path
 import sqlite3
 import tarfile
@@ -202,8 +205,7 @@ class SplitReader(io.RawIOBase):
         super().close()
 
 
-def archive_frames(paths, max_member_bytes=64 * 1024 * 1024):
-    """Preserve all types, full geometry and altitude labels before indexing."""
+def _archive_members(paths, max_member_bytes):
     try:
         with io.BufferedReader(SplitReader(paths)) as stream:
             with tarfile.open(fileobj=stream, mode="r|*") as archive:
@@ -212,17 +214,152 @@ def archive_frames(paths, max_member_bytes=64 * 1024 * 1024):
                         continue
                     if member.size > max_member_bytes:
                         raise DataUnavailable(f"Oversized trace member: {member.name}")
-                    raw = archive.extractfile(member).read()
-                    if raw[:2] == b"\x1f\x8b":
-                        with gzip.GzipFile(fileobj=io.BytesIO(raw)) as compressed:
-                            raw = compressed.read(max_member_bytes + 1)
-                        if len(raw) > max_member_bytes:
-                            raise DataUnavailable(f"Oversized expanded trace: {member.name}")
-                    frame = adsblol_frame(json.loads(raw))
-                    if not frame.empty:
-                        yield frame
+                    yield archive.extractfile(member).read()
     except (tarfile.TarError, EOFError, OSError, ValueError) as error:
         raise DataUnavailable(f"Invalid/truncated ADS-B archive: {error}") from error
+
+
+def _decode_archive_frame(raw, max_member_bytes):
+    if raw[:2] == b"\x1f\x8b":
+        with gzip.GzipFile(fileobj=io.BytesIO(raw)) as compressed:
+            raw = compressed.read(max_member_bytes + 1)
+        if len(raw) > max_member_bytes:
+            raise DataUnavailable("Oversized expanded trace")
+    return adsblol_frame(json.loads(raw))
+
+
+def archive_frames(paths, max_member_bytes=64 * 1024 * 1024):
+    """Preserve all types, full geometry and altitude labels before indexing."""
+    try:
+        for raw in _archive_members(paths, max_member_bytes):
+            frame = _decode_archive_frame(raw, max_member_bytes)
+            if not frame.empty:
+                yield frame
+    except (EOFError, OSError, ValueError) as error:
+        raise DataUnavailable(f"Invalid/truncated ADS-B archive: {error}") from error
+
+
+def _prepare_staging(frame, class_map):
+    required = ["flight_id", "time_s", "lat", "lon", "alt_m"]
+    if not set(required).issubset(frame):
+        raise DataUnavailable(f"Missing canonical columns: {required}")
+    valid = np.isfinite(frame[["time_s", "lat", "lon", "alt_m"]].to_numpy(dtype=float)).all(axis=1)
+    valid &= frame.lat.between(-90, 90) & frame.lon.between(-180, 180) & frame.flight_id.notna()
+    clean = frame.loc[valid].copy()
+    clean["aircraft_class"] = clean.typecode.map(class_map).astype(object).fillna("unclassified") if "typecode" in clean else "unclassified"
+    altitude = clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)}
+    return clean, int((~valid).sum()), altitude
+
+
+_STAGING_CLASS_MAP = None
+_STAGING_MEMBER_LIMIT = None
+
+
+def _init_staging_worker(class_map, max_member_bytes):
+    global _STAGING_CLASS_MAP, _STAGING_MEMBER_LIMIT
+    _STAGING_CLASS_MAP, _STAGING_MEMBER_LIMIT = class_map, max_member_bytes
+
+
+def _stage_archive_member(raw):
+    frame = _decode_archive_frame(raw, _STAGING_MEMBER_LIMIT)
+    if frame.empty:
+        return None
+    clean, invalid, altitude = _prepare_staging(frame, _STAGING_CLASS_MAP)
+    return list(_staging_rows(clean)), invalid, altitude
+
+
+def _index_workers():
+    available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    return max(1, available - 1)
+
+
+@contextmanager
+def _index_pool(workers, initializer=None, initargs=()):
+    # The parent writes SQLite. Each spawned worker must not start its own
+    # multithreaded BLAS pool and oversubscribe the available cores.
+    names = ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS")
+    saved = {name: os.environ.get(name) for name in names}
+    os.environ.update({name: "1" for name in names})
+    try:
+        with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn"),
+                                 initializer=initializer, initargs=initargs) as pool:
+            yield pool
+    finally:
+        for name, value in saved.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
+def archive_staging(paths, class_map, workers=None, max_member_bytes=64 * 1024 * 1024):
+    """Prepare archive rows in parallel, retaining source order and one SQLite writer."""
+    if workers is None:
+        workers = _index_workers()
+    if type(workers) is not int or workers < 1:
+        raise ValueError("workers must be a positive integer")
+    if workers == 1:
+        for frame in archive_frames(paths, max_member_bytes):
+            clean, invalid, altitude = _prepare_staging(frame, class_map)
+            yield list(_staging_rows(clean)), invalid, altitude
+        return
+    try:
+        with _index_pool(workers, _init_staging_worker, (class_map, max_member_bytes)) as pool:
+            pending = deque()
+            for raw in _archive_members(paths, max_member_bytes):
+                pending.append(pool.submit(_stage_archive_member, raw))
+                if len(pending) >= workers:
+                    batch = pending.popleft().result()
+                    if batch is not None:
+                        yield batch
+            while pending:
+                batch = pending.popleft().result()
+                if batch is not None:
+                    yield batch
+    except (EOFError, OSError, ValueError) as error:
+        raise DataUnavailable(f"Invalid/truncated ADS-B archive: {error}") from error
+
+
+def _build_flight_segments(flight, records, max_gap_s, namespace):
+    frame = pd.DataFrame([json.loads(row) for row in records]).drop_duplicates("time_s")
+    groups = (frame.time_s.diff() > max_gap_s).cumsum()
+    segments = []
+    for index, (_, chunk) in enumerate(frame.groupby(groups)):
+        if len(chunk) < 3:
+            continue
+        name = flight + (f"@{namespace}" if namespace else "") + (f":{index}" if groups.max() else "")
+        track = _frame_track(name, chunk)
+        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), compresslevel=6, mtime=0)
+        segments.append((name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]),
+                         payload, hashlib.sha256(payload).hexdigest(), _continuous_bounds(track)))
+    return segments
+
+
+def _flight_inputs(db, max_flight_samples):
+    for (flight,) in db.execute("SELECT DISTINCT flight FROM samples ORDER BY flight"):
+        count = db.execute("SELECT count(*) FROM samples WHERE flight=?", (flight,)).fetchone()[0]
+        if count > max_flight_samples:
+            raise DataUnavailable(f"Flight {flight} exceeds {max_flight_samples} sample memory limit")
+        records = [row[0] for row in db.execute("SELECT row FROM samples WHERE flight=? ORDER BY time,rowid", (flight,))]
+        yield flight, records
+
+
+def _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers):
+    # Keep source order and cap queued serialized inputs as well as task count.
+    max_pending_bytes = 128 * 1024 * 1024
+    with _index_pool(workers) as pool:
+        pending, queued_bytes = deque(), 0
+        for flight, records in _flight_inputs(db, max_flight_samples):
+            size = sum(len(row.encode("utf-8")) for row in records)
+            while pending and (len(pending) >= workers or queued_bytes + size > max_pending_bytes):
+                future, used = pending.popleft()
+                queued_bytes -= used
+                yield future.result()
+            pending.append((pool.submit(_build_flight_segments, flight, records, max_gap_s, namespace), size))
+            queued_bytes += size
+        while pending:
+            future, _ = pending.popleft()
+            yield future.result()
 
 
 class FlightIndex:
@@ -243,7 +380,8 @@ class FlightIndex:
         return sqlite3.connect(f"{self.path.resolve().as_uri()}?mode=ro", uri=True)
 
     @classmethod
-    def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None):
+    def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
+              prepared=False):
         """Disk staging permits arbitrary source order without whole-table RAM.
 
         Explicit source coverage is required: cropped or prop-only historical
@@ -278,39 +416,31 @@ class FlightIndex:
                 """)
                 rows, invalid, altitude = 0, 0, Counter()
                 for frame in frames:
-                    required = ["flight_id", "time_s", "lat", "lon", "alt_m"]
-                    if not set(required).issubset(frame):
-                        raise DataUnavailable(f"Missing canonical columns: {required}")
-                    valid = np.isfinite(frame[["time_s", "lat", "lon", "alt_m"]].to_numpy(dtype=float)).all(axis=1)
-                    valid &= frame.lat.between(-90, 90) & frame.lon.between(-180, 180) & frame.flight_id.notna()
-                    invalid += int((~valid).sum())
-                    clean = frame.loc[valid]
-                    clean = clean.copy()
-                    clean["aircraft_class"] = clean.typecode.map(class_map).astype(object).fillna("unclassified") if "typecode" in clean else "unclassified"
-                    altitude.update(clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)})
-                    # pandas normalizes numpy scalars/NaNs to JSON numbers/null.
-                    db.executemany("INSERT INTO samples VALUES(?,?,?)", _staging_rows(clean))
-                    rows += len(clean)
+                    if prepared:
+                        staged, invalid_count, altitude_counts = frame
+                        count = len(staged)
+                    else:
+                        clean, invalid_count, altitude_counts = _prepare_staging(frame, class_map)
+                        count, staged = len(clean), _staging_rows(clean)
+                    invalid += invalid_count
+                    altitude.update(altitude_counts)
+                    db.executemany("INSERT INTO samples VALUES(?,?,?)", staged)
+                    rows += count
                 db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
-                for (flight,) in db.execute("SELECT DISTINCT flight FROM samples ORDER BY flight"):
-                    count = db.execute("SELECT count(*) FROM samples WHERE flight=?", (flight,)).fetchone()[0]
-                    if count > max_flight_samples:
-                        raise DataUnavailable(f"Flight {flight} exceeds {max_flight_samples} sample memory limit")
-                    records = [json.loads(r[0]) for r in db.execute("SELECT row FROM samples WHERE flight=? ORDER BY time,rowid", (flight,))]
-                    frame = pd.DataFrame(records).drop_duplicates("time_s")
-                    groups = (frame.time_s.diff() > max_gap_s).cumsum()
-                    for index, (_, chunk) in enumerate(frame.groupby(groups)):
-                        if len(chunk) < 3:
-                            continue
-                        namespace = coverage.get("release_tag", "")
-                        name = flight + (f"@{namespace}" if namespace else "") + (f":{index}" if groups.max() else "")
-                        track = _frame_track(name, chunk)
-                        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), compresslevel=6, mtime=0)
+                namespace = coverage.get("release_tag", "")
+                workers = _index_workers() if prepared else 1
+                if workers > 1:
+                    flights = _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers)
+                else:
+                    flights = (_build_flight_segments(flight, records, max_gap_s, namespace)
+                               for flight, records in _flight_inputs(db, max_flight_samples))
+                for flight_segments in flights:
+                    for name, start, end, payload, payload_hash, bounds in flight_segments:
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
-                                         (name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]), payload, hashlib.sha256(payload).hexdigest()))
-                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track)))
+                                         (name, start, end, payload, payload_hash))
+                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *bounds))
                         segments += 1
                 db.execute("DROP TABLE samples")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
@@ -510,8 +640,8 @@ class FlightCache:
             description = value.get("desc", "") if isinstance(value, dict) else (value[2] if len(value) > 2 else "")
             # ICAO T also covers helicopter turboshafts; keep the family label broad.
             class_map[code] = {"J": "jet", "T": "turbine", "P": "piston"}.get(description[-1:], "unclassified")
-        return FlightIndex.build(index, archive_frames([s["path"] for s in sources]), sources=sources + [type_source],
-                                 coverage=coverage, class_map=class_map)
+        return FlightIndex.build(index, archive_staging([s["path"] for s in sources], class_map), sources=sources + [type_source],
+                                 coverage=coverage, class_map=class_map, prepared=True)
 
 
 class CachedTerrain:
