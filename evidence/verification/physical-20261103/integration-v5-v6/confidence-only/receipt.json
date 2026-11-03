@@ -1,0 +1,36 @@
+{
+  "source_commit": "ef1c6ea2c9b36ea46365386e2a9ff57d248bd715",
+  "source_tree": "65f3d6c2f32117d7100e402cd5e9b343588d0a5c",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-review/tests/test_confidence.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-review/tests/test_finite_evidence_independent.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-oracle/tests/test_finite_union_independent.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v5/tests/test_decision_invariants.py",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/finite-union-published/pytest.xml"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-review/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-review/tests",
+  "elapsed_s": 0.41803243899994413,
+  "exit_code": 0,
+  "source_hashes": {
+    "src/aircraft_geoloc/confidence.py": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6",
+    "tests/test_confidence.py": "ed28709f695680b8c8cdc1bab7c374ed58ef26df478083b6f0a025c913b13042",
+    "tests/test_finite_evidence_independent.py": "27b61543817b1f598e29489fa754579282dfe9eae3ce291f762ce63229744a3b",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-oracle/tests/test_finite_union_independent.py": "e4dbd35fae25c17b5168e9daa0ad01c348be5a7e76401d2f5bf2c382fed49077",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v5/tests/test_decision_invariants.py": "6a6481bb6df5f633e007a9abfcb38da538be2c5278108c51a6a2d95467ec46a5"
+  },
+  "scope": "Independent geometric, evidence-accounting, numerical margin and legacy compatibility controls. No scientific replay or complete producer integration.",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "1",
+    "tests": "53",
+    "time": "0.205",
+    "timestamp": "2026-11-02T23:03:06.178698-04:00",
+    "hostname": "05c893b10fbb"
+  }
+}

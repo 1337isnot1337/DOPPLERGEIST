@@ -1,0 +1,48 @@
+{
+  "source_commit": "392ff442f38b41a93060728bcf81915f7f916eb8",
+  "source_tree": "ddace3957d0a5b26500393bcf9a98f786530484b",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-oracle/tests/test_finite_union_independent.py",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/integrated-v6/pytest.xml"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v6/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v6/tests",
+  "loopback_sockets_enabled": true,
+  "components": {
+    "main": "8cdb7ae357137e7d7255b87b7ff88a4d281f6d7c",
+    "product": "a6726f3c660382dc64f692bcc780c1ecb53f05b0",
+    "confidence": "ef1c6ea2c9b36ea46365386e2a9ff57d248bd715",
+    "independent_union_controls": "37f5c616126eb948cde3e8a89dd72972cc08237c"
+  },
+  "scope": "Combined product, operator chunk adapter, finite-envelope consumer and independent geometric/legacy controls. Disk-backed retention producer and classified-trial adapter remain absent; no scientific replay is claimed.",
+  "source_hashes": {
+    "src/aircraft_geoloc/confidence.py": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6",
+    "src/aircraft_geoloc/automatic.py": "7c9b359544538406e34295da39b8adc0dc96772750211c981887da15f9b492ad",
+    "tests/test_decision_invariants.py": "6a6481bb6df5f633e007a9abfcb38da538be2c5278108c51a6a2d95467ec46a5",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-union-oracle/tests/test_finite_union_independent.py": "e4dbd35fae25c17b5168e9daa0ad01c348be5a7e76401d2f5bf2c382fed49077"
+  },
+  "elapsed_s": 49.70400173100097,
+  "exit_code": 0,
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "1",
+    "tests": "291",
+    "time": "49.000",
+    "timestamp": "2026-11-02T23:03:33.308306-04:00",
+    "hostname": "05c893b10fbb"
+  },
+  "skips": [
+    {
+      "class": "tests.test_ci_checkpoint_replay.CheckpointReplayTests",
+      "name": "test_rss_includes_child_spawned_by_background_thread",
+      "message": "Requires Linux per-thread /proc children interfaces",
+      "detail": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v6/tests/test_ci_checkpoint_replay.py:51: Requires Linux per-thread /proc children interfaces"
+    }
+  ]
+}

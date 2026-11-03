@@ -1,0 +1,66 @@
+{
+  "README.md": {
+    "bytes": 4499,
+    "sha256": "f8c1d359971686d682f25958ff6d8afa66890bf5fa1957d6b6139c7e1943fe5c"
+  },
+  "confidence-only/pytest.log": {
+    "bytes": 110,
+    "sha256": "a28574b81533442f4bd2f18cf88887a001e1a187cf14216174bf2b371dd3df5f"
+  },
+  "confidence-only/pytest.xml": {
+    "bytes": 7898,
+    "sha256": "ee485d525c28f07af5e3c89a5a9560f4131d929d59e2f3bc951601cca826c1b6"
+  },
+  "confidence-only/receipt.json": {
+    "bytes": 2059,
+    "sha256": "b049415ec8ff19df44d3d2a2074051468a01b058f2156168ef7864119c81f616"
+  },
+  "controls/test_finite_union_independent.py": {
+    "bytes": 3579,
+    "sha256": "e4dbd35fae25c17b5168e9daa0ad01c348be5a7e76401d2f5bf2c382fed49077"
+  },
+  "source-and-scope.json": {
+    "bytes": 2680,
+    "sha256": "c977de482f1cc4586e55e8f3e8144cb03d2d9bcca6fc0bdc8c501c8692e93cb3"
+  },
+  "v5/corrected-collection/pytest.log": {
+    "bytes": 357,
+    "sha256": "599b79d7555ce61c22bc203c2e3b238112366203b72e4769ecd37423eb305da7"
+  },
+  "v5/corrected-collection/pytest.xml": {
+    "bytes": 35890,
+    "sha256": "fa54cfaff585e777908941ed371bb110f73c5455c6e292b1194dad12fbac18c6"
+  },
+  "v5/corrected-collection/receipt.json": {
+    "bytes": 1568,
+    "sha256": "4895b900262d39984d2c0ad423543b7d1b90b550cd937f16118b0b0b09b69c2d"
+  },
+  "v5/pytest.log": {
+    "bytes": 783,
+    "sha256": "b40adfd3de81c855edea7ceb13c60e8c9ed171db72fbbf14dafa891fa331ad14"
+  },
+  "v5/pytest.xml": {
+    "bytes": 780,
+    "sha256": "570512f24c8b072c6eb60d1cb8a696f5e2199a54056a4e389c15731bcb2df028"
+  },
+  "v5/receipt.json": {
+    "bytes": 1390,
+    "sha256": "f63982166196dabe7717f4ea0b7b2aa8cebb98effb134e08c6cb8a28f61a64a3"
+  },
+  "v6/pytest.log": {
+    "bytes": 437,
+    "sha256": "80b98562c5e66745e5a6646e6a3eb801c5e53b7fa0712e23ca737371117597c2"
+  },
+  "v6/pytest.xml": {
+    "bytes": 38115,
+    "sha256": "f7f378228ed24bd18d77235ce46386de1cb519f55e1cdbb15b355f87125de8e2"
+  },
+  "v6/receipt.json": {
+    "bytes": 2392,
+    "sha256": "0802ccb1440b3de271c4692e98f0e1a7ed71b14d513075a6f28317526de8aa7b"
+  },
+  "v6/source.json": {
+    "bytes": 1702,
+    "sha256": "ef31bf16d878183f6d7e5c13daed334fc82c8b311b9b82615b9472826fa57c57"
+  }
+}

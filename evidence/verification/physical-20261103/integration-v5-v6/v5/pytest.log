@@ -1,0 +1,13 @@
+
+==================================== ERRORS ====================================
+________________________ ERROR collecting test session _________________________
+import file mismatch:
+imported module 'test_decision_invariants' has this __file__ attribute:
+  /workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v5/tests/test_decision_invariants.py
+which is not the same as the test file we want to collect:
+  /workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated/tests/test_decision_invariants.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+=========================== short test summary info ============================
+ERROR 
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 2.42s

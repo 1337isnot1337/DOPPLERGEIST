@@ -1,0 +1,34 @@
+{
+  "source_commit": "26eec2334c76d37486d1358e67f0146538c65104",
+  "source_tree": "a3d7cf48ae6181aff728225799e3bb04ecb38d3e",
+  "scope": "Current-main/product finite relay plus numerical-boundary repair. Compatibility verification; the disk-backed retention producer and finite-union implementation are not yet included.",
+  "cwd": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v5",
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v5/src",
+  "loopback_sockets_enabled": true,
+  "external_legacy_controls_sha256": "6a6481bb6df5f633e007a9abfcb38da538be2c5278108c51a6a2d95467ec46a5",
+  "dependencies": {
+    "origin/main": "fcbe5136d556120b9dc97b69ec316f2e26e88fc3",
+    "origin/swarm/w5-product": "57909c355fb696802ad82f7f65784e92c54e181f",
+    "origin/worker/finite-evidence-review-20261103": "27a2f87aa106f908a1143d2314ee07b7f4dff947"
+  },
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/integrated-v5/corrected-collection/pytest.xml"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 47.73806827399858,
+  "junit": {
+    "tests": 275,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "time_s": 46.816
+  },
+  "prior_attempt": "../receipt.json",
+  "collection_correction": "The exact independent legacy test file already exists inside this combined checkout; collect it only once as part of tests.",
+  "independent_legacy_controls_present_in_checkout": true
+}

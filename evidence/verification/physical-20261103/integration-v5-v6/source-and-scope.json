@@ -1,0 +1,69 @@
+{
+  "v5": {
+    "executed_local_commit": "26eec2334c76d37486d1358e67f0146538c65104",
+    "published_same_tree_commit": "03beb2c9f6b3a3bf01c848dd139cb133bcf19ef5",
+    "tree": "a3d7cf48ae6181aff728225799e3bb04ecb38d3e",
+    "branch": "verify/physical-integration-v5-20261103"
+  },
+  "v6": {
+    "executed_local_commit": "392ff442f38b41a93060728bcf81915f7f916eb8",
+    "published_same_tree_commit": "6b078f7336f4c1b9b8d5cacef6a12b315d260ca7",
+    "tree": "ddace3957d0a5b26500393bcf9a98f786530484b",
+    "branch": "verify/physical-integration-v6-20261103"
+  },
+  "environment_skip": {
+    "platform": "linux",
+    "proc_thread_self_children_exists": false,
+    "affected_test": "tests.test_ci_checkpoint_replay.CheckpointReplayTests.test_rss_includes_child_spawned_by_background_thread",
+    "limitation": "No actual per-thread child-process memory measurement was established in this environment."
+  },
+  "v6_independent_controls": [
+    {
+      "class": "tests.test_decision_invariants",
+      "name": "test_near_tied_mode_outside_returned_radius_cannot_be_supported[90.0]",
+      "passed": true
+    },
+    {
+      "class": "tests.test_decision_invariants",
+      "name": "test_near_tied_mode_outside_returned_radius_cannot_be_supported[150.0]",
+      "passed": true
+    },
+    {
+      "class": "tests.test_decision_invariants",
+      "name": "test_optimizer_exhaustion_cannot_establish_complete_sensitivity",
+      "passed": true
+    },
+    {
+      "class": "tests.test_decision_invariants",
+      "name": "test_unrefined_distant_same_association_mode_is_not_fully_assessed",
+      "passed": true
+    },
+    {
+      "class": "",
+      "name": "test_union_contains_a_displaced_reported_profile_not_just_its_center",
+      "passed": true
+    },
+    {
+      "class": "",
+      "name": "test_a_nearby_point_can_have_a_reported_profile_exceeding_the_target",
+      "passed": true
+    },
+    {
+      "class": "",
+      "name": "test_raw_and_refined_states_sharing_one_seed_id_both_enter_the_union",
+      "passed": true
+    },
+    {
+      "class": "",
+      "name": "test_an_unprofiled_finite_point_does_not_borrow_the_leading_profile",
+      "passed": true
+    }
+  ],
+  "control_identification": "External pytest cases have an empty JUnit classname; exact function names are obtained from the byte-preserved predeclared test source.",
+  "scientific_jobs_submitted": 0,
+  "limits": [
+    "The disk-backed retention producer, classified-trial accounting and new core_assessed_mode_ids product gate are absent.",
+    "No actual finite-qualified API/UI radius or national accepted result is claimed.",
+    "Historical decisions and independent-field-data gate #53 remain unchanged."
+  ]
+}
