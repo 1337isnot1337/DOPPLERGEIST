@@ -34,6 +34,11 @@ PR #196 removes the automatic CPA filter's unsupported minimum speed and
 near-sonic maximum. On one real cell, five passes below 1 m/s admitted 1,166
 additional associations while retaining all 23,136 earlier associations. The
 finite emitted-frequency range remains a separate modeling prior.
+PR #205 adds a conservative acoustic score ceiling against the current Top-K
+floor. Retained candidates matched exactly on a 468-association real point
+(37.77 → 28.23 CPU seconds) and a 2,443-association real clock partition
+(158.01 → 149.56 CPU seconds). These single paired measurements are not a
+nationwide speed or accuracy estimate.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
@@ -71,8 +76,8 @@ At this handoff the upload search is still running; no coordinate has been
 accepted. On the originating machine, the job, `resume.json`, discovery output,
 search checkpoints and archived earlier revisions are under
 `/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
-The active search uses the code merged at `c259f38` and run hash
-`b5f83ebb72f3cf03e4b1d10a9b48f5112800568b5fa1f2181f18418a8c9139c5`;
+The active search uses the code from PR #205 at `225bf6b` and run hash
+`d1ef045417a64a792b81c7355e508bb204046a70b614fb5815aba14b74a75456`;
 check its current API/status and source identity before intervening. The separate
 homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. The local search is configured for 12
@@ -84,20 +89,21 @@ they are not a portable distributed CLI. The homelab disk guard stops only the
 identified staging process group below 15 GiB free; the coordinator then imports
 its completed checkpoints. The guard and its log are also in homelab's
 `~/.cache/dopplergeist-multicore-20261103/`. A search checkpoint from different
-code must not be mixed in without a specifically validated migration. The only such
-migration used here accepts strictly empty root tiles after checking both
-identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
-zero receiver grid points were migrated; the preceding search is archived locally
-as `search-before-motion-c259f38`. Check final coverage, unsupported-motion and
-retention evidence before describing any candidate as a localization. Main also
-contains a newer harmonic-ambiguity confidence check from PR #192, which is not
-in the active search process. Its aligned-sample heuristic flagged no pair when
+code must not be mixed in without a specifically validated migration. On this
+restart, 654 root checkpoints were migrated after checking the search identities,
+unchanged pre-scoring code, terrain hashes and empty retention ledgers. They had
+either no receiver points or no CPA rows; unsupported-flight evidence was
+preserved. A no-CPA root replayed with an identical full payload. Homelab was
+seeded with 422 verified no-receiver roots. The preceding local search is
+archived as `search-before-floor-225bf6b`; other old homelab results remain under
+`national-motion-a9f91ee` and must not be mixed with the new run.
+Check final coverage, unsupported-motion and retention evidence before describing
+any candidate as a localization. The active code includes PR #192's
+harmonic-ambiguity confidence check. Its aligned-sample heuristic flagged no pair when
 run over all 17 discovered ridges from this upload; this does not establish that
 the groups are independent. Apply current confidence checks to the final
-matched evidence before accepting a result. PR #203 also corrects cache keys
-for caller-supplied acoustic arrays; one complete 468-association point produced
-the same full payload and retention ledger before and after that fix. That
-point-level comparison does not prove equivalence across the national search.
+matched evidence before accepting a result. The active code also includes PR #203's
+cache-key fix for caller-supplied acoustic arrays.
 
 ## Read first
 
