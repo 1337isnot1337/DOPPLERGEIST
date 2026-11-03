@@ -18,7 +18,7 @@ def main():
     fields = ['site', 'record_url', 'status', 'error', 'audio_path', 'source_filename_timestamp_utc',
               'clip_duration_s', 'source_sha256', 'location_status', 'location_reference',
               'location_uncertainty', 'publisher_clock_setting', 'clock_uncertainty', 'proposal_count', 'proposal_group_count',
-              'scanner_interpretation', 'visual_review', 'review_plot']
+              'scanner_interpretation', 'visual_review', 'review_plot', 'alternate_review', 'alternate_plot']
     rows = []
     for source in selection['sites']:
         site = source['site']
@@ -45,7 +45,9 @@ def main():
                      'proposal_group_count': result.get('proposal_group_count'),
                      'scanner_interpretation': result.get('interpretation'),
                      'visual_review': review.get('visual_review', 'pending'),
-                     'review_plot': review.get('plot')})
+                     'review_plot': review.get('plot'),
+                     'alternate_review': review.get('alternate_review', {}).get('visual_review'),
+                     'alternate_plot': review.get('alternate_review', {}).get('plot')})
     directory = args.root / 'reports'
     directory.mkdir(exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
