@@ -84,7 +84,7 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
 
     @matching._cache_ridge_fits
     def run():
-        return [score_candidate(candidates[i], point, tracks, events, measurements, mode="robust_ridge")
+        return [score_candidate(candidates[i], point, tracks, events, measurements, mode="robust_ridge", score_floor=0.0)
                 for i in chosen]
 
     original = screen.ridge_trial_rejections
