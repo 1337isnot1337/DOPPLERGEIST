@@ -331,11 +331,31 @@ class FlightIndex:
     def from_parquet(cls, path, parquet, *, coverage, **kwargs):
         import pyarrow.parquet as pq
         parquet = Path(parquet)
-        source = {"path": str(parquet.resolve()), "sha256": sha256(parquet), "bytes": parquet.stat().st_size}
         try:
-            frames = (batch.to_pandas() for batch in pq.ParquetFile(parquet).iter_batches(batch_size=16384))
+            parquet_file = pq.ParquetFile(parquet)
+            metadata = parquet_file.schema_arrow.metadata or {}
+            if b"dopplergeist.selection.v1" in metadata:
+                selected = json.loads(metadata[b"dopplergeist.selection.v1"])
+                bounds, times = coverage["bounds"], coverage["time_range_s"]
+                box, interval = selected["bounds"], selected["time_range_s"]
+                if (len(bounds) != 4 or len(box) != 4 or len(times) != 2 or
+                        not np.isfinite([*bounds, *box, *times]).all() or
+                        type(selected["all_aircraft"]) is not bool or
+                        not np.isfinite(selected["max_gap_s"]) or selected["max_gap_s"] <= 0 or
+                        not (box[0] <= bounds[0] <= bounds[2] <= box[2] and
+                             box[1] <= bounds[1] <= bounds[3] <= box[3] and times[0] <= times[1])):
+                    raise DataUnavailable("Declared flight coverage exceeds the Parquet selection bounds")
+                if interval is not None and (len(interval) != 2 or not np.isfinite(interval).all() or
+                        not interval[0] <= times[0] <= times[1] <= interval[1]):
+                    raise DataUnavailable("Declared flight coverage exceeds the Parquet selection time")
+                if coverage.get("all_aircraft", False) and selected["all_aircraft"] is not True:
+                    raise DataUnavailable("Parquet selection excluded aircraft types")
+                if selected["max_gap_s"] != kwargs.get("max_gap_s", 30.0):
+                    raise DataUnavailable("Index gap limit differs from the Parquet selection gap")
+            source = {"path": str(parquet.resolve()), "sha256": sha256(parquet), "bytes": parquet.stat().st_size}
+            frames = (batch.to_pandas() for batch in parquet_file.iter_batches(batch_size=16384))
             return cls.build(path, frames, sources=[source], coverage=coverage, **kwargs)
-        except (OSError, ValueError) as error:
+        except (OSError, ValueError, KeyError, TypeError) as error:
             raise DataUnavailable(f"Invalid/truncated Parquet: {parquet}: {error}") from error
 
     def query(self, bounds, time_range):
