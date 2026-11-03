@@ -34,6 +34,8 @@ def test_all_outcomes_and_eligibility():
     assert report["summary"]["false_localizations"] == 1
     assert report["summary"]["execution_failures"] == 1
     assert not report["cases"][1]["location_returned"]
+    assert report["cases"][1]["diagnostic_best_candidate_error_m"] > 100
+    assert "location_error_m" not in report["cases"][1]
     assert report["cases"][3]["location_error_m"] > 100
 
 
