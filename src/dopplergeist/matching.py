@@ -185,7 +185,13 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
                              [start + tolerance for start, _ in ordered],
                              [index for _, index in ordered])
         grouped.append(groups)
-    by_point = {p: frame for p, frame in table.groupby("point_id")}
+    silence_index = {}
+    if silence:
+        for point, frame in table.groupby("point_id"):
+            indices = list(frame.index)
+            reserve(len(indices) * max(1, len(indices).bit_length()))
+            ordered = sorted((records[i]["receive_time"], i) for i in indices)
+            silence_index[point] = ([value for value, _ in ordered], [i for _, i in ordered])
 
     def indexed_options(index, point_id, lower, upper):
         starts, ends, indices = grouped[index][point_id]
@@ -241,13 +247,15 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             examined += 1
             passes = tuple(row for _, row in path)
             if silence and len(path) > 1:
-                frame = by_point[point_id]
-                reserve(len(frame))
                 margin = silence.get("edge_margin_s", 60)
                 distance = max(p["distance_m"] for p in passes)*silence.get("distance_multiplier", 1)
-                between = frame[(frame.receive_time > passes[0]["receive_time"]+margin) &
-                                (frame.receive_time < passes[-1]["receive_time"]-margin) & (frame.distance_m <= distance)]
-                if any((r.flight_id, r.emission_time) not in used for r in between.itertuples()):
+                times, indices = silence_index[point_id]
+                left = bisect_right(times, passes[0]["receive_time"] + margin)
+                right = bisect_left(times, passes[-1]["receive_time"] - margin)
+                reserve(2 * max(1, len(times).bit_length()) + max(0, right - left))
+                if any(records[i]["distance_m"] <= distance and
+                       (records[i]["flight_id"], records[i]["emission_time"]) not in used
+                       for i in indices[left:right]):
                     continue
             if len(candidates) >= max_candidates:
                 raise ValueError("Association candidate budget exceeded; search is incomplete")

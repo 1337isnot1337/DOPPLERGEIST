@@ -31,3 +31,12 @@ def test_real_passages_fit_association_budget_without_losing_hypotheses():
     ):
         assert candidates[index]['event_indices'] == event_indices
         assert [p['flight_id'] for p in candidates[index]['passes']] == flight_ids
+
+
+def test_real_silence_filter_remains_within_work_budget():
+    fixture = json.loads((Path(__file__).parent / 'data' / 'reference-cpa-real.json').read_text())
+    candidates, counts = association_candidates(pd.DataFrame(fixture['cpa_rows']), fixture['events'],
+                                                 offset_tolerance_s=5, max_candidates=20000,
+                                                 silence={'edge_margin_s': 60})
+    assert len(candidates) == 1590
+    assert counts['work_units'] <= 400000
