@@ -1,0 +1,378 @@
+{
+  "artifact_hashes": {
+    "data-provenance.json": {
+      "bytes": 1508,
+      "sha256": "78eeb0af97393f2d3925f61c42ee6281cd03b4800f972a9cbf1dbb164856094e"
+    },
+    "decision.json": {
+      "bytes": 43670,
+      "sha256": "f35757aafc73a8c332b276a63f4dda6bbe3313638969cf6f99d6eeb92b740879"
+    },
+    "discovery/discovery.json": {
+      "bytes": 70258,
+      "sha256": "67111905357e64bd3255e17bfe4570abab222caf88808c0d4d0d22ebd0ef20c2"
+    },
+    "input.json": {
+      "bytes": 126,
+      "sha256": "4a8869df5766798db465da601d847dd9f8910049179f5001150212db3754cbd4"
+    },
+    "intake/intake.json": {
+      "bytes": 911,
+      "sha256": "98fa9304517f897f485343a159164bfc9a4d383f9d385f359dcb0ea699018715"
+    },
+    "intake/recording.json": {
+      "bytes": 417,
+      "sha256": "a960d68499f35f52717384bc28b3146c37e7444a424332e2a03c0f65a419af61"
+    },
+    "operator.json": {
+      "bytes": 384,
+      "sha256": "3c82098cda1c04e416bd4a5387dfc11c64587ee7c4bc6101c862fac8496dd6da"
+    },
+    "post-search-evaluation.json": {
+      "bytes": 3118,
+      "sha256": "53731f211584a2a7e8fe47820a6309c0f9d2772fdbdcf252d7b6b340b9c5ee50"
+    },
+    "provenance.json": {
+      "bytes": 3112,
+      "sha256": "2f1d9db8bb15e265d122838e3d0abcc417d9d3ce61918f2fb176a6b250a2b370"
+    },
+    "refined-candidates.json": {
+      "bytes": 265305,
+      "sha256": "e69ab2fa7e941a004749b4f5c7e9eebbd30870b122e1aee304379ebd9646ed77"
+    },
+    "request.json": {
+      "bytes": 452,
+      "sha256": "133c43158160589a760eb5fec2ec92ffee51e3846233528b7c444311d1e42097"
+    },
+    "result.json": {
+      "bytes": 84326,
+      "sha256": "f0631ba6474cfeda49459f6a8f8f7558f0ad93b20d3f4b6a918bf59afe686cde"
+    },
+    "search/manifest.json": {
+      "bytes": 47529,
+      "sha256": "f0b7e9a6db2aec241d259fbd8c4b2819758ad283ffba009b26795096d060b078"
+    },
+    "search/search-report.json": {
+      "bytes": 247861,
+      "sha256": "3e2586bfa4b6f4075d414055dc78164743096c79e743c29850aa4083cba45b3b"
+    }
+  },
+  "audit_kind": "bounded_read_only_final_artifact_consistency_audit",
+  "audit_status": "completed_with_reporting_limitations",
+  "audited_at_utc": "2026-11-03T01:16:23.756282+00:00",
+  "auditor": "verification_audit",
+  "consistency_checks": {
+    "all_result_artifact_links_exist": true,
+    "audio_hashes_match_intake_discovery_and_result": true,
+    "candidate_count": 111,
+    "checkpoint_files_checked": 19278,
+    "checkpoint_hash_algorithm": "SHA-256 of json.dumps(payload, sort_keys=True, allow_nan=False), matching data_access.content_hash",
+    "checkpoint_payload_hash_mismatches": 0,
+    "checkpoint_run_hash_mismatches": 0,
+    "discovery_events_exactly_equal_result_events": true,
+    "manifest_configuration_hash_valid": true,
+    "manifest_implementation_hashes_equal_run_provenance": true,
+    "mismatched_source_or_input_artifacts_found": [],
+    "refinement_candidate_count_matches": true,
+    "request_matches_provenance": true,
+    "result_and_decision_candidate_lists_identical": true,
+    "result_artifact_link_count": 12,
+    "result_decision_status_reason_message_identical": true,
+    "search_run_hash_matches_provenance": true
+  },
+  "execution_result": {
+    "automatic_events": 2,
+    "candidate_retention_limit": 100,
+    "complete_pipeline_elapsed_s": 226.10791356200025,
+    "data_scope_complete": true,
+    "decision_competing_hypothesis": {
+      "checked_radius_m": 42.841986085700775,
+      "loss_gap_per_event_hz": 0.02146734430545802,
+      "same_flight_association": false,
+      "separation_m": 1046002.3322655795
+    },
+    "grid_points_searched": 17664,
+    "leading_candidate": {
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "f4a942f158fc",
+        "159329fe8c9f"
+      ],
+      "lat": 40.03172446436919,
+      "lon": -100.01829223577491,
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "score": -0.1720691034013313,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "uncertainty": {
+        "kind": "sensitivity",
+        "method": "profiled_relative_altitude_offsets",
+        "radius_m": 42.841986085700775
+      }
+    },
+    "message": "Competing hypotheses fit nearly as well; no unique precise location is supported.",
+    "post_search_evaluation_note": "Truth and identity mapping read only in post-search evaluation; this is a previously inspected synthetic regression, not an independent real/held-out accuracy result.",
+    "post_search_position_error_m_reported": 0.6435930475006092,
+    "reason_code": "ambiguous_locations",
+    "search_bounds": [
+      -125.0,
+      24.0,
+      -66.0,
+      50.0
+    ],
+    "search_elapsed_s": 211.5439934279998,
+    "search_peak_rss_mib": 283.05078125,
+    "search_status": "complete",
+    "status": "inconclusive",
+    "tile_failures": [],
+    "tiles_completed": 19278,
+    "tiles_resumed": 0,
+    "tiles_total": 19278,
+    "unsearched_tiles": 0
+  },
+  "inputs": {
+    "audio_bytes": 9440973,
+    "audio_observed_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+    "audio_path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v3-20261103/bb3e96c615d44abaa75bcf75db2cbeb3/input.mp3",
+    "audio_recorded_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+    "flight_indexes": [
+      {
+        "input_hash": "af92029eb60fd6e01d46c957c3f9b51bb9644703717674d6743cb0201cab1cf0",
+        "metadata_equal_to_data_provenance": true,
+        "observed_file_sha256": "d161687f8a08917ab4ff61f0c8a44e44fd3f43f2ce65104b6e0aac5bb0be548f",
+        "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-inputs-20261103/flight-index-v2.sqlite",
+        "recorded_file_sha256": "d161687f8a08917ab4ff61f0c8a44e44fd3f43f2ce65104b6e0aac5bb0be548f"
+      }
+    ],
+    "operator_observed_canonical_sha256": "6b072ce18b00a73f15548c67d077884717e1fec43a61b5f13f5cb56cececb27b",
+    "operator_recorded_canonical_sha256": "6b072ce18b00a73f15548c67d077884717e1fec43a61b5f13f5cb56cececb27b",
+    "source_files": [
+      {
+        "bytes": 38569,
+        "observed_sha256": "86e79715aab786a9b229ca7cd61085eb00a356fe04f5401585024a5b197d27e1",
+        "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-inputs-20261103/all-trajectories.parquet",
+        "recorded_sha256": "86e79715aab786a9b229ca7cd61085eb00a356fe04f5401585024a5b197d27e1"
+      }
+    ],
+    "synthetic_universe": {
+      "all_types_retained": true,
+      "coverage_declaration": {
+        "all_aircraft": true,
+        "bounds": [
+          -180,
+          -90,
+          180,
+          90
+        ],
+        "source_note": "Finite synthetic universe generated by scripts/make_synthetic_cases.py; all seven trajectories retained, not real national data",
+        "synthetic": true,
+        "time_range_s": [
+          1789999000.0,
+          1790003000.0
+        ]
+      },
+      "sample_rows": 1617,
+      "trajectory_count": 7
+    },
+    "terrain_configuration": {
+      "constant_m": 120.0
+    },
+    "time_window": {
+      "end_utc": "2026-09-21T14:13:20Z",
+      "source": "user",
+      "source_detail": "Controlled independent synthetic generator epoch; exact-clock integration regression",
+      "start_utc": "2026-09-21T14:13:20Z"
+    }
+  },
+  "job_directory": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v3-20261103/bb3e96c615d44abaa75bcf75db2cbeb3",
+  "job_id": "bb3e96c615d44abaa75bcf75db2cbeb3",
+  "method": {
+    "checks": "Read final artifacts, compare source/input hashes and cross-artifact values, and verify every saved tile run hash and canonical payload hash. The audit JSON is the only output written for this task.",
+    "pipeline_rerun": false,
+    "production_modifications": false,
+    "test_suite_rerun": false
+  },
+  "remaining_gates": [
+    {
+      "detail": "A different flight association approximately 1046 km away is within the declared near-tie threshold. The inconclusive ambiguous_locations decision is justified.",
+      "evidence": "decision.json: diagnostics.competing_hypothesis",
+      "gate": "competing_location",
+      "state": "fails"
+    },
+    {
+      "detail": "alternative_modes_exhaustively_assessed and alternatives_evaluated are false. tiled_search.search_national currently writes the former as literal False; therefore standard automatic search cannot reach supported success even if its leading candidate is unique.",
+      "evidence": "search/search-report.json and refined-candidates.json: matching_diagnostics.alternatives_evaluated",
+      "gate": "alternative_modes_assessed",
+      "state": "fails"
+    },
+    {
+      "detail": "All 21 profile optimizers succeeded and none hit a boundary, but constant_m=120 has no established ellipsoidal terrain datum. Both flight tracks are labelled ellipsoidal. The full envelope correctly remains incomplete.",
+      "evidence": "refined-candidates.json: ranked[1].sensitivity",
+      "gate": "full_sensitivity_and_terrain_datum",
+      "state": "fails"
+    },
+    {
+      "detail": "Attach full profile evidence to the same leading hypothesis rather than relying on independent candidate sorting with nearly identical floating-point scores. The current result remains inconclusive, but the displayed 42.84 m radius must be labelled partial.",
+      "evidence": "result.json: candidates[0].uncertainty; refined-candidates.json: ranked[0], ranked[1], matching_diagnostics.sensitivity",
+      "gate": "profile_reporting",
+      "state": "reporting_limitation"
+    },
+    {
+      "detail": "This is a previously inspected synthetic regression with seven trajectories, an exact supplied clock, and constant terrain. A full CONUS tile traversal and 0.643593 m post-search error do not establish held-out real recording performance or national real-flight coverage.",
+      "evidence": "request.json, data-provenance.json, post-search-evaluation.json",
+      "gate": "independent_real_accuracy",
+      "state": "not_established_by_this_run"
+    }
+  ],
+  "schema_version": 1,
+  "sensitivity_audit": {
+    "failed_profile_optimizers": 0,
+    "flight_altitude_basis": {
+      "159329fe8c9f": [
+        "ellipsoidal"
+      ],
+      "f4a942f158fc": [
+        "ellipsoidal"
+      ]
+    },
+    "full_profile_boundary_limited": false,
+    "full_profile_complete": false,
+    "full_profile_count": 21,
+    "full_profile_failures": [
+      {
+        "reason": "Ellipsoidal terrain datum is not established",
+        "scenario": "terrain",
+        "source": "altitude"
+      }
+    ],
+    "full_profile_method": "declared_perturbation_profiles",
+    "full_profile_radius_m": 42.82946591274311,
+    "full_profile_rank_one_based": 2,
+    "full_profile_score": -0.17206910340163048,
+    "full_profile_sources": [
+      "altitude",
+      "clock",
+      "frequency",
+      "sound_speed",
+      "source_frequency"
+    ],
+    "leading_candidate_complete_flag": true,
+    "leading_candidate_method": "profiled_relative_altitude_offsets",
+    "leading_candidate_profile_count": 3,
+    "leading_candidate_radius_m": 42.841986085700775,
+    "leading_candidate_sources": [],
+    "leading_minus_full_profile_score": 2.9917734956086406e-13,
+    "matching_diagnostics_use_full_profile": false,
+    "per_flight_altitude_bias_scenarios": [
+      {
+        "bias_m": -150.0,
+        "flight_id": "159329fe8c9f"
+      },
+      {
+        "bias_m": 150.0,
+        "flight_id": "159329fe8c9f"
+      },
+      {
+        "bias_m": -150.0,
+        "flight_id": "f4a942f158fc"
+      },
+      {
+        "bias_m": 150.0,
+        "flight_id": "f4a942f158fc"
+      }
+    ],
+    "reporting_limitation": "The leading 42.84 m radius is a three-scenario relative-altitude sensitivity, not full measurement/model uncertainty. The full profile is incomplete because terrain datum is unestablished. A 2.99e-13 score difference ranks the full profile second, so matching_diagnostics inherits the partial leading profile and omits the full-profile failure.",
+    "terrain_vertical_datum": "unestablished"
+  },
+  "source": {
+    "input_build_receipt_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+    "input_build_receipt_note": "physics-automatic-inputs-20261103/run-receipt-v2.json describes earlier construction of reused inputs. The final job implementation hashes match the audited v3 source; the older input-build commit is not a final-run source mismatch.",
+    "integration_commit": "87143f5db99454f14541d736be6e5338b5d2ee76",
+    "integration_tree": "6e284fdcc92f10e151cda00181bed8880308acf1",
+    "module_hash_count": 19,
+    "module_hash_mismatch_count": 0,
+    "module_hashes": {
+      "__init__.py": {
+        "observed": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+        "recorded": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+      },
+      "audio.py": {
+        "observed": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+        "recorded": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+      },
+      "automatic.py": {
+        "observed": "088620bc081ab8458c3a4e343aeca73e4ee08e38993e61cee99fcf9d7dc2f3d5",
+        "recorded": "088620bc081ab8458c3a4e343aeca73e4ee08e38993e61cee99fcf9d7dc2f3d5"
+      },
+      "cli.py": {
+        "observed": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+        "recorded": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+      },
+      "confidence.py": {
+        "observed": "2d30077fe25c51522786f4314192666a60830697e3013f064ffe5ac2cee6c801",
+        "recorded": "2d30077fe25c51522786f4314192666a60830697e3013f064ffe5ac2cee6c801"
+      },
+      "contracts.py": {
+        "observed": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+        "recorded": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+      },
+      "data_access.py": {
+        "observed": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+        "recorded": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218"
+      },
+      "discovery.py": {
+        "observed": "c357a6cdf01364bdcf0e05e1241a913073a43123ebbfdb6e06a4e0f61477c589",
+        "recorded": "c357a6cdf01364bdcf0e05e1241a913073a43123ebbfdb6e06a4e0f61477c589"
+      },
+      "evaluation.py": {
+        "observed": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071",
+        "recorded": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071"
+      },
+      "geometry.py": {
+        "observed": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+        "recorded": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+      },
+      "intake.py": {
+        "observed": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+        "recorded": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648"
+      },
+      "jobs.py": {
+        "observed": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+        "recorded": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+      },
+      "matching.py": {
+        "observed": "e90115129818d03bd36771e17f5db0169db0df0e934a877346a8d923d029b0dd",
+        "recorded": "e90115129818d03bd36771e17f5db0169db0df0e934a877346a8d923d029b0dd"
+      },
+      "pipeline.py": {
+        "observed": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+        "recorded": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb"
+      },
+      "search.py": {
+        "observed": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+        "recorded": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b"
+      },
+      "service.py": {
+        "observed": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+        "recorded": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d"
+      },
+      "terrain.py": {
+        "observed": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+        "recorded": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+      },
+      "tiled_search.py": {
+        "observed": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5",
+        "recorded": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5"
+      },
+      "tracks.py": {
+        "observed": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+        "recorded": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+      }
+    },
+    "published_snapshot_commit_reported_by_parent": "98b14955741f32cf6fb7592bbf44df050a5bd309",
+    "published_snapshot_tree_observed_locally": null,
+    "published_snapshot_tree_reported_by_parent": "6e284fdcc92f10e151cda00181bed8880308acf1"
+  }
+}
