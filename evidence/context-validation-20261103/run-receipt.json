@@ -1,0 +1,45 @@
+{
+  "context_status": "compared",
+  "mode_count": 106,
+  "prepared_group_count": 2,
+  "trajectory_segments_queried": 10,
+  "max_query_segments": 20000,
+  "settings": {
+    "expansion_s": 120.0,
+    "core_guard_s": 2.0,
+    "low_band_multiplier": 0.5,
+    "high_band_multiplier": 2.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.25,
+    "sideband_offsets_hz": [
+      -10.0,
+      -5.0,
+      5.0,
+      10.0
+    ],
+    "min_common_samples": 40,
+    "block_s": 10.0,
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 7231,
+    "max_window_s": 600.0,
+    "max_modes": 1000,
+    "sound_speed_mps": 343.0
+  },
+  "inputs_sha256": {
+    "intake/recording.json": "f55057617c9c6a6a3934eeacc5a0b090ed5c79b739a076a9f107048a88e82463",
+    "discovery/discovery.json": "ecf4d52e9fe39018a1920f164a50f7b386aea2504fb7e02f8d2cbccfda27e61c",
+    "operator.json": "f0338273fd478f3ee94bbaf3df5de46511523561151d17746c14e278fa83657f",
+    "refined-candidates.json": "687404bba1c11ca835a35e43e7e12606b3c4fbcdf6adb85583ce1c818d4929bb"
+  },
+  "indexes_sha256": {
+    "/inputs/tracks.sqlite": "2ebf51be99ac11e00d8afcf17856a27efcf2fa4cc6ed6840c63f3f9f2672d388"
+  },
+  "script_sha256": "93581be3c07f1dd2d8efcf46a20f073b484c6f10d079bbdd524854c0c89e9bce",
+  "limits": [
+    "No job decision was changed.",
+    "All prepared groups were supplied; no first-two or association-only filter.",
+    "This is development diagnostics, not independent location-accuracy acceptance."
+  ]
+}

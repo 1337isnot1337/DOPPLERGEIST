@@ -76,3 +76,35 @@ are saved. Use a new directory. Large spectra stay out of Git; commit the readab
 summary and hashes with the exact development scope. Benchmark location errors,
 when separately evaluated, should now be reported at 100/500/1000 m per AGENTS.md,
 while preserving historical receipts at their original thresholds.
+
+## Frozen development replay
+
+At consumer `0dbfceb`, a wheel installed in a separate filesystem/pid namespace
+compared all 106 retained modes and both prepared groups from the prior automatic
+browser job. Only the completed job, runtime, opaque index and fresh context-output
+directory were mounted. The parent directory containing post-search evaluation,
+source checkouts, labels and identifier map were absent. Candidate parameters were
+never refitted; ground truth was joined only after the context process exited.
+
+The context leader was the 6.505 m candidate, formerly rank 4 under core scoring.
+All 106 modes were compared. The strongest distant context competitor scored
+1.450892 against 1.593565; the original 1,046 km leader scored 1.247464 and ranked
+fourth. The nearest distant competitor was retained and lost by 0.142673 contrast
+units; its paired-block margin interval was [0.053508, 0.235893], descriptive only.
+It slightly exceeded the leader in one event's pre-core portion, so this is not
+uniform dominance across every partition.
+
+Common context retained 759/936 bins for event 1 and 475/728 for event 2, with both
+pre/post portions present. Those symmetric restrictions remain conditional on the
+retained modes. Computation took 2.63 s with 571.93 MiB peak RSS measured inside
+the scientific process. The initial external namespace-launcher timer did not
+measure scientific memory; an instrumented replay reproduced the ranking exactly.
+
+The diagnostic leader is within 100/500/1000 m, but the original automatic job
+remains `inconclusive / unsupported_score_kind`. No accepted location or
+independent real/national accuracy is established. The case was already inspected
+during development; it is not a held-out success. Full readable results, all-mode
+evaluation, input/code/array hashes and the namespace probe are under
+`evidence/context-validation-20261103/`; larger NPZ/CSV files remain local with
+their exact hashes. The implementation's full base-plus-consumer suite passed
+132 tests; all 11 focused context tests passed after adding memory instrumentation.

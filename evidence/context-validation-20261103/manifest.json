@@ -1,0 +1,33 @@
+{
+  "consumer_commit": "0dbfceb",
+  "protocol_source_commit": "6783984eff2c834e923c8d046bec8fb47fae4190",
+  "scope": "development replay of all106 frozen synthetic modes, not changed job decision",
+  "all_modes_compared": true,
+  "readable_files_sha256": {
+    "command.json": "05f9ea230558ce7c0de358fdb53d9de332f6bd8c9c26473098bb02393789544f",
+    "evaluation-after-context.json": "15a3edb845eb0a78e5fdc8094bf0b69c7cb20136fddd70916c18c8c812a5f25c",
+    "namespace-probe.json": "d7b6c80c2d7f1ca81b8eac551bfc7ccee34bafc8c918fd26dd686c50ea1ac30e",
+    "pytest.log": "f81ddd7575e89ea4acf9406f6fe7df8d4bd497ed499f1cc80052ed5b00e5b182",
+    "report.json": "f2d2b763ebef91294ccaf010c62c4fa2b0e272af7a16534ed8fbf9f5215ec869",
+    "run-receipt.json": "3f71b5009fe3125dcaf516bbb7cd5791f8bc21f99262f86e2a7de452feb40d17"
+  },
+  "large_local_artifacts": {
+    "event-0001-validation.csv": {
+      "bytes": 2063531,
+      "sha256": "6d199cdde6c4b53538a0fe41780918b6717704ed4c6cd3ef532ece0d2ac33574"
+    },
+    "event-0001.npz": {
+      "bytes": 18976421,
+      "sha256": "ad9923179d2713133290c01b13b200c963526be5b6df0bfd2fc842a420c8a98f"
+    },
+    "event-0002-validation.csv": {
+      "bytes": 1289207,
+      "sha256": "1e29eaddd93905f7b5c059b03ef0be8c85d2470b4ad40a6ef8b99406114a3ab8"
+    },
+    "event-0002.npz": {
+      "bytes": 16898730,
+      "sha256": "71a7fa5552f6645d5fc3c33cb154d9130be3a9a973b420a0f2296823d3297d2f"
+    }
+  },
+  "large_artifact_directory": "/home/cinna/DOPPLERGEIST-upload-acceptance/results/context-replay-106-v2-20261103/diagnostic"
+}

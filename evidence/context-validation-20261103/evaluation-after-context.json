@@ -1,0 +1,1939 @@
+{
+  "scope": "development frozen-context replay; original automatic job unchanged/inconclusive",
+  "consumer_commit": "0dbfceb",
+  "all_modes_compared": true,
+  "mode_count": 106,
+  "events": 2,
+  "context_top_error_m": 6.505245821579339,
+  "thresholds_m": {
+    "100": {
+      "context_top_within": true,
+      "retained_candidates_within": 5
+    },
+    "500": {
+      "context_top_within": true,
+      "retained_candidates_within": 27
+    },
+    "1000": {
+      "context_top_within": true,
+      "retained_candidates_within": 27
+    }
+  },
+  "ranking": [
+    {
+      "rank": 1,
+      "mode_id": "mode-0004",
+      "input_index": 3,
+      "context_contrast_excess": 1.5935651672665383,
+      "winner_minus_mode": 0.0,
+      "descriptive_paired_block_interval_95": [
+        0.0,
+        0.0
+      ],
+      "error_m": 6.505245821579339,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03171652041066,
+      "lon": -100.01821583005915
+    },
+    {
+      "rank": 2,
+      "mode_id": "mode-0003",
+      "input_index": 2,
+      "context_contrast_excess": 1.5934101087022352,
+      "winner_minus_mode": 0.00015505856430308995,
+      "descriptive_paired_block_interval_95": [
+        7.53222806513687e-05,
+        0.00024817152188325584
+      ],
+      "error_m": 6.510865461166067,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.0317165120325,
+      "lon": -100.01821576498205
+    },
+    {
+      "rank": 3,
+      "mode_id": "mode-0007",
+      "input_index": 6,
+      "context_contrast_excess": 1.4508919447690558,
+      "winner_minus_mode": 0.1426732224974825,
+      "descriptive_paired_block_interval_95": [
+        0.053508275038352905,
+        0.23589320509567657
+      ],
+      "error_m": 21.885529691476,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528
+    },
+    {
+      "rank": 4,
+      "mode_id": "mode-0001",
+      "input_index": 0,
+      "context_contrast_excess": 1.247464128265405,
+      "winner_minus_mode": 0.3461010390011332,
+      "descriptive_paired_block_interval_95": [
+        0.1792334251169328,
+        0.5112810655252387
+      ],
+      "error_m": 1046024.73912748,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.000057148871385,
+      "lon": -89.99998357704526
+    },
+    {
+      "rank": 5,
+      "mode_id": "mode-0002",
+      "input_index": 1,
+      "context_contrast_excess": 1.247464128265405,
+      "winner_minus_mode": 0.3461010390011332,
+      "descriptive_paired_block_interval_95": [
+        0.1792334251169328,
+        0.5112810655252387
+      ],
+      "error_m": 1046024.73912748,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.000057148871385,
+      "lon": -89.99998357704526
+    },
+    {
+      "rank": 6,
+      "mode_id": "mode-0017",
+      "input_index": 16,
+      "context_contrast_excess": 0.9596917486760108,
+      "winner_minus_mode": 0.6338734185905275,
+      "descriptive_paired_block_interval_95": [
+        0.3869410891795707,
+        0.9031606568734001
+      ],
+      "error_m": 1045959.6271834107,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706
+    },
+    {
+      "rank": 7,
+      "mode_id": "mode-0018",
+      "input_index": 17,
+      "context_contrast_excess": 0.9596917486760108,
+      "winner_minus_mode": 0.6338734185905275,
+      "descriptive_paired_block_interval_95": [
+        0.3869410891795707,
+        0.9031606568734001
+      ],
+      "error_m": 1045959.6271834107,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706
+    },
+    {
+      "rank": 8,
+      "mode_id": "mode-0039",
+      "input_index": 38,
+      "context_contrast_excess": 0.7791915012114359,
+      "winner_minus_mode": 0.8143736660551024,
+      "descriptive_paired_block_interval_95": [
+        0.5253378338781486,
+        1.1314575809721563
+      ],
+      "error_m": 145.69976553314865,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936
+    },
+    {
+      "rank": 9,
+      "mode_id": "mode-0024",
+      "input_index": 23,
+      "context_contrast_excess": 0.7605508395641347,
+      "winner_minus_mode": 0.8330143277024036,
+      "descriptive_paired_block_interval_95": [
+        0.5699161307542963,
+        1.1079143713639212
+      ],
+      "error_m": 82.92831879740659,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095
+    },
+    {
+      "rank": 10,
+      "mode_id": "mode-0008",
+      "input_index": 7,
+      "context_contrast_excess": 0.7557454520727886,
+      "winner_minus_mode": 0.8378197151937496,
+      "descriptive_paired_block_interval_95": [
+        0.5733306342012797,
+        1.0944935238265674
+      ],
+      "error_m": 1051991.5447839876,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.000340301288176,
+      "lon": -111.99985571667271
+    },
+    {
+      "rank": 11,
+      "mode_id": "mode-0005",
+      "input_index": 4,
+      "context_contrast_excess": 0.7535750712900559,
+      "winner_minus_mode": 0.8399900959764824,
+      "descriptive_paired_block_interval_95": [
+        0.5765895324868899,
+        1.1040436785895111
+      ],
+      "error_m": 1052001.8805106322,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00013132147989,
+      "lon": -112.00005850939831
+    },
+    {
+      "rank": 12,
+      "mode_id": "mode-0006",
+      "input_index": 5,
+      "context_contrast_excess": 0.7534469395692118,
+      "winner_minus_mode": 0.8401182276973265,
+      "descriptive_paired_block_interval_95": [
+        0.5766875023916664,
+        1.1040995326156788
+      ],
+      "error_m": 1052001.868804877,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.000131328190996,
+      "lon": -112.0000583590041
+    },
+    {
+      "rank": 13,
+      "mode_id": "mode-0009",
+      "input_index": 8,
+      "context_contrast_excess": 0.7275149084926573,
+      "winner_minus_mode": 0.866050258773881,
+      "descriptive_paired_block_interval_95": [
+        0.6282525767326589,
+        1.1255695075951422
+      ],
+      "error_m": 1052083.562948563,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00019029518254,
+      "lon": -112.00107148245839
+    },
+    {
+      "rank": 14,
+      "mode_id": "mode-0013",
+      "input_index": 12,
+      "context_contrast_excess": 0.7204499262923151,
+      "winner_minus_mode": 0.8731152409742232,
+      "descriptive_paired_block_interval_95": [
+        0.5831018752777004,
+        1.1419130738146
+      ],
+      "error_m": 1046045.4666161569,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605
+    },
+    {
+      "rank": 15,
+      "mode_id": "mode-0014",
+      "input_index": 13,
+      "context_contrast_excess": 0.7204499262923151,
+      "winner_minus_mode": 0.8731152409742232,
+      "descriptive_paired_block_interval_95": [
+        0.5831018752777004,
+        1.1419130738146
+      ],
+      "error_m": 1046045.4666161569,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605
+    },
+    {
+      "rank": 16,
+      "mode_id": "mode-0015",
+      "input_index": 14,
+      "context_contrast_excess": 0.7159044107297367,
+      "winner_minus_mode": 0.8776607565368016,
+      "descriptive_paired_block_interval_95": [
+        0.6064751204554228,
+        1.194998737252573
+      ],
+      "error_m": 1046097.331740354,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378
+    },
+    {
+      "rank": 17,
+      "mode_id": "mode-0016",
+      "input_index": 15,
+      "context_contrast_excess": 0.7159044107297367,
+      "winner_minus_mode": 0.8776607565368016,
+      "descriptive_paired_block_interval_95": [
+        0.6064751204554228,
+        1.194998737252573
+      ],
+      "error_m": 1046097.331740354,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378
+    },
+    {
+      "rank": 18,
+      "mode_id": "mode-0011",
+      "input_index": 10,
+      "context_contrast_excess": 0.6724525845352238,
+      "winner_minus_mode": 0.9211125827313145,
+      "descriptive_paired_block_interval_95": [
+        0.6738811625376133,
+        1.1748871517268957
+      ],
+      "error_m": 1046011.4966058539,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413
+    },
+    {
+      "rank": 19,
+      "mode_id": "mode-0012",
+      "input_index": 11,
+      "context_contrast_excess": 0.6724525845352238,
+      "winner_minus_mode": 0.9211125827313145,
+      "descriptive_paired_block_interval_95": [
+        0.6738811625376133,
+        1.1748871517268957
+      ],
+      "error_m": 1046011.4966058539,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413
+    },
+    {
+      "rank": 20,
+      "mode_id": "mode-0071",
+      "input_index": 70,
+      "context_contrast_excess": 0.6626709460938962,
+      "winner_minus_mode": 0.9308942211726421,
+      "descriptive_paired_block_interval_95": [
+        0.6686094907820535,
+        1.227979332107864
+      ],
+      "error_m": 1045821.923516111,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.001509793553396,
+      "lon": -90.00145693660203
+    },
+    {
+      "rank": 21,
+      "mode_id": "mode-0072",
+      "input_index": 71,
+      "context_contrast_excess": 0.6626709460938962,
+      "winner_minus_mode": 0.9308942211726421,
+      "descriptive_paired_block_interval_95": [
+        0.6686094907820535,
+        1.227979332107864
+      ],
+      "error_m": 1045821.923516111,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.001509793553396,
+      "lon": -90.00145693660203
+    },
+    {
+      "rank": 22,
+      "mode_id": "mode-0083",
+      "input_index": 82,
+      "context_contrast_excess": 0.6432088134756764,
+      "winner_minus_mode": 0.9503563537908619,
+      "descriptive_paired_block_interval_95": [
+        0.69820783725976,
+        1.2363722627240208
+      ],
+      "error_m": 214.16926709447247,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03331506166696,
+      "lon": -100.01971979776403
+    },
+    {
+      "rank": 23,
+      "mode_id": "mode-0053",
+      "input_index": 52,
+      "context_contrast_excess": 0.5619975914669327,
+      "winner_minus_mode": 1.0315675757996057,
+      "descriptive_paired_block_interval_95": [
+        0.7342602988416232,
+        1.371366144703675
+      ],
+      "error_m": 1052215.965077749,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.0009227871254,
+      "lon": -112.00249391958837
+    },
+    {
+      "rank": 24,
+      "mode_id": "mode-0032",
+      "input_index": 31,
+      "context_contrast_excess": 0.5057016448155887,
+      "winner_minus_mode": 1.0878635224509496,
+      "descriptive_paired_block_interval_95": [
+        0.8342457898769928,
+        1.3649332027782182
+      ],
+      "error_m": 1052031.934323032,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.001222814839394,
+      "lon": -112.00006236309645
+    },
+    {
+      "rank": 25,
+      "mode_id": "mode-0037",
+      "input_index": 36,
+      "context_contrast_excess": 0.4895259969515179,
+      "winner_minus_mode": 1.1040391703150205,
+      "descriptive_paired_block_interval_95": [
+        0.8657256346992388,
+        1.3606234074867751
+      ],
+      "error_m": 1046183.1695429125,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99955663713321,
+      "lon": -89.99828864046096
+    },
+    {
+      "rank": 26,
+      "mode_id": "mode-0038",
+      "input_index": 37,
+      "context_contrast_excess": 0.4895259969515179,
+      "winner_minus_mode": 1.1040391703150205,
+      "descriptive_paired_block_interval_95": [
+        0.8657256346992388,
+        1.3606234074867751
+      ],
+      "error_m": 1046183.1695429125,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99955663713321,
+      "lon": -89.99828864046096
+    },
+    {
+      "rank": 27,
+      "mode_id": "mode-0035",
+      "input_index": 34,
+      "context_contrast_excess": 0.4618125000651223,
+      "winner_minus_mode": 1.131752667201416,
+      "descriptive_paired_block_interval_95": [
+        0.8326566519570795,
+        1.4483123765157517
+      ],
+      "error_m": 140.7026865629188,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072
+    },
+    {
+      "rank": 28,
+      "mode_id": "mode-0010",
+      "input_index": 9,
+      "context_contrast_excess": 0.4613776091297001,
+      "winner_minus_mode": 1.1321875581368381,
+      "descriptive_paired_block_interval_95": [
+        0.871599884346344,
+        1.4130786245880085
+      ],
+      "error_m": 89.1822875541064,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812
+    },
+    {
+      "rank": 29,
+      "mode_id": "mode-0087",
+      "input_index": 86,
+      "context_contrast_excess": 0.46078719270043084,
+      "winner_minus_mode": 1.1327779745661075,
+      "descriptive_paired_block_interval_95": [
+        0.8342294042518554,
+        1.4537379105227528
+      ],
+      "error_m": 232.69253389193904,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.02982370915776,
+      "lon": -100.0171575353325
+    },
+    {
+      "rank": 30,
+      "mode_id": "mode-0096",
+      "input_index": 95,
+      "context_contrast_excess": 0.4362477189110023,
+      "winner_minus_mode": 1.157317448355536,
+      "descriptive_paired_block_interval_95": [
+        0.8566507649584512,
+        1.464276259461417
+      ],
+      "error_m": 1052307.982911793,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.000772756385466,
+      "lon": -112.00370968990228
+    },
+    {
+      "rank": 31,
+      "mode_id": "mode-0021",
+      "input_index": 20,
+      "context_contrast_excess": 0.43056460821402925,
+      "winner_minus_mode": 1.163000559052509,
+      "descriptive_paired_block_interval_95": [
+        0.8730208489060601,
+        1.4709948352823754
+      ],
+      "error_m": 1051951.1630181607,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99945778861459,
+      "lon": -111.99964907553621
+    },
+    {
+      "rank": 32,
+      "mode_id": "mode-0031",
+      "input_index": 30,
+      "context_contrast_excess": 0.4293528926504995,
+      "winner_minus_mode": 1.1642122746160388,
+      "descriptive_paired_block_interval_95": [
+        0.9261947745388801,
+        1.4059622684476516
+      ],
+      "error_m": 1051859.1428851283,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.999607781341446,
+      "lon": -111.99843331956731
+    },
+    {
+      "rank": 33,
+      "mode_id": "mode-0059",
+      "input_index": 58,
+      "context_contrast_excess": 0.4099020677205637,
+      "winner_minus_mode": 1.1836630995459747,
+      "descriptive_paired_block_interval_95": [
+        0.9471707458966518,
+        1.4338757552413688
+      ],
+      "error_m": 221.5797305145455,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03075312169894,
+      "lon": -100.01602632687492
+    },
+    {
+      "rank": 34,
+      "mode_id": "mode-0040",
+      "input_index": 39,
+      "context_contrast_excess": 0.39805936790885826,
+      "winner_minus_mode": 1.19550579935768,
+      "descriptive_paired_block_interval_95": [
+        0.8853891865425283,
+        1.5243953676216557
+      ],
+      "error_m": 1052123.9488813533,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00107280661009,
+      "lon": -112.0012781439863
+    },
+    {
+      "rank": 35,
+      "mode_id": "mode-0049",
+      "input_index": 48,
+      "context_contrast_excess": 0.39241266431682803,
+      "winner_minus_mode": 1.2011525029497103,
+      "descriptive_paired_block_interval_95": [
+        0.8807830353320868,
+        1.545957114415246
+      ],
+      "error_m": 1046149.2036818347,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99872104928491,
+      "lon": -89.99946090500397
+    },
+    {
+      "rank": 36,
+      "mode_id": "mode-0050",
+      "input_index": 49,
+      "context_contrast_excess": 0.39241266431682803,
+      "winner_minus_mode": 1.2011525029497103,
+      "descriptive_paired_block_interval_95": [
+        0.8807830353320868,
+        1.545957114415246
+      ],
+      "error_m": 1046149.2036818347,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99872104928491,
+      "lon": -89.99946090500397
+    },
+    {
+      "rank": 37,
+      "mode_id": "mode-0028",
+      "input_index": 27,
+      "context_contrast_excess": 0.3674442380984394,
+      "winner_minus_mode": 1.2261209291680988,
+      "descriptive_paired_block_interval_95": [
+        0.9466050020265071,
+        1.5311962662018685
+      ],
+      "error_m": 1045873.7904188159,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538
+    },
+    {
+      "rank": 38,
+      "mode_id": "mode-0029",
+      "input_index": 28,
+      "context_contrast_excess": 0.3674442380984394,
+      "winner_minus_mode": 1.2261209291680988,
+      "descriptive_paired_block_interval_95": [
+        0.9466050020265071,
+        1.5311962662018685
+      ],
+      "error_m": 1045873.7904188159,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538
+    },
+    {
+      "rank": 39,
+      "mode_id": "mode-0026",
+      "input_index": 25,
+      "context_contrast_excess": 0.3600109445495565,
+      "winner_minus_mode": 1.2335542227169818,
+      "descriptive_paired_block_interval_95": [
+        0.9121406180319478,
+        1.536762141358896
+      ],
+      "error_m": 1052043.1847885551,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.999307784632556,
+      "lon": -112.00086482621806
+    },
+    {
+      "rank": 40,
+      "mode_id": "mode-0079",
+      "input_index": 78,
+      "context_contrast_excess": 0.35884358083443196,
+      "winner_minus_mode": 1.2347215864321064,
+      "descriptive_paired_block_interval_95": [
+        0.9352602755403506,
+        1.5351441779522574
+      ],
+      "error_m": 1051818.7652874226,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99872526742183,
+      "lon": -111.99822669882148
+    },
+    {
+      "rank": 41,
+      "mode_id": "mode-0041",
+      "input_index": 40,
+      "context_contrast_excess": 0.3507169776938455,
+      "winner_minus_mode": 1.2428481895726928,
+      "descriptive_paired_block_interval_95": [
+        0.9367733345977861,
+        1.5486886237639241
+      ],
+      "error_m": 163.04082051063114,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522
+    },
+    {
+      "rank": 42,
+      "mode_id": "mode-0069",
+      "input_index": 68,
+      "context_contrast_excess": 0.34782161527488625,
+      "winner_minus_mode": 1.245743551991652,
+      "descriptive_paired_block_interval_95": [
+        0.9532838533695065,
+        1.5380647930590274
+      ],
+      "error_m": 1046235.0371865745,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99866464751068,
+      "lon": -89.99835836289147
+    },
+    {
+      "rank": 43,
+      "mode_id": "mode-0070",
+      "input_index": 69,
+      "context_contrast_excess": 0.34782161527488625,
+      "winner_minus_mode": 1.245743551991652,
+      "descriptive_paired_block_interval_95": [
+        0.9532838533695065,
+        1.5380647930590274
+      ],
+      "error_m": 1046235.0371865745,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99866464751068,
+      "lon": -89.99835836289147
+    },
+    {
+      "rank": 44,
+      "mode_id": "mode-0100",
+      "input_index": 99,
+      "context_contrast_excess": 0.3473179379749528,
+      "winner_minus_mode": 1.2462472292915856,
+      "descriptive_paired_block_interval_95": [
+        0.9286171674185406,
+        1.578449264289323
+      ],
+      "error_m": 260.9760330061191,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03342823114428,
+      "lon": -100.01617616729203
+    },
+    {
+      "rank": 45,
+      "mode_id": "mode-0020",
+      "input_index": 19,
+      "context_contrast_excess": 0.3380587340591642,
+      "winner_minus_mode": 1.255506433207374,
+      "descriptive_paired_block_interval_95": [
+        1.0198015899448578,
+        1.4897844704833216
+      ],
+      "error_m": 1051899.528257344,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00049029613849,
+      "lon": -111.99863994559982
+    },
+    {
+      "rank": 46,
+      "mode_id": "mode-0073",
+      "input_index": 72,
+      "context_contrast_excess": 0.3330297178838788,
+      "winner_minus_mode": 1.2605354493826595,
+      "descriptive_paired_block_interval_95": [
+        0.9908120938118049,
+        1.538561739276192
+      ],
+      "error_m": 1046079.4547080016,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00134061385312,
+      "lon": -89.99814919074639
+    },
+    {
+      "rank": 47,
+      "mode_id": "mode-0074",
+      "input_index": 73,
+      "context_contrast_excess": 0.3330297178838788,
+      "winner_minus_mode": 1.2605354493826595,
+      "descriptive_paired_block_interval_95": [
+        0.9908120938118049,
+        1.538561739276192
+      ],
+      "error_m": 1046079.4547080016,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00134061385312,
+      "lon": -89.99814919074639
+    },
+    {
+      "rank": 48,
+      "mode_id": "mode-0046",
+      "input_index": 45,
+      "context_contrast_excess": 0.3256597429873752,
+      "winner_minus_mode": 1.2679054242791632,
+      "descriptive_paired_block_interval_95": [
+        0.9573149038912994,
+        1.5730716025282883
+      ],
+      "error_m": 1051939.9214032085,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00137281181326,
+      "lon": -111.99884657691916
+    },
+    {
+      "rank": 49,
+      "mode_id": "mode-0044",
+      "input_index": 43,
+      "context_contrast_excess": 0.30326275597675434,
+      "winner_minus_mode": 1.290302411289784,
+      "descriptive_paired_block_interval_95": [
+        0.943018797366747,
+        1.6628644003467783
+      ],
+      "error_m": 1045993.6083102262,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00139701743864,
+      "lon": -89.99925177108072
+    },
+    {
+      "rank": 50,
+      "mode_id": "mode-0045",
+      "input_index": 44,
+      "context_contrast_excess": 0.30326275597675434,
+      "winner_minus_mode": 1.290302411289784,
+      "descriptive_paired_block_interval_95": [
+        0.943018797366747,
+        1.6628644003467783
+      ],
+      "error_m": 1045993.6083102262,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00139701743864,
+      "lon": -89.99925177108072
+    },
+    {
+      "rank": 51,
+      "mode_id": "mode-0099",
+      "input_index": 98,
+      "context_contrast_excess": 0.2960817320112866,
+      "winner_minus_mode": 1.2974834352552516,
+      "descriptive_paired_block_interval_95": [
+        1.0223640834605199,
+        1.5782801640795405
+      ],
+      "error_m": 1051726.7431856643,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99887524677026,
+      "lon": -111.99701095266981
+    },
+    {
+      "rank": 52,
+      "mode_id": "mode-0086",
+      "input_index": 85,
+      "context_contrast_excess": 0.2958057517704761,
+      "winner_minus_mode": 1.297759415496062,
+      "descriptive_paired_block_interval_95": [
+        0.9939447520337201,
+        1.6260516917787713
+      ],
+      "error_m": 1051980.3223218676,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00225532836599,
+      "lon": -111.99905321352558
+    },
+    {
+      "rank": 53,
+      "mode_id": "mode-0025",
+      "input_index": 24,
+      "context_contrast_excess": 0.29327583808233193,
+      "winner_minus_mode": 1.3002893291842064,
+      "descriptive_paired_block_interval_95": [
+        0.9691657496676502,
+        1.6465027251954252
+      ],
+      "error_m": 119.67049091887542,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882
+    },
+    {
+      "rank": 54,
+      "mode_id": "mode-0068",
+      "input_index": 67,
+      "context_contrast_excess": 0.2920439692058517,
+      "winner_minus_mode": 1.3015211980606867,
+      "descriptive_paired_block_interval_95": [
+        0.9846306744490835,
+        1.6188242755222417
+      ],
+      "error_m": 1051910.7890264061,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.998575276818315,
+      "lon": -111.99944243968672
+    },
+    {
+      "rank": 55,
+      "mode_id": "mode-0060",
+      "input_index": 59,
+      "context_contrast_excess": 0.29011969916318137,
+      "winner_minus_mode": 1.303445468103357,
+      "descriptive_paired_block_interval_95": [
+        1.075520027114756,
+        1.541783798404456
+      ],
+      "error_m": 230.39411152721263,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.032385614764586,
+      "lon": -100.02085099876777
+    },
+    {
+      "rank": 56,
+      "mode_id": "mode-0051",
+      "input_index": 50,
+      "context_contrast_excess": 0.28281754875683074,
+      "winner_minus_mode": 1.3107476185097076,
+      "descriptive_paired_block_interval_95": [
+        1.071358795283699,
+        1.5619561115695053
+      ],
+      "error_m": 1045907.7645793761,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.001453410672084,
+      "lon": -90.0003543530327
+    },
+    {
+      "rank": 57,
+      "mode_id": "mode-0052",
+      "input_index": 51,
+      "context_contrast_excess": 0.28281754875683074,
+      "winner_minus_mode": 1.3107476185097076,
+      "descriptive_paired_block_interval_95": [
+        1.071358795283699,
+        1.5619561115695053
+      ],
+      "error_m": 1045907.7645793761,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.001453410672084,
+      "lon": -90.0003543530327
+    },
+    {
+      "rank": 58,
+      "mode_id": "mode-0061",
+      "input_index": 60,
+      "context_contrast_excess": 0.27569548651198655,
+      "winner_minus_mode": 1.3178696807545518,
+      "descriptive_paired_block_interval_95": [
+        0.9938101870962393,
+        1.6638071115191573
+      ],
+      "error_m": 200.82603044143687,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.033390519067844,
+      "lon": -100.01735737869151
+    },
+    {
+      "rank": 59,
+      "mode_id": "mode-0104",
+      "input_index": 103,
+      "context_contrast_excess": 0.2525581123607489,
+      "winner_minus_mode": 1.3410070549057895,
+      "descriptive_paired_block_interval_95": [
+        1.0658300400782132,
+        1.6371593653262835
+      ],
+      "error_m": 311.9788418816842,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.0307908212373,
+      "lon": -100.01484515819895
+    },
+    {
+      "rank": 60,
+      "mode_id": "mode-0097",
+      "input_index": 96,
+      "context_contrast_excess": 0.24623066824476034,
+      "winner_minus_mode": 1.347334499021778,
+      "descriptive_paired_block_interval_95": [
+        1.038973947802847,
+        1.6651505975452074
+      ],
+      "error_m": 1046201.0824396252,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99782905821666,
+      "lon": -89.9995306130767
+    },
+    {
+      "rank": 61,
+      "mode_id": "mode-0098",
+      "input_index": 97,
+      "context_contrast_excess": 0.24623066824476034,
+      "winner_minus_mode": 1.347334499021778,
+      "descriptive_paired_block_interval_95": [
+        1.038973947802847,
+        1.6651505975452074
+      ],
+      "error_m": 1046201.0824396252,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99782905821666,
+      "lon": -89.9995306130767
+    },
+    {
+      "rank": 62,
+      "mode_id": "mode-0033",
+      "input_index": 32,
+      "context_contrast_excess": 0.2423569050721511,
+      "winner_minus_mode": 1.3512082621943873,
+      "descriptive_paired_block_interval_95": [
+        1.0795531446551316,
+        1.6353485319488774
+      ],
+      "error_m": 1046131.3087163942,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261
+    },
+    {
+      "rank": 63,
+      "mode_id": "mode-0034",
+      "input_index": 33,
+      "context_contrast_excess": 0.2423569050721511,
+      "winner_minus_mode": 1.3512082621943873,
+      "descriptive_paired_block_interval_95": [
+        1.0795531446551316,
+        1.6353485319488774
+      ],
+      "error_m": 1046131.3087163942,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261
+    },
+    {
+      "rank": 64,
+      "mode_id": "mode-0055",
+      "input_index": 54,
+      "context_contrast_excess": 0.2422821821773425,
+      "winner_minus_mode": 1.3512829850891959,
+      "descriptive_paired_block_interval_95": [
+        1.074725263706783,
+        1.6217615012357454
+      ],
+      "error_m": 1045977.5446788893,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99883382177801,
+      "lon": -90.00166599408114
+    },
+    {
+      "rank": 65,
+      "mode_id": "mode-0056",
+      "input_index": 55,
+      "context_contrast_excess": 0.2422821821773425,
+      "winner_minus_mode": 1.3512829850891959,
+      "descriptive_paired_block_interval_95": [
+        1.074725263706783,
+        1.6217615012357454
+      ],
+      "error_m": 1045977.5446788893,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99883382177801,
+      "lon": -90.00166599408114
+    },
+    {
+      "rank": 66,
+      "mode_id": "mode-0047",
+      "input_index": 46,
+      "context_contrast_excess": 0.23253009744373873,
+      "winner_minus_mode": 1.3610350698227995,
+      "descriptive_paired_block_interval_95": [
+        1.0798532360736053,
+        1.6378154768788424
+      ],
+      "error_m": 1052135.20819589,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99915776939546,
+      "lon": -112.00208057161252
+    },
+    {
+      "rank": 67,
+      "mode_id": "mode-0054",
+      "input_index": 53,
+      "context_contrast_excess": 0.23013353919052454,
+      "winner_minus_mode": 1.3634316280760137,
+      "descriptive_paired_block_interval_95": [
+        1.062153994289084,
+        1.6830831334232266
+      ],
+      "error_m": 205.25351795593758,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03253652762431,
+      "lon": -100.01612621924471
+    },
+    {
+      "rank": 68,
+      "mode_id": "mode-0030",
+      "input_index": 29,
+      "context_contrast_excess": 0.22001462907429842,
+      "winner_minus_mode": 1.37355053819224,
+      "descriptive_paired_block_interval_95": [
+        1.12683750865345,
+        1.6404612740793758
+      ],
+      "error_m": 117.14662723939321,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191
+    },
+    {
+      "rank": 69,
+      "mode_id": "mode-0064",
+      "input_index": 63,
+      "context_contrast_excess": 0.20839456871824427,
+      "winner_minus_mode": 1.385170598548294,
+      "descriptive_paired_block_interval_95": [
+        1.14831856037975,
+        1.6342281209966731
+      ],
+      "error_m": 1045787.9563230305,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00067417572889,
+      "lon": -90.0026291964907
+    },
+    {
+      "rank": 70,
+      "mode_id": "mode-0065",
+      "input_index": 64,
+      "context_contrast_excess": 0.20839456871824427,
+      "winner_minus_mode": 1.385170598548294,
+      "descriptive_paired_block_interval_95": [
+        1.14831856037975,
+        1.6342281209966731
+      ],
+      "error_m": 1045787.9563230305,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00067417572889,
+      "lon": -90.0026291964907
+    },
+    {
+      "rank": 71,
+      "mode_id": "mode-0084",
+      "input_index": 83,
+      "context_contrast_excess": 0.20373994633584008,
+      "winner_minus_mode": 1.3898252209306983,
+      "descriptive_paired_block_interval_95": [
+        1.1032053067330672,
+        1.6597546403897823
+      ],
+      "error_m": 244.55132938009152,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03060221272304,
+      "lon": -100.02075098915986
+    },
+    {
+      "rank": 72,
+      "mode_id": "mode-0067",
+      "input_index": 66,
+      "context_contrast_excess": 0.20056122431696136,
+      "winner_minus_mode": 1.3930039429495769,
+      "descriptive_paired_block_interval_95": [
+        1.0732093742742306,
+        1.7284509025404764
+      ],
+      "error_m": 1052002.814402186,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.998425274959786,
+      "lon": -112.00065817526512
+    },
+    {
+      "rank": 73,
+      "mode_id": "mode-0094",
+      "input_index": 93,
+      "context_contrast_excess": 0.19456401495214665,
+      "winner_minus_mode": 1.3990011523143917,
+      "descriptive_paired_block_interval_95": [
+        1.15612532714829,
+        1.6781090229755307
+      ],
+      "error_m": 1052164.3425860684,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00195531891535,
+      "lon": -112.00148481080203
+    },
+    {
+      "rank": 74,
+      "mode_id": "mode-0105",
+      "input_index": 104,
+      "context_contrast_excess": 0.17835388413658698,
+      "winner_minus_mode": 1.4152112831299513,
+      "descriptive_paired_block_interval_95": [
+        1.176771055012542,
+        1.6480075380051347
+      ],
+      "error_m": 1045891.7191820008,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99889019249684,
+      "lon": -90.0027685410452
+    },
+    {
+      "rank": 75,
+      "mode_id": "mode-0106",
+      "input_index": 105,
+      "context_contrast_excess": 0.17835388413658698,
+      "winner_minus_mode": 1.4152112831299513,
+      "descriptive_paired_block_interval_95": [
+        1.176771055012542,
+        1.6480075380051347
+      ],
+      "error_m": 1045891.7191820008,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99889019249684,
+      "lon": -90.0027685410452
+    },
+    {
+      "rank": 76,
+      "mode_id": "mode-0036",
+      "input_index": 35,
+      "context_contrast_excess": 0.1638467448559195,
+      "winner_minus_mode": 1.4297184224106188,
+      "descriptive_paired_block_interval_95": [
+        1.1717806851029,
+        1.7011228782224066
+      ],
+      "error_m": 189.1878624966544,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902
+    },
+    {
+      "rank": 77,
+      "mode_id": "mode-0080",
+      "input_index": 79,
+      "context_contrast_excess": 0.1472397191423705,
+      "winner_minus_mode": 1.4463254481241679,
+      "descriptive_paired_block_interval_95": [
+        1.1741330755897108,
+        1.7579068491215373
+      ],
+      "error_m": 1052072.331634433,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00210532926844,
+      "lon": -112.00026901480761
+    },
+    {
+      "rank": 78,
+      "mode_id": "mode-0089",
+      "input_index": 88,
+      "context_contrast_excess": 0.14488849656584826,
+      "winner_minus_mode": 1.44867667070069,
+      "descriptive_paired_block_interval_95": [
+        1.1436833849079908,
+        1.7709091396211247
+      ],
+      "error_m": 1045941.7568235376,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.002289005140234,
+      "lon": -89.99918205653775
+    },
+    {
+      "rank": 79,
+      "mode_id": "mode-0090",
+      "input_index": 89,
+      "context_contrast_excess": 0.14488849656584826,
+      "winner_minus_mode": 1.44867667070069,
+      "descriptive_paired_block_interval_95": [
+        1.1436833849079908,
+        1.7709091396211247
+      ],
+      "error_m": 1045941.7568235376,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.002289005140234,
+      "lon": -89.99918205653775
+    },
+    {
+      "rank": 80,
+      "mode_id": "mode-0088",
+      "input_index": 87,
+      "context_contrast_excess": 0.1285266946616276,
+      "winner_minus_mode": 1.4650384726049106,
+      "descriptive_paired_block_interval_95": [
+        1.2087121035557742,
+        1.7394818923594892
+      ],
+      "error_m": 1052094.8414143373,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99827526184633,
+      "lon": -112.00187390555631
+    },
+    {
+      "rank": 81,
+      "mode_id": "mode-0101",
+      "input_index": 100,
+      "context_contrast_excess": 0.12131998784634905,
+      "winner_minus_mode": 1.4722451794201892,
+      "descriptive_paired_block_interval_95": [
+        1.199081341655883,
+        1.798134322495335
+      ],
+      "error_m": 1045855.9087947273,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00234539897739,
+      "lon": -90.00028465123098
+    },
+    {
+      "rank": 82,
+      "mode_id": "mode-0102",
+      "input_index": 101,
+      "context_contrast_excess": 0.12131998784634905,
+      "winner_minus_mode": 1.4722451794201892,
+      "descriptive_paired_block_interval_95": [
+        1.199081341655883,
+        1.798134322495335
+      ],
+      "error_m": 1045855.9087947273,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.00234539897739,
+      "lon": -90.00028465123098
+    },
+    {
+      "rank": 83,
+      "mode_id": "mode-0019",
+      "input_index": 18,
+      "context_contrast_excess": 0.12046824605189801,
+      "winner_minus_mode": 1.4730969212146403,
+      "descriptive_paired_block_interval_95": [
+        1.2358534461484805,
+        1.7086955820793122
+      ],
+      "error_m": 115.62238404419993,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012
+    },
+    {
+      "rank": 84,
+      "mode_id": "mode-0048",
+      "input_index": 47,
+      "context_contrast_excess": 0.11091310233681229,
+      "winner_minus_mode": 1.482652064929726,
+      "descriptive_paired_block_interval_95": [
+        1.2339264738905469,
+        1.736169196183519
+      ],
+      "error_m": 215.92164932655223,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.031493913558165,
+      "lon": -100.0208009933423
+    },
+    {
+      "rank": 85,
+      "mode_id": "mode-0085",
+      "input_index": 84,
+      "context_contrast_excess": 0.11019830339313225,
+      "winner_minus_mode": 1.483366863873406,
+      "descriptive_paired_block_interval_95": [
+        1.228100734962629,
+        1.7571769743856636
+      ],
+      "error_m": 243.80018772458803,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.02974825564067,
+      "lon": -100.0195198371669
+    },
+    {
+      "rank": 86,
+      "mode_id": "mode-0077",
+      "input_index": 76,
+      "context_contrast_excess": 0.10685349703444882,
+      "winner_minus_mode": 1.4867116702320895,
+      "descriptive_paired_block_interval_95": [
+        1.2379618578075642,
+        1.7420841695908869
+      ],
+      "error_m": 1046269.0100128694,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99950022440338,
+      "lon": -89.99718608722596
+    },
+    {
+      "rank": 87,
+      "mode_id": "mode-0078",
+      "input_index": 77,
+      "context_contrast_excess": 0.10685349703444882,
+      "winner_minus_mode": 1.4867116702320895,
+      "descriptive_paired_block_interval_95": [
+        1.2379618578075642,
+        1.7420841695908869
+      ],
+      "error_m": 1046269.0100128694,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99950022440338,
+      "lon": -89.99718608722596
+    },
+    {
+      "rank": 88,
+      "mode_id": "mode-0103",
+      "input_index": 102,
+      "context_contrast_excess": 0.09230764512846958,
+      "winner_minus_mode": 1.5012575221380686,
+      "descriptive_paired_block_interval_95": [
+        1.221798145162914,
+        1.810890685600927
+      ],
+      "error_m": 316.60676819075894,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.031456158122815,
+      "lon": -100.02198217046146
+    },
+    {
+      "rank": 89,
+      "mode_id": "mode-0095",
+      "input_index": 94,
+      "context_contrast_excess": 0.09047802214341677,
+      "winner_minus_mode": 1.5030871451231216,
+      "descriptive_paired_block_interval_95": [
+        1.2748327963592938,
+        1.7751238500736228
+      ],
+      "error_m": 1051847.9101223112,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.001522797531635,
+      "lon": -111.99763078545482
+    },
+    {
+      "rank": 90,
+      "mode_id": "mode-0075",
+      "input_index": 74,
+      "context_contrast_excess": 0.08048208304419821,
+      "winner_minus_mode": 1.5130830842223402,
+      "descriptive_paired_block_interval_95": [
+        1.2653382950961978,
+        1.7849163551966276
+      ],
+      "error_m": 215.89381370129016,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.029785987940265,
+      "lon": -100.0183386868708
+    },
+    {
+      "rank": 91,
+      "mode_id": "mode-0066",
+      "input_index": 65,
+      "context_contrast_excess": 0.07790504769656903,
+      "winner_minus_mode": 1.5156601195699693,
+      "descriptive_paired_block_interval_95": [
+        1.2139140231489534,
+        1.855075848749016
+      ],
+      "error_m": 181.43251112959842,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03335279590874,
+      "lon": -100.01853858884897
+    },
+    {
+      "rank": 92,
+      "mode_id": "mode-0091",
+      "input_index": 90,
+      "context_contrast_excess": 0.0675758530158784,
+      "winner_minus_mode": 1.52598931425066,
+      "descriptive_paired_block_interval_95": [
+        1.249261756826771,
+        1.8252837216147726
+      ],
+      "error_m": 289.81835126416604,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "lat": 40.03168252449938,
+      "lon": -100.01489508910836
+    },
+    {
+      "rank": 93,
+      "mode_id": "mode-0027",
+      "input_index": 26,
+      "context_contrast_excess": 0.06747955926052676,
+      "winner_minus_mode": 1.5260856080060115,
+      "descriptive_paired_block_interval_95": [
+        1.2235984519546523,
+        1.8117494063309765
+      ],
+      "error_m": 1052175.582750645,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00004027782172,
+      "lon": -112.00228724295647
+    },
+    {
+      "rank": 94,
+      "mode_id": "mode-0057",
+      "input_index": 56,
+      "context_contrast_excess": 0.06676866420854714,
+      "winner_minus_mode": 1.526796503057991,
+      "descriptive_paired_block_interval_95": [
+        1.2921605606155333,
+        1.77614503078245
+      ],
+      "error_m": 1045839.834343661,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99978218453371,
+      "lon": -90.00269886957628
+    },
+    {
+      "rank": 95,
+      "mode_id": "mode-0058",
+      "input_index": 57,
+      "context_contrast_excess": 0.06676866420854714,
+      "winner_minus_mode": 1.526796503057991,
+      "descriptive_paired_block_interval_95": [
+        1.2921605606155333,
+        1.77614503078245
+      ],
+      "error_m": 1045839.834343661,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99978218453371,
+      "lon": -90.00269886957628
+    },
+    {
+      "rank": 96,
+      "mode_id": "mode-0042",
+      "input_index": 41,
+      "context_contrast_excess": 0.04968107629395248,
+      "winner_minus_mode": 1.5438840909725857,
+      "descriptive_paired_block_interval_95": [
+        1.3028810433019464,
+        1.7869675709897457
+      ],
+      "error_m": 1046063.3728457205,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99877744070735,
+      "lon": -90.00056344873397
+    },
+    {
+      "rank": 97,
+      "mode_id": "mode-0043",
+      "input_index": 42,
+      "context_contrast_excess": 0.04968107629395248,
+      "winner_minus_mode": 1.5438840909725857,
+      "descriptive_paired_block_interval_95": [
+        1.3028810433019464,
+        1.7869675709897457
+      ],
+      "error_m": 1046063.3728457205,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99877744070735,
+      "lon": -90.00056344873397
+    },
+    {
+      "rank": 98,
+      "mode_id": "mode-0062",
+      "input_index": 61,
+      "context_contrast_excess": 0.03361959834355512,
+      "winner_minus_mode": 1.559945568922983,
+      "descriptive_paired_block_interval_95": [
+        1.270906896535047,
+        1.837855750782927
+      ],
+      "error_m": 1051767.1243898894,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99975776281309,
+      "lon": -111.99721755831179
+    },
+    {
+      "rank": 99,
+      "mode_id": "mode-0022",
+      "input_index": 21,
+      "context_contrast_excess": 0.01946410856871287,
+      "winner_minus_mode": 1.5741010586978255,
+      "descriptive_paired_block_interval_95": [
+        1.325048783812076,
+        1.8195248313958465
+      ],
+      "error_m": 1045925.6641400695,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173
+    },
+    {
+      "rank": 100,
+      "mode_id": "mode-0023",
+      "input_index": 22,
+      "context_contrast_excess": 0.01946410856871287,
+      "winner_minus_mode": 1.5741010586978255,
+      "descriptive_paired_block_interval_95": [
+        1.325048783812076,
+        1.8195248313958465
+      ],
+      "error_m": 1045925.6641400695,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173
+    },
+    {
+      "rank": 101,
+      "mode_id": "mode-0076",
+      "input_index": 75,
+      "context_contrast_excess": 0.012599193599623262,
+      "winner_minus_mode": 1.580965973666915,
+      "descriptive_paired_block_interval_95": [
+        1.290836825532582,
+        1.8828773964230792
+      ],
+      "error_m": 1052267.6041898085,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 42.99989024920576,
+      "lon": -112.0035029981666
+    },
+    {
+      "rank": 102,
+      "mode_id": "mode-0092",
+      "input_index": 91,
+      "context_contrast_excess": -0.016523324517057812,
+      "winner_minus_mode": 1.610088491783596,
+      "descriptive_paired_block_interval_95": [
+        1.3364669895580277,
+        1.9080900991258172
+      ],
+      "error_m": 1046115.2559020375,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.9978854490355,
+      "lon": -90.00063314406661
+    },
+    {
+      "rank": 103,
+      "mode_id": "mode-0093",
+      "input_index": 92,
+      "context_contrast_excess": -0.016523324517057812,
+      "winner_minus_mode": 1.610088491783596,
+      "descriptive_paired_block_interval_95": [
+        1.3364669895580277,
+        1.9080900991258172
+      ],
+      "error_m": 1046115.2559020375,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 34.9978854490355,
+      "lon": -90.00063314406661
+    },
+    {
+      "rank": 104,
+      "mode_id": "mode-0081",
+      "input_index": 80,
+      "context_contrast_excess": -0.04839231422369803,
+      "winner_minus_mode": 1.6419574814902362,
+      "descriptive_paired_block_interval_95": [
+        1.3816617800119304,
+        1.9310923297257616
+      ],
+      "error_m": 1046217.1534834644,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.000392212580266,
+      "lon": -89.99711635043705
+    },
+    {
+      "rank": 105,
+      "mode_id": "mode-0082",
+      "input_index": 81,
+      "context_contrast_excess": -0.04839231422369803,
+      "winner_minus_mode": 1.6419574814902362,
+      "descriptive_paired_block_interval_95": [
+        1.3816617800119304,
+        1.9310923297257616
+      ],
+      "error_m": 1046217.1534834644,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "lat": 35.000392212580266,
+      "lon": -89.99711635043705
+    },
+    {
+      "rank": 106,
+      "mode_id": "mode-0063",
+      "input_index": 62,
+      "context_contrast_excess": -0.09216493690752132,
+      "winner_minus_mode": 1.6857301041740596,
+      "descriptive_paired_block_interval_95": [
+        1.4234986291633611,
+        1.990965248141746
+      ],
+      "error_m": 1051807.5133690597,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "lat": 43.00064027973346,
+      "lon": -111.99742416924006
+    }
+  ],
+  "location_decision_changed": false,
+  "evaluation_after_context_process_exited": true,
+  "original_job_status": "inconclusive",
+  "original_reason": "unsupported_score_kind",
+  "ranking_bit_identical_to_initial_5e823be_replay": true,
+  "context_elapsed_s": 2.6301428051665425,
+  "context_process_peak_rss_mib": 571.92578125
+}

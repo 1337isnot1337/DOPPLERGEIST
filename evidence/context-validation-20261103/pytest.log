@@ -1,0 +1,9 @@
+........................................................................ [ 54%]
+............................................................             [100%]
+=============================== warnings summary ===============================
+tests/test_data_access.py::test_truncated_parquet_and_payload_corruption
+  /home/cinna/DOPPLERGEIST-context/src/aircraft_geoloc/data_access.py:263: Pandas4Warning: 'str' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
+    clean["aircraft_class"] = clean.typecode.map(class_map).fillna("unclassified") if "typecode" in clean else "unclassified"
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+132 passed, 1 warning in 21.17s
