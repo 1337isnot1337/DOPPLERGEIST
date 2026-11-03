@@ -26,9 +26,10 @@ PR #191 excludes unsupported trajectories only when their entire spline is
 provably outside the search radius. PR #193 adds bounded exact-input acoustic
 reuse for dense tiles and an explicit upload-search worker setting. A complete
 3,795-association partition preserved its full payload and retention checksum;
-its CPU time changed from 76.05 to 74.60 seconds. A denser 5,000-association
-sample changed from 90.45 to 74.21 CPU seconds with identical scored rows.
-Neither measurement predicts nationwide runtime or establishes a location.
+its CPU time changed from 76.05 to 74.60 seconds. A complete 19,341-association
+partition also preserved its payload and checksum, with CPU time changing from
+276.99 to 250.88 seconds. Neither measurement predicts nationwide runtime or
+establishes a location.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner

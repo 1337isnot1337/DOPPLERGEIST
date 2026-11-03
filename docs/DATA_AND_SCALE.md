@@ -157,9 +157,11 @@ For association sets of at least 1,000 candidates, repeated acoustic batches
 reuse exact track, receiver, time-array and sound-speed inputs in a per-worker
 32 MiB cache. Sparse searches keep the ordinary path. A complete real-data clock
 partition with 3,795 associations took 76.05 → 74.60 CPU seconds with identical
-payloads and retention checksums. A 5,000-association sample from a denser cell
-took 90.45 → 74.21 CPU seconds with identical scored rows. These measurements
-are specific to those workloads, not nationwide runtime estimates.
+payloads and retention checksums. A complete 19,341-association partition took
+276.99 → 250.88 CPU seconds, also with identical payloads and retention
+checksums. A 5,000-association sample took 90.45 → 74.21 CPU seconds with
+identical scored rows. These measurements are specific to those workloads, not
+nationwide runtime estimates.
 
 Unperformed trials remain unknown with explicit conservative bounds in the
 retention ledger. A competitive candidate receives full evaluation, preserving
