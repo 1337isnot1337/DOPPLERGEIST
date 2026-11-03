@@ -59,4 +59,4 @@ jobs:
           print("Installed package imports and browser assets passed; no audio or tracks generated.")
           PY
       - name: Check exact native arithmetic on recorded inputs
-        run: python -I -m pytest -q tests/test_real_native_ridge.py
+        run: python -I -m pytest -q tests/test_real_native_ridge.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py

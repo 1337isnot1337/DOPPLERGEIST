@@ -1,0 +1,93 @@
+{
+  "fixture": "/workspace/scratch/68d3faf2620f/DOPPLERGEIST/results/recovered-inputs/real-cpa-full.json",
+  "scope": {
+    "input_kind": "recorded ridges and historical-flight CPA rows",
+    "selected_rows_per_event_limit": 5,
+    "clock_trials_per_row": 21,
+    "clock_offsets_s": [
+      -5.0,
+      5.0
+    ],
+    "unavailable_flight_rows": 0,
+    "unsupported_clock_trials": 0
+  },
+  "measurement": "Uncached batch fitting, including shared preprocessing; fixture loading and acoustic propagation excluded",
+  "numpy_version": "2.5.4",
+  "ridge_fit_backend": "native-c-irls-v2-pairwise:a4160c0be2c214af1f7011fb106e4e28b1b2e1ecdf9a9a7192799314c44f5fed",
+  "batch_count": 80,
+  "clock_rows": 1680,
+  "sample_counts": [
+    21,
+    23,
+    25,
+    26,
+    28,
+    31,
+    33,
+    36,
+    39,
+    44,
+    48,
+    58,
+    63,
+    85,
+    141
+  ],
+  "vectorized_fallback_batches": 0,
+  "native_calls_in_verified_pass": 1680,
+  "all_diagnostics_exact": true,
+  "repeats": 3,
+  "rounds_per_arm": 10,
+  "trials": [
+    {
+      "pair": 1,
+      "arm": "vectorized",
+      "process_cpu_s": 1.287767788,
+      "wall_s": 1.2944418910000195
+    },
+    {
+      "pair": 1,
+      "arm": "native_rows",
+      "process_cpu_s": 0.2304982579999999,
+      "wall_s": 0.23050327700002526
+    },
+    {
+      "pair": 2,
+      "arm": "native_rows",
+      "process_cpu_s": 0.24687642900000029,
+      "wall_s": 0.24846269499994378
+    },
+    {
+      "pair": 2,
+      "arm": "vectorized",
+      "process_cpu_s": 1.1828440110000003,
+      "wall_s": 1.18327508699997
+    },
+    {
+      "pair": 3,
+      "arm": "vectorized",
+      "process_cpu_s": 1.1491266720000004,
+      "wall_s": 1.1491620630000625
+    },
+    {
+      "pair": 3,
+      "arm": "native_rows",
+      "process_cpu_s": 0.19482415399999997,
+      "wall_s": 0.19482907099995828
+    }
+  ],
+  "medians": {
+    "vectorized": {
+      "process_cpu_s": 1.1828440110000003,
+      "wall_s": 1.18327508699997
+    },
+    "native_rows": {
+      "process_cpu_s": 0.2304982579999999,
+      "wall_s": 0.23050327700002526
+    }
+  },
+  "speedup": {
+    "process_cpu_s": 5.131683081960649,
+    "wall_s": 5.133441495497005
+  }
+}

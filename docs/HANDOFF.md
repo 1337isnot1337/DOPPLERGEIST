@@ -92,38 +92,36 @@ discovery produced 17 ridges; the daily ADSB.lol indexes retain all aircraft
 types. A video image can help check a result, but is not by itself a precise
 recorder GPS measurement.
 
-At this handoff the upload search is still running; no coordinate has been
-accepted. On the originating machine, the job, `resume.json`, discovery output,
-search checkpoints and archived earlier revisions are under
-`/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
-The active search uses the code from PR #205 at `225bf6b` and run hash
-`d1ef045417a64a792b81c7355e508bb204046a70b614fb5815aba14b74a75456`;
-check its current API/status and source identity before intervening. The separate
-homelab stages tiles under the same identity; its coordinator imports verified
-results only after pausing the local job. The local search is configured for 12
-workers and homelab stages with eight. A monitor resumes only the configured
-wall-time timeout after transferring available remote checkpoints; it does not
-resume a user cancellation or another failure. Operator-local cross-host helpers
-and logs are under `/home/cinna/.local/state/dopplergeist-cross-host-parity-20261103/`;
-they are not a portable distributed CLI. The homelab disk guard stops only the
-identified staging process group below 15 GiB free; the coordinator then imports
-its completed checkpoints. The guard and its log are also in homelab's
-`~/.cache/dopplergeist-multicore-20261103/`. A search checkpoint from different
-code must not be mixed in without a specifically validated migration. On this
-restart, 654 root checkpoints were migrated after checking the search identities,
-unchanged pre-scoring code, terrain hashes and empty retention ledgers. They had
-either no receiver points or no CPA rows; unsupported-flight evidence was
-preserved. A no-CPA root replayed with an identical full payload. Homelab was
-seeded with 422 verified no-receiver roots. The preceding local search is
-archived as `search-before-floor-225bf6b`; other old homelab results remain under
-`national-motion-a9f91ee` and must not be mixed with the new run.
-Check final coverage, unsupported-motion and retention evidence before describing
-any candidate as a localization. The active code includes PR #192's
-harmonic-ambiguity confidence check. Its aligned-sample heuristic flagged no pair when
-run over all 17 discovered ridges from this upload; this does not establish that
-the groups are independent. Apply current confidence checks to the final
-matched evidence before accepting a result. The active code also includes PR #203's
-cache-key fix for caller-supplied acoustic arrays.
+Snapshot: 2026-11-03 16:30 UTC. No coordinate has been accepted. The original
+job `a90452172daf453986cf9bed846b0e2d` remains preserved with 853 tile files,
+but its current result is `failed / processing_error`: its audio checkpoint is
+not readable by the resume path. Do not treat its tile count as a completed
+search or use its result as a location.
+
+The same MP3 is being searched in optimized job
+`7ae679c304b849a0a2b1f1085b9312d5`, under
+`/home/cinna/.local/state/dopplergeist-optimized-upload-20261103/jobs/`. This
+job has the completed whole-recording audio checkpoint and is `running/search`
+with 12 workers. It uses the broad CONUS window above; no coordinates, flight
+IDs or truth-derived bounds were supplied. Its current source is
+`cb996dcb49b9d31a24c10b9b5418c35423f7bbcd` (`Combine clustered tile scheduling
+with faster scoring`). The original decoded audio and 17-event discovery were
+reused; the updated detector reproduced the saved 17-event discovery exactly.
+
+At the snapshot, the active search directory had 838 tile receipts, all keyed to
+its current run hash. The previous 851-receipt search directory is preserved at
+`search-before-combined-cb996dc/`; 13 of those receipts were not present in the
+new active directory and remain available in the archive. Progress `0.55` in
+`result.json` is stale. See [issue #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13)
+for the latest process and checkpoint status. Older remote/homelab staging
+artifacts belong to different run identities and have not been imported into
+this job.
+
+Before accepting any candidate, check current search completeness, omitted
+coverage, unsupported-motion accounting, retained alternatives and uncertainty.
+The 17 discovered ridges are not proof of 17 independent aircraft passages; the
+previous aligned-sample check did not establish independence. No final search
+result or location has been produced.
 
 ## Read first
 

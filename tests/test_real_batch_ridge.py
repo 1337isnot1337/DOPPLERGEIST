@@ -81,14 +81,14 @@ def test_real_association_results_match_scalar_fits(recorded, monkeypatch):
                                 mode="robust_ridge", score_floor=0.) for i in selected]
 
     with monkeypatch.context() as patch:
-        patch.setattr(batch_ridge, "first_event_fits", lambda *args: None)
+        patch.setattr(batch_ridge, "first_event_fits", lambda *args, **kwargs: None)
         scalar = run()
     calls = 0
     original = batch_ridge.first_event_fits
 
-    def counted(*args):
+    def counted(*args, **kwargs):
         nonlocal calls
-        result = original(*args)
+        result = original(*args, **kwargs)
         calls += result is not None
         return result
 

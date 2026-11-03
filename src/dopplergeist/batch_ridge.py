@@ -5,7 +5,7 @@ import pickle
 import numpy as np
 
 from . import matching
-from .matching import _fit_argument_key, _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs
+from .matching import _fit_argument_key, _fit_ridge_uncached, _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs
 
 
 def _batch_fit_key(measurement, event, factors, emissions):
@@ -30,22 +30,25 @@ def _batch_fit_key(measurement, event, factors, emissions):
     return digest.digest()
 
 
-def first_event_fits(measurement, event, factors, emissions):
+def first_event_fits(measurement, event, factors, emissions, *, legacy_arithmetic=False):
     """Reuse an identical complete fit batch within the current scoring call."""
+    options = {"legacy_arithmetic": True} if legacy_arithmetic else {}
     cache = _ridge_fit_cache.get()
     if cache is None or cache.max_entries < 1 or cache.batch_fit_limit <= 0:
-        return _first_event_fits_uncached(measurement, event, factors, emissions)
+        return _first_event_fits_uncached(measurement, event, factors, emissions, **options)
     try:
         key = _batch_fit_key(measurement, event, factors, emissions)
+        if legacy_arithmetic:
+            key = hashlib.sha256(b"legacy-array-v1" + key).digest()
     except (TypeError, ValueError, KeyError, AttributeError):
-        return _first_event_fits_uncached(measurement, event, factors, emissions)
+        return _first_event_fits_uncached(measurement, event, factors, emissions, **options)
     entries = cache.batch_fit_entries
     if key in entries:
         entries.move_to_end(key)
         # Only snapshots produced below from our own scalar-valued diagnostics
         # enter this private memory cache. No files or external pickles are read.
         return pickle.loads(entries[key])
-    result = _first_event_fits_uncached(measurement, event, factors, emissions)
+    result = _first_event_fits_uncached(measurement, event, factors, emissions, **options)
     if result is not None:
         snapshot = pickle.dumps(result, protocol=5)
         size = len(key) + len(snapshot)
@@ -61,7 +64,7 @@ def first_event_fits(measurement, event, factors, emissions):
     return result
 
 
-def _first_event_fits_uncached(measurement, event, factors, emissions):
+def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy_arithmetic=False):
     """Fit supported clocks together, or return None for the ordinary fitter.
 
     This uses the same six iterations, box constraints, and diagnostics as the
@@ -80,7 +83,7 @@ def _first_event_fits_uncached(measurement, event, factors, emissions):
         return None
     low, high = event["f0_range_hz"]
     # Keep scalar numeric promotion for noncanonical parameter types.
-    if any(type(value) not in (int, float) for value in (sigma, fraction, low, high)):
+    if not legacy_arithmetic and any(type(value) not in (int, float) for value in (sigma, fraction, low, high)):
         return None
     y, w = ridge[measured], weights[measured]
     independent = len(np.unique(times[measured]))
@@ -96,7 +99,10 @@ def _first_event_fits_uncached(measurement, event, factors, emissions):
         native = matching._native_fit_irls
         # Contiguous rows use the native kernel's same pairwise reduction order.
         # Other layouts and scalar promotion rules retain the vectorized path.
-        if (native is not None and all(type(value) is float for value in (sigma, fraction, low, high))
+        # Saved first-group batches must keep their original array powers and
+        # scalar compatibility checks even when the native fitter is installed.
+        if (not legacy_arithmetic and native is not None
+                and all(type(value) is float for value in (sigma, fraction, low, high))
                 and factors.flags.c_contiguous and emissions.flags.c_contiguous
                 and factors.flags.aligned and emissions.flags.aligned):
             native_rows = []
@@ -122,8 +128,9 @@ def _first_event_fits_uncached(measurement, event, factors, emissions):
         # The scalar fitter squares Python floats here. NumPy's array square
         # can differ by one ULP, which changes later IRLS steps and mode scores.
         try:
-            prior = np.fromiter(((2 * sigma / float(value))**2 for value in cap),
-                                dtype=float, count=len(cap))
+            prior = ((2 * sigma / cap)**2 if legacy_arithmetic else
+                     np.fromiter(((2 * sigma / float(value))**2 for value in cap),
+                                 dtype=float, count=len(cap)))
         except (OverflowError, ZeroDivisionError):
             return None
         for iteration in range(6):
@@ -162,9 +169,10 @@ def _first_event_fits_uncached(measurement, event, factors, emissions):
                 effective = w / residual_scale
         loss = np.average(2 * sigma**2 * (residual_scale - 1), weights=w, axis=1)
         try:
-            penalty = np.fromiter(
-                ((2 * sigma * float(drift) / float(bound))**2 / independent
-                 for drift, bound in zip(beta, cap)), dtype=float, count=len(cap))
+            penalty = ((2 * sigma * beta / cap)**2 / independent if legacy_arithmetic else
+                       np.fromiter(
+                           ((2 * sigma * float(drift) / float(bound))**2 / independent
+                            for drift, bound in zip(beta, cap)), dtype=float, count=len(cap)))
         except (OverflowError, ZeroDivisionError):
             return None
         score = -np.sqrt(loss + penalty)
@@ -172,7 +180,17 @@ def _first_event_fits_uncached(measurement, event, factors, emissions):
         outlier = np.average(np.abs(residual) > 3 * sigma, weights=w, axis=1)
     if not all(np.all(np.isfinite(value)) for value in (span, reference, score, rmse, outlier)):
         return None
-    return _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, len(y), independent)
+    results = _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, len(y), independent)
+    if legacy_arithmetic:
+        # Saved searches before the scalar-consistent correction used this
+        # array arithmetic and these three fallback checks for the first group.
+        # Preserve their exact scores while batching later groups normally.
+        for i in {0, len(results)//2, len(results)-1}:
+            scalar = _fit_ridge_uncached(None, None, measurement, 0., event["f0_range_hz"],
+                                         343., sigma, fraction, acoustic_result=(factors[i], emissions[i]))
+            if results[i] != scalar:
+                return None
+    return results
 
 
 def _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, sample_count, independent):

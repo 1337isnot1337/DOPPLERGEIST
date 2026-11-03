@@ -208,3 +208,39 @@ def test_unsupported_recorded_batches_keep_none_fallback(monkeypatch, unsupporte
     monkeypatch.setattr(matching, "_native_fit_irls", unexpected_native_call)
     with np.errstate(all="raise"):
         assert _first_event_fits_uncached(measurement, event, factors, emissions) is None
+
+
+@pytest.mark.parametrize("single_changed_row", [False, True], ids=["legacy-cache", "legacy-fallback"])
+def test_native_batch_preserves_recorded_legacy_arithmetic(monkeypatch, single_changed_row):
+    from dopplergeist import batch_ridge
+
+    if getattr(matching, "_native_fit_irls", None) is None:
+        pytest.skip("optional native ridge extension is not installed")
+    measurement, event, factors, emissions = _recorded_native_batch()
+    if single_changed_row:
+        factors, emissions = factors[1:2], emissions[1:2]
+    inputs = (measurement, event, factors, emissions)
+    with monkeypatch.context() as patch:
+        patch.setattr(matching, "_native_fit_irls", None)
+        canonical = batch_ridge._first_event_fits_uncached(*inputs)
+        legacy = batch_ridge._first_event_fits_uncached(*inputs, legacy_arithmetic=True)
+    assert canonical is not None
+    if single_changed_row:
+        # This row now participates in the legacy scalar validation.
+        assert legacy is None
+    else:
+        assert legacy is not None
+        # The captured second row differs by one ULP in fitted frequency.
+        old, current = legacy[1]["f0_hz"], canonical[1]["f0_hz"]
+        assert old != current and np.nextafter(old, current) == current
+
+    @matching._cache_ridge_fits
+    def check():
+        for _ in range(2):
+            actual = batch_ridge.first_event_fits(*inputs)
+            assert json.dumps(actual, sort_keys=True) == json.dumps(canonical, sort_keys=True)
+            actual = batch_ridge.first_event_fits(*inputs, legacy_arithmetic=True)
+            assert json.dumps(actual, sort_keys=True) == json.dumps(legacy, sort_keys=True)
+        assert len(matching._ridge_fit_cache.get().batch_fit_entries) == 1 + int(legacy is not None)
+
+    check()

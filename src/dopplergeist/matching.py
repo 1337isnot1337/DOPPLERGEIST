@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from functools import wraps
 import hashlib
 from itertools import chain
+import os
 
 import numpy as np
 from pyproj import Transformer
@@ -17,12 +18,18 @@ from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
-try:
-    from . import _native_ridge as _native_ridge_module
-    from ._native_ridge import fit_irls as _native_fit_irls
-except ImportError:
-    _native_ridge_module = None
-    _native_fit_irls = None
+_ridge_backend_choice = os.environ.get("DOPPLERGEIST_RIDGE_BACKEND", "auto")
+if _ridge_backend_choice not in {"auto", "python"}:
+    raise ValueError("DOPPLERGEIST_RIDGE_BACKEND must be 'auto' or 'python'")
+_native_ridge_module = None
+_native_fit_irls = None
+if _ridge_backend_choice == "auto":
+    try:
+        from . import _native_ridge as _native_ridge_module
+        from ._native_ridge import fit_irls as _native_fit_irls
+    except ImportError:
+        _native_ridge_module = None
+        _native_fit_irls = None
 
 if _native_ridge_module is None:
     RIDGE_FIT_BACKEND = "python-irls-v1"
