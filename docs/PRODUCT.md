@@ -10,7 +10,7 @@ bands, flight IDs and ground-truth coordinates are not upload inputs.
 Launch the local interface after installing the project:
 
 ```bash
-dopplergeist serve --jobs jobs --config operator.json --port 8765
+dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
 ```
 
 Open `http://127.0.0.1:8765`. The same persistent directory must be supplied after
@@ -24,16 +24,18 @@ to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
 operator limits. Cancellation terminates the analysis process group, including
 decoders. No API credentials or paid service are required by the local service.
-Flight/terrain provider configuration and scientific integration are described
-below; an unconfigured backend must report
-missing data rather than invent a location.
+`--online` enables public flight and terrain downloads into `~/.cache/dopplergeist`
+when a job has a defensible recording time. Archives and indexes can take tens of gigabytes or more and hours; no automatic
+disk-space limit is currently enforced. The example gives each job four hours; adjust `--max-runtime`
+for your system. Omit `--online` and supply `--config operator.json` to use
+preconfigured offline data. An unconfigured backend reports missing data.
 
 CLI equivalents:
 
 ```bash
-dopplergeist analyze recording.mp3 --jobs jobs --config operator.json \
-  --start-utc 2026-09-08T20:00:00Z --end-utc 2026-09-08T20:05:00Z \
-  --time-source 'Recorder clock and recording log'
+dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
+  --start-utc "$RECORDING_START_UTC_MIN" --end-utc "$RECORDING_START_UTC_MAX" \
+  --time-source 'Your evidence for this recording time'
 dopplergeist job JOB_ID --jobs jobs
 ```
 
@@ -44,7 +46,7 @@ An inconclusive result may retain candidate hypotheses for inspection.
 
 ## HTTP surface
 
-- `GET /api/capabilities`: declared coverage and upload/work limits.
+- `GET /api/capabilities`: declared coverage, upload/work limits, and whether a flight provider and online acquisition are configured.
 - `POST /api/jobs`: raw audio bytes with `Content-Type: application/octet-stream`,
   `Content-Length`, optional `X-Filename`, and `X-Dopplergeist-Request` containing
   the shared request JSON **without** `audio_path`. The server saves the upload
@@ -69,8 +71,12 @@ These transport tests do not establish scientific localization accuracy.
 
 ## Provider and search configuration
 
-An operator configures data once; users upload audio without choosing trajectory
-files. The normal acquisition path delegates to `data_access.acquire_inputs`:
+`--online` requires no JSON configuration: it uses the per-user cache and public
+providers automatically. For a different cache location, existing indexes, or
+custom budgets, provide an operator config with `--config`; `--online` enables
+network acquisition while retaining the configured cache path. Users upload
+audio without choosing trajectory files. The acquisition path delegates to
+`data_access.acquire_inputs`:
 
 ```json
 {
