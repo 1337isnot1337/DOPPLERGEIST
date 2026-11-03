@@ -98,3 +98,40 @@ def test_w3_vertical_only_profile_is_not_a_100m_confidence_claim():
     diag["sensitivity"] = {"radius_m": 0.0, "kind": "sensitivity", "method": "profiled_relative_altitude_offsets",
                            "complete": True, "boundary_limited": False, "profiles": []}
     assert decide((events, candidates, coverage, diag))["reason_code"] == "uncertainty_not_established"
+
+
+def test_known_clock_single_event_requires_full_trusted_window_sensitivity():
+    from aircraft_geoloc.contracts import utc_timestamp
+    events, candidates, coverage, diag = evidence()
+    events = events[:1]
+    candidates[0].update(event_ids=["e0"], flight_ids=["a"])
+    start = utc_timestamp(candidates[0]["recording_start_utc"]).timestamp()
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "insufficient_independent_events"
+    diag["recording_start_window_s"] = [start-1, start+1]
+    diag["sensitivity"]["settings"] = {"clock_bounds_s": [start, start]}
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "insufficient_independent_events"
+    diag["sensitivity"]["settings"]["clock_bounds_s"] = [start-1, start+1]
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["known_clock_single_event"] is True
+    diag["recording_start_window_s"] = [start+1, start+2]
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "recording_clock_mismatch"
+
+
+def test_explicit_subset_keeps_unconfirmed_proposals_without_forcing_matches():
+    events, candidates, coverage, diag = evidence()
+    extra = deepcopy(events[1])
+    extra.update(event_id="e2", harmonic_group_id="g2")
+    events.append(extra)
+    candidates[0].update(score_kind="matched_group_support_minus_normalized_residual", score=1.8)
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "unexplained_events"
+    diag["unmatched_event_ids"] = ["e2"]
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["unmatched_event_ids"] == ["e2"]
+    alternative = dict(candidates[0], lat=45., event_ids=["e0", "e2"], flight_ids=["a", "c"], score=1.7)
+    assert decide((events, candidates+[alternative], coverage, diag))["reason_code"] == "ambiguous_locations"
+    alternative["score"] = 0.5
+    assert decide((events, candidates+[alternative], coverage, diag))["status"] == "succeeded"
+    extra["harmonic_group_id"] = "g0"
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "incomplete_harmonic_group"

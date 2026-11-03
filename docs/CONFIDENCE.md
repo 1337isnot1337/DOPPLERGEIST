@@ -16,21 +16,35 @@ scope and availability of requested archives, not capture of every aircraft.
 
 ## Default policy and evidence
 
-The default `DecisionPolicy` is `engineering-v1`, frozen before the held-out
-decision-fixture run. Development negative controls motivated explicit abstention
+The current default `DecisionPolicy` is `engineering-v2`; the original v1 receipts
+remain preserved. Development negative controls motivated explicit abstention
 for noise, absent tracks, harmonic duplicates, incomplete coverage, bad residuals
 and multiple plausible hypotheses. The engineering thresholds are deliberately
-simple and predeclared: at least two independent flyovers, <=3 Hz event RMSE,
+simple and predeclared: normally at least two independent flyovers, <=3 Hz event RMSE,
 <=25% outliers, >=95% trajectory support, and 100 m maximum sensitivity radius.
 For `negative_robust_ridge_loss_hz`, a competing loss within 0.5 Hz per independent
-event is a near tie. A location more than 200 m away or a different flight
-association then triggers ambiguity. Other score kinds have no declared gap
+event is a near tie. The declared subset-support score has a separate
+dimensionless near-tie threshold of 0.2 support units per independent group;
+it is not a Hz threshold or probability. Other score kinds have no declared gap
 threshold and abstain. These are regression-tested engineering choices, **not
 empirically calibrated thresholds for arbitrary aircraft audio**. No held-out
 real recordings have established their false-localization rate.
 
-Every leading hypothesis must explain the event set with one locked recording
-clock; harmonics count once and must map to the same flight. Matching diagnostics
+One flyover can pass the event-count gate with a trusted recording-start window
+when the fitted clock lies within it and sensitivity tests cover that **entire
+input window**, not only a local clock perturbation. All residual, support,
+global-alternative and uncertainty gates still apply. A known clock is not
+inferred from the fitted candidate. W5 supplies the validated original request
+window as `recording_start_window_s`; W3 profiles expose the tested span in
+`sensitivity.settings.clock_bounds_s`.
+
+Matched flyovers use one locked recording clock; harmonics count once and must
+map to the same flight. The explicit subset score may leave proposals unmatched
+when `unmatched_event_ids` exactly enumerates the original discovered-minus-matched
+IDs. Entire harmonic groups must be retained. These omitted proposals remain
+unconfirmed sounds, not labelled aircraft misses or silently deleted evidence.
+Different retained subsets remain comparable only using their declared support
+score and may still trigger flight/location ambiguity. Matching diagnostics
 use event-ID keys with `rmse_hz`, `outlier_fraction`, `support_fraction` and
 `drift_at_bound`. Other required evidence keys are `clock_locked`,
 `refinement_boundary_limited`, `alternatives_evaluated` and `sensitivity`.
@@ -62,7 +76,9 @@ branch; it does not establish that the real producer has provided such evidence.
 | `no_matching_flights` | No event/track hypothesis |
 | `insufficient_independent_events` | Too few flyovers after harmonic grouping |
 | `inconsistent_harmonic_association` | Harmonics map to different flights |
-| `unexplained_events` | Candidate omits discovered events |
+| `incomplete_harmonic_group` | Partial association omits a matched event's harmonic |
+| `unexplained_events` | Unmatched proposals lack explicit subset-association evidence |
+| `recording_clock_mismatch` | Fitted start is outside the trusted original window |
 | `timing_not_established` | Shared clock unverified |
 | `matching_diagnostics_missing` | Event-fit evidence unavailable |
 | `insufficient_track_support` | Incomplete trajectory support |
