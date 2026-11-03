@@ -1,0 +1,69 @@
+name: Retrieve declared NASA high-speed inputs
+on:
+  push:
+    branches: [worker/e2e-nasa-highspeed-inputs-20261103]
+    paths: [.github/workflows/nasa-highspeed-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  original-members:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 5582002be34e0e1e9df6735e7a4227ca4c0fc899
+          persist-credentials: false
+      - name: Retrieve both predeclared original members
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from datetime import datetime, timezone
+          import runpy, hashlib, json, urllib.error
+          script=Path('scripts/inspect_nasa_flyover_release.py')
+          namespace=runpy.run_path(str(script))
+          archive_type=namespace['Archive']; original=archive_type.fetch
+          output=Path('real-inputs'); source=output/'source'
+          source.mkdir(parents=True,exist_ok=False)
+          failures=[]
+          def fetch(self,*args,**kwargs):
+              for attempt in range(1,4):
+                  try:
+                      return original(self,*args,**kwargs)
+                  except (urllib.error.URLError,TimeoutError,ConnectionError) as exc:
+                      if isinstance(exc,urllib.error.HTTPError) and exc.code<500: raise
+                      item={'args':args,'kwargs':kwargs,'attempt':attempt,'error':type(exc).__name__+': '+str(exc)}
+                      failures.append(item); print(json.dumps(item),flush=True)
+                      (output/'network-failures.json').write_text(json.dumps(failures,indent=2)+'\n')
+                      if attempt==3: raise
+          archive_type.fetch=fetch
+          archive=archive_type()
+          selected_names=['data/edge_flyover_065.mat','data/edge_flyover_066.mat']
+          selected=[next(e for e in archive.members if e['name']==name) for name in selected_names]
+          receipt={'source':namespace['URL'],'archive_bytes':archive.size,'inventory':archive.members,
+                   'selection':'All publisher Edge high-speed protocol rows; both cases retained, including background-aircraft note on065',
+                   'predeclaration_sha256':'15bdef2c60f1d6723c2f4343620fb7bae1cb7b6041bb5564c86ce09ea7c90e19',
+                   'source_reader_commit':'5582002be34e0e1e9df6735e7a4227ca4c0fc899',
+                   'source_reader_sha256':hashlib.sha256(script.read_bytes()).hexdigest(),
+                   'localization_performed':False,'audio_inspected':False,'files':[]}
+          for entry in selected:
+              data=archive.member(entry)
+              path=source/Path(entry['name']).name
+              path.write_bytes(data)
+              item={'name':entry['name'],'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest(),
+                    'crc32_verified':True,'acquisition':'public_range_download'}
+              receipt['files'].append(item)
+              receipt.update(requests=archive.requests,status='partial',network_failures=failures)
+              (output/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+              print(json.dumps(item),flush=True)
+          receipt.update(status='complete',completed_utc=datetime.now(timezone.utc).isoformat())
+          (output/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - name: Preserve originals and receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nasa-highspeed-original-inputs
+          path: real-inputs/
+          retention-days: 7
+          if-no-files-found: error
