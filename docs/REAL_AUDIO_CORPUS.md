@@ -55,6 +55,27 @@ CC BY-NC 4.0; no media is copied into this repository. Its public coordinates
 refer to nearby public places rather than exact microphones, so these clips do
 not establish location truth for geolocation evaluation.
 
+A follow-up review selected **20 known-site candidate clips** from that sample.
+All 20 were publisher-labeled aircraft recordings, emitted at least one scanner
+proposal, and were visually reviewed as having a clear descending tonal ridge.
+They are linked in the [scanner-facing manifest](../benchmarks/aerosonic-known-site-candidate-manifest-20261103.csv);
+publisher aircraft/date/time/site/microphone metadata and the approximate public
+site markers are in separate [event-reference](../benchmarks/truth-separated/aerosonic-known-site-event-references-20261103.csv)
+and [location-marker](../benchmarks/truth-separated/aerosonic-location-markers-20261103.csv)
+tables. The scanner manifest contains no truth labels or coordinates. No flight
+matching or geolocation was run on these clips.
+
+The local audio hardlinks are at
+`/home/cinna/.local/state/dopplergeist-benchmark-candidate-audio-20261103/aerosonic-known-site/`;
+they are not redistributed in this repository. They can be reacquired from the
+[AeroSonicDB v1.1.2 record](https://zenodo.org/records/10215080) under CC BY-NC
+4.0. The source labels provide recording date/time strings, microphone IDs and
+one of three site IDs, but the timezone is not stated. The three published
+coordinates are nearby public-place markers with unquantified microphone offset.
+This is a 20-clip known-site scanner candidate collection, not a 20-point
+microphone ground-truth benchmark and not evidence of 100 m localization
+accuracy.
+
 ## Publisher-documented aircraft scanner control
 
 The [DLR RECORD 139 scanner check](../benchmarks/dlr-record139-scanner-check-20261103.md)
@@ -82,6 +103,13 @@ contains:
   review. Their exact receiver coordinates are unprovided; some titles mention a
   coarse place. Aircraft identity, recording UTC and independence from editing
   are not established.
+
+The separate [five-source unknown-exact-point shortlist](../benchmarks/real-candidates-unknown-point-v2-20261103.md)
+contains real clips with visually plausible descending patterns and positive
+scanner proposals. Their exact receiver coordinates and absolute recording times
+are unverified; one is an edited compilation, and another may contain overlapping
+harmonic groups from a single pass. This is candidate material, not five
+validated unknown-location benchmark examples.
 
 The Eclipse and YouTube candidates are real recordings and real moving-tone
 evidence, but the source of the tonal bands has not been confirmed as aircraft.
@@ -123,6 +151,14 @@ python scripts/export_youtube_survey_20261103.py \
   --state-root /home/cinna/.local/state \
   --output /tmp/youtube-expanded-scan-20261103.csv
 ```
+
+A separate fixed-seed sample of 200 videos, randomly selected without replacement
+from the query-derived YouTube catalog, is being scanned in scanner-only mode.
+It is a randomized sample of that catalog, not a representative sample of
+YouTube. Its full audio, scan outcomes, no-proposal cases and acquisition failures
+remain local while collection runs under
+`/home/cinna/.local/state/dopplergeist-youtube-random-sample-20261103/youtube-only-200/`.
+No flight matching or geolocation is run on this sample.
 
 Source rights and continued online availability are not established by this
 survey. Retain failed downloads, ambiguous proposals and no-proposal excerpts in
