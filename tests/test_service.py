@@ -137,6 +137,7 @@ def test_resume_preserves_original_and_checks_input(tmp_path, monkeypatch):
         (old / "search" / "manifest.json").write_text('{"run_hash":"saved"}')
         (old / "search" / "retention.sqlite").write_bytes(b"ledger")
         (old / "search" / "tile-1.json").write_text("original checkpoint")
+        manager.max_upload_bytes = 4  # A prior upload may have used a larger limit.
         resumed = manager.resume(job["job_id"])
         new = manager.directory(resumed["job_id"])
         assert new != old and manager.get(job["job_id"])["reason_code"] == "work_limit"

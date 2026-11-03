@@ -84,7 +84,7 @@ class JobManager:
 
     def submit(self, metadata, source, size, *, suffix=".mp3", _search_seed=None, _config=None):
         """Copy exactly size bytes from a binary stream before launching analysis."""
-        if size <= 0 or size > self.max_upload_bytes:
+        if size <= 0 or (_search_seed is None and size > self.max_upload_bytes):
             raise ValueError(f"Audio size must be 1..{self.max_upload_bytes} bytes")
         request = validate_request(dict(metadata, audio_path="pending"))
         with self._mutex:
