@@ -113,3 +113,39 @@ truth. No access request or author message was sent. Additional real recordings
 must establish coordinate uncertainty, consent/public site, source licence,
 sample-zero UTC/time window and a flight archive independent of the known target.
 Until those exist, do not close the real-corpus or nationwide-accuracy gate.
+
+## Automatic discovery on the 40 real Livermore recordings
+
+On 2026-11-03, all 40 published smartphone recordings were encoded to 192 kbps
+MP3 and passed through the normal automatic CLI at source `e8cbb08`. Inputs had
+opaque names, no event windows/bands, no flight hints and no supplied UTC. Workers
+had no network or access to the annotations, KML files or original case mapping.
+Every case and outcome is in [the compact table](real-discovery-20261103.csv).
+
+**36 clips produced proposals; four produced none; 136 groups were proposed.**
+All 40 jobs returned `needs_input / recording_time_required`; none returned a
+location. Processing took 241.88 s, excluding MP3 staging. These are real positive
+recordings, but a proposal in a positive clip is not a confirmed target detection.
+There is no event-level false-alarm rate or location-accuracy result here.
+
+The missed clips were N958JX_R50, N1387U_R44, N451EE_R51 and N9658K_R24. Their
+annotated bands, inspected only after outputs were terminal, all lie inside the
+frozen 40–1600 Hz discovery range. The historical manually banded analysis detected
+N9658K_R24; the other three were historical misses too. N563FX_R21 produced 25
+groups and N60RS_R11 produced 19, requiring inspection for fragments, harmonics
+and unrelated proposals. Extra groups remain unconfirmed rather than being
+automatically counted as false alarms. These cases are handed to W1 in issue #5.
+
+To repeat with the restored public source and a new output directory:
+
+```sh
+PYTHONPATH=src .venv/bin/python scripts/benchmark_real_discovery.py \
+  data/research/zenodo-23424278 --output results/NEW-UNUSED-DIRECTORY
+```
+
+The script requires the automatic CLI, ffmpeg and bwrap. Its runner is made
+portable from the local script used for this experiment; only `--help` was run
+on the committed helper, without repeating the unchanged 40-clip experiment.
+The missing microphone/UTC evidence described above still prevents these cases
+from qualifying as real geolocation acceptance. Further validation must use real
+recordings and geolocations under the user's real-data-only directive.
