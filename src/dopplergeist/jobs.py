@@ -268,7 +268,10 @@ class JobManager:
             process = self._processes.get(job_id)
             if process:
                 self._stop(process)
-            return result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(self.get(job_id)))
+            current = self.get(job_id)
+            if current["status"] in TERMINAL:
+                return current
+            return result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(current))
 
     def resume(self, job_id):
         """Explicitly continue a stopped job after its complete audio checkpoint."""
