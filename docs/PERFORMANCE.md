@@ -211,5 +211,41 @@ The GitHub runner used Python 3.12, NumPy 2.5.4, SciPy 1.18.1, and pandas 3.1.0 
 [The CI measurement record](../benchmarks/results/performance-ci-20261103.json) preserves all eight runs and their source revisions.
 These ratios support the local result on a second environment without pooling timings from different machines.
 
-The complete HTTP replay uses the entire 3,600.1845-second reference recording and an explicit source-informed clock.
-Its regional flight coverage cannot establish an accepted independent location.
+### Integration with current main
+
+The tested integration commit is `d6a0c860bd5a64797b3bde29bb1f74c689d0ed52`.
+It includes main `6d3e3f7`, with PR #210's configured workers and PR #213's association traversal optimization.
+The fitter changes preserve those concurrent changes.
+
+[The integrated CI run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41659297200) passed all eight real-input tests and both complete-output comparisons.
+It used two alternating pairs per workload and the same scalar-consistent baseline.
+Broad-window median CPU time was **69.4880 → 25.0318 seconds (2.7760×)**.
+Narrow-window median CPU time was **5.6747 → 4.0153 seconds (1.4133×)**.
+The CI measurement record includes all eight integration runs separately from the earlier measurements.
+Python 3.11 and 3.14 installation, compilation, CLI, and packaged-asset checks also passed.
+
+### Complete-recording HTTP checks
+
+The full-domain HTTP replay used the entire 3,600.1845-second reference recording and an explicit source-informed clock.
+It completed intake, discovery, and acquisition, then reached its 900-second limit during adaptive geographic search.
+Its source remained unchanged, and the service stopped cleanly.
+It did not complete refinement or a scientific decision.
+The partial job and timeout receipt remain available for inspection.
+
+This timeout does not establish a complete-pipeline speedup.
+The current search subdivides dense tiles that the older historical replay omitted after budget failures.
+That older elapsed time is not a comparison for equal work.
+
+A separate HTTP replay on the integrated source passed the complete application-path check in **247.04 seconds**.
+It used the same complete recording and clock window, with explicit source-informed bounds `[-73.545, 40.865, -73.505, 40.895]`.
+The bounds contain four actual 2 km grid points.
+The operator retained the original search budgets, solver settings, 500 m refinement spacing, and three finalists.
+Discovery produced 18 ridge records in 16 independent groups.
+The verifier checked intake, discovery, acquisition, search, refinement, and decision, including 23 returned diagnostic candidates.
+Search processed both tiles, four coarse points, and 40 refinement points without tile or refinement failures.
+The verifier reported no pipeline-evidence errors, unchanged source files, and clean service shutdown.
+
+The scientific result was **`inconclusive / search_incomplete`**.
+Incomplete regional flight coverage and remaining search/model limitations still prevent an accepted location.
+The bounded replay verifies the complete application path, not nationwide completion or a speed ratio against the timed-out run.
+The CI measurement record preserves both HTTP outcomes and their separate source revisions.
