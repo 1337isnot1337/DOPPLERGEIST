@@ -135,3 +135,17 @@ def test_terrain_offline_datum_missing_and_corruption(tmp_path):
     (tmp_path / "tileList.txt").write_text("broken")
     with pytest.raises(DataUnavailable, match="corrupt"):
         CachedTerrain(tmp_path, offline=True, geoid_path=tmp_path / "geoid.tif")
+
+
+def test_terrain_degree_boundary_uses_published_cog_extent(tmp_path):
+    import rasterio
+    from rasterio.transform import from_origin
+    tag = "Copernicus_DSM_COG_30_N39_00_W100_00_DEM"
+    (tmp_path / "tileList.txt").write_text(tag + "/\n")
+    for name, value in [(tag + ".tif", 100.), ("geoid.tif", -30.)]:
+        with rasterio.open(tmp_path / name, "w", driver="GTiff", height=2, width=2, count=1,
+                           dtype="float32", crs="EPSG:4326", transform=from_origin(-100, 40.000416666667, .5, .5)) as raster:
+            raster.write(np.full((2, 2), value, dtype="float32"), 1)
+    terrain = CachedTerrain(tmp_path, offline=True, geoid_path=tmp_path / "geoid.tif", adopt_existing=True)
+    assert terrain.sample([40.], [-99.5]).tolist() == [70.]
+    assert tag in str(terrain.provenance()["files"])

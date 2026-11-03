@@ -308,11 +308,13 @@ class FlightCache:
         self.session = session or requests.Session()
 
     def acquire_day(self, day, *, provider="staging-0"):
+        from . import tracks as normalizer
         day = date.fromisoformat(day)
         tag = f"v{day:%Y.%m.%d}-planes-readsb-{provider}"
         directory = self.root / day.isoformat() / provider
         directory.mkdir(parents=True, exist_ok=True)
-        index = directory / "all-types-v1.sqlite"
+        normalizer_hash = sha256(normalizer.__file__)
+        index = directory / f"all-types-v1-{normalizer_hash[:12]}.sqlite"
         if index.exists():
             return FlightIndex(index)
         release_path = directory / "release.json"
@@ -340,6 +342,7 @@ class FlightCache:
         coverage = {"bounds": [-180, -90, 180, 90], "time_range_s": [start, start + 86400],
                     "all_aircraft": True, "provider": "ADSB.lol", "release_tag": tag,
                     "release_sha256": sha256(release_path), "license": "ODbL", "missing_receiver_data_possible": True}
+        coverage["normalizer_sha256"] = normalizer_hash
         types_path = self.root / "icao_aircraft_types.js"
         type_source = download("https://raw.githubusercontent.com/wiedehopf/tar1090-db/master/db/icao_aircraft_types.js",
                                types_path, offline=self.offline, session=self.session)
@@ -404,7 +407,9 @@ class CachedTerrain:
         lat, lon = np.broadcast_arrays(lat, lon)
         shape = lat.shape
         lat, lon = lat.ravel(), lon.ravel()
-        degrees = np.column_stack((np.floor(lat).astype(int), np.floor(lon).astype(int)))
+        # Published COG tiles omit the original bottom/right overlap pixels.
+        # Their outer edges are shifted north/west by half a GLO90 pixel.
+        degrees = np.column_stack((np.floor(lat - 1 / 2400).astype(int), np.floor(lon + 1 / 2400).astype(int)))
         self.last_sample_files = {"tileList.txt", self.geoid_path.name}
         tiles, inverse = np.unique(degrees, axis=0, return_inverse=True)
         height = np.zeros(len(lat))
