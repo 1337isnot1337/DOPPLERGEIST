@@ -78,8 +78,8 @@ def main():
     cb=fig.colorbar(dots, ax=ax, orientation='horizontal', fraction=.038, pad=.025)
     cb.set_label('Fit score  ·  higher is better',fontsize=9)
     cb.ax.tick_params(labelsize=8)
-    fig.text(.065,.078, f'★  Highest score     ●  Inferred reference     —  Aircraft track       {distance:.0f} m between points',
-             fontsize=10, color='#334451')
+    fig.text(.5,.078, f'★  Highest score     ●  Inferred reference     —  Aircraft track       {distance:.0f} m between points',
+             ha='center', fontsize=10, color='#334451')
     fig.text(.065,.035, 'USGS / USDA NAIP imagery', fontsize=9, color='#5b6875')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(args.output, dpi=180, facecolor=fig.get_facecolor())
