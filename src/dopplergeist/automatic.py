@@ -137,9 +137,15 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     if not events:
         return finish("inconclusive", "no_supported_events", "No supported moving-tone Doppler events were discovered in the recording.")
     progress("acquisition", 0.35, **state)
+
+    def report_search_progress(fraction=0.0):
+        fraction = min(1.0, max(0.0, float(fraction)))
+        progress("search", 0.55 + 0.29 * fraction, **state)
+
     try:
         from .data_access import DataUnavailable
-        search, prepared_events, measurements, indexes, terrain = _search(request, recording, events, output, config, lambda: progress("search", 0.55, **state))
+        search, prepared_events, measurements, indexes, terrain = _search(
+            request, recording, events, output, config, report_search_progress)
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic matching/data components are not installed: {exc}")
     except MissingData as exc:
@@ -269,7 +275,8 @@ def _search(request, recording, events, output, config, search_progress):
                "recording_start_window_s": [lo, hi]}
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
                              bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
-                             scoring=scoring, filters=filters, input_hashes=hashes)
+                             scoring=scoring, filters=filters, input_hashes=hashes,
+                             search_progress=search_progress)
     write_json(output / "data-provenance.json", {"flight_indexes": [index.report for index in indexes],
                "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes})
     return report, prepared, measurements, indexes, terrain
