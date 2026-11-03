@@ -152,13 +152,16 @@ python scripts/export_youtube_survey_20261103.py \
   --output /tmp/youtube-expanded-scan-20261103.csv
 ```
 
-A separate fixed-seed sample of 200 videos, randomly selected without replacement
-from the query-derived YouTube catalog, is being scanned in scanner-only mode.
-It is a randomized sample of that catalog, not a representative sample of
-YouTube. Its full audio, scan outcomes, no-proposal cases and acquisition failures
-remain local while collection runs under
+A fixed-seed sample of 200 videos was selected without replacement from the
+query-derived YouTube catalog and scanned in scanner-only mode. It is random
+within that catalog, not representative of YouTube. Of 200 selected videos, 198
+were scanned and two failed download; 24 scanned excerpts produced scanner
+proposals, while 174 had no proposal in the first 180 seconds. All 24 proposal
+plots were visually reviewed for trace shape only; aircraft identity remains
+unverified. No flight matching or geolocation was run. Per-video outcomes,
+summary counts and review limits are in the [random-sample report](../benchmarks/youtube-random-sample-20261103.md).
+Audio, detailed scanner artifacts and logs remain local under
 `/home/cinna/.local/state/dopplergeist-youtube-random-sample-20261103/youtube-only-200/`.
-No flight matching or geolocation is run on this sample.
 
 Source rights and continued online availability are not established by this
 survey. Retain failed downloads, ambiguous proposals and no-proposal excerpts in
