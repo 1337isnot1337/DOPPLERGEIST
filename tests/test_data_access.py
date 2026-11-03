@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aircraft_geoloc.data_access import CachedTerrain, DataUnavailable, FlightCache, FlightIndex, archive_frames, download
+from dopplergeist.data_access import CachedTerrain, DataUnavailable, FlightCache, FlightIndex, archive_frames, download
 
 
 def samples():
@@ -154,7 +154,7 @@ def test_terrain_degree_boundary_uses_published_cog_extent(tmp_path):
 
 def test_index_bounds_include_hermite_excursion_between_samples(tmp_path):
     from pyproj import Transformer
-    from aircraft_geoloc.geometry import Track, velocity_ecef
+    from dopplergeist.geometry import Track, velocity_ecef
     frame = pd.DataFrame({"flight_id": ["turn"] * 3, "time_s": [0., 10., 20.],
                           "lat": [40.] * 3, "lon": [-100.] * 3, "alt_m": [1000.] * 3,
                           "east_mps": [300., -300., 300.], "north_mps": [0.] * 3, "up_mps": [0.] * 3})

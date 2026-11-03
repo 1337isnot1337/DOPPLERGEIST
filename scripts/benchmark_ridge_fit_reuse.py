@@ -11,10 +11,10 @@ import time
 
 import pandas as pd
 
-from aircraft_geoloc import matching
-from aircraft_geoloc.finite_search import RetentionLedger
-from aircraft_geoloc.tiled_search import SearchBudget, _score
-from aircraft_geoloc.tracks import load_tracks
+from dopplergeist import matching
+from dopplergeist.finite_search import RetentionLedger
+from dopplergeist.tiled_search import SearchBudget, _score
+from dopplergeist.tracks import load_tracks
 
 
 def main():

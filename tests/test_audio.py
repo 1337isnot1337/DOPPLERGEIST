@@ -1,8 +1,8 @@
 import numpy as np
 import soundfile as sf
 
-from aircraft_geoloc.audio import measure
-from aircraft_geoloc.tracks import adsblol_frame
+from dopplergeist.audio import measure
+from dopplergeist.tracks import adsblol_frame
 
 
 def test_noise_does_not_force_a_detection(tmp_path):

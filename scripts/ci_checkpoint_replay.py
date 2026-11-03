@@ -288,7 +288,7 @@ def main(argv=None):
                 case_output.parent.mkdir(exist_ok=True)
                 case["report_path"] = str(case_output / "report.json")
                 case["execution"] = execute(
-                    [sys.executable, "-m", "aircraft_geoloc.cli", "run", str(config),
+                    [sys.executable, "-m", "dopplergeist.cli", "run", str(config),
                      "--output", str(case_output)], snapshot,
                     output / "logs" / f"{name}.log", env, args.case_timeout_s)
                 if case["execution"].get("returncode") != 0 or case["execution"].get("timed_out"):

@@ -12,7 +12,7 @@ DOPPLERGEIST investigates **where an audio recording was made** by comparing the
 
 | Area | Available now | Entry point or remaining work |
 | --- | --- | --- |
-| Configured localization | Event measurement, flight ranking and physical refinement | `aircraft-geoloc run` and `aircraft-geoloc measure` on `main` |
+| Configured localization | Event measurement, flight ranking and physical refinement | `dopplergeist run` and `dopplergeist measure` on `main` |
 | Automatic acoustic discovery | Whole-recording decoding, frequency-track discovery and harmonic grouping without supplied event windows or bands | `scripts/discover_audio.py`; produces event proposals and diagnostics |
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
 | Geographic search | Resumable bounded-memory tiles, joint matching across independent flyovers and disk-backed accounting of candidates discarded by ranking limits | [Search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) on `main` |
@@ -94,7 +94,7 @@ Large research inputs live in checksummed release assets. With an authenticated 
 ```bash
 .venv/bin/python scripts/restore_artifacts.py \
   --bundle data-source --bundle data-adsb-derived --bundle data-terrain
-.venv/bin/aircraft-geoloc run \
+.venv/bin/dopplergeist run \
   data/source/reproduce-local.json \
   --output results/my-reference-replay
 ```

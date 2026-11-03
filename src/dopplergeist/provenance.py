@@ -14,7 +14,7 @@ def implementation_provenance(code_root):
     directory. Unrelated installed libraries are not implementation sources.
     """
     root = Path(code_root).resolve()
-    package_root = root / "aircraft_geoloc"
+    package_root = root / "dopplergeist"
     if not package_root.is_dir():
         raise FileNotFoundError(f"Implementation package is absent: {package_root}")
     digest = hashlib.sha256()

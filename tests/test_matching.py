@@ -5,9 +5,9 @@ import pandas as pd
 import pytest
 from pyproj import Transformer
 
-from aircraft_geoloc.geometry import Track, ecef, straight_doppler
-from aircraft_geoloc.matching import RidgeTimes, fit_ridge, prepare_events, refine_candidate
-from aircraft_geoloc.search import event_score, filter_event, pair_candidates, score_candidate
+from dopplergeist.geometry import Track, ecef, straight_doppler
+from dopplergeist.matching import RidgeTimes, fit_ridge, prepare_events, refine_candidate
+from dopplergeist.search import event_score, filter_event, pair_candidates, score_candidate
 
 
 class Flyover:
@@ -179,7 +179,7 @@ def test_refinement_cannot_move_a_trusted_clock_outside_its_window(window):
 
 def test_source_fit_matches_independent_bounded_solver_on_interior_and_edges():
     from scipy.optimize import lsq_linear
-    from aircraft_geoloc.matching import _source_fit
+    from dopplergeist.matching import _source_fit
     rng = np.random.default_rng(440)
     factor, u = rng.uniform(0.7, 1.4, 80), np.linspace(-0.5, 0.5, 80)
     for _ in range(30):
@@ -194,7 +194,7 @@ def test_source_fit_matches_independent_bounded_solver_on_interior_and_edges():
 
 
 def test_full_sensitivity_reoptimizes_all_sources_without_moving_exact_utc():
-    from aircraft_geoloc.matching import profile_candidate
+    from dopplergeist.matching import profile_candidate
     observer, epoch, seed, tracks, events, measurements, terrain = physical_case()
     for event in events:
         event["quality"]["frequency_loss_scale_hz"] = 0.05
@@ -213,7 +213,7 @@ def test_full_sensitivity_reoptimizes_all_sources_without_moving_exact_utc():
 
 
 def test_missing_sensitivity_scenario_is_retained_as_incomplete_evidence():
-    from aircraft_geoloc.matching import profile_candidate
+    from dopplergeist.matching import profile_candidate
     class LimitedTrack(Flyover):
         def acoustic(self, t, observer, c):
             factor, emitted, distance = super().acoustic(t, observer, c)
@@ -228,7 +228,7 @@ def test_missing_sensitivity_scenario_is_retained_as_incomplete_evidence():
 
 
 def test_exhausted_real_optimizer_cannot_report_complete_sensitivity(monkeypatch):
-    import aircraft_geoloc.matching as matching
+    import dopplergeist.matching as matching
     real_minimize = matching.minimize
     def exhausted(*args, **kwargs):
         kwargs["options"] = dict(kwargs.get("options", {}), maxiter=0)
@@ -242,7 +242,7 @@ def test_exhausted_real_optimizer_cannot_report_complete_sensitivity(monkeypatch
 
 
 def test_flight_altitude_bias_preserves_derivatives_and_original_track():
-    from aircraft_geoloc.matching import _altitude_bias
+    from dopplergeist.matching import _altitude_bias
     observer, epoch, seed, tracks, events, measurements, terrain = physical_case()
     original = tracks["a"]
     shifted = _altitude_bias(original, 150)
@@ -255,7 +255,7 @@ def test_flight_altitude_bias_preserves_derivatives_and_original_track():
 
 
 def test_unestablished_flight_datum_prevents_complete_sensitivity():
-    from aircraft_geoloc.matching import profile_candidate
+    from dopplergeist.matching import profile_candidate
     track = Flyover()
     track.altitude_basis = ["barometric", "unspecified"]
     seed = dict(lat=40, lon=-100, recording_start_time_s=0, flight_ids=["a"])
@@ -269,7 +269,7 @@ def test_unestablished_flight_datum_prevents_complete_sensitivity():
 
 
 def test_overlay_prediction_uses_fitted_emission_drift_and_preserves_support():
-    from aircraft_geoloc.matching import predict_fitted_ridge
+    from dopplergeist.matching import predict_fitted_ridge
     epoch = 1_790_000_000.0
     measured = measurement(drift=1.8)
     track = Flyover(epoch+30)

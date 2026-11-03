@@ -4,11 +4,11 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from aircraft_geoloc import matching
-from aircraft_geoloc.finite_search import RetentionLedger
-from aircraft_geoloc.geometry import Track, ecef
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, _score, tile_points
+from dopplergeist import matching
+from dopplergeist.finite_search import RetentionLedger
+from dopplergeist.geometry import Track, ecef
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, _score, tile_points
 from test_tiled_search import scenario
 
 
@@ -132,7 +132,7 @@ def test_cache_eviction_copies_results_and_releases_scope_on_error(tmp_path, mon
 
 
 def test_typed_support_errors_are_never_replaced_with_cached_fit(tmp_path, monkeypatch):
-    from aircraft_geoloc.geometry import AcousticSupportError
+    from dopplergeist.geometry import AcousticSupportError
 
     arguments = fit_inputs(tmp_path)
     original = matching._fit_ridge_uncached

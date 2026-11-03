@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from aircraft_geoloc.contracts import validate_recording
-from aircraft_geoloc.intake import AudioIntakeError, intake_recording, source_hash
+from dopplergeist.contracts import validate_recording
+from dopplergeist.intake import AudioIntakeError, intake_recording, source_hash
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="POSIX executable startup failures")
@@ -48,7 +48,7 @@ def test_chunk_iterator_does_not_retain_recording_sized_rss(tmp_path):
     script = """
 import json, sys
 from pathlib import Path
-from aircraft_geoloc.intake import IntakeRecording
+from dopplergeist.intake import IntakeRecording
 path = Path(sys.argv[1])
 duration = path.stat().st_size / 4 / 4000
 metadata = dict(source_sha256="0" * 64, duration_s=duration, sample_rate_hz=4000,
