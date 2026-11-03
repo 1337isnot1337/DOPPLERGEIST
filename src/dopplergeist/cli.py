@@ -1,16 +1,24 @@
 import argparse
 import json
+import math
 from pathlib import Path
 
 
 def operator_config(path, online):
     config = json.loads(Path(path).read_text()) if path else {}
+    if not isinstance(config, dict):
+        raise ValueError("Operator configuration must be a JSON object")
     if online:
-        if not isinstance(config, dict):
-            raise ValueError("Operator configuration must be a JSON object")
         config.setdefault("cache_root", str(Path.home() / ".cache" / "dopplergeist"))
         config["offline"] = False
     return config
+
+
+def positive_runtime(value):
+    number = float(value)
+    if not math.isfinite(number) or number <= 0:
+        raise argparse.ArgumentTypeError("Runtime must be positive and finite")
+    return number
 
 
 def main():
@@ -33,13 +41,13 @@ def main():
     analyze.add_argument("--jobs",default="jobs",help="Persistent job directory")
     analyze.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     analyze.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
-    analyze.add_argument("--max-runtime",type=float,default=3600,help="Wall-time limit in seconds")
+    analyze.add_argument("--max-runtime",type=positive_runtime,default=3600,help="Wall-time limit in seconds")
     serve=sub.add_parser("serve",help="Launch the local MP3 upload interface and job API")
     serve.add_argument("--jobs",default="jobs")
     serve.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     serve.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
     serve.add_argument("--port",type=int,default=8765)
-    serve.add_argument("--max-runtime",type=float,default=3600)
+    serve.add_argument("--max-runtime",type=positive_runtime,default=3600)
     serve.add_argument("--max-upload-mb",type=int,default=100)
     job=sub.add_parser("job",help="Read a persisted job result without rerunning it")
     job.add_argument("job_id")
@@ -47,8 +55,13 @@ def main():
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id")
     resume.add_argument("--jobs",default="jobs")
-    resume.add_argument("--max-runtime",type=float,default=3600)
+    resume.add_argument("--max-runtime",type=positive_runtime,default=3600)
     args=parser.parse_args()
+    if args.command in {"analyze", "serve"}:
+        try:
+            config=operator_config(args.config,args.online)
+        except (OSError, ValueError) as exc:
+            parser.error(f"Invalid operator configuration: {exc}")
     if args.command=="run":
         from .pipeline import run
         run(args.config,args.output)
@@ -58,10 +71,13 @@ def main():
         print(json.dumps(result[-1],indent=2))
     elif args.command=="serve":
         from .service import serve
-        config=operator_config(args.config,args.online)
         serve(args.jobs,config,port=args.port,max_runtime_s=args.max_runtime,max_upload_bytes=args.max_upload_mb*1024*1024)
     elif args.command=="analyze":
         from .jobs import JobManager
+        from .contracts import validate_request
+        audio=Path(args.audio)
+        if not audio.is_file():
+            parser.error(f"Audio file is unavailable or not a regular file: {audio}")
         if args.end_utc and not args.start_utc:
             parser.error("--end-utc requires --start-utc")
         request={"schema_version":1,"search":{"coverage":"conus"}}
@@ -69,10 +85,12 @@ def main():
             request["time_window"]={"start_utc":args.start_utc,"end_utc":args.end_utc or args.start_utc,"source":"user"}
             if args.time_source:
                 request["time_window"]["source_detail"]=args.time_source
-        config=operator_config(args.config,args.online)
+        try:
+            validate_request(dict(request, audio_path=str(audio)))
+        except ValueError as exc:
+            parser.error(str(exc))
         manager=JobManager(args.jobs,config,max_runtime_s=args.max_runtime)
         try:
-            audio=Path(args.audio)
             with audio.open("rb") as source:
                 queued=manager.submit(request,source,audio.stat().st_size,suffix=audio.suffix)
             print(json.dumps(manager.wait(queued["job_id"]),indent=2))
