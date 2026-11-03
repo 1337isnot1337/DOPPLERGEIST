@@ -37,11 +37,14 @@ finite emitted-frequency range remains a separate modeling prior.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
-survey and a 25-row reviewed candidate index. The requested 20 known-location
-usable aircraft recordings plus five unknown-location usable aircraft recordings
-is still unmet: publisher site coordinates do not establish microphone accuracy,
-and moving-tone review does not confirm aircraft identity. No new corpus
-recordings were matched to flights or localized.
+survey, a 155-clip licensed AeroSonicDB scanner-only sample, and a 25-row reviewed
+candidate index. In the AeroSonicDB sample, 51/125 publisher-labeled aircraft
+clips and 0/30 ambient clips produced scanner proposals; publisher coordinates
+are nearby-place references, not exact microphone locations. The requested set of
+20 known-location usable aircraft recordings plus five unknown-location usable
+aircraft recordings is still unmet: publisher site coordinates do not establish
+microphone accuracy, and moving-tone review does not confirm aircraft identity.
+No new corpus recordings were matched to flights or localized.
 
 The [swarm task plan](AGENT_TASKS.md) provides 12 actionable GitHub issues,
 dependencies, suggested agent allocation and a copyable assignment prompt.
