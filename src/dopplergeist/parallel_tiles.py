@@ -6,6 +6,7 @@ import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
+from .parallel_retention import EmptyRetentionStage
 from .tiled_search import (_expanded_bounds, _sample_tile_terrain, _score, _tile_anchor_window,
                            _tile_coordinates, _tracks_for_points)
 
@@ -42,7 +43,7 @@ def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, m
 
 
 def score_tile(stage, cells, score_floor=None):
-    """Evaluate one tile and return its payload and completed private ledger."""
+    """Return a tile payload and either its private ledger or empty descriptor."""
     if _worker is None:
         raise RuntimeError("Tile worker was not initialized")
     state = _worker
@@ -72,11 +73,11 @@ def score_tile(stage, cells, score_floor=None):
         sampled = "elev_m" in points
         if not tracks:
             points = pd.DataFrame()
-        with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
-                                         dir=state["ledger_directory"], delete=False) as handle:
-            path = Path(handle.name)
-        ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
         if len(points):
+            with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
+                                             dir=state["ledger_directory"], delete=False) as handle:
+                path = Path(handle.name)
+            ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
             kwargs = {"ledger": ledger, "stage": stage}
             anchor = _tile_anchor_window(stage.removeprefix("coarse:"), state["start_window"],
                                          state["parameters"], state["filters"], state["events"])
@@ -86,14 +87,17 @@ def score_tile(stage, cells, score_floor=None):
                 kwargs["score_floor"] = score_floor
             rows, counts = _score(points, tracks, state["events"], state["measurements"], budget,
                                   state["parameters"], state["filters"], state["start_window"], **kwargs)
+            checksum = ledger.checksum(stage)
+            retention = str(path)
         else:
             rows, counts = [], {}
-            ledger.record(stage, [], [], 0)
+            retention = EmptyRetentionStage.for_stage(state["run_hash"], state["score_kind"], stage)
+            checksum = retention.checksum
         provenance = observed_terrain() if sampled else {
             "terrain_files": [], "terrain_ocean_tiles": [], "terrain_failures": []}
         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
-                   "cells": list(cells), **provenance, "retention_checksum": ledger.checksum(stage)}
-        return payload, str(path)
+                   "cells": list(cells), **provenance, "retention_checksum": checksum}
+        return payload, retention
     except (DataUnavailable, ValueError, OSError) as error:
         if path is not None:
             path.unlink(missing_ok=True)

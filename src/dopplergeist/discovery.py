@@ -362,15 +362,22 @@ def _plot_event(recording, group, event, settings, path):
     sr = recording.metadata["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")
     spec = _spectrum(np.array(data[round(first * sr):round(last * sr)]), sr, first, settings)
+    low = min(points[:, 1].min() for points in group)
+    high = max(points[:, 1].max() for points in group)
+    limits = (max(settings.min_frequency_hz, low * 0.9), high * 1.1)
+    # Only visible cells can affect the image. Keep an extra frequency bin on
+    # each side so pcolormesh reconstructs the same boundary-cell coordinates.
+    # Whitening still uses the full spectrum and all measured ridges are kept.
+    lower = max(0, np.searchsorted(spec.frequency, limits[0]) - 1)
+    upper = min(len(spec.frequency), np.searchsorted(spec.frequency, limits[1], side="right") + 1)
+    visible = slice(lower, upper)
     fig, ax = plt.subplots(figsize=(10, 4), layout="constrained")
-    ax.pcolormesh(spec.time, spec.frequency, spec.contrast, shading="auto", cmap="magma", vmin=0, vmax=6,
+    ax.pcolormesh(spec.time, spec.frequency[visible], spec.contrast[visible], shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
         for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > settings.max_gap_s) + 1):
             ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=0.9)
-    low = min(points[:, 1].min() for points in group)
-    high = max(points[:, 1].max() for points in group)
-    ax.set(xlim=(first, last), ylim=(max(settings.min_frequency_hz, low * 0.9), high * 1.1),
+    ax.set(xlim=(first, last), ylim=limits,
            xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)",
            title=f"{event['event_id']}: measured ridges; acoustic proposal, identity unconfirmed")
     fig.savefig(path, dpi=130)

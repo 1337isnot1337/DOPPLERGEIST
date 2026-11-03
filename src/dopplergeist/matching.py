@@ -56,6 +56,10 @@ class _RidgeFitCache:
         self.batch_fit_entries = OrderedDict()
         self.batch_fit_bytes = 0
         self.batch_fit_limit = 4 * 1024 * 1024
+        self.ceiling_entries = OrderedDict()
+        self.screen_entries = OrderedDict()
+        self.screen_bytes = 0
+        self.screen_limit = 8 * 1024 * 1024
 
     def prepared_measurement(self, measurement, sigma_hz, drift_fraction, key):
         """Reuse selected samples only after checking their current content key."""

@@ -1,0 +1,83 @@
+{
+  "scope": "Recorded empty worker tiles, parent imports, global merges and checkpoint writes; excludes process startup, populated tiles and localization",
+  "index_sources": [
+    {
+      "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0",
+      "bytes": 32823780
+    }
+  ],
+  "tiles": 256,
+  "passes": 3,
+  "timings": {
+    "baseline": [
+      {
+        "wall_s": 1.3252746839998508,
+        "cpu_s": 1.304918123,
+        "worker_sqlite_files": 256
+      },
+      {
+        "wall_s": 1.3230037739995169,
+        "cpu_s": 1.3130931380000002,
+        "worker_sqlite_files": 256
+      },
+      {
+        "wall_s": 1.2772926750003535,
+        "cpu_s": 1.2720694190000001,
+        "worker_sqlite_files": 256
+      }
+    ],
+    "current": [
+      {
+        "wall_s": 0.9291229770005884,
+        "cpu_s": 0.9258609819999997,
+        "worker_sqlite_files": 0
+      },
+      {
+        "wall_s": 0.9196562549996088,
+        "cpu_s": 0.9186595150000003,
+        "worker_sqlite_files": 0
+      },
+      {
+        "wall_s": 0.79837246399984,
+        "cpu_s": 0.7972947680000004,
+        "worker_sqlite_files": 0
+      }
+    ]
+  },
+  "medians": {
+    "baseline": {
+      "wall_s": 1.3230037739995169,
+      "cpu_s": 1.304918123
+    },
+    "current": {
+      "wall_s": 0.9196562549996088,
+      "cpu_s": 0.9186595150000003
+    }
+  },
+  "wall_speedup": 1.4385850874249528,
+  "cpu_speedup": 1.4204589422883183,
+  "all_recorded_payloads_match": true,
+  "all_parent_tables_match": true,
+  "all_stages_pass_resume_validation": true,
+  "invalid_descriptor_rejected_without_mutation": true,
+  "duplicate_delivery_is_idempotent": true,
+  "baseline_commit": "1f60cb5e5f03031516015064c384a1e25c8e88d2",
+  "environment": {
+    "python": "3.12.14",
+    "cpu_affinity": [
+      3
+    ],
+    "numerical_threads": 1,
+    "output_filesystem": "tmpfs",
+    "scope_limit": "No physical-disk throughput or complete national-search speed claim."
+  },
+  "process_transport_check": {
+    "spawned_workers": 2,
+    "recorded_tiles": 16,
+    "ordered_delivery": true,
+    "all_parent_stages_resume_valid": true,
+    "private_worker_sqlite_files": 0
+  },
+  "storage_failure_check": "Read-only parent ledger rejected through DataUnavailable without changing committed evidence.",
+  "reproduction": "PYTHONPATH=src python scripts/benchmark_real_empty_workers.py --index REAL_INDEX.sqlite --fixture tests/data/real-empty-tile-workload.json --events tests/data/reference-cpa-real.json --baseline BASELINE_CHECKOUT --terrain-root TERRAIN_CACHE --output NEW_OUTPUT --passes 3 --tiles 256"
+}

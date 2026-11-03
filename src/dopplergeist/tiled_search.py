@@ -583,7 +583,8 @@ def _record_support(output, stage, counts, summary):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + ".json"),
                    {"stage": stage, "unsupported_cpa_tracks": counts.get("unsupported_cpa_tracks", []),
-                    "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])})
+                    "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])},
+                   compact=True)
 
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
@@ -622,7 +623,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     import os
     from contextlib import ExitStack, nullcontext
     from .data_access import CachedTerrain, _index_pool
-    from .parallel_retention import import_retention_stage
+    from .parallel_retention import EmptyRetentionStage, import_retention_stage
     from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
     total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
@@ -762,10 +763,15 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         payload = None
         try:
             payload, worker_path = future.result()
+            if isinstance(worker_path, EmptyRetentionStage) and (
+                    payload["ranked"] or payload["counts"] or payload["grid_points"]):
+                raise DataUnavailable("Empty worker retention stage has scored output")
             import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
-            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
+                       compact=True)
             try:
-                Path(worker_path).unlink()
+                if not isinstance(worker_path, EmptyRetentionStage):
+                    Path(worker_path).unlink()
             except OSError:
                 pass
         except (DataUnavailable, ValueError, OSError) as error:
@@ -851,7 +857,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
                                    "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
                                    "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
-                        write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+                        write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
+                                   compact=True)
                     done += 1
                     if "~t" not in tile_id:
                         points_searched += payload["grid_points"]

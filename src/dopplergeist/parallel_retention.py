@@ -1,18 +1,50 @@
 """Move a completed worker stage into the search's retention ledger."""
+from dataclasses import dataclass
 import json
 from pathlib import Path
 import sqlite3
 
 from .data_access import DataUnavailable
+from .finite_search import RetentionLedger
+
+
+@dataclass(frozen=True)
+class EmptyRetentionStage:
+    """An empty worker result that needs no intermediate SQLite database.
+
+    The parent still records the stage in its durable ledger before writing a
+    checkpoint. Identity fields prevent a descriptor from another run or stage
+    from being accepted merely because all empty stages have the same checksum.
+    """
+    run_hash: str
+    score_kind: str
+    stage: str
+    checksum: str
+
+    @classmethod
+    def for_stage(cls, run_hash, score_kind, stage):
+        return cls(run_hash, score_kind, stage, RetentionLedger._checksum([], [], 0, 0))
 
 
 def import_retention_stage(ledger, worker_path, stage, expected_checksum):
     """Atomically import one verified worker stage without changing its evidence.
 
-    Workers use private ledgers; only the parent writes the destination ledger.
+    Scored workers use private ledgers; empty workers return an identity-bearing
+    descriptor. Only the parent writes the destination ledger.
     The stage checksum, run identity, scores, discarded bounds and kept modes
     must all match before the parent can checkpoint that stage.
     """
+    if isinstance(worker_path, EmptyRetentionStage):
+        expected = EmptyRetentionStage.for_stage(ledger.run_hash, ledger.score_kind, stage)
+        if worker_path != expected or expected_checksum != expected.checksum:
+            raise DataUnavailable("Empty worker retention stage identity/checksum mismatch")
+        try:
+            checksum = ledger.record(stage, [], [], 0)
+            if checksum != expected_checksum or not ledger.stage_valid(stage, expected_checksum):
+                raise DataUnavailable("Imported empty retention stage failed verification")
+        except (sqlite3.DatabaseError, OSError, ValueError, TypeError) as error:
+            raise DataUnavailable("Cannot import empty worker retention stage") from error
+        return
     worker_path = Path(worker_path)
     if not worker_path.is_file() or worker_path.resolve() == ledger.path.resolve():
         raise DataUnavailable("Missing or invalid worker retention ledger")
