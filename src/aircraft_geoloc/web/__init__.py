@@ -1,0 +1,1 @@
+"""Bundled local upload interface."""

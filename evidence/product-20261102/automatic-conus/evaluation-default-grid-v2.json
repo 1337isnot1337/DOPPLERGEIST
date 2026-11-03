@@ -1,0 +1,1176 @@
+{
+  "scope": "post-search evaluation of automatic normal-grid CONUS synthetic MP3 integration; no independent real localization claim",
+  "status": "inconclusive",
+  "reason_code": "partial_flight_coverage",
+  "truth_separated": true,
+  "all_returned_candidates": [
+    {
+      "rank": 1,
+      "position_error_m": 1046023.1493328345,
+      "score": -0.18245572972826157,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 2,
+      "position_error_m": 1046023.1493328355,
+      "score": -0.18245572972836022,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 3,
+      "position_error_m": 1046023.1493328355,
+      "score": -0.18245572972836022,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 4,
+      "position_error_m": 6.156481394341498,
+      "score": -0.18311495344509449,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": true
+    },
+    {
+      "rank": 5,
+      "position_error_m": 1052005.6704098934,
+      "score": -0.19503320558713327,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 6,
+      "position_error_m": 1052005.6667462678,
+      "score": -0.1950332175825294,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 7,
+      "position_error_m": 21.885529691476,
+      "score": -0.23988397923539767,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": true
+    },
+    {
+      "rank": 8,
+      "position_error_m": 1051991.5447839876,
+      "score": -0.2960248296435849,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 9,
+      "position_error_m": 1052083.562948563,
+      "score": -0.39057474324736285,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 10,
+      "position_error_m": 1046011.4966058539,
+      "score": -0.4066636993952275,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 11,
+      "position_error_m": 1046011.4966058539,
+      "score": -0.4066636993952275,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 12,
+      "position_error_m": 89.1822875541064,
+      "score": -0.4189726081401029,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": true
+    },
+    {
+      "rank": 13,
+      "position_error_m": 1046097.331740354,
+      "score": -0.4871644595133531,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 14,
+      "position_error_m": 1046097.331740354,
+      "score": -0.4871644595133531,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 15,
+      "position_error_m": 1045959.6271834107,
+      "score": -0.4920223907111268,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 16,
+      "position_error_m": 1045959.6271834107,
+      "score": -0.4920223907111268,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 17,
+      "position_error_m": 1046045.4666161569,
+      "score": -0.5128066520752463,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 18,
+      "position_error_m": 1046045.4666161569,
+      "score": -0.5128066520752463,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 19,
+      "position_error_m": 115.62238404419993,
+      "score": -0.5680506635509943,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 20,
+      "position_error_m": 1051951.1630181607,
+      "score": -0.6041747952049958,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 21,
+      "position_error_m": 82.92831879740659,
+      "score": -0.6334183236958829,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": true
+    },
+    {
+      "rank": 22,
+      "position_error_m": 1051899.528257344,
+      "score": -0.6658762969055005,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 23,
+      "position_error_m": 1052043.1847885551,
+      "score": -0.6915123588255225,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 24,
+      "position_error_m": 1045925.6641400695,
+      "score": -0.6936500634500111,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 25,
+      "position_error_m": 1045925.6641400695,
+      "score": -0.6936500634500111,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 26,
+      "position_error_m": 119.67049091887542,
+      "score": -0.7264503019185946,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 27,
+      "position_error_m": 117.14662723939321,
+      "score": -0.7538536325509562,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 28,
+      "position_error_m": 1052175.582750645,
+      "score": -0.7540019587898293,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 29,
+      "position_error_m": 1051859.1428851283,
+      "score": -0.7890272523207639,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 30,
+      "position_error_m": 1045873.7904188159,
+      "score": -0.789476360473192,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 31,
+      "position_error_m": 1045873.7904188159,
+      "score": -0.789476360473192,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 32,
+      "position_error_m": 1052031.934323032,
+      "score": -0.8148228437515322,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 33,
+      "position_error_m": 140.7026865629188,
+      "score": -0.8272804443370931,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 34,
+      "position_error_m": 1046183.1695429125,
+      "score": -0.8385916178544526,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 35,
+      "position_error_m": 1046183.1695429125,
+      "score": -0.8385916178544526,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 36,
+      "position_error_m": 145.69976553314865,
+      "score": -0.8482316561703342,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 37,
+      "position_error_m": 189.1878624966544,
+      "score": -0.8485170819306533,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 38,
+      "position_error_m": 1046131.3087163942,
+      "score": -0.84990928321274,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 39,
+      "position_error_m": 1046131.3087163942,
+      "score": -0.84990928321274,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 40,
+      "position_error_m": 1052123.9488813533,
+      "score": -0.8865234058133162,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 41,
+      "position_error_m": 1046063.3728457205,
+      "score": -0.9350971900587919,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 42,
+      "position_error_m": 1046063.3728457205,
+      "score": -0.9350971900587919,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 43,
+      "position_error_m": 163.04082051063114,
+      "score": -0.9685482539848433,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 44,
+      "position_error_m": 215.92164932655223,
+      "score": -0.9730199652869733,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 45,
+      "position_error_m": 1046149.2036818347,
+      "score": -0.9934688100976283,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 46,
+      "position_error_m": 1046149.2036818347,
+      "score": -0.9934688100976283,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 47,
+      "position_error_m": 1045993.6083102262,
+      "score": -1.0060575905354376,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 48,
+      "position_error_m": 1045993.6083102262,
+      "score": -1.0060575905354376,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 49,
+      "position_error_m": 1052135.20819589,
+      "score": -1.0161627400041922,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 50,
+      "position_error_m": 1051939.9214032085,
+      "score": -1.0278847255236276,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 51,
+      "position_error_m": 1045907.7645793761,
+      "score": -1.0297093772155503,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 52,
+      "position_error_m": 1045907.7645793761,
+      "score": -1.0297093772155503,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 53,
+      "position_error_m": 1052215.965077749,
+      "score": -1.0794029569274626,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 54,
+      "position_error_m": 205.25351795593758,
+      "score": -1.0859685446148784,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 55,
+      "position_error_m": 1045839.834343661,
+      "score": -1.0964616060326335,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 56,
+      "position_error_m": 1045839.834343661,
+      "score": -1.0964616060326335,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 57,
+      "position_error_m": 221.5797305145455,
+      "score": -1.1045897204864712,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 58,
+      "position_error_m": 230.39411152721263,
+      "score": -1.1116494395474144,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 59,
+      "position_error_m": 1045977.5446788893,
+      "score": -1.1212426035760075,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 60,
+      "position_error_m": 1045977.5446788893,
+      "score": -1.1212426035760075,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 61,
+      "position_error_m": 1051767.1243898894,
+      "score": -1.1347862033474931,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 62,
+      "position_error_m": 1051910.7890264061,
+      "score": -1.148450509411878,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 63,
+      "position_error_m": 1051807.5133690597,
+      "score": -1.1550652779195119,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 64,
+      "position_error_m": 1045787.9563230305,
+      "score": -1.1556942790148912,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 65,
+      "position_error_m": 1045787.9563230305,
+      "score": -1.1556942790148912,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 66,
+      "position_error_m": 181.43251112959842,
+      "score": -1.1697191221979195,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 67,
+      "position_error_m": 1052002.814402186,
+      "score": -1.180988574408754,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 68,
+      "position_error_m": 200.82603044143687,
+      "score": -1.1856081203853588,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 69,
+      "position_error_m": 1046235.0371865745,
+      "score": -1.223106231703858,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 70,
+      "position_error_m": 1046235.0371865745,
+      "score": -1.223106231703858,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 71,
+      "position_error_m": 1052267.6041898085,
+      "score": -1.24627456488479,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 72,
+      "position_error_m": 215.89381370129016,
+      "score": -1.2487632527571155,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 73,
+      "position_error_m": 1045821.923516111,
+      "score": -1.2534935803836091,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 74,
+      "position_error_m": 1045821.923516111,
+      "score": -1.2534935803836091,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 75,
+      "position_error_m": 1051818.7652874226,
+      "score": -1.2639003182662587,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 76,
+      "position_error_m": 1046269.0100128694,
+      "score": -1.268709561456114,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 77,
+      "position_error_m": 1046269.0100128694,
+      "score": -1.268709561456114,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 78,
+      "position_error_m": 1046079.4547080016,
+      "score": -1.2750731090259861,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 79,
+      "position_error_m": 1046079.4547080016,
+      "score": -1.2750731090259861,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 80,
+      "position_error_m": 232.69253389193904,
+      "score": -1.3101185545367502,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 81,
+      "position_error_m": 1052072.331634433,
+      "score": -1.3193741619232158,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 82,
+      "position_error_m": 1046217.1534834644,
+      "score": -1.3245852775342455,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 83,
+      "position_error_m": 1046217.1534834644,
+      "score": -1.3245852775342455,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 84,
+      "position_error_m": 214.16926709447247,
+      "score": -1.3247420094517568,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 85,
+      "position_error_m": 244.55132938009152,
+      "score": -1.332936760039554,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 86,
+      "position_error_m": 289.81835126416604,
+      "score": -1.3832263754685412,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 87,
+      "position_error_m": 243.80018772458803,
+      "score": -1.3876075944130872,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 88,
+      "position_error_m": 1052094.8414143373,
+      "score": -1.4012711324113534,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 89,
+      "position_error_m": 1052164.3425860684,
+      "score": -1.4019565440729271,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 90,
+      "position_error_m": 1051980.3223218676,
+      "score": -1.4131900275312497,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 91,
+      "position_error_m": 1046115.2559020375,
+      "score": -1.4132388591767033,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 92,
+      "position_error_m": 1046115.2559020375,
+      "score": -1.4132388591767033,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 93,
+      "position_error_m": 1052307.982911793,
+      "score": -1.4385597307489197,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 94,
+      "position_error_m": 1046201.0824396252,
+      "score": -1.447836575231287,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 95,
+      "position_error_m": 1046201.0824396252,
+      "score": -1.447836575231287,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 96,
+      "position_error_m": 1045941.7568235376,
+      "score": -1.4510362028196226,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 97,
+      "position_error_m": 1045941.7568235376,
+      "score": -1.4510362028196226,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 98,
+      "position_error_m": 1051847.9101223112,
+      "score": -1.4681994057219399,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 99,
+      "position_error_m": 1051726.7431856643,
+      "score": -1.4750775681439505,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 100,
+      "position_error_m": 316.60676819075894,
+      "score": -1.476362757444671,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 101,
+      "position_error_m": 260.9760330061191,
+      "score": -1.4912154953960808,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": false
+    },
+    {
+      "rank": 102,
+      "position_error_m": 1052227.2332397387,
+      "score": -1.4929165819829,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 103,
+      "position_error_m": 1045891.7191820008,
+      "score": -1.4931331848344154,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 104,
+      "position_error_m": 1045891.7191820008,
+      "score": -1.4931331848344154,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 105,
+      "position_error_m": 1045855.9087947273,
+      "score": -1.4932421494433221,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 106,
+      "position_error_m": 1045855.9087947273,
+      "score": -1.4932421494433221,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    }
+  ],
+  "affirmative_locations": 0,
+  "false_affirmative_locations": 0
+}
