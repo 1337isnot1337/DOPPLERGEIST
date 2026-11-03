@@ -53,11 +53,13 @@ module is included in that source's `tests` directory.
 
 ## Remaining acceptance gates
 
-This checkpoint does not include W2's disk-backed distinct-retention ledger,
-W3's classification of every bounded scoring trial, or W5's subsequently
-announced `core_assessed_mode_ids` requirement. A supported winning fit alone
-does not establish that all trials were assessed. Those interfaces still need
-combined verification before a fresh qualifying replay.
+The V6 run above predates W2's disk-backed distinct-retention ledger, W1's
+bounded-trial classification, and W5's explicit `core_assessed_mode_ids`
+requirement. The later classified-producer check below verifies those scorer
+and ledger interfaces with actual physical controls. Outer CPA support
+isolation, continuous-motion support, and combined product verification remain
+separate gates before a fresh qualifying replay. A supported winning fit alone
+does not establish that all competing trials were assessed.
 
 No actual accepted finite-mode API/browser result, national real-recording
 accuracy, calibrated coverage probability, or continuous-space uniqueness is
@@ -110,3 +112,32 @@ distinguish consistent nested explanations from conflicting assignments. The
 different-flight/subset veto remains unchanged. No six-event historical decision
 was rerun or revised. The exact script, native output, source hash and invocation
 are preserved for that discussion.
+
+## Classified producer: independent physical controls pass
+
+Frozen combined source `7897f5cb38f966576b2ee40517ea46b9648a7117` passes all
+**38 selected tests**, with no failures, errors or skips. JUnit reports 15.953 s;
+wall time is 16.423 s. The exact invocation and four production-file hashes are
+in `classified-producer/receipt.json`. This source combines the first W2
+producer with W1's classified-clock scorer and the contemporary W5 adapter.
+
+The selection includes seven W1 protocol controls, six finite-ledger tests,
+17 tiled-search tests, and eight external physical controls. The unchanged
+retention oracle now reaches and passes its discarded-score bound, partition,
+resume, refinement, event-cap and unfinished-tile assertions. Four additional
+real-geometry controls verify that supported fixed-clock trials are classified,
+a finite winner cannot hide unsupported clock trials, wholly unsupported trials
+remain unknown, and completed poor acoustic fits count as known rejections.
+The latter controls use actual trajectories and source-frequency fits, without
+replacing the scorer or injecting classification metadata.
+
+Both external files are copied byte for byte into `controls/` from published
+commit `faef3b402457d05afc3232f4965bcff537a42e0a`. The classified run's native
+two physical-grid directories are retained in a separate checksummed archive.
+The earlier 25-pass/two-failure readiness receipt remains unchanged. Those two
+readiness checks pass only in this later source with the required classifier.
+
+This is a bounded scorer and ledger check. It does not establish outer CPA
+support isolation, continuous subsonic motion or retarded-time convergence,
+national real-recording accuracy, an accepted API/browser location, or closure
+of #13, #53 or #64. No historical search or decision was rerun or promoted.

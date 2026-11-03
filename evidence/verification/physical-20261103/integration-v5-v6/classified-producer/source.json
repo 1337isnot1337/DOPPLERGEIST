@@ -1,0 +1,26 @@
+{
+  "source_commit": "7897f5cb38f966576b2ee40517ea46b9648a7117",
+  "source_tree": "b4be1b68afcdb5ca91362ae10cde64411721db3e",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-classified-review/tests/test_scoring_assessment.py",
+    "tests/test_finite_search.py",
+    "tests/test_tiled_search.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-oracle/tests/test_finite_retention_oracle.py",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-retention-oracle/tests/test_scoring_assessment_independent.py",
+    "--basetemp=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/classified-source-7897f5c/work",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/classified-source-7897f5c/pytest.xml"
+  ],
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-classified-review/src:/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-classified-review/tests",
+  "independent_controls_commit": "faef3b402457d05afc3232f4965bcff537a42e0a",
+  "source_sha256": {
+    "geometry.py": "73a5d2846f09fdac592e42b64f34c0fe95577b87edd8ea57718ce1ad582ddde9",
+    "search.py": "53e139fc2de1dde6b49301a1faeb7f747736c9e9474c1508949b463c6c91b414",
+    "finite_search.py": "95fa6eec1a6de4d88f2d56173c6e87c9c45f20786593c3690850a0411dc8e5b0",
+    "tiled_search.py": "f3a90c08de0ad5fbe714935c8a03bbab6c325dba99fcb640f272de72e756e3a6"
+  },
+  "scope": "Actual classified scorer plus producer, real-geometry trial controls and unchanged physical retention/resume oracle. No national replay or outer CPA support-isolation claim."
+}
