@@ -213,7 +213,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     # The index iterator is bounded by the same local acoustic support envelope.
     def mode_key(row):
         return (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]),
-                tuple(row.get("pass_emission_times_s", [])), row["lat"], row["lon"], row["recording_start_time_s"])
+                tuple(row.get("pass_emission_times_s", [])), row["lat"], row["lon"], row["recording_start_time_s"],
+                row.get("elev_m"), row.get("mode_id"))
 
     retained_keys = {mode_key(row) for row in raw}
     refined_keys = set()

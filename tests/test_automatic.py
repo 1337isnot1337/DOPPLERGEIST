@@ -159,8 +159,9 @@ def test_refinement_adapter_preserves_raw_residual_and_avoids_double_normalizati
     assert _comparable_refinement(normalized, original, events)["score"] == normalized["score"]
 
 
-@pytest.mark.parametrize("second", [{"lat": 41.}, {"recording_start_time_s": 1790000010.}])
-def test_refinement_preserves_same_association_spatial_and_clock_modes(tmp_path, monkeypatch, second):
+@pytest.mark.parametrize("second", [{"lat": 41.}, {"recording_start_time_s": 1790000010.},
+                                     {"elev_m": 180.}, {"mode_id": "separate-seed"}])
+def test_refinement_preserves_same_association_model_modes(tmp_path, monkeypatch, second):
     from types import SimpleNamespace
     from aircraft_geoloc import automatic, matching
     events = [{"event_id": f"event-{i}", "start_s": i*100., "end_s": i*100.+20., "band_hz": [90., 200.],
@@ -172,7 +173,8 @@ def test_refinement_preserves_same_association_spatial_and_clock_modes(tmp_path,
     raw = [seed, dict(seed, score=-2., **second)]
     seen = []
     def refine(candidate, *args, **kwargs):
-        seen.append((candidate["lat"], candidate["lon"], candidate["recording_start_time_s"]))
+        seen.append((candidate["lat"], candidate["lon"], candidate["recording_start_time_s"],
+                     candidate.get("elev_m"), candidate.get("mode_id")))
         return dict(candidate, score=candidate["score"]+.1)
     monkeypatch.setattr(matching, "refine_candidate", refine)
     monkeypatch.setattr(matching, "profile_candidate", lambda candidate, *args, **kwargs: dict(candidate, sensitivity={"complete": False}))
@@ -185,7 +187,8 @@ def test_refinement_preserves_same_association_spatial_and_clock_modes(tmp_path,
         return dict(status=status, **fields)
     final = automatic._decide(search, events, events, [None]*2, [index], None, state, tmp_path,
                               {"refine_finalists": 5}, finish, lambda: None)
-    assert set(seen) == {(row["lat"], row["lon"], row["recording_start_time_s"]) for row in raw}
+    assert set(seen) == {(row["lat"], row["lon"], row["recording_start_time_s"],
+                          row.get("elev_m"), row.get("mode_id")) for row in raw}
     assert final["status"] == "inconclusive"
     diagnostics = json.loads((tmp_path/"refined-candidates.json").read_text())["matching_diagnostics"]
     assert diagnostics["retained_hypotheses"] == 2
