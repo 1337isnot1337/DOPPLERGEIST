@@ -1,0 +1,21 @@
+case_id,filename,sha256,source_url,dataset_license,duration_s,ridge_records,proposal_groups,visual_review,scan_only,matching_or_geolocation
+case-0001,aerosonic-known-site/clip-01.wav,36164d8f88d3a67da0efb2a9a8934a27f7991e3d1eddebe1757fc8eee30b823f,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,3,1,clear_descending_ridge,true,not_run
+case-0003,aerosonic-known-site/clip-02.wav,f2ca127e7c42eee8fb2f1224d9bfff351234f3521bd2b6f7f00785ff32996e58,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,2,2,clear_descending_ridge,true,not_run
+case-0004,aerosonic-known-site/clip-03.wav,eefe282d1875368fbcc7f27075c9fda565dcee325a4213c56d6b1b993c1aba41,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,4,4,clear_descending_ridge,true,not_run
+case-0007,aerosonic-known-site/clip-04.wav,a9a36342a1ba974260da45adab5d0a5d35976b0f190dec803f829e57f000c964,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,3,3,clear_descending_ridge,true,not_run
+case-0016,aerosonic-known-site/clip-05.wav,18d6ec2fd9f3e09bca4b4bc7f5eaa64105744315cc36c0ae358fdb87c796f66d,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,5,5,clear_descending_ridge,true,not_run
+case-0021,aerosonic-known-site/clip-06.wav,bfad3d06f8049580b9df07ddb18f21aef80b6a5e63c237ab8630f2bc5d398a6a,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,4,4,clear_descending_ridge,true,not_run
+case-0032,aerosonic-known-site/clip-07.wav,661e127c6f53a130f007ca79f8538fcffd175bd6b87d776b7b92786f46a01fa9,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,5,5,clear_descending_ridge,true,not_run
+case-0048,aerosonic-known-site/clip-08.wav,391990e16f75d9190fcc3bf0db52b065d765e61faba1aabb9dea5a7c0040d31e,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,9,9,clear_descending_ridge,true,not_run
+case-0052,aerosonic-known-site/clip-09.wav,6f9f7b8a4bd92b93d46958747fe1f55e3c29de6983fb4e12fbea2fba75f7a8a2,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,5,5,clear_descending_ridge,true,not_run
+case-0055,aerosonic-known-site/clip-10.wav,296ad9da04ac7b42ce1dae91db2c760cdbd26c297bc584bf4a28d3990c3c69a3,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,1,1,clear_descending_ridge,true,not_run
+case-0059,aerosonic-known-site/clip-11.wav,49d913cc535103d72cde4e57862a63752fc60916d52367adb6d467cf5e430f9e,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,4,4,clear_descending_ridge,true,not_run
+case-0065,aerosonic-known-site/clip-12.wav,659ff9b77732e56df458ffa8df4f126691cdf7041357e73fea44bc1f0b4db9b0,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,2,2,clear_descending_ridge,true,not_run
+case-0069,aerosonic-known-site/clip-13.wav,68fb0de261b3b2aff79704572104ea464460f29b1609314e52065d2b34b98a87,https://zenodo.org/records/10215080,CC BY-NC 4.0,24.0,2,2,clear_descending_ridge,true,not_run
+case-0071,aerosonic-known-site/clip-14.wav,e68ff324e422ffb99ad2451a68b7103179f61ca4c3d9ce9a11cd05edd624b41a,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,1,1,clear_descending_ridge,true,not_run
+case-0072,aerosonic-known-site/clip-15.wav,4884154bc784b257f40b71efb73bed1fcfb586abb524f109fb18443319869890,https://zenodo.org/records/10215080,CC BY-NC 4.0,22.0,1,1,clear_descending_ridge,true,not_run
+case-0074,aerosonic-known-site/clip-16.wav,c4c62a84407d83a4b871cd85f7bf932566eee294bec5de8c43bf8aee138f6e92,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,1,1,clear_descending_ridge,true,not_run
+case-0078,aerosonic-known-site/clip-17.wav,29e92b90fdeeb45c44682d09a6e60f8a37f45b985eab0b83ddd027dde71ac75a,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,5,5,clear_descending_ridge,true,not_run
+case-0083,aerosonic-known-site/clip-18.wav,9cb3f5a87d6f184e62900c9ddc441065f37e736c139e3c48234fe7ac765451e3,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,2,2,clear_descending_ridge,true,not_run
+case-0093,aerosonic-known-site/clip-19.wav,15d94546bc223f1e34a5172e6fd42295c235993da292136e066268a3e048dc5e,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,2,2,clear_descending_ridge,true,not_run
+case-0100,aerosonic-known-site/clip-20.wav,11e08b8786e70e5b6be96504c97e85b5c5461388264a052fd9f8309f6430c4eb,https://zenodo.org/records/10215080,CC BY-NC 4.0,60.0,3,3,clear_descending_ridge,true,not_run
