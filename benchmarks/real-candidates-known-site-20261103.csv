@@ -1,0 +1,25 @@
+site_id,filename,sha256,source_url,visual_class,aircraft_identity
+103,site-103.mp3,da4e9c2850c21ffe285e9ae156de31909b1a4362bbe72e039b0dd59dc75e492f,https://zenodo.org/records/22049202,clear_candidate,unconfirmed; visual descending-tone evidence only
+281,site-281.mp3,b7c197928f2a5e8e9041ddce94228d0ab862448f1790c28c4bd74863b051c73c,https://zenodo.org/records/22214458,clear_candidate,unconfirmed; visual descending-tone evidence only
+443,site-443.mp3,44a74f083201cf5d5465438b45e31f7fb6d24d27c1b9fa8a4c90a9014fbb7978,https://zenodo.org/records/21755346,clear_candidate,unconfirmed; visual descending-tone evidence only
+445,site-445.mp3,ee6fdbdf415e06d241b751df06ce5e82bbef6569c3f7c68beb33a4c02f296551,https://zenodo.org/records/21743960,clear_candidate,unconfirmed; visual descending-tone evidence only
+485,site-485.mp3,c1185bdd271db380677336484fedb05e0c6ff0aa7646bef3c63b28321b60cd0b,https://zenodo.org/records/22224082,clear_candidate,unconfirmed; visual descending-tone evidence only
+656,site-656.mp3,05bce047ab83c1079a6113bc44f70322c986f051b2cbcb51a9c9eb8f559b6ea1,https://zenodo.org/records/22224306,clear_candidate,unconfirmed; visual descending-tone evidence only
+665,site-665.mp3,5925bb0c62aadbecaa2166dab1cdf3f14deebec2040c3f69ebd476b1e18735ea,https://zenodo.org/records/21999916,clear_candidate,unconfirmed; visual descending-tone evidence only
+688,site-688.mp3,654220edf1997b70c7d9b88ab39aeb5086a38e76e68df29e0b83a956159720c0,https://zenodo.org/records/22025528,clear_candidate,unconfirmed; visual descending-tone evidence only
+696,site-696.mp3,176d96be404f01cd17c94bb7f77501407fd0136f4f2cfd6c843fe29149ac3d83,https://zenodo.org/records/22050432,clear_candidate,unconfirmed; visual descending-tone evidence only
+706,site-706.mp3,0ce68cebd73d1df8ea0b969074948f35219eaa072d9a13fdd3595ca9e60cdbbf,https://zenodo.org/records/22227872,clear_candidate,unconfirmed; visual descending-tone evidence only
+756,site-756.mp3,7366f8e24711561d4c4fcbf16b9ac084e73ced259c42356c16330e0c2846976a,https://zenodo.org/records/22030700,clear_candidate,unconfirmed; visual descending-tone evidence only
+762,site-762.mp3,6d40dc1934491c8f6ac445b1b628289e1be50ca22cf60f8497b553d00028dddf,https://zenodo.org/records/21786378,clear_candidate,unconfirmed; visual descending-tone evidence only
+847,site-847.mp3,8267a6c707fd1b218b4991e00bd0b4caab31fb2cb2b740a5f1641391269d1dec,https://zenodo.org/records/22059635,clear_candidate,unconfirmed; visual descending-tone evidence only
+920,site-920.mp3,127a1d47a62d25f77be9cd66a3e0936df55f9d1619136347ec3d9a68700ea107,https://zenodo.org/records/22014438,clear_candidate,unconfirmed; visual descending-tone evidence only
+962,site-962.mp3,42ec047d820119fbe4aaa9dd925392d6f51a16ee5aac1fcb233c197ccf58e85c,https://zenodo.org/records/22002491,clear_candidate,unconfirmed; visual descending-tone evidence only
+430,site-430.mp3,ce9bb9e4daf20b130936eb4a202fba6e3ef0e93e83c4b597040c612df9c601db,https://zenodo.org/records/21772857,clear_candidate,unconfirmed; visual descending-tone evidence only
+923,site-923.mp3,d186474724bece11e471265e629ce63dbfa648a3c89a7795b053494662403fbd,https://zenodo.org/records/21918793,clear_candidate,unconfirmed; visual descending-tone evidence only
+373,site-373.mp3,26d8c20c410219816af649f9eba87ed4f45be06b2741ce8fc5d76cf9399e16e0,https://zenodo.org/records/21848207,clear_candidate,unconfirmed; visual descending-tone evidence only
+378,site-378.mp3,fcf560b9214952368e434a1fc72c59262ac733088f6a6034bb524efae3d5baf0,https://zenodo.org/records/21854205,clear_candidate,unconfirmed; visual descending-tone evidence only
+748,site-748.mp3,7d43bc2dd2caa6b1f87ac9d875c57bd3a1547ff1b59c4e9aae21dd31214bab19,https://zenodo.org/records/21852908,clear_candidate,unconfirmed; visual descending-tone evidence only
+878,site-878.mp3,d7a1e09176456e946c22b51daceff73399f8ba81ca56e1f0d18e98ea0601abc4,https://zenodo.org/records/21910430,clear_candidate,unconfirmed; visual descending-tone evidence only
+914,site-914.mp3,f8a64393dc624833ca93fbd1d1bec717970c8c1d7f7421a0273309eb17bd8bf9,https://zenodo.org/records/21861137,clear_candidate,unconfirmed; visual descending-tone evidence only
+919,site-919.mp3,31054f9086ecd993d2413b087605a9f63bf117286398d172a67a0cf6fbdedc32,https://zenodo.org/records/21909090,clear_candidate,unconfirmed; visual descending-tone evidence only
+921,site-921.mp3,17a5f437245561b7f79d8e82559a203cc30d9ecfa6415646531502730537eccf,https://zenodo.org/records/21876086,clear_candidate,unconfirmed; visual descending-tone evidence only
