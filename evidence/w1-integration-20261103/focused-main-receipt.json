@@ -1,0 +1,9 @@
+{
+  "tested_commit": "ae188dcd917478293ba9806d02cd4f4603c17c64",
+  "code_commit": "d156a77",
+  "equivalent_combined_code_commit": "7897f5c",
+  "tests_passed": 226,
+  "subtests_passed": 6,
+  "seconds": 59.87,
+  "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w1-classified-main-20261103/tests.xml"
+}
