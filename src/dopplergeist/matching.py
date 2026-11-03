@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from functools import wraps
 import hashlib
 from itertools import chain
+import sys
 
 import numpy as np
 from pyproj import Transformer
@@ -43,6 +44,24 @@ def _fit_argument_key(value):
     raise TypeError("Unsupported fit-cache argument representation")
 
 
+def _batch_result_bytes(key, results):
+    """Conservatively estimate retained key, diagnostics and container storage."""
+    seen = set()
+
+    def size(value):
+        if isinstance(value, type) or id(value) in seen:
+            return 0  # Built-in type objects are shared, not cache allocations.
+        seen.add(id(value))
+        total = sys.getsizeof(value)
+        if isinstance(value, dict):
+            total += sum(size(k) + size(v) for k, v in value.items())
+        elif isinstance(value, (tuple, list)):
+            total += sum(size(item) for item in value)
+        return total
+
+    return size(key) + size(results)
+
+
 class _RidgeFitCache:
     """Bounded reuse for an immutable set of tracks within one scoring batch."""
 
@@ -52,6 +71,67 @@ class _RidgeFitCache:
         self.acoustic_entries = OrderedDict()
         self.acoustic_bytes = 0
         self.acoustic_limit = 32 * 1024 * 1024
+        self.measurement_entries = OrderedDict()
+        self.measurement_bytes = 0
+        self.measurement_limit = 4 * 1024 * 1024
+        self.batch_entries = OrderedDict()
+        self.batch_bytes = 0
+        self.batch_limit = 32 * 1024 * 1024
+        self.batch_max_entries = 1024
+        # Keep this reserve after eviction: backing tables can retain their
+        # peak allocation. It also covers entry tuples/nodes and counters.
+        # Allocator fragmentation is outside this estimated storage budget.
+        self.batch_container_reserve = 512 * self.batch_max_entries
+
+    def batch_result(self, key):
+        """Reuse an independently mutable successful batch within this context."""
+        capacity = max(0, min(self.max_entries, self.batch_max_entries))
+        available = max(0, self.batch_limit - self.batch_container_reserve)
+        while self.batch_entries and (len(self.batch_entries) > capacity or
+                                       self.batch_bytes > available):
+            _, (_, removed) = self.batch_entries.popitem(last=False)
+            self.batch_bytes -= removed
+        if not capacity or not available or key not in self.batch_entries:
+            return None
+        self.batch_entries.move_to_end(key)
+        return [result.copy() for result in self.batch_entries[key][0]]
+
+    def remember_batch_result(self, key, results):
+        """Retain only successful diagnostics under entry and estimated-byte caps."""
+        capacity = max(0, min(self.max_entries, self.batch_max_entries))
+        available = max(0, self.batch_limit - self.batch_container_reserve)
+        if not capacity or not available:
+            return
+        stored = [result.copy() for result in results]
+        size = _batch_result_bytes(key, stored)
+        if size > available:
+            return
+        if key in self.batch_entries:
+            _, removed = self.batch_entries.pop(key)
+            self.batch_bytes -= removed
+        while self.batch_entries and (len(self.batch_entries) >= capacity or
+                                       self.batch_bytes + size > available):
+            _, (_, removed) = self.batch_entries.popitem(last=False)
+            self.batch_bytes -= removed
+        self.batch_entries[key] = (stored, size)
+        self.batch_bytes += size
+
+    def prepared_measurement(self, measurement, sigma_hz, drift_fraction, key):
+        """Reuse selected samples only after checking their current content key."""
+        if key in self.measurement_entries:
+            self.measurement_entries.move_to_end(key)
+            return self.measurement_entries[key][0]
+        prepared = _prepare_ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
+        # Include the lazily normalized weights in the bound before allocation.
+        size = prepared.times.nbytes + prepared.ridge.nbytes + 2 * prepared.weight.nbytes + 512
+        if size <= self.measurement_limit and self.max_entries > 0:
+            while (self.measurement_bytes + size > self.measurement_limit or
+                   len(self.measurement_entries) >= self.max_entries):
+                _, (_, removed) = self.measurement_entries.popitem(last=False)
+                self.measurement_bytes -= removed
+            self.measurement_entries[key] = (prepared, size)
+            self.measurement_bytes += size
+        return prepared
 
     def acoustic_batch(self, track, observer, starts, times, c):
         """Reuse exact batched propagation inputs within this scoring call."""
@@ -106,14 +186,17 @@ class _RidgeFitCache:
             values = np.asarray(values, dtype=float)
             observed.update(repr(values.shape).encode())
             observed.update(values.tobytes())
-        key = (id(track), parameters, observed.digest(), acoustic_key)
+        measurement_key = observed.digest()
+        key = (id(track), parameters, measurement_key, acoustic_key)
         if key in self.entries:
             self.entries.move_to_end(key)
-            # Core fit diagnostics contain only immutable scalar values. A new
-            # dictionary isolates callers without recursively copying each one.
             return self.entries[key][1].copy()
-        result = _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result)
+        prepared = self.prepared_measurement(measurement, sigma_hz, drift_fraction,
+                                             (measurement_key, parameters[-2:]))
+        result = _fit_ridge_uncached(*arguments, acoustic_result=acoustic_result, _prepared=prepared)
         # Keep the track alive so a different trajectory cannot reuse its id.
+        # Fit diagnostics contain only immutable scalar values, so a shallow copy
+        # gives each caller an independent dictionary without recursive copying.
         # The enclosing batch already owns these tracks. Exceptions are not cached.
         self.entries[key] = (track, result.copy())
         if len(self.entries) > self.max_entries:
@@ -452,40 +535,65 @@ def _ridge_fit_inputs(measurement, sigma_hz, drift_fraction):
     return times, ridge, weight
 
 
+@dataclass
+class _PreparedRidge:
+    times: np.ndarray
+    ridge: np.ndarray
+    weight: np.ndarray
+    independent_samples: int | None = None
+    normalized_weight: np.ndarray | None = None
+
+    def fit_values(self):
+        # Preserve the original order: normalization is needed only after the
+        # acoustic model has supplied finite values for all measured samples.
+        if self.normalized_weight is None:
+            count = len(np.unique(self.times))
+            normalized = self.weight * count / self.weight.sum()
+            self.independent_samples = count
+            self.normalized_weight = normalized
+        return self.ridge, self.normalized_weight, self.independent_samples
+
+
+def _prepare_ridge_fit_inputs(measurement, sigma_hz, drift_fraction):
+    times, ridge, weight = _ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
+    measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
+    return _PreparedRidge(times[measured], ridge[measured], weight[measured])
+
+
 def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=343.0,
-                        sigma_hz=1.0, drift_fraction=0.02, acoustic_result=None):
+                        sigma_hz=1.0, drift_fraction=0.02, acoustic_result=None, _prepared=None):
     """Bounded linear source drift at emission time, with robust residual loss.
 
     Drift is bounded to a fraction of source frequency over the measured event.
     It cannot supply independent event time shifts or arbitrary curve warping.
     Zero-weight samples are missing evidence; negative/nonfinite weights fail.
     """
-    times, ridge, weight = _ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
-    measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
+    prepared = (_prepare_ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
+                if _prepared is None else _prepared)
     failed = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
-    if measured.sum() < 10:
+    if len(prepared.times) < 10:
         return failed
     if acoustic_result is None:
-        factor, emission, _ = track.acoustic(start_time + times[measured], observer, c)
+        factor, emission, _ = track.acoustic(start_time + prepared.times, observer, c)
     else:
         factor, emission = acoustic_result
-        if factor.shape != times[measured].shape or emission.shape != factor.shape:
+        if factor.shape != prepared.times.shape or emission.shape != factor.shape:
             raise ValueError("Batched acoustic result does not match the measured ridge")
     if not np.all(np.isfinite(factor)) or not np.all(np.isfinite(emission)):
         return failed
-    y, w = ridge[measured], weight[measured]
-    independent_samples = len(np.unique(times[measured]))
-    w = w * independent_samples / w.sum()
+    y, w, independent_samples = prepared.fit_values()
     span = max(float(np.ptp(emission)), 1e-9)
     u = (emission - (emission.min() + emission.max()) / 2) / span
     cap = float(np.clip(np.median(y / factor), *f0_bounds)) * drift_fraction
     effective = w.copy()
     basis = (factor**2, u**2)
-    for _ in range(6):
+    for iteration in range(6):
         fit = _source_fit(factor, u, y, effective, f0_bounds, cap, sigma_hz, basis)
         residual = factor*(fit[0]+fit[1]*u)-y
-        effective = w / np.sqrt(1 + (residual / sigma_hz) ** 2)
-    loss = np.average(2 * sigma_hz**2 * (np.sqrt(1 + (residual / sigma_hz)**2) - 1), weights=w)
+        residual_scale = np.sqrt(1 + (residual / sigma_hz) ** 2)
+        if iteration < 5:
+            effective = w / residual_scale
+    loss = np.average(2 * sigma_hz**2 * (residual_scale - 1), weights=w)
     drift = float(fit[1])
     penalty = (2 * sigma_hz * drift / cap)**2 / independent_samples if cap else 0.0
     return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit[0]),
@@ -758,3 +866,4 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                      "frequency_scale_hz": [_frequency_scale(events[i]) for i in indices],
                      "clock_bounds_s": [lo, hi]}}
     return dict(nominal, sensitivity=sensitivity)
+

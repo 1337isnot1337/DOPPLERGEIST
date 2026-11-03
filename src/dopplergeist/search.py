@@ -335,6 +335,20 @@ def _ridge_trial_classification(result, events, association):
 
 
 
+def _association_event_ceiling(diagnostic, score, frequency, event, limit):
+    """Validate one fitted group's contribution before tightening a ceiling."""
+    single = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
+              "event_scores": [score], "f0_hz": [frequency], "event_diagnostics": [diagnostic]}
+    classification, _ = _ridge_trial_classification(single, [event], False)
+    if classification != "evaluated":
+        return 1.0
+    if -score > limit:
+        return -np.inf
+    # Preserve the scorer's operation order and upward rounding, including
+    # noncanonical numeric types handled by the original general bound helper.
+    return float(np.nextafter(1 - (-score) / limit, np.inf))
+
+
 def _association_trial_bound(result, events):
     """Bound an incompletely supported association at one shared clock.
 
@@ -361,18 +375,10 @@ def _association_trial_bound(result, events):
         return maximum
     contributions = []
     for diagnostic, score, frequency, event, limit in zip(diagnostics, scores, frequencies, events, limits):
-        single = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
-                  "event_scores": [score], "f0_hz": [frequency], "event_diagnostics": [diagnostic]}
-        classification, _ = _ridge_trial_classification(single, [event], False)
-        if classification != "evaluated":
-            contributions.append(1.0)
-            continue
-        if -score > limit:
+        contribution = _association_event_ceiling(diagnostic, score, frequency, event, limit)
+        if contribution == -np.inf:
             return -np.inf
-        # Use the scorer's per-event arithmetic, then round every contribution
-        # and positive accumulation upward. Subtracting losses from k instead
-        # changes the operation order and can understate a floating-point score.
-        contributions.append(float(np.nextafter(1 - (-score) / limit, np.inf)))
+        contributions.append(contribution)
     upper = 0.0
     for contribution in contributions:
         upper = float(np.nextafter(upper + contribution, np.inf))
@@ -401,44 +407,15 @@ def _validate_score_ceiling_inputs(events, measurements):
             raise ValueError("Source frequency bounds must be finite, positive and ordered")
 
 
-def _supported_ridge_batch(measurement, event, batch, eligible=None, min_clocks=4):
-    """Batch complete clocks without hiding unsupported clocks or fit fallbacks."""
-    if batch is None:
-        return None
-    factors, emissions = batch
-    if factors.ndim != 2 or emissions.shape != factors.shape:
-        return None
-    supported = np.all(np.isfinite(factors) & (factors > 0) & np.isfinite(emissions), axis=1)
-    if eligible is not None:
-        supported &= eligible
-    selected = np.flatnonzero(supported)
-    if len(selected) < min_clocks:
-        return None
-    from .batch_ridge import first_event_fits
-    fitted = first_event_fits(measurement, event, factors[selected], emissions[selected])
-    if fitted is None:
-        return None
-    results = [None] * len(factors)
-    for index, fit in zip(selected, fitted):
-        results[index] = fit
-    return results
-
-
-def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor, dual_at=None, first_fit=None, later_fit_at=None):
+def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor, dual_at=None, first_fit=None):
     """Fit groups until a conservative residual ceiling cannot reach the floor.
 
     Unperformed groups each contribute at most one. The existing validated-fit
     bound rounds upward and never uses missing evidence as a rejection.
     """
-    from .matching import _frequency_scale, score_ridges
+    from .matching import score_ridges
     diagnostics = []
-    try:
-        limits = [3 * _frequency_scale(event) for event in events]
-    except (TypeError, ValueError, KeyError):
-        limits = None
-    if limits is not None and not all(np.isfinite(value) and value > 0 for value in limits):
-        limits = None
-    prefix_upper = 0.0
+    missing = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
         if dual_at is not None:
             upper = dual_at(index)
@@ -448,39 +425,112 @@ def _screen_association_trial(tracks, events, measurements, observer, start, c, 
         if index == 0 and first_fit is not None:
             single = {"event_diagnostics": [first_fit]}
         else:
-            fit = later_fit_at(index) if index and later_fit_at is not None else None
-            single = ({"event_diagnostics": [fit]} if fit is not None else
-                      score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic))
+            single = score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic)
         diagnostics.extend(single["event_diagnostics"])
         remaining = len(events) - len(diagnostics)
-        if remaining and limits is not None:
-            # A completed event's evidence never changes during this trial.
-            # Validate its contribution once instead of revalidating the entire
-            # prefix and every missing event after each fitted group.
-            diagnostic = diagnostics[-1]
-            score, frequency = diagnostic["score"], diagnostic["f0_hz"]
-            evidence = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
-                        "event_scores": [score], "f0_hz": [frequency],
-                        "event_diagnostics": [diagnostic]}
-            classification, _ = _ridge_trial_classification(evidence, [event], False)
-            contribution = 1.0
-            if classification == "evaluated":
-                if -score > limits[index]:
-                    return None, -np.inf
-                contribution = float(np.nextafter(1 - (-score) / limits[index], np.inf))
-            prefix_upper = math.nextafter(prefix_upper + contribution, math.inf)
-            # Preserve the original event order and each upward rounding step,
-            # including the unit contributions from all unperformed groups.
-            bound = prefix_upper
-            for _ in range(remaining):
-                bound = math.nextafter(bound + 1.0, math.inf)
-            bound = min(float(len(events)), bound)
-            if bound < floor:
+        if remaining:
+            partial = diagnostics + [missing] * remaining
+            bound = _association_trial_bound({
+                "score_kind": "matched_group_support_minus_normalized_residual",
+                "event_scores": [d["score"] for d in partial],
+                "f0_hz": [d["f0_hz"] for d in partial], "event_diagnostics": partial}, events)
+            if bound is not None and bound < floor:
                 return None, bound
     return {"score": float(sum(d["score"] for d in diagnostics)),
             "event_scores": [d["score"] for d in diagnostics],
             "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
             "score_kind": "negative_robust_ridge_loss_hz"}, None
+
+
+def _ridge_result(diagnostics):
+    return {"score": float(sum(d["score"] for d in diagnostics)),
+            "event_scores": [d["score"] for d in diagnostics],
+            "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
+            "score_kind": "negative_robust_ridge_loss_hz"}
+
+
+def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
+                         acoustic_batches, score_floor, use_dual):
+    """Batch only clocks that survive the preceding event's existing screen.
+
+    Event order within each clock is unchanged. A later event sees precisely the
+    clocks that would reach it in the scalar loop. Unsupported batches retain
+    scalar fits, including each clock's first acoustic-support error.
+    """
+    from .acoustic_screen import ridge_trial_rejections
+    from .batch_ridge import first_event_fits
+    from .matching import _frequency_scale, fit_ridge
+
+    diagnostics = [[] for _ in starts]
+    outcomes = [None] * len(starts)
+    active = list(range(len(starts)))
+    rejected_count = floor_count = 0
+    prefixes = [0.0] * len(starts)
+    limits = [3 * _frequency_scale(event) for event in events] if score_floor is not None else []
+    bound_enabled = bool(limits) and all(np.isfinite(value) and value > 0 for value in limits)
+    batches = iter(acoustic_batches)
+    for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
+        if not active:
+            break
+        batch = next(batches)
+        if use_dual and batch is not None:
+            rejected, upper = ridge_trial_rejections(measurement, event, *batch,
+                score_floor=score_floor, group_count=len(events))
+            eligible = []
+            for trial in active:
+                if rejected[trial]:
+                    rejected_count += 1
+                    outcomes[trial] = (None, -np.inf, None)
+                elif np.isfinite(upper[trial]):
+                    floor_count += 1
+                    outcomes[trial] = (None, float(upper[trial]), None)
+                else:
+                    eligible.append(trial)
+        else:
+            eligible = active
+        fitted = None
+        if batch is not None and len(eligible) >= 4:
+            fitted = first_event_fits(measurement, event,
+                                     batch[0][eligible], batch[1][eligible])
+        remaining = len(events) - index - 1
+        next_active = []
+        for fit_index, trial in enumerate(eligible):
+            try:
+                if fitted is None:
+                    acoustic = None if batch is None else (batch[0][trial], batch[1][trial])
+                    fit = fit_ridge(track, observer, measurement, starts[trial],
+                        event["f0_range_hz"], c, _frequency_scale(event),
+                        event.get("quality", {}).get("source_drift_fraction", 0.02),
+                        acoustic_result=acoustic)
+                else:
+                    fit = fitted[fit_index]
+            except AcousticSupportError as error:
+                outcomes[trial] = (None, None, error)
+                continue
+            diagnostics[trial].append(fit)
+            if remaining:
+                if bound_enabled:
+                    contribution = _association_event_ceiling(
+                        fit, fit["score"], fit["f0_hz"], event, limits[index])
+                    if contribution == -np.inf:
+                        outcomes[trial] = (None, -np.inf, None)
+                        continue
+                    # Reuse the already validated prefix. Add unperformed
+                    # groups one at a time with the identical outward rounding;
+                    # capping a prefix or summing losses first changes the bound.
+                    prefixes[trial] = math.nextafter(prefixes[trial] + contribution, math.inf)
+                    bound = prefixes[trial]
+                    for _ in range(remaining):
+                        bound = math.nextafter(bound + 1.0, math.inf)
+                    bound = min(float(len(events)), bound)
+                    if bound < score_floor:
+                        outcomes[trial] = (None, bound, None)
+                        continue
+                next_active.append(trial)
+            else:
+                outcomes[trial] = (_ridge_result(diagnostics[trial]), None, None)
+        active = next_active
+    return outcomes, rejected_count, floor_count
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
@@ -568,11 +618,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         else:
             batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
     first_fits, first_batch_attempted = None, False
-    full_fits = {}
-    later_fits = {}
     dual_flags = {}
     dual_pruned = 0
     floor_dual_pruned = 0
+    batched_trials = None
+    # Bound the retained per-clock diagnostics; large products keep the scalar
+    # traversal rather than allocating an unbounded event-by-clock table.
+    if (mode == "robust_ridge" and not floor_pruned and batches is not None
+            and len(shifts) >= 4 and len(shifts) * len(events) <= 4096):
+        batched_trials, dual_pruned, floor_dual_pruned = _batched_ridge_trials(
+            selected_tracks, events, measurements, observer, anchor + shifts, c,
+            lazy_batches if lazy_batches is not None else batches,
+            score_floor if association else None,
+            association and score_floor is not None and time_origin is None)
     for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -583,7 +641,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 batch = batches[index]
                 return None if batch is None else (batch[0][trial], batch[1][trial])
             precomputed = ([acoustic_at(index) for index in range(len(events))]
-                           if batches is not None and lazy_batches is None else None)
+                           if batched_trials is None and batches is not None and lazy_batches is None else None)
             def dual_flags_at(index):
                 if index not in dual_flags:
                     acoustic_at(index)
@@ -608,64 +666,46 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     floor_dual_pruned += 1
                     return float(upper)
                 return None
-            def later_fit_at(index):
-                if index not in later_fits:
-                    rejected, upper = dual_flags_at(index)
-                    eligible = ~rejected & ~np.isfinite(upper)
-                    # Only future clocks can still use this batch. Earlier
-                    # groups' supported dual rejections cannot reach this event.
-                    eligible[:trial] = False
-                    for earlier in range(index):
-                        rejected, upper = dual_flags_at(earlier)
-                        eligible &= ~rejected & ~np.isfinite(upper)
-                    later_fits[index] = _supported_ridge_batch(
-                        measurements[index], events[index], batches[index], eligible, min_clocks=8)
-                fitted = later_fits[index]
-                return fitted[trial] if fitted is not None else None
             try:
-                if association and score_floor is not None:
-                    if not first_batch_attempted and batches is not None and lazy_batches is not None and time_origin is None:
-                        first_batch_attempted = True
-                        acoustic_at(0)
-                        if batches[0] is not None:
-                            rejected, upper = dual_flags_at(0)
-                            first_fits = _supported_ridge_batch(measurements[0], events[0], batches[0],
-                                                                ~rejected & ~np.isfinite(upper))
-                    result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
-                                                              anchor+shift, c, acoustic_at if batches is not None else None,
-                                                              score_floor, dual_at if batches is not None and time_origin is None else None,
-                                                              first_fits[trial] if first_fits is not None else None,
-                                                              later_fit_at if batches is not None and time_origin is None else None)
+                if batched_trials is not None:
+                    result, upper, error = batched_trials[trial]
+                    if error is not None:
+                        raise error
                     if result is None:
                         partial_prunes += 1
                         assessment["unknown_trials"] += 1
                         reasons.add("partial_group_score_below_retention_floor")
                         unknown_bounds.append(upper)
                         continue
-                elif batches is None:
+                elif association and score_floor is not None:
+                    if not first_batch_attempted and batches is not None and lazy_batches is not None and time_origin is None:
+                        first_batch_attempted = True
+                        acoustic_at(0)
+                        if batches[0] is not None:
+                            rejected, upper = dual_flags_at(0)
+                            eligible = np.flatnonzero(~rejected & ~np.isfinite(upper))
+                            if len(eligible) >= 4:
+                                from .batch_ridge import first_event_fits
+                                factors, emissions = batches[0]
+                                fitted = first_event_fits(measurements[0], events[0],
+                                                          factors[eligible], emissions[eligible])
+                                if fitted is not None:
+                                    first_fits = [None] * len(shifts)
+                                    for index, fit in zip(eligible, fitted):
+                                        first_fits[index] = fit
+                    result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
+                                                              anchor+shift, c, acoustic_at if batches is not None else None,
+                                                              score_floor, dual_at if batches is not None and time_origin is None else None,
+                                                              first_fits[trial] if first_fits is not None else None)
+                    if result is None:
+                        partial_prunes += 1
+                        assessment["unknown_trials"] += 1
+                        reasons.add("partial_group_score_below_retention_floor")
+                        unknown_bounds.append(upper)
+                        continue
+                else:
                     result = score_ridges(selected_tracks, events, measurements, observer, anchor+shift, c,
                                           acoustic_results=precomputed)
-                else:
-                    # Full evaluations, including competitive-candidate retries,
-                    # need every group at every clock. Reuse the scalar-checked
-                    # batch fitter instead of repeating its six iterations in
-                    # Python. Reach events in the original order so support
-                    # failures retain the same per-trial classification.
-                    diagnostics = []
-                    for index, (track, event, measurement) in enumerate(zip(selected_tracks, events, measurements)):
-                        if index not in full_fits:
-                            full_fits[index] = _supported_ridge_batch(measurement, event, batches[index])
-                        fitted = full_fits[index]
-                        fit = fitted[trial] if fitted is not None else None
-                        if fit is None:
-                            single = score_ridges([track], [event], [measurement], observer, anchor+shift, c,
-                                                  acoustic_results=[precomputed[index]])
-                            fit = single["event_diagnostics"][0]
-                        diagnostics.append(fit)
-                    result = {"score": float(sum(d["score"] for d in diagnostics)),
-                              "event_scores": [d["score"] for d in diagnostics],
-                              "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
-                              "score_kind": "negative_robust_ridge_loss_hz"}
             except AcousticSupportError as error:
                 assessment["unknown_trials"] += 1
                 reasons.add(str(error))
@@ -750,3 +790,4 @@ def rank_candidates(candidates, points, tracks, events, measurements, **kwargs):
         if i and i%100==0:
             print(f"Scored {i}/{len(candidates)} candidates",flush=True)
     return sorted(result,key=lambda r:r["score"],reverse=True)
+

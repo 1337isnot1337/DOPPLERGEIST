@@ -152,6 +152,12 @@ def worker(spec_path, output):
     operations["scalar_validation_hook"] = validation_hook
     scalar_aliases = [name for name, value in vars(batch_ridge).items() if value is original_fit]
     original_batch = batch_ridge.first_event_fits
+    # Older implementations expose requests only; do not infer numerical solves
+    # for them. The optional helper separates fresh solves from exact cache hits.
+    original_numerical_batch = getattr(batch_ridge, "_fit_ridge_batch_uncached", None)
+    operations["batch_numerical_hook_present"] = original_numerical_batch is not None
+    operations["batch_numerical_solve_calls"] = 0 if original_numerical_batch else None
+    operations["batch_numerically_fitted_clock_rows"] = 0 if original_numerical_batch else None
     def fit(*args, **kwargs):
         operations["scalar_source_fit_calls"] += 1
         return original_fit(*args, **kwargs)
@@ -167,7 +173,15 @@ def worker(spec_path, output):
         result = original_batch(*args, **kwargs)
         if result is not None:
             operations["batch_fit_successes"] += 1
+            # Preserve the historical field name: returned rows include cache hits.
             operations["batched_clock_fits"] += len(result)
+        return result
+
+    def numerical_batch_fit(*args, **kwargs):
+        operations["batch_numerical_solve_calls"] += 1
+        result = original_numerical_batch(*args, **kwargs)
+        if result is not None:
+            operations["batch_numerically_fitted_clock_rows"] += len(result)
         return result
 
     def acoustic(track, receive, *args, **kwargs):
@@ -183,6 +197,8 @@ def worker(spec_path, output):
         if original_validation is not None:
             stack.enter_context(patch.object(batch_ridge, validation_hook, validation))
         stack.enter_context(patch.object(batch_ridge, "first_event_fits", batch_fit))
+        if original_numerical_batch is not None:
+            stack.enter_context(patch.object(batch_ridge, "_fit_ridge_batch_uncached", numerical_batch_fit))
         stack.enter_context(patch.object(Track, "acoustic", acoustic))
         for owner, name in ((tiled_search, "cpa_table"), (matching, "association_candidates"),
                             (tiled_search, "score_candidate")):

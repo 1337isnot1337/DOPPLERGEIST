@@ -5,13 +5,30 @@ use the same vertical datum. ECEF treats those heights as ellipsoidal; supplying
 orthometric heights to both is a documented common-datum approximation.
 """
 from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
-from scipy.interpolate import CubicHermiteSpline
+from scipy.interpolate import CubicHermiteSpline, PPoly
 from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 
 _EMISSION_ITERATION_TOLERANCE_S = 1e-7
+_PACKED_KINEMATICS_MAX_INTERVALS = 4096
+
+
+@lru_cache(maxsize=8)
+def _packed_kinematics(position, velocity):
+    """Evaluate fixed position/velocity splines with one interval lookup.
+
+    Padding the quadratic velocity coefficients with a leading zero keeps the
+    existing polynomial arithmetic. Only small splines enter this cache: eight
+    entries add at most 6 MiB of coefficients and keep eight source pairs alive.
+    Track changes construct new splines, including altitude-bias trials.
+    """
+    coefficients = np.zeros((4, position.c.shape[1], 6))
+    coefficients[:, :, :3] = position.c
+    coefficients[1:, :, 3:] = velocity.c
+    return PPoly.construct_fast(coefficients, position.x, extrapolate=False)
 
 
 class AcousticSupportError(ValueError):
@@ -82,6 +99,12 @@ class Track:
 
     def speed_vector(self, t):
         return self.derivative(np.asarray(t) - self.origin)
+
+    def _position_velocity(self, t):
+        if len(self.time)-1 > _PACKED_KINEMATICS_MAX_INTERVALS:
+            return self.position(t), self.speed_vector(t)
+        values = _packed_kinematics(self.spline, self.derivative)(np.asarray(t)-self.origin)
+        return values[..., :3], values[..., 3:]
 
     def _unsupported_motion_intervals(self, c):
         """Find non-subsonic native spline intervals, caching speed extrema.
@@ -207,10 +230,10 @@ class Track:
         initial = self.position(np.clip(t, start, end))
         tau = np.clip(t - np.linalg.norm(initial - observer, axis=-1) / c, start, end)
         for _ in range(10):
-            relative = tau - self.origin
-            delta = self.spline(relative) - observer
+            position, velocity = self._position_velocity(tau)
+            delta = position - observer
             distance = np.linalg.norm(delta, axis=-1)
-            radial = np.sum(delta * self.derivative(relative), axis=-1) / distance
+            radial = np.sum(delta * velocity, axis=-1) / distance
             derivative = 1 + radial / c
             if np.any(derivative <= 0):
                 raise AcousticSupportError(self.id, "non_monotone_arrival")
@@ -222,13 +245,13 @@ class Track:
             # even when its unrounded correction exceeds the tolerance.
             if np.max(np.abs(correction)) < _EMISSION_ITERATION_TOLERANCE_S or unchanged:
                 break
-        # At an unchanged Newton iterate these are already the final values.
-        # Re-evaluate only when the last update actually changed emission time.
+        # An unchanged Newton iterate already has these exact values. Otherwise
+        # evaluate the final updated time, including tolerance/iteration exits.
         if not unchanged:
-            relative = tau - self.origin
-            delta = self.spline(relative) - observer
+            position, velocity = self._position_velocity(tau)
+            delta = position - observer
             distance = np.linalg.norm(delta, axis=-1)
-            radial = np.sum(delta * self.derivative(relative), axis=-1) / distance
+            radial = np.sum(delta * velocity, axis=-1) / distance
         factor = c / (c + radial)
         self._check_motion_support(t, observer, c)
         arrival_derivative = 1+radial/c
@@ -287,3 +310,4 @@ def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):
     tau = (u - np.sqrt((beta * u) ** 2 + (1 - beta ** 2) * (slant / c) ** 2)) / (1 - beta ** 2)
     radial = speed ** 2 * tau / np.sqrt(slant ** 2 + (speed * tau) ** 2)
     return f0 * c / (c + radial)
+

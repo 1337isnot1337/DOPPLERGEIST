@@ -109,8 +109,9 @@ def test_real_batch_reference_checks_keep_running_with_cached_scalar_work(record
     _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
     expected = first_event_fits(measurement, event, factors, emissions)
     assert expected is not None
-    scalar_calls, reference_checks = [], []
+    scalar_calls, reference_checks, numerical_calls = [], [], []
     original_reference = batch_ridge._scalar_reference_fit
+    original_numerical = batch_ridge._fit_ridge_batch_uncached
 
     def counted_scalar(*args, **kwargs):
         scalar_calls.append(1)
@@ -120,23 +121,38 @@ def test_real_batch_reference_checks_keep_running_with_cached_scalar_work(record
         reference_checks.append(1)
         return original_reference(*args, **kwargs)
 
+    def counted_numerical(*args, **kwargs):
+        numerical_calls.append(1)
+        return original_numerical(*args, **kwargs)
+
     monkeypatch.setattr(matching, "_fit_ridge_uncached", counted_scalar)
     monkeypatch.setattr(batch_ridge, "_scalar_reference_fit", counted_reference)
+    monkeypatch.setattr(batch_ridge, "_fit_ridge_batch_uncached", counted_numerical)
 
     @matching._cache_ridge_fits
     def repeated_batch():
         before = len(scalar_calls)
+        computations = len(numerical_calls)
+        first = first_event_fits(measurement, event, factors, emissions)
+        assert first == expected
+        assert len(scalar_calls) == before + 3
+        first[0]["score"] = float("nan")
+        first.pop()
+        second = first_event_fits(measurement, event, factors.copy(), emissions.copy())
+        assert second == expected
+        second[0]["score"] = float("nan")
+        second.pop()
         assert first_event_fits(measurement, event, factors, emissions) == expected
         assert len(scalar_calls) == before + 3
-        assert first_event_fits(measurement, event, factors.copy(), emissions.copy()) == expected
-        assert len(scalar_calls) == before + 3
+        assert len(numerical_calls) == computations + 1
 
     repeated_batch()
-    assert len(reference_checks) == 6
+    assert len(reference_checks) == 9
     assert matching._ridge_fit_cache.get() is None
     # A later scoring context must compute its own scalar reference values.
     repeated_batch()
-    assert len(reference_checks) == 12 and len(scalar_calls) == 6
+    assert len(reference_checks) == 18 and len(scalar_calls) == 6
+    assert len(numerical_calls) == 2
     assert matching._ridge_fit_cache.get() is None
 
 
@@ -177,3 +193,159 @@ def test_real_cached_scalar_reference_tracks_mutation_and_capacity(recorded_case
 
     matching._cache_ridge_fits(changed_recorded_clock, max_entries=1)()
     assert matching._ridge_fit_cache.get() is None
+
+
+def test_real_batch_cache_keys_follow_recorded_rows_and_measured_inputs(recorded_case, monkeypatch):
+    from copy import deepcopy
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    changed_measurement = deepcopy(measurement)
+    changed_measurement[2][0] = np.nextafter(changed_measurement[2][0], np.inf)
+    changed_event = dict(event, f0_range_hz=[float(np.nextafter(event["f0_range_hz"][0], -np.inf)),
+                                           event["f0_range_hz"][1]])
+    # Reorder or replace rows with other actual clocks; no new trajectory data.
+    order = np.arange(len(factors))
+    order[[0, 1]] = order[[1, 0]]
+    replaced_factors, replaced_emissions = factors.copy(), emissions.copy()
+    replaced_factors[0], replaced_emissions[0] = factors[1], emissions[1]
+    cases = [(measurement, event, factors, emissions),
+             (measurement, event, factors[order], emissions[order]),
+             (measurement, event, replaced_factors, replaced_emissions),
+             (changed_measurement, event, factors, emissions),
+             (measurement, changed_event, factors, emissions)]
+    expected = [first_event_fits(*case) for case in cases]
+    assert all(value is not None for value in expected)
+    calls = []
+    original = batch_ridge._fit_ridge_batch_uncached
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(batch_ridge, "_fit_ridge_batch_uncached", counted)
+
+    @matching._cache_ridge_fits
+    def check():
+        for index, (case, result) in enumerate(zip(cases, expected), 1):
+            assert first_event_fits(*case) == result
+            assert len(calls) == index
+            assert first_event_fits(*case) == result
+            assert len(calls) == index
+        assert len(matching._ridge_fit_cache.get().batch_entries) == len(cases)
+    check()
+
+
+def test_real_batch_cache_respects_entry_and_byte_limits(recorded_case, monkeypatch):
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    order = np.arange(len(factors))[::-1]
+    cases = [(measurement, event, factors, emissions),
+             (measurement, event, factors[order], emissions[order])]
+    expected = [first_event_fits(*case) for case in cases]
+    assert all(value is not None for value in expected)
+    calls = []
+    original = batch_ridge._fit_ridge_batch_uncached
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(batch_ridge, "_fit_ridge_batch_uncached", counted)
+
+    def one_entry():
+        cache = matching._ridge_fit_cache.get()
+        for index in (0, 1, 0):
+            assert first_event_fits(*cases[index]) == expected[index]
+            assert len(cache.batch_entries) == 1
+            assert 0 < cache.batch_bytes + cache.batch_container_reserve <= cache.batch_limit
+            assert cache.batch_bytes == sum(size for _, size in cache.batch_entries.values())
+        assert len(calls) == 3
+    matching._cache_ridge_fits(one_entry, max_entries=1)()
+
+    @matching._cache_ridge_fits
+    def tiny_budget():
+        cache = matching._ridge_fit_cache.get()
+        assert first_event_fits(*cases[0]) == expected[0]
+        assert cache.batch_entries
+        reserve = cache.batch_container_reserve
+        # The real result fits the raw limit, but not after the fixed backing
+        # table reserve. Eviction must not discard that historical allowance.
+        for limit in (reserve + cache.batch_bytes - 1, 1):
+            cache.batch_limit = limit
+            assert first_event_fits(*cases[0]) == expected[0]
+            assert not cache.batch_entries and cache.batch_bytes == 0
+            assert cache.batch_container_reserve == reserve
+    tiny_budget()
+    assert len(calls) == 6
+    assert matching._ridge_fit_cache.get() is None
+
+
+def test_real_batch_cache_preserves_noncanonical_array_layouts(recorded_case, monkeypatch):
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    layouts = [(np.asfortranarray(factors), np.asfortranarray(emissions)),
+               (np.repeat(factors, 2, axis=0)[::2], np.repeat(emissions, 2, axis=0)[::2])]
+    unaligned = []
+    for values in (factors, emissions):
+        array = np.ndarray(values.shape, dtype=values.dtype,
+                           buffer=bytearray(values.nbytes + 1), offset=1)
+        array[:] = values
+        assert array.flags.c_contiguous and not array.flags.aligned
+        unaligned.append(array)
+    layouts.append(tuple(unaligned))
+    expected = [first_event_fits(measurement, event, *layout) for layout in layouts]
+    baseline = first_event_fits(measurement, event, factors, emissions)
+    assert baseline is not None
+    calls = []
+    original = batch_ridge._fit_ridge_batch_uncached
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(batch_ridge, "_fit_ridge_batch_uncached", counted)
+
+    @matching._cache_ridge_fits
+    def check():
+        assert first_event_fits(measurement, event, factors, emissions) == baseline
+        for layout, result in zip(layouts, expected):
+            assert all(np.array_equal(value, source) for value, source in zip(layout, (factors, emissions)))
+            before = len(calls)
+            for _ in range(2):
+                assert first_event_fits(measurement, event, *layout) == result
+            assert len(calls) == before + 2
+        assert len(matching._ridge_fit_cache.get().batch_entries) == 1
+    check()
+
+
+def test_real_batch_cache_still_rejects_reference_disagreement(recorded_case, monkeypatch):
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    original = batch_ridge._scalar_reference_fit
+    expected = first_event_fits(measurement, event, factors, emissions)
+    assert expected is not None
+
+    def disagree(*args, **kwargs):
+        result = original(*args, **kwargs)
+        return dict(result, score=float(np.nextafter(result["score"], np.inf)))
+
+    @matching._cache_ridge_fits
+    def cached_rejection():
+        assert first_event_fits(measurement, event, factors, emissions) == expected
+        with monkeypatch.context() as patch:
+            patch.setattr(batch_ridge, "_scalar_reference_fit", disagree)
+            assert first_event_fits(measurement, event, factors, emissions) is None
+        assert first_event_fits(measurement, event, factors, emissions) == expected
+    cached_rejection()
+
+    @matching._cache_ridge_fits
+    def uncached_rejection():
+        with monkeypatch.context() as patch:
+            patch.setattr(batch_ridge, "_scalar_reference_fit", disagree)
+            assert first_event_fits(measurement, event, factors, emissions) is None
+        assert not matching._ridge_fit_cache.get().batch_entries
+    uncached_rejection()

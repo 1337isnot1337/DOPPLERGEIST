@@ -148,24 +148,44 @@ cannot enter Top-K. While fitting a shared-clock trial, validated residuals can
 tighten that ceiling or establish a residual rejection before the remaining
 groups are fitted. Comparisons are strict, so ties remain eligible. Acoustic
 batches for later groups are deferred until a surviving trial needs them.
-Measured-ridge loss bounds screen individual clocks. The scorer fits supported
-clocks in batches for the first event and for later events that surviving trials
-reach. Full evaluations also batch each event across its supported clocks.
-The scorer checks representative batched fits against the scalar fitter. Unsupported,
-small or numerically degenerate batches use the ordinary fitter.
 
-Partial-score checks validate each completed event once and reuse its
-contribution. Each addition retains the original upward rounding order, so the
-ceiling remains conservative. Propagation reuses the final Newton geometry when
-the emission time stops changing. A bounded motion-support cache avoids repeated
-interval scans at the same sound speed. Fit diagnostics use independent shallow
-copies because their values are immutable scalars.
+At each event group, the scorer fits only the shared-clock trials that survive
+earlier groups and the acoustic bound. It reuses validated group contributions
+and preserves the order and upward rounding of the conservative score ceiling.
+If the product of clock trials and event groups exceeds 4,096, the scorer keeps
+the scalar traversal.
 
-Representative scalar references also reuse the existing bounded fit cache.
-The key includes typed parameters and the complete measurement and acoustic
-contents. Every representative comparison still runs. Identical inputs reuse
-their scalar result within one scoring context. Changed arrays and later
-contexts require fresh scalar work.
+Batch arithmetic matches the scalar model and uses Python `float` powers.
+Regression tests compare every fitted clock in the recorded-data test batches
+with the scalar fitter. Unsupported, nonfinite or degenerate batches use scalar
+fitting. The same fallback handles overflowing powers, zero drift bounds and
+noncanonical numeric parameters.
+
+Representative batch checks also use the existing bounded scalar-fit cache.
+The key includes typed parameters and complete measurement and acoustic contents.
+Every representative comparison still runs. Repeated inputs reuse their scalar
+result within one scoring context. Changed arrays require a new cache entry.
+A last-threshold motion-support cache requires equal parameter types and values.
+It returns independent interval arrays and preserves unsupported-motion accounting.
+
+The same scoring context can reuse complete successful batch fits.
+The same numerical batch can serve several candidate associations.
+Keys include typed fit parameters, complete measured arrays and complete acoustic
+arrays, with their shapes and layouts. Only C-contiguous, aligned acoustic matrices
+qualify for reuse. Other layouts keep the existing numerical computation.
+Every cache hit still runs the representative scalar comparisons.
+Independent diagnostic copies prevent callers from changing retained cache values.
+The cache holds at most 1,024 batches within a 32 MiB accounting budget per
+scoring context. Each worker has its own context. This limits cache retention;
+it does not cap the worker's complete memory usage.
+
+An earlier replay at one source-informed receiver point used 16 event groups and 3,905
+associations. Across three alternating pairs, median CPU time fell from 68.9247
+to 25.5895 seconds, a 2.6935× speedup. All candidate results, diagnostics, support
+records and retention data matched the baseline with the separate correction to
+scalar rounding. A narrower clock window had a smaller change: 4.6782 to 4.0092 CPU
+seconds. The [performance report](PERFORMANCE.md) gives the inputs, procedure and
+limits.
 
 When an event's conservative loss bound alone makes the association unable to
 reach the current Top-K floor, the scorer may also skip that clock and retain a
@@ -277,11 +297,15 @@ their child calls and must not be added together.
 
 New-run comparisons require identical workloads, runtime versions, ranked rows,
 assessment counts and all three retention tables. The script stops at the first
-discrepancy. Operation counts distinguish scalar fits, scalar validation calls
-and clocks fitted in batches. A lower scalar-call count alone is not a speedup.
+discrepancy. Operation counts distinguish actual scalar computations, scalar
+validation requests and clocks fitted in batches. A lower scalar-call count
+alone is not a speedup.
 
-### Measured results: 2026-11-03
+### Earlier measured version: 2026-11-03
 
+Before integration with the optimizer from PR #212, the measured source was
+[`a36ccf9`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/a36ccf9e590db5608376a450c3ddd7608b3c39b0).
+It includes all numerical guards and main's association-traversal improvement.
 The primary replay used 16 measured proposals, 16 independent groups and one
 saved receiver hypothesis. Its aircraft input contained 64,246 observations in
 447 trajectory segments. Both versions evaluated the same 3,921 associations
@@ -289,39 +313,52 @@ over a four-minute recording-start window and retained 100 rows.
 
 | Measurement | Corrected baseline | Optimized | Speedup |
 | --- | ---: | ---: | ---: |
-| Scoring CPU, median of three runs | 62.21 s | 31.92 s | 1.95× |
-| Scoring wall time, median of three runs | 62.25 s | 31.94 s | 1.95× |
-| Complete benchmark subprocess, median wall time | 65.20 s | 34.65 s | 1.88× |
+| Scoring CPU, median of three runs | 67.65 s | 28.08 s | 2.41× |
+| Scoring wall time, median of three runs | 67.72 s | 28.09 s | 2.41× |
+| Complete benchmark subprocess, median wall time | 71.06 s | 31.18 s | 2.28× |
 
-All three pairs reproduced the complete ranked rows, assessment counts and
-retention tables exactly. Baseline CPU times were 62.21, 60.94 and 66.49 seconds.
-Optimized CPU times were 31.20, 31.92 and 39.08 seconds. Each paired run improved,
-despite timing variation. The table reports the ratio of medians.
+All seven exact-output and environment checks passed in every paired and
+repeat-consistency comparison. Baseline CPU times were 67.6488, 64.2554 and
+74.1847 seconds. Optimized CPU times were 31.3246, 28.0773 and 27.9379 seconds.
+Run order was baseline/optimized, optimized/baseline, baseline/optimized.
+Each pair improved. The table reports the ratio of medians.
+
+The complete subprocess includes imports, preparation, trajectory loading,
+scoring and output. It excludes audio discovery, downloads, nationwide search
+and refinement.
 
 The timing used Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0 and pandas 2.2.3 on
 Linux x86-64. The benchmark records the remaining runtime versions.
-Scalar fitter calls decreased from 66,337 to 21,894. These totals include
-8,367 and 21,735 scalar validation calls, respectively. Successful batched clock
-fits increased from 90,393 to 244,263. Both versions made 861 acoustic calls
-over 2,121,053 samples.
+
+| Operation | Corrected baseline | Optimized |
+| --- | ---: | ---: |
+| Actual uncached scalar computations | 66,337 | 1,939 |
+| Representative scalar validation requests | 8,367 | 21,735 |
+| Clocks fitted in successful batches | 90,393 | 244,263 |
+| Acoustic calls | 861 | 861 |
+| Acoustic samples | 2,121,053 | 2,121,053 |
+
+All three representative comparisons remain in each successful batch.
+The existing bounded fit cache reuses exact scalar inputs across comparisons.
+This avoids repeated computation without removing validation requests.
 
 Batching and reusable partial bounds reduce time while retaining the same search
 workload. These are regional computation measurements from the same real
 recording. They do not establish independent localization accuracy or nationwide
 wall time.
 
-Two further workload comparisons preserved every compared output:
+Two final-source replays also passed every comparison against saved corrected
+baselines. These are auxiliary single runs, not repeated paired medians:
 
-| Workload, one paired run | Baseline CPU | Optimized CPU | Speedup |
+| Workload | Saved baseline CPU | Final replay CPU | Observed ratio |
 | --- | ---: | ---: | ---: |
-| Fresh discovery: 18 ridges, 16 groups, 3,921 associations | 66.82 s | 39.04 s | 1.71× |
-| Second saved receiver: 16 groups, 4,031 associations | 71.18 s | 41.04 s | 1.73× |
+| Fresh discovery: 18 ridges, 16 groups, 3,921 associations | 66.82 s | 33.30 s | 2.01× |
+| Second saved receiver: 16 groups, 4,031 associations | 71.18 s | 29.56 s | 2.41× |
 
-The three primary pairs and fresh-discovery pair preceded the final cache-key
-type guard. Their Python-float sound speeds give the same cache hits with that
-guard. The second-receiver pair used the final guarded source. A final guarded
-primary replay also preserved every output and took 44.78 CPU seconds. This
-slower confirmation remains part of the timing record.
+The earlier implementation's 1.95× series remains in the
+[prior report](https://github.com/1337isnot1337/DOPPLERGEIST/blob/9dff10e2e5d91cfe3ccad8fbc5cd2e89567edcd1/docs/DATA_AND_SCALE.md#measure-scoring-throughput).
+Separate timing series cannot isolate the benefit of scalar-reference caching.
+The final source also includes main's association-traversal change.
 
 ### Arithmetic correction
 
@@ -344,6 +381,7 @@ Use the same Python environment for both source checkouts. Keep both checkouts
 unchanged during the comparison.
 
 ```bash
+git fetch origin 89dc912737436a5c13504fc06d353dedc8ebc36a
 git worktree add --detach ../dopplergeist-performance-baseline 89dc912737436a5c13504fc06d353dedc8ebc36a
 
 python scripts/benchmark_real_optimization.py \
