@@ -92,7 +92,10 @@ parameters were tuned on these clips. A separate full-band decoded-audio check
 measured Times Square at approximately -85.9 dBFS RMS and the Liberty view at
 -56.2 dBFS RMS (16 kHz mono; no physical SPL calibration). Both contain nonzero
 audio, but the very quiet Times Square channel is a further limit on treating
-zero proposals as evidence about aircraft detection. There is no event-count cap in this capture
+zero proposals as evidence about aircraft detection. A separate fresh 12 s
+source-channel audit found the provider already sends mono 44.1 kHz audio at
+about 5.69e-5 RMS, so the quiet channel was not caused by stereo downmix
+cancellation. That diagnostic is preserved separately from the frozen benchmark. There is no event-count cap in this capture
 or verification wrapper; all supported independent proposals are left to the
 shared all-event association/search path.
 
