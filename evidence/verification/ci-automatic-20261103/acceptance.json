@@ -1,0 +1,1859 @@
+{
+  "schema_version": 1,
+  "scope": "automatic_synthetic_cli_integration",
+  "started_utc": "2026-11-03T01:04:11.603090Z",
+  "stage": "complete",
+  "total_budget_s": 1800.0,
+  "limitations": [
+    "This is the complete generated synthetic fixture, not independent real audio.",
+    "The offline trajectory index describes the generated universe only; real ADS-B receiver completeness is not established.",
+    "The fixed 120 m synthetic terrain model does not establish real elevation or vertical-datum accuracy.",
+    "The real automatic CLI and job subprocesses are exercised; HTTP upload and browser display are not exercised.",
+    "Data are prepared offline; live historical flight and terrain acquisition are not exercised.",
+    "Truth and legacy event settings are not pipeline inputs. Filesystem access to generator source and evaluation artifacts is not sandboxed.",
+    "Candidate error below 100 m is diagnostic unless the actual decision also reports succeeded."
+  ],
+  "stages": [
+    {
+      "stage": "producer-preflight",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/ci_automatic_replay.py",
+          "_preflight",
+          "--snapshot",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+          "--report",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/preflight.json"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/logs/producer-preflight.log",
+        "started_utc": "2026-11-03T01:04:11.866913Z",
+        "timeout_s": 90,
+        "returncode": 0,
+        "elapsed_s": 1.602950161999999,
+        "finished_utc": "2026-11-03T01:04:13.469881Z",
+        "peak_sampled_process_tree_rss_bytes": 224346112,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "generation",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/scripts/make_synthetic_cases.py"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/logs/generation.log",
+        "started_utc": "2026-11-03T01:04:13.471776Z",
+        "timeout_s": 240,
+        "returncode": 0,
+        "elapsed_s": 2.003843951999997,
+        "finished_utc": "2026-11-03T01:04:15.475632Z",
+        "peak_sampled_process_tree_rss_bytes": 409276416,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "indexing",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/ci_automatic_replay.py",
+          "_index",
+          "--csv",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/tracks.csv",
+          "--parquet",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/tracks.parquet",
+          "--index",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/synthetic.sqlite",
+          "--report",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/indexing.json"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/logs/indexing.log",
+        "started_utc": "2026-11-03T01:04:15.513639Z",
+        "timeout_s": 240,
+        "returncode": 0,
+        "elapsed_s": 1.6030238499999996,
+        "finished_utc": "2026-11-03T01:04:17.116675Z",
+        "peak_sampled_process_tree_rss_bytes": 284037120,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "mp3-encoding",
+      "execution": {
+        "command": [
+          "ffmpeg",
+          "-nostdin",
+          "-v",
+          "error",
+          "-i",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/recording.wav",
+          "-codec:a",
+          "libmp3lame",
+          "-ar",
+          "8000",
+          "-b:a",
+          "32k",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/recording.mp3"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/logs/mp3-encoding.log",
+        "started_utc": "2026-11-03T01:04:17.118630Z",
+        "timeout_s": 240,
+        "returncode": 0,
+        "elapsed_s": 1.6026847279999998,
+        "finished_utc": "2026-11-03T01:04:18.721326Z",
+        "peak_sampled_process_tree_rss_bytes": 53465088,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "automatic-cli",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "-m",
+          "aircraft_geoloc.cli",
+          "analyze",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/recording.mp3",
+          "--jobs",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/jobs",
+          "--config",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/operator-synthetic.json",
+          "--start-utc",
+          "2026-09-21T14:13:20Z",
+          "--end-utc",
+          "2026-09-21T14:13:20Z",
+          "--time-source",
+          "Known sample-zero clock of the independent synthetic generator",
+          "--max-runtime",
+          "1762.863254926"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/logs/automatic-cli.log",
+        "started_utc": "2026-11-03T01:04:18.741059Z",
+        "timeout_s": 1772.863254926,
+        "returncode": 0,
+        "elapsed_s": 157.209919173,
+        "finished_utc": "2026-11-03T01:06:55.950989Z",
+        "peak_sampled_process_tree_rss_bytes": 20807680,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    }
+  ],
+  "passed": false,
+  "supported_decision": false,
+  "top_candidate_within_100m": false,
+  "automatic_cli_verified": false,
+  "http_upload_verified": false,
+  "independent_real_accuracy_verified": false,
+  "national_real_coverage_verified": false,
+  "evaluation_truth_loaded_after_analysis": true,
+  "implementation": {
+    "checkout": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST",
+    "git": {
+      "commit": "db9e5bd1233c7eb518571ebcc7b2be2a28e9c567",
+      "status": ""
+    },
+    "snapshot_sha256": "5eee48b5b45a7d792e6a2615de884fefc82b8d24348e56ab2e7fabccc87175c0",
+    "files": {
+      "ci_automatic_replay.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/ci_automatic_replay.py",
+        "bytes": 32952,
+        "sha256": "bb0cde838f3aa5975f5114c379c312252d2ebe192d32bca07bee57d426062e58"
+      },
+      "ci_checkpoint_replay.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/ci_checkpoint_replay.py",
+        "bytes": 17441,
+        "sha256": "d02aa681a793dc7fd28a250bd1051907bfc0f3a1cab9202dc4a3f41e22fae107"
+      },
+      "pyproject.toml": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/pyproject.toml",
+        "bytes": 668,
+        "sha256": "c6941c17ac72bbf87fca8fe8b18ed223faa738a2ebb2859eceda28e90e9da7e0"
+      },
+      "scripts/make_synthetic_cases.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/scripts/make_synthetic_cases.py",
+        "bytes": 4653,
+        "sha256": "699d4903a90d0aea874f64209fd3d1a55b3141f3945243d5952f1af9f6f91e3f"
+      },
+      "src/aircraft_geoloc/__init__.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/__init__.py",
+        "bytes": 50,
+        "sha256": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+      },
+      "src/aircraft_geoloc/audio.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/audio.py",
+        "bytes": 8315,
+        "sha256": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+      },
+      "src/aircraft_geoloc/automatic.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/automatic.py",
+        "bytes": 16455,
+        "sha256": "39b5cca9ff515af364681200b26ca0626babcdd3efea774867bbf061fe86d17d"
+      },
+      "src/aircraft_geoloc/cli.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/cli.py",
+        "bytes": 4131,
+        "sha256": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+      },
+      "src/aircraft_geoloc/confidence.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/confidence.py",
+        "bytes": 10661,
+        "sha256": "b34e41b7db279c8a601adb6eb6b5cd7d5936cadfb43f941523f6c9daaa6c9b79"
+      },
+      "src/aircraft_geoloc/contracts.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/contracts.py",
+        "bytes": 15115,
+        "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+      },
+      "src/aircraft_geoloc/data_access.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/data_access.py",
+        "bytes": 29693,
+        "sha256": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218"
+      },
+      "src/aircraft_geoloc/discovery.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/discovery.py",
+        "bytes": 14469,
+        "sha256": "8c5c6e72289ee1db9cd9d70a7eafe60e07587fa0449d880437eda17ad6e8a26d"
+      },
+      "src/aircraft_geoloc/geometry.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/geometry.py",
+        "bytes": 5992,
+        "sha256": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+      },
+      "src/aircraft_geoloc/intake.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/intake.py",
+        "bytes": 8900,
+        "sha256": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648"
+      },
+      "src/aircraft_geoloc/jobs.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/jobs.py",
+        "bytes": 10569,
+        "sha256": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+      },
+      "src/aircraft_geoloc/matching.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/matching.py",
+        "bytes": 23630,
+        "sha256": "a9b8267b488c1f96625a844f465e872aab1a4ae3c526e151e0e89d22e286c9aa"
+      },
+      "src/aircraft_geoloc/pipeline.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/pipeline.py",
+        "bytes": 9438,
+        "sha256": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb"
+      },
+      "src/aircraft_geoloc/search.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/search.py",
+        "bytes": 16909,
+        "sha256": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b"
+      },
+      "src/aircraft_geoloc/service.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/service.py",
+        "bytes": 6516,
+        "sha256": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d"
+      },
+      "src/aircraft_geoloc/terrain.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/terrain.py",
+        "bytes": 8519,
+        "sha256": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+      },
+      "src/aircraft_geoloc/tiled_search.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/tiled_search.py",
+        "bytes": 18553,
+        "sha256": "4c7dba13a45c7060300a72cd7e61d8676aacea2d368bed1f4487cc4e7fe31218"
+      },
+      "src/aircraft_geoloc/tracks.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/tracks.py",
+        "bytes": 7434,
+        "sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+      },
+      "src/aircraft_geoloc/web/__init__.py": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/web/__init__.py",
+        "bytes": 38,
+        "sha256": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+      },
+      "src/aircraft_geoloc/web/app.js": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/web/app.js",
+        "bytes": 8762,
+        "sha256": "8a0e4e3c464ae3dc0e3abd8b2d119ad92bf033afd70f57b05dcb28fe9925c4fb"
+      },
+      "src/aircraft_geoloc/web/index.html": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/web/index.html",
+        "bytes": 3556,
+        "sha256": "f3827cd477b0630aeba28cc284c4a4388715f2f884f218e040156fe1d1bb3be9"
+      },
+      "src/aircraft_geoloc/web/style.css": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc/web/style.css",
+        "bytes": 4576,
+        "sha256": "c9d9afda04f64c9db8a09075aac3cd7f23f9e5ae8401083b85dadd3a59883716"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/PKG-INFO": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/PKG-INFO",
+        "bytes": 433,
+        "sha256": "1869cf34e577b10afb28955bbc7a14928574db830d97acb381f4c559282c8792"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt",
+        "bytes": 1575,
+        "sha256": "dfc483a21d3804ffa80e40d2a00e40553c69b2d86055f5e320acd0dbb51fb362"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/entry_points.txt": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/entry_points.txt",
+        "bytes": 61,
+        "sha256": "4e76b710462f001e64e2610e5825e8c664f25a4d0180b79bde36646699042dcb"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/requires.txt": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/requires.txt",
+        "bytes": 91,
+        "sha256": "b86a70c60df483877a15c9af90a79fd3eecbf866d0f3d66ad298f7a7dfc41287"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/top_level.txt": {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/implementation/src/aircraft_geoloc_reproduction.egg-info/top_level.txt",
+        "bytes": 16,
+        "sha256": "f78e0bfd2f6ced36348301c041d51ecf06e9d3f55cf5c0d5a5801dc397ed1243"
+      }
+    },
+    "expected_pipeline_implementation_sha256": "91ecb8d104414dbe07da90c863da082333b7114704fbf1ed59aa0e9e25b5eee8",
+    "snapshot_copy_atomic": false,
+    "expected_automatic_files": {
+      "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+      "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+      "automatic.py": "39b5cca9ff515af364681200b26ca0626babcdd3efea774867bbf061fe86d17d",
+      "cli.py": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+      "confidence.py": "b34e41b7db279c8a601adb6eb6b5cd7d5936cadfb43f941523f6c9daaa6c9b79",
+      "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+      "data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+      "discovery.py": "8c5c6e72289ee1db9cd9d70a7eafe60e07587fa0449d880437eda17ad6e8a26d",
+      "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+      "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+      "jobs.py": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+      "matching.py": "a9b8267b488c1f96625a844f465e872aab1a4ae3c526e151e0e89d22e286c9aa",
+      "pipeline.py": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+      "search.py": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+      "service.py": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+      "terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+      "tiled_search.py": "4c7dba13a45c7060300a72cd7e61d8676aacea2d368bed1f4487cc4e7fe31218",
+      "tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+    }
+  },
+  "runtime": {
+    "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+    "executable": "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+    "implementation": "CPython",
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "3.1.0",
+      "soundfile": "0.14.0",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "matplotlib": "3.11.2",
+      "requests": "2.34.2",
+      "pyarrow": "26.0.0",
+      "pytest": "9.2.0",
+      "setuptools": null,
+      "pip": "26.2.2"
+    },
+    "external_tools": {
+      "ffmpeg": {
+        "returncode": 0,
+        "version": [
+          "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+        ]
+      },
+      "ffprobe": {
+        "returncode": 0,
+        "version": [
+          "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+        ]
+      }
+    },
+    "subprocess_thread_settings": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "generator_source": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/scripts/make_synthetic_cases.py",
+    "bytes": 4653,
+    "sha256": "699d4903a90d0aea874f64209fd3d1a55b3141f3945243d5952f1af9f6f91e3f"
+  },
+  "complete_trajectory_inventory": {
+    "rows": 1617,
+    "flight_count": 7,
+    "samples_per_flight": {
+      "flight-34b02f895d683231ac565035c08290ee": 231,
+      "flight-4f129110420b89ee5e606b291e904b27": 231,
+      "flight-5a36d15129d26e945c32f84bed05f002": 231,
+      "flight-646b4c2a38c7de0ad0c8dae1ed36264c": 231,
+      "flight-6cce98f8109bf9657a79415c5ea669ae": 231,
+      "flight-ca79927f414ab4fb7898e05668c237fd": 231,
+      "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": 231
+    },
+    "typecode_rows": {
+      "A320": 231,
+      "C172": 1386
+    }
+  },
+  "trajectory_ids_anonymized": true,
+  "all_trajectory_rows_preserved": true,
+  "indexing": {
+    "status": "passed",
+    "inventory": {
+      "rows": 1617,
+      "flight_count": 7,
+      "samples_per_flight": {
+        "flight-34b02f895d683231ac565035c08290ee": 231,
+        "flight-4f129110420b89ee5e606b291e904b27": 231,
+        "flight-5a36d15129d26e945c32f84bed05f002": 231,
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c": 231,
+        "flight-6cce98f8109bf9657a79415c5ea669ae": 231,
+        "flight-ca79927f414ab4fb7898e05668c237fd": 231,
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4": 231
+      },
+      "typecode_rows": {
+        "A320": 231,
+        "C172": 1386
+      }
+    },
+    "coverage": {
+      "bounds": [
+        -126.0,
+        23.0,
+        -65.0,
+        51.0
+      ],
+      "time_range_s": [
+        1789999400.0,
+        1790001780.0
+      ],
+      "all_aircraft": true,
+      "synthetic": true,
+      "source_note": "Complete seven-track generated simulation only, including every distractor and aircraft class. No additional aircraft exist in this declared synthetic source envelope; this is not real receiver coverage."
+    },
+    "index_report": {
+      "index_version": 2,
+      "sources": [
+        {
+          "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/tracks.parquet",
+          "sha256": "3b79ecc530fea8b7404aae38f2c09173c9ff77658f666c1f3b5faecfb08e732e",
+          "bytes": 38829
+        }
+      ],
+      "coverage": {
+        "bounds": [
+          -126.0,
+          23.0,
+          -65.0,
+          51.0
+        ],
+        "time_range_s": [
+          1789999400.0,
+          1790001780.0
+        ],
+        "all_aircraft": true,
+        "synthetic": true,
+        "source_note": "Complete seven-track generated simulation only, including every distractor and aircraft class. No additional aircraft exist in this declared synthetic source envelope; this is not real receiver coverage."
+      },
+      "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+      "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "max_gap_s": 30.0,
+      "max_flight_samples": 250000,
+      "input_hash": "487f6931b1c2c4342aa46b9d653fdcd8dd4a30eb8dee7a766e055845a8c8c0cd",
+      "rows": 1617,
+      "invalid_rows": 0,
+      "segments": 7,
+      "altitude_basis_counts": {
+        "ellipsoidal": 1617
+      },
+      "jets_excluded": false,
+      "unknown_types_retained": true,
+      "geometry_clipped": false,
+      "continuous_geometry_bounds": true
+    },
+    "sources": [
+      {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/tracks.csv",
+        "bytes": 167477,
+        "sha256": "81e2364b444bdc1b898aa8484e8a0af0e03fed3713c95c61f349c623746c0382"
+      },
+      {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/tracks.parquet",
+        "bytes": 38829,
+        "sha256": "3b79ecc530fea8b7404aae38f2c09173c9ff77658f666c1f3b5faecfb08e732e"
+      },
+      {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/synthetic.sqlite",
+        "bytes": 77824,
+        "sha256": "0827917b2403bbafb0de427bbb64b566f1d00d42859bd1ea7c41c803b57e3eb3"
+      }
+    ],
+    "all_generated_tracks_retained": true,
+    "evaluation_truth_read": false
+  },
+  "audio_sources": [
+    {
+      "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/recording.wav",
+      "bytes": 18880080,
+      "sha256": "d9edb058805e60192f7fdb83aee61ea2ec1831a45b14bd0402e475a43cc05e47"
+    },
+    {
+      "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/generated/data/synthetic/recording.mp3",
+      "bytes": 4720941,
+      "sha256": "b18246df5090f5fecb547ab88047b9ff5c9849988fb2e256de21325b6a01e3b5"
+    }
+  ],
+  "operator_configuration": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/operator-synthetic.json",
+    "bytes": 257,
+    "sha256": "6d82ea864f89c45f34686cf47789e52338ee16bd462417a1b7e2c0b399334f50"
+  },
+  "job_status_observation": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/job-status-history.jsonl",
+    "interval_s": 0.2,
+    "may_miss_short_stages": true,
+    "observer_stopped": true,
+    "warnings": []
+  },
+  "analysis_terminated_utc": "2026-11-03T01:06:55.953197Z",
+  "job": {
+    "directory": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/jobs/8b010e7e03c24f4ca302946bc3889f65",
+    "result": {
+      "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/jobs/8b010e7e03c24f4ca302946bc3889f65/result.json",
+      "bytes": 73043,
+      "sha256": "dfd20455b1c998ba64e635664db87ffe87c15666b7ebb783067dda1f776a0fe2"
+    },
+    "status": "inconclusive",
+    "reason_code": "ambiguous_flight_match",
+    "coverage": {
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+      ],
+      "requested_area": {
+        "coverage": "conus"
+      },
+      "missing_data": []
+    },
+    "checks": {
+      "normal_request_verified": true,
+      "uploaded_bytes_verified": true,
+      "operator_configuration_verified": true,
+      "implementation_verified": true,
+      "all_stage_artifacts_present": true,
+      "decision_artifact_consistent": true,
+      "search_artifact_consistent": true,
+      "alternative_mode_evidence_consistent": true
+    },
+    "missing_stage_artifacts": [],
+    "diagnostics": []
+  },
+  "evaluation_truth_loaded_utc": "2026-11-03T01:06:55.964960Z",
+  "evaluation_reference": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/evaluation/truth.json",
+    "bytes": 362,
+    "sha256": "377bbc1306548f3258431b3247443113b894feb94731f7c9d5ac9b2b56f316ae"
+  },
+  "evaluation_identity_mapping": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/evaluation/flight-id-mapping.json",
+    "bytes": 1905,
+    "sha256": "c715d1b6fbe559fa10da8ed4d4883926d6ce6a64cce181a867590087342dc77c"
+  },
+  "candidate_evaluations": [
+    {
+      "rank": 1,
+      "error_m": 1046023.7708583066,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 2,
+      "error_m": 1046023.7708583066,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 3,
+      "error_m": 1046023.7708583066,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 4,
+      "error_m": 5.5421237626251205,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": true,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 5,
+      "error_m": 1052003.4293853391,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 6,
+      "error_m": 1052003.4240761192,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 7,
+      "error_m": 21.885529691476,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": true,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 8,
+      "error_m": 1051991.5447839876,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 9,
+      "error_m": 1052083.562948563,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 10,
+      "error_m": 1046011.4966058539,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 11,
+      "error_m": 1046011.4966058539,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 12,
+      "error_m": 89.1822875541064,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": true,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 13,
+      "error_m": 1045959.6271834107,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 14,
+      "error_m": 1045959.6271834107,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 15,
+      "error_m": 1046045.4666161569,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 16,
+      "error_m": 1046045.4666161569,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 17,
+      "error_m": 1046097.331740354,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 18,
+      "error_m": 1046097.331740354,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 19,
+      "error_m": 115.62238404419993,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 20,
+      "error_m": 1051951.1630181607,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 21,
+      "error_m": 82.92831879740659,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": true,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 22,
+      "error_m": 1051899.528257344,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 23,
+      "error_m": 1045925.6641400695,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 24,
+      "error_m": 1045925.6641400695,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 25,
+      "error_m": 1052043.1847885551,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 26,
+      "error_m": 119.67049091887542,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 27,
+      "error_m": 1052175.582750645,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 28,
+      "error_m": 117.14662723939321,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 29,
+      "error_m": 1045873.7904188159,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 30,
+      "error_m": 1045873.7904188159,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 31,
+      "error_m": 1051859.1428851283,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 32,
+      "error_m": 1052031.934323032,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 33,
+      "error_m": 140.7026865629188,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 34,
+      "error_m": 1046131.3087163942,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 35,
+      "error_m": 1046131.3087163942,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 36,
+      "error_m": 189.1878624966544,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 37,
+      "error_m": 1046183.1695429125,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 38,
+      "error_m": 1046183.1695429125,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 39,
+      "error_m": 145.69976553314865,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 40,
+      "error_m": 1052123.9488813533,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 41,
+      "error_m": 1046063.3728457205,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 42,
+      "error_m": 1046063.3728457205,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 43,
+      "error_m": 163.04082051063114,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 44,
+      "error_m": 215.92164932655223,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 45,
+      "error_m": 1045993.6083102262,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 46,
+      "error_m": 1045993.6083102262,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 47,
+      "error_m": 1052135.20819589,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 48,
+      "error_m": 1051939.9214032085,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 49,
+      "error_m": 1046149.2036818347,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 50,
+      "error_m": 1046149.2036818347,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 51,
+      "error_m": 1045907.7645793761,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 52,
+      "error_m": 1045907.7645793761,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 53,
+      "error_m": 205.25351795593758,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 54,
+      "error_m": 1052215.965077749,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 55,
+      "error_m": 1045839.834343661,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 56,
+      "error_m": 1045839.834343661,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 57,
+      "error_m": 230.39411152721263,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 58,
+      "error_m": 1045977.5446788893,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 59,
+      "error_m": 1045977.5446788893,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 60,
+      "error_m": 221.5797305145455,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 61,
+      "error_m": 1051807.5133690597,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 62,
+      "error_m": 1051767.1243898894,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 63,
+      "error_m": 1045787.9563230305,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 64,
+      "error_m": 1045787.9563230305,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 65,
+      "error_m": 181.43251112959842,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 66,
+      "error_m": 1051910.7890264061,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 67,
+      "error_m": 200.82603044143687,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 68,
+      "error_m": 1052002.814402186,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 69,
+      "error_m": 1046235.0371865745,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 70,
+      "error_m": 1046235.0371865745,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 71,
+      "error_m": 1052267.6041898085,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 72,
+      "error_m": 1045821.923516111,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 73,
+      "error_m": 1045821.923516111,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 74,
+      "error_m": 1046079.4547080016,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 75,
+      "error_m": 1046079.4547080016,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 76,
+      "error_m": 1046269.0100128694,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 77,
+      "error_m": 1046269.0100128694,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 78,
+      "error_m": 215.89381370129016,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 79,
+      "error_m": 1051818.7652874226,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 80,
+      "error_m": 1046217.1534834644,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 81,
+      "error_m": 1046217.1534834644,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 82,
+      "error_m": 1052072.331634433,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 83,
+      "error_m": 214.16926709447247,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 84,
+      "error_m": 244.55132938009152,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 85,
+      "error_m": 232.69253389193904,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 86,
+      "error_m": 289.81835126416604,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 87,
+      "error_m": 1052164.3425860684,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 88,
+      "error_m": 243.80018772458803,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 89,
+      "error_m": 1051980.3223218676,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 90,
+      "error_m": 1052094.8414143373,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 91,
+      "error_m": 1046115.2559020375,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 92,
+      "error_m": 1046115.2559020375,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 93,
+      "error_m": 1052307.982911793,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 94,
+      "error_m": 1045941.7568235376,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 95,
+      "error_m": 1045941.7568235376,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 96,
+      "error_m": 1051847.9101223112,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 97,
+      "error_m": 316.60676819075894,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 98,
+      "error_m": 1046201.0824396252,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 99,
+      "error_m": 1046201.0824396252,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 100,
+      "error_m": 1045891.7191820008,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 101,
+      "error_m": 1045891.7191820008,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-ca79927f414ab4fb7898e05668c237fd",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    },
+    {
+      "rank": 102,
+      "error_m": 1052227.2332397387,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 103,
+      "error_m": 260.9760330061191,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 104,
+      "error_m": 311.9788418816842,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": true,
+      "flight_ids": [
+        "flight-4f129110420b89ee5e606b291e904b27",
+        "flight-6cce98f8109bf9657a79415c5ea669ae"
+      ]
+    },
+    {
+      "rank": 105,
+      "error_m": 1051726.7431856643,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-646b4c2a38c7de0ad0c8dae1ed36264c",
+        "flight-34b02f895d683231ac565035c08290ee"
+      ]
+    },
+    {
+      "rank": 106,
+      "error_m": 1045855.9087947273,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": false,
+      "distinct_flights_correct": false,
+      "flight_ids": [
+        "flight-5a36d15129d26e945c32f84bed05f002",
+        "flight-fd965a6a50b542bfba72ef5f5dbbe4c4"
+      ]
+    }
+  ],
+  "top_candidate_flights_correct": false,
+  "declared_synthetic_coverage_complete": true,
+  "independent_event_groups": 2,
+  "matched_event_ids_valid": true,
+  "execution_succeeded": true,
+  "provenance_checks_passed": true,
+  "finished_utc": "2026-11-03T01:06:56.005447Z",
+  "elapsed_s": 164.40236848199999
+}

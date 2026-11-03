@@ -1,0 +1,21 @@
+--- w5-a0dd8403/src/aircraft_geoloc/automatic.py
++++ composed/src/aircraft_geoloc/automatic.py
+@@ -234,10 +234,16 @@
+             profiled = profile_candidate(leading, track_sets[approach(leading)], prepared_events, measurements, terrain,
+                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
+                          c=config.get("sound_speed_mps", 343.0))
+-            raw.append(_comparable_refinement(profiled, leading, prepared_events))
+-            raw.sort(key=order, reverse=True)
++            # Full profiling updates this exact hypothesis. Its earlier, limited
++            # envelope must not compete with incomplete evidence or score roundoff.
++            raw[0] = _comparable_refinement(profiled, leading, prepared_events)
+         except (ValueError, KeyError) as exc:
+             refinement_failures.append(f"Sensitivity profiling: {exc}")
++            raw[0] = dict(leading, sensitivity={"complete": False, "sources": [],
++                         "failures": [{"source": "profiling", "reason": str(exc)}]})
++        # Preserve other modes; a different leader must satisfy its own full
++        # sensitivity gate, without borrowing this hypothesis's profile.
++        raw.sort(key=order, reverse=True)
+     candidates, rows = [], []
+     for row in raw:
+         event_ids, flight_ids = [], []

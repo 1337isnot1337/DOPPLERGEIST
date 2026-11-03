@@ -1,0 +1,70 @@
+name: Multi-event upload replay
+
+on:
+  push:
+    branches: [worker/ci-multievent-upload-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: multi-event-upload-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Record checkout before installation
+        run: |
+          mkdir -p results/ci-upload-environment
+          git rev-parse HEAD > results/ci-upload-environment/commit.txt
+          git rev-parse HEAD^{tree} > results/ci-upload-environment/tree.txt
+          python --version > results/ci-upload-environment/python.txt
+      - name: Install package and actual browser
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python -m pip install -e '.[test]' playwright
+          python -m pip check
+          python -m pip freeze > results/ci-upload-environment/dependencies.txt
+          python -m playwright install --with-deps chromium
+      - name: Record exact source and run repository tests
+        shell: bash
+        run: |
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
+          python -m pytest -q --junitxml=results/ci-upload-environment/pytest.xml | tee results/ci-upload-environment/pytest.log
+      - name: Run actual four-flyover browser upload
+        timeout-minutes: 33
+        run: |
+          python scripts/ci_upload_replay.py \
+            --output results/ci-upload \
+            --browser-python "$(command -v python)" \
+            --expect-status inconclusive \
+            --events 4 \
+            --timeout-s 1800
+      - name: Retain every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: multi-event-upload-${{ github.sha }}
+          path: |
+            results/ci-upload/
+            results/ci-upload-environment/
+            !results/ci-upload/**/__pycache__/**
+            !results/ci-upload/**/*.pyc
+          if-no-files-found: error
+          retention-days: 30

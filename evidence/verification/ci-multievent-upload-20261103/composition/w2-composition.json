@@ -1,0 +1,50 @@
+{
+  "main_commit": "0ec20b906ab47d58187bc68136b20e5e2049e13c",
+  "main_tree": "ff7a81bbdda899e6631c0d49759137ed466ca25d",
+  "w2_pr57_commit": "50c01271fc4edc0c4743959b442234a9da46e570",
+  "pr46_head": "c1ab530e258716f0aa352f5b3f6a24f1b4288445",
+  "pr46_merge_commit": "8a52689e6fd5347c390acbb3068869a458cd6b94",
+  "git_merge_base": "3ea3406ae827a26b193202fb7f737714438af506",
+  "inputs": {
+    "base": {
+      "src/aircraft_geoloc/tiled_search.py": "68e5394bafece788faf1448299b140830358dc8a",
+      "tests/test_tiled_search.py": "da70a90d92eb25ba6a7109019f7643550b8c8ec8"
+    },
+    "main": {
+      "src/aircraft_geoloc/tiled_search.py": "b4175f76fc22aceda776363472c6b7f127d7d286",
+      "tests/test_tiled_search.py": "12a1e76c741842f3f16e2f31b933e394e4c1b75a"
+    },
+    "w2": {
+      "src/aircraft_geoloc/tiled_search.py": "328fbfe9f0c1e406b8fc0c36a77bcc51e8f0ad2d",
+      "tests/test_tiled_search.py": "c764cd49afcb845b6b8516df441700953a20c5ed"
+    }
+  },
+  "method": "git merge-file -p MAIN COMMON_BASE W2, with exact published file bytes",
+  "source_merge_returncode": 0,
+  "test_merge_returncode": 1,
+  "conflict_resolution": "One append/append conflict only: retain the complete main refinement-union test, then retain the complete W2 appended tests. No test function body changed.",
+  "validation": {
+    "syntax_compile_passed": true,
+    "all_test_function_asts_preserved": true,
+    "w2_scenario_helper_unchanged": true,
+    "non_search_national_function_asts_preserved": true,
+    "merged_test_function_count": 12,
+    "numerical_tests_executed_locally": false
+  },
+  "outputs": [
+    {
+      "path": "src/aircraft_geoloc/tiled_search.py",
+      "staged_path": "/workspace/scratch/98b2855f721e/upload_integration/w2_composition/tiled_search.py",
+      "bytes": 21563,
+      "expected_git_blob": "96d9a919c25e9ba254486f9c92268a0f63715c92",
+      "expected_sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870"
+    },
+    {
+      "path": "tests/test_tiled_search.py",
+      "staged_path": "/workspace/scratch/98b2855f721e/upload_integration/w2_composition/test_tiled_search.py",
+      "bytes": 16860,
+      "expected_git_blob": "dd95f0e130bbbcb98f6861df6c21aa4bfa7e0b2f",
+      "expected_sha256": "bce817886afa9a439b341de71905533fe49ab91327d7a9a4f1b533cef4dbe516"
+    }
+  ]
+}
