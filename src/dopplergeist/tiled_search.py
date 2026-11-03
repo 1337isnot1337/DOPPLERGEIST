@@ -154,6 +154,22 @@ def _tracks(indexes, bounds, time_range, budget):
     return tracks
 
 
+def _association_clock_window(start_window, sweep_s):
+    """Enclose every association clock that could reach the scoring window."""
+    lower, upper = map(float, start_window)
+    if not all(math.isfinite(v) for v in (lower, upper, sweep_s)) or lower > upper or sweep_s < 0:
+        raise ValueError("Recording clock bounds and sweep must be finite and ordered")
+    # Association intervals are expanded by the scorer before intersection with
+    # the requested window. Prune only outside that expanded envelope. Round
+    # both the envelope and its center/radius representation outward at Unix
+    # timestamp precision, so an inclusive endpoint cannot disappear.
+    lower = math.nextafter(lower - sweep_s, -math.inf)
+    upper = math.nextafter(upper + sweep_s, math.inf)
+    center = lower + (upper - lower) / 2
+    tolerance = math.nextafter(max(center - lower, upper - center), math.inf)
+    return center, tolerance
+
+
 @_cache_ridge_fits
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None):
     radius = max(e["slant_range_m"][1] for e in events)
@@ -201,6 +217,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     subset = filters.get("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full") == "subsets"
     if subset:
         from .matching import association_candidates
+        if start_window is not None and kwargs["time_origin"] is None:
+            kwargs["time_origin"], kwargs["time_tolerance_s"] = _association_clock_window(
+                start_window, parameters.get("time_sweep_s", 5.0))
         candidates, counts = association_candidates(table, events, **kwargs,
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)

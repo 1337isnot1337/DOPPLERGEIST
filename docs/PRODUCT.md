@@ -84,6 +84,34 @@ and input validation. They do not establish scientific localization accuracy.
 Automatic CI checks installation, source compilation, CLI help, and packaged
 assets without generated data.
 
+### Verify the complete HTTP pipeline
+
+`scripts/verify_upload_http.py` submits a real recording to a local service and
+checks the saved inputs, stage outputs, terminal decision and persisted result.
+Use `--require-full-pipeline` to require acquisition, search, refinement and
+decision evidence as well as intake/discovery, with at least one returned
+candidate. A correctly handled missing clock or empty search cannot pass this
+stronger operational check.
+
+```bash
+python scripts/verify_upload_http.py \
+  --audio path/to/real-recording.mp3 \
+  --operator-config operator.json \
+  --start-utc "$RECORDING_START_UTC_MIN" \
+  --end-utc "$RECORDING_START_UTC_MAX" \
+  --time-source 'Evidence establishing the recording-start interval' \
+  --expect-status inconclusive --require-full-pipeline \
+  --output results/new-real-http-run
+```
+
+Declare the expected outcome before running. An expected `inconclusive` result
+can verify that every stage ran; it does not establish a supported location.
+It can pass with incomplete search coverage; the result retains those limitations.
+Use `--expect-status succeeded` when testing that acceptance requirement, then
+evaluate location error against an independent reference after the run. The
+verifier reports operational verification and `supported_decision` separately.
+It counts independent harmonic groups separately from their ridge records.
+
 ## Provider and search configuration
 
 `--online` requires no JSON configuration: it uses the per-user cache and public
