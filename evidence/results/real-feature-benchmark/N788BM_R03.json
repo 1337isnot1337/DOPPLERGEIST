@@ -1,0 +1,11 @@
+{
+  "f0_hz": 306.04636161729786,
+  "speed_mps": 83.65558098212162,
+  "slant_m": 1305.0477291664026,
+  "cpa_receive_s": 39.94423070341729,
+  "rmse_hz": 1.131940065869602,
+  "frequency_drop_hz": 142.375,
+  "optimizer_success": true,
+  "ridge_contrast": 2.368117634382802,
+  "detected": true
+}

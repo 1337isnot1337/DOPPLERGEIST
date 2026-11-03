@@ -1,0 +1,9 @@
+{
+  "per_event_survivors": [
+    1545,
+    1754
+  ],
+  "pairs_before_silence": 568,
+  "silence_rejected": 0,
+  "survivors": 568
+}

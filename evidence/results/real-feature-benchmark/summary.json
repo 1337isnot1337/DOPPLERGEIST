@@ -1,0 +1,8 @@
+{
+  "cases": 40,
+  "detected": 33,
+  "errors": 0,
+  "median_absolute_speed_error_percent": 6.846731286680974,
+  "median_absolute_slant_error_percent": 15.374031631603325,
+  "validation_scope": "harmonic-band-assisted acoustic parameter recovery; not a location benchmark"
+}

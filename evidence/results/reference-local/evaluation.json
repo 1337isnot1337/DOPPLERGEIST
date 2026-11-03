@@ -1,0 +1,10 @@
+{
+  "reference_source": "https://app.osprey-watch.org/nest/3916",
+  "reference_coordinate": [
+    40.8766,
+    -73.5247
+  ],
+  "reference_precision_degrees": 0.0001,
+  "error_m": 43.85847078233993,
+  "scope": "regional search; published public nest-platform coordinate; not a blind national result"
+}

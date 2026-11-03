@@ -1,0 +1,44 @@
+[
+  {
+    "start_s": 65,
+    "end_s": 250,
+    "band_hz": [
+      95,
+      185
+    ],
+    "speed_range_mps": [
+      60,
+      120
+    ],
+    "slant_range_m": [
+      1300,
+      2500
+    ],
+    "f0_range_hz": [
+      132,
+      138
+    ],
+    "cpa_receive_s": 156.40558847561667
+  },
+  {
+    "start_s": 985,
+    "end_s": 1170,
+    "band_hz": [
+      80,
+      155
+    ],
+    "speed_range_mps": [
+      50,
+      105
+    ],
+    "slant_range_m": [
+      1000,
+      2200
+    ],
+    "f0_range_hz": [
+      112,
+      118
+    ],
+    "cpa_receive_s": 1072.843525161682
+  }
+]

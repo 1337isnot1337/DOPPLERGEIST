@@ -1,0 +1,182 @@
+{
+  "config": {
+    "audio": "recording.wav",
+    "tracks": [
+      "tracks.csv"
+    ],
+    "type_database": "types.csv",
+    "terrain": {
+      "constant_m": 120
+    },
+    "grid": {
+      "spacing_m": 200,
+      "scoring_spacing_m": 100,
+      "refine_spacing_m": 25,
+      "refine_pairs": 3
+    },
+    "events": [
+      {
+        "start_s": 65,
+        "end_s": 250,
+        "band_hz": [
+          95,
+          185
+        ],
+        "speed_range_mps": [
+          60,
+          120
+        ],
+        "slant_range_m": [
+          1300,
+          2500
+        ],
+        "f0_range_hz": [
+          132,
+          138
+        ]
+      },
+      {
+        "start_s": 985,
+        "end_s": 1170,
+        "band_hz": [
+          80,
+          155
+        ],
+        "speed_range_mps": [
+          50,
+          105
+        ],
+        "slant_range_m": [
+          1000,
+          2200
+        ],
+        "f0_range_hz": [
+          112,
+          118
+        ]
+      }
+    ],
+    "filters": {
+      "offset_tolerance_s": 6,
+      "silence": {
+        "edge_margin_s": 100
+      }
+    },
+    "scoring": {
+      "mode": "brightness",
+      "time_sweep_s": 3,
+      "time_step_s": 0.5
+    }
+  },
+  "measured_events": [
+    {
+      "start_s": 65,
+      "end_s": 250,
+      "band_hz": [
+        95,
+        185
+      ],
+      "speed_range_mps": [
+        60,
+        120
+      ],
+      "slant_range_m": [
+        1300,
+        2500
+      ],
+      "f0_range_hz": [
+        132,
+        138
+      ],
+      "cpa_receive_s": 156.40558847561667
+    },
+    {
+      "start_s": 985,
+      "end_s": 1170,
+      "band_hz": [
+        80,
+        155
+      ],
+      "speed_range_mps": [
+        50,
+        105
+      ],
+      "slant_range_m": [
+        1000,
+        2200
+      ],
+      "f0_range_hz": [
+        112,
+        118
+      ],
+      "cpa_receive_s": 1072.843525161682
+    }
+  ],
+  "imports": [
+    {
+      "rows": 1617,
+      "segments": 6,
+      "known_jets_excluded": [
+        "known-jet"
+      ],
+      "unknown_types_retained": true,
+      "path": "/home/cinna/aircraft-audio-geolocation/data/synthetic/tracks.csv"
+    }
+  ],
+  "sources": [
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/synthetic/recording.wav",
+      "sha256": "372912c008ed61a49de647cd9a5cd1651d1ce952e4690a2fe6c1da0cd641140a"
+    },
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/synthetic/tracks.csv",
+      "sha256": "a406060a16e1622ad9ab89cb297ba7376f3939d177506a529b7fab27550f42af"
+    }
+  ],
+  "coarse_filter_counts": {
+    "per_event_survivors": [
+      9878,
+      9171
+    ],
+    "pairs_before_silence": 144,
+    "silence_rejected": 0,
+    "survivors": 144
+  },
+  "scoring_filter_counts": {
+    "per_event_survivors": [
+      1545,
+      1754
+    ],
+    "pairs_before_silence": 568,
+    "silence_rejected": 0,
+    "survivors": 568
+  },
+  "ranked_points": 807,
+  "flight_combinations": 3,
+  "best": {
+    "score": 4.491249330548563,
+    "event_scores": [
+      2.1299092245088747,
+      2.3613401060396884
+    ],
+    "f0_hz": [
+      135.0,
+      115.0
+    ],
+    "recording_start_time_s": 1789999999.6574178,
+    "time_adjustment_s": 1.0,
+    "point_id": 518,
+    "lat": 40.03156939118181,
+    "lon": -100.01843863537528,
+    "elev_m": 120.0,
+    "x": -339800.0,
+    "y": 1897700.0,
+    "flight_ids": [
+      "true-A",
+      "true-B"
+    ]
+  },
+  "elapsed_s": 192.46327281999402,
+  "scoring_time_is_locked": true,
+  "ground_truth_used_by_search": false
+}
