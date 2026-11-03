@@ -55,6 +55,18 @@ CC BY-NC 4.0; no media is copied into this repository. Its public coordinates
 refer to nearby public places rather than exact microphones, so these clips do
 not establish location truth for geolocation evaluation.
 
+## Publisher-documented aircraft scanner control
+
+The [DLR RECORD 139 scanner check](../benchmarks/dlr-record139-scanner-check-20261103.md)
+uses one center-microphone channel from a real, publisher-identified A320 flyover
+recording. The automatic scanner found no ridge proposals in this seven-second
+excerpt. That is a scanner miss on this excerpt, not proof that no Doppler
+structure exists in the full array recording. The source contains microphone and
+aircraft geometry only in a relative coordinate frame; the inspected HDF5 does
+not provide geodetic microphone coordinates or an absolute UTC clock. No flight
+matching or geolocation was run, and this control does not count toward the
+20-known plus five-unknown location benchmark target.
+
 ## Candidate index
 
 The [25-row candidate index](../benchmarks/audio-candidate-index-20261103.csv)
