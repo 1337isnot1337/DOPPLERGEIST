@@ -1,0 +1,137 @@
+{
+  "input": "Original public MP3 national search, 12 saved coarse grid tiles with cached GLO-90 terrain",
+  "method": "Single sequential baseline and optimized process runs under load, each warming its cache and sampling the same 12 grids three times in each order.",
+  "baseline_terrain_source_commit": "225bf6b",
+  "optimized_terrain_source": "cache-hit metadata reuse",
+  "baseline": {
+    "actual_saved_tiles": [
+      "tile--14_7.json",
+      "tile--17_3.json",
+      "tile--18_6.json",
+      "tile--19_9.json",
+      "tile--21_5.json",
+      "tile--23_3.json",
+      "tile--25_4.json",
+      "tile--27_4.json",
+      "tile--28_9.json",
+      "tile--32_5.json",
+      "tile-31_7.json",
+      "tile-35_6.json"
+    ],
+    "points": [
+      1024,
+      1024,
+      1024,
+      1024,
+      1024,
+      637,
+      1024,
+      987,
+      1024,
+      1003,
+      1024,
+      1024
+    ],
+    "repetitions": 3,
+    "clustered": {
+      "cpu_s": 2.4611824769999995,
+      "elapsed_s": 2.56626691101701,
+      "raster_opens": {
+        "total": 117,
+        "dem": 81
+      },
+      "cache_bytes": 28800000
+    },
+    "interleaved": {
+      "cpu_s": 5.559028949999998,
+      "elapsed_s": 5.745901759015396,
+      "raster_opens": {
+        "total": 117,
+        "dem": 81
+      },
+      "cache_bytes": 28800000
+    },
+    "elevation_arrays_equal": true,
+    "elevation_sha256": {
+      "0": "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0",
+      "1": "c636ec2148b65d11f79f426482f8916e31ce930ab7f328c408f4fbd02757d54e",
+      "2": "47c1693b9eb0cdcc3cf13124fe6bc398a69295862afaa5c76451bd5c054f5d9a",
+      "3": "b869ec457a5091d01d9fafd0ef377c76c7a8ecb38ec6a1133191205f1cf3c6ff",
+      "4": "f0fcc339a96d7886903da320add06a0ca8756edb17d8dae225261934086e8f7d",
+      "5": "e1c09fd11c0e862c9822e84659cf8d0ecfbb1543169621f71f617d46b1ebe380",
+      "6": "c53e1bf21b0b0c097718bfbd1dbd776acafbfe6275f79399d4aac5bd66f17186",
+      "7": "a646e1d6b2ca1a0d7dce4ea335e21d56a2df7641a03f5e6db372659e47ee3eeb",
+      "8": "ec9be89330b455dca60e75aaaa247f1a5ee0eb888f40ad88b740092ae9e37ed0",
+      "9": "831305b8361115706555f1fff3c4d0cc9585b81e7d2f0b10bcecc33b44968bf2",
+      "10": "24b1afd33176765f85e626da4a4cc98f3470b55fa2333782caf47cb371225b91",
+      "11": "d282456d840d20eee5fa86ee1eb99d5341811b8b68dd9cfedd8e3bff53b07ae8"
+    },
+    "note": "Cached-terrain locality microbenchmark; not a complete search speed estimate."
+  },
+  "optimized": {
+    "actual_saved_tiles": [
+      "tile--14_7.json",
+      "tile--17_3.json",
+      "tile--18_6.json",
+      "tile--19_9.json",
+      "tile--21_5.json",
+      "tile--23_3.json",
+      "tile--25_4.json",
+      "tile--27_4.json",
+      "tile--28_9.json",
+      "tile--32_5.json",
+      "tile-31_7.json",
+      "tile-35_6.json"
+    ],
+    "points": [
+      1024,
+      1024,
+      1024,
+      1024,
+      1024,
+      637,
+      1024,
+      987,
+      1024,
+      1003,
+      1024,
+      1024
+    ],
+    "repetitions": 3,
+    "clustered": {
+      "cpu_s": 2.1033095700000004,
+      "elapsed_s": 2.146612634998746,
+      "raster_opens": {
+        "total": 62,
+        "dem": 26
+      },
+      "cache_bytes": 28800000
+    },
+    "interleaved": {
+      "cpu_s": 5.407419108999999,
+      "elapsed_s": 5.5337040849844925,
+      "raster_opens": {
+        "total": 114,
+        "dem": 78
+      },
+      "cache_bytes": 28800000
+    },
+    "elevation_arrays_equal": true,
+    "elevation_sha256": {
+      "0": "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0",
+      "1": "c636ec2148b65d11f79f426482f8916e31ce930ab7f328c408f4fbd02757d54e",
+      "2": "47c1693b9eb0cdcc3cf13124fe6bc398a69295862afaa5c76451bd5c054f5d9a",
+      "3": "b869ec457a5091d01d9fafd0ef377c76c7a8ecb38ec6a1133191205f1cf3c6ff",
+      "4": "f0fcc339a96d7886903da320add06a0ca8756edb17d8dae225261934086e8f7d",
+      "5": "e1c09fd11c0e862c9822e84659cf8d0ecfbb1543169621f71f617d46b1ebe380",
+      "6": "c53e1bf21b0b0c097718bfbd1dbd776acafbfe6275f79399d4aac5bd66f17186",
+      "7": "a646e1d6b2ca1a0d7dce4ea335e21d56a2df7641a03f5e6db372659e47ee3eeb",
+      "8": "ec9be89330b455dca60e75aaaa247f1a5ee0eb888f40ad88b740092ae9e37ed0",
+      "9": "831305b8361115706555f1fff3c4d0cc9585b81e7d2f0b10bcecc33b44968bf2",
+      "10": "24b1afd33176765f85e626da4a4cc98f3470b55fa2333782caf47cb371225b91",
+      "11": "d282456d840d20eee5fa86ee1eb99d5341811b8b68dd9cfedd8e3bff53b07ae8"
+    },
+    "note": "Cached-terrain locality microbenchmark; not a complete search speed estimate."
+  },
+  "limitation": "Terrain-only stress measurement; no nationwide or end-to-end speedup established."
+}

@@ -253,3 +253,28 @@ The scientific result was **`inconclusive / search_incomplete`**.
 Incomplete regional flight coverage and remaining search/model limitations still prevent an accepted location.
 The bounded replay verifies the complete application path, not nationwide completion or a speed ratio against the timed-out run.
 The CI measurement record preserves both HTTP outcomes and their separate source revisions.
+
+## DEM cache locality (2026-11-03)
+
+A terrain-only stress check sampled 12 actual saved coarse tiles from the public
+original-MP3 search, three times each. With the existing 32 MiB per-worker DEM
+cache, clustered calls took 2.46 CPU seconds and interleaved calls took 5.56 CPU
+seconds in the baseline run. Reusing cached raster metadata and decoded pixels
+reduced clustered raster opens from 81 to 26 and CPU time to 2.10 seconds;
+interleaved CPU time was 5.41 seconds with 78 opens. The twelve elevation arrays
+matched bit-for-bit across implementations. Each figure is one loaded-machine
+observation, and this is not a whole-search speed estimate. A separate exploratory
+128 MiB cache run did not materially improve the interleaved workload, so the
+32 MiB cap is unchanged. See [the recorded measurements](../benchmarks/results/dem-locality-20261103.json).
+
+To repeat on a real saved job and populated terrain cache:
+
+```bash
+OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python scripts/benchmark_dem_locality.py \
+  --job /path/to/job --cache /path/to/cache --output /path/to/result.json
+```
+
+Each search worker retains its own bounded cache; row-major tile scheduling does
+not guarantee that neighboring work reaches the same worker. Grouping work by
+geography remains a separate scheduling opportunity requiring a full search and
+load-balance comparison.
