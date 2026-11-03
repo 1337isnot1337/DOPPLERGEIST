@@ -1,0 +1,2212 @@
+{
+  "schema_version": 1,
+  "checkpoint": "2026-11-02",
+  "source_manifest_sha256": "67556140dc40922b6e569fb44f5fbffb31871f3256483d6c337f906e8bcf5a4d",
+  "datasets": {
+    "independent_synthetic": {
+      "source": "scripts/make_synthetic_cases.py; seed 78139; independent emission-domain renderer",
+      "license": "Repository source license; generated fixtures",
+      "clock": "Explicit synthetic epoch 1790000000; no filesystem inference",
+      "location_precision": "Exact simulated coordinate; not a real recording",
+      "files": [
+        {
+          "path": "data/synthetic/known-time-minute.json",
+          "bytes": 742,
+          "sha256": "4169ef4ee7b90070609f629d9a574c956d857a763504a66a2d2f21dcfe855610"
+        },
+        {
+          "path": "data/synthetic/recording.wav",
+          "bytes": 18880080,
+          "sha256": "372912c008ed61a49de647cd9a5cd1651d1ce952e4690a2fe6c1da0cd641140a"
+        },
+        {
+          "path": "data/synthetic/tracks.csv",
+          "bytes": 115039,
+          "sha256": "a406060a16e1622ad9ab89cb297ba7376f3939d177506a529b7fab27550f42af"
+        },
+        {
+          "path": "data/synthetic/truth.json",
+          "bytes": 362,
+          "sha256": "377bbc1306548f3258431b3247443113b894feb94731f7c9d5ac9b2b56f316ae"
+        },
+        {
+          "path": "data/synthetic/two-events.json",
+          "bytes": 1037,
+          "sha256": "f687b73f2befd342b7997a9e9910a02a4a63b6ad0e78b51ea1927dcca88ab188"
+        },
+        {
+          "path": "data/synthetic/types.csv",
+          "bytes": 44,
+          "sha256": "28f56b6e74f78b1b5e654a0ed9ce7f9375eee5fd168ac9f2eafd1e6e7bec5c3e"
+        }
+      ]
+    },
+    "public_reference": {
+      "source": "https://www.youtube.com/watch?v=UytYrhYLOKI",
+      "license": "Third-party platform media; no independent redistribution license established in source evidence",
+      "clock": "Stated time and video timeline unresolved; fitted start is not independent recording time",
+      "location_precision": "Rounded public platform coordinate, 4 decimal places; physical coordinate uncertainty unestablished",
+      "files": [
+        {
+          "path": "data/source/adsb-day-download.log",
+          "bytes": 262,
+          "sha256": "09cc026a7deb991a7b734412bfa96376ea6c2e5ad5da265be706e2e8fc5915a4"
+        },
+        {
+          "path": "data/source/adsb-day-ingestion.log",
+          "bytes": 10375,
+          "sha256": "b71256838bc966ac5d0ce1737138b94ce610dfc186c8af3b2ca91b0fc23bf9cb"
+        },
+        {
+          "path": "data/source/adsb-faint-alltypes.log",
+          "bytes": 2676,
+          "sha256": "e6af9260273ac85a900e510852818ed56e24f5649707615af8387201b520eb7b"
+        },
+        {
+          "path": "data/source/adsb-region-ingestion.log",
+          "bytes": 563,
+          "sha256": "0134e78ff2e263fc3ac0d02e1464d69cfc3076be1d720a2205747db044c38f5e"
+        },
+        {
+          "path": "data/source/adsblol-readme.txt",
+          "bytes": 2661,
+          "sha256": "17085e223a9a7d51971effdea23f791e4bfa4705baefaf7dad10b79f9b068b3e"
+        },
+        {
+          "path": "data/source/aircraft-type-codes.json",
+          "bytes": 14,
+          "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed"
+        },
+        {
+          "path": "data/source/data_source.png",
+          "bytes": 538764,
+          "sha256": "e10ebcfb6914cdc0b219b48521d872a27ca9b306217c6d0aefeb435433cc9f1b"
+        },
+        {
+          "path": "data/source/dependency-install.log",
+          "bytes": 8499,
+          "sha256": "611d0749760b2f5f31694658f490ed9772939ca58a18006fb9fa3fb041eb15a8"
+        },
+        {
+          "path": "data/source/event_ranges.png",
+          "bytes": 1399506,
+          "sha256": "c2910d76d6f0b32b4dab28a5d64598f76e8b7d10d68981a3d44f3c639049500c"
+        },
+        {
+          "path": "data/source/faint-measurement-frame.png",
+          "bytes": 2522268,
+          "sha256": "a448cd10f759309cef55b4f4a95d68352df7ee7c0411ef4997fedbfd379cbcf4"
+        },
+        {
+          "path": "data/source/icao_aircraft_types.js",
+          "bytes": 16340,
+          "sha256": "9406b57f0ff07d1f734c1975a3083861c9bd7728e8e02b8a5788942b6b85aa99"
+        },
+        {
+          "path": "data/source/icao_aircraft_types.json",
+          "bytes": 88638,
+          "sha256": "9bd3089351c1458545acf3b1d84f41b67aeb5586e3ec5597f818d39ec731a625"
+        },
+        {
+          "path": "data/source/icao_aircraft_types2.js",
+          "bytes": 60373,
+          "sha256": "cadd9de74a8797d4aca15f3e9b977b75b0d53cd9aeb25b5dd49a46198bc7ecdf"
+        },
+        {
+          "path": "data/source/independent-reimplementation-notes.md",
+          "bytes": 7788,
+          "sha256": "4c3c426803b464609ae1b3b01d21f182446e56641a732b5f4f17a839b43d4778"
+        },
+        {
+          "path": "data/source/known_time_result.png",
+          "bytes": 1924688,
+          "sha256": "57105e8f91d08be224733fb0b40fa9d6b147edaab58f633750a79ac66b4ede70"
+        },
+        {
+          "path": "data/source/preferred-releases.txt",
+          "bytes": 95463,
+          "sha256": "a98b34e893762715d6a1d9b66df761465d2f3991d2995bbd4806a752c95eca09"
+        },
+        {
+          "path": "data/source/project-install.log",
+          "bytes": 1465,
+          "sha256": "ee708ca83d4bb8b52c2557f18a3b0cde118866dd68dcd72e9707dfa87320ed30"
+        },
+        {
+          "path": "data/source/readsb-json.md",
+          "bytes": 22058,
+          "sha256": "abb581d94e5c12e52d45cd8f9096a250ee99cb4f84926e3217f5003c8d242b30"
+        },
+        {
+          "path": "data/source/real-feature-benchmark.log",
+          "bytes": 5491,
+          "sha256": "ee8460b243edb0a463294048f5960241c13aae4a7213297f71df906c7745a455"
+        },
+        {
+          "path": "data/source/reference-audio-download.log",
+          "bytes": 4914,
+          "sha256": "428a43e7ad70f22d2ff6d47331b4ec29bb8e3e69f789e18f6486a9a1a4f6933a"
+        },
+        {
+          "path": "data/source/reference-faint-alltypes-local.log",
+          "bytes": 2322,
+          "sha256": "3e7dc4d2b643986dfcba7053aa1fcec7c56869c28e1a0c848edf8ca3090e7b15"
+        },
+        {
+          "path": "data/source/reference-faint-local-run.log",
+          "bytes": 1128,
+          "sha256": "71a51153a17630feba37a8958f2c4f5926f1a56b79df02e5ddd29039a876d278"
+        },
+        {
+          "path": "data/source/reference-faint-recovered-clock.log",
+          "bytes": 1128,
+          "sha256": "71a51153a17630feba37a8958f2c4f5926f1a56b79df02e5ddd29039a876d278"
+        },
+        {
+          "path": "data/source/reference-local-fast.log",
+          "bytes": 1286,
+          "sha256": "3952fe8f272ee7ae5755ed1e2cd94f6c7ae3b02e51c1b996fa88d40d7a2093be"
+        },
+        {
+          "path": "data/source/reference-local-run.log",
+          "bytes": 1286,
+          "sha256": "7a9ea4477e144558fadc24e3bb7f011d401e7ff6381f32917c2576def0d1d693"
+        },
+        {
+          "path": "data/source/reference-measure-1.log",
+          "bytes": 291,
+          "sha256": "06c75e2ed0ffa10e95d9f23b78aa46de5cd20f91adf06b1c67ee7b138dda7e80"
+        },
+        {
+          "path": "data/source/reference-measure-2-clean.log",
+          "bytes": 304,
+          "sha256": "afd6dd07230e10575ed0329098be1213950bf2b4639177cbdb79bb5b813c5db8"
+        },
+        {
+          "path": "data/source/reference-measure-2.log",
+          "bytes": 304,
+          "sha256": "8dba1de1ee20f260c4391bb3dbbc4b85873708326c11f40eeb157d3bd0b609f7"
+        },
+        {
+          "path": "data/source/reference-overview.png",
+          "bytes": 2941552,
+          "sha256": "32bd0548a70ed804856f3e825d608034ce3bbeac54ebccbd4a34fcb25d6db9f0"
+        },
+        {
+          "path": "data/source/reference-recording.info.json",
+          "bytes": 888,
+          "sha256": "6791a2589a6240fe99daa848fc9913d875c13dc1ef4e808c91e728943b9cd7e6",
+          "original_bytes": 64576,
+          "original_sha256": "fa5b201b6e70b2659c9691d73264460fc31e9c3bcecb4f565c78a184408ffc3e",
+          "transformation": "descriptive_metadata_only"
+        },
+        {
+          "path": "data/source/reference-recording.wav",
+          "bytes": 691235466,
+          "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+        },
+        {
+          "path": "data/source/reproduce-faint-alltypes-local.json",
+          "bytes": 1056,
+          "sha256": "49256b88aa7e9bbbc9d8df714a101bc8814946098e2236eb1024061085890608"
+        },
+        {
+          "path": "data/source/reproduce-faint-local.json",
+          "bytes": 1103,
+          "sha256": "21aa263ea87909799e73e8d3ad72537e5d0c8924fc02a6a2fdf72ae75bad0ab2"
+        },
+        {
+          "path": "data/source/reproduce-faint-recovered-clock.json",
+          "bytes": 1103,
+          "sha256": "d4e534d7428e6ee818354432d59177ffd3ec97cf12b3e47e509612788aac3dc4"
+        },
+        {
+          "path": "data/source/reproduce-local.json",
+          "bytes": 1450,
+          "sha256": "d397fa1102d33af564f1414141a879d8394be7a1d04b941e3b9e88915646b541"
+        },
+        {
+          "path": "data/source/research-download.log",
+          "bytes": 742,
+          "sha256": "e59d83bc789dc521b6cd305e6b93dc4d5e8cb6c61156754d71a8948fa267bc0c"
+        },
+        {
+          "path": "data/source/silence-730.png",
+          "bytes": 558033,
+          "sha256": "18c5ef65d97202a92698550a742989211bab9f215a2b602129e95b3bf73b691d"
+        },
+        {
+          "path": "data/source/silence-732.png",
+          "bytes": 559487,
+          "sha256": "ae98c7a631982754abff81f599edcd01bba987af65b3bc0811eee93a25f8b64e"
+        },
+        {
+          "path": "data/source/silence-734.png",
+          "bytes": 553912,
+          "sha256": "8a7deb1202ec103334373e3ce46d623a070f82014cace4e0cde9a0197c731dc8"
+        },
+        {
+          "path": "data/source/silence_thresholds.png",
+          "bytes": 3103677,
+          "sha256": "0853c8d0008373408877a6d0580882573c8e9aba9a82672acba75a10f90c1b8f"
+        },
+        {
+          "path": "data/source/source-1441.png",
+          "bytes": 1163980,
+          "sha256": "e38043fbc514bcad66055401c0471f7f3791044091f586f9a20e7ee1c27a6ec8"
+        },
+        {
+          "path": "data/source/source-1444.png",
+          "bytes": 1152026,
+          "sha256": "b72749eab0243a9fe005c2904d02669665e36e4f7a50520af4b68a1bbdf80bcf"
+        },
+        {
+          "path": "data/source/source-1526.png",
+          "bytes": 1889259,
+          "sha256": "ccb440dee0800ae3570e005a4b7eb9b2d4ce64605cd8bd68e2246099b3cd2703"
+        },
+        {
+          "path": "data/source/source-1528.png",
+          "bytes": 1901209,
+          "sha256": "b2a400143182b0e27843230973331ef0634f0dda3619b1d5031ab6499bedd40c"
+        },
+        {
+          "path": "data/source/source_manifest.json",
+          "bytes": 373,
+          "sha256": "f225b1d456455f32e246a1fdb1a1649de0c5facf1d21046bf5bac3fd1abce113"
+        },
+        {
+          "path": "data/source/synthetic-minute-run.log",
+          "bytes": 1211,
+          "sha256": "8d0a894a9f0deb15ab55a90b0715e516f2789e235ac9e73ebcdfa674a7f66267"
+        },
+        {
+          "path": "data/source/synthetic-run.log",
+          "bytes": 1622,
+          "sha256": "e408946f57161585939feba777f5857d2b36ce3c3d2382efa5e4c5f6916236bc"
+        },
+        {
+          "path": "data/source/transcript.json",
+          "bytes": 66651,
+          "sha256": "3c331eb72e4cb9087a8744d332ddd53e2fdbafd070412321435663899d1eddda"
+        },
+        {
+          "path": "data/source/transcript.txt",
+          "bytes": 36381,
+          "sha256": "eca51167fb8bb454c31cf51235814274d736bc4e4027deb913b6ad72c9d3f4b3"
+        },
+        {
+          "path": "data/source/true_camera.png",
+          "bytes": 1951599,
+          "sha256": "254708d3aac1115407e92b785586656ed583a5a87b19c7d3bb4cda8c31ce1554"
+        },
+        {
+          "path": "data/source/type_lookup.png",
+          "bytes": 335772,
+          "sha256": "e9f501d87d205669121ab122054e61e93529f2596d832e015ff77eb24fd369a0"
+        },
+        {
+          "path": "data/source/video.en-orig.vtt",
+          "bytes": 280518,
+          "sha256": "108fa6fdd5dc1d7db7b6f717781b059f823275136723471abf2820775f28afb6"
+        },
+        {
+          "path": "data/source/video.en.vtt",
+          "bytes": 280518,
+          "sha256": "108fa6fdd5dc1d7db7b6f717781b059f823275136723471abf2820775f28afb6"
+        },
+        {
+          "path": "data/source/video.info.json",
+          "bytes": 2863,
+          "sha256": "0b77d2f062ca6519c7fe3dc8150b75d8b0da2c5460425d3363de743c1994b6a0",
+          "original_bytes": 609246,
+          "original_sha256": "d6ea6ddb4eb5beee6644302e4cdd7095ed11f8d2d3b51ec272bc9ef18ab85b70",
+          "transformation": "descriptive_metadata_only"
+        }
+      ]
+    },
+    "forty_passages": {
+      "source": "https://zenodo.org/records/23424278",
+      "license": "CC-BY-4.0; Praveen Pathak",
+      "clock": "Harmonic annotation UTC exists, but audio sample-zero UTC not established",
+      "location_precision": "No explicit recorder coordinate in collected evidence; location accuracy ineligible",
+      "files": [
+        {
+          "path": "data/research/zenodo-23424278/N4040-result.png",
+          "bytes": 154774,
+          "sha256": "133e5682d3148051896896a3bb6cdd3521f9c8dc5b058f055f79d822817627ff"
+        },
+        {
+          "path": "data/research/zenodo-23424278/Raw data_V_constant_H_constant.zip",
+          "bytes": 23096453,
+          "sha256": "9c4b5500561dc97d69ff06e79d4aea313d663afd2b77f1f0ceeefc8d9a19b4d0"
+        },
+        {
+          "path": "data/research/zenodo-23424278/Raw data_V_constant_H_varying.zip",
+          "bytes": 78526572,
+          "sha256": "2a1a7e2ca361fbf22c24ecb65cc5f17ee55732580f443d12f6c00a5e854b0dc8"
+        },
+        {
+          "path": "data/research/zenodo-23424278/Raw data_V_varying_H_constant.zip",
+          "bytes": 9914340,
+          "sha256": "436f70a9a55ba4bf5e4a5d3df2ea19c176e39262f408624f3a3c9a3cabb10c3a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/Raw data_V_varying_H_varying.zip",
+          "bytes": 20903858,
+          "sha256": "99b4296e5770cdefbfb6e5f5f0fd67ab9d25efd97fca7d0c3f8ced72c5fdc5c6"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N373DF_R06/N373DF-track-EGM96.kml",
+          "bytes": 29152,
+          "sha256": "b64c7f6733a526d4477a2111467553a83d88c89cd2451658e1ce355268cbdda7"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N373DF_R06/audio.wav",
+          "bytes": 4794126,
+          "sha256": "27629dee59acf4877ac3094f9b6db46189b1f6572bf2ceecff06360caaee49bd"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N373DF_R06/frequency_vs_time_used.csv",
+          "bytes": 3586,
+          "sha256": "766fc0835220215be110fef2c9deb2766d2d05a2f7cbff455bc1957d72d1aba7"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N373DF_R06/result_page.pdf",
+          "bytes": 324864,
+          "sha256": "ff5dcd23671233d4866f4c3732821ee5a60406ab270c8735f3010a052a9d8e2d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N394FX_R20/N394FX-track-EGM96.kml",
+          "bytes": 37434,
+          "sha256": "6eb7303601396f6580356a2c618eb1e46bb3a8dbbb5b1f3fa20c7a6045e150fa"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N394FX_R20/audio.wav",
+          "bytes": 5810604,
+          "sha256": "cfd03401b5f891020d76c12000a7552be0c549f65b8e67dc571f06258f0178ac"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N394FX_R20/frequency_vs_time_used.csv",
+          "bytes": 7777,
+          "sha256": "2babfca80845134872e0bde3edb9b631b49567a1f8682bb106b73cb5604303e1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N394FX_R20/result_page.pdf",
+          "bytes": 335287,
+          "sha256": "3c261c3fb81605d7f1756fa07bb02c35083598f1d44484c6437168f1b053e9c4"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N4040_R12/N4040-track-EGM96.kml",
+          "bytes": 70236,
+          "sha256": "a8bf32f88a98f7fbea1537e62dae354963d8e31d6496f1af4794f2a5628f3c9c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N4040_R12/audio.wav",
+          "bytes": 8824368,
+          "sha256": "f0a78abf7fb124e0688ce82d0eb6410475b840188209b5e07dc21519c8bfa3df"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N4040_R12/frequency_vs_time_used.csv",
+          "bytes": 14179,
+          "sha256": "3f312de3c069c0f6be6579dbeecc6ed0d897749c05f369a4346be766826e3059"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N4040_R12/result_page.pdf",
+          "bytes": 353503,
+          "sha256": "3a4cb6b0954ca27b498504c29cb42aff2f63c65703251db1c348e3b37a24d862"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N413AK_R49/N413AK-track-EGM96.kml",
+          "bytes": 373505,
+          "sha256": "5f835fa8526876f9f0e54e8e99a51741d75d4f585cb247751b26a1cbd9f803b2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N413AK_R49/audio.wav",
+          "bytes": 8949198,
+          "sha256": "c28412b7c3de34b006b40bf6fe005ba042145ee4d480547a0647091e531a5b3b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N413AK_R49/frequency_vs_time_used.csv",
+          "bytes": 12595,
+          "sha256": "1701efc414fa37063b4fba7fc1d6aaaa894d19408c1cae26de9ccba15b27dc6b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N413AK_R49/result_page.pdf",
+          "bytes": 350538,
+          "sha256": "20852d387050a42fb7a091c357d0b955f0b4677e172c285b454a45752788978a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N757AH_R41/N757AH-track-EGM96.kml",
+          "bytes": 52687,
+          "sha256": "0b841dbc8016625198ef3dbc29da7f6a18b434c6ba4f65cac1c4f89ffdd35d4b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N757AH_R41/audio.wav",
+          "bytes": 5418276,
+          "sha256": "e47eb35b076a9fbeb4983498221f6853d1d0cc9d8af7259a430557a100bed293"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N757AH_R41/frequency_vs_time_used.csv",
+          "bytes": 4081,
+          "sha256": "1c65aa354617ee2b7e26141b64427b006574e4397d28ec6287111a7675b243ac"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N757AH_R41/result_page.pdf",
+          "bytes": 327175,
+          "sha256": "269fc0f8d211427b05fd11495a0a27b50e6c18e5e1f3799d7658372f998f970d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N784MB_R04/N784MB-track-EGM96.kml",
+          "bytes": 61464,
+          "sha256": "411dde59aeb238bb74447a73899a4d68cab3c1df740477ec54fce86381a21dce"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N784MB_R04/audio.wav",
+          "bytes": 8182382,
+          "sha256": "c0366b111fbf82877bcaba53aa53a99602f9f5512513bc996e629aa04633d37e"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N784MB_R04/frequency_vs_time_used.csv",
+          "bytes": 13321,
+          "sha256": "3610fe509fed244d75c8720b55b396ba3f44258bec2a57c59fedd5afb6881638"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N784MB_R04/result_page.pdf",
+          "bytes": 349784,
+          "sha256": "d78bf4e8d2880cddc7924ca6c94253ccc91cae631b333c84f786533e47b5155d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N788BM_R03/N788BM-track-EGM96.kml",
+          "bytes": 107666,
+          "sha256": "1773f3bc696c9116f77cea39ea4a297eaef5c4953ab2b8c57c5925451f562b75"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N788BM_R03/audio.wav",
+          "bytes": 6530604,
+          "sha256": "8d23e3aa36ad439801fcbec6ef3f7f80647ed70d3b9ed11157539e72e771b38b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N788BM_R03/frequency_vs_time_used.csv",
+          "bytes": 11275,
+          "sha256": "f12e56c8105d43c1c830edc781913736870e0f10c0c32cefdce0695299806f14"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N788BM_R03/result_page.pdf",
+          "bytes": 346549,
+          "sha256": "101fab48cb5a05bd7b9e81aa64c9b1e353a745a6ef33c48fb8bee4b91cae90fd"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N916KT_R22/N916KT-track-EGM96.kml",
+          "bytes": 146011,
+          "sha256": "df53ae42bf54d62ee4d5292c9307ab6a3d56754d0228db6a4b663dd71408e115"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N916KT_R22/audio.wav",
+          "bytes": 7433400,
+          "sha256": "81da035ff6af575fcaded1a4dfc3162bb6377a033c0d840af490eba47a879998"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N916KT_R22/frequency_vs_time_used.csv",
+          "bytes": 10219,
+          "sha256": "4f2d64a4a7f6c0c8f7f65c3e5672686c255d9d9d73c66ba8637973ba2fe062ff"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_constant/N916KT_R22/result_page.pdf",
+          "bytes": 343298,
+          "sha256": "242f3990ac7d352733896eccb7aa73b0f0c7bd71308b519253f0eedfd973d900"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N172EL_R35/N172EL-track-EGM96.kml",
+          "bytes": 434344,
+          "sha256": "2f404da59c5db41e03144fc13d8eae49db5344d4035889947f7b96eb70216484"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N172EL_R35/audio.wav",
+          "bytes": 12711942,
+          "sha256": "ec5ff2e4d78d68521c7f65fcf030c7b49131c18cb3c018900e61cf06382bcdf7"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N172EL_R35/frequency_vs_time_used.csv",
+          "bytes": 19228,
+          "sha256": "827e09badfb168e1ade520e216ca972ecbcfb60439e9974dd17d73b6ae81f230"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N172EL_R35/result_page.pdf",
+          "bytes": 374788,
+          "sha256": "708595261f705ced7f607449134c3ecf8a9bb948154ba424fcbe7a3e0ae7540b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N248LF_R14/N248LF-track-EGM96.kml",
+          "bytes": 59124,
+          "sha256": "8f3d103aa831aeafcf5c0c855b18e6d97ee04320c11a186c5dd7a73345f9238e"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N248LF_R14/audio.wav",
+          "bytes": 14584402,
+          "sha256": "e71592a17f8b1d82746f3915af9810066afefb54810443efe99fd0e081606319"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N248LF_R14/frequency_vs_time_used.csv",
+          "bytes": 15730,
+          "sha256": "dfe4398ffec398d04876d8305efdb0655ed218967d2a1cb304fb10b57b0b5022"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N248LF_R14/result_page.pdf",
+          "bytes": 358399,
+          "sha256": "3d7fe7befa535315abfb89283b076d235bc2a3555755f3d5b996ab033d5e7329"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N310MG_R23/N310MG-track-EGM96.kml",
+          "bytes": 61037,
+          "sha256": "8f00144d2442ef8b08d6118b1fc3b73a3a226efddea5d1e9f3397cf6eda3a183"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N310MG_R23/audio.wav",
+          "bytes": 5846270,
+          "sha256": "b04a46541d3adf35419faf1e15ca5f02cfd93b4f99f2c3d5cd25dce5531066c8"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N310MG_R23/frequency_vs_time_used.csv",
+          "bytes": 8074,
+          "sha256": "8518bfb9d5c81c7d966003d29676e9a27c9920da4e449ad6dff302f65fae7bca"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N310MG_R23/result_page.pdf",
+          "bytes": 339280,
+          "sha256": "ed07a4cd1279c41f250e8f16d650dbb293ec1e40ccc430fce8aef842d0e0fc20"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N4004R_R19/N4004R-track-EGM96.kml",
+          "bytes": 84305,
+          "sha256": "1ac4da572b97ee358750afada5dc49d3efe8fe5c79e3e3222935ed0e237f6733"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N4004R_R19/audio.wav",
+          "bytes": 9751680,
+          "sha256": "a5e4bad00fc1382824218e92f0da9ffb97223e5dfcccd35cf22bf0e354b72c8f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N4004R_R19/frequency_vs_time_used.csv",
+          "bytes": 11902,
+          "sha256": "c63f65b641ce7f32c6613b154c8b506b18d682ac9c413f9f34e3d0c4565ef424"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N4004R_R19/result_page.pdf",
+          "bytes": 350384,
+          "sha256": "f33936c78f354be6efb9aa17cce354d06c9bcfedc2cf791552f365be5015475b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R05/N413AK-track-EGM96.kml",
+          "bytes": 263459,
+          "sha256": "aa7cf7790f29d9bf3a92028c4869e13ea9341e2be70e577d57626584593542c9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R05/audio.wav",
+          "bytes": 13764090,
+          "sha256": "7202a8a4332765074c85af28ade258f41170f62e5356c4bf866f5775d25d1429"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R05/frequency_vs_time_used.csv",
+          "bytes": 20086,
+          "sha256": "5ab29cd8571bb29fc1a70c75d12441a21e863e3ca74f2342c20a1c6682e9977a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R05/result_page.pdf",
+          "bytes": 371143,
+          "sha256": "84e421425e7c2baf9c602842c97f48c5d1be99535d3e2f1a958bdd0f4a457dd1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R16/N413AK-track-EGM96_2.kml",
+          "bytes": 40465,
+          "sha256": "67055914208f1e915b8ce0d26ed88ba8a8b204712c1a084b9ec6a546f81db77c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R16/audio.wav",
+          "bytes": 14116400,
+          "sha256": "fe241d8839128daf85de79606f0663333c6c32a40d50ab5043f32d36586440ac"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R16/frequency_vs_time_used.csv",
+          "bytes": 13847,
+          "sha256": "73df39d0937d72be9b2333a663039d59ac501f9a3f39a6096656f7165a3cafbe"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N413AK_R16/result_page.pdf",
+          "bytes": 358630,
+          "sha256": "da3841e2003557ba71b8a70257677aea8f0f1ba6ef8ac8c7f95781c70e37e64c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N500MG_R17/N500MG-track-EGM96.kml",
+          "bytes": 60487,
+          "sha256": "95b3fdabc47b918d62def8f3d59a265b70975d49bc1676164984579c92127091"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N500MG_R17/audio.wav",
+          "bytes": 7104048,
+          "sha256": "02d2acc40e897b4b3a83c05f2ec89af4c10f0ccb17a1ea0a8fa7f1530e72eb39"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N500MG_R17/frequency_vs_time_used.csv",
+          "bytes": 11440,
+          "sha256": "0484aef0853ca64984c17735f06059a16b85c55d89548b0be2361ab01033a080"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N500MG_R17/result_page.pdf",
+          "bytes": 345236,
+          "sha256": "923acd1c83195a9cc41516dafe1a3af21cfef838a5fc18150f126cf3f1530f42"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N563FX_R21/N563FX-track-EGM96.kml",
+          "bytes": 116899,
+          "sha256": "af3373fe1b03f04b0b23ae10ff36224ed5bfdf6d78e1901a7df64a1ae3d9dc8c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N563FX_R21/audio.wav",
+          "bytes": 12444452,
+          "sha256": "427a7575ec97a84feb8fe81f7fb8b1cff5a122e79223fba11d5327c0ba9e1179"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N563FX_R21/frequency_vs_time_used.csv",
+          "bytes": 21459,
+          "sha256": "ee79d4883a42f9b9871169e6aa155bd0584235cc9e0feb7f73f65faf4f76a6d3"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N563FX_R21/result_page.pdf",
+          "bytes": 376060,
+          "sha256": "2fc1e2eac37e1e09049f0c86377158f16ec23ad9270ed3c895812fefe4bd2966"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N61NG_R37/N61NG-track-EGM96.kml",
+          "bytes": 108369,
+          "sha256": "45657f2a173cf7612acee7a31f5e19070ace0a266e609380e3d09eba7c78e9ad"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N61NG_R37/audio.wav",
+          "bytes": 7480880,
+          "sha256": "8edaf3c4a5a6f4370b979842bc38b3755a3930f8befa017795991d3d8224a657"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N61NG_R37/frequency_vs_time_used.csv",
+          "bytes": 12067,
+          "sha256": "598c7abacaadb33dc888866e7849464737857b23607f2ff7c04b8c936260eef1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N61NG_R37/result_page.pdf",
+          "bytes": 352387,
+          "sha256": "c2c46ce8847a76c5ead07c66f634e2080124e0373d9479a337425388d228cccc"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N621KS_R18/N621KS-track-EGM96.kml",
+          "bytes": 38512,
+          "sha256": "280d34ed707ca44ac5b4cddb4f930471010801b87c8f7091502a04471592687f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N621KS_R18/audio.wav",
+          "bytes": 6202924,
+          "sha256": "2002081930df3f5b6e6ea9a6e6ce97fe65a712c9e02fe720f12f2f45e0602e81"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N621KS_R18/frequency_vs_time_used.csv",
+          "bytes": 8899,
+          "sha256": "69f5f9f9ebd6a571f6150afcb7d8165c37876855b58ea8dfc076344916db2d8f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N621KS_R18/result_page.pdf",
+          "bytes": 340364,
+          "sha256": "db403800af55dfb84b211311b848d032b30c4d39f37ae2d12cb45852ee705768"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N67WL_R59/N67WL-track-EGM96.kml",
+          "bytes": 58857,
+          "sha256": "bc4ec474dca0a0653d89e1a174585105d431839057e1477746d5433e129a6ba5"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N67WL_R59/audio.wav",
+          "bytes": 17419838,
+          "sha256": "46b7905f230dc5cc8dc0e9485a88ab2b3b544737d62c20b96b34ea2d460b84c9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N67WL_R59/frequency_vs_time_used.csv",
+          "bytes": 16027,
+          "sha256": "a77f04b29084180ec3ad8e95e0cfaba1f08f16dda16228ced11487773d233f2d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N67WL_R59/result_page.pdf",
+          "bytes": 363127,
+          "sha256": "79ce09d4137cc4219cae84f63a549ce676fac76737aad580825f1b2499c1395a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N759NC_R46/N759NC-track-EGM96.kml",
+          "bytes": 72090,
+          "sha256": "20f1271b928f8bc6fa6d0309dc2dbb8033da3db294bec26b2de3e931140c5b94"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N759NC_R46/audio.wav",
+          "bytes": 9145358,
+          "sha256": "520153c1e15d1ebf75cb713ca3fb158ecd73594a5dd8a6490b1baee4e2a98036"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N759NC_R46/frequency_vs_time_used.csv",
+          "bytes": 14542,
+          "sha256": "e6b48ca00636c7e437ec5d481176d2974c808273f4305773084dda55d1d73c27"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N759NC_R46/result_page.pdf",
+          "bytes": 356391,
+          "sha256": "c09216b2594e3cc23e1d53e196a2cd08ae1fb0a8bca9e35cc060a7a8c2795d95"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N795MM_R13/N795MM-track-EGM96.kml",
+          "bytes": 76125,
+          "sha256": "2af0f1a56823e5a7dfdefab1352b576d20ca87ed8fdb8fa31dba38911025a2e5"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N795MM_R13/audio.wav",
+          "bytes": 7480876,
+          "sha256": "9a800515b85817e09b418ff125a3d71723fd9922b978a317017bf5098ed77c0b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N795MM_R13/frequency_vs_time_used.csv",
+          "bytes": 10120,
+          "sha256": "b18ef330481920577cd1cadb6645f985f845d2efc9dbf94eee1e54bd1d0d1666"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N795MM_R13/result_page.pdf",
+          "bytes": 341572,
+          "sha256": "0cdced4d1c3279b3c44567b5a3bbdcdffbb95d69ef93dea60b6c3caf6c85f02f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7PG_R60/N7PG-track-EGM96.kml",
+          "bytes": 244337,
+          "sha256": "b58b5c2bfb9c5a5c43b944f02d575fed06f74a914f40af673281b02ea57122ad"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7PG_R60/audio.wav",
+          "bytes": 10803824,
+          "sha256": "9164e2702d0e24b9620f4511a1ee21758a7d501cb00867dd04089ca0b846e30f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7PG_R60/frequency_vs_time_used.csv",
+          "bytes": 18271,
+          "sha256": "14070e8940285be4f5cb08eaad817ddc3155dcef4b88117d4bef9d2bfc3ceecc"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7PG_R60/result_page.pdf",
+          "bytes": 368939,
+          "sha256": "3e42506eca8d2bb757cc2647750f62dcdfa821f6d866feb0b579efca3bbb1817"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7RR_R30/N7RR-track-EGM96.kml",
+          "bytes": 47484,
+          "sha256": "7a672697ddd15e12d876725533758e1509d187a29e47e7999fe1dbe8869934ad"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7RR_R30/audio.wav",
+          "bytes": 10464998,
+          "sha256": "7b34ab4933a7c4193f9e668d42fa4d7cb94a0b754b25eb84ebddbca227419b7a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7RR_R30/frequency_vs_time_used.csv",
+          "bytes": 16984,
+          "sha256": "e7e41079e14ddd7e51d12f260397e53220d5895ab2a6b37074a7c81252997e5d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N7RR_R30/result_page.pdf",
+          "bytes": 361385,
+          "sha256": "b36c0195a5c1d9e4f87c2a53ab3e959acef3f45676c255e0cd69a2b854a8e8a7"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N8085W_R27/N8085W-track-EGM96.kml",
+          "bytes": 31302,
+          "sha256": "923fcc28ccc89b153b434d21824543485806ca9406c6c35d079907b88b73576c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N8085W_R27/audio.wav",
+          "bytes": 7112404,
+          "sha256": "a06237f42d5789ff0b868e636b45f86974f61c4318f6ddb01865129245111ee5"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N8085W_R27/frequency_vs_time_used.csv",
+          "bytes": 9130,
+          "sha256": "79fe631bd40a69ad0b119b3ea65ae685b6bd2c65227c6504809f7dd6d0d6a8a1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N8085W_R27/result_page.pdf",
+          "bytes": 341430,
+          "sha256": "eb43197760132c7b4299a076e0554ef859d913dba605baa73a97d3b61fa26b75"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N86LP_R01/N86LP-track-EGM96.kml",
+          "bytes": 67412,
+          "sha256": "06f1c92a04715df98ec35a181c17e84fca5784f0c0300e0357fc237b8929f6b9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N86LP_R01/audio.wav",
+          "bytes": 10987054,
+          "sha256": "a19c78d9d147a6e8b4b2c495bd344787363875ea411e3af21b59490517832495"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N86LP_R01/frequency_vs_time_used.csv",
+          "bytes": 17545,
+          "sha256": "63b8223ce1a95f1d90849c2faf8943b1585668c3cd8fad43fdac0ab62f7c7048"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N86LP_R01/result_page.pdf",
+          "bytes": 362791,
+          "sha256": "aa898e5532a05c3b1033da7ad65ff3e8a273c6ce1a5395f537ce2e8ede5ccdb5"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N913TC_R15/N913TC-track-EGM96.kml",
+          "bytes": 33530,
+          "sha256": "6183509f0fc8e884cd5bd0481823a316e69ff71fbf5641925d7eb9a645b45d54"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N913TC_R15/audio.wav",
+          "bytes": 9448522,
+          "sha256": "676e3cb4e34941760a1f3df031d551e0aa7e1d69d4e9085a05a91e2029a87c19"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N913TC_R15/frequency_vs_time_used.csv",
+          "bytes": 10648,
+          "sha256": "a7db5f5f29599c5968b87be270bd3eb1d0fce146045c8877e26e8b32313496de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N913TC_R15/result_page.pdf",
+          "bytes": 347326,
+          "sha256": "144ae54b4b91c257f8a80ccbcdb03227da63bdbd29bdc3516273ff84c3caa916"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N9393T_R02/N9393T-track-EGM96.kml",
+          "bytes": 64456,
+          "sha256": "f2144b61154aac62120e5c531de5133a68c341434a90f92cd92308b42b1d16e9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N9393T_R02/audio.wav",
+          "bytes": 13198892,
+          "sha256": "7834bad6d620df2143b396325fd861d6581d5ad25dd9bcfa997eb953d13a65f5"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N9393T_R02/frequency_vs_time_used.csv",
+          "bytes": 24706,
+          "sha256": "b130c56d04b790d38538c276d626ea98cbf5c5711fdd67db0413d2cbce0d2a4b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N9393T_R02/result_page.pdf",
+          "bytes": 381846,
+          "sha256": "64e263df7e16ba295ae5f1561d2bbcfbe2206502253b17374c2bd7943ad76cba"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N958JX_R50/N958JX-track-EGM96.kml",
+          "bytes": 50477,
+          "sha256": "5f980bb38674baaeb3d8340e1b1fd513bacfedef048f1d0e41f934fea3ef9e67"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N958JX_R50/audio.wav",
+          "bytes": 4544468,
+          "sha256": "3cfa0ca3a58db714074487004ca3b7505ab9ee4e4882b7efbfdf62f8d7f1a426"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N958JX_R50/frequency_vs_time_used.csv",
+          "bytes": 4312,
+          "sha256": "6bcd151abeb8f9c8978bee8d5fbc00df951d7674c417a5d229989b529a72d8fd"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_constant_H_varying/N958JX_R50/result_page.pdf",
+          "bytes": 328376,
+          "sha256": "9b0d81a46cbe9573dd17cc43f0fd02792f6cb9a8e2f0ab796dd5fc1d09c4c50f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N456CS_R38/N456CS-track-EGM96.kml",
+          "bytes": 50730,
+          "sha256": "c42d4710e28905283859e4f80052a471072a6088782d1a4c44af798ac0edd607"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N456CS_R38/audio.wav",
+          "bytes": 11445804,
+          "sha256": "032ff198c6c85997758a2893641d7a87cb21d9f4bb847dd261cca8fd67df2ae8"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N456CS_R38/frequency_vs_time_used.csv",
+          "bytes": 17875,
+          "sha256": "9a600e3717e1562d8d157a8ef0c981088bbdb4c1bfa9846fec939bf162d0b8d1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N456CS_R38/result_page.pdf",
+          "bytes": 368158,
+          "sha256": "e779a740e041364e313d904850b047bd24267d2fe61a924520997798e7d65d69"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N60RS_R11/N60RS-track-EGM96.kml",
+          "bytes": 35329,
+          "sha256": "ad607b57200840df386cc64e6146d59016b03e57d06ca5bfb8888f24dec7b9a0"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N60RS_R11/audio.wav",
+          "bytes": 8840748,
+          "sha256": "d2e839c8a95f53824cabb294748aaf63f5714a2add6a414c4f8cdd4c4db9e293"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N60RS_R11/frequency_vs_time_used.csv",
+          "bytes": 14905,
+          "sha256": "e1f534716076fbe75c6b45ceb059ddcbb3a5fef79769c2b0c9c0f501da322208"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N60RS_R11/result_page.pdf",
+          "bytes": 355545,
+          "sha256": "78c7ebf8af01294bbf197181333b681682409624eb156969963d2cd2c6b873ef"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N748SP_R36/N748SP-track-EGM96.kml",
+          "bytes": 94653,
+          "sha256": "eabe8dbb94219f430e763a6bbf695d38ad3f010e360886e13e16d4db73f6c9f8"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N748SP_R36/audio.wav",
+          "bytes": 6563374,
+          "sha256": "0fdf8b328b9e02ff83144b634f5a6ced115cac4672b89557e1aae3151ab7612d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N748SP_R36/frequency_vs_time_used.csv",
+          "bytes": 9757,
+          "sha256": "4c7eeaf4f5c566c5eea3a532e29f7b505c2e6a253445777ad09b929045ecbaec"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N748SP_R36/result_page.pdf",
+          "bytes": 345869,
+          "sha256": "dc83dff2eb81d58e5501deff5bccf2bb2332d3baefbaf5611621668583000167"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N814SR_R07/N814SR-track-EGM96.kml",
+          "bytes": 41686,
+          "sha256": "0af861b44578d890cdc191972d02b3903e75e314c796d6bcd3846494166905df"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N814SR_R07/audio.wav",
+          "bytes": 6167260,
+          "sha256": "c732dff1b19142894931fcd87febdb70a18daa472c316e5c6f36ac6dfe3debc1"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N814SR_R07/frequency_vs_time_used.csv",
+          "bytes": 4873,
+          "sha256": "a0c7cb3198b85bbd28633a6359af177bc598b65ab53416de4bf0c9a63aa8dd73"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_constant/N814SR_R07/result_page.pdf",
+          "bytes": 330495,
+          "sha256": "06a7cac25fd495ecf0ff9b4ee3d8eea58968640b1c4ce464642dd2394dec5218"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N1387U_R44/N1387U-track-EGM96.kml",
+          "bytes": 102963,
+          "sha256": "f4bb93007228897d09f7e3912725e6f27102f818b47c6f77dd269e7eb1e5664a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N1387U_R44/audio.wav",
+          "bytes": 4010382,
+          "sha256": "e9e57696eb1d1a80eaf4688f4bce068398afcf6f9bb8732d72dba8833837255e"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N1387U_R44/frequency_vs_time_used.csv",
+          "bytes": 11836,
+          "sha256": "e35e4aae713f948ff28a0c0bd1682f61b45f81a3e31dfa692b8e4fe0f69115e9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N1387U_R44/result_page.pdf",
+          "bytes": 349204,
+          "sha256": "ad6c4d641464dba70ac63b960224a25c407c41b198b82c340092cc8b190d45de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N231DT_R57/N231DT-track-EGM96.kml",
+          "bytes": 25129,
+          "sha256": "a66e711bd5cbefd69e869dcbd432240be64949b8497fbcdfd2b62e97cfde289f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N231DT_R57/audio.wav",
+          "bytes": 7683062,
+          "sha256": "56aef7ec190822a03f78764d5d91d22c1f8181e4b672a453c04c899d2cb0a0c9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N231DT_R57/frequency_vs_time_used.csv",
+          "bytes": 10648,
+          "sha256": "2bd14addf684538ba88d96f573530d7bb3482a592c09a45bda6a3c8b902ef119"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N231DT_R57/result_page.pdf",
+          "bytes": 345414,
+          "sha256": "8ef83b8e69765f0104302d0aee6c70e6ffd4146e48aa7fa23a6413e275e84075"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N2933A_R08/N2933A-track-EGM96.kml",
+          "bytes": 81039,
+          "sha256": "81d44bacad89e002792d1fc9dd042cab0274a3600aea2b046444be524abcfc38"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N2933A_R08/audio.wav",
+          "bytes": 4695598,
+          "sha256": "bea85232822bb0702e9af8c825934aa27cf04bbb0665db8e15ceae87f552e690"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N2933A_R08/frequency_vs_time_used.csv",
+          "bytes": 3553,
+          "sha256": "daf74dff1bc81c9cba89f75427da171504884d1d627f22e097795043dde23a92"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N2933A_R08/result_page.pdf",
+          "bytes": 326171,
+          "sha256": "d890dfb07a1c070dddc74da1aafed928c421dd407dfd111a4400a66aa25d6dd2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N3012N_R40/N3012N-track-EGM96.kml",
+          "bytes": 31017,
+          "sha256": "b4b07f4931a624ca622c75238b596eaf47f37a037fbf2d559ef40c63c21d9b48"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N3012N_R40/audio.wav",
+          "bytes": 7665228,
+          "sha256": "70dc6c4edc47d56c85c8d24ae6ac34a640bfaa5bbf23a908f2dd2244d7534e06"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N3012N_R40/frequency_vs_time_used.csv",
+          "bytes": 8998,
+          "sha256": "edafc81e1dd30200e6f30ea5c30b60f6b6303ebd21723f2d9f325e7425ad853c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N3012N_R40/result_page.pdf",
+          "bytes": 346106,
+          "sha256": "79d932f2f567f80fb51e3769e0a7f005b18381569bb12eeaf92b920952c13b22"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R45/N451EE-track-EGM96.kml",
+          "bytes": 71465,
+          "sha256": "cfebf8a469c7e9dd914422df06431a054e301b74b655d85224658a391998ef0a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R45/audio.wav",
+          "bytes": 3902222,
+          "sha256": "e9ba69a70a8a2c2eb79c06094e9c250c7490af738871ed03b52ba1bd809e94a2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R45/frequency_vs_time_used.csv",
+          "bytes": 6094,
+          "sha256": "0cc576f11def5609c6d323208294be111bcd984cadb50fddc3d813de1ba26ab3"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R45/result_page.pdf",
+          "bytes": 337623,
+          "sha256": "2a59fba4a612c9a7212fb54c5020d871a94ffa2919d32cbe429bbbce8c2d35c2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R51/N451EE-track-EGM96.kml",
+          "bytes": 20682,
+          "sha256": "f3876072e7730b62b0a418f55169aa2e03e6f3613755b562bd85d4845c9e3099"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R51/audio.wav",
+          "bytes": 4437466,
+          "sha256": "10b83e163e84784d5d9952857160fb17d30dc6a1687c6fa159c0d54c3078323d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R51/frequency_vs_time_used.csv",
+          "bytes": 5632,
+          "sha256": "30c4f0f9dead5972b9ed943795e498c75c6a988770b8b05f3a2c55067e18aa1c"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N451EE_R51/result_page.pdf",
+          "bytes": 328670,
+          "sha256": "86b5b5e3c62a531d3ef526902bab4a843ee65675872c0c0a05fdf5b44077d937"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N662EZ_R48/N662EZ-track-EGM96.kml",
+          "bytes": 58343,
+          "sha256": "869b802a116112d56467ab09f987943327172f1e61c5f7afcdf455770451fa7a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N662EZ_R48/audio.wav",
+          "bytes": 10126172,
+          "sha256": "2f374f6244cfe5dad8a200b427e392a4c64540d4cb0bc4a621e34aac229c3ea4"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N662EZ_R48/frequency_vs_time_used.csv",
+          "bytes": 11242,
+          "sha256": "fc32dede5941f6daa7aca1b5d6c455806bad9d40a8c215661e277a47e3282472"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N662EZ_R48/result_page.pdf",
+          "bytes": 351262,
+          "sha256": "bb2ee54c29cb36e4eabc4cc0e2477cc4836d6df6d357b57c7d272429b175c207"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N9658K_R24/N9658K-track-EGM96.kml",
+          "bytes": 127946,
+          "sha256": "b7cef59252e12e8191962439cedbb1deb082280f018cedcac3317b2fb192c152"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N9658K_R24/audio.wav",
+          "bytes": 10019176,
+          "sha256": "87ccca3294b374e3a8c4ae7362c5d67c3cfa12bdf4ddaa576a06d07ff60be8c2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N9658K_R24/frequency_vs_time_used.csv",
+          "bytes": 7183,
+          "sha256": "934548bc51f114617ded02d317771ee798d0b14708fc146ccae1959f912356ee"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/V_varying_H_varying/N9658K_R24/result_page.pdf",
+          "bytes": 339405,
+          "sha256": "c8721a97bf7bd455c4f90a850b90b49b47117a31fefc1439a3e06fdcc6be4295"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/._V_constant_H_constant",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/._V_constant_H_varying",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/._V_varying_H_constant",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/._V_varying_H_varying",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N373DF_R06",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N394FX_R20",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N4040_R12",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N413AK_R49",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N757AH_R41",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N784MB_R04",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N788BM_R03",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/._N916KT_R22",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N373DF_R06/._N373DF-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "e6a6f6a2656147af2293780885009ae2abd9a25dd649038d2f10ed83224f008d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N373DF_R06/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N373DF_R06/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N373DF_R06/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N394FX_R20/._N394FX-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "e89c1bb3af566958b6f5c3f75c1ce90874c1c21b448d11d93298c00cfa4c93dc"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N394FX_R20/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N394FX_R20/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N394FX_R20/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N4040_R12/._N4040-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "64e483b453c4dff0b4c0791564ac948c3a8efb426cf71b5463d1ca7fa80a6d0d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N4040_R12/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N4040_R12/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N4040_R12/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N413AK_R49/._N413AK-track-EGM96.kml",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N413AK_R49/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N413AK_R49/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N413AK_R49/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N757AH_R41/._N757AH-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "3a2b0522cd29b2b2053fe63f7fd83baa9a15b31b230a760b17af6efd4439ccf3"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N757AH_R41/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N757AH_R41/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N757AH_R41/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N784MB_R04/._N784MB-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "02842607a45f487c9267269abe17cf326e398ab19f8275ff4b635275623df286"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N784MB_R04/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N784MB_R04/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N784MB_R04/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N788BM_R03/._N788BM-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "915961548a83b771167a4a1c053cddcd72c70a537ea79b7374bc8b435ff85c78"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N788BM_R03/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N788BM_R03/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N788BM_R03/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N916KT_R22/._N916KT-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "adde91558eb851f898015214b6c6049baeca9d378a7ce6e6ebcf8bb6f01f88cc"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N916KT_R22/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N916KT_R22/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_constant/N916KT_R22/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N172EL_R35",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N248LF_R14",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N310MG_R23",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N4004R_R19",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N413AK_R05",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N413AK_R16",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N500MG_R17",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N563FX_R21",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N61NG_R37",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N621KS_R18",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N67WL_R59",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N759NC_R46",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N795MM_R13",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N7PG_R60",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N7RR_R30",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N8085W_R27",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N86LP_R01",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N913TC_R15",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N9393T_R02",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/._N958JX_R50",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N172EL_R35/._N172EL-track-EGM96.kml",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N172EL_R35/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N172EL_R35/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N172EL_R35/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N248LF_R14/._N248LF-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "bf2ebb070284fe05772645c92f6043b122e5f4d3dd12456f44f155249c71901d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N248LF_R14/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N248LF_R14/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N248LF_R14/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N310MG_R23/._N310MG-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "d67c96b2b49fe33e73a5cf48d39e2df8593a61a5c1c8f06ed49fa8f5c147ec14"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N310MG_R23/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N310MG_R23/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N310MG_R23/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N4004R_R19/._N4004R-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "9cc8103e6f1b478cbf09f094f561f8de800a300bd3c3589b2aaf20cd0e8ba3c9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N4004R_R19/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N4004R_R19/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N4004R_R19/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R05/._N413AK-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "52b53358c7cd2e510a97abb18772bf18c46cb2a879121450f20695081355b5c2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R05/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R05/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R05/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R16/._N413AK-track-EGM96_2.kml",
+          "bytes": 249,
+          "sha256": "fe6fc9d6e46047727ae84cf07394cdf865014573b1322603b4b38c793876f9fb"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R16/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R16/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N413AK_R16/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N500MG_R17/._N500MG-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "833ae846b05c4ac0553420f9ec41d0416d2e7a09085958baeb66fb09ed9603ea"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N500MG_R17/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N500MG_R17/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N500MG_R17/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N563FX_R21/._N563FX-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "a6736f5ec1df1cd941072216f56125dd633a9d1b71d6b62a3da60a347273afc2"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N563FX_R21/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N563FX_R21/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N563FX_R21/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N61NG_R37/._N61NG-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "2e9fce9cb0f98b18b43815fb11c7b79b32d6f56f0a2734e857a77e6a8cddfd4d"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N61NG_R37/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N61NG_R37/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N61NG_R37/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N621KS_R18/._N621KS-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "497dd1a9664e40ea8a9c42c0f0aee475737158e3c4cf55a9708b33f8badc7647"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N621KS_R18/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N621KS_R18/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N621KS_R18/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N67WL_R59/._N67WL-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "edd2d9d6d04ef5155e04d14c73648ef6cb733fc672c4500b6944d94f45fd042f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N67WL_R59/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N67WL_R59/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N67WL_R59/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N759NC_R46/._N759NC-track-EGM96.kml",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N759NC_R46/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N759NC_R46/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N759NC_R46/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N795MM_R13/._N795MM-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "20f16b1d2ba3a4c67e8a1edd1e4b21e9831ec290356a51106ae5996e7e938f57"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N795MM_R13/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N795MM_R13/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N795MM_R13/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7PG_R60/._N7PG-track-EGM96.kml",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7PG_R60/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7PG_R60/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7PG_R60/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7RR_R30/._N7RR-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "b1f25d4ca50be494bebd2351cca431b99f4fa0447a982748dc62b1583167ba0b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7RR_R30/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7RR_R30/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N7RR_R30/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N8085W_R27/._N8085W-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "b35a13183ca6eaefb37991395b6690f5c1dda68539d75f3289983b31aafc2a36"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N8085W_R27/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N8085W_R27/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N8085W_R27/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N86LP_R01/._N86LP-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "56582991f249352826827f8dd2948a270f4989d50e253fb6d6ef1476738198d4"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N86LP_R01/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N86LP_R01/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N86LP_R01/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N913TC_R15/._N913TC-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "73f5bae374237dc7981814f251d89995faf345c07f76ba23b49ad41867f4ac2b"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N913TC_R15/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N913TC_R15/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N913TC_R15/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N9393T_R02/._N9393T-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "65a79b41296397e20f80c8e109273a55edcb67433f3a6ab952f15dec1fddf57f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N9393T_R02/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N9393T_R02/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N9393T_R02/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N958JX_R50/._N958JX-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "7de2964ed7bad051be469b5eed7633c222f541ec6bb58393ed8cf9e4c28da193"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N958JX_R50/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N958JX_R50/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_constant_H_varying/N958JX_R50/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/._N456CS_R38",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/._N60RS_R11",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/._N748SP_R36",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/._N814SR_R07",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N456CS_R38/._N456CS-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "fbad74c9ca9620e071c7810152907442ab5af74a58c6c32aebca132e0cff608e"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N456CS_R38/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N456CS_R38/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N456CS_R38/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N60RS_R11/._N60RS-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "fdfeb94aaf53dfbe476afbfed4909b8da27546c047de7d839e3eacacf6da7e97"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N60RS_R11/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N60RS_R11/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N60RS_R11/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N748SP_R36/._N748SP-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "f5e292688abb82a75568c5be72781d1e25dff6869c9b84db460c448e064abe65"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N748SP_R36/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N748SP_R36/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N748SP_R36/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N814SR_R07/._N814SR-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "dd345a53b6d2995385ba3271cc6da7675193e09feab60563859f5674d3a4f4e0"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N814SR_R07/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N814SR_R07/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_constant/N814SR_R07/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N1387U_R44",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N231DT_R57",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N2933A_R08",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N3012N_R40",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N451EE_R45",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N451EE_R51",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N662EZ_R48",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/._N9658K_R24",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N1387U_R44/._N1387U-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "aeedf978009a483ef3a9a106877c55d5d56c53ebe70adc1302faa20de4483996"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N1387U_R44/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N1387U_R44/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N1387U_R44/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N231DT_R57/._N231DT-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "fe048fb86e249ff66ba6b8758de445e4971cfe3de1ad805bf509714f1b541699"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N231DT_R57/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N231DT_R57/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N231DT_R57/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N2933A_R08/._N2933A-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "41c84271e4479f7d8325e4ef7c16c232211fc54ebc20286609c31b45a2e37405"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N2933A_R08/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N2933A_R08/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N2933A_R08/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N3012N_R40/._N3012N-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "198d484560168b78b83dd86e230ae9eb30e58f64cfde5c5f1f7176a11cb995b3"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N3012N_R40/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N3012N_R40/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N3012N_R40/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R45/._N451EE-track-EGM96.kml",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R45/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R45/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R45/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R51/._N451EE-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "be20a4487b29cbadc679c6dfca2e759c77bd8718f519b661e1b42b6afbaaf21f"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R51/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R51/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N451EE_R51/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N662EZ_R48/._N662EZ-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "bf6d2f5627e1deb51f2869bd2ae42b236b19da165e9e789c63fe858956719b48"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N662EZ_R48/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N662EZ_R48/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N662EZ_R48/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N9658K_R24/._N9658K-track-EGM96.kml",
+          "bytes": 249,
+          "sha256": "4cdd1d1b9788aeb1b6259688c15148a905f7cc729cf938b34b0f217024dcde27"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N9658K_R24/._audio.wav",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N9658K_R24/._frequency_vs_time_used.csv",
+          "bytes": 163,
+          "sha256": "4e9060406b82ad52978190dcf0dc145e731710dce23b71a677859e3c81b10c91"
+        },
+        {
+          "path": "data/research/zenodo-23424278/extracted/__MACOSX/V_varying_H_varying/N9658K_R24/._result_page.pdf",
+          "bytes": 249,
+          "sha256": "1d21e73bd110b8908a5470b6e02ecf8fd00e84aea7fe22b8ff776a7f0a3443de"
+        },
+        {
+          "path": "data/research/zenodo-23424278/final_results_40_cases.csv",
+          "bytes": 22047,
+          "sha256": "4bb2d3f5bd9055eb102a6ed7bf2610d6e0ca2141fea04fe7c6e13b683427474a"
+        },
+        {
+          "path": "data/research/zenodo-23424278/frequency_extraction_tool.html",
+          "bytes": 241257,
+          "sha256": "3eb16c89da79b091625b2b1995155c5e33e74881205309d0b2efd97ac3bfea45"
+        },
+        {
+          "path": "data/research/zenodo-23424278/frequency_vs_time_40_cases.pdf",
+          "bytes": 1309932,
+          "sha256": "a391ce8824b46bc26009a4fa974eb6e327059373c1a72b825122c25fd48f75a9"
+        },
+        {
+          "path": "data/research/zenodo-23424278/record.json",
+          "bytes": 8247,
+          "sha256": "fc70e37093378c5dbafe7cc4013ed41694da72c6cba67b3676322fd6de5d4c31"
+        },
+        {
+          "path": "data/research/zenodo-23424278/results.txt",
+          "bytes": 198772,
+          "sha256": "608a71547ed8e10021d3712ececf4fe4becc8386455b29d6c1f028b56137f6b7"
+        },
+        {
+          "path": "data/research/zenodo-23424278/results_for_all40_flights.pdf",
+          "bytes": 2296805,
+          "sha256": "5313ea39ea7263ae35c9afc1cbeae0681d6af4317a5d7e2f2edddf266523fdb9"
+        }
+      ]
+    }
+  }
+}
