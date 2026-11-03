@@ -19,6 +19,7 @@ from pyproj import Transformer
 
 from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, classified_assessment, identify_mode, mode_seed
+from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_event, pair_candidates, score_candidate
 
 
@@ -129,6 +130,7 @@ def _tracks(indexes, bounds, time_range, budget):
     return tracks
 
 
+@_cache_ridge_fits
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None):
     radius = max(e["slant_range_m"][1] for e in events)
     tables, count = [], 0

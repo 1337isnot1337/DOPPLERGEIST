@@ -3,7 +3,12 @@
 Scores are penalized residuals, never probabilities. Geometry from a straight-pass
 audio fit is a proposal diagnostic, not a reliable exclusion bound for real tracks.
 """
+from collections import OrderedDict
+from contextvars import ContextVar
+from copy import deepcopy
 from dataclasses import dataclass
+from functools import wraps
+import hashlib
 from itertools import chain
 
 import numpy as np
@@ -16,6 +21,81 @@ from .geometry import Track, ecef
 @dataclass
 class RidgeTimes:
     time: np.ndarray
+
+
+_ridge_fit_cache = ContextVar("ridge_fit_cache", default=None)
+
+
+def _fit_argument_key(value):
+    """Preserve scalar precision and array shape without rounding fit inputs."""
+    if type(value) is float:
+        return (float, value.hex())
+    if type(value) in (int, bool):
+        return (type(value), value)
+    if type(value) in (list, tuple):
+        return (type(value), tuple(_fit_argument_key(item) for item in value))
+    if type(value) is np.ndarray or isinstance(value, np.generic):
+        array = np.asarray(value)
+        if array.dtype.kind in "biuf":
+            return (type(value), array.dtype.str, array.shape, array.tobytes())
+    raise TypeError("Unsupported fit-cache argument representation")
+
+
+class _RidgeFitCache:
+    """Bounded reuse for an immutable set of tracks within one scoring batch."""
+
+    def __init__(self, max_entries):
+        self.max_entries = max_entries
+        self.entries = OrderedDict()
+
+    def fit(self, track, observer, measurement, start_time, f0_bounds, c, sigma_hz, drift_fraction):
+        arguments = (track, observer, measurement, start_time, f0_bounds, c, sigma_hz, drift_fraction)
+        try:
+            parameters = tuple(_fit_argument_key(value) for value in
+                               (observer, start_time, f0_bounds, c, sigma_hz, drift_fraction))
+        except (TypeError, ValueError):
+            # Let the fitter handle custom representations and their validation.
+            return _fit_ridge_uncached(*arguments)
+        # Measurements may be equivalent copies or modified arrays. Hash the
+        # numeric inputs actually used by the fit, without retaining their data.
+        spec, ridge, weight, _ = measurement
+        observed = hashlib.sha256()
+        for values in (spec.time, ridge, weight):
+            values = np.asarray(values, dtype=float)
+            observed.update(repr(values.shape).encode())
+            observed.update(values.tobytes())
+        key = (id(track), parameters, observed.digest())
+        if key in self.entries:
+            self.entries.move_to_end(key)
+            return deepcopy(self.entries[key][1])
+        result = _fit_ridge_uncached(*arguments)
+        # Keep the track alive so a different trajectory cannot reuse its id.
+        # The enclosing batch already owns these tracks. Exceptions are not cached.
+        self.entries[key] = (track, deepcopy(result))
+        if len(self.entries) > self.max_entries:
+            self.entries.popitem(last=False)
+        return result
+
+
+def _cache_ridge_fits(function, *, max_entries=4096):
+    """Reuse fits only while this batch's tracks stay unchanged.
+
+    Each call has at most 4,096 entries by default. Context-local state prevents
+    reuse between concurrent jobs, nested batches or later calls. Cached results
+    are copied so candidate diagnostics remain independently mutable.
+    """
+    if type(max_entries) is not int or max_entries < 1:
+        raise ValueError("Fit-cache capacity must be a positive integer")
+
+    @wraps(function)
+    def run(*args, **kwargs):
+        token = _ridge_fit_cache.set(_RidgeFitCache(max_entries))
+        try:
+            return function(*args, **kwargs)
+        finally:
+            _ridge_fit_cache.reset(token)
+
+    return run
 
 
 def _frequency_scale(event):
@@ -228,8 +308,8 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     return [settings[i] for i in order], [measurements[i] for i in order]
 
 
-def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
-              sigma_hz=1.0, drift_fraction=0.02):
+def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=343.0,
+                        sigma_hz=1.0, drift_fraction=0.02):
     """Bounded linear source drift at emission time, with robust residual loss.
 
     Drift is bounded to a fraction of source frequency over the measured event.
@@ -274,6 +354,14 @@ def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
             "support_fraction": 1.0, "sample_count": int(len(y)),
             "independent_sample_count": independent_samples,
             "outlier_fraction": float(np.average(np.abs(residual) > 3 * sigma_hz, weights=w))}
+
+
+def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
+              sigma_hz=1.0, drift_fraction=0.02):
+    """Fit bounded source drift, optionally reusing an identical batch input."""
+    cache = _ridge_fit_cache.get()
+    fit = _fit_ridge_uncached if cache is None else cache.fit
+    return fit(track, observer, measurement, start_time, f0_bounds, c, sigma_hz, drift_fraction)
 
 
 def score_ridges(tracks, events, measurements, observer, recording_start_s, c=343.0):
