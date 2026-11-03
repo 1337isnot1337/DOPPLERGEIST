@@ -85,8 +85,13 @@ def main():
                                    arg=expected_display, timeout=15000)
             if queued["job_id"] not in page.locator("#job-id").inner_text():
                 raise RuntimeError("Reload restored a different job")
-            page.locator("#downloads").evaluate("element => element.open = true")
             page.wait_for_function("() => document.querySelector('#artifacts').children.length > 0", timeout=15000)
+            artifact_count = page.locator("#artifacts > li").count()
+            # National jobs retain thousands of tile receipts. Capture the real
+            # default collapsed view instead of allocating a giant screenshot.
+            downloads_expanded = artifact_count <= 200
+            if downloads_expanded:
+                page.locator("#downloads").evaluate("element => element.open = true")
             if errors:
                 raise RuntimeError(f"Browser JavaScript errors: {errors}")
             page.set_viewport_size({"width": 390, "height": 844})
@@ -98,7 +103,8 @@ def main():
             write_json(output / "browser.json", {"browser": browser.version, "url": page.url,
                        "python": sys.version, "playwright": importlib.metadata.version("playwright"),
                        "status": value["status"], "javascript_errors": errors,
-                       "reloaded_job_verified": True, "mobile_layout": mobile})
+                       "reloaded_job_verified": True, "mobile_layout": mobile,
+                       "artifact_count": artifact_count, "downloads_expanded": downloads_expanded})
         finally:
             (output / "page.txt").write_text(page.locator("body").inner_text())
             page.screenshot(path=str(output / "page.png"), full_page=True)
