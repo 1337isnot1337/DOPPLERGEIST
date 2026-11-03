@@ -1,5 +1,6 @@
 """Geometric event filters, silence constraints and locked multi-event scoring."""
 from itertools import product
+import math
 
 import numpy as np
 import pandas as pd
@@ -230,6 +231,8 @@ def _ridge_trial_classification(result, events, association):
     can be rejected only by the existing association residual thresholds.
     """
     def finite(value):
+        if type(value) is float:
+            return math.isfinite(value)
         return (isinstance(value, (int, float, np.integer, np.floating))
                 and not isinstance(value, (bool, np.bool_)) and np.isfinite(value))
 
@@ -267,8 +270,7 @@ def _ridge_trial_classification(result, events, association):
         drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
         if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
             return "unknown", "fit_outside_declared_drift_domain"
-        if not np.isclose(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"], drift,
-                          rtol=1e-12, atol=1e-12):
+        if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
             return "unknown", "inconsistent_source_drift"
     if "optimizer_success" in result and result["optimizer_success"] is not True:
         return "unknown", "failed_optimizer"
