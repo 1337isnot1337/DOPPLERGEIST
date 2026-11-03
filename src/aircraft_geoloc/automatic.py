@@ -312,7 +312,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})
     decision_progress()
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)
-    decision["candidates"] = candidates
+    decision.setdefault("candidates", candidates)
 
     write_json(output / "decision.json", decision)
     fields = {key: value for key, value in decision.items() if key not in {"schema_version", "job_id", "status", "stage", "progress", "artifacts", "recording", "events", "diagnostics"}}

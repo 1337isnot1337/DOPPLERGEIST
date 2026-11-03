@@ -118,3 +118,18 @@ def test_reranking_does_not_transfer_full_profile_to_another_candidate(run_profi
     assert not receipt["matching_diagnostics"]["sensitivity"].get("sources")
     assert any(row.get("sensitivity", {}).get("method") == "declared_perturbation_profiles"
                for row in receipt["ranked"][1:])
+
+
+def test_decision_candidate_copy_is_preserved_for_evidence_derived_envelopes(run_profile, monkeypatch):
+    from aircraft_geoloc import confidence
+    original = confidence.decide_location
+    def decision(events, candidates, coverage, **kwargs):
+        result = original(events, candidates, coverage, **kwargs)
+        returned = deepcopy(candidates)
+        returned[0]["uncertainty"] = {"radius_m": 120., "method": "finite_modes_and_tested_profiles", "kind": "sensitivity"}
+        result["candidates"] = returned
+        return result
+    monkeypatch.setattr(confidence, "decide_location", decision)
+    final, _ = run_profile()
+    assert final["candidates"][0]["uncertainty"]["radius_m"] == 120.
+    assert final["candidates"][0]["uncertainty"]["method"] == "finite_modes_and_tested_profiles"
