@@ -127,9 +127,11 @@ $('upload-form').addEventListener('submit', async event => {
     request.time_window = {start_utc: start + 'Z', end_utc: (end || start) + 'Z', source: 'user'};
     if ($('time-source').value.trim()) request.time_window.source_detail = $('time-source').value.trim();
   }
+  // JSON escapes preserve Unicode notes in the ASCII-only HTTP metadata header.
+  const requestMetadata = JSON.stringify(request).replace(/[^\x20-\x7e]/g, character => '\\u' + character.charCodeAt(0).toString(16).padStart(4, '0'));
   $('submit').disabled = true;
   try {
-    const value = await api('/api/jobs', {method: 'POST', headers: {'Content-Type': 'application/octet-stream', 'X-Dopplergeist-Request': JSON.stringify(request), 'X-Filename': 'input.' + (file.name.split('.').pop() || 'mp3').replace(/[^a-z0-9]/gi, '')}, body: file});
+    const value = await api('/api/jobs', {method: 'POST', headers: {'Content-Type': 'application/octet-stream', 'X-Dopplergeist-Request': requestMetadata, 'X-Filename': 'input.' + (file.name.split('.').pop() || 'mp3').replace(/[^a-z0-9]/gi, '')}, body: file});
     render(value); selectJob(value.job_id);
   } catch (error) { $('upload-error').textContent = error.message; }
   finally { $('submit').disabled = false; }

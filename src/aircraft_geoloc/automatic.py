@@ -132,9 +132,11 @@ def _search(request, recording, events, output, config, search_progress):
     scoring = {"mode": "robust_ridge", "c": c, "time_origin": lo if lo == hi else None,
                "time_sweep_s": 0 if lo == hi else 5, "time_step_s": 0.5,
                "recording_start_window_s": [lo, hi]}
+    filters = {"association": "subsets", **config.get("filters", {})}
+    filters.setdefault("max_events", len(prepared))
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
                              bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
-                             scoring=scoring, filters=config.get("filters", {}), input_hashes=hashes)
+                             scoring=scoring, filters=filters, input_hashes=hashes)
     write_json(output / "data-provenance.json", {"flight_indexes": [index.report for index in indexes],
                "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes})
     return report, prepared, measurements, indexes, terrain
