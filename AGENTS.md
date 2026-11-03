@@ -1,5 +1,26 @@
 # DOPPLERGEIST agent instructions
 
+## Owner directive: real-world testing only
+
+**NO MORE SYNTHETIC DATA.** The owner requires real-world tests, real audio
+recordings and real geolocations. This supersedes older synthetic fixture,
+benchmark, baseline and replay plans throughout the repository.
+
+- Do not generate synthetic recordings, trajectories or test datasets, or launch
+  synthetic-data tests, benchmarks, replays or metamorphic matrices. Stop any
+  such active runs and preserve them as interrupted historical work.
+- The planned canonical synthetic three-event baseline and synthetic 3/4/6-event
+  sweeps are cancelled. Do not replace them with another synthetic fixture.
+- Use actual recorded audio and historical measured flight data for experiments.
+  Use independently established recorder locations and defensible clock evidence
+  for location-error claims. Keep unknown metadata and inconclusive outcomes
+  explicit; approximate public listings do not become measured GPS truth.
+- Preserve existing synthetic code/data/results as historical material. Do not
+  delete them or present their results as real-world validation.
+- Older blanket test commands are subject to this directive: do not launch a
+  suite that generates or uses synthetic data. Coordinate automatic CI changes
+  with the primary; validation of the pipeline must use real recordings.
+
 ## Objective and starting points
 
 Implement the automatic MP3-upload-to-location pipeline. The user's updated target
