@@ -1,0 +1,14 @@
+{
+  "source_page": "https://www.allaboutbirds.org/cams/cornell-lab-feederwatch/",
+  "public_video": "https://www.youtube.com/watch?v=x10vL6_47Dw",
+  "requested_duration_s": 3600,
+  "capture_started_utc": "2026-11-03T02:06:09.907700+00:00",
+  "selection": "First full hour of an available fixed source playlist; no event/flight-based selection.",
+  "broadcaster_segment_start_utc": "2026-11-03T00:59:40.092+00:00",
+  "recording_clock_validation": "pending independent visible-clock/AV mapping; segment UTC is not silently promoted.",
+  "decoder_exit_code": 0,
+  "audio_sha256": "f7081e38a03e2fa059fb21cc658f8287f74e8cf263a06e62406f4b2710f7c71d",
+  "audio_bytes": 28800908,
+  "elapsed_s": 98.96561452501919,
+  "capture_finished_utc": "2026-11-03T02:07:48.873338+00:00"
+}

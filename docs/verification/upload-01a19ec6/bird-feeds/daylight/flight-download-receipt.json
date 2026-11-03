@@ -1,0 +1,33 @@
+{
+  "provider": "ADSB.lol globe_history_2026",
+  "release_tag": "v2026.11.02-planes-readsb-staging-0",
+  "release_url": "https://github.com/adsblol/globe_history_2026/releases/tag/v2026.11.02-planes-readsb-staging-0",
+  "published_at": "2026-11-03T00:20:00Z",
+  "assets": [
+    {
+      "name": "v2026.11.02-planes-readsb-staging-0.tar.aa",
+      "bytes": 2000000000,
+      "published_digest": "sha256:c2c48a1719e51b2003fefd3527f533e372c790e3d31a9d3b904e84ff8960c5ce"
+    },
+    {
+      "name": "v2026.11.02-planes-readsb-staging-0.tar.ab",
+      "bytes": 979275776,
+      "published_digest": "sha256:fc6a6446c621e248672e1e28adc64a46326915e297b17a9dcba76c8117728bab"
+    }
+  ],
+  "verified_downloads": [
+    {
+      "url": "https://github.com/adsblol/globe_history_2026/releases/download/v2026.11.02-planes-readsb-staging-0/v2026.11.02-planes-readsb-staging-0.tar.aa",
+      "path": "/home/cache/flights/2026-11-02/staging-0/v2026.11.02-planes-readsb-staging-0.tar.aa",
+      "sha256": "c2c48a1719e51b2003fefd3527f533e372c790e3d31a9d3b904e84ff8960c5ce",
+      "bytes": 2000000000
+    },
+    {
+      "url": "https://github.com/adsblol/globe_history_2026/releases/download/v2026.11.02-planes-readsb-staging-0/v2026.11.02-planes-readsb-staging-0.tar.ab",
+      "path": "/home/cache/flights/2026-11-02/staging-0/v2026.11.02-planes-readsb-staging-0.tar.ab",
+      "sha256": "fc6a6446c621e248672e1e28adc64a46326915e297b17a9dcba76c8117728bab",
+      "bytes": 979275776
+    }
+  ],
+  "nov3_attempt": "Historical release unavailable; independent provider API returned404 before daylight selection."
+}

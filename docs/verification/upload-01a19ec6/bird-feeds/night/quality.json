@@ -1,0 +1,10 @@
+{
+  "file": "capture-hour.mp3",
+  "decoded_duration_s": 3599.9985,
+  "sample_rate_hz": 4000,
+  "rms_dbfs": -59.45230959121919,
+  "peak_dbfs": -25.2794246673584,
+  "near_full_scale_fraction": 0.0,
+  "decoded_pcm_sha256": "da5ae039376163ddcac18dc81e87d35a19c786ecb85568503c64ca9fe8f590d9",
+  "finite_samples": true
+}

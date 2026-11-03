@@ -1,0 +1,36 @@
+{
+  "source_video_id": "x10vL6_47Dw",
+  "first_audio_sequence": 4072021,
+  "first_video_sequence": 4072021,
+  "first_audio_pts_s": 20359219.850159,
+  "first_video_pts_s": 20359219.866667,
+  "video_minus_audio_s": 0.01650799810886383,
+  "frame_clocks": [
+    {
+      "offset_s": 0,
+      "visible_local": "2026-11-02T15:47:49"
+    },
+    {
+      "offset_s": 120,
+      "visible_local": "2026-11-02T15:49:49"
+    },
+    {
+      "offset_s": 3595,
+      "visible_local": "2026-11-02T16:47:44"
+    }
+  ],
+  "timezone": "America/New_York",
+  "pdt_anchor_sequence": 4075043,
+  "pdt_anchor_utc": "2026-11-03T00:59:40.092Z",
+  "audio_first_nominal_pdt_utc": "2026-11-02T20:47:50.092Z",
+  "engineering_start_window_utc": [
+    "2026-11-02T20:47:48Z",
+    "2026-11-02T20:47:51Z"
+  ],
+  "limitations": [
+    "Camera wall clock is corroborated by broadcaster program time; absolute camera calibration was not measured.",
+    "Visible clock is whole-second resolution; conservative outward bounds include the camera/program-time discrepancy.",
+    "Public institutional garden is documented; precise microphone coordinates and uncertainty remain separate evaluation work."
+  ],
+  "selection": "Whole hour selected six hours before observed live head before discovery; no event-based cropping."
+}

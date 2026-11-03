@@ -1,0 +1,37 @@
+{
+  "selection": "one hour starting six hours before observed live head, selected before listening or event extraction",
+  "head_sequence": 4076341,
+  "first_sequence": 4072021,
+  "segment_count": 720,
+  "formats": {
+    "audio": {
+      "format_id": "140",
+      "status": 200,
+      "headers": {
+        "Content-Type": "audio/mp4",
+        "Date": "Tue, 03 Nov 2026 02:48:56 GMT",
+        "X-Sequence-Num": "4072021",
+        "X-Head-Time-Millis": "20380879866",
+        "X-Head-Seqnum": "4076353"
+      },
+      "bytes": 82238,
+      "sha256": "0117965c37c003ff14e852a14e805f2ce1c28b18c00a0cbb722f332c339bcd61",
+      "probe_returncode": 0
+    },
+    "video": {
+      "format_id": "136",
+      "status": 200,
+      "headers": {
+        "Content-Type": "video/mp4",
+        "Date": "Tue, 03 Nov 2026 02:48:56 GMT",
+        "X-Sequence-Num": "4072021",
+        "X-Head-Time-Millis": "20380879866",
+        "X-Head-Seqnum": "4076353"
+      },
+      "bytes": 614751,
+      "sha256": "aad1d024305abd27fd67fd8d11baf8cb293ea123277e515567199e554b35f65c",
+      "probe_returncode": 0,
+      "frame_returncode": 0
+    }
+  }
+}

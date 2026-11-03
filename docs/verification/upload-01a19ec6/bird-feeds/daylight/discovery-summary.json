@@ -1,0 +1,48 @@
+{
+  "code_commit": "23632c32e6e904874ddabc8c58da00f774edc806",
+  "job_id": "1b4e1e1ee1164ab4b019e9637371cabe",
+  "proposal_count": 4,
+  "classification": "unconfirmed acoustic proposals, not labelled aircraft",
+  "proposals": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 398.5,
+      "end_s": 412.5,
+      "band_hz": [
+        202.47837590239942,
+        254.45991338416934
+      ]
+    },
+    {
+      "event_id": "event-0002",
+      "harmonic_group_id": "harmonics-0002",
+      "start_s": 1002.5,
+      "end_s": 1019.0,
+      "band_hz": [
+        40.9211650043726,
+        51.52611543610692
+      ]
+    },
+    {
+      "event_id": "event-0003",
+      "harmonic_group_id": "harmonics-0003",
+      "start_s": 2720.0,
+      "end_s": 2735.5,
+      "band_hz": [
+        161.69085232913494,
+        173.64264279603958
+      ]
+    },
+    {
+      "event_id": "event-0004",
+      "harmonic_group_id": "harmonics-0004",
+      "start_s": 2983.5,
+      "end_s": 3000.0,
+      "band_hz": [
+        174.9138878211379,
+        188.336377710104
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "source_codec": {
+    "codec_name": "aac",
+    "sample_rate": "44100",
+    "channels": 2,
+    "channel_layout": "stereo"
+  },
+  "duration_s": 30.0,
+  "channel_rms_dbfs": [
+    -61.148237690470765,
+    -61.148237690092564
+  ],
+  "arithmetic_mono_rms_dbfs": -61.14841895221581,
+  "channel_correlation": 0.9999165274569675,
+  "purpose": "Check that mono conversion is not cancelling an out-of-phase live source."
+}

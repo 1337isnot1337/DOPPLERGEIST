@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus"
+  },
+  "time_window": {
+    "start_utc": "2026-11-02T20:47:48Z",
+    "end_utc": "2026-11-02T20:47:51Z",
+    "source": "user",
+    "source_detail": "Visible source clock cross-checked at three frames against broadcaster program time and measured audio/video packet alignment; conservative whole-second bounds."
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "sequence": 4072045,
+    "nominal_offset_s": 120,
+    "sha256": "5eee788dfe3ecc30e08b4557db1680e89e9f02aa5ddd7f2581cec0c44aa36c73",
+    "bytes": 677843
+  },
+  {
+    "sequence": 4072740,
+    "nominal_offset_s": 3595,
+    "sha256": "5a57d15f6882ac54cc6fd62cd03529fdf1cd980f206788667be6b6021d568c93",
+    "bytes": 706193
+  }
+]

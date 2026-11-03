@@ -1,0 +1,16 @@
+{
+  "mp3_sha256": "741f9bc8cf3ee7e286d0bdb5f234d9a62d19971f5fdd537b296c231c06d65ba0",
+  "bytes": 28800908,
+  "decoded_rate_hz": 16000,
+  "decoded_samples": 57599977,
+  "decoded_duration_s": 3599.9985625,
+  "expected_source_duration_s": 3599.9985487528343,
+  "decoded_pcm_sha256": "0002afb9723c1554d72a4181348aebf1f55687611ba9972de0373900a0475ca6",
+  "finite": true,
+  "rms_dbfs": -42.08098920227278,
+  "peak_dbfs": -1.123091220855713,
+  "near_full_scale_samples": 0,
+  "encoder_exit_code": 0,
+  "encoder_warning_bytes": 0,
+  "max_boundary_gap_s": 1.0021030902862549e-06
+}

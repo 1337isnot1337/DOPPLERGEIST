@@ -1,0 +1,34 @@
+{
+  "source": "https://www.youtube.com/watch?v=x10vL6_47Dw",
+  "retained_failed_attempts": [
+    {
+      "attempt": "yt-dlp partial live section",
+      "returncode": 1,
+      "outcome": "This format cannot be partially downloaded; no media produced."
+    },
+    {
+      "attempt": "ytarchive0.5.0 direct URL with live-from -6h",
+      "returncode": 1,
+      "outcome": "Direct-URL mode has no last-sequence metadata; rejects six-hour offset as exceeding zero-second stream length."
+    },
+    {
+      "attempt": "direct fragment probe with absent sq query key",
+      "outcome": "Returned live sequence4076347 instead of requested4072021; rejected before whole-hour acquisition."
+    },
+    {
+      "attempt": "default ffconcat container durations",
+      "encoder_exit_code": 0,
+      "outcome": "Invalid repeated absolute timestamps; retained rejected encode and log. Repaired duration from independently audited AAC packet counts in a new output."
+    },
+    {
+      "attempt": "current-main-only service launch at fcbe513",
+      "outcome": "No service module in that source; failed before upload. Product integration23632c3 is separately frozen and passes245 tests+6subtests."
+    },
+    {
+      "attempt": "direct official visitor-map HTTP fetch",
+      "http_status": 403,
+      "outcome": "No PDF saved; web provider extracted official map text. No visual or surveyed-coordinate conclusion claimed."
+    }
+  ],
+  "privacy": "Original private extraction/playlist/download logs and signed URLs remain ignored local; no raw media published."
+}

@@ -1,0 +1,21 @@
+{
+  "visible_source_clock": "2026-11-02 20:04:04",
+  "timezone_interpretation": "America/New_York; independently cross-checked against HLS UTC",
+  "video_minus_audio_first_pts_s": 265.0025440000027,
+  "camera_derived_audio_start_interval_utc": [
+    "2026-11-03T00:59:38.997456+00:00",
+    "2026-11-03T00:59:39.997456+00:00"
+  ],
+  "hls_audio_start_utc": "2026-11-03T00:59:40.092000+00:00",
+  "media_frame_margin_s": 0.033333,
+  "rounded_request_window_utc": [
+    "2026-11-03T00:59:38+00:00",
+    "2026-11-03T00:59:41+00:00"
+  ],
+  "frame_sha256": "d816d883ca69f1ca5a9f137c8382d129bef2fc3d8b0172da0500a509a9208bfc",
+  "method": "Union of the visible one-second source-clock interval and broadcaster UTC, aligned with measured first audio/video packet PTS; rounded outward to whole seconds.",
+  "limitations": [
+    "Engineering timing envelope; camera absolute clock calibration is not independently measured.",
+    "No download, upload or file modification time is treated as the recording clock."
+  ]
+}
