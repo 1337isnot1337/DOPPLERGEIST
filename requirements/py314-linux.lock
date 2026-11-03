@@ -1,0 +1,34 @@
+# Tested Linux Python 3.14 dependency snapshot, 2026-11-02.
+# Install this, then install the checked-out project with --no-deps.
+Pygments==2.21.0
+affine==3.0.1
+attrs==26.1.0
+certifi==2026.10.23
+cffi==2.1.1
+charset-normalizer==3.5.2
+click==8.5.0
+contourpy==1.4.0
+cycler==0.12.1
+fonttools==4.68.0
+idna==3.20
+iniconfig==2.3.1
+kiwisolver==1.5.1
+matplotlib==3.11.2
+numpy==2.5.4
+packaging==26.3
+pandas==3.1.0
+pillow==13.0.0
+pluggy==1.7.0
+pyarrow==26.0.0
+pycparser==3.12
+pyparsing==3.3.3
+pyproj==3.8.0
+pytest==9.2.0
+python-dateutil==4.0.0
+rasterio==1.5.2
+requests==2.34.2
+scipy==1.18.1
+soundfile==0.14.0
+typing_extensions==4.16.0
+tzdata==2026.6
+urllib3==2.8.0
