@@ -18,7 +18,7 @@ from dopplergeist.tracks import load_tracks
 # Image extent for the documented USGS NAIP request, WGS84.
 BBOX = (-121.82, 37.642, -121.74, 37.687)
 # Inferred from the dataset's reported track offsets; not measured microphone GPS.
-REFERENCE = (37.6632161, -121.7818757)
+REFERENCE = (37.66321511833046, -121.78187655936314)
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
     plt.rcParams.update({'font.family':'DejaVu Sans', 'font.size':11, 'text.color':'#202d38',
                          'axes.labelcolor':'#5b6875','xtick.color':'#687581','ytick.color':'#687581'})
     fig = plt.figure(figsize=(14.5, 7.1), facecolor='#fbfaf7')
-    gs = fig.add_gridspec(1, 2, left=.065, right=.97, bottom=.20, top=.86, wspace=.16)
+    gs = fig.add_gridspec(1, 2, left=.065, right=.97, bottom=.18, top=.86, wspace=.16)
     ax = fig.add_subplot(gs[0,0])
     ax.pcolormesh(time, freq, spec['contrast'], shading='auto', cmap='Blues',
                   vmin=0, vmax=5, rasterized=True)
@@ -76,13 +76,11 @@ def main():
     ax.plot([west+.003,scale_lon],[south+.003,south+.003], color='#17242c',lw=2,zorder=9)
     ax.text(west+.003,south+.0042,'1 km',color='white',fontsize=10,weight='bold',zorder=9)
     cb=fig.colorbar(dots, ax=ax, orientation='horizontal', fraction=.038, pad=.025)
-    cb.set_label('Fit score  ·  higher is better  ·  not a probability',fontsize=9)
+    cb.set_label('Fit score  ·  higher is better',fontsize=9)
     cb.ax.tick_params(labelsize=8)
-    fig.text(.065,.115, f'★  Highest score     ●  Inferred reference     —  Aircraft track       {distance:.0f} m between points',
-             fontsize=10, color='#334451')
-    fig.text(.065,.075, 'Real recording · supplied aircraft, approximate area and time · reference inferred from track data',
-             fontsize=9, color='#5b6875')
-    fig.text(.065,.047, 'Research ranking; incomplete model assessment. USGS / USDA NAIP imagery.', fontsize=9, color='#5b6875')
+    fig.text(.5,.078, f'★  Highest score     ●  Inferred reference     —  Aircraft track       {distance:.0f} m between points',
+             ha='center', fontsize=10, color='#334451')
+    fig.text(.065,.035, 'USGS / USDA NAIP imagery', fontsize=9, color='#5b6875')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(args.output, dpi=180, facecolor=fig.get_facecolor())
     plt.close(fig)

@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "completed_utc": "2026-11-03T16:56:11.463860+00:00",
+  "scope": "Real measured audio and observed regional ADS-B; development receiver hypotheses; no independent location-accuracy claim. The restored historical region excludes known jets and does not establish complete flight coverage.",
+  "measured_sources": {
+    "baseline": {
+      "commit": "21262e031388b3a5a8dd75979b2dc851608499b2",
+      "git_tree": "8c199905375d7b295aad3b1c1e407bb9b667f219",
+      "source": "/workspace/scratch/68d3faf2620f/baseline-latest/src",
+      "backend": "python-irls-v1",
+      "native_available": false,
+      "unchanged_during_measurement": true
+    },
+    "current": {
+      "commit": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+      "git_tree": "36f4c6eae35db51c2cbef99146c3747e300fdb83",
+      "source": "/workspace/scratch/68d3faf2620f/timed-integrated/src",
+      "backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+      "native_available": true,
+      "unchanged_during_measurement": true
+    }
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "pyarrow": "26.0.1"
+    },
+    "affinity": [
+      8
+    ],
+    "thread_environment": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "inputs": {
+    "fixture": "tests/data/real-search-workloads.json",
+    "fixture_sha256": "90d2552da3559390d03dd2d10853b8e5941ea69b1eb63df693625c2c241b389d",
+    "index_sha256": "d3de8c2ebcec00fc362b1f44e1f2c005c3cc36709dbbdeecf1c80c1b20ac4fa8",
+    "index_input_hash": "bba872277ac47cbe4eacf1e7203b0d8f4e84d9641d777dd841cb4c1d6d64c88b",
+    "recording_start_window_s": [
+      1788898589.6620934,
+      1788898709.6620934
+    ],
+    "query_time_s": [
+      1788897749.6620934,
+      1788903449.6620934
+    ],
+    "ridge_records": 18,
+    "recorded_ridge_samples": 805
+  },
+  "method": {
+    "pairs_per_case": 3,
+    "process_order": [
+      "1-baseline",
+      "1-current",
+      "2-current",
+      "2-baseline",
+      "3-baseline",
+      "3-current"
+    ],
+    "fresh_python_process_per_run": true,
+    "timer_scope": "Complete tiled_search._score at one receiver, including candidate construction, score capture and retention writes; excludes imports, input loading, final serialization and comparison.",
+    "backend_selector": "auto",
+    "other_activity": "The parent concurrently measured full HTTP jobs on CPU 4; these scoring processes and their children were pinned to CPU 8.",
+    "peak_rss_caveat": "Raw worker-lifetime ru_maxrss includes imports/input loading and may inherit an earlier high-water mark. No memory-saving conclusion is made.",
+    "command": "env PYTHONDONTWRITEBYTECODE=1 DOPPLERGEIST_RIDGE_BACKEND=auto OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/68d3faf2620f/python-deps taskset -c 8 python scripts/benchmark_real_search_batch.py --fixture tests/data/real-search-workloads.json --case CASE --index /workspace/scratch/68d3faf2620f/DOPPLERGEIST/results/recovered-inputs/reference-region.sqlite --baseline-source /workspace/scratch/68d3faf2620f/baseline-latest/src --current-source /workspace/scratch/68d3faf2620f/timed-integrated/src --repeats 3 --timeout-s 600 --output NEW_OUTPUT",
+    "command_working_directory": "/workspace/scratch/68d3faf2620f/timed-integrated",
+    "cases_in_order": [
+      "previous-fit",
+      "offset"
+    ]
+  },
+  "cases": {
+    "previous-fit": {
+      "description": "Dense association workload at previous fitted receiver",
+      "input_counts": {
+        "trajectories": 214,
+        "trajectory_samples": 71571,
+        "ridge_records": 18,
+        "independent_groups": 16
+      },
+      "expected_workload_counts": {
+        "cpa_rows": 117,
+        "associations": 1927,
+        "retained": 100
+      },
+      "scoring_counts": {
+        "survivors": 1927,
+        "hypotheses_examined": 1927,
+        "work_units": 16996,
+        "max_matched_events": 16,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 117,
+        "candidates": 1927,
+        "unclassified_score_candidates": 1636,
+        "retention_score_pruned_candidates": 1636,
+        "bounded_score_candidates": 1636,
+        "unbounded_score_candidates": 0,
+        "evaluated_rejections": 99,
+        "evaluated_trials": 6887,
+        "rejected_trials": 5594,
+        "unknown_trials": 61014,
+        "unreported_trial_envelopes": 0,
+        "unsupported_cpa_tracks": 6
+      },
+      "exact_comparison": {
+        "all_six_payloads_identical": true,
+        "payload_fields": [
+          "all_scored_candidates",
+          "counts",
+          "ranked",
+          "retention"
+        ],
+        "all_six_sql_snapshots_identical": true,
+        "sql_tables_and_row_counts": {
+          "bounds": 1636,
+          "records": 280,
+          "run": 1,
+          "stages": 1
+        },
+        "retention_sql_matches_saved_payloads": true,
+        "numerical_tolerance": null
+      },
+      "statistics": {
+        "baseline": {
+          "cpu_seconds": {
+            "median": 6.538701329,
+            "min": 6.335125874000001,
+            "max": 7.092621456,
+            "runs_in_repetition_order": [
+              7.092621456,
+              6.335125874000001,
+              6.538701329
+            ]
+          },
+          "wall_seconds": {
+            "median": 6.548742071999868,
+            "min": 6.344128201000103,
+            "max": 7.110121761000073,
+            "runs_in_repetition_order": [
+              7.110121761000073,
+              6.344128201000103,
+              6.548742071999868
+            ]
+          }
+        },
+        "current": {
+          "cpu_seconds": {
+            "median": 5.0391454399999995,
+            "min": 4.731444069,
+            "max": 5.163060145999999,
+            "runs_in_repetition_order": [
+              5.163060145999999,
+              5.0391454399999995,
+              4.731444069
+            ]
+          },
+          "wall_seconds": {
+            "median": 5.048642054000084,
+            "min": 4.738561148999906,
+            "max": 5.188482727000064,
+            "runs_in_repetition_order": [
+              5.188482727000064,
+              5.048642054000084,
+              4.738561148999906
+            ]
+          }
+        }
+      },
+      "median_speedup": {
+        "wall_seconds": 1.2971294066710952,
+        "cpu_seconds": 1.2975813869345276
+      },
+      "median_time_reduction_percent": {
+        "wall_seconds": 22.90668958262515,
+        "cpu_seconds": 22.93354312345286
+      },
+      "runs_in_execution_order": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "cpu_seconds": 7.092621456,
+          "wall_seconds": 7.110121761000073,
+          "load_seconds_excluded": 0.7387650369998937,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 299.67578125
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "cpu_seconds": 5.163060145999999,
+          "wall_seconds": 5.188482727000064,
+          "load_seconds_excluded": 0.9085211269998581,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 304.8046875
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "cpu_seconds": 5.0391454399999995,
+          "wall_seconds": 5.048642054000084,
+          "load_seconds_excluded": 0.8357828719999816,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 303.1953125
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "cpu_seconds": 6.335125874000001,
+          "wall_seconds": 6.344128201000103,
+          "load_seconds_excluded": 0.6612645759998941,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 298.8046875
+        },
+        {
+          "source": "baseline",
+          "repetition": 3,
+          "cpu_seconds": 6.538701329,
+          "wall_seconds": 6.548742071999868,
+          "load_seconds_excluded": 0.7202367239999603,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 300.0859375
+        },
+        {
+          "source": "current",
+          "repetition": 3,
+          "cpu_seconds": 4.731444069,
+          "wall_seconds": 4.738561148999906,
+          "load_seconds_excluded": 0.6442404029999125,
+          "operations": {
+            "scalar_fit_calls": 68,
+            "acoustic_calls": 397,
+            "scored_candidates": 1927
+          },
+          "peak_rss_mib": 304.578125
+        }
+      ],
+      "local_raw_outputs": "/workspace/scratch/dopplergeist-recovery-matching/final-scoring-21262-4f528cd/previous-fit"
+    },
+    "offset": {
+      "description": "Sparse association workload at declared offset receiver",
+      "input_counts": {
+        "trajectories": 219,
+        "trajectory_samples": 74457,
+        "ridge_records": 18,
+        "independent_groups": 16
+      },
+      "expected_workload_counts": {
+        "cpa_rows": 65,
+        "associations": 206,
+        "retained": 28
+      },
+      "scoring_counts": {
+        "survivors": 206,
+        "hypotheses_examined": 206,
+        "work_units": 1786,
+        "max_matched_events": 16,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 65,
+        "candidates": 206,
+        "unclassified_score_candidates": 168,
+        "retention_score_pruned_candidates": 164,
+        "bounded_score_candidates": 168,
+        "unbounded_score_candidates": 0,
+        "evaluated_rejections": 10,
+        "evaluated_trials": 1328,
+        "rejected_trials": 984,
+        "unknown_trials": 7623,
+        "unreported_trial_envelopes": 0,
+        "unsupported_cpa_tracks": 3
+      },
+      "exact_comparison": {
+        "all_six_payloads_identical": true,
+        "payload_fields": [
+          "all_scored_candidates",
+          "counts",
+          "ranked",
+          "retention"
+        ],
+        "all_six_sql_snapshots_identical": true,
+        "sql_tables_and_row_counts": {
+          "bounds": 168,
+          "records": 28,
+          "run": 1,
+          "stages": 1
+        },
+        "retention_sql_matches_saved_payloads": true,
+        "numerical_tolerance": null
+      },
+      "statistics": {
+        "baseline": {
+          "cpu_seconds": {
+            "median": 1.5712544040000003,
+            "min": 1.546126874,
+            "max": 1.877541697,
+            "runs_in_repetition_order": [
+              1.877541697,
+              1.546126874,
+              1.5712544040000003
+            ]
+          },
+          "wall_seconds": {
+            "median": 1.5748777210001208,
+            "min": 1.5496959709998919,
+            "max": 1.883160690000068,
+            "runs_in_repetition_order": [
+              1.883160690000068,
+              1.5496959709998919,
+              1.5748777210001208
+            ]
+          }
+        },
+        "current": {
+          "cpu_seconds": {
+            "median": 1.325233355,
+            "min": 1.276269991,
+            "max": 1.3882896970000003,
+            "runs_in_repetition_order": [
+              1.276269991,
+              1.325233355,
+              1.3882896970000003
+            ]
+          },
+          "wall_seconds": {
+            "median": 1.3288862419999532,
+            "min": 1.2792936160001318,
+            "max": 1.391736850000143,
+            "runs_in_repetition_order": [
+              1.2792936160001318,
+              1.3288862419999532,
+              1.391736850000143
+            ]
+          }
+        }
+      },
+      "median_speedup": {
+        "wall_seconds": 1.1851110134378051,
+        "cpu_seconds": 1.1856435684113915
+      },
+      "median_time_reduction_percent": {
+        "wall_seconds": 15.619719278519707,
+        "cpu_seconds": 15.657620330208498
+      },
+      "runs_in_execution_order": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "cpu_seconds": 1.877541697,
+          "wall_seconds": 1.883160690000068,
+          "load_seconds_excluded": 0.7478567059999932,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 270.35546875
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "cpu_seconds": 1.276269991,
+          "wall_seconds": 1.2792936160001318,
+          "load_seconds_excluded": 0.7108617789999698,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 271.734375
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "cpu_seconds": 1.325233355,
+          "wall_seconds": 1.3288862419999532,
+          "load_seconds_excluded": 0.7374992950001342,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 271.83984375
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "cpu_seconds": 1.546126874,
+          "wall_seconds": 1.5496959709998919,
+          "load_seconds_excluded": 0.7512378659998831,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 272.1328125
+        },
+        {
+          "source": "baseline",
+          "repetition": 3,
+          "cpu_seconds": 1.5712544040000003,
+          "wall_seconds": 1.5748777210001208,
+          "load_seconds_excluded": 0.6296011669999189,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 271.9921875
+        },
+        {
+          "source": "current",
+          "repetition": 3,
+          "cpu_seconds": 1.3882896970000003,
+          "wall_seconds": 1.391736850000143,
+          "load_seconds_excluded": 0.7155624769998212,
+          "operations": {
+            "scalar_fit_calls": 437,
+            "acoustic_calls": 297,
+            "scored_candidates": 206
+          },
+          "peak_rss_mib": 272.0390625
+        }
+      ],
+      "local_raw_outputs": "/workspace/scratch/dopplergeist-recovery-matching/final-scoring-21262-4f528cd/offset"
+    }
+  },
+  "limitations": [
+    "These timings do not include upload, decoding, audio discovery, input loading, nationwide search or refinement.",
+    "Receiver and clock settings are development hypotheses from previous fitting; this is not independent localization validation.",
+    "Three repetitions describe the measured workload and host variation; they do not establish a universal performance ratio."
+  ]
+}

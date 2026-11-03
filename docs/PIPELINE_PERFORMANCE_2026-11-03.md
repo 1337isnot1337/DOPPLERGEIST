@@ -1,5 +1,7 @@
 # Pipeline performance: 2026-11-03
 
+Later exact fitting and I/O changes have a separate [throughput guide](PERFORMANCE_EXACT_THROUGHPUT.md). This report preserves its original sources and measurements.
+
 The optimized scorer reduces median dense-workload CPU time from **42.2787 to 8.8591 seconds: 4.772× faster**. The sparse workload improves from **3.5491 to 2.2310 seconds: 1.591× faster**. Both results use three alternating pairs and require exact scoring results and logical ledger contents.
 
 A fresh regional HTTP comparison processes the complete MP3 in **261.8356 versus 148.5474 seconds**. That is **1.763× faster**, or **43.27% less wall time**, in one sequential pair. Both runs complete every pipeline stage and return the same inconclusive result.

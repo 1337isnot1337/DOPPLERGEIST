@@ -1,0 +1,329 @@
+{
+  "measurement_series": "after_environment_reset",
+  "summary": "/dev/shm/dopplergeist-final-20261103/pairs-latest/summary.json",
+  "exact_comparison_count": 3,
+  "environment": {
+    "python": "3.12.3",
+    "sqlite": "3.45.1",
+    "numerical_threads": 1,
+    "cpu_affinity": [
+      4
+    ],
+    "numerical_package_versions": {
+      "numpy": "2.5.4",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "soundfile": "0.14.0"
+    }
+  },
+  "roles": {
+    "baseline": {
+      "source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+      "backend": "python-irls-v1",
+      "wall_s": {
+        "values": [
+          101.47404943800007,
+          103.96939349900003,
+          110.06398363499989
+        ],
+        "median": 103.96939349900003,
+        "min": 101.47404943800007,
+        "max": 110.06398363499989
+      },
+      "cpu_s": {
+        "values": [
+          101.232724,
+          103.75944999999999,
+          109.841672
+        ],
+        "median": 103.75944999999999,
+        "min": 101.232724,
+        "max": 109.841672
+      },
+      "label": "Pinned comparison main"
+    },
+    "current": {
+      "source_revision": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+      "backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+      "wall_s": {
+        "values": [
+          76.89139512200018,
+          74.04422789699993,
+          71.80775800999982
+        ],
+        "median": 74.04422789699993,
+        "min": 71.80775800999982,
+        "max": 76.89139512200018
+      },
+      "cpu_s": {
+        "values": [
+          76.688613,
+          73.90528200000001,
+          71.66872999999998
+        ],
+        "median": 73.90528200000001,
+        "min": 71.66872999999998,
+        "max": 76.688613
+      },
+      "public_runtime_equivalent": "a21edb95e39e67113b8fcd721aa0f3556919cf9d",
+      "public_equivalence_basis": "git diff 4f528cd a21edb95 -- src setup.py is empty; the public commit adds CI changes.",
+      "label": "Optimized frozen runtime"
+    }
+  },
+  "python_executable": "/usr/bin/python3",
+  "inputs": {
+    "audio": "/workspace/scratch/68d3faf2620f/DOPPLERGEIST/results/recovered-inputs/reference.mp3",
+    "request": "/workspace/scratch/68d3faf2620f/DOPPLERGEIST/results/recovered-inputs/request.json",
+    "operator": "/workspace/scratch/68d3faf2620f/DOPPLERGEIST/results/recovered-inputs/operator.json",
+    "verifier": "/workspace/scratch/68d3faf2620f/baseline-start/scripts/verify_upload_http.py"
+  },
+  "settings": {
+    "threads": 1,
+    "expected_ridges": 17,
+    "expected_groups": 15,
+    "expected_detail_plots": "none",
+    "timeout_s": 1200,
+    "poll_interval_s": 0.25
+  },
+  "timing_basis": "Regional timing.json: HTTP verification and final control checks; initial input checks and imports excluded.",
+  "trials": [
+    {
+      "pair": 1,
+      "order": [
+        "baseline",
+        "current"
+      ],
+      "arms": {
+        "baseline": {
+          "wall_s": 101.47404943800007,
+          "cpu_s": 101.232724,
+          "source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+          "ridge_fit_backend": "python-irls-v1",
+          "backend_kind": "python",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-001-baseline",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.2512209415435791,
+            "intake": 7.067523002624512,
+            "discovery": 5.332682847976685,
+            "acquisition": 0.5429990291595459,
+            "search": 44.14296197891235,
+            "refinement": 39.168763160705566
+          }
+        },
+        "current": {
+          "wall_s": 76.89139512200018,
+          "cpu_s": 76.688613,
+          "source_revision": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+          "ridge_fit_backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+          "backend_kind": "native",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-001-current",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.251392126083374,
+            "intake": 7.313123941421509,
+            "discovery": 6.3538289070129395,
+            "acquisition": 0.2723839282989502,
+            "search": 31.250644207000732,
+            "refinement": 26.976521015167236
+          }
+        }
+      }
+    },
+    {
+      "pair": 2,
+      "order": [
+        "current",
+        "baseline"
+      ],
+      "arms": {
+        "baseline": {
+          "wall_s": 103.96939349900003,
+          "cpu_s": 103.75944999999999,
+          "source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+          "ridge_fit_backend": "python-irls-v1",
+          "backend_kind": "python",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-002-baseline",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.2511727809906006,
+            "intake": 7.068601131439209,
+            "discovery": 5.3313679695129395,
+            "acquisition": 0.5439660549163818,
+            "search": 47.464967012405396,
+            "refinement": 39.367547035217285
+          }
+        },
+        "current": {
+          "wall_s": 74.04422789699993,
+          "cpu_s": 73.90528200000001,
+          "source_revision": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+          "ridge_fit_backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+          "backend_kind": "native",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-002-current",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.25144290924072266,
+            "intake": 6.555851221084595,
+            "discovery": 5.322831869125366,
+            "acquisition": 0.5521841049194336,
+            "search": 31.517725944519043,
+            "refinement": 26.07152795791626
+          }
+        }
+      }
+    },
+    {
+      "pair": 3,
+      "order": [
+        "baseline",
+        "current"
+      ],
+      "arms": {
+        "baseline": {
+          "wall_s": 110.06398363499989,
+          "cpu_s": 109.841672,
+          "source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+          "ridge_fit_backend": "python-irls-v1",
+          "backend_kind": "python",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-003-baseline",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.2554459571838379,
+            "intake": 6.311601877212524,
+            "discovery": 6.104919195175171,
+            "acquisition": 0.2738628387451172,
+            "search": 49.861003160476685,
+            "refinement": 42.87295389175415
+          }
+        },
+        "current": {
+          "wall_s": 71.80775800999982,
+          "cpu_s": 71.66872999999998,
+          "source_revision": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+          "ridge_fit_backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+          "backend_kind": "native",
+          "expected_detail_plots": "none",
+          "event_detail_png_count": 0,
+          "output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-003-current",
+          "outcome": {
+            "ridges": 17,
+            "groups": 15,
+            "candidates": 23,
+            "status": "inconclusive",
+            "reason_code": "search_incomplete"
+          },
+          "observed_phase_seconds": {
+            "queued": 0.25138092041015625,
+            "intake": 6.556596040725708,
+            "discovery": 5.321253061294556,
+            "acquisition": 0.27365994453430176,
+            "search": 27.920050859451294,
+            "refinement": 27.21359920501709,
+            "decision": 0.2805190086364746
+          }
+        }
+      }
+    }
+  ],
+  "checked_artifacts_per_pair": {
+    "json": 20,
+    "sqlite": 1,
+    "root_json": 3
+  },
+  "ledger_rows_per_arm": {
+    "search/retention.sqlite": {
+      "bounds": 29738,
+      "records": 852,
+      "run": 1,
+      "stages": 12
+    }
+  },
+  "ratio_of_medians": {
+    "wall_s": 1.404152578154071,
+    "cpu_s": 1.4039517500251195
+  },
+  "paired_speedups": {
+    "wall_s": {
+      "values": [
+        1.319706181387341,
+        1.404152578154071,
+        1.5327589481302644
+      ],
+      "median": 1.404152578154071,
+      "min": 1.319706181387341,
+      "max": 1.5327589481302644
+    },
+    "cpu_s": {
+      "values": [
+        1.320048962158176,
+        1.4039517500251195,
+        1.5326303675256983
+      ],
+      "median": 1.4039517500251195,
+      "min": 1.320048962158176,
+      "max": 1.5326303675256983
+    }
+  },
+  "phase_note": "Phase durations use first observed HTTP transitions and include polling uncertainty. Unobserved short phases have no inferred duration.",
+  "scope": "Fresh regional full-workflow runtime; incomplete coverage and no location-accuracy claim.",
+  "separate_starting_main_single_pair": {
+    "wall_s": 141.046627469,
+    "cpu_s": 140.645966,
+    "source_revision": "1f60cb5e5f03031516015064c384a1e25c8e88d2",
+    "ridge_fit_backend": "python-irls-v1",
+    "output": "/dev/shm/dopplergeist-final-20261103/starting-main-1",
+    "pooled": false,
+    "environment_matches_pairs": true,
+    "note": "One exact sequential pair in the replacement environment; separate from repeated-pair statistics.",
+    "comparison": "/workspace/scratch/68d3faf2620f/data-docs/results/starting-main-vs-first-current.json",
+    "semantic_differences": 0,
+    "current_output": "/dev/shm/dopplergeist-final-20261103/pairs-latest/pair-001-current",
+    "current_source": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
+    "wall_speedup": 1.834361663554258,
+    "cpu_speedup": 1.83398760908611
+  }
+}

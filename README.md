@@ -39,6 +39,14 @@ To install the CLI without keeping a checkout, create a virtual environment and 
 
 Native Windows execution is unverified.
 
+The faster native fitter needs a C compiler and Python development headers during installation. Without them, installation can retain the Python fitter. Check the installed backend:
+
+```bash
+.venv/bin/python -c 'from dopplergeist.matching import RIDGE_FIT_BACKEND; print(RIDGE_FIT_BACKEND)'
+```
+
+A value starting with `native-c-` confirms native fitting. See the [throughput guide](docs/PERFORMANCE_EXACT_THROUGHPUT.md) for build commands, measured results, and repeatable comparisons.
+
 ### Analyze from the command line
 
 ```bash
@@ -93,6 +101,8 @@ Recording-time evidence matters: audio-relative seconds do not identify which da
 The automatic search uses conservative score ceilings before completing every fit: incompatible residuals and an established Top-K cutoff can stop further group fitting at a shared clock. It batches eligible clock fits, reuses exact acoustic calculations in dense tiles, and divides overloaded areas or single-cell clock ranges into checkpointed pieces. [Search screening and real-data timing](docs/DATA_AND_SCALE.md#search) describe the bounds and their measured limits.
 
 At one source-informed receiver point, median scoring time fell from **68.92 to 25.59 CPU seconds**, a **2.69×** speedup. All 3,905 associations across 16 event groups matched the scalar-corrected baseline in three alternating pairs. The [performance report](docs/PERFORMANCE.md) describes this bounded test, which does not establish nationwide runtime or independent location accuracy.
+
+Later exact fitting and reuse changes reduce a complete regional MP3 upload from **103.97 to 74.04 seconds**: **1.40× faster**. Three alternating pairs preserve every scientific result and logical retention row against pinned main `21262e`. The [throughput guide](docs/PERFORMANCE_EXACT_THROUGHPUT.md) includes native installation, repeated measurements, and reproduction commands. This source-informed regional workflow remains inconclusive.
 
 Recent search work makes omitted alternatives and failed model evaluations visible. For more detail see [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md).
 
