@@ -46,8 +46,8 @@ This scans the complete recording and saves an inspectable job. To permit histor
 Initial data acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
 
 The command prints a job ID when queued. In another terminal, run
-`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow local
-checkpoint pieces and their recent rate. 
+`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow reported
+progress, checkpoint rate, and the age of the latest tile and job status update.
 
 ### Discover events in a recording
 
