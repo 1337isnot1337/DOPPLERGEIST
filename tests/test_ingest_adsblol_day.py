@@ -51,12 +51,14 @@ def test_native_altitude_support_is_normalized_before_row_selection(tmp_path, se
     result = subprocess.run(command, cwd=project, env=env, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     rows = pd.read_parquet(day / "new.parquet")
-    assert rows.time_s.tolist() == [1790000010, 1790000020]
-    assert rows.alt_m.tolist() == pytest.approx([5450 * 0.3048] * 2)
-    assert rows.altitude_basis.tolist() == ["ellipsoidal_interpolated"] * 2
+    assert rows.time_s.tolist() == [1790000000, 1790000010, 1790000020, 1790000030]
+    assert rows.alt_m.tolist() == pytest.approx([5450 * 0.3048] * 4)
+    assert rows.altitude_basis.tolist() == ["ellipsoidal", "ellipsoidal_interpolated",
+                                            "ellipsoidal_interpolated", "ellipsoidal"]
     report = json.loads((day / "new-ingestion-report.json").read_text())
     assert report["barometric_rows"] == 0
-    assert report["normalization_scope"] == "full_native_trace_before_row_selection"
+    assert report["normalization_scope"] == "full_native_trace_before_segment_selection"
+    assert report["selection_max_gap_s"] == 30.0
     assert all(hashlib.sha256((day / n).read_bytes()).hexdigest() == h for n, h in original.items())
     # Repeating an old output name must preserve its historical bytes.
     artifact = (day / "new.parquet").read_bytes()
