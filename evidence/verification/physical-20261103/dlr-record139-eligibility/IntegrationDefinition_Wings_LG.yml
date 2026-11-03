@@ -1,0 +1,82 @@
+# Groups of different AOIs that belong together. They get added up in the 
+# evaluation. The AOIs shape must be defined seperately (see below)
+
+Regions:
+  Inlets: [Inlet1, Inlet2]
+  Nozzles: [Nozzle1, Nozzle2]
+  Jets: [Jet1, Jet2]
+  NozzlesAndJets: [Jet1, Jet2, Nozzle1, Nozzle2]
+  Slathorns: [Slathorn1, Slathorn2]
+  Wings: [Wing1, Wing2]
+  NoseLG : [NLG]
+  MainLG : [MLG]
+  LandingGear: [MLG, NLG]
+
+# Definition of the AOIs. The numbers represent the coordinates of corners of a Polygon 
+# (arbitrary many). 
+
+Patches:
+  Inlet1:
+    - [  4.2,  3.5]
+    - [   13,  3.5]
+    - [   13,    8]
+    - [  4.2,    8]
+
+  Inlet2: mirrored Inlet1
+    
+  Nozzle1: 
+    - [  4.2,  3.5]
+    - [   -2,  3.5]
+    - [   -2,    8]
+    - [  4.2,    8]
+
+  Nozzle2: mirrored Nozzle1
+    
+  Jet1: 
+    - [   -2,  3.5]
+    - [  -25,    1]
+    - [  -25,   11]
+    - [   -2,    8]
+
+  Jet2: mirrored Jet1
+  
+  Wing1:
+    - [ -5.5, 20]
+    - [    1, 20]
+    - [    5,    8]
+    - [   -4,    8]
+
+  Wing2: mirrored Wing1
+
+  Slathorn1: 
+    - [    8,  3.5]
+    - [    8,  0.5]
+    - [  3.5,  0.5]
+    - [  3.5,  3.5]
+
+  Slathorn2: mirrored Slathorn1
+     
+  MLG: 
+    - [   -2,   3.5]
+    - [   -2,  -3.5]
+    - [    3,  -3.5]
+    - [    3,   3.5]
+
+  NLG: 
+    - [   11,     2]
+    - [   16,     2]
+    - [   16,    -2]
+    - [   11,    -2]
+
+
+   
+    
+#Which of the Groups are actually supposed to be plotted
+
+RegionsToPlot:
+  - Inlets
+  - Nozzles
+  - Jets
+  - Slathorns
+  - Wings
+  - LandingGear

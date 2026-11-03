@@ -1,0 +1,111 @@
+{
+  "scope": "Eligibility inspection of all three published files; no audio conversion, discovery, fitting, localization or acceptance claim.",
+  "source_record": "https://zenodo.org/records/20494053",
+  "doi": "10.5281/zenodo.20494053",
+  "license": "CC-BY-4.0",
+  "source_sha256": "826fb22c2daa5c09ea378f4f1104428ab064c00373cff94fa4fc957822084fa4",
+  "all_three_files_match_publisher_checksums": true,
+  "hdf5_objects_inspected": 32,
+  "microphone_channels": 231,
+  "samples_per_channel": 337344,
+  "sample_rate_hz": 48192.0,
+  "duration_s": 7.0,
+  "pressure_unit": "Pa",
+  "microphone_positions_shape": [
+    231,
+    3
+  ],
+  "microphone_local_xyz_bounds_m": [
+    [
+      -20.95800018310547,
+      22.437999725341797
+    ],
+    [
+      -18.68000030517578,
+      17.21299934387207
+    ],
+    [
+      -0.40299999713897705,
+      0.07400000095367432
+    ]
+  ],
+  "trajectory_records": [
+    {
+      "path": "/Trajectories/Trajectory060",
+      "reference_sample": 89926,
+      "reference_sample_divided_by_rate_s": 1.8659943559096945,
+      "reference_position_m": [
+        124.712,
+        2.156,
+        198.636
+      ],
+      "reference_velocity_mps": [
+        -88.034,
+        -0.317,
+        -9.484
+      ],
+      "wind_velocity_mps": [
+        1.86356,
+        3.94718,
+        0.0
+      ]
+    },
+    {
+      "path": "/Trajectories/Trajectory090",
+      "reference_sample": 152624,
+      "reference_sample_divided_by_rate_s": 3.1669986719787517,
+      "reference_position_m": [
+        8.824,
+        -0.027,
+        186.22
+      ],
+      "reference_velocity_mps": [
+        -87.969,
+        -0.5,
+        -9.185
+      ],
+      "wind_velocity_mps": [
+        1.72846,
+        4.52837,
+        0.0
+      ]
+    },
+    {
+      "path": "/Trajectories/Trajectory120",
+      "reference_sample": 210406,
+      "reference_sample_divided_by_rate_s": 4.365994355909694,
+      "reference_position_m": [
+        -97.146,
+        -1.134,
+        175.365
+      ],
+      "reference_velocity_mps": [
+        -87.969,
+        -0.473,
+        -8.677
+      ],
+      "wind_velocity_mps": [
+        1.71502,
+        4.20965,
+        0.0
+      ]
+    }
+  ],
+  "sound_speed_mps": 339.8900146484375,
+  "notes": [
+    "Reference-sample/rate ratios are arithmetic, not a claim that the publication resolves zero-versus-one-based sample numbering.",
+    "The inspected HDF5 stores local Cartesian microphone/trajectory positions and sample-number references. No geodetic reference, latitude/longitude tie, absolute sample-zero UTC or measured uncertainty for those ties was found.",
+    "The small companions contain aircraft outline/region geometry; they do not establish the missing absolute coordinate/time ties.",
+    "231 channels from this one published flyover do not establish a multi-session/device/environment field corpus.",
+    "The metadata can support a local-array physical comparison. It does not establish this project's automatic CONUS location and recording-clock benchmark."
+  ],
+  "field_corpus_eligible_as_published": false,
+  "issue_53_closed": false,
+  "pipeline_run_performed": false,
+  "missing_required_evidence": [
+    "independent microphone geodetic position and uncertainty",
+    "measured sample-zero UTC and uncertainty",
+    "multiple independently documented sessions/devices/environments",
+    "sealed holdout protocol"
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "file": "a3202_V2500.dat",
+    "url": "https://zenodo.org/api/records/20494053/files/a3202_V2500.dat/content",
+    "status": 200,
+    "bytes": 6072,
+    "sha256": "bdb5a19cc2266c4243d7d81805b56ef586117e4e8adfa675cc93d6c6f3d8302a",
+    "md5": "8cc44fbe960fd8fa319be2f09b61e31a",
+    "publisher_checksum": "md5:8cc44fbe960fd8fa319be2f09b61e31a",
+    "publisher_integrity_pass": true
+  },
+  {
+    "file": "IntegrationDefinition_Wings_LG.yml",
+    "url": "https://zenodo.org/api/records/20494053/files/IntegrationDefinition_Wings_LG.yml/content",
+    "status": 200,
+    "bytes": 1468,
+    "sha256": "a50dbbfeb42fccb36b8566ba89b89dac68a4fdd56fcb1e3df9944371cf87b6ac",
+    "md5": "55215e5259ada27af3f071b4decd4cbb",
+    "publisher_checksum": "md5:55215e5259ada27af3f071b4decd4cbb",
+    "publisher_integrity_pass": true
+  }
+]

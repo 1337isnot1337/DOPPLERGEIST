@@ -1,0 +1,60 @@
+{
+  "scope": "Independent metadata eligibility inspection; original pressure dataset is pinned by source URL and digest, not duplicated here. This manifest excludes itself.",
+  "files": [
+    {
+      "path": "IntegrationDefinition_Wings_LG.yml",
+      "bytes": 1468,
+      "sha256": "a50dbbfeb42fccb36b8566ba89b89dac68a4fdd56fcb1e3df9944371cf87b6ac"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4331,
+      "sha256": "55ced7ddbc025914e7d4179eec474afbd676facfaf8dfdcd05e7434de25de9b3"
+    },
+    {
+      "path": "a3202_V2500.dat",
+      "bytes": 6072,
+      "sha256": "bdb5a19cc2266c4243d7d81805b56ef586117e4e8adfa675cc93d6c6f3d8302a"
+    },
+    {
+      "path": "companion-downloads.json",
+      "bytes": 829,
+      "sha256": "7feb6baf31bdb276693e5f6a8b43772bc69790c8299b6c15cccdb36483f37538"
+    },
+    {
+      "path": "download-receipt.json",
+      "bytes": 588,
+      "sha256": "bb93819d4e3898c1a0fc53338ae9d5a16d5733c30008fba56d40c0a50c138c8b"
+    },
+    {
+      "path": "eligibility.json",
+      "bytes": 3344,
+      "sha256": "88e724d3e22e6d21a0cb55c9d15a76a4bf5c580a1424136886b3e67904efdc3e"
+    },
+    {
+      "path": "hdf5-metadata.json",
+      "bytes": 258039,
+      "sha256": "9f8b74e3eff5c2dd8af0bf2a833538c5c1ae37a9f199fa1cc25376b6f0946073"
+    },
+    {
+      "path": "inspect_hdf5.py",
+      "bytes": 2383,
+      "sha256": "ba2c0057723fdc27db06720c21b7f8ae197f830578d64250962b3c03cb7acea6"
+    },
+    {
+      "path": "metadata-request.json",
+      "bytes": 207,
+      "sha256": "60971157b2455e6ef9bc1d9c4ff8083bae924008498a690d9dda4210f80162fe"
+    },
+    {
+      "path": "reader-install-receipt.json",
+      "bytes": 903,
+      "sha256": "760266091a3591350c30d516466619610c063589192250e48a58e7cb7e7d0767"
+    },
+    {
+      "path": "zenodo-record-response.json",
+      "bytes": 6385,
+      "sha256": "013c4b6d0ae2e6e8f450fcfc05e663f5a066a0f4927788b7e86b4d1c50d3a652"
+    }
+  ]
+}

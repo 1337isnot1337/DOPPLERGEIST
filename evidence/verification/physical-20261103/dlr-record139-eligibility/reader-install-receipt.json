@@ -1,0 +1,26 @@
+{
+  "package": "h5py",
+  "version": "3.16.0",
+  "download": {
+    "url": "https://files.pythonhosted.org/packages/9e/e9/1a19e42cd43cc1365e127db6aae85e1c671da1d9a5d746f4d34a50edb577/h5py-3.16.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+    "archive_info": {
+      "hash": "sha256=dfc21898ff025f1e8e67e194965a95a8d4754f452f83454538f98f8a3fcb207e",
+      "hashes": {
+        "sha256": "dfc21898ff025f1e8e67e194965a95a8d4754f452f83454538f98f8a3fcb207e"
+      }
+    }
+  },
+  "environment": {
+    "implementation_name": "cpython",
+    "implementation_version": "3.12.14",
+    "os_name": "posix",
+    "platform_machine": "x86_64",
+    "platform_release": "6.18.57",
+    "platform_system": "Linux",
+    "platform_version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+    "python_full_version": "3.12.14",
+    "platform_python_implementation": "CPython",
+    "python_version": "3.12",
+    "sys_platform": "linux"
+  }
+}

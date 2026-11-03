@@ -1,0 +1,14 @@
+{
+  "url": "https://zenodo.org/api/records/20494053/files/REC139.h5/content",
+  "publisher_bytes": 311789336,
+  "publisher_checksum": "md5:1fb08d67965550d26d5b35abaf71f3f3",
+  "started_utc": "2026-11-03T02:41:44.426157+00:00",
+  "status": 200,
+  "content_type": "application/octet-stream,application/octet-stream",
+  "bytes": 311789336,
+  "sha256": "826fb22c2daa5c09ea378f4f1104428ab064c00373cff94fa4fc957822084fa4",
+  "md5": "1fb08d67965550d26d5b35abaf71f3f3",
+  "elapsed_s": 91.01876126999923,
+  "completed_utc": "2026-11-03T02:43:15.444973+00:00",
+  "publisher_integrity_pass": true
+}
