@@ -177,6 +177,7 @@ Fully vibecoded if it wasn't obvious. Using a series of 6.1 Sol xhigh and Terra 
 
 - [Methodology](docs/METHODOLOGY.md) — geometry, Doppler and acoustic propagation
 - [Installation and reproducibility](docs/SETUP.md) — environments, verification, restoration
+- [Pipeline performance measurements](docs/PIPELINE_PERFORMANCE_2026-11-03.md) — real-input timings, comparison controls, and reproduction commands
 - [Automatic event discovery](docs/AUDIO_DISCOVERY.md) — detector design and known failure modes
 - [Confidence and decision rules](docs/CONFIDENCE.md) — ambiguity, abstention, incomplete coverage
 - [Finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md) — retained/discarded candidates and unknown model work
