@@ -147,3 +147,15 @@ def test_temporal_pruning_matches_an_exhaustive_small_oracle(origin):
                     if lo <= hi:
                         expected.add(key(point, indices, passes))
     assert actual == expected
+
+
+def test_many_empty_per_point_groups_do_not_expand_all_subsets():
+    count = 40
+    table = pd.DataFrame([dict(point_id=i, flight_id=str(i), receive_time=100*i,
+                              emission_time=100*i-5, speed_mps=80, distance_m=1700) for i in range(count)])
+    events = [dict(cpa_receive_s=100*i, speed_range_mps=[60, 100], slant_range_m=[500, 3000]) for i in range(count)]
+    candidates, counts = association_candidates(table, events, time_origin=0, time_tolerance_s=1, max_candidates=100)
+    assert len(candidates) == count
+    assert {tuple(c["event_indices"]) for c in candidates} == {(i,) for i in range(count)}
+    assert counts["max_matched_events"] == count
+    assert counts["work_units"] < 1000
