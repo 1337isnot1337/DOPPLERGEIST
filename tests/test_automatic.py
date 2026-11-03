@@ -190,3 +190,14 @@ def test_refinement_preserves_same_association_spatial_and_clock_modes(tmp_path,
     diagnostics = json.loads((tmp_path/"refined-candidates.json").read_text())["matching_diagnostics"]
     assert diagnostics["retained_hypotheses"] == 2
     assert diagnostics["refined_hypotheses"] == 2
+
+
+def test_an_explicit_event_cap_is_incomplete_work_not_missing_flight_data():
+    from aircraft_geoloc.automatic import _coverage
+    coverage = _coverage({"search": {"coverage": "conus"}},
+        {"status": "partial", "tiles_total": 2, "tiles_completed": 2, "tile_failures": [],
+         "refinement_failure": None, "data_scope_complete": True, "all_event_groups_considered": False,
+         "event_limit_reason": "Configured limit 3 omits proposed groups from this four-group recording."}, {})
+    assert coverage["search_complete"] is False
+    assert coverage["data_status"] == "available"
+    assert any("limit 3" in message for message in coverage["limitations"])

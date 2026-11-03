@@ -145,9 +145,12 @@ def _search(request, recording, events, output, config, search_progress):
 def _coverage(request, search, config):
     limitations = ["Historical receiver archives may omit aircraft or trajectory samples."]
     search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
-                       and not search.get("tile_failures") and not search.get("refinement_failure"))
+                       and not search.get("tile_failures") and not search.get("refinement_failure")
+                       and search.get("all_event_groups_considered") is not False)
     if not search_complete:
-        limitations.append("Search did not complete the full requested tile work or refinement.")
+        limitations.append("The search did not assess the complete requested scope within its work limits.")
+    if search.get("all_event_groups_considered") is False:
+        limitations.append(search.get("event_limit_reason") or "Not every proposed flyover group was considered within the configured budget.")
     if "constant_m" in config.get("terrain", {}):
         limitations.append("A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.")
     if search.get("alternative_modes_exhaustively_assessed") is not True:
