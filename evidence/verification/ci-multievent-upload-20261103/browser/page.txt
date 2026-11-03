@@ -1,0 +1,110 @@
+DOPPLERGEIST
+Aircraft sound → location evidence
+
+ACOUSTIC GEOLOCATION
+
+Find the flights.
+Test the location.
+
+Upload a recording to discover aircraft Doppler curves, search historical flight tracks, and inspect the evidence. When the evidence cannot support a location, the result is inconclusive.
+
+Search coverage: contiguous United States (CONUS). Location goal: 100–500 m or better preferred; up to 1,000 m acceptable. Nationwide accuracy remains under evaluation.
+
+New analysis
+↑
+Choose an MP3 recording
+Your original file is preserved with the job.
+When did the recording start?
+
+Enter UTC, including the date. A window is allowed. File creation and upload times do not establish recording time. Leave blank if unknown; analysis will request this evidence before searching.
+
+Earliest start (UTC)
+Latest start (UTC)
+How is this time known? Optional
+
+Up to 100 MB per file. Analysis budget: 29 minutes per job.
+
+Upload & analyze
+→
+
+Analysis
+
+JOB bfe6866813b34141a2ed84d64612110a
+
+Inconclusive
+complete
+
+Competing hypotheses fit nearly as well; no unique precise location is supported.
+
+Search & data coverage
+
+Requested area: contiguous United States (CONUS)
+
+Search complete · Data available
+
+Historical receiver archives may omit aircraft or trajectory samples.
+
+Candidate retention is bounded; exhaustive alternative-location assessment is not established.
+
+Location hypotheses · result remains inconclusive
+1. 40.031730, -100.018289
+
+Sensitivity radius: 6 m · declared perturbation profiles
+
+Score 3.9568 (matched group support minus normalized residual); not a probability.
+
+Flights: 1e3a1eea7263c16d9c20041d294b6071, 73956cb486fabc28fbe64806eea49259, 168bb3d4dab93f4679a1d8a9152b4603, 8b8e4c8a6d7ef2f9d47e7b0b45851455 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+2. 40.031730, -100.018289
+
+Sensitivity radius: 6 m · profiled relative altitude offsets
+
+Score 3.9568 (matched group support minus normalized residual); not a probability.
+
+Flights: 1e3a1eea7263c16d9c20041d294b6071, 73956cb486fabc28fbe64806eea49259, 168bb3d4dab93f4679a1d8a9152b4603, 8b8e4c8a6d7ef2f9d47e7b0b45851455 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+3. 40.031730, -100.018289
+
+Sensitivity radius: 6 m · profiled relative altitude offsets
+
+Score 3.9568 (matched group support minus normalized residual); not a probability.
+
+Flights: 1e3a1eea7263c16d9c20041d294b6071, 73956cb486fabc28fbe64806eea49259, 168bb3d4dab93f4679a1d8a9152b4603, 8b8e4c8a6d7ef2f9d47e7b0b45851455 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+4. 40.031730, -100.018289
+
+Sensitivity radius: 6 m · profiled relative altitude offsets
+
+Score 3.9568 (matched group support minus normalized residual); not a probability.
+
+Flights: 1e3a1eea7263c16d9c20041d294b6071, 73956cb486fabc28fbe64806eea49259, 168bb3d4dab93f4679a1d8a9152b4603, 8b8e4c8a6d7ef2f9d47e7b0b45851455 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+5. 40.031730, -100.018289
+
+Sensitivity radius: 6 m · profiled relative altitude offsets
+
+Score 3.9568 (matched group support minus normalized residual); not a probability.
+
+Flights: 1e3a1eea7263c16d9c20041d294b6071, 73956cb486fabc28fbe64806eea49259, 168bb3d4dab93f4679a1d8a9152b4603, 8b8e4c8a6d7ef2f9d47e7b0b45851455 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+100 additional hypotheses
+4 detected Doppler curves
+event-0001 · 75.0–240.0 s · 110–170 Hz · group harmonics-0001
+event-0002 · 295.5–480.0 s · 127–203 Hz · group harmonics-0002
+event-0003 · 518.0–709.5 s · 143–237 Hz · group harmonics-0003
+event-0004 · 740.0–933.0 s · 160–273 Hz · group harmonics-0004
+discovery/discovery.png
+discovery/event-0001.png
+discovery/event-0002.png
+discovery/event-0003.png
+discovery/event-0004.png
+Download run artifacts
+
+Recent jobs on this browser
+bfe6866813b3
+Scores rank hypotheses; they are not probabilities. An inconclusive result can include alternatives without supporting a precise location.

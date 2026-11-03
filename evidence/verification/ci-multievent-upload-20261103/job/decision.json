@@ -1,0 +1,1956 @@
+{
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "message": "Competing hypotheses fit nearly as well; no unique precise location is supported.",
+  "diagnostics": {
+    "policy": {
+      "target_radius_m": 1000.0,
+      "min_independent_events": 2,
+      "max_event_rmse_hz": 3.0,
+      "max_outlier_fraction": 0.25,
+      "min_support_fraction": 0.95,
+      "near_tie_loss_per_event_hz": 0.5,
+      "near_tie_support_per_group": 0.2
+    },
+    "policy_version": "engineering-v3",
+    "calibration": "uncalibrated",
+    "probability": null,
+    "limitations": [
+      "Archive availability does not establish capture of every aircraft.",
+      "Sensitivity checks are not a calibrated confidence interval."
+    ],
+    "independent_event_groups": 4,
+    "recording_start_window_s": [
+      1790000000.0,
+      1790000000.0
+    ],
+    "known_clock_single_event": false,
+    "unmatched_event_ids": [],
+    "unmatched_proposal_status": "unconfirmed acoustic proposals; not labelled aircraft misses",
+    "competing_hypothesis": {
+      "separation_m": 21.960276635521613,
+      "score_gap": 0.037324793959408575,
+      "gap_units": "support_units_per_group",
+      "same_flight_association": true,
+      "checked_radius_m": 6.268946589875684
+    }
+  },
+  "candidates": [
+    {
+      "lat": 40.031730400320114,
+      "lon": -100.01828922169871,
+      "score": 3.956833284003326,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 6.268946589875684,
+        "method": "declared_perturbation_profiles",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03173040030729,
+      "lon": -100.01828922796628,
+      "score": 3.9568332836827658,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 6.272910211805378,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.031730397996824,
+      "lon": -100.01828921002969,
+      "score": 3.9568332809559577,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 6.2817507570174795,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03173039338481,
+      "lon": -100.01828921419875,
+      "score": 3.9568332808009306,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 6.274892127378487,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.0317304002132,
+      "lon": -100.01828920819082,
+      "score": 3.9568332789613567,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 6.27276546835607,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 3.8075341081656915,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 3.425347982771037,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 3.396520253889416,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 3.25215351290472,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 3.204131167404939,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 3.1251547934595134,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 3.0595681682734313,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 3.0407273408498914,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03335279590874,
+      "lon": -100.01853858884897,
+      "score": 2.918545161180646,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": 2.9116063806082915,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 2.8824485267965425,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 2.8697987819976998,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 2.853027140554059,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 2.8506597991792995,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 2.849116602766016,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031493913558165,
+      "lon": -100.0208009933423,
+      "score": 2.7926054546485273,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03253652762431,
+      "lon": -100.01612621924471,
+      "score": 2.7608333582192297,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029785987940265,
+      "lon": -100.0183386868708,
+      "score": 2.746999063733557,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03331506166696,
+      "lon": -100.01971979776403,
+      "score": 2.7441009022677636,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.033390519067844,
+      "lon": -100.01735737869151,
+      "score": 2.711710812983159,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03075312169894,
+      "lon": -100.01602632687492,
+      "score": 2.6876741590210873,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02982370915776,
+      "lon": -100.0171575353325,
+      "score": 2.683702686739124,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032385614764586,
+      "lon": -100.02085099876777,
+      "score": 2.6744737914519243,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 2.6501603132953795,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 2.618486936444483,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 2.6174935840327995,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03060221272304,
+      "lon": -100.02075098915986,
+      "score": 2.5728804987557625,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 2.5669482868100566,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 2.5255626721398454,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03168252449938,
+      "lon": -100.01489508910836,
+      "score": 2.5244514854601907,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0342444988298,
+      "lon": -100.01858856744938,
+      "score": 2.515794997414657,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02974825564067,
+      "lon": -100.0195198371669,
+      "score": 2.5156251543077666,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 2.5140816295172335,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 2.507344902510416,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 2.504163642181717,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 2.4977739883149765,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 2.493315069056014,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 2.4845084895214,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 2.452259588695579,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03420676410243,
+      "lon": -100.01976979102008,
+      "score": 2.449914179967307,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03342823114428,
+      "lon": -100.01617616729203,
+      "score": 2.4375790248307823,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03327731634254,
+      "lon": -100.02090100543631,
+      "score": 2.4358048770208334,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03257422813287,
+      "lon": -100.01494502125898,
+      "score": 2.426412125310115,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029861419293134,
+      "lon": -100.01597638255235,
+      "score": 2.41937522896456,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031456158122815,
+      "lon": -100.02198217046146,
+      "score": 2.4167680422415243,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 2.3964900000141904,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 2.3784160122098585,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0288942868759,
+      "lon": -100.0182887144819,
+      "score": 2.3776085642418474,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0307908212373,
+      "lon": -100.01484515819895,
+      "score": 2.3774128775973518,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03428222247437,
+      "lon": -100.01740734263623,
+      "score": 2.3600882571367023,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02893200760806,
+      "lon": -100.01710757759749,
+      "score": 2.3529426948090126,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 2.352673737725133,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 2.3498993770387244,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 2.3487988478774393,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 2.335396659146598,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 2.3352092534260365,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 2.334995472955414,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0323478588434,
+      "lon": -100.02203219054176,
+      "score": 2.3336025811521237,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03335279590874,
+      "lon": -100.01853858884897,
+      "score": 2.323514245962416,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 2.3209747983821076,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 2.3200411846265574,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": 2.3021983392021603,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 2.299594085379109,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 2.29557578256611,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.030564457773494,
+      "lon": -100.02193215162454,
+      "score": 2.2873984216101624,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 2.28714320192728,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 2.277237842480803,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03335279590874,
+      "lon": -100.01853858884897,
+      "score": 2.268641105858138,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02971051225899,
+      "lon": -100.0207009862204,
+      "score": 2.264183080804895,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 2.2565705583673075,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": 2.2309183689607575,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031493913558165,
+      "lon": -100.0208009933423,
+      "score": 2.220974420000791,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03416901829226,
+      "lon": -100.02095101334798,
+      "score": 2.2103812739118407,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029785987940265,
+      "lon": -100.0183386868708,
+      "score": 2.207491861246133,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 2.205390443838982,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0288565550618,
+      "lon": -100.01946985012417,
+      "score": 2.2013498034293932,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03172021344037,
+      "lon": -100.01371390453647,
+      "score": 2.2002926849500666,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 2.189693742016277,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03346593213801,
+      "lon": -100.01499495465087,
+      "score": 2.1804488158529156,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03513620212291,
+      "lon": -100.01863854729224,
+      "score": 2.1781985977145553,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03509846690992,
+      "lon": -100.01981978551896,
+      "score": 2.1709554043963233,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 2.1694878942275464,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02896971725824,
+      "lon": -100.01592643947126,
+      "score": 2.162611981121624,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031493913558165,
+      "lon": -100.0208009933423,
+      "score": 2.162174036221599,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 2.1595324826046642,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029899118346385,
+      "lon": -100.0147952285307,
+      "score": 2.1569466473697703,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03253652762431,
+      "lon": -100.01612621924471,
+      "score": 2.150691257427542,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.033239559935495,
+      "lon": -100.0220822118655,
+      "score": 2.150683033786544,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029785987940265,
+      "lon": -100.0183386868708,
+      "score": 2.1394492080662806,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03331506166696,
+      "lon": -100.01971979776403,
+      "score": 2.1392760245822955,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03431993503612,
+      "lon": -100.01622611658101,
+      "score": 2.1383580344756843,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02982370915776,
+      "lon": -100.0171575353325,
+      "score": 2.1379961779746055,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.033390519067844,
+      "lon": -100.01735737869151,
+      "score": 2.1352395956501997,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032611917558874,
+      "lon": -100.013763822032,
+      "score": 2.126017454116588,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03331506166696,
+      "lon": -100.01971979776403,
+      "score": 2.1252345356243376,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03253652762431,
+      "lon": -100.01612621924471,
+      "score": 2.1190406137536395,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 2.1129347597184345,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": 2.1046693379771866,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032385614764586,
+      "lon": -100.02085099876777,
+      "score": 2.101760188244194,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03082850969333,
+      "lon": -100.01366398828182,
+      "score": 2.1003970081136183,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ],
+      "flight_ids": [
+        "1e3a1eea7263c16d9c20041d294b6071",
+        "73956cb486fabc28fbe64806eea49259",
+        "168bb3d4dab93f4679a1d8a9152b4603",
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    }
+  ]
+}

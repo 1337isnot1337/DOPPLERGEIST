@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only scientific audit of one frozen known-clock synthetic four-event browser development replay",
+  "audit_utc": "2026-11-03T02:08:43.824585Z",
+  "source": {
+    "commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+    "tree": "4db8aec1e8fc0f3b41b18e9d43a9ab07f608247f",
+    "run_id": 41562469268,
+    "job_id": 125676036022,
+    "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41562469268",
+    "artifact_id": 13197212672,
+    "artifact_zip_bytes": 82031174,
+    "artifact_zip_sha256_from_upload_log": "4b48add76c813441cd6578bf5b677bf9f8e5581152d3a1ca80d762389d1ef2fa",
+    "extracted_file_hashes": {
+      "ci-upload/acceptance.json": {
+        "bytes": 899144,
+        "sha256": "1f955d276e5238f443bcbb4e4c9ea9d571ff60a27e229dec9ee5a0b3168ed6d8"
+      },
+      "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/decision.json": {
+        "bytes": 57397,
+        "sha256": "e7b49f500db78c4a5606d29b4c8e1487fba2e2f360398f2dc6eb11332bbcd618"
+      },
+      "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/result.json": {
+        "bytes": 250495,
+        "sha256": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624"
+      },
+      "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/refined-candidates.json": {
+        "bytes": 434500,
+        "sha256": "c383ba027e33b7b334ffe391869fbc312dc3334ae9c43f726bf05650ab2eb481"
+      },
+      "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/search/search-report.json": {
+        "bytes": 406111,
+        "sha256": "4038a86c34514b6be9b599117642cc42c012502a34b0f0dd14df762257ba5bb2"
+      }
+    }
+  },
+  "outcome": {
+    "producer_status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "transport_ui_passed": true,
+    "supported_localization_passed": false,
+    "full_acceptance_passed": false,
+    "leading_point_error_m": 0.07993058330434617,
+    "leading_score": 3.956833284003326,
+    "score_kind": "matched_group_support_minus_normalized_residual",
+    "leading_full_true_flight_set_correct": true,
+    "leading_strict_under_100m": true,
+    "clock": {
+      "reported_recording_start_utc": "2026-09-21T14:13:20Z",
+      "within_request_window": true,
+      "clock_error_s": 0.0,
+      "comparison": "inclusive trusted request UTC bounds; no additional tolerance"
+    }
+  },
+  "first_recorded_ambiguity": {
+    "candidate_rank": 6,
+    "separation_m": 21.960276635521613,
+    "score_gap": 0.037324793959408575,
+    "gap_units": "support_units_per_group",
+    "same_flight_association": true,
+    "checked_radius_m": 6.268946589875684,
+    "alternative_score": 3.8075341081656915,
+    "alternative_error_to_synthetic_truth_m": 21.885529691476,
+    "policy_near_tie_threshold_per_group": 0.2,
+    "interpretation": "A retained point with the same correct four-flight association lies outside the returned sensitivity radius and remains near-tied under the unchanged policy."
+  },
+  "derived_retained_near_tie_readout": {
+    "method": "Use the saved candidate scores and unchanged W4 formula. Classify spatial containment with triangle-inequality bounds from the saved WGS84 truth errors; no new localization, re-scoring, or geodesic computation. The first separation is copied from decision.json.",
+    "candidate_records": [
+      {
+        "rank": 6,
+        "score": 3.8075341081656915,
+        "error_to_synthetic_truth_m": 21.885529691476,
+        "score_gap_per_group": 0.037324793959408575,
+        "same_flight_association": true,
+        "leader_separation_bounds_m": [
+          21.805599108171652,
+          21.965460274780344
+        ],
+        "recorded_leader_separation_m": 21.960276635521613
+      },
+      {
+        "rank": 7,
+        "score": 3.425347982771037,
+        "error_to_synthetic_truth_m": 82.92831879740659,
+        "score_gap_per_group": 0.13287132530807222,
+        "same_flight_association": true,
+        "leader_separation_bounds_m": [
+          82.84838821410224,
+          83.00824938071094
+        ]
+      },
+      {
+        "rank": 8,
+        "score": 3.396520253889416,
+        "error_to_synthetic_truth_m": 89.1822875541064,
+        "score_gap_per_group": 0.14007825752847747,
+        "same_flight_association": true,
+        "leader_separation_bounds_m": [
+          89.10235697080205,
+          89.26221813741074
+        ]
+      },
+      {
+        "rank": 9,
+        "score": 3.25215351290472,
+        "error_to_synthetic_truth_m": 115.62238404419993,
+        "score_gap_per_group": 0.17616994277465148,
+        "same_flight_association": true,
+        "leader_separation_bounds_m": [
+          115.54245346089559,
+          115.70231462750428
+        ]
+      },
+      {
+        "rank": 10,
+        "score": 3.204131167404939,
+        "error_to_synthetic_truth_m": 117.14662723939321,
+        "score_gap_per_group": 0.18817552914959668,
+        "same_flight_association": true,
+        "leader_separation_bounds_m": [
+          117.06669665608887,
+          117.22655782269756
+        ]
+      }
+    ],
+    "unresolved_spatial_classifications": [],
+    "scope": "Retained records only; this does not certify discarded or unvisited alternatives and does not recompute acceptance."
+  },
+  "candidate_distance_tiers": {
+    "100": {
+      "all_candidate_records": 20,
+      "correct_full_four_flight_records": 8,
+      "leading_point_within": true,
+      "supported_localization": false
+    },
+    "500": {
+      "all_candidate_records": 105,
+      "correct_full_four_flight_records": 53,
+      "leading_point_within": true,
+      "supported_localization": false
+    },
+    "1000": {
+      "all_candidate_records": 105,
+      "correct_full_four_flight_records": 53,
+      "leading_point_within": true,
+      "supported_localization": false
+    }
+  },
+  "candidate_record_population": {
+    "total": 105,
+    "by_matched_groups": {
+      "4": 53,
+      "3": 52
+    },
+    "all_selected_event_to_flight_assignments_agree_with_leading_correct_assignment": true,
+    "full_four_group_records": 53,
+    "partial_three_group_records": 52,
+    "scene_count": 1,
+    "independently_held_out_trials": 0,
+    "count_scope": "Candidate records from one generated development scene, including repeated points and partial associations; not independent trials."
+  },
+  "four_event_participation": {
+    "discovered_events": 4,
+    "selected_event_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "unmatched_event_ids": [],
+    "required_flyovers_explained": true,
+    "nominal_public_internal_binding_verified": true,
+    "nominal_joint_fit_recorded": true,
+    "groups": [
+      {
+        "event_id": "event-0001",
+        "group_id": "harmonics-0001",
+        "detected_span_s": [
+          75.0,
+          240.0
+        ],
+        "ridge_span_s": [
+          76.0,
+          239.0
+        ],
+        "unique_ridge_times": 327,
+        "harmonic_count": 2.0,
+        "rmse_hz": 0.01905807207259025,
+        "trajectory_support_fraction": 1.0,
+        "outlier_fraction": 0.0,
+        "drift_at_bound": false,
+        "target_interval_fraction": 1.0,
+        "other_true_interval_fractions": {
+          "73956cb486fabc28fbe64806eea49259": 0.0,
+          "168bb3d4dab93f4679a1d8a9152b4603": 0.0,
+          "8b8e4c8a6d7ef2f9d47e7b0b45851455": 0.0
+        }
+      },
+      {
+        "event_id": "event-0002",
+        "group_id": "harmonics-0002",
+        "detected_span_s": [
+          295.5,
+          480.0
+        ],
+        "ridge_span_s": [
+          296.5,
+          479.0
+        ],
+        "unique_ridge_times": 366,
+        "harmonic_count": 2.0,
+        "rmse_hz": 0.026704955697296123,
+        "trajectory_support_fraction": 1.0,
+        "outlier_fraction": 0.0,
+        "drift_at_bound": false,
+        "target_interval_fraction": 1.0,
+        "other_true_interval_fractions": {
+          "1e3a1eea7263c16d9c20041d294b6071": 0.0,
+          "168bb3d4dab93f4679a1d8a9152b4603": 0.0,
+          "8b8e4c8a6d7ef2f9d47e7b0b45851455": 0.0
+        }
+      },
+      {
+        "event_id": "event-0003",
+        "group_id": "harmonics-0003",
+        "detected_span_s": [
+          518.0,
+          709.5
+        ],
+        "ridge_span_s": [
+          519.0,
+          708.5
+        ],
+        "unique_ridge_times": 380,
+        "harmonic_count": 2.0,
+        "rmse_hz": 0.03238794052915335,
+        "trajectory_support_fraction": 1.0,
+        "outlier_fraction": 0.0,
+        "drift_at_bound": false,
+        "target_interval_fraction": 1.0,
+        "other_true_interval_fractions": {
+          "1e3a1eea7263c16d9c20041d294b6071": 0.0,
+          "73956cb486fabc28fbe64806eea49259": 0.0,
+          "8b8e4c8a6d7ef2f9d47e7b0b45851455": 0.0
+        }
+      },
+      {
+        "event_id": "event-0004",
+        "group_id": "harmonics-0004",
+        "detected_span_s": [
+          740.0,
+          933.0
+        ],
+        "ridge_span_s": [
+          741.0,
+          932.0
+        ],
+        "unique_ridge_times": 379,
+        "harmonic_count": 2.0,
+        "rmse_hz": 0.05194142783978217,
+        "trajectory_support_fraction": 1.0,
+        "outlier_fraction": 0.0,
+        "drift_at_bound": false,
+        "target_interval_fraction": 1.0,
+        "other_true_interval_fractions": {
+          "1e3a1eea7263c16d9c20041d294b6071": 0.0,
+          "73956cb486fabc28fbe64806eea49259": 0.0,
+          "168bb3d4dab93f4679a1d8a9152b4603": 0.0
+        }
+      }
+    ],
+    "empirical_leave_one_out_effect_tested": false,
+    "scope": "Recorded inputs and diagnostics under the frozen joint-fit implementation; unique timestamps are not a claim of statistical sample independence."
+  },
+  "profile_evidence": {
+    "radius_m": 6.268946589875684,
+    "kind": "sensitivity",
+    "method": "declared_perturbation_profiles",
+    "complete": true,
+    "boundary_limited": false,
+    "failures": [],
+    "sources": [
+      "altitude",
+      "clock",
+      "frequency",
+      "sound_speed",
+      "source_frequency"
+    ],
+    "settings": {
+      "altitude_uncertainty_m": 150.0,
+      "sound_speed_uncertainty_mps": 5.0,
+      "frequency_scale_hz": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "clock_bounds_s": [
+        1790000000.0,
+        1790000000.0
+      ]
+    },
+    "profile_rows": 33,
+    "profile_rows_by_source": {
+      "nominal": 1,
+      "altitude": 12,
+      "sound_speed": 2,
+      "frequency": 16,
+      "source_frequency": 1,
+      "clock": 1
+    },
+    "all_optimizer_success": true,
+    "all_profiles_nonboundary": true,
+    "all_profile_clocks_in_trusted_window": true,
+    "maximum_displacement_profile": {
+      "source": "altitude",
+      "scenario": "height_-1",
+      "lat": 40.03169390828249,
+      "lon": -100.01823317896825,
+      "score": 3.223094505626032,
+      "recording_start_time_s": 1790000000.0,
+      "displacement_m": 6.268946589875684,
+      "boundary_limited": false,
+      "flight_altitude_bias": null,
+      "observer_altitude_offset_m": -150.0,
+      "optimizer_success": true
+    },
+    "all_selected_frequency_scenarios_recorded": true,
+    "all_selected_flight_altitude_signs_recorded": true,
+    "calibration": "uncalibrated finite engineering perturbations",
+    "decision_scope": "Observed profile evidence; the producer returned early at retained-location ambiguity, so this is not a claim that the decision accepted its later gates."
+  },
+  "search": {
+    "run_hash": "487e8bacc9f11b1efb2f3b56323de22f6c6024d3ddb4c51482f5eb422b52c035",
+    "status": "complete",
+    "tiles_total": 4940,
+    "tiles_completed": 4940,
+    "unsearched_tiles": 0,
+    "grid_points_searched": 28672,
+    "refinement_points_searched": 1681,
+    "refinement_points_skipped": 15129,
+    "candidate_retention_limit": 100,
+    "alternative_modes_exhaustively_assessed": false,
+    "data_scope_complete": true,
+    "event_groups_proposed": 4,
+    "association_event_limit": 4,
+    "all_event_groups_considered": true,
+    "event_limit_reason": null,
+    "scoring_time_is_locked": true,
+    "scope": [
+      -125.0,
+      24.0,
+      -66.0,
+      50.0
+    ],
+    "tile_failures": [],
+    "refinement_failure": null
+  },
+  "matching_alternatives_evaluated": false,
+  "inputs": {
+    "track_count": 12,
+    "rows": 3252,
+    "typecode_rows": {
+      "C172": 813,
+      "PC12": 813,
+      "A320": 813,
+      "": 813
+    },
+    "all_non_id_values_preserved": true,
+    "all_rows_retained": true,
+    "index_version": 2,
+    "coverage": {
+      "bounds": [
+        -180.0,
+        -85.0,
+        180.0,
+        85.0
+      ],
+      "time_range_s": [
+        1789999700.0,
+        1790001260.0
+      ],
+      "all_aircraft": true,
+      "source_kind": "complete_finite_synthetic_population",
+      "real_receiver_coverage": false,
+      "synthetic": true
+    }
+  },
+  "evidence_integrity": {
+    "all_14_job_checks_passed": true,
+    "job_errors": [],
+    "candidate_arrays_equal_across_decision_result_browser_receipt": true,
+    "service_and_workers_stopped": true,
+    "analysis_stopped_utc": "2026-11-03T02:01:20.072556Z",
+    "truth_loaded_utc": "2026-11-03T02:01:20.072667Z",
+    "truth_loaded_after_stop": true,
+    "procedural_separation_only": true
+  },
+  "limitations": [
+    "One deterministic synthetic development scene with an exact supplied clock; not an independently timed real-field test.",
+    "No empirical calibration, continuum uniqueness, or complete real national traffic claim.",
+    "The original frozen acceptance and policy are unchanged; all supported-location tiers remain false.",
+    "The close leading point does not remove the recorded near-tied points outside its returned sensitivity radius.",
+    "Bounded retention and unestablished alternative-mode completeness remain separate limitations."
+  ]
+}

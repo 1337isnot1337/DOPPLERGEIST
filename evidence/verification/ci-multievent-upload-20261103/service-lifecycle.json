@@ -1,0 +1,29 @@
+{
+  "adapter": "service SIGTERM request replaced by SIGINT only",
+  "scientific_stages_replaced": false,
+  "servers": [
+    {
+      "pid": 4754,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+        "-m",
+        "aircraft_geoloc.cli",
+        "serve",
+        "--jobs",
+        "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/product/http-jobs",
+        "--port",
+        "37695",
+        "--max-runtime",
+        "1731.0071218799999",
+        "--config",
+        "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/operator.json"
+      ],
+      "started_utc": "2026-11-03T01:55:52.309583Z",
+      "forced_kill": false,
+      "returncode": 0,
+      "shutdown_signal": "SIGINT",
+      "shutdown_requested_utc": "2026-11-03T02:01:19.857997Z",
+      "stopped_utc": "2026-11-03T02:01:19.894504Z"
+    }
+  ]
+}

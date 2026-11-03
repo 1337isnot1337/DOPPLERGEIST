@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only audit of completed synthetic four-flyover browser run and artifact. No rerun or decision-policy change.",
+  "run": {
+    "repository": "1337isnot1337/DOPPLERGEIST",
+    "commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+    "tree": "4db8aec1e8fc0f3b41b18e9d43a9ab07f608247f",
+    "run_id": 41562469268,
+    "job_id": 125676036022,
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41562469268",
+    "conclusion": "failure",
+    "checkout_fetch_depth": 0,
+    "observed_fetch_command": "git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*",
+    "python": "3.12.15",
+    "pip_check": "No broken requirements found.",
+    "pytest_summary": "267 passed, 25 subtests passed in 64.63s (0:01:04)"
+  },
+  "artifact": {
+    "id": 13197212672,
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41562469268/artifacts/13197212672",
+    "bytes": 82031174,
+    "sha256": "4b48add76c813441cd6578bf5b677bf9f8e5581152d3a1ca80d762389d1ef2fa",
+    "github_digest_matches_recomputed_bytes": true,
+    "archive_entries": 5048,
+    "expires_at": "2026-12-03T02:01:22Z",
+    "manifest_entries": 5061,
+    "manifest_files_hash_and_size_verified": 5040,
+    "hash_or_size_mismatches": [],
+    "absent_manifest_entries": {
+      "explicitly_excluded_python_bytecode": 20,
+      "runtime_manager_lock_absent": 1,
+      "interpretation": "Bytecode files are explicitly excluded by the workflow; absence of the runtime lockfile is consistent with the artifact action hidden-file default."
+    },
+    "unlisted_files": [
+      "acceptance.json",
+      "artifact-manifest.json"
+    ],
+    "separate_environment_files": 6,
+    "acceptance_bytes_match_marked_ci_stdout": true,
+    "evidence_sha256": {
+      "acceptance.json": "1f955d276e5238f443bcbb4e4c9ea9d571ff60a27e229dec9ee5a0b3168ed6d8",
+      "artifact-manifest.json": "0d098ca4992b6d754335c793fb647525be4b0da0dd856dd6b19772244ca27217",
+      "service-lifecycle.json": "72cef8a0cb7e51ad38ac14ae1e9312aff72b096e9495efff28ebe8876e910998",
+      "product/browser/browser.json": "cb3866218e80b34c3fa684ee0d4265477b85fd2315b2b719801edd0e08da1fff",
+      "product/browser/submission.json": "9c64590d23bfda75bb216c339b73de77cad6525a860d6e7c65c277f3cfba42b8",
+      "product/browser/browser-upload-headers.json": "2f5eea96aaa07097c592c880db0e00a3c5a84872d814dc6971e4ca79a044ddef",
+      "product/browser/result.json": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624",
+      "product/browser/artifacts.json": "881f442d6981f1a556c121bbc959b6969757bbd711f6ec9e68c984e57709f12a",
+      "product/browser/trace.zip": "9eddedb132004bb62f255c0168f2e44b588088c5ba71173b1e3139bbd4aaba02",
+      "product/browser/page.png": "0b37e205f5a780eeafb6f49bc2fb7fb62fbaa2e7021db37401314a74091a45cb",
+      "product/browser/page-mobile.png": "eea150b2f17c65ca3357fae25099f2866aa8830f466bf498145541116c57cd8a",
+      "product/http-jobs/bfe6866813b34141a2ed84d64612110a/provenance.json": "c3895b3eb23434844f05fd4269a927e5881847be4127ee3f90a1421d2a52dcbd",
+      "product/http-jobs/bfe6866813b34141a2ed84d64612110a/decision.json": "e7b49f500db78c4a5606d29b4c8e1487fba2e2f360398f2dc6eb11332bbcd618",
+      "product/http-jobs/bfe6866813b34141a2ed84d64612110a/search/search-report.json": "4038a86c34514b6be9b599117642cc42c012502a34b0f0dd14df762257ba5bb2"
+    }
+  },
+  "source": {
+    "frozen_snapshot_files_verified": 37,
+    "snapshot_sha256": "5b93d687694864f22b04f09f53c6877c7a9dd4e482ab1c75e6ffe9d8db3a3d8e",
+    "snapshot_mismatches": [],
+    "snapshot_legacy_pipeline_digest": "ff9a8b033f53b6407abd5286f9a44038fd4d43bb5b9b26def48d3c3b5e1a69e8",
+    "snapshot_legacy_digest_matches_expected": true,
+    "worker_python_files_verified": 20,
+    "actual_worker_provenance_matches_frozen_sources": true,
+    "source_checkout_clean_in_receipt": true
+  },
+  "browser": {
+    "submission": {
+      "job_id": "bfe6866813b34141a2ed84d64612110a",
+      "upload_http_status": 202,
+      "job_id_source": "actual upload-form display"
+    },
+    "recorded_checks": {
+      "browser": "156.0.8078.4",
+      "url": "http://127.0.0.1:37695/?job=bfe6866813b34141a2ed84d64612110a",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "playwright": "1.64.1",
+      "status": "inconclusive",
+      "javascript_errors": [],
+      "reloaded_job_verified": true,
+      "mobile_layout": {
+        "viewport_width": 390,
+        "document_width": 390
+      },
+      "artifact_count": 4964,
+      "downloads_expanded": false
+    },
+    "captured_header_request_matches_predeclared_wire_request": true,
+    "upload_content_length_bytes": 3841101,
+    "recording_files": {
+      "fixture/inputs/recording.mp3": {
+        "bytes": 3841101,
+        "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+      },
+      "product/http-jobs/bfe6866813b34141a2ed84d64612110a/input.mp3": {
+        "bytes": 3841101,
+        "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+      },
+      "product/browser/downloaded-original.bin": {
+        "bytes": 3841101,
+        "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+      }
+    },
+    "browser_result_matches_persisted_result": true,
+    "api_artifact_files_size_verified": 4964,
+    "network_requests_in_trace": 335,
+    "trace_routes": [
+      {
+        "method": "GET",
+        "path": "/",
+        "status": 200,
+        "count": 2
+      },
+      {
+        "method": "GET",
+        "path": "/style.css",
+        "status": 200,
+        "count": 2
+      },
+      {
+        "method": "GET",
+        "path": "/app.js",
+        "status": 200,
+        "count": 2
+      },
+      {
+        "method": "GET",
+        "path": "/api/capabilities",
+        "status": 200,
+        "count": 2
+      },
+      {
+        "method": "POST",
+        "path": "/api/jobs",
+        "status": 202,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a",
+        "status": 200,
+        "count": 319
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/discovery/discovery.png",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/discovery/event-0001.png",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/discovery/event-0002.png",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/discovery/event-0004.png",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/discovery/event-0003.png",
+        "status": 200,
+        "count": 1
+      },
+      {
+        "method": "GET",
+        "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts",
+        "status": -1,
+        "count": 1
+      }
+    ],
+    "trace_limitation": "One artifact-index request immediately before reload has no completed response in the trace. The post-reload request returned 200; this audit does not claim every trace request completed.",
+    "screenshots_present_and_hashed": true,
+    "visual_inspection": "Parent owns the separate visual review; this audit verifies archived bytes and recorded viewport check."
+  },
+  "lifecycle": {
+    "record": {
+      "adapter": "service SIGTERM request replaced by SIGINT only",
+      "scientific_stages_replaced": false,
+      "servers": [
+        {
+          "pid": 4754,
+          "command": [
+            "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+            "-m",
+            "aircraft_geoloc.cli",
+            "serve",
+            "--jobs",
+            "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/product/http-jobs",
+            "--port",
+            "37695",
+            "--max-runtime",
+            "1731.0071218799999",
+            "--config",
+            "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/operator.json"
+          ],
+          "started_utc": "2026-11-03T01:55:52.309583Z",
+          "forced_kill": false,
+          "returncode": 0,
+          "shutdown_signal": "SIGINT",
+          "shutdown_requested_utc": "2026-11-03T02:01:19.857997Z",
+          "stopped_utc": "2026-11-03T02:01:19.894504Z"
+        }
+      ]
+    },
+    "service_and_workers_stopped": true,
+    "analysis_stopped_utc": "2026-11-03T02:01:20.072556Z",
+    "evaluation_truth_loaded_utc": "2026-11-03T02:01:20.072667Z",
+    "truth_loaded_after_clean_stop": true,
+    "verification_basis": "Recorded SIGINT exit 0 without force, plus pinned service.py finally calling JobManager.close and pinned jobs.py waiting for workers and joining owned threads. Procedural separation; no OS access sandbox is claimed."
+  },
+  "retained_inputs": {
+    "rows": 3252,
+    "tracks": 12,
+    "rows_per_track_unique": [
+      271
+    ],
+    "typecode_rows": {
+      "C172": 813,
+      "PC12": 813,
+      "A320": 813,
+      "": 813
+    },
+    "index_version": 2,
+    "invalid_rows": 0,
+    "all_rows_retained": true,
+    "all_non_id_values_preserved": true,
+    "jets_excluded": false,
+    "unknown_types_retained": true,
+    "geometry_clipped": false
+  },
+  "observed_outcome": {
+    "stage": "complete",
+    "all_named_job_checks_true": true,
+    "named_job_checks_count": 14,
+    "collection_errors": [],
+    "transport_ui_passed": true,
+    "status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "candidate_count": 105,
+    "leading_error_m": 0.07993058330434617,
+    "leading_clock": {
+      "reported_recording_start_utc": "2026-09-21T14:13:20Z",
+      "within_request_window": true,
+      "clock_error_s": 0.0,
+      "comparison": "inclusive trusted request UTC bounds; no additional tolerance"
+    },
+    "true_flyovers": 4,
+    "discovered_events": 4,
+    "required_flyovers_explained": true,
+    "full_true_flight_set_correct": true,
+    "nominal_joint_fit_recorded": true,
+    "empirical_leave_one_out_effect_tested": false,
+    "threshold_counts": {
+      "100": {
+        "all_candidates": 20,
+        "correct_full_flight_set": 8
+      },
+      "500": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      },
+      "1000": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      }
+    },
+    "supported_localization_at_m": {
+      "100": false,
+      "500": false,
+      "1000": false
+    },
+    "supported_decision": false,
+    "passed": false,
+    "competing_hypothesis": {
+      "separation_m": 21.960276635521613,
+      "score_gap": 0.037324793959408575,
+      "gap_units": "support_units_per_group",
+      "same_flight_association": true,
+      "checked_radius_m": 6.268946589875684
+    },
+    "finite_grid_search": {
+      "status": "complete",
+      "tiles_total": 4940,
+      "tiles_completed": 4940,
+      "grid_points_searched": 28672,
+      "refinement_points_searched": 1681,
+      "refinement_points_skipped": 15129,
+      "all_event_groups_considered": true,
+      "alternative_modes_exhaustively_assessed": false
+    },
+    "total_elapsed_s": 337.896905789,
+    "stage_execution": [
+      {
+        "stage": "generation",
+        "returncode": 0,
+        "elapsed_s": 7.021791941000004,
+        "peak_sampled_process_tree_rss_bytes": 528171008,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      },
+      {
+        "stage": "indexing",
+        "returncode": 0,
+        "elapsed_s": 1.804845628999999,
+        "peak_sampled_process_tree_rss_bytes": 286846976,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      },
+      {
+        "stage": "browser-upload",
+        "returncode": 0,
+        "elapsed_s": 328.75044565599995,
+        "peak_sampled_process_tree_rss_bytes": 1453154304,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    ],
+    "search_self_reported_process_peak_rss_mib": 450.14453125
+  },
+  "limitations": [
+    "One finite synthetic development scene, not an independent real holdout.",
+    "The sample-zero clock is supplied from the generator, not inferred from audio.",
+    "Only finite generated traffic/terrain completeness is declared; no live acquisition is exercised.",
+    "Reference separation is procedural; no operating-system filesystem sandbox is claimed.",
+    "Sampled RSS includes verifier/server/browser/worker processes and can miss short peaks.",
+    "A close alternative or expected inconclusive result cannot pass supported localization.",
+    "Candidate rows and repeated HTTP polls belong to one scene; they are not independent localization trials.",
+    "The actual producer decision remains inconclusive. A small leading point error cannot make supported acceptance true."
+  ]
+}
