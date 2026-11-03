@@ -16,8 +16,10 @@ import json
 import multiprocessing
 import os
 from pathlib import Path
+import pickle
 import sqlite3
 import tarfile
+from threading import Lock
 
 import numpy as np
 import pandas as pd
@@ -363,9 +365,22 @@ def _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, work
 
 
 class FlightIndex:
-    """SQLite R-tree of complete, gap-split flight segments; lazy payload reads."""
-    def __init__(self, path):
+    """SQLite R-tree of whole segments with an optional per-instance track cache.
+
+    ``track_cache_bytes`` bounds serialized snapshot bytes retained until this
+    instance is released; zero disables reuse. At most 2,048 entries are kept.
+    The limit excludes returned tracks, temporary serialization and map overhead.
+    Concurrent queries use separate SQLite connections and return independent
+    tracks, even when they reuse the same verified snapshot.
+    """
+    def __init__(self, path, *, track_cache_bytes=32 * 1024 * 1024):
+        if type(track_cache_bytes) is not int or track_cache_bytes < 0:
+            raise ValueError("Track cache size must be a nonnegative integer")
         self.path = Path(path)
+        self._track_cache = OrderedDict()
+        self._track_cache_bytes = 0
+        self._track_cache_limit = track_cache_bytes
+        self._track_cache_lock = Lock()
         if not self.path.exists():
             raise DataUnavailable(f"Missing flight index: {path}")
         try:
@@ -378,6 +393,61 @@ class FlightIndex:
 
     def connect(self):
         return sqlite3.connect(f"{self.path.resolve().as_uri()}?mode=ro", uri=True)
+
+    def _decode_track(self, name, payload, expected, *, max_samples=None, cache_scan=None):
+        # Verify every fetched payload, including hits. A cached track must not
+        # conceal damage to an index that was changed after the previous query.
+        if hashlib.sha256(payload).hexdigest() != expected:
+            raise DataUnavailable(f"Corrupt flight payload: {name}")
+        key = (name, expected)
+        with self._track_cache_lock:
+            entry = self._track_cache.get(key)
+            if entry is not None:
+                count, cached = entry
+                if max_samples is not None and count > max_samples:
+                    raise DataUnavailable("Flight lookup sample budget exceeded")
+                self._track_cache.move_to_end(key)
+                if cache_scan is not None:
+                    cache_scan["used"].add(key)
+        if entry is not None:
+            return pickle.loads(cached)
+        frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
+        if max_samples is not None and len(frame) > max_samples:
+            raise DataUnavailable("Flight lookup sample budget exceeded")
+        track = _frame_track(name, frame)
+        if self._track_cache_limit and (cache_scan is None or cache_scan["admit"]):
+            # These bytes are produced here, never read from a file/request.
+            # Restoring them returns independent arrays and mutable diagnostics,
+            # while reusing JSON decoding, velocity inference and spline setup.
+            cached = pickle.dumps(track, protocol=pickle.HIGHEST_PROTOCOL)
+            if len(cached) <= self._track_cache_limit:
+                with self._track_cache_lock:
+                    # Another query can fill this key while decoding runs
+                    # outside the lock. Never count the same entry twice.
+                    if key in self._track_cache:
+                        self._track_cache.move_to_end(key)
+                        if cache_scan is not None:
+                            cache_scan["used"].add(key)
+                        return track
+                    # Bound serialized values and entry count separately so many
+                    # tiny segments cannot grow the key/container overhead forever.
+                    while self._track_cache and (self._track_cache_bytes + len(cached) > self._track_cache_limit
+                                                 or len(self._track_cache) >= 2048):
+                        # A query larger than the cache must not evict entries it
+                        # just used. Otherwise repeated ordered scans thrash with
+                        # zero hits. Older entries unused by this query can go.
+                        if cache_scan is not None and next(iter(self._track_cache)) in cache_scan["used"]:
+                            # Further misses still decode normally, but do not pay
+                            # serialization costs after admission stops.
+                            cache_scan["admit"] = False
+                            return track
+                        _, (_, previous) = self._track_cache.popitem(last=False)
+                        self._track_cache_bytes -= len(previous)
+                    self._track_cache[key] = (len(frame), cached)
+                    self._track_cache_bytes += len(cached)
+                    if cache_scan is not None:
+                        cache_scan["used"].add(key)
+        return track
 
     @classmethod
     def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
@@ -504,6 +574,7 @@ class FlightIndex:
         """
         west, south, east, north = bounds
         start, end = time_range
+        cache_scan = {"used": set(), "admit": True}
         with self.connect() as db:
             sql = """SELECT s.name,s.payload,s.payload_hash FROM segments s JOIN spatial r ON s.id=r.id
                 WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
@@ -518,10 +589,7 @@ class FlightIndex:
                 sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
                 params = (end, start)
             for name, payload, expected in db.execute(sql, params):
-                if hashlib.sha256(payload).hexdigest() != expected:
-                    raise DataUnavailable(f"Corrupt flight payload: {name}")
-                frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
-                yield _frame_track(name, frame)
+                yield self._decode_track(name, payload, expected, cache_scan=cache_scan)
 
     def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000):
         """Yield named whole segments without scanning unrelated trajectories.
@@ -540,6 +608,7 @@ class FlightIndex:
             if len(names) > max_tracks:
                 raise DataUnavailable("Flight lookup identifier budget exceeded")
         names, samples = sorted(names), 0
+        cache_scan = {"used": set(), "admit": True}
         with self.connect() as db:
             # Stay below SQLite's conservative bound on bound SQL parameters.
             for first in range(0, len(names), 500):
@@ -548,13 +617,10 @@ class FlightIndex:
                 sql = ("SELECT name,payload,payload_hash FROM segments WHERE name IN ("
                        + placeholders + ") ORDER BY name")
                 for name, payload, expected in db.execute(sql, batch):
-                    if hashlib.sha256(payload).hexdigest() != expected:
-                        raise DataUnavailable(f"Corrupt flight payload: {name}")
-                    frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
-                    samples += len(frame)
-                    if samples > max_samples:
-                        raise DataUnavailable("Flight lookup sample budget exceeded")
-                    yield _frame_track(name, frame)
+                    track = self._decode_track(name, payload, expected, max_samples=max_samples - samples,
+                                               cache_scan=cache_scan)
+                    samples += len(track.time)
+                    yield track
 
     def coverage_for(self, bounds, time_range):
         source = self.report["coverage"]

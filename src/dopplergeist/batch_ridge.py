@@ -1,15 +1,103 @@
-"""Batched versions of the existing robust first-event ridge fits."""
+"""Batched versions of the existing robust ridge fits."""
+import hashlib
+
 import numpy as np
 
-from .matching import _fit_ridge_uncached, _frequency_scale, _ridge_fit_inputs
+from .matching import (_fit_argument_key, _fit_ridge_uncached, _frequency_scale,
+                       _ridge_fit_cache, _ridge_fit_inputs)
 
 
-def first_event_fits(measurement, event, factors, emissions):
+def _numeric_digest(values):
+    digest = hashlib.sha256()
+    for value in values:
+        array = np.asarray(value, dtype=float)
+        digest.update(array.dtype.str.encode())
+        digest.update(repr(array.shape).encode())
+        digest.update(array.tobytes())
+    return digest.digest()
+
+
+def _source_cache_key(measurement, event):
+    """Hash every source-fit input; preserve numeric types and full precision."""
+    try:
+        spec, ridge, weight, _ = measurement
+        parameters = tuple(_fit_argument_key(value) for value in
+            (event["f0_range_hz"], _frequency_scale(event),
+             event.get("quality", {}).get("source_drift_fraction", .02)))
+        digest = hashlib.sha256(b"scalar-power-source-fit-v1")
+        digest.update(repr(parameters).encode())
+        digest.update(_numeric_digest((spec.time, ridge, weight)))
+        return digest.digest()
+    except (TypeError, ValueError, KeyError, AttributeError):
+        return None
+
+
+def supported_clock_fits(measurement, event, batch, eligible=None):
+    """Fit supported rows together while leaving all other rows to the scalar path.
+
+    A partially supported clock batch must not disable batching of its supported
+    clocks. None entries mean only that the ordinary fitter must assess that row;
+    they do not reject a clock or change its support classification.
+    """
+    if batch is None:
+        return None
+    factors, emissions = batch
+    if factors.ndim != 2 or emissions.shape != factors.shape:
+        return None
+    supported = np.all(np.isfinite(factors) & (factors > 0) & np.isfinite(emissions), axis=1)
+    if eligible is not None:
+        eligible = np.asarray(eligible, dtype=bool)
+        if eligible.shape != supported.shape:
+            return None
+        supported &= eligible
+    selected = np.flatnonzero(supported)
+    if not len(selected):
+        return None
+    fraction = event.get("quality", {}).get("source_drift_fraction", .02)
+    if fraction <= 0:
+        return None
+    cache = _ridge_fit_cache.get()
+    prefix = _source_cache_key(measurement, event) if cache is not None else None
+    entries = cache.source_entries if prefix is not None else None
+    results = [None] * len(factors)
+    missing, keys = [], {}
+    for index in selected:
+        if entries is not None:
+            key = (prefix, _numeric_digest((factors[index], emissions[index])))
+            keys[index] = key
+            if key in entries:
+                entries.move_to_end(key)
+                results[index] = entries[key].copy()
+                continue
+        missing.append(index)
+    if len(missing) >= 4:
+        fitted = first_event_fits(measurement, event, factors[missing], emissions[missing], True)
+    elif missing and entries is not None:
+        # Reusing a batch often leaves only one or two new clocks. Fit just
+        # those clocks once instead of rerunning the three-row batch guard.
+        fitted = [_fit_ridge_uncached(None, None, measurement, 0., event["f0_range_hz"],
+            343., _frequency_scale(event), fraction, acoustic_result=(factors[index], emissions[index]))
+            for index in missing]
+    else:
+        fitted = None
+    if fitted is not None:
+        for index, result in zip(missing, fitted):
+            results[index] = result
+            if entries is not None:
+                entries[keys[index]] = result.copy()
+                if len(entries) > cache.max_entries:
+                    entries.popitem(last=False)
+    return results if any(result is not None for result in results) else None
+
+
+def first_event_fits(measurement, event, factors, emissions, scalar_power_arithmetic=False):
     """Fit supported clocks together, or return None for the ordinary fitter.
 
-    This uses the same six iterations, box constraints, and diagnostics as the
-    scalar fitter. Unsupported, degenerate or numerically nonfinite batches
-    fall back rather than changing their classification.
+    This uses the same six iterations and box constraints as the scalar fitter.
+    The default preserves the established first-event vectorized powers; newly
+    batched scalar paths request scalar power arithmetic explicitly. Checking
+    representative rows can detect a discrepancy but cannot prove every row is
+    bitwise equal. Unsupported or degenerate batches use the ordinary fitter.
     """
     sigma = _frequency_scale(event)
     fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
@@ -29,9 +117,22 @@ def first_event_fits(measurement, event, factors, emissions):
         span = np.maximum(np.ptp(emissions, axis=1), 1e-9)
         reference = (emissions.min(axis=1) + emissions.max(axis=1)) / 2
         u = (emissions - reference[:, None]) / span[:, None]
-        cap = np.clip(np.median(y[None, :] / factors, axis=1), low, high) * fraction
+        centers = np.clip(np.median(y[None, :] / factors, axis=1), low, high)
+        scalar_caps = [float(value)*fraction for value in centers] if scalar_power_arithmetic else None
+        cap = np.asarray(scalar_caps) if scalar_power_arithmetic else centers*fraction
         if not np.all(np.isfinite(cap) & (cap > 0)) or not np.all(np.isfinite(u)):
             return None
+        # Python float powers and NumPy squares can differ by one ULP. Preserve
+        # the old first-event path, while matching scalar arithmetic on newly
+        # batched paths so an intermediate Top-K cutoff cannot change.
+        if scalar_power_arithmetic:
+            try:
+                prior = np.fromiter(((2*sigma/bound)**2 for bound in scalar_caps),
+                                    dtype=float, count=len(cap))
+            except OverflowError:
+                return None
+        else:
+            prior = (2*sigma/cap)**2
         factor2, u2 = factors**2, u**2
         effective = np.broadcast_to(w, factors.shape).copy()
         for _ in range(6):
@@ -39,7 +140,6 @@ def first_event_fits(measurement, event, factors, emissions):
             a = np.sum(weighted_factor2, axis=1)
             r = np.sum(weighted_factor * y, axis=1)
             b = np.sum(weighted_factor2 * u, axis=1)
-            prior = (2 * sigma / cap)**2
             d = np.sum(weighted_factor2 * u2, axis=1) + prior
             s = np.sum(weighted_factor * u * y, axis=1)
             determinant = a*d - b*b
@@ -68,7 +168,14 @@ def first_event_fits(measurement, event, factors, emissions):
             residual = factors * (alpha[:, None] + beta[:, None] * u) - y
             effective = w / np.sqrt(1 + (residual / sigma)**2)
         loss = np.average(2 * sigma**2 * (np.sqrt(1 + (residual / sigma)**2) - 1), weights=w, axis=1)
-        penalty = (2 * sigma * beta / cap)**2 / independent
+        if scalar_power_arithmetic:
+            try:
+                penalty = np.fromiter(((2*sigma*float(drift)/bound)**2/independent
+                                       for drift, bound in zip(beta, scalar_caps)), dtype=float, count=len(cap))
+            except OverflowError:
+                return None
+        else:
+            penalty = (2*sigma*beta/cap)**2/independent
         score = -np.sqrt(loss + penalty)
         rmse = np.sqrt(np.average(residual**2, weights=w, axis=1))
         outlier = np.average(np.abs(residual) > 3 * sigma, weights=w, axis=1)

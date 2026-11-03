@@ -48,6 +48,9 @@ class _RidgeFitCache:
     def __init__(self, max_entries):
         self.max_entries = max_entries
         self.entries = OrderedDict()
+        # New batched scalar-equivalent fits use fixed-size digest keys and
+        # the same row-count limit; no measurement/acoustic arrays are retained.
+        self.source_entries = OrderedDict()
         self.acoustic_entries = OrderedDict()
         self.acoustic_bytes = 0
         self.acoustic_limit = 32 * 1024 * 1024
@@ -121,9 +124,11 @@ class _RidgeFitCache:
 def _cache_ridge_fits(function, *, max_entries=4096):
     """Reuse fits only while this batch's tracks stay unchanged.
 
-    Each call has at most 4,096 entries by default. Context-local state prevents
-    reuse between concurrent jobs, nested batches or later calls. Cached results
-    are copied so candidate diagnostics remain independently mutable.
+    Each call has at most 4,096 scalar-fit entries and 4,096 source-fit entries
+    by default, plus a separate 32 MiB acoustic cache. Source-fit keys have fixed
+    size and retain no measurement arrays. Context-local state prevents reuse
+    between concurrent jobs, nested batches or later calls. Cached results are
+    copied so candidate diagnostics remain independently mutable.
     """
     if type(max_entries) is not int or max_entries < 1:
         raise ValueError("Fit-cache capacity must be a positive integer")

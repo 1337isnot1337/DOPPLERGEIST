@@ -401,7 +401,35 @@ def _validate_score_ceiling_inputs(events, measurements):
             raise ValueError("Source frequency bounds must be finite, positive and ordered")
 
 
-def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor, dual_at=None, first_fit=None):
+def _ridge_trial_result(diagnostics):
+    return {"score": float(sum(d["score"] for d in diagnostics)),
+            "event_scores": [d["score"] for d in diagnostics],
+            "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
+            "score_kind": "negative_robust_ridge_loss_hz"}
+
+
+def _score_clock_fit_trial(tracks, events, measurements, observer, start, c, trial, batches, fitted_batches):
+    """Reuse exact batched source fits for every group in a complete assessment."""
+    from .batch_ridge import supported_clock_fits
+    from .matching import score_ridges
+
+    diagnostics = []
+    for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
+        if index not in fitted_batches:
+            fitted_batches[index] = supported_clock_fits(measurement, event, batches[index])
+        fitted = fitted_batches[index]
+        result = fitted[trial] if fitted is not None else None
+        if result is None:
+            batch = batches[index]
+            acoustic = None if batch is None else (batch[0][trial], batch[1][trial])
+            result = score_ridges([track], [event], [measurement], observer, start, c,
+                                  acoustic_results=[acoustic])["event_diagnostics"][0]
+        diagnostics.append(result)
+    return _ridge_trial_result(diagnostics)
+
+
+def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor, dual_at=None, first_fit=None,
+                              later_fit_at=None):
     """Fit groups until a conservative residual ceiling cannot reach the floor.
 
     Unperformed groups each contribute at most one. The existing validated-fit
@@ -416,8 +444,9 @@ def _screen_association_trial(tracks, events, measurements, observer, start, c, 
             if upper is not None:
                 return None, upper
         acoustic = None if acoustic_at is None else [acoustic_at(index)]
-        if index == 0 and first_fit is not None:
-            single = {"event_diagnostics": [first_fit]}
+        fitted = first_fit if index == 0 else later_fit_at(index) if later_fit_at is not None else None
+        if fitted is not None:
+            single = {"event_diagnostics": [fitted]}
         else:
             single = score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic)
         diagnostics.extend(single["event_diagnostics"])
@@ -430,10 +459,7 @@ def _screen_association_trial(tracks, events, measurements, observer, start, c, 
                 "f0_hz": [d["f0_hz"] for d in partial], "event_diagnostics": partial}, events)
             if bound is not None and bound < floor:
                 return None, bound
-    return {"score": float(sum(d["score"] for d in diagnostics)),
-            "event_scores": [d["score"] for d in diagnostics],
-            "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
-            "score_kind": "negative_robust_ridge_loss_hz"}, None
+    return _ridge_trial_result(diagnostics), None
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
@@ -521,6 +547,13 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         else:
             batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
     first_fits, first_batch_attempted = None, False
+    later_fits = {}
+    # Competitive associations are reassessed without a floor to preserve every
+    # clock's diagnostics. Their later groups used to repeat the scalar source
+    # fitter for every clock despite already having batched acoustic arrays.
+    # Initialize each group's exact fits only when that group is first reached.
+    full_clock_fits = ({} if batches is not None and lazy_batches is None and len(shifts) >= 4
+                       and any(batch is not None for batch in batches) else None)
     dual_flags = {}
     dual_pruned = 0
     floor_dual_pruned = 0
@@ -534,7 +567,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 batch = batches[index]
                 return None if batch is None else (batch[0][trial], batch[1][trial])
             precomputed = ([acoustic_at(index) for index in range(len(events))]
-                           if batches is not None and lazy_batches is None else None)
+                           if batches is not None and lazy_batches is None and full_clock_fits is None else None)
             def dual_flags_at(index):
                 if index not in dual_flags:
                     acoustic_at(index)
@@ -559,6 +592,33 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     floor_dual_pruned += 1
                     return float(upper)
                 return None
+            def later_fit_at(index):
+                if first_fits is None:
+                    return None
+                if index not in later_fits:
+                    rejected, upper = dual_flags_at(index)
+                    eligible = ~rejected & ~np.isfinite(upper)
+                    known_loss = np.zeros(len(shifts))
+                    from .matching import _frequency_scale
+                    for previous in range(index):
+                        fitted = first_fits if previous == 0 else later_fits.get(previous)
+                        if fitted is None:
+                            continue
+                        limit = 3 * _frequency_scale(events[previous])
+                        losses = np.fromiter((-fit["score"]/limit if fit is not None else 0.
+                                              for fit in fitted), dtype=float, count=len(shifts))
+                        finite = np.isfinite(losses)
+                        eligible &= ~finite | (losses <= 1.)
+                        known_loss += np.where(finite, np.maximum(0., losses), 0.)
+                    # This only chooses which rows are worth batching. Every
+                    # omitted row retains the ordinary scalar fit if reached;
+                    # it is not a new pruning rule or a score certificate.
+                    eligible &= known_loss <= len(events)-score_floor
+                    from .batch_ridge import supported_clock_fits
+                    later_fits[index] = supported_clock_fits(measurements[index], events[index],
+                                                             batches[index], eligible)
+                fitted = later_fits[index]
+                return fitted[trial] if fitted is not None else None
             try:
                 if association and score_floor is not None:
                     if not first_batch_attempted and batches is not None and lazy_batches is not None and time_origin is None:
@@ -579,13 +639,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
                                                               anchor+shift, c, acoustic_at if batches is not None else None,
                                                               score_floor, dual_at if batches is not None and time_origin is None else None,
-                                                              first_fits[trial] if first_fits is not None else None)
+                                                               first_fits[trial] if first_fits is not None else None,
+                                                               later_fit_at if first_fits is not None else None)
                     if result is None:
                         partial_prunes += 1
                         assessment["unknown_trials"] += 1
                         reasons.add("partial_group_score_below_retention_floor")
                         unknown_bounds.append(upper)
                         continue
+                elif full_clock_fits is not None:
+                    result = _score_clock_fit_trial(selected_tracks, events, measurements, observer,
+                                                    anchor+shift, c, trial, batches, full_clock_fits)
+                    if all(fitted is None for fitted in full_clock_fits.values()):
+                        full_clock_fits = None
                 else:
                     result = score_ridges(selected_tracks, events, measurements, observer, anchor+shift, c,
                                           acoustic_results=precomputed)
