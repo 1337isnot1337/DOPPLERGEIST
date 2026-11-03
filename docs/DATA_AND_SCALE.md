@@ -173,11 +173,13 @@ The same numerical batch can serve several candidate associations.
 Keys include typed fit parameters, complete measured arrays and complete acoustic
 arrays, with their shapes and layouts. Only C-contiguous, aligned acoustic matrices
 qualify for reuse. Other layouts keep the existing numerical computation.
-Every cache hit still runs the representative scalar comparisons.
+Before accepting a computed or reused batch, the fitter checks its representative
+clocks against the scalar model. A mismatch retains the scalar fallback.
 Independent diagnostic copies prevent callers from changing retained cache values.
-The cache holds at most 1,024 batches within a 32 MiB accounting budget per
-scoring context. Each worker has its own context. This limits cache retention;
-it does not cap the worker's complete memory usage.
+The cache holds at most 1,024 batches within a 32 MiB estimated storage budget
+per scoring context. That budget includes a fixed 512 KiB reserve for container
+capacity. Each worker has its own context. This limits cache retention;
+it does not cap complete worker memory or allocator fragmentation.
 
 An earlier replay at one source-informed receiver point used 16 event groups and 3,905
 associations. Across three alternating pairs, median CPU time fell from 68.9247
@@ -301,64 +303,117 @@ discrepancy. Operation counts distinguish actual scalar computations, scalar
 validation requests and clocks fitted in batches. A lower scalar-call count
 alone is not a speedup.
 
-### Earlier measured version: 2026-11-03
+### Measured results: 2026-11-03
 
-Before integration with the optimizer from PR #212, the measured source was
-[`a36ccf9`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/a36ccf9e590db5608376a450c3ddd7608b3c39b0).
-It includes all numerical guards and main's association-traversal improvement.
+The final measured source is
+[`682a539`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/682a539274d3bd6daf0fee6184001eabe84f5342).
+It integrates the optimizer from PR #212 and preserves its scheduling,
+prepared-input cache, fused geometry and numerical guards.
+Main `f979320`, its integration parent, differs from `aa3dff6` only in the README.
+
 The primary replay used 16 measured proposals, 16 independent groups and one
 saved receiver hypothesis. Its aircraft input contained 64,246 observations in
-447 trajectory segments. Both versions evaluated the same 3,921 associations
-over a four-minute recording-start window and retained 100 rows.
+447 trajectory segments. Each version evaluated the same 3,921 associations
+within a ±120-second recording-start window and retained 100 rows.
 
-| Measurement | Corrected baseline | Optimized | Speedup |
+#### Incremental comparison with the merged optimizer
+
+The baseline is
+[`aa3dff6`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/aa3dff686c989524daa20c081a816b792d9c8890),
+which already contains PR #212.
+
+| Measurement, median of three runs | Main baseline | Final source | Speedup |
 | --- | ---: | ---: | ---: |
-| Scoring CPU, median of three runs | 67.65 s | 28.08 s | 2.41× |
-| Scoring wall time, median of three runs | 67.72 s | 28.09 s | 2.41× |
-| Complete benchmark subprocess, median wall time | 71.06 s | 31.18 s | 2.28× |
+| Scoring CPU | 29.20 s | 17.63 s | 1.66× |
+| Scoring wall time | 29.21 s | 17.69 s | 1.65× |
+| Complete benchmark subprocess, wall time | 32.75 s | 21.41 s | 1.53× |
 
-All seven exact-output and environment checks passed in every paired and
-repeat-consistency comparison. Baseline CPU times were 67.6488, 64.2554 and
-74.1847 seconds. Optimized CPU times were 31.3246, 28.0773 and 27.9379 seconds.
-Run order was baseline/optimized, optimized/baseline, baseline/optimized.
-Each pair improved. The table reports the ratio of medians.
+Main CPU times were 31.0323, 28.6455, 29.1982 seconds.
+Final-source CPU times were 20.0753, 16.8685, 17.6343 seconds.
+Every pair improved. The table reports ratios of medians.
+
+#### Comparison with the corrected original
+
+The original baseline is `89dc912`, before the performance changes.
+
+| Measurement, median of three runs | Corrected original | Final source | Speedup |
+| --- | ---: | ---: | ---: |
+| Scoring CPU | 70.59 s | 18.00 s | 3.92× |
+| Scoring wall time | 70.65 s | 18.01 s | 3.92× |
+| Complete benchmark subprocess, wall time | 73.99 s | 21.54 s | 3.43× |
+
+Original CPU times were 86.0219, 70.5917, 69.1955 seconds.
+Final-source CPU times were 19.3379, 17.9990, 16.4775 seconds.
+All observations remain included. Each pair improved.
+The final source was measured independently in each baseline series.
+
+
+All seven checks passed in every paired and repeat-consistency comparison.
+They compare complete ranked rows, assessment counts, workloads, runtime versions
+and all three retention tables. Run order was baseline/optimized,
+optimized/baseline, baseline/optimized. Profiles run separately and do not enter
+these measurements.
 
 The complete subprocess includes imports, preparation, trajectory loading,
 scoring and output. It excludes audio discovery, downloads, nationwide search
-and refinement.
+and refinement. The environment used Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0,
+pandas 2.2.3, PyArrow 26.0.1 and pyproj 3.8.0 on Linux x86-64.
 
-The timing used Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0 and pandas 2.2.3 on
-Linux x86-64. The benchmark records the remaining runtime versions.
+#### Work avoided, checks retained
 
-| Operation | Corrected baseline | Optimized |
+| Operation on the primary workload | Main baseline | Final source |
 | --- | ---: | ---: |
-| Actual uncached scalar computations | 66,337 | 1,939 |
-| Representative scalar validation requests | 8,367 | 21,735 |
-| Clocks fitted in successful batches | 90,393 | 244,263 |
+| Successful batch requests | 7,343 | 7,343 |
+| Clock rows returned by the batch path | 241,101 | 241,101 |
+| Representative scalar comparisons | 0 | 22,029 |
+| Actual uncached scalar computations | 74 | 2,071 |
 | Acoustic calls | 861 | 861 |
 | Acoustic samples | 2,121,053 | 2,121,053 |
 
-All three representative comparisons remain in each successful batch.
-The existing bounded fit cache reuses exact scalar inputs across comparisons.
-This avoids repeated computation without removing validation requests.
+The final source executes only 1,093 numerical batch solves over 38,986 clock
+rows. It reuses all 6,250 repeated complete solves in this workload.
+The harness counts numerical solves separately from requests and returned rows.
+Older revisions lack that separate numerical-helper counter.
 
-Batching and reusable partial bounds reduce time while retaining the same search
-workload. These are regional computation measurements from the same real
-recording. They do not establish independent localization accuracy or nationwide
-wall time.
+Before accepting a computed or reused batch, the fitter checks its representative
+clocks against the scalar model. Scalar-reference caching reduces repeated work
+inside those checks. A mismatch retains the ordinary scalar fallback.
 
-Two final-source replays also passed every comparison against saved corrected
-baselines. These are auxiliary single runs, not repeated paired medians:
+#### Additional real-input comparisons
+
+A separate paired control used a ±10-second window against main `aa3dff6`.
+It included 1,055 associations, 422 trajectory segments, 60,711 observations and
+all 16 groups. All seven checks passed.
+
+Scoring CPU changed from 4.08 to 2.26 seconds (1.81×).
+This is one auxiliary pair, not a repeated median.
+
+Two final-source replays also passed all seven checks against saved corrected-original baselines:
 
 | Workload | Saved baseline CPU | Final replay CPU | Observed ratio |
 | --- | ---: | ---: | ---: |
-| Fresh discovery: 18 ridges, 16 groups, 3,921 associations | 66.82 s | 33.30 s | 2.01× |
-| Second saved receiver: 16 groups, 4,031 associations | 71.18 s | 29.56 s | 2.41× |
+| Fresh discovery: 18 ridges, 16 groups, 3,921 associations | 66.82 s | 18.22 s | 3.67× |
+| Second receiver: 16 groups, 4,031 associations | 71.18 s | 17.29 s | 4.12× |
 
-The earlier implementation's 1.95× series remains in the
-[prior report](https://github.com/1337isnot1337/DOPPLERGEIST/blob/9dff10e2e5d91cfe3ccad8fbc5cd2e89567edcd1/docs/DATA_AND_SCALE.md#measure-scoring-throughput).
-Separate timing series cannot isolate the benefit of scalar-reference caching.
-The final source also includes main's association-traversal change.
+These are single replays against saved baselines, not new paired medians.
+The fresh replay sets `--recording-duration-s 3600.1845` for the original WAV.
+The second receiver uses `--recording-duration-s 3600.0`. Both retain all 16 groups.
+Loaded trajectory windows also include clock uncertainty and padding.
+
+
+#### Development results and limits
+
+A preliminary integration restored cached scalar checks without complete-batch
+reuse. It took 29.29 CPU seconds against main's 25.88 seconds in one pair.
+That regression motivated complete-batch reuse. A separate profile found 1,093
+unique complete keys among 7,343 requests. Its bounded-cache simulation guided
+the memory budget; the final tables measure the implemented cache.
+
+The preceding implementation's 2.41× result remains in the
+[earlier report](https://github.com/1337isnot1337/DOPPLERGEIST/blob/682a539274d3bd6daf0fee6184001eabe84f5342/docs/DATA_AND_SCALE.md#earlier-measured-version-2026-11-03).
+Each report keeps its original source revision and settings.
+These regional computation replays do not establish independent localization
+accuracy or nationwide wall time.
 
 ### Arithmetic correction
 
@@ -377,37 +432,66 @@ every clock, including the clock that the representative runtime checks omitted.
 ### Reproduce the comparison
 
 Restore the real source and derived aircraft inputs through [Artifacts](ARTIFACTS.md).
-Use the same Python environment for both source checkouts. Keep both checkouts
-unchanged during the comparison.
+Use one Python dependency environment for all source checkouts.
+Create detached worktrees for the measured source and both baselines:
 
 ```bash
-git fetch origin 89dc912737436a5c13504fc06d353dedc8ebc36a
-git worktree add --detach ../dopplergeist-performance-baseline 89dc912737436a5c13504fc06d353dedc8ebc36a
+git fetch origin 682a539274d3bd6daf0fee6184001eabe84f5342 \
+  aa3dff686c989524daa20c081a816b792d9c8890 \
+  89dc912737436a5c13504fc06d353dedc8ebc36a
+git worktree add --detach ../dopplergeist-performance-source 682a539274d3bd6daf0fee6184001eabe84f5342
+git worktree add --detach ../dopplergeist-performance-main aa3dff686c989524daa20c081a816b792d9c8890
+git worktree add --detach ../dopplergeist-performance-original 89dc912737436a5c13504fc06d353dedc8ebc36a
+```
 
-python scripts/benchmark_real_optimization.py \
-  --baseline ../dopplergeist-performance-baseline \
+From the repository root, compare the incremental change with main:
+
+```bash
+python ../dopplergeist-performance-source/scripts/benchmark_real_optimization.py \
+  --source ../dopplergeist-performance-source \
+  --baseline ../dopplergeist-performance-main \
   --tracks data/adsb/2026-09-08/reference-region.parquet \
   --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
   --candidate evidence/results/reference-local/report.json \
   --clock-radius-s 120 --repeats 3 \
-  --output results/performance-new-run
+  --output results/performance-main-new-run
+```
+
+Then compare the complete improvement with the corrected original baseline:
+
+```bash
+python ../dopplergeist-performance-source/scripts/benchmark_real_optimization.py \
+  --source ../dopplergeist-performance-source \
+  --baseline ../dopplergeist-performance-original \
+  --tracks data/adsb/2026-09-08/reference-region.parquet \
+  --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+  --candidate evidence/results/reference-local/report.json \
+  --clock-radius-s 120 --repeats 3 \
+  --output results/performance-original-new-run
 ```
 
 The output contains `comparison.json`, complete scored results and retention
 databases. The script refuses an existing output directory. The default input
 window extends through the last measured event, with 120 seconds of padding.
+The primary and narrow-window comparisons use that default extent.
 `--recording-duration-s` supplies a longer recording extent when required.
 `--point-file` accepts multiple saved receiver hypotheses.
 
 For a fresh whole-recording discovery, run:
 
 ```bash
-python scripts/discover_audio.py data/source/reference-recording.wav \
+PYTHONPATH=../dopplergeist-performance-source/src \
+python ../dopplergeist-performance-source/scripts/discover_audio.py \
+  data/source/reference-recording.wav \
   --output results/performance-fresh-discovery
 ```
 
-Then use its `discovery/discovery.json` with the same comparison command.
-Use `--recording-duration-s 3600.1845` for this reference WAV.
+Then use its `discovery/discovery.json` with the pinned-source comparison command.
+The reported fresh replay uses `--recording-duration-s 3600.1845`.
+The second-receiver replay uses `--recording-duration-s 3600.0` and the saved
+`evidence/results/reference-faint-alltypes-local/report.json` candidate.
+Both auxiliary runs load a broader trajectory extent than the primary comparison.
+Use a distinct output directory for each workload.
 Add `--profile` to identify the remaining dominant stage.
 
 ### Continue optimization
@@ -436,13 +520,15 @@ Use actual recorded observations; do not run the historical generated-data suite
 
 ```bash
 DOPPLERGEIST_REAL_CPA_FIXTURE=/path/to/real-cpa-diagnostic.json \
+DOPPLERGEIST_REAL_REGION_PARQUET=data/adsb/2026-09-08/reference-region.parquet \
+  OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   PYTHONPATH=src python -m pytest -q \
   tests/test_real_retention_floor.py tests/test_real_score_ceiling_validation.py \
   tests/test_real_batch_ridge.py tests/test_real_acoustic_batch_cache.py \
-  tests/test_real_geometry_reuse.py
-
-DOPPLERGEIST_REAL_REGION_PARQUET=data/adsb/2026-09-08/reference-region.parquet \
-  PYTHONPATH=src python -m pytest -q tests/test_real_batch_rounding.py
+  tests/test_real_geometry_reuse.py tests/test_real_batch_rounding.py \
+  tests/test_real_association_budget.py tests/test_real_association_clock_window.py \
+  tests/test_real_index_staging.py tests/test_real_batch_scalar_parity.py \
+  tests/test_real_geometry_kinematics.py tests/test_real_prepared_measurements.py
 
 PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python scripts/benchmark_acoustic_sieve.py \
   --fixture /path/to/real-cpa-diagnostic.json --baseline 72cdebb \
@@ -455,3 +541,8 @@ The diagnostic contains measured event ridges, observed `cpa_rows`, one receiver
 matching/scoring modules with the current fitter and requires identical shared
 geometry. Timing includes scoring with a bounded fit cache. Scaling experiments
 and location-accuracy evidence must be labelled separately.
+
+The final local gate selected 37 distinct real-data tests: 36 passed and one
+archived-segment test skipped. That upstream case requires `ab50b9:11`, absent from
+the local diagnostic. The independent 39-clock regression on actual segment
+`ab50b9:1` passed, including the rounding-sensitive clock.
