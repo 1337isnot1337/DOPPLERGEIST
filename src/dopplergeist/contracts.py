@@ -19,7 +19,7 @@ class RecordingTimeWindow(TypedDict):
 
 
 class SearchArea(TypedDict):
-    coverage: Literal["conus"]
+    coverage: str
     bounds_wsen: NotRequired[list[float]]
 
 
@@ -169,8 +169,8 @@ def validate_request(value):
             _text(window["source_detail"], "source_detail")
         request["time_window"] = window
     search = _record(request.get("search", {"coverage": "conus"}), ("coverage",), ("bounds_wsen",))
-    if search["coverage"] != "conus":
-        raise ValueError("Version one supports declared CONUS coverage only")
+    if search["coverage"] not in {"conus", "custom", "bbox"}:
+        raise ValueError("Unsupported coverage; version one supports CONUS or custom bounding box")
     if "bounds_wsen" in search:
         bounds = search["bounds_wsen"]
         if not isinstance(bounds, list) or len(bounds) != 4:

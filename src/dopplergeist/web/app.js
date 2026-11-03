@@ -61,7 +61,11 @@ function render(value) {
     const card = node('div', undefined, 'candidate');
     card.append(node('strong', 'Search & data coverage'));
     const bounds = coverage.requested_area?.bounds_wsen;
-    card.append(node('p', bounds ? `Requested CONUS subset (west, south, east, north): ${bounds.join(', ')}` : 'Requested area: contiguous United States (CONUS)'));
+    const isFullConus = bounds && bounds[0] === -125 && bounds[1] === 24 && bounds[2] === -66 && bounds[3] === 50;
+    const boundsLabel = bounds
+      ? (isFullConus ? 'Requested area: Contiguous United States (CONUS)' : `Requested search bounds (west, south, east, north): ${bounds.map(x => typeof x === 'number' ? x.toFixed(2) : x).join(', ')}`)
+      : 'Requested area: Contiguous United States (CONUS)';
+    card.append(node('p', boundsLabel));
     card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
     for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
     if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
@@ -125,7 +129,18 @@ $('upload-form').addEventListener('submit', async event => {
   const start = $('start').value, end = $('end').value;
   if (end && !start) { $('upload-error').textContent = 'Enter the earliest recording start as well.'; return; }
   if (start && end && end < start) { $('upload-error').textContent = 'The latest start must be at or after the earliest start.'; return; }
-  const request = {schema_version: 1, search: {coverage: 'conus'}};
+  const w = parseFloat($('bbox-w')?.value || '-125.0');
+  const s = parseFloat($('bbox-s')?.value || '24.0');
+  const e = parseFloat($('bbox-e')?.value || '-66.0');
+  const n = parseFloat($('bbox-n')?.value || '50.0');
+  const isConus = (Math.abs(w - (-125.0)) < 0.01 && Math.abs(s - 24.0) < 0.01 && Math.abs(e - (-66.0)) < 0.01 && Math.abs(n - 50.0) < 0.01);
+  const request = {
+    schema_version: 1,
+    search: {
+      coverage: isConus ? 'conus' : 'custom',
+      bounds_wsen: [w, s, e, n]
+    }
+  };
   if (start) {
     request.time_window = {start_utc: start + 'Z', end_utc: (end || start) + 'Z', source: 'user'};
     if ($('time-source').value.trim()) request.time_window.source_detail = $('time-source').value.trim();
@@ -161,3 +176,171 @@ api('/api/capabilities').then(value => {
 renderRecent();
 const savedJob = new URLSearchParams(location.search).get('job');
 if (savedJob && /^[0-9a-f]{32}$/.test(savedJob)) selectJob(savedJob);
+
+// Interactive World Map & Boundary Box Selector (Defaults to CONUS, Drag to draw)
+const CONUS_BOUNDS = [-125.0, 24.0, -66.0, 50.0];
+
+function wrapLng(lng) {
+  return (((lng + 180) % 360 + 360) % 360) - 180;
+}
+function clampLat(lat) {
+  return Math.max(-85.0, Math.min(85.0, lat));
+}
+function normalizeBounds(w, s, e, n) {
+  let nw = wrapLng(w);
+  let ne = wrapLng(e);
+  if (nw > ne) [nw, ne] = [ne, nw];
+  let ns = clampLat(Math.min(s, n));
+  let nn = clampLat(Math.max(s, n));
+  if (ne - nw < 0.05) ne = Math.min(180, nw + 0.1);
+  if (nn - ns < 0.05) nn = Math.min(85, ns + 0.1);
+  return [nw, ns, ne, nn];
+}
+
+let map, rectLayer;
+let currentW = CONUS_BOUNDS[0], currentS = CONUS_BOUNDS[1], currentE = CONUS_BOUNDS[2], currentN = CONUS_BOUNDS[3];
+let isDrawing = false, drawOrigin = null, tempRect = null;
+let isPanning = false, panStart = null;
+
+function initMap() {
+  if (typeof L === 'undefined') {
+    setTimeout(initMap, 50);
+    return;
+  }
+  const mapElem = $('map');
+  if (!mapElem) return;
+
+  map = L.map('map', {
+    center: [38.5, -96.0],
+    zoom: 4,
+    worldCopyJump: true,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18
+  }).addTo(map);
+
+  map.dragging.disable(); // Left-drag draws bounding box
+
+  // Right-click drag (or Shift + Left-click drag) to pan the map
+  const container = map.getContainer();
+  container.addEventListener('contextmenu', e => e.preventDefault());
+
+  container.addEventListener('mousedown', e => {
+    if (e.button === 2 || (e.button === 0 && e.shiftKey)) {
+      isPanning = true;
+      panStart = { x: e.clientX, y: e.clientY };
+      container.style.cursor = 'grab';
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isPanning || !panStart) return;
+    const dx = e.clientX - panStart.x;
+    const dy = e.clientY - panStart.y;
+    panStart = { x: e.clientX, y: e.clientY };
+    map.panBy([-dx, -dy], { animate: false });
+  });
+
+  window.addEventListener('mouseup', e => {
+    if (isPanning) {
+      isPanning = false;
+      panStart = null;
+      container.style.cursor = '';
+    }
+  });
+
+  function updateInputs() {
+    $('bbox-w').value = currentW.toFixed(2);
+    $('bbox-s').value = currentS.toFixed(2);
+    $('bbox-e').value = currentE.toFixed(2);
+    $('bbox-n').value = currentN.toFixed(2);
+  }
+
+  function setBounds(w, s, e, n, fit) {
+    [currentW, currentS, currentE, currentN] = normalizeBounds(w, s, e, n);
+    updateInputs();
+    const bounds = [[currentS, currentW], [currentN, currentE]];
+    if (!rectLayer) {
+      rectLayer = L.rectangle(bounds, {
+        color: '#baf078',
+        weight: 2,
+        fillColor: '#baf078',
+        fillOpacity: 0.18,
+        interactive: false
+      }).addTo(map);
+    } else {
+      rectLayer.setBounds(bounds);
+    }
+    if (fit) {
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+  }
+
+  setBounds(...CONUS_BOUNDS, true);
+  setTimeout(() => map.invalidateSize(), 150);
+
+  // Coordinate input changes with auto-modulo normalization
+  ['bbox-w', 'bbox-s', 'bbox-e', 'bbox-n'].forEach(id => {
+    $(id).addEventListener('change', () => {
+      const w = parseFloat($('bbox-w').value);
+      const s = parseFloat($('bbox-s').value);
+      const e = parseFloat($('bbox-e').value);
+      const n = parseFloat($('bbox-n').value);
+      if (!isNaN(w) && !isNaN(s) && !isNaN(e) && !isNaN(n)) {
+        setBounds(w, s, e, n, false);
+      }
+    });
+  });
+
+  // Left-click drag anywhere on the map draws a new bounding box
+  map.on('mousedown', e => {
+    if (e.originalEvent.button !== 0 || e.originalEvent.shiftKey) return;
+    isDrawing = true;
+    drawOrigin = e.latlng.wrap();
+    if (tempRect) map.removeLayer(tempRect);
+    tempRect = L.rectangle([drawOrigin, drawOrigin], {
+      color: '#baf078',
+      weight: 2,
+      dashArray: '4, 4',
+      fillColor: '#baf078',
+      fillOpacity: 0.25,
+      interactive: false
+    }).addTo(map);
+  });
+
+  map.on('mousemove', e => {
+    if (!isDrawing || !drawOrigin || !tempRect) return;
+    const current = e.latlng.wrap();
+    tempRect.setBounds([drawOrigin, current]);
+  });
+
+  map.on('mouseup', e => {
+    if (!isDrawing || !drawOrigin || !tempRect) return;
+    const current = e.latlng.wrap();
+    map.removeLayer(tempRect);
+    tempRect = null;
+    isDrawing = false;
+
+    let s = clampLat(Math.min(drawOrigin.lat, current.lat));
+    let n = clampLat(Math.max(drawOrigin.lat, current.lat));
+    let w = wrapLng(Math.min(drawOrigin.lng, current.lng));
+    let e_coord = wrapLng(Math.max(drawOrigin.lng, current.lng));
+    if (w > e_coord) [w, e_coord] = [e_coord, w];
+    drawOrigin = null;
+
+    // Only update if dragged area is meaningful (> 0.05 deg)
+    if (e_coord - w > 0.05 && n - s > 0.05) {
+      setBounds(w, s, e_coord, n, false);
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMap);
+} else {
+  initMap();
+}

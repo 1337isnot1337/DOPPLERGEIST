@@ -85,7 +85,8 @@ class Handler(BaseHTTPRequestHandler):
                     raise KeyError("Unknown artifact")
                 return self._file(path, download=path.suffix not in {".png", ".svg"})
         if self.command == "GET":
-            asset = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css"}.get(urlsplit(self.path).path)
+            asset = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css",
+                     "/leaflet.js": "leaflet.js", "/leaflet.css": "leaflet.css"}.get(urlsplit(self.path).path)
             if asset:
                 return self._file(files("dopplergeist.web").joinpath(asset))
         raise KeyError("Unknown endpoint")
@@ -95,7 +96,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", mimetypes.guess_type(str(path))[0] or "application/octet-stream")
         self.send_header("Content-Length", str(path.stat().st_size))
         self.send_header("X-Content-Type-Options", "nosniff")
-        self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
+        self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org https://tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
         if download:
             self.send_header("Content-Disposition", f'attachment; filename="{path.name.replace(chr(34), "")}"')
         self.end_headers()
