@@ -1,5 +1,8 @@
 # Measured pipeline performance
 
+The [integrated pipeline measurements and reproduction method](../benchmarks/PIPELINE_PERFORMANCE_METHOD.md) cover the combined flight-query, native-scoring, index-column, and spatial-bound changes against main `d51a310`.
+The sections below preserve earlier experiments with their original baselines and scopes.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
@@ -1099,8 +1102,8 @@ requires its validated checkpoint compatibility path before resuming that job.
 
 ## Reproduce the optional native backends
 
-Installation builds the acoustic and ridge extensions when a compatible C compiler is available.
-The package remains usable when either optional extension cannot build.
+Installation builds the acoustic, ridge, closest-approach, and index-column extensions when a compatible C compiler is available.
+The package remains usable when an optional extension cannot build.
 A source checkout used for timing must contain its own built extensions; an installed copy elsewhere does not establish native use.
 
 ```bash
@@ -1109,10 +1112,16 @@ CC=gcc python -m pip install --editable '.[test]'
 python - <<'PY'
 from dopplergeist.geometry import ACOUSTIC_BACKEND
 from dopplergeist.matching import RIDGE_FIT_BACKEND
+from dopplergeist.native_cpa import CPA_BACKEND
+from dopplergeist.data_access import _native_payload_columns
 print("Acoustic:", ACOUSTIC_BACKEND)
 print("Ridge:", RIDGE_FIT_BACKEND)
+print("Closest approach:", CPA_BACKEND)
+print("Native index columns:", callable(_native_payload_columns))
 assert ACOUSTIC_BACKEND.startswith("native-c-")
 assert RIDGE_FIT_BACKEND.startswith("native-c-")
+assert CPA_BACKEND.startswith("native-c-")
+assert callable(_native_payload_columns)
 PY
 ```
 
@@ -1125,6 +1134,8 @@ Batched ridge arithmetic retains its existing ignored-error block and restores t
 The optional ridge implementation is integrated from [PR228](https://github.com/1337isnot1337/DOPPLERGEIST/pull/228).
 
 Set `DOPPLERGEIST_ACOUSTIC_BACKEND=python` and `DOPPLERGEIST_RIDGE_BACKEND=python` before starting a process to force both Python implementations.
+Set `DOPPLERGEIST_CPA_BACKEND=python` or `DOPPLERGEIST_INDEX_BACKEND=python` to select their corresponding Python implementations.
+The index helper only collects references after exact type checks; it performs no floating-point arithmetic and requires no index rebuild.
 The default for each selector is `auto`; invalid selector values fail explicitly.
 The legacy checkpoint upgrade requires both Python backends and its original runtime and input controls.
 Ordinary checkpoints include the selected native binary identities and reject an implementation mismatch.

@@ -37,7 +37,7 @@ python -m venv .venv
 
 To install the CLI without keeping a checkout, create a virtual environment and run `.venv/bin/python -m pip install "git+https://github.com/1337isnot1337/DOPPLERGEIST.git"`.
 
-Installation builds optional acoustic and ridge acceleration when a compatible C compiler is available. Python fallbacks remain available. See [native backend checks and reproducible timing](docs/PERFORMANCE.md#reproduce-the-optional-native-backends) to verify which implementations are active and compare complete recorded-input jobs.
+Installation builds optional acoustic, ridge, closest-approach, and index-column acceleration when a compatible C compiler is available. Python fallbacks remain available. See [native backend checks](docs/PERFORMANCE.md#reproduce-the-optional-native-backends) and the [integrated pipeline measurements and reproduction method](benchmarks/PIPELINE_PERFORMANCE_METHOD.md) to verify active implementations and compare complete recorded-input jobs.
 
 Native Windows execution is unverified.
 

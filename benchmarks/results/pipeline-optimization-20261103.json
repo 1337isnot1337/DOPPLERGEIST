@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "sources": {
+    "baseline_public_revision": "d51a31073c03fa56c29819e4709664b329ed4535",
+    "optimized_public_revision": "57445622181b3b27e4c445ee801024bd318a2739",
+    "local_tested_revision": "90989d26cb5d6183551607e4bb516a1d461ca291",
+    "identical_git_tree": "401ee10595b807a97fa2ddac37bac52088a948ab",
+    "delivery_pr": "https://github.com/1337isnot1337/DOPPLERGEIST/pull/277",
+    "included_existing_prs": [
+      "https://github.com/1337isnot1337/DOPPLERGEIST/pull/256",
+      "https://github.com/1337isnot1337/DOPPLERGEIST/pull/266"
+    ]
+  },
+  "inputs": {
+    "source_wav": "data/source/reference-recording.wav",
+    "mp3": "benchmark-inputs/reference.mp3",
+    "aircraft": "data/adsb/2026-09-08/reference-region.parquet",
+    "index": "benchmark-inputs/reference-region.sqlite",
+    "request": "benchmark-inputs/regional-request.json",
+    "operator": "benchmark-inputs/regional-operator.json",
+    "dense_discovery": "evidence/audio/w1-sensitivity-20261102/reference/discovery.json",
+    "dense_anchor_window_s": [
+      1788864888.7151732,
+      1788865236.7214916
+    ]
+  },
+  "http": {
+    "scope": "Fresh complete regional HTTP verification, including intake, discovery, acquisition, search, refinement and decision. Driver input checks and imports are excluded.",
+    "clock_partition_query_active": false,
+    "clock_partition_scope": "The regional tiles have no clock partition. This speedup does not measure partition-query narrowing.",
+    "repeats": 3,
+    "order": [
+      "baseline",
+      "current",
+      "current",
+      "baseline",
+      "baseline",
+      "current"
+    ],
+    "controls": {
+      "audio_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+      "audio_bytes": 43202925,
+      "request_sha256": "5a40506ca3f0c9b96b791e31e51cb2a61e7272d2957c87c0caba4c2217509eac",
+      "operator_sha256": "631a9f793ee31daff5cce8b333a3a16bd628ba8a3d00ad2329b1f370a96c211d",
+      "python": "3.12.14",
+      "sqlite": "3.53.1",
+      "numerical_package_versions": {
+        "numpy": "2.5.4",
+        "scipy": "1.17.0",
+        "pandas": "2.2.3",
+        "pyarrow": "19.0.1",
+        "pyproj": "3.7.2",
+        "rasterio": "1.4.3",
+        "soundfile": "0.13.1"
+      },
+      "numerical_threads": 1,
+      "detail_plots_enabled": false,
+      "recording_control": "fixed_counts",
+      "reference_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+      "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+      "verifier_sha256": "3748d337802228b6867782425deb02c42d9e6b7fa2c3d2044e30a7c31db23459",
+      "cpu_affinity": [
+        0
+      ]
+    },
+    "native_backends": {
+      "baseline": {
+        "ridge_fit_backend": "native-c-irls-v2-pairwise:52e69b1a8abaeecaf06091d740598117d03c77e9f4d11e5cc4f12d2f09853849",
+        "acoustic_backend": "native-c-acoustic-v1:0b514977aa2b0e14d01d9d126a9f989c25a3374f3a478089494f0689853bc443"
+      },
+      "current": {
+        "ridge_fit_backend": "native-c-irls-v2-pairwise:ef3ff53dd63e3e4fba37a6a547d41293aee3f6d667a5979ab25aaa0817b8c600",
+        "acoustic_backend": "native-c-acoustic-v1:548ff9747118b152f99dd3630303701f17df99ace13214c2e23a9f90d0e8165d"
+      }
+    },
+    "runs": [
+      {
+        "source": "baseline",
+        "pair": 1,
+        "receipt_s": 57.23572816899832,
+        "wall_s": 57.248346725999,
+        "cpu_s": 56.928659,
+        "producer_wall_s": 52.99628375099928,
+        "search_wall_s": 24.988339765001
+      },
+      {
+        "source": "current",
+        "pair": 1,
+        "receipt_s": 47.53106797700093,
+        "wall_s": 47.54153780999695,
+        "cpu_s": 47.086385,
+        "producer_wall_s": 42.96065718499813,
+        "search_wall_s": 18.122433153999737
+      },
+      {
+        "source": "current",
+        "pair": 2,
+        "receipt_s": 45.876890442999866,
+        "wall_s": 45.8854309749986,
+        "cpu_s": 45.701672,
+        "producer_wall_s": 41.86403850700299,
+        "search_wall_s": 17.25740314900031
+      },
+      {
+        "source": "baseline",
+        "pair": 2,
+        "receipt_s": 59.5181547889988,
+        "wall_s": 59.52919894599836,
+        "cpu_s": 59.303811,
+        "producer_wall_s": 54.79757727899778,
+        "search_wall_s": 25.933045243997185
+      },
+      {
+        "source": "baseline",
+        "pair": 3,
+        "receipt_s": 57.81537674699939,
+        "wall_s": 57.830039464002766,
+        "cpu_s": 57.62339,
+        "producer_wall_s": 53.357517176998954,
+        "search_wall_s": 25.113115488002222
+      },
+      {
+        "source": "current",
+        "pair": 3,
+        "receipt_s": 48.963073756000085,
+        "wall_s": 48.97186907899959,
+        "cpu_s": 48.713362999999994,
+        "producer_wall_s": 44.70087621900166,
+        "search_wall_s": 19.190091902997665
+      }
+    ],
+    "medians": {
+      "baseline": {
+        "receipt_s": 57.81537674699939,
+        "wall_s": 57.830039464002766,
+        "cpu_s": 57.62339,
+        "producer_wall_s": 53.357517176998954,
+        "search_wall_s": 25.113115488002222
+      },
+      "current": {
+        "receipt_s": 47.53106797700093,
+        "wall_s": 47.54153780999695,
+        "cpu_s": 47.086385,
+        "producer_wall_s": 42.96065718499813,
+        "search_wall_s": 18.122433153999737
+      }
+    },
+    "speedup": {
+      "receipt_s": 1.2163702438786936,
+      "wall_s": 1.2164107878698522,
+      "cpu_s": 1.2237802923286636,
+      "producer_wall_s": 1.2420088674907752,
+      "search_wall_s": 1.385747447630099
+    },
+    "reduction_percent": {
+      "receipt_s": 17.788189489800764,
+      "wall_s": 17.790929678355237,
+      "cpu_s": 18.285985951190998,
+      "producer_wall_s": 19.48527694328822,
+      "search_wall_s": 27.83677850461158
+    },
+    "comparisons": [
+      {
+        "pair": 1,
+        "scientific_and_ledger_differences": 0,
+        "array_differences": 0,
+        "verified_receipt_speedup": 1.204175092314215
+      },
+      {
+        "pair": 2,
+        "scientific_and_ledger_differences": 0,
+        "array_differences": 0,
+        "verified_receipt_speedup": 1.297345007786603
+      },
+      {
+        "pair": 3,
+        "scientific_and_ledger_differences": 0,
+        "array_differences": 0,
+        "verified_receipt_speedup": 1.1807954916211632
+      }
+    ],
+    "outcomes": {
+      "baseline": {
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17
+      },
+      "current": {
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 17
+      }
+    },
+    "checked_artifacts_per_pair": {
+      "json": 20,
+      "sqlite": 1,
+      "root_json": 3
+    },
+    "retention_rows": {
+      "bounds": 29738,
+      "records": 852,
+      "run": 1,
+      "stages": 12
+    },
+    "array_checks_per_pair": {
+      "intake_diagnostics": 1,
+      "decoded_pcm": 1,
+      "csv": 17,
+      "npz": 0,
+      "npz_arrays": 0,
+      "png": 1
+    },
+    "initial_comparison_difference": {
+      "artifact": "job/search/manifest.json",
+      "path": "/configuration/runtime/cpa_backend",
+      "baseline": {
+        "missing": true
+      },
+      "current": "native-c-cpa-v1"
+    },
+    "comparator_change": "Only search/manifest.json/configuration/runtime/cpa_backend was added to existing implementation-backend metadata. No scientific field was removed.",
+    "stage_timing_scope": "Producer and search elapsed_s are direct, overlapping wall timers. Poll-derived stage durations are not CPU measurements."
+  },
+  "dense_clock_partition": {
+    "scope": "Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim. One association-anchor partition. Physical fit intervals remain unchanged.",
+    "timing_scope": "Initial local index traversal and conservative distance sieve, followed by complete CPA/association scoring and retention. Excludes imports, index metadata, event preparation, downloads, terrain sampling, audio discovery, and refinement.",
+    "repeats": 3,
+    "identical_results": false,
+    "identical_scored_candidates_rankings_and_retention": true,
+    "performance_timing_eligible": true,
+    "equality_scope": "Exact scored candidate payloads, rankings, trial/support evidence and retention records. Early query/CPA/event/work counts may decrease; every removed unsupported track's complete emission interval must miss the proved partition interval.",
+    "clock_partition_query_verification": {
+      "requested_time_range_s": [
+        1788825600.17,
+        1788911999.6
+      ],
+      "effective_time_range_s": [
+        1788865079.6561337,
+        1788868750.471493
+      ],
+      "excluded_unsupported_tracks_proved_outside_time_range": 58,
+      "baseline": {
+        "queried_tracks": 4694,
+        "queried_samples": 713100,
+        "selected_tracks": 1354,
+        "cpa_rows": 944,
+        "unsupported_cpa_tracks": 62,
+        "association_work_units": 302818
+      },
+      "current": {
+        "queried_tracks": 197,
+        "queried_samples": 40690,
+        "selected_tracks": 197,
+        "cpa_rows": 95,
+        "unsupported_cpa_tracks": 4,
+        "association_work_units": 147985
+      }
+    },
+    "medians": {
+      "baseline": {
+        "wall_seconds": 35.091602533000696,
+        "cpu_seconds": 35.019194973999994,
+        "peak_rss_mib": 459.875
+      },
+      "current": {
+        "wall_seconds": 20.268437553000695,
+        "cpu_seconds": 20.22600465,
+        "peak_rss_mib": 335.52734375
+      }
+    },
+    "speedup": {
+      "wall_seconds": 1.7313422626306716,
+      "cpu_seconds": 1.7313945873141088
+    },
+    "execution_stage_medians": {
+      "baseline": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 7.054216851000092,
+          "cpu_seconds": 7.043509614
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 27.926273163997394,
+          "cpu_seconds": 27.864231954
+        }
+      },
+      "current": {
+        "track_query_and_distance_sieve": {
+          "wall_seconds": 0.3179787109984318,
+          "cpu_seconds": 0.31715404300000016
+        },
+        "cpa_association_scoring_and_retention": {
+          "wall_seconds": 19.950439242998982,
+          "cpu_seconds": 19.908841403
+        }
+      }
+    },
+    "cpu_affinity": [
+      0
+    ],
+    "numerical_threads": 1,
+    "scored_candidates": 16101,
+    "retained_candidates": 100,
+    "independent_groups": 16,
+    "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
+    "runs": [
+      {
+        "source": "baseline",
+        "repetition": 1,
+        "wall_seconds": 33.80226109900104,
+        "cpu_seconds": 33.735255017,
+        "peak_rss_mib": 460.23046875
+      },
+      {
+        "source": "current",
+        "repetition": 1,
+        "wall_seconds": 20.051251495999168,
+        "cpu_seconds": 20.008188989,
+        "peak_rss_mib": 335.203125
+      },
+      {
+        "source": "current",
+        "repetition": 2,
+        "wall_seconds": 20.268437553000695,
+        "cpu_seconds": 20.22600465,
+        "peak_rss_mib": 335.90234375
+      },
+      {
+        "source": "baseline",
+        "repetition": 2,
+        "wall_seconds": 35.091602533000696,
+        "cpu_seconds": 35.019194973999994,
+        "peak_rss_mib": 459.64453125
+      },
+      {
+        "source": "baseline",
+        "repetition": 3,
+        "wall_seconds": 35.981518413998856,
+        "cpu_seconds": 35.897449593,
+        "peak_rss_mib": 459.875
+      },
+      {
+        "source": "current",
+        "repetition": 3,
+        "wall_seconds": 21.861173854998924,
+        "cpu_seconds": 21.819412085,
+        "peak_rss_mib": 335.52734375
+      }
+    ],
+    "operations": {
+      "baseline": {
+        "scalar_fit_calls": null,
+        "acoustic_calls": null,
+        "scored_candidates": 16101,
+        "native_fit_calls": null,
+        "native_fit_successes": null,
+        "native_acoustic_successes": 5731
+      },
+      "current": {
+        "scalar_fit_calls": null,
+        "acoustic_calls": null,
+        "scored_candidates": 16101,
+        "native_fit_calls": 206740,
+        "native_fit_successes": 206740,
+        "native_acoustic_successes": 5111,
+        "native_batch_calls": 4845,
+        "native_batch_rows": 205878,
+        "native_cpa_successes": 63
+      }
+    },
+    "native_execution_scope": "Baseline ridge backend available, successful-fit count unmeasured. Current ridge/batch/acoustic/CPA success counters measured. Native index execution is established by separate decode checks.",
+    "reduction_percent": {
+      "wall_seconds": 42.241345250790594,
+      "cpu_seconds": 42.24309078202169,
+      "peak_rss_mib": 27.039446860559934
+    }
+  },
+  "native_index_component": {
+    "scope": "Compare fresh real index queries and exact Track fields outside the timer.\n\nThis component isolates data_access.py from two source trees. Both arms use\nthe current shared geometry and normalization modules. Timing includes SQLite\ntraversal, payload integrity, gzip/JSON, column extraction, Track construction\nand admission to a fresh cache. Metadata loading and all subsequent pipeline\nstages are outside this timer. No generated aircraft observations are used.",
+    "baseline_revision": "611dca2a4398f50f67114f0bb018ea41c622c4e2",
+    "source_equivalence": "Measured baseline data_access.py is byte-identical to d51; measured optimized data_access.py is byte-identical to delivered code.",
+    "controls": {
+      "python": "3.12.14",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "cpu_affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "numerical_threads": 1
+    },
+    "inventory": {
+      "tracks": 4694,
+      "samples": 713100
+    },
+    "exact_all_track_fields": true,
+    "runs": [
+      {
+        "arm": "baseline",
+        "repeat": 1,
+        "cpu_seconds": 6.549452676,
+        "wall_seconds": 6.568124200999591,
+        "native_extractions": 0
+      },
+      {
+        "arm": "current",
+        "repeat": 1,
+        "cpu_seconds": 5.92303116,
+        "wall_seconds": 5.95306156299921,
+        "native_extractions": 4694
+      },
+      {
+        "arm": "current",
+        "repeat": 2,
+        "cpu_seconds": 6.089761596999999,
+        "wall_seconds": 6.094086106000759,
+        "native_extractions": 4694
+      },
+      {
+        "arm": "baseline",
+        "repeat": 2,
+        "cpu_seconds": 6.566290408,
+        "wall_seconds": 6.570944242001133,
+        "native_extractions": 0
+      },
+      {
+        "arm": "baseline",
+        "repeat": 3,
+        "cpu_seconds": 6.952729569000002,
+        "wall_seconds": 6.953883830999985,
+        "native_extractions": 0
+      },
+      {
+        "arm": "current",
+        "repeat": 3,
+        "cpu_seconds": 6.091422249000004,
+        "wall_seconds": 6.092245374999038,
+        "native_extractions": 4694
+      }
+    ],
+    "medians": {
+      "baseline": {
+        "cpu_seconds": 6.566290408,
+        "wall_seconds": 6.570944242001133
+      },
+      "current": {
+        "cpu_seconds": 6.089761596999999,
+        "wall_seconds": 6.092245374999038
+      }
+    },
+    "speedup": {
+      "cpu_seconds": 1.078250815472769,
+      "wall_seconds": 1.07857511271075
+    }
+  },
+  "validation": {
+    "recorded_native_index_tests_passed": 11,
+    "integrated_recorded_tests_passed": 73,
+    "synthetic_data_generated_or_test_suites_run": false
+  },
+  "limitations": [
+    "Source-informed development controls; no location-accuracy claim.",
+    "The historical aircraft archive excludes known jets and has incomplete coverage.",
+    "The dense result is one unknown-clock anchor partition, not a complete upload or nationwide runtime.",
+    "The native-index component used CPUs 0-8 without pinning.",
+    "Filesystem caches were uncontrolled. Component speedups cannot be multiplied into whole-workflow speedups."
+  ],
+  "post_measurement_delivery_update": {
+    "upstream_confidence_fix_revision_prefix": "5329",
+    "exact_saved_decision_replays": 4,
+    "changed_helper_calls": 0,
+    "outside_timed_source_cohort": true
+  }
+}
