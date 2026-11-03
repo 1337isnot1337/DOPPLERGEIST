@@ -1,0 +1,177 @@
+{
+  "scope": "known-clock synthetic multi-event browser development replay",
+  "started_utc": "2026-11-03T01:55:42.300232Z",
+  "finished_utc": "2026-11-03T02:01:20.197109Z",
+  "elapsed_s": 337.896905789,
+  "passed": false,
+  "transport_ui_passed": true,
+  "supported_localization_passed": false,
+  "independent_real_accuracy_verified": false,
+  "real_national_coverage_verified": false,
+  "limitations": [
+    "One finite synthetic development scene, not an independent real holdout.",
+    "The sample-zero clock is supplied from the generator, not inferred from audio.",
+    "Only finite generated traffic/terrain completeness is declared; no live acquisition is exercised.",
+    "Reference separation is procedural; no operating-system filesystem sandbox is claimed.",
+    "Sampled RSS includes verifier/server/browser/worker processes and can miss short peaks.",
+    "A close alternative or expected inconclusive result cannot pass supported localization."
+  ],
+  "normal_request": {
+    "schema_version": 1,
+    "search": {
+      "coverage": "conus"
+    },
+    "time_window": {
+      "start_utc": "2026-09-21T14:13:20Z",
+      "end_utc": "2026-09-21T14:13:20Z",
+      "source": "user",
+      "source_detail": "Known sample-zero clock of the published independent synthetic generator"
+    }
+  },
+  "operator_configuration": {
+    "flight_indexes": [
+      "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/flights.sqlite"
+    ],
+    "offline": true,
+    "terrain": {
+      "rasters": [
+        "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/terrain.tif"
+      ],
+      "geoid_raster": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/geoid.tif"
+    },
+    "sound_speed_mps": 343,
+    "max_distance_m": 20000
+  },
+  "leading_prediction_error_m": 0.07993058330434617,
+  "leading_prediction_clock": {
+    "reported_recording_start_utc": "2026-09-21T14:13:20Z",
+    "within_request_window": true,
+    "clock_error_s": 0.0,
+    "comparison": "inclusive trusted request UTC bounds; no additional tolerance"
+  },
+  "matched_groups": {
+    "valid": true,
+    "independent_groups": 4,
+    "group_flights": {
+      "harmonics-0001": "1e3a1eea7263c16d9c20041d294b6071",
+      "harmonics-0002": "73956cb486fabc28fbe64806eea49259",
+      "harmonics-0003": "168bb3d4dab93f4679a1d8a9152b4603",
+      "harmonics-0004": "8b8e4c8a6d7ef2f9d47e7b0b45851455"
+    }
+  },
+  "true_event_count": 4,
+  "discovered_event_count": 4,
+  "threshold_counts": {
+    "100": {
+      "all_candidates": 20,
+      "correct_full_flight_set": 8
+    },
+    "500": {
+      "all_candidates": 105,
+      "correct_full_flight_set": 53
+    },
+    "1000": {
+      "all_candidates": 105,
+      "correct_full_flight_set": 53
+    }
+  },
+  "supported_localization_at_m": {
+    "100": false,
+    "500": false,
+    "1000": false
+  },
+  "service_and_workers_stopped": true,
+  "analysis_stopped_utc": "2026-11-03T02:01:20.072556Z",
+  "evaluation_truth_loaded_utc": "2026-11-03T02:01:20.072667Z",
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "stages": [
+    {
+      "stage": "generation",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation/scripts/make_multi_event_case.py",
+          "--output",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture",
+          "--events",
+          "4",
+          "--seed",
+          "20261103"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/logs/generation.log",
+        "started_utc": "2026-11-03T01:55:42.458069Z",
+        "timeout_s": 300,
+        "returncode": 0,
+        "elapsed_s": 7.021791941000004,
+        "finished_utc": "2026-11-03T01:55:49.479882Z",
+        "peak_sampled_process_tree_rss_bytes": 528171008,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "indexing",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation/scripts/ci_upload_replay.py",
+          "_index",
+          "--inputs",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs",
+          "--evaluation",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/evaluation",
+          "--index",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/flights.sqlite",
+          "--report",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/indexing.json",
+          "--events",
+          "4"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/logs/indexing.log",
+        "started_utc": "2026-11-03T01:55:49.481475Z",
+        "timeout_s": 180,
+        "returncode": 0,
+        "elapsed_s": 1.804845628999999,
+        "finished_utc": "2026-11-03T01:55:51.286334Z",
+        "peak_sampled_process_tree_rss_bytes": 286846976,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    },
+    {
+      "stage": "browser-upload",
+      "execution": {
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation/scripts/ci_upload_replay.py",
+          "_product",
+          "--audio",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/recording.mp3",
+          "--output",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/product",
+          "--request",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/wire-request.json",
+          "--operator",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/operator.json",
+          "--lifecycle",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/service-lifecycle.json",
+          "--browser-python",
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "--expect-status",
+          "inconclusive",
+          "--timeout-s",
+          "1731.0071218799999"
+        ],
+        "cwd": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/implementation",
+        "log": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/logs/browser-upload.log",
+        "started_utc": "2026-11-03T01:55:51.293898Z",
+        "timeout_s": 1776.007055826,
+        "returncode": 0,
+        "elapsed_s": 328.75044565599995,
+        "finished_utc": "2026-11-03T02:01:20.044362Z",
+        "peak_sampled_process_tree_rss_bytes": 1453154304,
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice"
+      }
+    }
+  ]
+}

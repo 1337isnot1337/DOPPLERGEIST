@@ -1,0 +1,88 @@
+{
+  "scope": "Post-run signal-equivalence check only; the actual CI upload remains the distinct encoder variant. No new national search.",
+  "decoder": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "inputs": [
+    {
+      "input": "canonical_release",
+      "path": ".artifacts/physical-verification/shared-multievent/four-canonical-1f03425/inputs/recording.mp3",
+      "mp3_bytes": 3841100,
+      "mp3_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+      "decoded_f32_bytes": 15360000,
+      "decoded_sample_count": 3840000,
+      "decoded_sha256": "b48e0c4d3c971d45c51ab2249297b3c883f94eddce8789354edbbed77b77074e",
+      "command": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "error",
+        "-xerror",
+        "-i",
+        ".artifacts/physical-verification/shared-multievent/four-canonical-1f03425/inputs/recording.mp3",
+        "-map",
+        "0:a:0",
+        "-vn",
+        "-sn",
+        "-dn",
+        "-af",
+        "pan=mono|c0=1*c0",
+        "-ac",
+        "1",
+        "-ar",
+        "4000",
+        "-acodec",
+        "pcm_f32le",
+        "-f",
+        "f32le",
+        "pipe:1"
+      ],
+      "id3v2_prefix_bytes": 44,
+      "post_id3_payload_sha256": "806ac86abdf78a6c6cb369c666b128dd514938674b7714a1e2a274d009a51958"
+    },
+    {
+      "input": "ci_uploaded_variant",
+      "path": ".artifacts/physical-verification/ci-four-event-41562469268/extracted/ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/input.mp3",
+      "mp3_bytes": 3841101,
+      "mp3_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c",
+      "decoded_f32_bytes": 15360000,
+      "decoded_sample_count": 3840000,
+      "decoded_sha256": "74604618cb5a375d912233e496b4d95c0ef59715fd525702de40352364cd8e67",
+      "command": [
+        "ffmpeg",
+        "-nostdin",
+        "-v",
+        "error",
+        "-xerror",
+        "-i",
+        ".artifacts/physical-verification/ci-four-event-41562469268/extracted/ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/input.mp3",
+        "-map",
+        "0:a:0",
+        "-vn",
+        "-sn",
+        "-dn",
+        "-af",
+        "pan=mono|c0=1*c0",
+        "-ac",
+        "1",
+        "-ar",
+        "4000",
+        "-acodec",
+        "pcm_f32le",
+        "-f",
+        "f32le",
+        "pipe:1"
+      ],
+      "id3v2_prefix_bytes": 45,
+      "post_id3_payload_sha256": "5366f929c7cd5d342567540bd5ca8c97c397a6d78c40d6e9cff26bdae725d01f"
+    }
+  ],
+  "decoded_samples_byte_identical": false,
+  "mpeg_payload_after_id3_identical": false,
+  "ci_saved_normalized_cache": [
+    {
+      "path": ".artifacts/physical-verification/ci-four-event-41562469268/extracted/ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/intake/recording.f32",
+      "bytes": 15360000,
+      "sha256": "74604618cb5a375d912233e496b4d95c0ef59715fd525702de40352364cd8e67"
+    }
+  ],
+  "canonical_decode_matches_ci_saved_cache": false
+}

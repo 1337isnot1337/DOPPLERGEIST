@@ -1,0 +1,32 @@
+{
+  "recorded_files": 5061,
+  "retained_files_verified": 5040,
+  "retained_byte_mismatches": [],
+  "workflow_excluded_bytecode_count": 20,
+  "workflow_excluded_bytecode": [
+    "implementation/scripts/__pycache__/ci_checkpoint_replay.cpython-312.pyc",
+    "implementation/scripts/__pycache__/verify_methodology.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/__init__.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/audio.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/automatic.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/cli.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/confidence.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/contracts.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/data_access.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/discovery.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/geometry.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/intake.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/jobs.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/matching.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/search.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/service.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/terrain.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/tiled_search.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/tracks.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/web/__pycache__/__init__.cpython-312.pyc"
+  ],
+  "other_unretained_files": [
+    "product/http-jobs/.manager.lock"
+  ],
+  "scope": "The workflow explicitly excludes Python bytecode. One transient service lock is also absent from the downloaded archive. All 5,040 retained manifest entries match their hashes; the original complete manifest and this retention difference are preserved."
+}

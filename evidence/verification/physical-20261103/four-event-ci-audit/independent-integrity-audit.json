@@ -1,0 +1,307 @@
+{
+  "completed_at_utc": "2026-11-03T02:03:36.800653+00:00",
+  "run": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/ci-four-event-41562469268/extracted/ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a",
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "auditor_sha256": "e84ad6e8b4945df6f9633a4f179496f307443e392ab0aea30c69b88e508ba96e",
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "integrity_checks_passed": true,
+  "accepted_location": false,
+  "localization_accuracy_evaluated": false,
+  "truth_opened": false,
+  "scope": "Independent persisted-evidence audit; no producer execution, accuracy acceptance or calibrated uncertainty claim.",
+  "files": [
+    {
+      "path": "result.json",
+      "sha256": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624",
+      "bytes": 250495
+    },
+    {
+      "path": "request.json",
+      "sha256": "6a8c3b217c9acfbd853aab852f432a9671f93808ebe403dc9cebc8cbd914ec3c",
+      "bytes": 433
+    },
+    {
+      "path": "operator.json",
+      "sha256": "86a46ba16139dbbe667872484f47464eea4c20d3853182052ba5272714a0b49e",
+      "bytes": 450
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "c3895b3eb23434844f05fd4269a927e5881847be4127ee3f90a1421d2a52dcbd",
+      "bytes": 3071
+    },
+    {
+      "path": "decision.json",
+      "sha256": "e7b49f500db78c4a5606d29b4c8e1487fba2e2f360398f2dc6eb11332bbcd618",
+      "bytes": 57397
+    },
+    {
+      "path": "refined-candidates.json",
+      "sha256": "c383ba027e33b7b334ffe391869fbc312dc3334ae9c43f726bf05650ab2eb481",
+      "bytes": 434500
+    },
+    {
+      "path": "search/manifest.json",
+      "sha256": "53757c0144248ef5e5f5ec67099ab356eabf65954ab0cd8f52a622707dd01c61",
+      "bytes": 214592
+    },
+    {
+      "path": "search/search-report.json",
+      "sha256": "4038a86c34514b6be9b599117642cc42c012502a34b0f0dd14df762257ba5bb2",
+      "bytes": 406111
+    }
+  ],
+  "event_contributions": [
+    {
+      "prepared_index": 0,
+      "original_event_ids": [
+        "event-0001"
+      ],
+      "residual_score": -0.01905517236611139,
+      "normalized_support": 0.9936482758779629,
+      "rmse_hz": 0.01905807207259025,
+      "sample_count": 327
+    },
+    {
+      "prepared_index": 1,
+      "original_event_ids": [
+        "event-0002"
+      ],
+      "residual_score": -0.026693295312871998,
+      "normalized_support": 0.9911022348957094,
+      "rmse_hz": 0.026704955697296123,
+      "sample_count": 366
+    },
+    {
+      "prepared_index": 2,
+      "original_event_ids": [
+        "event-0003"
+      ],
+      "residual_score": -0.03235624991559647,
+      "normalized_support": 0.9892145833614678,
+      "rmse_hz": 0.03238794052915335,
+      "sample_count": 380
+    },
+    {
+      "prepared_index": 3,
+      "original_event_ids": [
+        "event-0004"
+      ],
+      "residual_score": -0.05139543039544257,
+      "normalized_support": 0.9828681898681858,
+      "rmse_hz": 0.05194142783978217,
+      "sample_count": 379
+    }
+  ],
+  "checks": [
+    {
+      "check": "source_files_match_declared_commit",
+      "passed": true,
+      "files": {
+        "__init__.py": {
+          "expected": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+          "actual": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+          "matches": true
+        },
+        "audio.py": {
+          "expected": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+          "actual": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+          "matches": true
+        },
+        "automatic.py": {
+          "expected": "bc847c6afb26e0c2647f4f7157f00e15572654f7c6c226d47c96741a521877c6",
+          "actual": "bc847c6afb26e0c2647f4f7157f00e15572654f7c6c226d47c96741a521877c6",
+          "matches": true
+        },
+        "cli.py": {
+          "expected": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+          "actual": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+          "matches": true
+        },
+        "confidence.py": {
+          "expected": "25997b9b2bb692374631be32a770fde0a991041413b929f6e1a833bd7fda6403",
+          "actual": "25997b9b2bb692374631be32a770fde0a991041413b929f6e1a833bd7fda6403",
+          "matches": true
+        },
+        "contracts.py": {
+          "expected": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+          "actual": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+          "matches": true
+        },
+        "data_access.py": {
+          "expected": "0ed7a9ff8599efdff99b5cdc5efccb5426dc18f2ea82edbcc27604bd149b8445",
+          "actual": "0ed7a9ff8599efdff99b5cdc5efccb5426dc18f2ea82edbcc27604bd149b8445",
+          "matches": true
+        },
+        "discovery.py": {
+          "expected": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+          "actual": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+          "matches": true
+        },
+        "evaluation.py": {
+          "expected": "e0d43b2904ad3a6dba5ba743912313442bd4ec45c36eed1335194a55f255f478",
+          "actual": "e0d43b2904ad3a6dba5ba743912313442bd4ec45c36eed1335194a55f255f478",
+          "matches": true
+        },
+        "geometry.py": {
+          "expected": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+          "actual": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+          "matches": true
+        },
+        "intake.py": {
+          "expected": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "actual": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "matches": true
+        },
+        "jobs.py": {
+          "expected": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+          "actual": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+          "matches": true
+        },
+        "matching.py": {
+          "expected": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+          "actual": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+          "matches": true
+        },
+        "pipeline.py": {
+          "expected": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d",
+          "actual": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d",
+          "matches": true
+        },
+        "provenance.py": {
+          "expected": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea",
+          "actual": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea",
+          "matches": true
+        },
+        "search.py": {
+          "expected": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+          "actual": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+          "matches": true
+        },
+        "service.py": {
+          "expected": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+          "actual": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+          "matches": true
+        },
+        "terrain.py": {
+          "expected": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+          "actual": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+          "matches": true
+        },
+        "tiled_search.py": {
+          "expected": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870",
+          "actual": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870",
+          "matches": true
+        },
+        "tracks.py": {
+          "expected": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+          "actual": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+          "matches": true
+        }
+      }
+    },
+    {
+      "check": "search_and_orchestration_source_agree",
+      "passed": true
+    },
+    {
+      "check": "canonical_audio_bytes",
+      "passed": true,
+      "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+    },
+    {
+      "check": "operator_configuration_hash",
+      "passed": true
+    },
+    {
+      "check": "configuration_and_run_hashes",
+      "passed": true,
+      "run_hash": "487e8bacc9f11b1efb2f3b56323de22f6c6024d3ddb4c51482f5eb422b52c035"
+    },
+    {
+      "check": "checkpoint_payload_hashes",
+      "passed": true,
+      "checked": 4940,
+      "mismatches": []
+    },
+    {
+      "check": "checkpoint_work_counts",
+      "passed": true,
+      "checkpoint_tiles": 4940,
+      "checkpoint_points": 28672
+    },
+    {
+      "check": "decision_result_consistency",
+      "passed": true
+    },
+    {
+      "check": "candidate_count_consistency",
+      "passed": true,
+      "raw": 105,
+      "public": 105
+    },
+    {
+      "check": "candidate_coordinates_and_scores",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "check": "candidate_order",
+      "passed": true
+    },
+    {
+      "check": "every_discovered_group_prepared",
+      "passed": true,
+      "discovered": 4,
+      "prepared": 4
+    },
+    {
+      "check": "all_hypothesis_clocks_in_trusted_window",
+      "passed": true,
+      "outside": [],
+      "window_s": [
+        1790000000.0,
+        1790000000.0
+      ]
+    },
+    {
+      "check": "shared_clock_evidence",
+      "passed": true
+    },
+    {
+      "check": "matched_groups_and_diagnostic_lengths",
+      "passed": true,
+      "matched_groups": 4,
+      "expected_minimum": 4
+    },
+    {
+      "check": "original_event_and_flight_mapping",
+      "passed": true
+    },
+    {
+      "check": "public_clock_matches_joint_clock",
+      "passed": true
+    },
+    {
+      "check": "per_event_residual_evidence",
+      "passed": true
+    },
+    {
+      "check": "raw_residual_score_preserved",
+      "passed": true,
+      "expected": -0.12950014799002244,
+      "recorded": -0.12950014799002244
+    },
+    {
+      "check": "all_matched_events_contribute_to_score",
+      "passed": true,
+      "expected": 3.956833284003326,
+      "recorded": 3.956833284003326
+    },
+    {
+      "check": "diagnostics_match_selected_sensitivity",
+      "passed": true
+    }
+  ]
+}

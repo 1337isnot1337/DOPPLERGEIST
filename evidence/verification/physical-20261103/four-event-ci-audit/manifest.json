@@ -1,0 +1,90 @@
+{
+  "scope": "Durable selected records from completed CI run 41562469268; this manifest excludes itself.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 8532,
+      "sha256": "32647c6af955289352801f16c9e29c1801c01d8939ae85c9528b49736bbc4881"
+    },
+    {
+      "path": "artifact-audit.json",
+      "bytes": 4519,
+      "sha256": "93fc801af839585d66685a36f0af8d05b30495981ccd87a7f1d0e3e281d09284"
+    },
+    {
+      "path": "artifact-retention-audit.json",
+      "bytes": 2092,
+      "sha256": "6a362de92bee8415ff1e7eb45733d5379de6d5f39c6a51bb36de408ab25e4743"
+    },
+    {
+      "path": "canonical-signal-equivalence.json",
+      "bytes": 2970,
+      "sha256": "3b1d49e30b8c99fccea39a2ccc18798542a2e6d4b6a360187cedd7f4f8a07310"
+    },
+    {
+      "path": "ci-commit.txt",
+      "bytes": 41,
+      "sha256": "2031ee5b62f91d04f7e51c669c7cf65c5495b7e27b7e98bfd9ecf7551e89a096"
+    },
+    {
+      "path": "ci-dependencies.txt",
+      "bytes": 699,
+      "sha256": "9bc4f252ab66029b1cf71f6308a960d4f9017c20f6fdcd1f3b78d160601a5c6c"
+    },
+    {
+      "path": "ci-pytest.log",
+      "bytes": 426,
+      "sha256": "e9307f9f4cbc450d70e2ef511358939766461bdddf494adf170bcd495c7975a5"
+    },
+    {
+      "path": "ci-pytest.xml",
+      "bytes": 35659,
+      "sha256": "80bb9712874cf487882d4d55e2315b838af1e63b55a7ca181c35cbb4f9caf477"
+    },
+    {
+      "path": "ci-summary.json",
+      "bytes": 7237,
+      "sha256": "f661359d5e0f2a9f3c7fcfba4ac606c9252860286d680d62cde0fa8c6061fefe"
+    },
+    {
+      "path": "ci-tree.txt",
+      "bytes": 41,
+      "sha256": "54a36ca2b8ce0fe7484774040faf51c9b832fb6be758f32ed6e462da3dff32cb"
+    },
+    {
+      "path": "download-receipt.json",
+      "bytes": 457,
+      "sha256": "7f00901ad2bc402456d3c75401b24ab6326752d223c24c7a91c2b9c2f1e2def3"
+    },
+    {
+      "path": "independent-integrity-audit.json",
+      "bytes": 10294,
+      "sha256": "7bb8ca4a2796796a6fe163da8eab3922f37120d2e1c6cd40e0c2f7d372f87d40"
+    },
+    {
+      "path": "independent-post-run-evaluation.json",
+      "bytes": 44816,
+      "sha256": "1571983ea71d542cdf2b92238a11ce5c78392ab24eb33ce655db6c73802dd7b6"
+    },
+    {
+      "path": "page-mobile.png",
+      "bytes": 641061,
+      "sha256": "eea150b2f17c65ca3357fae25099f2866aa8830f466bf498145541116c57cd8a"
+    },
+    {
+      "path": "page.png",
+      "bytes": 1332662,
+      "sha256": "0b37e205f5a780eeafb6f49bc2fb7fb62fbaa2e7021db37401314a74091a45cb"
+    },
+    {
+      "path": "source-records-manifest.json",
+      "bytes": 4050,
+      "sha256": "ff188537e5b32486db68067b2aed88ba41549170d5d09f82f4b27976976a00e9"
+    },
+    {
+      "path": "source-records.zip",
+      "bytes": 703197,
+      "sha256": "d03e4a2b1dccc45cebdf1ac9515a79832dd4b360e33a45a56a60665100f1bfa2"
+    }
+  ]
+}

@@ -1,0 +1,1660 @@
+{
+  "scope": "Post-run comparison only; does not revise the producer decision or establish missing finite-search evidence.",
+  "truth_read_after_ci_service_stopped": true,
+  "reference_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+  "recorded_status": "inconclusive",
+  "recorded_reason": "ambiguous_locations",
+  "leading_point_error_m": 0.07993058330434617,
+  "thresholds_m": {
+    "100": true,
+    "500": true,
+    "1000": true
+  },
+  "supported_localization": false,
+  "candidate_count": 105,
+  "distinct_associations": 5,
+  "competitive_retained_candidates": 10,
+  "maximum_retained_competitive_separation_m": 117.19575435008896,
+  "minimum_retained_search_score": 2.1003970081136183,
+  "leading_score": 3.956833284003326,
+  "conservative_finite_row_near_tie_cutoff": 3.1568332840033255,
+  "returned_profile_radius_m": 6.268946589875684,
+  "all_33_profile_rows_successful": true,
+  "first_competing_hypothesis": {
+    "separation_m": 21.960276635521613,
+    "score_gap": 0.037324793959408575,
+    "gap_units": "support_units_per_group",
+    "same_flight_association": true,
+    "checked_radius_m": 6.268946589875684
+  },
+  "candidate_rows": [
+    {
+      "rank": 1,
+      "separation_from_leader_m": 0.0,
+      "error_m": 0.07993058330434617,
+      "score": 3.956833284003326,
+      "support_gap_per_group": 0.0,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 2,
+      "separation_from_leader_m": 0.0005349660220351579,
+      "error_m": 0.07948572805875775,
+      "score": 3.9568332836827658,
+      "support_gap_per_group": 8.014000574263491e-11,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 3,
+      "separation_from_leader_m": 0.001028865721253078,
+      "error_m": 0.08061857788736904,
+      "score": 3.9568332809559577,
+      "support_gap_per_group": 7.618420339028376e-10,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 4,
+      "separation_from_leader_m": 0.0010013962231434647,
+      "error_m": 0.08004058694187816,
+      "score": 3.9568332808009306,
+      "support_gap_per_group": 8.005988094694771e-10,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 5,
+      "separation_from_leader_m": 0.0011530175359076742,
+      "error_m": 0.08088483986091363,
+      "score": 3.9568332789613567,
+      "support_gap_per_group": 1.2604922661196838e-09,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 6,
+      "separation_from_leader_m": 21.960276635521613,
+      "error_m": 21.885529691476,
+      "score": 3.8075341081656915,
+      "support_gap_per_group": 0.037324793959408575,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 7,
+      "separation_from_leader_m": 82.89842078446404,
+      "error_m": 82.92831879740659,
+      "score": 3.425347982771037,
+      "support_gap_per_group": 0.13287132530807222,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 8,
+      "separation_from_leader_m": 89.12345513672597,
+      "error_m": 89.1822875541064,
+      "score": 3.396520253889416,
+      "support_gap_per_group": 0.14007825752847747,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 9,
+      "separation_from_leader_m": 115.69606960318923,
+      "error_m": 115.62238404419993,
+      "score": 3.25215351290472,
+      "support_gap_per_group": 0.17616994277465148,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 10,
+      "separation_from_leader_m": 117.19575435008896,
+      "error_m": 117.14662723939321,
+      "score": 3.204131167404939,
+      "support_gap_per_group": 0.18817552914959668,
+      "competitive": true,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 11,
+      "separation_from_leader_m": 119.59222807988888,
+      "error_m": 119.67049091887542,
+      "score": 3.1251547934595134,
+      "support_gap_per_group": 0.2079196226359531,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 12,
+      "separation_from_leader_m": 140.73398877720567,
+      "error_m": 140.7026865629188,
+      "score": 3.0595681682734313,
+      "support_gap_per_group": 0.22431627893247363,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 13,
+      "separation_from_leader_m": 145.69202701098357,
+      "error_m": 145.69976553314865,
+      "score": 3.0407273408498914,
+      "support_gap_per_group": 0.2290264857883586,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 14,
+      "separation_from_leader_m": 181.396149266471,
+      "error_m": 181.43251112959842,
+      "score": 2.918545161180646,
+      "support_gap_per_group": 0.2595720307056699,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 15,
+      "separation_from_leader_m": 189.12374163849591,
+      "error_m": 189.1878624966544,
+      "score": 2.9116063806082915,
+      "support_gap_per_group": 0.2613067258487586,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 16,
+      "separation_from_leader_m": 163.11832887286153,
+      "error_m": 163.04082051063114,
+      "score": 2.8824485267965425,
+      "support_gap_per_group": 0.2685961893016958,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 17,
+      "separation_from_leader_m": 21.960276635521613,
+      "error_m": 21.885529691476,
+      "score": 2.8697987819976998,
+      "support_gap_per_group": 0.2717586255014065,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 18,
+      "separation_from_leader_m": 21.960276635521613,
+      "error_m": 21.885529691476,
+      "score": 2.853027140554059,
+      "support_gap_per_group": 0.2759515358623167,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 19,
+      "separation_from_leader_m": 21.960276635521613,
+      "error_m": 21.885529691476,
+      "score": 2.8506597991792995,
+      "support_gap_per_group": 0.2765433712060066,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 20,
+      "separation_from_leader_m": 21.960276635521613,
+      "error_m": 21.885529691476,
+      "score": 2.849116602766016,
+      "support_gap_per_group": 0.2769291703093274,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 21,
+      "separation_from_leader_m": 215.9929882137582,
+      "error_m": 215.92164932655223,
+      "score": 2.7926054546485273,
+      "support_gap_per_group": 0.29105695733869963,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 22,
+      "separation_from_leader_m": 205.17434965214565,
+      "error_m": 205.25351795593758,
+      "score": 2.7608333582192297,
+      "support_gap_per_group": 0.298999981446024,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 23,
+      "separation_from_leader_m": 215.93954380001438,
+      "error_m": 215.89381370129016,
+      "score": 2.746999063733557,
+      "support_gap_per_group": 0.30245855506744224,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 24,
+      "separation_from_leader_m": 214.17060796193832,
+      "error_m": 214.16926709447247,
+      "score": 2.7441009022677636,
+      "support_gap_per_group": 0.30318309543389055,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 25,
+      "separation_from_leader_m": 200.75889493440357,
+      "error_m": 200.82603044143687,
+      "score": 2.711710812983159,
+      "support_gap_per_group": 0.3112806177550417,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 26,
+      "separation_from_leader_m": 221.5435725049785,
+      "error_m": 221.5797305145455,
+      "score": 2.6876741590210873,
+      "support_gap_per_group": 0.3172897812455596,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 27,
+      "separation_from_leader_m": 232.70538368764846,
+      "error_m": 232.69253389193904,
+      "score": 2.683702686739124,
+      "support_gap_per_group": 0.31828264931605044,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 28,
+      "separation_from_leader_m": 230.44310293327794,
+      "error_m": 230.39411152721263,
+      "score": 2.6744737914519243,
+      "support_gap_per_group": 0.32058987313785037,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 29,
+      "separation_from_leader_m": 82.89842078446404,
+      "error_m": 82.92831879740659,
+      "score": 2.6501603132953795,
+      "support_gap_per_group": 0.3266682426769866,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 30,
+      "separation_from_leader_m": 82.89842078446404,
+      "error_m": 82.92831879740659,
+      "score": 2.618486936444483,
+      "support_gap_per_group": 0.33458658688971066,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 31,
+      "separation_from_leader_m": 89.12345513672597,
+      "error_m": 89.1822875541064,
+      "score": 2.6174935840327995,
+      "support_gap_per_group": 0.33483492499263157,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 32,
+      "separation_from_leader_m": 244.63115143409766,
+      "error_m": 244.55132938009152,
+      "score": 2.5728804987557625,
+      "support_gap_per_group": 0.3459881963118908,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 33,
+      "separation_from_leader_m": 89.12345513672597,
+      "error_m": 89.1822875541064,
+      "score": 2.5669482868100566,
+      "support_gap_per_group": 0.3474712492983173,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 34,
+      "separation_from_leader_m": 115.69606960318923,
+      "error_m": 115.62238404419993,
+      "score": 2.5255626721398454,
+      "support_gap_per_group": 0.3578176529658701,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 35,
+      "separation_from_leader_m": 289.75274209092396,
+      "error_m": 289.81835126416604,
+      "score": 2.5244514854601907,
+      "support_gap_per_group": 0.35809544963578377,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 36,
+      "separation_from_leader_m": 280.3204113987314,
+      "error_m": 280.35862999781693,
+      "score": 2.515794997414657,
+      "support_gap_per_group": 0.36025957164716715,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 37,
+      "separation_from_leader_m": 243.86891319308523,
+      "error_m": 243.80018772458803,
+      "score": 2.5156251543077666,
+      "support_gap_per_group": 0.3603020324238898,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 38,
+      "separation_from_leader_m": 82.89842078446404,
+      "error_m": 82.92831879740659,
+      "score": 2.5140816295172335,
+      "support_gap_per_group": 0.3606879136215231,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 39,
+      "separation_from_leader_m": 89.12345513672597,
+      "error_m": 89.1822875541064,
+      "score": 2.507344902510416,
+      "support_gap_per_group": 0.36237209537322745,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 40,
+      "separation_from_leader_m": 117.19575435008896,
+      "error_m": 117.14662723939321,
+      "score": 2.504163642181717,
+      "support_gap_per_group": 0.36316741045540224,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 41,
+      "separation_from_leader_m": 89.12345513672597,
+      "error_m": 89.1822875541064,
+      "score": 2.4977739883149765,
+      "support_gap_per_group": 0.3647648239220873,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 42,
+      "separation_from_leader_m": 82.89842078446404,
+      "error_m": 82.92831879740659,
+      "score": 2.493315069056014,
+      "support_gap_per_group": 0.3658795537368279,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 43,
+      "separation_from_leader_m": 115.69606960318923,
+      "error_m": 115.62238404419993,
+      "score": 2.4845084895214,
+      "support_gap_per_group": 0.3680811986204815,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 44,
+      "separation_from_leader_m": 117.19575435008896,
+      "error_m": 117.14662723939321,
+      "score": 2.452259588695579,
+      "support_gap_per_group": 0.37614342382693666,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 45,
+      "separation_from_leader_m": 302.6129484488314,
+      "error_m": 302.62560610631095,
+      "score": 2.449914179967307,
+      "support_gap_per_group": 0.3767297760090047,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 46,
+      "separation_from_leader_m": 260.8979909963272,
+      "error_m": 260.9760330061191,
+      "score": 2.4375790248307823,
+      "support_gap_per_group": 0.3798135647931359,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 47,
+      "separation_from_leader_m": 281.420669675013,
+      "error_m": 281.3951874301391,
+      "score": 2.4358048770208334,
+      "support_gap_per_group": 0.3802571017456231,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 48,
+      "separation_from_leader_m": 300.424343210637,
+      "error_m": 300.50132508728126,
+      "score": 2.426412125310115,
+      "support_gap_per_group": 0.38260528967330265,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 49,
+      "separation_from_leader_m": 286.42236905868265,
+      "error_m": 286.435962742507,
+      "score": 2.41937522896456,
+      "support_gap_per_group": 0.3843645137596915,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 50,
+      "separation_from_leader_m": 316.6771628102399,
+      "error_m": 316.60676819075894,
+      "score": 2.4167680422415243,
+      "support_gap_per_group": 0.38501631044045037,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 51,
+      "separation_from_leader_m": 115.69606960318923,
+      "error_m": 115.62238404419993,
+      "score": 2.3964900000141904,
+      "support_gap_per_group": 0.39008582099728384,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 52,
+      "separation_from_leader_m": 119.59222807988888,
+      "error_m": 119.67049091887542,
+      "score": 2.3784160122098585,
+      "support_gap_per_group": 0.3946043179483668,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 53,
+      "separation_from_leader_m": 314.9084694562282,
+      "error_m": 314.86403595935883,
+      "score": 2.3776085642418474,
+      "support_gap_per_group": 0.3948061799403696,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 54,
+      "separation_from_leader_m": 311.9310946364121,
+      "error_m": 311.9788418816842,
+      "score": 2.3774128775973518,
+      "support_gap_per_group": 0.3948551016014935,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 55,
+      "separation_from_leader_m": 293.16978662292,
+      "error_m": 293.2298068580224,
+      "score": 2.3600882571367023,
+      "support_gap_per_group": 0.39918625671665586,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 56,
+      "separation_from_leader_m": 326.68003001315884,
+      "error_m": 326.65827180248453,
+      "score": 2.3529426948090126,
+      "support_gap_per_group": 0.4009726472985783,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 57,
+      "separation_from_leader_m": 119.59222807988888,
+      "error_m": 119.67049091887542,
+      "score": 2.352673737725133,
+      "support_gap_per_group": 0.40103988656954814,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 58,
+      "separation_from_leader_m": 115.69606960318923,
+      "error_m": 115.62238404419993,
+      "score": 2.3498993770387244,
+      "support_gap_per_group": 0.40173347674115034,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 59,
+      "separation_from_leader_m": 119.59222807988888,
+      "error_m": 119.67049091887542,
+      "score": 2.3487988478774393,
+      "support_gap_per_group": 0.4020086090314716,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 60,
+      "separation_from_leader_m": 140.73398877720567,
+      "error_m": 140.7026865629188,
+      "score": 2.335396659146598,
+      "support_gap_per_group": 0.40535915621418195,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 61,
+      "separation_from_leader_m": 145.69202701098357,
+      "error_m": 145.69976553314865,
+      "score": 2.3352092534260365,
+      "support_gap_per_group": 0.40540600764432233,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 62,
+      "separation_from_leader_m": 117.19575435008896,
+      "error_m": 117.14662723939321,
+      "score": 2.334995472955414,
+      "support_gap_per_group": 0.4054594527619779,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 63,
+      "separation_from_leader_m": 326.75075032135305,
+      "error_m": 326.6951305253086,
+      "score": 2.3336025811521237,
+      "support_gap_per_group": 0.4058076757128005,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 64,
+      "separation_from_leader_m": 181.396149266471,
+      "error_m": 181.43251112959842,
+      "score": 2.323514245962416,
+      "support_gap_per_group": 0.40832975951022743,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 65,
+      "separation_from_leader_m": 117.19575435008896,
+      "error_m": 117.14662723939321,
+      "score": 2.3209747983821076,
+      "support_gap_per_group": 0.40896462140530454,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 66,
+      "separation_from_leader_m": 145.69202701098357,
+      "error_m": 145.69976553314865,
+      "score": 2.3200411846265574,
+      "support_gap_per_group": 0.4091980248441921,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 67,
+      "separation_from_leader_m": 189.12374163849591,
+      "error_m": 189.1878624966544,
+      "score": 2.3021983392021603,
+      "support_gap_per_group": 0.41365873620029137,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 68,
+      "separation_from_leader_m": 140.73398877720567,
+      "error_m": 140.7026865629188,
+      "score": 2.299594085379109,
+      "support_gap_per_group": 0.4143097996560542,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 69,
+      "separation_from_leader_m": 119.59222807988888,
+      "error_m": 119.67049091887542,
+      "score": 2.29557578256611,
+      "support_gap_per_group": 0.41531437535930393,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 70,
+      "separation_from_leader_m": 336.8163866785028,
+      "error_m": 336.73797425544853,
+      "score": 2.2873984216101624,
+      "support_gap_per_group": 0.41735871559829085,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 71,
+      "separation_from_leader_m": 140.73398877720567,
+      "error_m": 140.7026865629188,
+      "score": 2.28714320192728,
+      "support_gap_per_group": 0.4174225205190114,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 72,
+      "separation_from_leader_m": 145.69202701098357,
+      "error_m": 145.69976553314865,
+      "score": 2.277237842480803,
+      "support_gap_per_group": 0.41989886038063073,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 73,
+      "separation_from_leader_m": 181.396149266471,
+      "error_m": 181.43251112959842,
+      "score": 2.268641105858138,
+      "support_gap_per_group": 0.42204804453629696,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 74,
+      "separation_from_leader_m": 304.4310705540404,
+      "error_m": 304.3534030284711,
+      "score": 2.264183080804895,
+      "support_gap_per_group": 0.42316255079960774,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 75,
+      "separation_from_leader_m": 140.73398877720567,
+      "error_m": 140.7026865629188,
+      "score": 2.2565705583673075,
+      "support_gap_per_group": 0.4250656814090046,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 76,
+      "separation_from_leader_m": 189.12374163849591,
+      "error_m": 189.1878624966544,
+      "score": 2.2309183689607575,
+      "support_gap_per_group": 0.4314787287606421,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 77,
+      "separation_from_leader_m": 215.9929882137582,
+      "error_m": 215.92164932655223,
+      "score": 2.220974420000791,
+      "support_gap_per_group": 0.4339647160006337,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 78,
+      "separation_from_leader_m": 353.45963665243085,
+      "error_m": 353.45099828490504,
+      "score": 2.2103812739118407,
+      "support_gap_per_group": 0.4366130025228713,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 79,
+      "separation_from_leader_m": 215.93954380001438,
+      "error_m": 215.89381370129016,
+      "score": 2.207491861246133,
+      "support_gap_per_group": 0.43733535568929816,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 80,
+      "separation_from_leader_m": 163.11832887286153,
+      "error_m": 163.04082051063114,
+      "score": 2.205390443838982,
+      "support_gap_per_group": 0.43786071004108595,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 81,
+      "separation_from_leader_m": 334.63251263514144,
+      "error_m": 334.57012419532026,
+      "score": 2.2013498034293932,
+      "support_gap_per_group": 0.43887087014348314,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 82,
+      "separation_from_leader_m": 390.5247438557607,
+      "error_m": 390.5910499079584,
+      "score": 2.2002926849500666,
+      "support_gap_per_group": 0.4391351497633148,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 83,
+      "separation_from_leader_m": 145.69202701098357,
+      "error_m": 145.69976553314865,
+      "score": 2.189693742016277,
+      "support_gap_per_group": 0.4417848854967622,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 84,
+      "separation_from_leader_m": 340.8745311873957,
+      "error_m": 340.9544567974208,
+      "score": 2.1804488158529156,
+      "support_gap_per_group": 0.44409611703760254,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 85,
+      "separation_from_leader_m": 379.33770352919584,
+      "error_m": 379.3768007328628,
+      "score": 2.1781985977145553,
+      "support_gap_per_group": 0.44465867157219263,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 86,
+      "separation_from_leader_m": 396.1347400508877,
+      "error_m": 396.15480362390946,
+      "score": 2.1709554043963233,
+      "support_gap_per_group": 0.4464694699017506,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 87,
+      "separation_from_leader_m": 163.11832887286153,
+      "error_m": 163.04082051063114,
+      "score": 2.1694878942275464,
+      "support_gap_per_group": 0.44683634744394485,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 88,
+      "separation_from_leader_m": 366.92834689098487,
+      "error_m": 366.9277364974896,
+      "score": 2.162611981121624,
+      "support_gap_per_group": 0.44855532572042545,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 89,
+      "separation_from_leader_m": 215.9929882137582,
+      "error_m": 215.92164932655223,
+      "score": 2.162174036221599,
+      "support_gap_per_group": 0.44866481194543173,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 90,
+      "separation_from_leader_m": 163.11832887286153,
+      "error_m": 163.04082051063114,
+      "score": 2.1595324826046642,
+      "support_gap_per_group": 0.4493252003496654,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 91,
+      "separation_from_leader_m": 360.954041243642,
+      "error_m": 360.98389808508716,
+      "score": 2.1569466473697703,
+      "support_gap_per_group": 0.4499716591583889,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 92,
+      "separation_from_leader_m": 205.17434965214565,
+      "error_m": 205.25351795593758,
+      "score": 2.150691257427542,
+      "support_gap_per_group": 0.4515355066439459,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 93,
+      "separation_from_leader_m": 364.54107501814735,
+      "error_m": 364.502518659233,
+      "score": 2.150683033786544,
+      "support_gap_per_group": 0.4515375625541954,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 94,
+      "separation_from_leader_m": 215.93954380001438,
+      "error_m": 215.89381370129016,
+      "score": 2.1394492080662806,
+      "support_gap_per_group": 0.4543460189842613,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 95,
+      "separation_from_leader_m": 214.17060796193832,
+      "error_m": 214.16926709447247,
+      "score": 2.1392760245822955,
+      "support_gap_per_group": 0.4543893148552576,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 96,
+      "separation_from_leader_m": 337.1669740724178,
+      "error_m": 337.23957616031146,
+      "score": 2.1383580344756843,
+      "support_gap_per_group": 0.4546188123819104,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 97,
+      "separation_from_leader_m": 232.70538368764846,
+      "error_m": 232.69253389193904,
+      "score": 2.1379961779746055,
+      "support_gap_per_group": 0.45470927650718007,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 98,
+      "separation_from_leader_m": 200.75889493440357,
+      "error_m": 200.82603044143687,
+      "score": 2.1352395956501997,
+      "support_gap_per_group": 0.4553984220882815,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ]
+    },
+    {
+      "rank": 99,
+      "separation_from_leader_m": 398.46846468044635,
+      "error_m": 398.5437808406337,
+      "score": 2.126017454116588,
+      "support_gap_per_group": 0.45770395747168446,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 100,
+      "separation_from_leader_m": 214.17060796193832,
+      "error_m": 214.16926709447247,
+      "score": 2.1252345356243376,
+      "support_gap_per_group": 0.45789968709474704,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 101,
+      "separation_from_leader_m": 205.17434965214565,
+      "error_m": 205.25351795593758,
+      "score": 2.1190406137536395,
+      "support_gap_per_group": 0.45944816756242157,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 102,
+      "separation_from_leader_m": 163.11832887286153,
+      "error_m": 163.04082051063114,
+      "score": 2.1129347597184345,
+      "support_gap_per_group": 0.46097463107122283,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 103,
+      "separation_from_leader_m": 189.12374163849591,
+      "error_m": 189.1878624966544,
+      "score": 2.1046693379771866,
+      "support_gap_per_group": 0.4630409865065348,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0003",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 104,
+      "separation_from_leader_m": 230.44310293327794,
+      "error_m": 230.39411152721263,
+      "score": 2.101760188244194,
+      "support_gap_per_group": 0.4637682739397829,
+      "competitive": false,
+      "full_true_flight_set_correct": false,
+      "independent_groups": 3,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0004"
+      ]
+    },
+    {
+      "rank": 105,
+      "separation_from_leader_m": 407.28924144747964,
+      "error_m": 407.3427103929628,
+      "score": 2.1003970081136183,
+      "support_gap_per_group": 0.4641090689724269,
+      "competitive": false,
+      "full_true_flight_set_correct": true,
+      "independent_groups": 4,
+      "event_ids": [
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004"
+      ]
+    }
+  ]
+}

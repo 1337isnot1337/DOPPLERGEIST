@@ -1,0 +1,105 @@
+{
+  "scope": "Exact retained source records; no producer rerun or rewritten result. Full 4,940 tile payloads remain in the original CI artifact; their original manifest and independent all-tile audit are retained here.",
+  "records": [
+    {
+      "path": "ci-upload/acceptance.json",
+      "bytes": 899144,
+      "sha256": "1f955d276e5238f443bcbb4e4c9ea9d571ff60a27e229dec9ee5a0b3168ed6d8"
+    },
+    {
+      "path": "ci-upload/artifact-manifest.json",
+      "bytes": 1746921,
+      "sha256": "0d098ca4992b6d754335c793fb647525be4b0da0dd856dd6b19772244ca27217"
+    },
+    {
+      "path": "ci-upload/service-lifecycle.json",
+      "bytes": 866,
+      "sha256": "72cef8a0cb7e51ad38ac14ae1e9312aff72b096e9495efff28ebe8876e910998"
+    },
+    {
+      "path": "ci-upload/product/report.json",
+      "bytes": 310199,
+      "sha256": "b667b92b14b42328a19ce280ef4d548d8f84240dca9a2e714b8bb4a435ca75d1"
+    },
+    {
+      "path": "ci-upload/product/browser/result.json",
+      "bytes": 250495,
+      "sha256": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624"
+    },
+    {
+      "path": "ci-upload/indexing.json",
+      "bytes": 2796,
+      "sha256": "9c10d354fb03b364a93711c8df66c10ddfaef2b5cb2319d1c778736e94931099"
+    },
+    {
+      "path": "ci-upload/wire-request.json",
+      "bytes": 291,
+      "sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "path": "ci-upload/operator.json",
+      "bytes": 450,
+      "sha256": "86a46ba16139dbbe667872484f47464eea4c20d3853182052ba5272714a0b49e"
+    },
+    {
+      "path": "ci-upload/evaluation/flight-id-mapping.json",
+      "bytes": 772,
+      "sha256": "496ad39e6db9ab1423b46ec10fd4e481a4e198e67b5ff5e76a5ea2c739f20c0e"
+    },
+    {
+      "path": "ci-upload/evaluation/truth/labels.json",
+      "bytes": 2109,
+      "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/result.json",
+      "bytes": 250495,
+      "sha256": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/request.json",
+      "bytes": 433,
+      "sha256": "6a8c3b217c9acfbd853aab852f432a9671f93808ebe403dc9cebc8cbd914ec3c"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/operator.json",
+      "bytes": 450,
+      "sha256": "86a46ba16139dbbe667872484f47464eea4c20d3853182052ba5272714a0b49e"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/provenance.json",
+      "bytes": 3071,
+      "sha256": "c3895b3eb23434844f05fd4269a927e5881847be4127ee3f90a1421d2a52dcbd"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/decision.json",
+      "bytes": 57397,
+      "sha256": "e7b49f500db78c4a5606d29b4c8e1487fba2e2f360398f2dc6eb11332bbcd618"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/refined-candidates.json",
+      "bytes": 434500,
+      "sha256": "c383ba027e33b7b334ffe391869fbc312dc3334ae9c43f726bf05650ab2eb481"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/data-provenance.json",
+      "bytes": 1918,
+      "sha256": "da981a8a99a09590430c8b4d29e5482031c085981c0bfaa6232a8b96589aca2b"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/search/manifest.json",
+      "bytes": 214592,
+      "sha256": "53757c0144248ef5e5f5ec67099ab356eabf65954ab0cd8f52a622707dd01c61"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/search/search-report.json",
+      "bytes": 406111,
+      "sha256": "4038a86c34514b6be9b599117642cc42c012502a34b0f0dd14df762257ba5bb2"
+    },
+    {
+      "path": "ci-upload/product/http-jobs/bfe6866813b34141a2ed84d64612110a/discovery/discovery.json",
+      "bytes": 413686,
+      "sha256": "b3946e5a82c807508ae52c1a373bf90cbbf816380db11494c42aba5206451247"
+    }
+  ]
+}

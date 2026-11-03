@@ -1,0 +1,120 @@
+{
+  "files_checked": 5061,
+  "hash_failures": [
+    "implementation/scripts/__pycache__/ci_checkpoint_replay.cpython-312.pyc",
+    "implementation/scripts/__pycache__/verify_methodology.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/__init__.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/audio.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/automatic.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/cli.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/confidence.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/contracts.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/data_access.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/discovery.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/geometry.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/intake.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/jobs.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/matching.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/search.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/service.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/terrain.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/tiled_search.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/__pycache__/tracks.cpython-312.pyc",
+    "implementation/src/aircraft_geoloc/web/__pycache__/__init__.cpython-312.pyc",
+    "product/http-jobs/.manager.lock"
+  ],
+  "native_junit": {
+    "tests": 292,
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0
+  },
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "source_tree": "4db8aec1e8fc0f3b41b18e9d43a9ab07f608247f",
+  "original_tracks": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/evaluation/original-tracks.parquet",
+    "bytes": 171645,
+    "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258"
+  },
+  "derived_tracks": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/tracks.parquet",
+    "bytes": 173219,
+    "sha256": "b85243afa485398e9f9aa9b8d5c62b9eb32f412c8f687bfa56a39e4b303c5fc8"
+  },
+  "audio": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-upload/fixture/inputs/recording.mp3",
+    "bytes": 3841101,
+    "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+  },
+  "scientific_summary": {
+    "decision": "ambiguous_locations",
+    "competing_hypothesis": {
+      "separation_m": 21.960276635521613,
+      "score_gap": 0.037324793959408575,
+      "gap_units": "support_units_per_group",
+      "same_flight_association": true,
+      "checked_radius_m": 6.268946589875684
+    },
+    "policy": {
+      "target_radius_m": 1000.0,
+      "min_independent_events": 2,
+      "max_event_rmse_hz": 3.0,
+      "max_outlier_fraction": 0.25,
+      "min_support_fraction": 0.95,
+      "near_tie_loss_per_event_hz": 0.5,
+      "near_tie_support_per_group": 0.2
+    },
+    "tiles_total": 4940,
+    "tiles_completed": 4940,
+    "grid_points_searched": 28672,
+    "refinement_points_searched": 1681,
+    "tile_failures": [],
+    "search_elapsed_s": 277.13226888800006,
+    "process_peak_rss_mib": 450.14453125,
+    "full_profile": {
+      "radius_m": 6.268946589875684,
+      "kind": "sensitivity",
+      "method": "declared_perturbation_profiles",
+      "sources": [
+        "altitude",
+        "clock",
+        "frequency",
+        "sound_speed",
+        "source_frequency"
+      ],
+      "complete": true,
+      "boundary_limited": false,
+      "failures": [],
+      "altitude_basis": {
+        "168bb3d4dab93f4679a1d8a9152b4603": [
+          "ellipsoidal"
+        ],
+        "1e3a1eea7263c16d9c20041d294b6071": [
+          "ellipsoidal"
+        ],
+        "73956cb486fabc28fbe64806eea49259": [
+          "ellipsoidal"
+        ],
+        "8b8e4c8a6d7ef2f9d47e7b0b45851455": [
+          "ellipsoidal"
+        ]
+      },
+      "terrain_vertical_datum": "ellipsoidal",
+      "settings": {
+        "altitude_uncertainty_m": 150.0,
+        "sound_speed_uncertainty_mps": 5.0,
+        "frequency_scale_hz": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "clock_bounds_s": [
+          1790000000.0,
+          1790000000.0
+        ]
+      }
+    },
+    "profile_scenarios": 33
+  }
+}
