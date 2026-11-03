@@ -1,16 +1,19 @@
 # Agent swarm task plan
 
 The goal is a real MP3-upload-to-location workflow with automatic Doppler-event
-discovery. Approximately **100 m location error** counts as success on supported,
-independently evaluated real recordings. Every issue includes a concrete objective,
+discovery. **Up to 1 km location error is acceptable; 100–500 m or better is
+preferred** on supported, independently evaluated real recordings. Use every
+supported independent flyover, including three, four or more, under one shared
+clock/location; there is no default two- or three-event cap. Every issue includes a concrete objective,
 suggested file ownership, dependencies and acceptance checks.
 
 **Default agent communication:** [discussion board #39](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
 Use threaded conversations for dependencies, design decisions, blockers and handoffs;
 read and respond at the checkpoints in `AGENTS.md`.
 **Task index and completion tracking:** [issue #1](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
-These are unassigned work packages; agents should claim them when deployed. No
-additional agents have been launched by this planning step.
+Workers are deployed by the user and claim work when launched. The primary and
+other workers must not launch subagents themselves; create concrete issues for
+new workstreams instead.
 
 ## Launch order
 
@@ -44,6 +47,20 @@ The user is launching five workers. This allocation supersedes the earlier
 seven-role suggestion. Do not have several agents independently rewrite
 `audio.py`, `search.py` or `pipeline.py`.
 
+## Additional workstreams for user-deployed workers
+
+| Priority / role | Task | Boundary and deliverable |
+| --- | --- | --- |
+| **Highest: independent field-data acquisition** | [#53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) | Obtain a documented multi-device/environment corpus with independent GPS and sample-zero UTC, plus a sealed holdout. Separate from W4's evaluator. Requires actual collection or an eligible independently documented source; tooling alone does not complete it. |
+| Atmospheric propagation audit | [#49](https://github.com/1337isnot1337/DOPPLERGEIST/issues/49) | Frozen-model falsification with independent wind/temperature/refraction fixtures and a measured error budget. No production changes or reference-case tuning. |
+| Recording robustness audit | [#54](https://github.com/1337isnot1337/DOPPLERGEIST/issues/54) | Measure effects of phone processing, compression, microphone wind noise, reverberation, motion and rate changes. Report failure ranges before proposing correction models. |
+
+These are task assignments, not worker launches. The primary-launched atmospheric
+worker was stopped at the user's request; #49 is available for a user-deployed
+owner. Coordinate all three workstreams on discussion board #39. Preserve every
+case and distinguish measured location error from model sensitivity and actual
+acceptance/abstention. Report outcomes at 100, 500 and 1,000 m.
+
 ## Ready-to-copy assignment prompt
 
 Replace the task/role placeholders with one row above:
@@ -54,6 +71,7 @@ Implement <TASK ISSUE URL>, followed by its next task only when dependencies all
 Read AGENTS.md, docs/AGENT_TASKS.md, docs/HANDOFF.md and the issue before editing.
 Claim the issue with your agent identity, branch/worktree and owned files.
 Use a separate branch/worktree and preserve existing changes and frozen evidence.
+Do not launch subagents; record additional tasks as issues for user deployment.
 Use discussion board #39 as the default way to communicate with other workers.
 Read it at least every 10 minutes; reply to questions directed to your role.
 Discuss shared interfaces and conflicting ownership before changing them.
@@ -63,8 +81,12 @@ Report exact commands, commit, artifacts, measured results and unresolved limits
 The product must discover Doppler events automatically from uploaded audio.
 A defensible recording date/time window may be supplied; manual event windows,
 frequency bands, known flight IDs and ground-truth locations are not normal inputs.
-A 100 m result counts as success, but do not claim that from regional-only,
-synthetic-only, mocked, selected, or ground-truth-assisted evidence.
+Up to 1 km error is acceptable; aim for 100–500 m or better and report all three
+thresholds (100/500/1,000 m). Use all supported independent flyovers, including
+3, 4 or more; harmonics/fragments count once and false proposals can stay unmatched.
+Bound computational work explicitly instead of silently limiting matched events.
+Do not claim national real-audio accuracy from regional-only, synthetic-only,
+mocked, selected, or ground-truth-assisted evidence.
 Do not upload the YouTube MP4. Do not overwrite historical experiment outputs.
 ```
 

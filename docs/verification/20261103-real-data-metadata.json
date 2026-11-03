@@ -1,0 +1,157 @@
+{
+  "source_record": "https://zenodo.org/records/23424278",
+  "audited_utc": "2026-11-03T00:43:15.704595+00:00",
+  "scope": "all-case summary/atlas/tool plus four cases from smallest archive; no recording-location validation",
+  "assets": [
+    {
+      "name": "final_results_40_cases.csv",
+      "bytes": 22047,
+      "source_checksum": "md5:69e5350d46a817f33c21c627ddebda77",
+      "sha256": "4bb2d3f5bd9055eb102a6ed7bf2610d6e0ca2141fea04fe7c6e13b683427474a",
+      "source_url": "https://zenodo.org/api/records/23424278/files/final_results_40_cases.csv/content"
+    },
+    {
+      "name": "Raw data_V_varying_H_constant.zip",
+      "bytes": 9914340,
+      "source_checksum": "md5:1f6c6c3614d87882b1ace28e963fc272",
+      "sha256": "436f70a9a55ba4bf5e4a5d3df2ea19c176e39262f408624f3a3c9a3cabb10c3a",
+      "source_url": "https://zenodo.org/api/records/23424278/files/Raw%20data_V_varying_H_constant.zip/content"
+    },
+    {
+      "name": "frequency_extraction_tool.html",
+      "bytes": 241257,
+      "source_checksum": "md5:e724036e5b69f2f49e8d0181d88c70d4",
+      "sha256": "3eb16c89da79b091625b2b1995155c5e33e74881205309d0b2efd97ac3bfea45",
+      "source_url": "https://zenodo.org/api/records/23424278/files/frequency_extraction_tool.html/content"
+    },
+    {
+      "name": "frequency_vs_time_40_cases.pdf",
+      "bytes": 1309932,
+      "source_checksum": "md5:1de906bc1cfaad36c47e16d83088f5c8",
+      "sha256": "a391ce8824b46bc26009a4fa974eb6e327059373c1a72b825122c25fd48f75a9",
+      "source_url": "https://zenodo.org/api/records/23424278/files/frequency_vs_time_40_cases.pdf/content"
+    },
+    {
+      "name": "results_for_all40_flights.pdf",
+      "bytes": 2296805,
+      "source_checksum": "md5:450816d44c6019e709e2380662c1919f",
+      "sha256": "5313ea39ea7263ae35c9afc1cbeae0681d6af4317a5d7e2f2edddf266523fdb9",
+      "source_url": "https://zenodo.org/api/records/23424278/files/results_for_all40_flights.pdf/content"
+    }
+  ],
+  "cases": [
+    {
+      "case": "N456CS_R38",
+      "first_annotation_utc": "2026-05-17T21:54:12.979Z",
+      "last_annotation_utc": "2026-05-17T21:56:02.205Z",
+      "summary_received_start_utc": "2026-05-17T21:54:12.979Z",
+      "annotation_span_s": 109.226,
+      "wav_duration_s": 119.22666666666667,
+      "duration_minus_annotation_span_s": 10.000666666666675,
+      "wav_sha256": "032ff198c6c85997758a2893641d7a87cb21d9f4bb847dd261cca8fd67df2ae8",
+      "annotation_sha256": "9a600e3717e1562d8d157a8ef0c981088bbdb4c1bfa9846fec939bf162d0b8d1"
+    },
+    {
+      "case": "N60RS_R11",
+      "first_annotation_utc": "2026-05-17T20:46:18.867Z",
+      "last_annotation_utc": "2026-05-17T20:47:40.957Z",
+      "summary_received_start_utc": "2026-05-17T20:46:18.867Z",
+      "annotation_span_s": 82.09,
+      "wav_duration_s": 92.09066666666666,
+      "duration_minus_annotation_span_s": 10.00066666666666,
+      "wav_sha256": "d2e839c8a95f53824cabb294748aaf63f5714a2add6a414c4f8cdd4c4db9e293",
+      "annotation_sha256": "e1f534716076fbe75c6b45ceb059ddcbb3a5fef79769c2b0c9c0f501da322208"
+    },
+    {
+      "case": "N748SP_R36",
+      "first_annotation_utc": "2026-05-17T20:06:48.691Z",
+      "last_annotation_utc": "2026-05-17T20:07:47.059Z",
+      "summary_received_start_utc": "2026-05-17T20:06:48.691Z",
+      "annotation_span_s": 58.368,
+      "wav_duration_s": 68.36802083333333,
+      "duration_minus_annotation_span_s": 10.00002083333333,
+      "wav_sha256": "0fdf8b328b9e02ff83144b634f5a6ced115cac4672b89557e1aae3151ab7612d",
+      "annotation_sha256": "4c7eeaf4f5c566c5eea3a532e29f7b505c2e6a253445777ad09b929045ecbaec"
+    },
+    {
+      "case": "N814SR_R07",
+      "first_annotation_utc": "2026-05-12T20:22:20.291Z",
+      "last_annotation_utc": "2026-05-12T20:23:14.533Z",
+      "summary_received_start_utc": "2026-05-12T20:22:20.291Z",
+      "annotation_span_s": 54.242,
+      "wav_duration_s": 64.24183333333333,
+      "duration_minus_annotation_span_s": 9.999833333333335,
+      "wav_sha256": "c732dff1b19142894931fcd87febdb70a18daa472c316e5c6f36ac6dfe3debc1",
+      "annotation_sha256": "a0c7cb3198b85bbd28633a6359af177bc598b65ab53416de4bf0c9a63aa8dd73"
+    }
+  ],
+  "sample_wav_ffprobe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "pcm_s16le",
+        "codec_long_name": "PCM signed 16-bit little-endian",
+        "codec_type": "audio",
+        "codec_tag_string": "[1][0][0][0]",
+        "codec_tag": "0x0001",
+        "sample_fmt": "s16",
+        "sample_rate": "48000",
+        "channels": 1,
+        "bits_per_sample": 16,
+        "initial_padding": 0,
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/48000",
+        "duration_ts": 3083608,
+        "duration": "64.241833",
+        "bit_rate": "768000",
+        "disposition": {
+          "default": 0,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0
+        }
+      }
+    ],
+    "format": {
+      "filename": "V_varying_H_constant/N814SR_R07/audio.wav",
+      "nb_streams": 1,
+      "nb_programs": 0,
+      "format_name": "wav",
+      "format_long_name": "WAV / WAVE (Waveform Audio)",
+      "duration": "64.241833",
+      "size": "6167260",
+      "bit_rate": "768005",
+      "probe_score": 99
+    }
+  },
+  "findings": {
+    "summary_start_equals_first_annotation": true,
+    "sample_wav_has_format_tags": false,
+    "sample_wav_has_stream_tags": false,
+    "recording_start_established": false,
+    "absolute_recorder_coordinate_established": false,
+    "padding_split_assumed": false,
+    "eligible_for_independent_100_m_location_acceptance": false
+  },
+  "html_timing_functions": [
+    "setMetaFromFilename",
+    "localFieldsToOriginalUtcMs",
+    "currentLoadedStartUtcMs",
+    "utcForAudioTime"
+  ]
+}

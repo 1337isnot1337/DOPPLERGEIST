@@ -2,8 +2,10 @@
 
 ## Objective and starting points
 
-Implement the automatic MP3-upload-to-location pipeline. The user's target is
-approximately 100 m error on supported real recordings. Read
+Implement the automatic MP3-upload-to-location pipeline. The user's updated target
+is **up to 1,000 m error acceptable, with 100–500 m or better preferred** on supported
+real recordings. Report benchmark outcomes at 100, 500 and 1,000 m; preserve old
+reports with their original thresholds. Read
 `docs/AGENT_TASKS.md`, `docs/HANDOFF.md`, the assigned GitHub issue and relevant
 source before editing. The current CLI still requires manual event settings.
 
@@ -42,7 +44,11 @@ source before editing. The current CLI still requires manual event settings.
   overlapping edits to `audio.py`, `search.py`, `pipeline.py`, `terrain.py` and
   dependency declarations before changing a shared interface.
 - Preserve user/concurrent changes. Do not force-push shared branches or silently
-  replace another agent's implementation. Do not spawn extra agents unless asked.
+  replace another agent's implementation.
+- **Do not launch subagents yourself.** The user controls worker deployment.
+  Record new workstreams as concrete GitHub issues, announce them on the board,
+  and leave them available for workers the user chooses to launch. A proposed
+  independent workstream is not permission to spawn a worker.
 - Keep the worktree clean between checkpoints. Inspect `git status` and the diff
   before every commit; stage only owned files. Never use broad cleanup, hard reset,
   checkout/restore or stash operations to hide or discard someone else's work.
@@ -60,6 +66,14 @@ source before editing. The current CLI still requires manual event settings.
 - Keep emission-time sound propagation, consistent altitude datums, track-gap
   handling and locked multi-event timing. Unknown types and potentially audible
   jets cannot be unconditionally discarded.
+- Use all supported independent flyovers, including three, four or more, to
+  constrain one shared location and recording clock. Do not impose a default
+  two- or three-event cap or silently discard later events. Harmonics/fragments
+  count once; unconfirmed acoustic proposals may remain unmatched. Bound compute
+  and memory explicitly and report incomplete search if budgets are exhausted.
+- Distinguish measured benchmark location error from uncalibrated sensitivity.
+  The relaxed distance target does not establish missing clock/coverage evidence
+  or make ambiguous flight associations unique.
 - Raw ranking scores are not probabilities. Return an explicit inconclusive result
   when events, coverage or constraints are insufficient.
 - Never describe regional, synthetic, annotation-assisted or selected results as

@@ -1,0 +1,107 @@
+[
+  {
+    "path": "data/source/aircraft-type-codes.json",
+    "sha256": "d5558cd419c8d46bdc958064cb97f963d1ea793866414c025906ec15033512ed",
+    "bytes": 14
+  },
+  {
+    "path": "data/source/icao_aircraft_types.json",
+    "sha256": "9bd3089351c1458545acf3b1d84f41b67aeb5586e3ec5597f818d39ec731a625",
+    "bytes": 88638
+  },
+  {
+    "path": "data/source/reference-recording.info.json",
+    "sha256": "6791a2589a6240fe99daa848fc9913d875c13dc1ef4e808c91e728943b9cd7e6",
+    "bytes": 888
+  },
+  {
+    "path": "data/source/reference-recording.wav",
+    "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "bytes": 691235466
+  },
+  {
+    "path": "data/source/reproduce-faint-alltypes-local.json",
+    "sha256": "49256b88aa7e9bbbc9d8df714a101bc8814946098e2236eb1024061085890608",
+    "bytes": 1056
+  },
+  {
+    "path": "data/source/reproduce-faint-local.json",
+    "sha256": "21aa263ea87909799e73e8d3ad72537e5d0c8924fc02a6a2fdf72ae75bad0ab2",
+    "bytes": 1103
+  },
+  {
+    "path": "data/source/reproduce-faint-recovered-clock.json",
+    "sha256": "d4e534d7428e6ee818354432d59177ffd3ec97cf12b3e47e509612788aac3dc4",
+    "bytes": 1103
+  },
+  {
+    "path": "data/source/reproduce-local.json",
+    "sha256": "d397fa1102d33af564f1414141a879d8394be7a1d04b941e3b9e88915646b541",
+    "bytes": 1450
+  },
+  {
+    "path": "data/source/source_manifest.json",
+    "sha256": "f225b1d456455f32e246a1fdb1a1649de0c5facf1d21046bf5bac3fd1abce113",
+    "bytes": 373
+  },
+  {
+    "path": "data/source/transcript.json",
+    "sha256": "3c331eb72e4cb9087a8744d332ddd53e2fdbafd070412321435663899d1eddda",
+    "bytes": 66651
+  },
+  {
+    "path": "data/source/transcript.txt",
+    "sha256": "eca51167fb8bb454c31cf51235814274d736bc4e4027deb913b6ad72c9d3f4b3",
+    "bytes": 36381
+  },
+  {
+    "path": "data/source/video.info.json",
+    "sha256": "0b77d2f062ca6519c7fe3dc8150b75d8b0da2c5460425d3363de743c1994b6a0",
+    "bytes": 2863
+  },
+  {
+    "path": "data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+    "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d",
+    "bytes": 15806993
+  },
+  {
+    "path": "data/terrain/us_nga_egm96_15.tif",
+    "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d",
+    "bytes": 2710815
+  },
+  {
+    "path": "data/adsb/2026-09-08/conus-alltypes-faint-window-ingestion-report.json",
+    "sha256": "c5c8db3ead6fe9c3f58b36ea3f13a612be520f534300cac900a81266d4f561b9",
+    "bytes": 156
+  },
+  {
+    "path": "data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+    "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154",
+    "bytes": 68141282
+  },
+  {
+    "path": "data/adsb/2026-09-08/ingestion-report.json",
+    "sha256": "a844ea01317330559a1009a006b249787192bdee5f06a86c96daabd2ef59c735",
+    "bytes": 165
+  },
+  {
+    "path": "data/adsb/2026-09-08/reference-region-ingestion-report.json",
+    "sha256": "e3dc533e91a690c81e0069dc23f51f24fbf0b3bac48b257533b8df710c687deb",
+    "bytes": 159
+  },
+  {
+    "path": "data/adsb/2026-09-08/reference-region.parquet",
+    "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0",
+    "bytes": 32823780
+  },
+  {
+    "path": "data/adsb/2026-09-08/release.json",
+    "sha256": "d48923d6d6a5cc2466305932a72b4daa67522e3222be3a939589d1ff488f5c5f",
+    "bytes": 9962
+  },
+  {
+    "path": "data/adsb/2026-09-08/type-database.csv",
+    "sha256": "e862edbce353514bea97e2d819988f408009edd3cfcb47199ebc648d9a5b600f",
+    "bytes": 47916
+  }
+]

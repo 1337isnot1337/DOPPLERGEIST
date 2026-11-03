@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus"
+  },
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user",
+    "source_detail": "Controlled independent synthetic generator epoch; exact-clock integration control"
+  },
+  "audio_path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/input.mp3"
+}

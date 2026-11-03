@@ -116,3 +116,23 @@ cover every possible model error, and distant competing modes still require
 the outer search. The bounded source-frequency solve uses the exact optimum
 of its two-variable convex box problem; regression tests compare it against
 SciPy's independent constrained solver, including boundary optima.
+
+Altitude scenarios include both common observer-height shifts and independent
+positive/negative biases for every matched flight segment. A constant geodetic
+height bias adjusts the trajectory derivatives by the derivative of that height
+displacement, preserving the original measured motion and never mutating the
+source track. The receipt records each flight's altitude basis and bias. Unknown,
+barometric, unspecified or mixed non-geometric bases keep sensitivity incomplete;
+a generic height envelope cannot establish a common datum. The trusted terrain
+and flight heights must already share a defensible ellipsoidal datum. Geometric
+interpolation remains labelled and subject to the declared perturbation range.
+Terrain must expose an applied geoid conversion or an explicit ellipsoidal-datum
+declaration; an unlabelled constant/raster surface keeps the envelope incomplete.
+
+`predict_fitted_ridge(track, observer_ecef, absolute_receive_times_s,
+event_diagnostics)` evaluates the frozen fitted model, including source drift at
+emission time. Diagnostics retain `source_reference_emission_time_s` and
+`source_span_s`; a drifting fit without its reference fails explicitly.
+Unsupported times remain NaN. The legacy replay plotter uses this helper for
+the scored curve. Older historical PNGs that drew only `f0 * factor` remain
+unchanged and are approximations when their associated fit includes drift.

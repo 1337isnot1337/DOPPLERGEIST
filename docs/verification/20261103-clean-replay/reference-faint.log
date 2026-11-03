@@ -1,0 +1,56 @@
+Event 1 {"f0_hz": 382.22290353839384, "speed_mps": 86.70937229959046, "slant_m": 1045.9921174440233, "cpa_receive_s": 1281.0697518922855, "rmse_hz": 1.5699607983095356, "frequency_drop_hz": 188.826831095557, "optimizer_success": true, "ridge_contrast": 2.299609476159665, "detected": true}
+Grid: 2525 points; 88 trajectory segments
+Coarse filters: {'per_event_survivors': [1260], 'pairs_before_silence': 1260, 'silence_rejected': 0, 'survivors': 1260}
+Scoring filters: {'per_event_survivors': [5130], 'pairs_before_silence': 5130, 'silence_rejected': 0, 'survivors': 5130}
+Scored 100/5130 candidates
+Scored 200/5130 candidates
+Scored 300/5130 candidates
+Scored 400/5130 candidates
+Scored 500/5130 candidates
+Scored 600/5130 candidates
+Scored 700/5130 candidates
+Scored 800/5130 candidates
+Scored 900/5130 candidates
+Scored 1000/5130 candidates
+Scored 1100/5130 candidates
+Scored 1200/5130 candidates
+Scored 1300/5130 candidates
+Scored 1400/5130 candidates
+Scored 1500/5130 candidates
+Scored 1600/5130 candidates
+Scored 1700/5130 candidates
+Scored 1800/5130 candidates
+Scored 1900/5130 candidates
+Scored 2000/5130 candidates
+Scored 2100/5130 candidates
+Scored 2200/5130 candidates
+Scored 2300/5130 candidates
+Scored 2400/5130 candidates
+Scored 2500/5130 candidates
+Scored 2600/5130 candidates
+Scored 2700/5130 candidates
+Scored 2800/5130 candidates
+Scored 2900/5130 candidates
+Scored 3000/5130 candidates
+Scored 3100/5130 candidates
+Scored 3200/5130 candidates
+Scored 3300/5130 candidates
+Scored 3400/5130 candidates
+Scored 3500/5130 candidates
+Scored 3600/5130 candidates
+Scored 3700/5130 candidates
+Scored 3800/5130 candidates
+Scored 3900/5130 candidates
+Scored 4000/5130 candidates
+Scored 4100/5130 candidates
+Scored 4200/5130 candidates
+Scored 4300/5130 candidates
+Scored 4400/5130 candidates
+Scored 4500/5130 candidates
+Scored 4600/5130 candidates
+Scored 4700/5130 candidates
+Scored 4800/5130 candidates
+Scored 4900/5130 candidates
+Scored 5000/5130 candidates
+Scored 5100/5130 candidates
+Best: {"score": -2.4296749185036983, "event_scores": [-2.4296749185036983], "f0_hz": [390.76743821007324], "recording_start_time_s": 1788898650.5, "time_adjustment_s": 0.5, "point_id": 73, "lat": 40.878427510058614, "lon": -73.52819115491744, "elev_m": -31.25569725036621, "x": 1860900.0, "y": 2206425.0, "flight_ids": ["a38237"]}

@@ -1,0 +1,14 @@
+Matplotlib is building the font cache; this may take a moment.
+Event 1 {"f0_hz": 133.16970743851238, "speed_mps": 87.26723873923397, "slant_m": 1724.3642884688334, "cpa_receive_s": 156.44693733330314, "rmse_hz": 0.6412451858414321, "frequency_drop_hz": 69.84036327085245, "optimizer_success": true, "ridge_contrast": 2.2524820815989224, "detected": true}
+Event 2 {"f0_hz": 115.91434525842415, "speed_mps": 76.59262543204697, "slant_m": 1420.571547504587, "cpa_receive_s": 1072.846713048965, "rmse_hz": 0.5413059009737676, "frequency_drop_hz": 54.25832093745754, "optimizer_success": true, "ridge_contrast": 2.4893352906138944, "detected": true}
+Grid: 23720 points; 6 trajectory segments
+Coarse filters: {'per_event_survivors': [9949, 9231], 'pairs_before_silence': 143, 'silence_rejected': 0, 'survivors': 143}
+Scoring filters: {'per_event_survivors': [1537, 1744], 'pairs_before_silence': 568, 'silence_rejected': 0, 'survivors': 568}
+Scored 100/568 candidates
+Scored 200/568 candidates
+Scored 300/568 candidates
+Scored 400/568 candidates
+Scored 500/568 candidates
+Scored 100/239 candidates
+Scored 200/239 candidates
+Best: {"score": 4.500836580174317, "event_scores": [2.129073880643107, 2.3717626995312098], "f0_hz": [135.0, 115.0], "recording_start_time_s": 1790000000.0638065, "time_adjustment_s": 1.5, "point_id": 122, "lat": 40.03179231669141, "lon": -100.01845112928773, "elev_m": 120.0, "x": -339800.0, "y": 1897725.0, "flight_ids": ["true-A", "true-B"]}
