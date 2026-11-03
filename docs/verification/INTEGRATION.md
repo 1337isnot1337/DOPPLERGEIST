@@ -11,6 +11,7 @@ source in a clean Python 3.14 environment. No system site packages were enabled.
 | Per-flight altitude profiles, codec/replay verifiers, benchmark-clock regressions | 121 passed | 62.24 s | `1d74fcd880ce5a9873b5661428575e2954064b76` |
 | All-event matcher, canonical renderer, refinement-grid union, confidence/evaluation and preserved real/synthetic evidence | 175 passed | 66.39 s | `e3d1952b497e16d3d5066e6bbbe5ff05c8e0310f` |
 | All-event tiled driver, trusted-window edges, acquisition controls and raw-motion audit | 218 passed + 6 subtests | 51.94 s | `c91de8214f4064ee5be4c2a24f29802949a9e812` |
+| Main-based bounded chunk reader and Linux live-RSS regression | 219 passed + 6 subtests | 51.61 s | `848c190699d17fee6f7528e310b457ecc973cfea` |
 
 The command was `PYTHONPATH=src <clean-venv>/bin/python -m pytest -q
 --junitxml=<receipt>`. The final run also set `OPENBLAS_NUM_THREADS=1` and
@@ -60,3 +61,13 @@ conflict was independent appended tiled tests, both retained. This source uses a
 prepared groups by default, keeps explicitly capped work partial, and preserves
 the unsupported-motion/coverage limits measured in [the raw audit](../../research/trajectory-motion/README.md).
 Product integration and independent real acceptance remain separate gates.
+
+A separate [product-review combination](../../evidence/verification/integration-20261103/product-modes-receipt.json)
+passes254 tests plus14 subtests at401b2e7. It includes actual service and independent
+decision controls, but remains a separate source from main and does not certify an
+accepted location. The [main chunk-memory receipt](../../evidence/verification/integration-20261103/intake-memory-main-receipt.json)
+records219 plus6, with no skips. W1’s
+[window-reader experiment](../../evidence/audio/w1-cache-memory-20261103/README.md)
+uses live process RSS and exact canonical six-event equivalence. This fixes mapped
+whole-file residency; it does not identify the cause of the earlier1.6GiB outlier
+or bound total search/browser memory.

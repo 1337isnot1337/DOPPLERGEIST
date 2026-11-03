@@ -1,0 +1,25 @@
+{
+  "tested_commit": "848c190699d17fee6f7528e310b457ecc973cfea",
+  "tested_tree": "9044e113c1c057c919e0553fac93ac3b9fcda037",
+  "python": "3.14.8",
+  "system_site_packages": false,
+  "pytest_summary": {
+    "passed": 219,
+    "subtests_passed": 6,
+    "skipped": 0,
+    "elapsed_s": 51.61
+  },
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "225",
+    "time": "51.614",
+    "timestamp": "2026-11-02T20:28:04.933706-06:00",
+    "hostname": "Asus"
+  },
+  "junit_sha256": "00a0f40f6190b3b24e31bdf6f6c3e66c845fa061f7da0aa94f9cba6dae750d8c",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 <clean-py314>/bin/python -m pytest -q --junitxml=<receipt>",
+  "scope": "Main-based chunk-memory repair; actual Linux resident-memory regression, no total-pipeline or location-accuracy bound."
+}
