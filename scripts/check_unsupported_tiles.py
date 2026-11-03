@@ -55,10 +55,16 @@ def main():
         _record_support(output, f"coarse:{name}", counts, summary)
         # Independently enumerate/score each track. A failure cannot interrupt
         # unrelated tracks in this oracle; retain every finite result before k.
-        reference, failures, nonfinite = [], [], 0
+        reference, failures, source_failures, nonfinite = [], [], [], 0
         lookup = {p.point_id: p for p in points.itertuples()}
         for track in tracks:
-            table = cpa_table([track], points, radius, config["scoring"].get("c", 343.), budget.cpa_step_s)
+            try:
+                table = cpa_table([track], points, radius, config["scoring"].get("c", 343.), budget.cpa_step_s)
+            except AcousticSupportError as error:
+                source_failures.append({"flight_id": track.id, "reason": error.reason,
+                    "emission_intervals_s": error.emission_intervals_s,
+                    "receive_intervals_s": error.receive_intervals_s})
+                continue
             candidates, _ = pair_candidates(table, [event], time_origin=config["scoring"]["time_origin"], time_tolerance_s=5.)
             for candidate in candidates:
                 try:
@@ -75,14 +81,16 @@ def main():
         kept = merge_candidates(reference, budget.top_k)
         assert signature(ranked) == signature(kept), f"Clean candidate change at {name}"
         assert counts["unclassified_score_candidates"] == len(failures) + nonfinite
-        assert failures and ranked, "Each historical failure tile must preserve valid diagnostics"
+        assert len(counts["unsupported_cpa_tracks"]) == len(source_failures)
+        assert (failures or source_failures) and ranked, "Each historical failure tile must preserve valid diagnostics"
         report = {"tile": name, "tracks": len(tracks), "points": len(points), "finite_oracle_rows": len(reference),
                   "retained_rows": len(ranked), "typed_candidate_failures": failures, "nonfinite_oracle_rows": nonfinite,
+                  "unsupported_cpa_sources": source_failures,
                   "model_support_complete": False, "model_support": summary, "clean_scores_equal_oracle": True,
                   "ranked": ranked}
         write_json(output / f"tile-{name}.json", report)
         reports.append({k: v for k, v in report.items() if k != "ranked"})
-        print(json.dumps({k: v for k, v in report.items() if k not in ("ranked", "typed_candidate_failures")}), flush=True)
+        print(json.dumps({k: v for k, v in report.items() if k not in ("ranked", "typed_candidate_failures", "unsupported_cpa_sources")}), flush=True)
     assert {r["tile"] for r in reports} == selected
     root = Path(__file__).resolve().parents[1]
     write_json(output / "report.json", {"scope": "Historical three failed analytic-ridge scale tiles; no localization truth",

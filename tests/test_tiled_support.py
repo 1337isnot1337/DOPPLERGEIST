@@ -1,7 +1,9 @@
 import json
 
+import numpy as np
 import pandas as pd
 import pytest
+from pyproj import Transformer
 
 from aircraft_geoloc import tiled_search
 from aircraft_geoloc.data_access import FlightIndex
@@ -117,6 +119,40 @@ def test_actual_classified_robust_scorer_supplies_finite_core_ids(tmp_path):
     assert result["core_assessed_mode_ids"] == [r["mode_id"] for r in result["ranked"]]
     assert result["model_support"]["evaluated_trials"] > 0
     assert result["model_support"]["unknown_trials"] == result["model_support"]["unreported_trial_envelopes"] == 0
+
+
+def test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preserves_clean_rows(tmp_path):
+    index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
+    inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
+    lon, lat = inverse.transform([-1000., 0., 1000.], [1900000.]*3)
+    # Measured zero knot motion hides an interior Hermite speed > 700 m/s.
+    bad = pd.DataFrame({"flight_id": "actual-invalid-observations", "time_s": origin+np.array([149., 151., 153.]),
+                        "lat": lat, "lon": lon, "alt_m": 1200., "altitude_basis": "ellipsoidal",
+                        "east_mps": 0., "north_mps": 0., "up_mps": 0.})
+    frames = [pd.DataFrame({"flight_id": t.id, "time_s": t.time, "lat": t.lat, "lon": t.lon,
+                            "alt_m": t.altitude, "altitude_basis": "ellipsoidal"}) for t in tracks]
+    mixed = FlightIndex.build(tmp_path / "actual-mixed.sqlite", frames+[bad], sources=[], coverage=index.report["coverage"])
+    raw = next(t for t in mixed.query(bounds, times) if t.id == "actual-invalid-observations")
+    assert np.max(np.linalg.norm(raw.speed_vector(raw.time), axis=1)) == 0
+    assert np.linalg.norm(raw.speed_vector(origin+150)) > 700
+    kwargs = dict(time_range_s=times, bounds=bounds,
+                  budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=1000),
+                  scoring={"mode": "ridge", "time_origin": origin, "time_sweep_s": 0})
+    clean = search_national([index], Terrain(constant_m=0), events, measurements,
+                            output_dir=tmp_path / "actual-clean", **kwargs)
+    output = tmp_path / "actual-mixed"
+    result = search_national([mixed], Terrain(constant_m=0), events, measurements, output_dir=output, **kwargs)
+    assert compact(result["ranked"]) == compact(clean["ranked"])
+    assert result["status"] == "partial" and not result["model_support_complete"]
+    assert result["data_scope_complete"] and not result["tile_failures"]
+    assert result["model_support"]["unsupported_cpa_track_evaluations"] > 0
+    assert not result["finite_search_evidence"]["complete"]
+    failures = [f for p in (output / "support").glob("*.json")
+                for f in json.loads(p.read_text())["unsupported_cpa_tracks"]]
+    assert failures and all(f["track_id"] == raw.id and f["reason"] == "non_subsonic_motion" for f in failures)
+    assert all(f["emission_time_range_s"] == [raw.time[0], raw.time[-1]] for f in failures)
+    assert all(f["reported_intervals"]["emission_intervals_s"] for f in failures)
+    assert all("receive_intervals_s" not in f["reported_intervals"] for f in failures)
 
 
 def test_cpa_programming_error_is_not_relabelled_as_source_support(tmp_path, monkeypatch):

@@ -1,0 +1,73 @@
+{
+  "source_commit": "c69ac12",
+  "dependencies": [
+    "W1 7897f5c, provenance84d5877",
+    "W3 186fbed/a1ae353, provenance7dd4a0f/c1578ca"
+  ],
+  "baseline": {
+    "production_commit": "8fbae8b",
+    "regression_test_commit": "6782a61",
+    "result": "Expected1 failure: actual indexed interior supersonic trajectory incorrectly leaves complete status"
+  },
+  "test_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-motion-integrated-gate-20261103/tests.xml",
+  "test_summary": "252 passed, 6 subtests passed in69.82s; zero failures/skips",
+  "junit_attributes": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "258",
+    "time": "69.820",
+    "timestamp": "2026-11-02T21:38:45.712693-06:00",
+    "hostname": "Asus"
+  },
+  "replay_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python scripts/check_unsupported_tiles.py /home/cinna/dopplergeist-w2-data-scale/results/w2-index-v2-20261102/conus-alltypes.sqlite results/w2-unsupported-tile-motion-20261103",
+  "artifacts": {
+    "actual-track-before.log": {
+      "bytes": 2753,
+      "sha256": "5400bb36a64e89db62f7f87078e645c1512435e215ed098e3556c65790f34255"
+    },
+    "tests.log": {
+      "bytes": 364,
+      "sha256": "ccea3ecca02423c21dd030cfa19de34b143c8e2ad2f7c64a2771c0584f677624"
+    },
+    "tests.xml": {
+      "bytes": 33212,
+      "sha256": "1b29f6cb83a005336dc417b916689c9c698be1b6dfda0dd976a19b560fa8d32b"
+    },
+    "historical-tile-replay/tile-9_9.json": {
+      "bytes": 13037,
+      "sha256": "dcfd32bb1e0736c1652b5d06dfaf0ea1b36e15ac18c9e9a1f8973fa93b684e22"
+    },
+    "historical-tile-replay/tile-5_13.json": {
+      "bytes": 31268,
+      "sha256": "23bbe785806dcf83b04d41d9fadf534d1da4b0df5fff530a4cb6408a93dbc016"
+    },
+    "historical-tile-replay/report.json": {
+      "bytes": 42783,
+      "sha256": "9e6203ce16030d798c433e2b69d066f7aeb0044bbae5d7eeabf9b1f525bc5f0b"
+    },
+    "historical-tile-replay/tile-7_15.json": {
+      "bytes": 5371,
+      "sha256": "126e7ff917ebf33a72f271fe9e44b5aa7c06eff8be5bb0da32de38bbe37efd16"
+    },
+    "historical-tile-replay/support/coarse-5_13.json": {
+      "bytes": 27019,
+      "sha256": "02174fcbae6c717b46a86a5df6cbdd0383b1fd5bf07299f67912dd8250c91015"
+    },
+    "historical-tile-replay/support/coarse-7_15.json": {
+      "bytes": 9152,
+      "sha256": "f0b02b0536219093c66152e40dc6611cbc3dfe918bd4873509fb8092b9415d46"
+    },
+    "historical-tile-replay/support/coarse-9_9.json": {
+      "bytes": 9310,
+      "sha256": "29ca608574c75a2575c41d6dfb5b321a37e37d3a0c2b1d9e285ccc971825c708"
+    }
+  },
+  "remaining_gates": [
+    "Historical source normalization repair and complete resulting coverage verification",
+    "Independent real GPS/UTC corpus acceptance",
+    "Canonical4/6 end-to-end qualified replay under new frozen integration",
+    "Exact-state nested-subset compatibility remains conservative pending approved protocol"
+  ]
+}
