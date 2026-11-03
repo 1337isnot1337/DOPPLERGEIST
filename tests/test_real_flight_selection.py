@@ -1,0 +1,58 @@
+"""Optional integration regression against a local, real ADS-B archive part."""
+import gzip
+import json
+import os
+from pathlib import Path
+import tarfile
+
+import numpy as np
+import pytest
+
+from dopplergeist.data_access import FlightIndex
+from dopplergeist.flight_selection import intersects_index_query
+from dopplergeist.tracks import adsblol_frame
+
+
+def test_real_boundary_segments_survive_selection(tmp_path):
+    source = os.environ.get("DOPPLERGEIST_REAL_ARCHIVE_PART")
+    if not source:
+        pytest.skip("set DOPPLERGEIST_REAL_ARCHIVE_PART to a local readsb tar part")
+    frames = []
+    with Path(source).open("rb") as stream, tarfile.open(fileobj=stream, mode="r|") as archive:
+        for member in archive:
+            if not member.isfile() or "trace_full_" not in member.name:
+                continue
+            raw = archive.extractfile(member).read()
+            data = json.loads(gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw)
+            frame = adsblol_frame(data)
+            if len(frame) > 50:
+                frames.append(frame)
+            if len(frames) == 10:
+                break
+    assert len(frames) == 10
+    bounds = (-180, -90, 180, 90)
+    coverage = {"bounds": list(bounds), "time_range_s": [0, 4102444800],
+                "all_aircraft": True, "release_tag": "real-regression"}
+    full = FlightIndex.build(tmp_path / "full.sqlite", frames, sources=[], coverage=coverage)
+    checked = old_filter_misses = 0
+    for frame in frames:
+        rows = frame.dropna(subset=["time_s", "lat", "lon", "alt_m"]).sort_values("time_s").drop_duplicates("time_s")
+        gaps = np.diff(rows.time_s.to_numpy())
+        choices = np.flatnonzero((gaps > 0.02) & (gaps <= 30))
+        if not len(choices):
+            continue
+        i = int(choices[len(choices) // 2])
+        a, b = float(rows.time_s.iloc[i]), float(rows.time_s.iloc[i + 1])
+        interval = (a + (b - a) * 0.4, a + (b - a) * 0.6)
+        selected_ids = {str(f.flight_id.iloc[0]) for f in frames
+                        if intersects_index_query(f, bounds, interval)}
+        matches = list(full.query(bounds, interval))
+        assert all(track.id.split("@")[0] in selected_ids for track in matches)
+        own_id = str(frame.flight_id.iloc[0])
+        if any(track.id.split("@")[0] == own_id for track in matches):
+            old_filter_misses += not frame.time_s.between(*interval).any()
+        checked += 1
+        if checked == 5:
+            break
+    assert checked == 5
+    assert old_filter_misses > 0

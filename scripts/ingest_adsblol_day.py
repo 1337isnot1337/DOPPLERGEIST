@@ -13,6 +13,7 @@ import pyarrow.parquet as pq
 import requests
 
 from dopplergeist.tracks import adsblol_frame,unix_time
+from dopplergeist.flight_selection import intersects_index_query
 
 parser=argparse.ArgumentParser()
 parser.add_argument("date")
@@ -68,7 +69,8 @@ class SplitReader(io.RawIOBase):
 paths=sorted(directory.glob("*.tar.a?"))
 if len(paths)<2:raise ValueError("Daily archive download is incomplete")
 stats={"trace_files":0,"known_jets_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
-stats["normalization_scope"]="full_native_trace_before_row_selection"
+stats["normalization_scope"]="full_native_trace_before_segment_selection"
+stats["selection_max_gap_s"]=30.0
 writer=None
 with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
     with tarfile.open(fileobj=stream,mode="r|") as archive:
@@ -80,20 +82,20 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             if not args.keep_jets and engines.get(d.get("t",""))=="Jet":
                 stats["known_jets_removed"]+=1
                 continue
-            trace=[p for p in d.get("trace",[]) if p[1] is not None and p[2] is not None and south<=p[1]<=north and west<=p[2]<=east
-                   and (time_range is None or time_range[0]<=d["timestamp"]+p[0]<=time_range[1])]
-            if not trace:
-                stats["no_conus_points"]+=1
-                continue
-            # The cheap raw selection above can reject an irrelevant aircraft,
-            # but altitude calibration needs this aircraft's full native trace.
+            # A segment can cross a query without a sample inside it. Temporal
+            # extents can reject only traces entirely before or after the query.
+            if time_range is not None:
+                offsets=[p[0] for p in d.get("trace",[]) if isinstance(p[0],(int,float)) and np.isfinite(p[0])]
+                if not offsets or d["timestamp"]+min(offsets)>time_range[1] or d["timestamp"]+max(offsets)<time_range[0]:
+                    stats["no_conus_points"]+=1
+                    continue
             frame=adsblol_frame(d)
             if frame.empty:continue
-            keep=frame.lat.between(south,north)&frame.lon.between(west,east)
-            if time_range is not None:
-                keep&=frame.time_s.between(*time_range)
-            frame=frame.loc[keep].copy()
-            if frame.empty:continue
+            if not intersects_index_query(frame,(west,south,east,north),time_range):
+                stats["no_conus_points"]+=1
+                continue
+            # Keep the native trace intact: FlightIndex performs its own
+            # gap splitting and uses neighboring samples to infer velocity.
             frame["heading_deg"]=frame.heading_deg.astype(float)
             # Bound schema explicitly so an all-null metadata field in one
             # aircraft cannot change a later parquet batch's physical type.
