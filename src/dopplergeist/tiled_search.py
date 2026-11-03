@@ -1,7 +1,8 @@
 """Sequential, checkpointed national search over one global projected grid.
 
-Only the receiver grid is partitioned. Every tile sees all overlapping original
-flight segments and the same event clocks, propagation model and scoring units.
+Every tile sees all overlapping original flight segments and the same event
+clocks, propagation model and scoring units. Overloaded single cells may also
+partition association anchors without narrowing the physical fit intervals.
 """
 from dataclasses import asdict, dataclass
 from functools import lru_cache
@@ -271,8 +272,48 @@ def _association_clock_window(start_window, sweep_s):
     return center, tolerance
 
 
+def _tile_anchor_window(tile_id, start_window, parameters, filters, events):
+    """Recover a deterministic half-open anchor partition from its tile ID."""
+    path = [part for part in tile_id.split("~")[1:] if part.startswith("t")]
+    if not path:
+        return None
+    if (len(path) > 24 or any(part not in ("t0", "t1") for part in path)
+            or start_window is None or parameters.get("time_origin") is not None
+            or parameters.get("mode") != "robust_ridge" or filters.get("association") != "subsets"):
+        raise ValueError("Invalid association-clock partition")
+    center, tolerance = _association_clock_window(start_window, parameters.get("time_sweep_s", 5.0))
+    margins = [event.get("quality", {}).get("cpa_tolerance_s", 0)
+               + filters.get("offset_tolerance_s", 5.0) / 2 for event in events]
+    if not margins or any(not math.isfinite(v) or v < 0 for v in margins):
+        raise ValueError("Invalid association-clock uncertainty")
+    margin = max(margins)
+    lo = math.nextafter(math.nextafter(center - tolerance, -math.inf) - margin, -math.inf)
+    hi = math.nextafter(math.nextafter(center + tolerance, math.inf) + margin, math.inf)
+    for part in path:
+        mid = lo + (hi - lo) / 2
+        if not lo < mid < hi:
+            raise ValueError("Association-clock partition has no representable midpoint")
+        if part == "t0":
+            hi = mid
+        else:
+            lo = mid
+    return lo, hi
+
+
+def _clock_children(tile_id, cells, start_window, parameters, filters, events):
+    if len([p for p in tile_id.split("~")[1:] if p.startswith("t")]) >= 24:
+        return []
+    children = [[f"{tile_id}~t{i}", list(cells)] for i in range(2)]
+    try:
+        for child, _ in children:
+            _tile_anchor_window(child, start_window, parameters, filters, events)
+    except ValueError:
+        return []
+    return children
+
+
 @_cache_ridge_fits
-def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None):
+def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None, anchor_window=None):
     radius = max(e["slant_range_m"][1] for e in events)
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     tables, count = [], 0
@@ -388,7 +429,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             track_lookup = {track.id: track for track in tracks}
         candidates, counts = association_candidates(table, events, **kwargs,
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
-            max_candidates=budget.max_candidates_per_tile, pair_screen=pair_screen)
+            max_candidates=budget.max_candidates_per_tile, pair_screen=pair_screen, anchor_window=anchor_window)
         if pair_screen is not None:
             counts["fixed_clock_event_pair_screen"] = {"recording_start_time_s": float(kwargs["time_origin"]),
                 **screen_counts, "rejections": list(screen_counts["rejections"])}
@@ -626,6 +667,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         "brightness": "summed_spectral_contrast"}[mode])
     ledger = RetentionLedger(output / "retention.sqlite", run_hash, score_kind)
     began, ranked, failures, done, processed_cells, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0, 0
+    counted_clock_cells = set()
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
                    bounded_score_candidates=0, unbounded_score_candidates=0,
                    evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
@@ -664,11 +706,12 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             if not marker.exists():
                 yield tile_request(tile_id, cells)
                 continue
-            parts = _split_tile_cells(cells)
-            children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
             try:
                 record = json.loads(marker.read_text())
-                if not parts or record != {"run_hash": run_hash, "cells": list(cells), "children": children}:
+                parts = _split_tile_cells(cells)
+                children = ([[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)] if parts else
+                            _clock_children(tile_id, cells, start_window, parameters, filters, events))
+                if not children or record != {"run_hash": run_hash, "cells": list(cells), "children": children}:
                     raise DataUnavailable("Corrupt tile subdivision checkpoint")
             except (DataUnavailable, ValueError, OSError) as error:
                 yield f"coarse:{tile_id}", cells, error, None
@@ -679,7 +722,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     def tile_order(item):
         root, *path = item[0].split("~")
         ix, iy = map(int, root.split("_"))
-        return iy, ix, tuple(map(int, path))
+        return iy, ix, tuple(4 + int(p[1:]) if p.startswith("t") else int(p) for p in path)
 
     if parallel:
         terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
@@ -707,12 +750,13 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                               ("terrain_files", "terrain_ocean_tiles", "terrain_failures")}
                 return TileFailure(str(error), provenance)
             return error
-        advance_progress(cells)
+        advance_progress(stage, cells)
         return checkpoint
 
-    def advance_progress(cells):
+    def advance_progress(stage, cells):
         nonlocal processed_cells
-        processed_cells += (cells[2]-cells[0]) * (cells[3]-cells[1])
+        clock_depth = sum(part.startswith("t") for part in stage.split("~")[1:])
+        processed_cells += (cells[2]-cells[0]) * (cells[3]-cells[1]) / (2 ** clock_depth)
         if coarse_cells:
             report_search_progress(0.8 * processed_cells / coarse_cells)
 
@@ -749,8 +793,10 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         if not tracks:
                             points = pd.DataFrame()
                         if len(points):
+                            anchor = _tile_anchor_window(tile_id, start_window, parameters, filters, events)
                             rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                   ledger=ledger, stage=stage,
+                                                  anchor_window=anchor,
                                                   score_floor=(_retained_score_floor(ranked, budget.top_k)
                                                                if floor_policy == "global_and_per_tile" else None))
                         else:
@@ -764,7 +810,13 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                    "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
                         write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
                     done += 1
-                    points_searched += payload["grid_points"]
+                    if "~t" not in tile_id:
+                        points_searched += payload["grid_points"]
+                    else:
+                        cell_owner = tile_id.split("~t", 1)[0]
+                        if cell_owner not in counted_clock_cells:
+                            points_searched += payload["grid_points"]
+                            counted_clock_cells.add(cell_owner)
                     _record_support(output, stage, payload["counts"], support)
                     ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
                                               ledger=ledger, stage=f"global:{tile_id}")
@@ -772,9 +824,11 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                     if isinstance(error, TileFailure):
                         restore_terrain(error.provenance)
                     parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
-                    if parts:
+                    children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
+                    if not children and str(error) == "Association candidate budget exceeded; search is incomplete":
+                        children = _clock_children(tile_id, cells, start_window, parameters, filters, events)
+                    if children:
                         terminal = False
-                        children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
                         write_json(output / f"split-{tile_id}.json",
                                    {"run_hash": run_hash, "cells": list(cells), "children": children})
                         total += len(children)-1
@@ -782,7 +836,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                     else:
                         failures.append({"tile": tile_id, "reason": str(error)})
                 if terminal and (pool is None or was_cached or isinstance(prepared, BaseException)):
-                    advance_progress(cells)
+                    advance_progress(stage, cells)
             wave = sorted(next_wave, key=tile_order) if next_wave else None
         report_search_progress(0.8, force=True)
     coarse = list(ranked)

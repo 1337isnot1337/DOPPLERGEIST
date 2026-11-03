@@ -6,7 +6,8 @@ import pandas as pd
 
 from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
-from .tiled_search import _expanded_bounds, _sample_tile_terrain, _score, _tile_coordinates, _tracks_for_points
+from .tiled_search import (_expanded_bounds, _sample_tile_terrain, _score, _tile_anchor_window,
+                           _tile_coordinates, _tracks_for_points)
 
 
 class TileFailure(DataUnavailable):
@@ -77,6 +78,10 @@ def score_tile(stage, cells, score_floor=None):
         ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
         if len(points):
             kwargs = {"ledger": ledger, "stage": stage}
+            anchor = _tile_anchor_window(stage.removeprefix("coarse:"), state["start_window"],
+                                         state["parameters"], state["filters"], state["events"])
+            if anchor is not None:
+                kwargs["anchor_window"] = anchor
             if score_floor is not None:
                 kwargs["score_floor"] = score_floor
             rows, counts = _score(points, tracks, state["events"], state["measurements"], budget,
