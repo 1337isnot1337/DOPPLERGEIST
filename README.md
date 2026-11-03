@@ -17,9 +17,9 @@ DOPPLERGEIST investigates **where an audio recording was made** by comparing the
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
 | Geographic search | Resumable bounded-memory tiles, joint matching across independent flyovers and disk-backed accounting of candidates discarded by ranking limits | [Search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) on `main` |
 | Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on `main` | `dopplergeist analyze`, `dopplergeist serve` and `dopplergeist job`; see [Local upload workflow](docs/PRODUCT.md) |
-| Independent location validation | Historical regional replays, synthetic controls and real-audio discovery benchmarks | [End-to-end acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [independently timed field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
+| Independent location validation | Real-audio discovery, browser upload and measured-session experiments; no accepted blind real localization | [Real-data verification](#real-data-verification-2026-11-03); [acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
 
-Start with automatic discovery on a real recording below. Connecting discovery, acquisition, search and a final location decision through the upload application remains a separate integration step. Current validation work prioritizes real recordings, real flight trajectories and independently established recorder locations; new synthetic experiments are stopped, while historical results remain documented.
+Start with automatic discovery on a real recording below. The upload application contains intake, discovery, acquisition, geographic search and decision stages. The verified one-hour real MP3 upload stopped before geographic search because no defensible UTC recording start time was available. Current validation uses real recordings and measured trajectories; new synthetic experiments are stopped. Historical results remain documented.
 
 ## Quickstart
 
@@ -45,6 +45,16 @@ Automatic discovery scans an entire recording for moving acoustic frequency patt
 ```
 
 Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`. **These are acoustic event proposals, not coordinates or certified aircraft detections.** See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
+
+### Run the local upload application
+
+Start the browser application:
+
+```bash
+.venv/bin/dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
+```
+
+Open `http://127.0.0.1:8765` and upload a recording. Supply a defensible UTC window for the **first audio sample** to permit historical flight search. Without that time evidence, the application returns `needs_input / recording_time_required`. It does not estimate a location. The `--online` option can download large aircraft and terrain datasets. See [Local upload workflow](docs/PRODUCT.md) for request fields, runtime limits and CLI alternatives.
 
 ## How it works
 
@@ -81,11 +91,51 @@ The published project artifacts preserve both successful fits and cases where th
 
 The two real-regional winners reproduce in a clean environment. See the [clean replay report](docs/verification/CLEAN_REPLAY.md) and [CI replay evidence](docs/CI_VERIFICATION_2026-11-02.md) for measurements and provenance.
 
+### Real-data verification (2026-11-03)
+
+These experiments used real recordings. The reference replay also used historical flight trajectories and terrain. The NASA tests used measured audio and GPS trajectories. **None established an independently accepted automatic location.**
+
+| Test and input | Observed result | Qualification |
+| --- | --- | --- |
+| Configured reference replay, installed package and fresh checkout | **43.8585 m** from the public reference; 3,587 trajectory segments, 2,525 coarse grid points and 283 ranked rows | Real audio and flight data, but source-informed event windows, frequency bands and regional bounds. The reference coordinate is not surveyed. `accepted_location=false` and model support remains incomplete. |
+| Complete one-hour reference MP3 in actual Chromium | 42,085,293-byte upload, 16 acoustic proposals, persistent job and loaded diagnostics; zero location cards | `needs_input / recording_time_required`. The original sample-zero UTC is unknown, so geographic search did not run. |
+| Four original NASA acoustic recordings with measured GPS | Cub107, Edge038 and Edge066: zero proposals. Edge065: one proposal and a **474.0 m** conditional best grid point | The Edge065 event may be a background aircraft, not the measured drone. **568/4,200** grid points lack support and another mode is 1,899 m from the microphone. No validated localization. |
+| 40 real smartphone aircraft recordings (automatic MP3 discovery) | Proposals in **36/40** recordings; 136 groups total | All 40 jobs required recording-time evidence. Groups are not confirmed aircraft detections, and none returned a location. |
+
+The reference replay and browser upload test different paths. The replay performs a geographic ranking with supplied research settings. The browser test starts with an unconfigured MP3 upload but stops at the missing recording-time gate. The NASA tests use supplied aircraft trajectories and a restricted footprint; they do not test automatic historical flight association.
+
+The [worker report](docs/verification/WORKER_E2E_2026-11-03.md) records inputs, source revisions, outcomes and limits. See the [configured replay workflow](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41580126694), [passing real Chromium job](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41580605939/job/125734292619), [passing NASA job](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41580450522/job/125733788989) and [40-recording result table](benchmarks/real-discovery-20261103.csv). The configured replay *step* passed in the first workflow, but that workflow ended in failure due to separate verifier and downloader defects. Both utility defects were fixed and their own jobs passed.
+
 Automatic discovery and integration experiments are separate from those configured replays. Integration results below describe their recorded source revisions, including code that remains outside `main`:
 
 - **Event discovery:** frozen synthetic fixtures with three, four and six flyovers yielded **13/13** discovered events with unchanged settings. This establishes detection on those fixtures, not accepted localization. See [multi-event fixtures](docs/MULTI_EVENT_FIXTURES.md).
 - **Full synthetic national searches:** one product-integration run processed **4,940** coarse tiles and ranked a hypothesis **1,046,023 m** from truth first; the correct flight pair was fourth at **6.16 m**. A separate browser/API upload on another integration revision led with a candidate **0.65 m** from truth. **Both ended inconclusive** because alternatives remained unresolved. Neither is an accepted automatic location. See [integration evidence](docs/verification/INTEGRATION.md), [product run](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19) and [upload replay](https://github.com/1337isnot1337/DOPPLERGEIST/pull/32).
 - **Real acoustic benchmarks:** the [annotation-assisted feature benchmark](docs/PROGRESS.md) detected **33/40** passages, with median speed/slant errors of **6.85% / 15.37%** among detections. Separate automatic discovery produced **102 proposals across 28/40 recordings**; these are not certified aircraft detections. Corrected 300-second Times Square and Statue of Liberty webcam clips each yielded **zero supported proposals** under frozen settings. These datasets lack the established recorder clock and microphone-coordinate evidence needed for location-accuracy validation. See [discovery results](docs/AUDIO_DISCOVERY.md), [timing audit](docs/verification/REAL_DATA_TIMING.md) and [public-camera benchmark](docs/verification/PUBLIC_CAMERA_BENCHMARK.md).
+
+### Reproduce the NASA real-recording benchmark
+
+The four NASA inputs are public original MAT files. The experiment uses their measured aircraft trajectories. It is a supplied-track search, not an automatic aircraft-identification test. Use a fresh output directory for each run.
+
+```bash
+.venv/bin/python scripts/download_nasa_cases.py --output data/nasa-originals
+
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py prepare \
+  --source-directory data/nasa-originals \
+  --case-manifest benchmarks/nasa-session-cases-20261103.json \
+  --output results/nasa-replay/prepared
+
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py search \
+  --inputs results/nasa-replay/prepared/search-inputs.json \
+  --domain results/nasa-replay/prepared/search-domain.json \
+  --output results/nasa-replay/search
+
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py evaluate \
+  --search-directory results/nasa-replay/search \
+  --truth results/nasa-replay/prepared/evaluation-truth.json \
+  --output results/nasa-replay/evaluation.json
+```
+
+See [NASA benchmark setup and results](benchmarks/README.md#real-nasa-supplied-trajectory-session-benchmark) for input checks, the shorter-window comparison and why the 474 m conditional fit is inconclusive. The source recording-time axis lacks an established calendar date.
 
 ### Replay the historical reference case
 
@@ -114,7 +164,7 @@ their own rights and terms.
 - [Automatic event discovery](docs/AUDIO_DISCOVERY.md) — detector design and known failure modes
 - [Confidence and decision rules](docs/CONFIDENCE.md) — ambiguity, abstention, incomplete coverage
 - [Finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md) — retained/discarded candidates and unknown model work
-- [Integration verification](docs/verification/INTEGRATION.md) — end-to-end results and caveats
+- [Integration verification](docs/verification/INTEGRATION.md) and [2026-11-03 real-data verification](docs/verification/WORKER_E2E_2026-11-03.md) — end-to-end results and caveats
 - [Data and search contracts](docs/DATA_AND_SCALE.md) — trajectory indexing, coverage and geographic search
 - [Implementation handoff](docs/HANDOFF.md), [acceptance issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39) — ongoing work; the handoff includes historical context and is not a current feature inventory
 
