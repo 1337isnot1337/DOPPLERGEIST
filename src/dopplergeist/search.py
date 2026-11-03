@@ -13,6 +13,7 @@ from .geometry import AcousticSupportError, ecef
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
 _CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
                        for name in _CPA_COLUMNS])
+_EMPTY_CPA_TABLE = pd.DataFrame(columns=_CPA_COLUMNS)
 
 
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
@@ -75,21 +76,24 @@ def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_siz
     return pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
 
 
-def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
+def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _sample_cache=None):
     """Spatial-radius CPA graph, retaining every local pass without dense tensors.
 
     The radius includes two complete sample steps beyond the audible envelope,
     so both neighbours of an in-range sampled minimum are present. Each minimum
     is refined on its two actual adjacent segments. The dense reference above
     provides an independent regression oracle for this search optimization.
+    The private sample cache lives only across one track's bounded tile chunks.
     """
     observers=ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     point_ids=points.point_id.to_numpy(dtype=int)
-    return pd.DataFrame(_cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size),
-                        columns=_CPA_COLUMNS)
+    rows = _cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size,
+                     _sample_cache=_sample_cache)
+    return pd.DataFrame(rows, columns=_CPA_COLUMNS) if rows else _EMPTY_CPA_TABLE.copy()
 
 
-def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512):
+def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512, *,
+              _sample_cache=None):
     """Return the same ordered CPA records without allocating per-track tables.
 
     Tiled scoring already has ECEF observers and needs to isolate unsupported
@@ -98,7 +102,7 @@ def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, c
     """
     rows=[]
     for track in tracks:
-        prepared = _PreparedCPATrack(track, c, step_s)
+        prepared = _PreparedCPATrack(track, c, step_s, _sample_cache=_sample_cache)
         rows.extend(prepared.raw_rows(observers, point_ids, max_distance, chunk_size))
     return _ordered_cpa_rows(rows, step_s)
 
@@ -106,12 +110,21 @@ def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, c
 class _PreparedCPATrack:
     """One validated track/step, reused only across one call's receiver chunks."""
 
-    def __init__(self, track, c, step_s):
+    def __init__(self, track, c, step_s, *, _sample_cache=None):
         track.validate_motion_support(c)
         self.track, self.c, self.step_s = track, c, step_s
-        self.time = np.unique(np.r_[np.arange(track.time[0], track.time[-1], step_s), track.time[-1]])
-        self.position = track.position(self.time)
-        self.max_step = np.max(np.linalg.norm(np.diff(self.position, axis=0), axis=1))
+        key = (id(track), step_s)
+        sampled = None if _sample_cache is None else _sample_cache.get(key)
+        if sampled is None:
+            self.time = np.unique(np.r_[np.arange(track.time[0], track.time[-1], step_s), track.time[-1]])
+            self.position = track.position(self.time)
+            self.max_step = np.max(np.linalg.norm(np.diff(self.position, axis=0), axis=1))
+            if _sample_cache is not None:
+                # Match the public wrapper's existing tuple protocol. Only
+                # sampling is reused: validation and sound speed stay local.
+                _sample_cache[key] = (track, self.time, self.position, self.max_step)
+        else:
+            _, self.time, self.position, self.max_step = sampled
         self.lower, self.upper = self.position.min(axis=0), self.position.max(axis=0)
         self.tree = None
 

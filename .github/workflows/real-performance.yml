@@ -4,7 +4,7 @@ on:
     inputs:
       baseline:
         description: Exact baseline commit for both real-input comparisons
-        default: fec518e51f14afe8d36203e6c5e1be1277dea14e
+        default: c37128bb08f12b8a68cf1f1cbf86adc2436f60fd
         required: true
       regional:
         description: Also compare the complete regional HTTP workflow
@@ -38,7 +38,7 @@ env:
   NUMEXPR_NUM_THREADS: '1'
   CC: gcc
   PYTHONPATH: src
-  BASELINE_REF: ${{ inputs.baseline || 'fec518e51f14afe8d36203e6c5e1be1277dea14e' }}
+  BASELINE_REF: ${{ inputs.baseline || 'c37128bb08f12b8a68cf1f1cbf86adc2436f60fd' }}
 jobs:
   compare:
     if: github.event_name != 'push' || github.ref != 'refs/heads/perf/real-pipeline-throughput-20261103'
@@ -75,6 +75,9 @@ jobs:
           if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
             (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
           fi
+          mkdir -p benchmark-inputs/reference-checkout
+          ln -s "$GITHUB_WORKSPACE/evidence/results" benchmark-inputs/reference-checkout/results
+          ln -s "$GITHUB_WORKSPACE/data" benchmark-inputs/reference-checkout/data
       - name: Freeze real workloads
         run: |
           for width in 120 10; do
@@ -88,7 +91,9 @@ jobs:
       - name: Real-input regression tests
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py
+          DOPPLERGEIST_REAL_REFERENCE_ROOT: benchmark-inputs/reference-checkout
+          DOPPLERGEIST_REAL_REFERENCE_DISCOVERY: evidence/audio/w1-sensitivity-20261102/reference/discovery.json
+        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py
       - name: Verify the explicit Python fallback on recorded arithmetic
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json

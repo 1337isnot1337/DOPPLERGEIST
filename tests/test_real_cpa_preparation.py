@@ -80,6 +80,43 @@ class RealCPAPreparationTests(unittest.TestCase):
                 search._PreparedCPATrack(track, 343., 2.)
             self.assertEqual(vars(direct.exception), vars(prepared.exception))
 
+    def test_public_sample_cache_preserves_chunks_and_sound_speed_validation(self):
+        track = self.long_track
+        indices = np.linspace(1, len(track.time)-2, 24, dtype=int)
+        points = pd.DataFrame({"point_id": np.arange(len(indices)), "lat": track.lat[indices],
+                               "lon": track.lon[indices], "elev_m": np.zeros(len(indices))})
+        expected = search.cpa_table([track], points, 20000.)
+        expected_changed_c = search.cpa_table([track], points, 20000., c=350.)
+        with self.assertRaises(AcousticSupportError) as direct:
+            search.cpa_table([track], points, 20000., c=0.)
+        cache = {}
+        with patch.object(track, "position", wraps=track.position) as position, \
+                patch.object(track, "validate_motion_support", wraps=track.validate_motion_support) as validate:
+            chunks = [search.cpa_table([track], points.iloc[first:first+4], 20000., _sample_cache=cache)
+                      for first in range(0, len(points), 4)]
+            changed_c = search.cpa_table([track], points, 20000., c=350., _sample_cache=cache)
+            with self.assertRaises(AcousticSupportError) as cached:
+                search.cpa_table([track], points, 20000., c=0., _sample_cache=cache)
+        actual = pd.concat(chunks, ignore_index=True).sort_values(
+            ["point_id", "flight_id", "emission_time"]).reset_index(drop=True)
+        pd.testing.assert_frame_equal(actual, expected, check_exact=True)
+        pd.testing.assert_frame_equal(changed_c, expected_changed_c, check_exact=True)
+        self.assertGreater(len(actual), 0)
+        self.assertEqual(vars(cached.exception), vars(direct.exception))
+        self.assertEqual([call.args[0] for call in validate.call_args_list], [343.] * len(chunks) + [350., 0.])
+        sampled = [call for call in position.call_args_list
+                   if np.asarray(call.args[0]).ndim == 1 and len(np.asarray(call.args[0])) > 3]
+        self.assertEqual(len(sampled), 1)
+        self.assertEqual(set(cache), {(id(track), 2.)})
+        stored = cache[(id(track), 2.)]
+        self.assertIs(type(stored), tuple)
+        self.assertEqual(len(stored), 4)
+        self.assertIs(stored[0], track)
+        expected_step = search.cpa_table([track], points, 20000., step_s=3.)
+        changed_step = search.cpa_table([track], points, 20000., step_s=3., _sample_cache=cache)
+        pd.testing.assert_frame_equal(changed_step, expected_step, check_exact=True)
+        self.assertEqual(set(cache), {(id(track), 2.), (id(track), 3.)})
+
 
 if __name__ == "__main__":
     unittest.main()

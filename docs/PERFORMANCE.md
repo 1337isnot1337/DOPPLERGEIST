@@ -1,5 +1,91 @@
 # Measured pipeline performance
 
+## Measured native computation and bounded reuse
+
+The implementation at [`41d0646`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/41d06469935f776988e1a4f04ab386d0355b433b) completed the regional HTTP replay in a median **37.188 seconds**, compared with **62.031 seconds** for the already optimized main baseline [`fec518e5`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/fec518e51f14afe8d36203e6c5e1be1277dea14e).
+That is **1.668× faster**, with **40.05% less elapsed time**, across three alternating fresh pairs.
+The [recorded-input CI run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41685506906) passed all complete-scoring and HTTP equality gates.
+The [compact measurement record](../benchmarks/results/exact-native-pipeline-20261103.json) preserves the individual samples, source pins, runtime, controls, and comparison scope.
+
+| Workload | Baseline wall median | Optimized wall median | Speedup |
+| --- | ---: | ---: | ---: |
+| Complete regional HTTP replay, three pairs | 62.031 s | 37.188 s | **1.668×** |
+| Complete point scoring, ±10 s clock, two pairs | 2.164 s | 1.273 s | **1.700×** |
+| Complete point scoring, ±120 s clock, two pairs | 13.858 s | 7.652 s | **1.811×** |
+
+HTTP baseline samples span **61.861–62.422 seconds**; optimized samples span **37.106–38.206 seconds**.
+Median driver CPU time falls from **61.607 to 36.863 seconds**; it includes the verifier and its child processes.
+Every pair processes the complete 3,600.1845-second recording and returns **17 ridge records, 15 independent groups, and 23 candidates**.
+The decision remains `inconclusive / search_incomplete`.
+
+Each HTTP pair compares 20 job JSON files, three root JSON files, the logical SQLite ledger, decoded PCM, 17 CSV files, and PNG pixels.
+All three pairs have zero scientific or array differences after the declared metadata normalization, with no numerical tolerance.
+Each ledger contains the same 29,738 bounds, 852 records, 12 stages, and one run.
+The broad point workload compares all **3,905 candidates**, including diagnostics and support records, and retains the same 100 across 16 groups.
+Its worker-lifetime peak RSS changes from **381.92 to 383.83 MiB**.
+Each timed broad call records **38,890 successful native ridge operations and 850 successful native acoustic operations**.
+All **78 selected recorded-input regression tests pass** at this measured checkpoint.
+
+### Why this version is faster
+
+The optional acoustic extension fuses spline evaluation, Newton updates, and vector reductions while preserving polynomial arithmetic order and the global stopping rule.
+The optional ridge extension preserves six IRLS iterations and the original reduction order.
+Python continues to handle unsupported representations, motion diagnostics, and exceptional numerical cases.
+
+Repeated associations reuse validated batch ceilings within the existing 4 MiB budget for digest keys and serialized fit payloads.
+A separate 8 MiB cache retains conservative, floor-independent acoustic loss evidence.
+Every call still validates public inputs and applies its current ranking cutoff and group count.
+The budgets cover their documented payload or evidence accounting; they are not limits on total process memory.
+First-use hashing and serialization have a cost, so the complete-job measurements above determine the net benefit.
+
+Trajectory queries continue in one pass when they exceed their initial budget.
+CPA preparation reuses receiver coordinates, per-track samples, and spatial trees across bounded chunks, then builds one compact table.
+Unsupported-motion checks batch interval work while retaining endpoint behavior and failure accounting.
+Detector thresholds, event coverage, search resolution, solver iterations, and scientific tolerances are unchanged.
+
+The native ridge implementation and narrow acoustic loss-bound cache are integrated from [PR228](https://github.com/1337isnot1337/DOPPLERGEIST/pull/228) at `2625539`.
+The acoustic solver, batch-ceiling reuse, motion-support batching, one-pass queries, and CPA changes are separate contributions in [PR237](https://github.com/1337isnot1337/DOPPLERGEIST/pull/237).
+Previously merged main optimizations remain in the comparison baseline.
+
+### Measurement controls and limits
+
+HTTP pairs run in baseline/current, current/baseline, and baseline/current order, with fresh processes and output directories.
+Both arms share one MP3, request, operator configuration, flight index, and terrain set; both use one pinned CPU and one numerical thread.
+Input restoration, index preparation, and MP3 encoding occur before timing.
+Operating-system page caches are not purged.
+Point scoring uses two alternating pairs and measures input loading separately.
+Separate profiling runs do not contribute to timing medians.
+
+The HTTP job uses Python 3.12.16; the point job uses Python 3.12.15.
+Both use NumPy 2.5.4, and each comparison matches the complete runtime between its baseline and optimized arms.
+The HTTP input is the original MP3 encoding with SHA-256 `707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15`.
+The regional request spans `[-73.545, 40.865, -73.505, 40.895]` and recording-start times from `2026-09-08T20:17:20Z` to `20:17:40Z`.
+It uses one search worker, 2 km coarse spacing, 500 m refinement spacing, top-K 20, and three refinement finalists.
+
+Install with a compatible C compiler and use the [native-backend checks and reproduction commands](#reproduce-the-optional-native-backends).
+Either extension can fall back to Python, and both backends have explicit Python selectors.
+Native performance and exact arithmetic controls were measured on Linux; macOS and Windows native performance remain unmeasured.
+
+These are computation controls on a real recording and historical observations with source-informed regional bounds and clock evidence.
+They do not establish independent location accuracy, nationwide completion time, or first-time network-acquisition speedup.
+Earlier measurements below retain their original commits, encodings, and runtimes.
+Their absolute times cannot be compared across runners, and component speedups must not be multiplied into a whole-pipeline claim.
+
+### Integration confirmation
+
+Source [`d935180`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/d93518010345a921b09722b8d7fc4ca1961c396e) incorporates later main changes through `b149d894`.
+Its [complete replay](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41687118475) passes **78 recorded-input tests and all four explicit Python-fallback tests, with zero skips**.
+This corrects the earlier fallback step's missing fixture setting, which had caused three tests to skip at `41d0646`.
+All three HTTP pairs and both complete point comparisons again have exact scientific outputs and logical ledgers.
+Against the same frozen baseline `fec518e5`, median HTTP time is **90.863 → 53.700 seconds**, or **1.692×**, on this separate runner.
+Median driver CPU time is **88.862 → 53.148 seconds**; narrow and broad point-scoring speedups are **1.720×** and **1.827×**.
+The differing absolute times illustrate why comparisons must stay within a matched run.
+The [Python 3.11 and 3.14 installation checks](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41687129205) also pass.
+The compact measurement record contains this confirmation separately from the first measured checkpoint.
+Further main integration, its exact comparison baseline, and final gate results are recorded in [PR237](https://github.com/1337isnot1337/DOPPLERGEIST/pull/237).
+
+## Historical PR225 integration measurements
+
 The integrated implementation completed the fresh bounded HTTP workflow in **54.176928122 seconds**, compared with **78.379028870 seconds** for baseline `aa3dff6`.
 That is an observed **1.44672×** speedup and **30.88%** less elapsed time in one sequential pair on the same CI runner.
 The [integrated measurement record](../benchmarks/results/integrated-http-20261103.json) preserves exact output comparisons and the measured source pins.
@@ -875,6 +961,8 @@ Ordinary checkpoints include the selected native binary identities and reject an
 
 Install the GitHub CLI (`gh`) before restoring the published input bundles; the restoration script uses `gh release download`.
 Use a fresh output directory and preserve the baseline checkout for the entire comparison.
+The commands compare the checked-out source against `fec518e5`; use source `41d0646` to repeat the native-computation table's measured optimization checkpoint.
+Build the extensions in that checkout first. Another source revision or runtime produces a new comparison.
 The following commands freeze the same real observations and source-informed receiver/clock workload for both implementations:
 
 ```bash
@@ -891,7 +979,7 @@ for width in 10 120; do
   python scripts/benchmark_prepared_measurements.py compare \
     --fixture "benchmark-inputs/point-$width.json" \
     --baseline-source ../DOPPLERGEIST-perf-baseline/src --current-source src \
-    --repeats 3 --require-current-native --require-current-native-acoustic \
+    --repeats 2 --require-current-native --require-current-native-acoustic \
     --output "results/native-scoring-$width"
 done
 ```
@@ -901,7 +989,8 @@ It compares every candidate, diagnostic, support record, ranking, and logical re
 Native success counters must increase inside the timed scoring call.
 Input loading is reported separately, and the RSS measurement covers the worker lifetime through scoring.
 
-The complete-fit cache shares its existing 4 MiB serialized-payload budget with validated batch ceilings.
+The complete-fit cache shares its existing 4 MiB digest-key and serialized-payload budget with validated batch ceilings.
+Python object headers and dictionary bookkeeping require additional memory.
 The separate screening cache permits at most 8 MiB of conservatively charged private loss evidence per scoring context.
 It never retains a candidate's ranking cutoff: every call applies its current cutoff and group count.
 These caches help repeated workloads; first-use hashing and serialization have a cost, so complete-job measurements decide whether they help a workload.
