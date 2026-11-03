@@ -487,7 +487,7 @@ def _record_support(output, stage, counts, summary):
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
                     bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None,
-                    workers=None):
+                    workers=None, search_progress=None):
     """Bounded outer driver using existing physical CPA/locked-event scoring.
 
     `events, measurements` come from `matching.prepare_events`. `time_range_s`
@@ -525,6 +525,23 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
     total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
+    if budget.max_tiles is None:
+        coarse_cells = (xmax-xmin+1) * (ymax-ymin+1)
+    else:
+        coarse_cells = sum((cells[2]-cells[0]) * (cells[3]-cells[1])
+                           for _, cells in itertools.islice(
+                               grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs), budget.max_tiles))
+    last_progress = 0.0
+
+    def report_search_progress(fraction, *, force=False):
+        nonlocal last_progress
+        if search_progress is None:
+            return
+        fraction = min(1.0, max(0.0, float(fraction)))
+        if fraction > last_progress and (force or fraction - last_progress >= 0.025):
+            search_progress(fraction)
+            last_progress = fraction
+
     available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
     if workers is None:
         workers = max(1, available - 1)
@@ -572,7 +589,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                   else {"robust_ridge": "negative_robust_ridge_loss_hz", "ridge": "negative_ridge_rmse_hz",
                         "brightness": "summed_spectral_contrast"}[mode])
     ledger = RetentionLedger(output / "retention.sqlite", run_hash, score_kind)
-    began, ranked, failures, done, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0
+    began, ranked, failures, done, processed_cells, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0, 0
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
                    bounded_score_candidates=0, unbounded_score_candidates=0,
                    evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
@@ -667,6 +684,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             for stage, cells, prepared, was_cached in results:
                 tile_id = stage[len("coarse:"):]
                 checkpoint = output / f"tile-{tile_id}.json"
+                terminal = True
                 try:
                     if isinstance(prepared, BaseException):
                         raise prepared
@@ -705,6 +723,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         restore_terrain(error.provenance)
                     parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
                     if parts:
+                        terminal = False
                         children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
                         write_json(output / f"split-{tile_id}.json",
                                    {"run_hash": run_hash, "cells": list(cells), "children": children})
@@ -712,7 +731,12 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         next_wave.extend((child_id, tuple(child_cells)) for child_id, child_cells in children)
                     else:
                         failures.append({"tile": tile_id, "reason": str(error)})
+                if terminal:
+                    processed_cells += (cells[2]-cells[0]) * (cells[3]-cells[1])
+                    if coarse_cells:
+                        report_search_progress(0.8 * processed_cells / coarse_cells)
             wave = sorted(next_wave, key=tile_order) if next_wave else None
+        report_search_progress(0.8, force=True)
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
@@ -770,6 +794,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
                                                       ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
                 completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
+                report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
         except (DataUnavailable, ValueError, OSError) as error:
             refinement_failure = str(error)
     coverage = [i.coverage_for(bounds, time_range_s) for i in indexes]
@@ -835,6 +860,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
     write_json(output / "search-report.json", report)
+    report_search_progress(1.0, force=True)
     return report
 
 

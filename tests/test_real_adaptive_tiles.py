@@ -47,18 +47,20 @@ def test_real_overloaded_tiles_split_and_resume(tmp_path):
     scoring = {"mode": "robust_ridge", "time_origin": clock, "time_sweep_s": 0.,
                "recording_start_window_s": [clock, clock]}
 
-    def run(name, capacity, workers, *, fine=False):
+    def run(name, capacity, workers, *, fine=False, progress=None):
         terrain = CachedTerrain(terrain_root, offline=True, geoid_path=geoid, adopt_existing=True)
         return search_national([index], terrain, events, measurements,
             time_range_s=index.report["coverage"]["time_range_s"], output_dir=tmp_path / name,
             bounds=(-73.56, 40.85, -73.50, 40.90),
             budget=SearchBudget(spacing_m=2000, tile_cells=4, top_k=5, refine_spacing_m=1000 if fine else 2000,
                                 refine_finalists=1 if fine else 10,
-                                max_candidates_per_tile=capacity), scoring=scoring, workers=workers)
+                                max_candidates_per_tile=capacity), scoring=scoring, workers=workers,
+            search_progress=progress)
 
     # This fixed clock and bounded region are an engineering replay, not location truth.
     baseline = run("baseline", 20000, 2)
-    split = run("split", 50, 2)
+    progress = []
+    split = run("split", 50, 2, progress=progress.append)
     keys = ("score", "lat", "lon", "elev_m", "flight_ids", "recording_start_time_s", "event_ids")
     projection = lambda report: [{key: row.get(key) for key in keys} for row in report["ranked"]]
     assert projection(baseline) == projection(split)
@@ -66,6 +68,8 @@ def test_real_overloaded_tiles_split_and_resume(tmp_path):
     assert not split["tile_failures"]
     assert list((tmp_path / "split").glob("split-*.json"))
     assert split["finite_search_evidence"]["pruning_accounted_for"]
+    assert progress and progress == sorted(progress) and progress[-1] == 1.0
+    assert any(0 < value < .8 for value in progress) and .8 in progress
     resumed = run("split", 50, 1)
     assert resumed["tiles_resumed"] == split["tiles_completed"]
     assert resumed["ranked"] == split["ranked"]
