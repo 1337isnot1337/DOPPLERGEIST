@@ -21,7 +21,10 @@ manual setting; that site's start-time note is empty. These statements do not
 measure the actual clock error. A separate
 [unknown-exact-location shortlist](../benchmarks/real-candidates-unknown-point-20261103.csv)
 contains five scanner-only leads, of which one is ambiguous and one is an
-edited compilation. These are not 29 validated geolocation benchmarks.
+edited compilation. A [revised unknown-point shortlist](../benchmarks/real-candidates-unknown-point-v2-20261103.md)
+substitutes a clearer Cessna trace for the ambiguous excerpt, while retaining
+explicit timing and editing limitations. These are not validated geolocation
+benchmarks.
 
 [Project instructions](https://eclipsesoundscapes.org/my-audiomoth-location/)
 ask for registration at the recorder but permit registering as close as
