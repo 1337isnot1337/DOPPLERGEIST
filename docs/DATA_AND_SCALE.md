@@ -1,8 +1,7 @@
 # Historical inputs and bounded search
 
-Worker 2 owns `data_access.py` and `tiled_search.py`. These are adapters around
-the shared `contracts.py` shapes and existing physical scorer; the legacy manual
-research workflow remains reproducible.
+`data_access.py` and `tiled_search.py` connect the shared request contracts to the
+physical scorer; the legacy manual research workflow remains reproducible.
 
 ## Acquisition
 
@@ -80,10 +79,22 @@ There is one EPSG:5070 origin and integer grid. Half-open tile cores own receive
 cells exactly once; expanded queries retain boundary flight segments. Only the
 receiver grid is partitioned. Original flight geometry, emission-time propagation,
 event offsets and score units are identical in every tile. One shared clock is
-constrained to the supplied recording-start window. Sequential execution and hard
-limits on grid cells, tracks, samples, CPA rows and candidate combinations bound
-working allocations. An overloaded tile is reported as missing work. Reducing
+constrained to the supplied recording-start window. Coarse tiles use separate
+worker processes for the built-in cached-terrain provider, automatically choosing
+one fewer worker than the available logical CPUs, with a minimum of one. Custom
+terrain providers use serial execution. Hard limits on grid cells, tracks, samples, CPA rows and
+candidate combinations bound each worker's allocations; total memory grows with
+the worker count. An overloaded tile is reported as missing work. Reducing
 `tile_cells` trades scheduling overhead for smaller working sets.
+
+Workers retain private score ledgers. The parent verifies their identities and
+checksums before importing a completed tile, and merges rankings in deterministic
+tile order. Parallel tiles use a conservative per-tile score floor; a checkpoint
+with that policy can resume with a different worker count, including one. A
+serial run using a global floor has a different checkpoint identity. On one
+shared-machine replay of two real grid points from a full-day search, one worker
+took 64.93 seconds and two took 38.95 seconds including startup, with identical
+payloads and ledgers. This small sample does not predict nationwide runtime.
 
 Candidate scores are merged deterministically with approach identities, then
 global finalists are refined on the same global grid in bounded subtiles. The

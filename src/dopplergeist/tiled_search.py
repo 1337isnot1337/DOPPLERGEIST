@@ -257,9 +257,74 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if start_window is not None and kwargs["time_origin"] is None:
             kwargs["time_origin"], kwargs["time_tolerance_s"] = _association_clock_window(
                 start_window, parameters.get("time_sweep_s", 5.0))
+        pair_screen = None
+        fixed_clock = (parameters.get("mode") == "robust_ridge" and parameters.get("time_origin") is not None
+                       and parameters.get("time_sweep_s", 5.0) == 0)
+        if fixed_clock:
+            from .matching import _frequency_scale, association_score, score_ridges
+            from .search import _ridge_trial_classification
+            screen_budget = budget.max_candidates_per_tile
+            screen_counts = {"checked": 0, "rejected": 0, "unknown": 0,
+                             "budget_exhausted": False, "rejections": []}
+
+            def pair_screen(event_index, event, frame):
+                keep = np.ones(len(frame), dtype=bool)
+                initial_checked = screen_counts["checked"]
+                initial_rejected = screen_counts["rejected"]
+                initial_unknown = screen_counts["unknown"]
+                rejection_start = len(screen_counts["rejections"])
+                exhausted_before = screen_counts["budget_exhausted"]
+                for (point_id, flight_id), indices in frame.groupby(["point_id", "flight_id"], sort=False).groups.items():
+                    if screen_counts["checked"] >= screen_budget:
+                        screen_counts["budget_exhausted"] = True
+                        break
+                    screen_counts["checked"] += 1
+                    point = lookup.get(point_id)
+                    track = track_lookup.get(flight_id)
+                    if point is None or track is None:
+                        screen_counts["unknown"] += 1
+                        continue
+                    try:
+                        result = score_ridges([track], [event], [measurements[event_index]],
+                                              ecef(point.lat, point.lon, point.elev_m), kwargs["time_origin"],
+                                              parameters.get("c", 343.0))
+                        result = association_score(result, [event])
+                        classification, reason = _ridge_trial_classification(result, [event], True)
+                    except AcousticSupportError:
+                        classification, reason, result = "unknown", "unsupported_acoustic_model", {}
+                    if classification == "rejected":
+                        positions = frame.index.get_indexer_for(indices)
+                        keep[positions] = False
+                        screen_counts["rejected"] += 1
+                        diagnostics = result.get("event_diagnostics", [{}])
+                        score = result.get("event_scores", [None])[0]
+                        limit = 3 * _frequency_scale(event)
+                        screen_counts["rejections"].append({
+                            "event_index": event_index, "event_id": event.get("event_id", str(event_index)),
+                            "point_id": int(point_id), "flight_id": str(flight_id),
+                            "recording_start_time_s": float(kwargs["time_origin"]),
+                            "event_score_hz": float(score), "residual_limit_hz": float(limit),
+                            "support_fraction": diagnostics[0].get("support_fraction"), "reason": reason})
+                    elif classification == "unknown":
+                        screen_counts["unknown"] += 1
+                return frame.loc[keep], {
+                    "checked": screen_counts["checked"] - initial_checked,
+                    "rejected": screen_counts["rejected"] - initial_rejected,
+                    "unknown": screen_counts["unknown"] - initial_unknown,
+                    "budget_exhausted": screen_counts["budget_exhausted"] and not exhausted_before,
+                    "rejections": list(screen_counts["rejections"][rejection_start:]),
+                }
+
+            # CPA rows are created below, so resolve receiver/track identities
+            # after all rows are available but before association enumeration.
+            lookup = {row.point_id: row for row in points.itertuples()}
+            track_lookup = {track.id: track for track in tracks}
         candidates, counts = association_candidates(table, events, **kwargs,
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
-            max_candidates=budget.max_candidates_per_tile)
+            max_candidates=budget.max_candidates_per_tile, pair_screen=pair_screen)
+        if pair_screen is not None:
+            counts["fixed_clock_event_pair_screen"] = {"recording_start_time_s": float(kwargs["time_origin"]),
+                **screen_counts, "rejections": list(screen_counts["rejections"])}
     else:
         # Count the same inclusive clock-boundary passages as pair_candidates.
         per_event = [filter_association_event(table, e, kwargs["offset_tolerance_s"],
@@ -371,6 +436,17 @@ def _record_support(output, stage, counts, summary):
     for key in ("unclassified_score_candidates", "bounded_score_candidates", "unbounded_score_candidates",
                 "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"):
         summary[key] += counts.get(key, 0)
+    pair_screen = counts.get("fixed_clock_event_pair_screen")
+    if pair_screen:
+        for key in ("checked", "rejected", "unknown"):
+            summary[f"fixed_clock_event_pairs_{key}"] = (
+                summary.get(f"fixed_clock_event_pairs_{key}", 0) + pair_screen[key])
+        summary["fixed_clock_event_pair_screen_budget_exhausted"] = (
+            summary.get("fixed_clock_event_pair_screen_budget_exhausted", False)
+            or pair_screen["budget_exhausted"])
+        (output / "support").mkdir(exist_ok=True)
+        write_json(output / "support" / (stage.replace(":", "-") + "-event-pair-screen.json"),
+                   {"stage": stage, **pair_screen})
     if counts.get("unsupported_cpa_tracks") or counts.get("unclassified_candidate_assessments"):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + ".json"),
