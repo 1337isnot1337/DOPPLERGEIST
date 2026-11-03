@@ -126,6 +126,7 @@ audio without choosing trajectory files. The acquisition path delegates to
   "cache_root": "/absolute/path/to/dopplergeist-cache",
   "offline": false,
   "terrain": {},
+  "search_workers": 12,
   "search_budget": {
     "spacing_m": 2000,
     "tile_cells": 32,
@@ -138,6 +139,9 @@ audio without choosing trajectory files. The acquisition path delegates to
 This acquires public ADSB.lol all-type daily archives and Copernicus terrain/geoid
 inputs, then reuses their indexed cache. It can require substantial disk space and
 time. `offline` defaults to true; online retrieval is an explicit operator choice.
+`search_workers` is an optional positive integer for coarse-search processes;
+omit it to use one fewer than the available logical CPUs. More workers increase
+memory use. Custom terrain providers currently search serially.
 No hidden account credentials or paid fallback are used. The default acquisition
 budget is three UTC archive dates, including propagation guards and the full recording (`max_acquisition_days`); wider recording windows need
 a narrower defensible input or an explicit operator budget change. Do not put

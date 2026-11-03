@@ -48,6 +48,35 @@ class _RidgeFitCache:
     def __init__(self, max_entries):
         self.max_entries = max_entries
         self.entries = OrderedDict()
+        self.acoustic_entries = OrderedDict()
+        self.acoustic_bytes = 0
+        self.acoustic_limit = 32 * 1024 * 1024
+
+    def acoustic_batch(self, track, observer, starts, times, c):
+        """Reuse exact batched propagation inputs within this scoring call."""
+        try:
+            key = (id(track), _fit_argument_key(observer), _fit_argument_key(starts),
+                   _fit_argument_key(times), _fit_argument_key(c))
+        except (TypeError, ValueError):
+            key = None
+        if key is not None and key in self.acoustic_entries:
+            self.acoustic_entries.move_to_end(key)
+            _, factors, emissions, _ = self.acoustic_entries[key]
+            return factors.copy(), emissions.copy()
+        receive = starts[:, None] + times[None, :]
+        unique, inverse = np.unique(receive, return_inverse=True)
+        factors, emissions, _ = track.acoustic(unique, observer, c)
+        factors = factors[inverse].reshape(receive.shape)
+        emissions = emissions[inverse].reshape(receive.shape)
+        size = factors.nbytes + emissions.nbytes + starts.nbytes + times.nbytes + 512
+        if key is not None and size <= self.acoustic_limit:
+            while self.acoustic_bytes + size > self.acoustic_limit:
+                _, (_, _, _, removed) = self.acoustic_entries.popitem(last=False)
+                self.acoustic_bytes -= removed
+            self.acoustic_entries[key] = (track, factors, emissions, size)
+            self.acoustic_bytes += size
+            return factors.copy(), emissions.copy()
+        return factors, emissions
 
     def fit(self, track, observer, measurement, start_time, f0_bounds, c, sigma_hz, drift_fraction,
             acoustic_result=None):
@@ -496,15 +525,20 @@ def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         if measured.sum() < 10 or not np.all(np.isfinite(weight)) or np.any(weight < 0) or size > remaining:
             yield None
             continue
-        receive = starts[:, None] + times[measured][None, :]
-        unique, inverse = np.unique(receive, return_inverse=True)
         try:
-            factor, emission, _ = track.acoustic(unique, observer, c)
+            cache = _ridge_fit_cache.get()
+            if cache is None or cache.acoustic_limit <= 0:
+                receive = starts[:, None] + times[measured][None, :]
+                unique, inverse = np.unique(receive, return_inverse=True)
+                factor, emission, _ = track.acoustic(unique, observer, c)
+                batch = factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)
+            else:
+                batch = cache.acoustic_batch(track, observer, starts, times[measured], c)
         except AcousticSupportError:
             yield None
             continue
         remaining -= size
-        yield factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)
+        yield batch
 
 
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,

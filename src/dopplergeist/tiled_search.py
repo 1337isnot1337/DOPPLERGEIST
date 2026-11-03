@@ -443,6 +443,12 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             raise DataUnavailable("Tile candidate memory budget exceeded; reduce tile_cells")
         candidates, counts = pair_candidates(table, events, **kwargs)
     screened = subset and parameters.get("mode") == "robust_ridge"
+    # Sparse tiles showed no benefit from caching batched propagation. Keep
+    # the exact-input cache for dense association sets, where repetition can
+    # outweigh key and copy costs, and preserve the ordinary path elsewhere.
+    if not screened or len(candidates) < 1000:
+        from .matching import _ridge_fit_cache
+        _ridge_fit_cache.get().acoustic_limit = 0
     # Every accepted association has a nonnegative score, even before K modes
     # exist. A strict zero floor can reject only residual-incompatible trials.
     cutoff = _RetainedScoreFloor(budget.top_k, 0.0 if score_floor is None else max(0.0, score_floor)) if screened else None
