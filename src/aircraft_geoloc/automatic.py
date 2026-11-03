@@ -158,16 +158,16 @@ def _coverage(request, search, config):
     if "model_support_complete" in search or "model_support" in search:
         support = search.get("model_support")
         count_names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",
-                       "evaluated_trials", "rejected_trials", "unknown_trials")
+                       "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes")
         valid_counts = (isinstance(support, dict) and
                         all(type(support.get(name)) is int and support[name] >= 0 for name in count_names))
         model_complete = (search.get("model_support_complete") is True and valid_counts and
-                          all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials")))
+                          all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials", "unreported_trial_envelopes")))
         if not model_complete:
             search_complete = False
             limitations.append("Trajectory model assessment is incomplete; unsupported competitors remain unassessed. See the search support diagnostics.")
             if valid_counts:
-                limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}. Counts describe work evaluations, not distinct aircraft.")
+                limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}; unreported trial envelopes: {support['unreported_trial_envelopes']}. Counts describe work evaluations, not distinct aircraft.")
             else:
                 limitations.append("Trajectory model support counts are unavailable or malformed; missing work is not treated as zero.")
     if not search_complete:

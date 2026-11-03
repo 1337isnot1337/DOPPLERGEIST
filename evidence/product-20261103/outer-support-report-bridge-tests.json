@@ -1,0 +1,25 @@
+{
+  "base_commit": "8ed3dd0",
+  "outer_support_dependency": "8fbae8b",
+  "gates": [
+    {
+      "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q tests/test_automatic.py tests/test_tiled_support.py tests/test_tiled_search.py tests/test_finite_search.py tests/test_automatic_finite.py tests/test_automatic_profile.py tests/test_decision_invariants.py --junitxml=results/w5-outer-support-integration-20261103.xml",
+      "passed": 78,
+      "skipped": 0,
+      "elapsed_s": 36.87
+    },
+    {
+      "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q tests/test_automatic_support.py tests/test_automatic.py::test_model_support_work_is_explicit_in_product_coverage tests/test_automatic.py::test_missing_model_support_evidence_cannot_become_completed_work --junitxml=results/w5-support-report-bridge-20261103.xml",
+      "passed": 13,
+      "skipped": 0,
+      "elapsed_s": 3.26
+    }
+  ],
+  "files_sha256": {
+    "src/aircraft_geoloc/automatic.py": "b84da5d92f2c029d97fd8a803cc4a80b64ae8b4adeb137b6e7c7c9d11ed13d81",
+    "tests/test_automatic.py": "fd5daa4bdbcabc2b2582eb5f4e9583fd1731adc66e435f404ba88b36cbb0e5e8",
+    "tests/test_automatic_support.py": "7594492020ade80ab9e9e250cf38073d3e5e3717b81339705719753cf8d446e1",
+    "docs/PRODUCT.md": "3a60e11af0d02e122e520443d9a3d7f9971f77f9f8be0b814c339f75ddbe56ba"
+  },
+  "scope": "Actual robust scorer/tiled report to product coverage; controlled omission of accounting demonstrates zero reported unknown trials with positive unreported envelopes remains incomplete. No acoustic geolocation benchmark or real accuracy claim."
+}

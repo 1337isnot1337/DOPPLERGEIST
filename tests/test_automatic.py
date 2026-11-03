@@ -227,28 +227,31 @@ def test_invalid_operator_discovery_configuration_is_explicit(tmp_path, options)
     assert not (tmp_path/"output/intake").exists()
 
 
-@pytest.mark.parametrize("flag,changes,complete", [
-    (True, {}, True),
-    (False, {"unsupported_cpa_track_evaluations": 1}, False),
-    (False, {"unclassified_score_candidates": 2, "unknown_trials": 3}, False),
-    (True, {"unknown_trials": 1}, False),
-    (True, {"unknown_trials": False}, False),
-    (True, {"unknown_trials": None}, False),
-    (None, {}, False),
+@pytest.mark.parametrize("flag,changes,complete,counts_known", [
+    (True, {}, True, True),
+    (False, {"unsupported_cpa_track_evaluations": 1}, False, True),
+    (False, {"unclassified_score_candidates": 2, "unknown_trials": 3}, False, True),
+    (True, {"unknown_trials": 1}, False, True),
+    (True, {"unknown_trials": False}, False, False),
+    (True, {"unknown_trials": None}, False, False),
+    (None, {}, False, True),
+    (True, {"unreported_trial_envelopes": 1}, False, True),
+    (True, {"unreported_trial_envelopes": None}, False, False),
 ])
-def test_model_support_work_is_explicit_in_product_coverage(flag, changes, complete):
+def test_model_support_work_is_explicit_in_product_coverage(flag, changes, complete, counts_known):
     from aircraft_geoloc.automatic import _coverage
     support = {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,
                "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0,
-               "diagnostics_directory": "support", **changes}
+               "unreported_trial_envelopes": 0, "diagnostics_directory": "support", **changes}
     coverage = _coverage({"search": {"coverage": "conus"}},
         {"status": "complete", "tiles_total": 2, "tiles_completed": 2, "data_scope_complete": True,
          "model_support_complete": flag, "model_support": support}, {})
     assert coverage["search_complete"] is complete
     assert coverage["data_status"] == "available"
     assert any("Trajectory model" in item for item in coverage["limitations"]) is (not complete)
-    if type(support["unknown_trials"]) is int and not complete:
+    if counts_known and not complete:
         assert f'unknown clock trials: {support["unknown_trials"]}' in ' '.join(coverage["limitations"])
+        assert f'unreported trial envelopes: {support["unreported_trial_envelopes"]}' in ' '.join(coverage["limitations"])
     elif not complete:
         assert "unavailable or malformed" in ' '.join(coverage["limitations"])
 
@@ -259,7 +262,8 @@ def test_missing_model_support_evidence_cannot_become_completed_work(missing):
     report = {"tiles_total": 1, "tiles_completed": 1, "data_scope_complete": True,
               "model_support_complete": True,
               "model_support": {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,
-                                "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0}}
+                                "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0,
+                                "unreported_trial_envelopes": 0}}
     report.pop("model_support" if missing == "counters" else "model_support_complete")
     coverage = _coverage({"search": {"coverage": "conus"}}, report, {})
     assert coverage["search_complete"] is False
