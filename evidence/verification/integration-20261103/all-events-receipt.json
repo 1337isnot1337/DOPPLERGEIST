@@ -1,0 +1,24 @@
+{
+  "tested_commit": "e3d1952b497e16d3d5066e6bbbe5ff05c8e0310f",
+  "tested_tree": "c3c212ac4174c1ee06f2fdf63088d68d195835c0",
+  "python": "3.14.8",
+  "system_site_packages": false,
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 <clean-py314>/bin/python -m pytest -q --junitxml=<receipt>",
+  "tests": 175,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "elapsed_s": 66.39,
+  "warning": "One existing pandas aircraft_class fallback dtype warning.",
+  "junit": "all-events-py314.xml",
+  "junit_sha256": "bb1338385088b513047c15e89c24990f8544bfe7f556266cab0527be38daf4e9",
+  "increments": {
+    "59": "5657f603cf37611686d860f2b9a54d55488e42a0",
+    "60": "26a5bff74e9aba664e5f951cca8fa26f26e3eaf0",
+    "46": "c1ab530e258716f0aa352f5b3f6a24f1b4288445",
+    "27": "3c8b9da7997254f1f798ed83c09df1e73d90f60a",
+    "51": "d28628747409d49d649aa8acf8948cd501fff86b",
+    "48": "0ab61b78a7b3220c1290ffeee621c9edccaf9d59"
+  },
+  "scope": "Combined repository checks; not end-to-end accepted localization or independent real national accuracy."
+}

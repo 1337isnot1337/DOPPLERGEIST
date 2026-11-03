@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated/tests/test_decision_invariants.py",
+    "--junitxml=/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/integrated-v3-e6a7824-fullsuite.xml"
+  ],
+  "cwd": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v3",
+  "source_commit": "e6a78249c8bd29bc552e3da4d2803fa6b28565fa",
+  "source_tree": "1b2dcbbe0e39de1053b0ccec60b543fc19560274",
+  "exit_code": 0,
+  "elapsed_s": 49.18747515099949,
+  "pythonpath": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated-v3/src",
+  "loopback_sockets_enabled": true
+}

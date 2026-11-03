@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_page": "https://www.earthcam.com/usa/nevada/lasvegas/?cam=sign_hd",
+  "camera": "sign_hd",
+  "requested_duration_s": 12.0,
+  "status": "failed",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "0a1cfa139d16c187e30d416e632615f09cce0d6afe4ed487232f88b582a66806",
+  "page_fetch": {
+    "started_utc": "2026-11-03T01:07:54.917492Z",
+    "finished_utc": "2026-11-03T01:07:55.317712Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:07:55 GMT",
+    "sha256": "d863a7c6d83c40d1f7199265eb224167988a498e92fe6a8e5cfce0f330d05fe3",
+    "bytes": 148071
+  },
+  "error_type": "AudioNotAdvertised",
+  "error": "Selected camera does not advertise audio.",
+  "reason_code": "source_has_no_advertised_audio"
+}

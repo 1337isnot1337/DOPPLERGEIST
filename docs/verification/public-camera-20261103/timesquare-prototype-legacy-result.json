@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "job_id": "dec813ce673742d68526df731a813b44",
+  "status": "needs_input",
+  "coverage": {
+    "search_complete": false,
+    "data_status": "unavailable",
+    "limitations": [],
+    "requested_area": {
+      "coverage": "conus"
+    }
+  },
+  "recording": {
+    "source_sha256": "fb8be2a1ef326392734eb1a94cd3ab44acd4b9540266f377a5946c8c15b21789",
+    "duration_s": 295.296,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": null
+  },
+  "events": [],
+  "stage": "complete",
+  "progress": 1,
+  "artifacts": {
+    "provenance": "provenance.json",
+    "request": "request.json",
+    "intake": "intake/intake.json",
+    "recording": "intake/recording.json",
+    "discovery": "discovery/discovery.json",
+    "discovery_plot": "discovery/discovery.png"
+  },
+  "required_fields": [
+    "time_window"
+  ],
+  "reason_code": "recording_time_required",
+  "message": "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks."
+}

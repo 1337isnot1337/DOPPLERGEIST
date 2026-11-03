@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "threshold_m": 1000,
+  "distance_thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "event_iou_threshold": 0.3,
+  "cases": [
+    {
+      "case_id": "national-fine",
+      "split": "development",
+      "scope": "automatic_national_synthetic",
+      "status": "inconclusive",
+      "reason_code": "work_limit",
+      "location_accuracy_eligible": true,
+      "eligibility_limit": null,
+      "runtime_s": null,
+      "peak_memory_bytes": null,
+      "location_returned": false
+    },
+    {
+      "case_id": "national-fast",
+      "split": "development",
+      "scope": "automatic_national_synthetic",
+      "status": "inconclusive",
+      "reason_code": "alternatives_not_assessed",
+      "location_accuracy_eligible": true,
+      "eligibility_limit": null,
+      "runtime_s": 126.83705656800885,
+      "peak_memory_bytes": null,
+      "location_returned": false,
+      "diagnostic_best_candidate_error_m": 5.569318171598563,
+      "diagnostic_within_thresholds_m": {
+        "100": true,
+        "500": true,
+        "1000": true
+      },
+      "diagnostic_flight_ids_correct": true
+    },
+    {
+      "case_id": "national-opaque",
+      "split": "development",
+      "scope": "automatic_national_synthetic",
+      "status": "inconclusive",
+      "reason_code": "alternatives_not_assessed",
+      "location_accuracy_eligible": true,
+      "eligibility_limit": null,
+      "runtime_s": 62.95651010199799,
+      "peak_memory_bytes": null,
+      "location_returned": false,
+      "diagnostic_best_candidate_error_m": 5.569318171598563,
+      "diagnostic_within_thresholds_m": {
+        "100": true,
+        "500": true,
+        "1000": true
+      },
+      "diagnostic_flight_ids_correct": true
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "eligible_location_cases": 3,
+    "successful_locations_within_threshold": 0,
+    "localization_errors_m": [],
+    "false_localizations": 0,
+    "false_localization_rate": 0.0,
+    "false_localization_denominator": 3,
+    "successful_locations_by_threshold_m": {
+      "100": 0,
+      "500": 0,
+      "1000": 0
+    },
+    "false_localizations_by_threshold_m": {
+      "100": 0,
+      "500": 0,
+      "1000": 0
+    },
+    "inconclusive_rate": 1.0,
+    "execution_failures": 0,
+    "needs_input": 0,
+    "detection_true_positives": 0,
+    "detection_misses": 0,
+    "detection_false_alarms": 0,
+    "detection_recall": null,
+    "detection_precision": null
+  },
+  "by_split": {
+    "development": {
+      "cases": 3,
+      "eligible_location_cases": 3,
+      "successful_locations_within_threshold": 0,
+      "localization_errors_m": [],
+      "false_localizations": 0,
+      "false_localization_rate": 0.0,
+      "false_localization_denominator": 3,
+      "successful_locations_by_threshold_m": {
+        "100": 0,
+        "500": 0,
+        "1000": 0
+      },
+      "false_localizations_by_threshold_m": {
+        "100": 0,
+        "500": 0,
+        "1000": 0
+      },
+      "inconclusive_rate": 1.0,
+      "execution_failures": 0,
+      "needs_input": 0,
+      "detection_true_positives": 0,
+      "detection_misses": 0,
+      "detection_false_alarms": 0,
+      "detection_recall": null,
+      "detection_precision": null
+    }
+  },
+  "by_scope": {
+    "automatic_national_synthetic": {
+      "cases": 3,
+      "eligible_location_cases": 3,
+      "successful_locations_within_threshold": 0,
+      "localization_errors_m": [],
+      "false_localizations": 0,
+      "false_localization_rate": 0.0,
+      "false_localization_denominator": 3,
+      "successful_locations_by_threshold_m": {
+        "100": 0,
+        "500": 0,
+        "1000": 0
+      },
+      "false_localizations_by_threshold_m": {
+        "100": 0,
+        "500": 0,
+        "1000": 0
+      },
+      "inconclusive_rate": 1.0,
+      "execution_failures": 0,
+      "needs_input": 0,
+      "detection_true_positives": 0,
+      "detection_misses": 0,
+      "detection_false_alarms": 0,
+      "detection_recall": null,
+      "detection_precision": null
+    }
+  },
+  "limits": [
+    "Synthetic and manually configured regional results do not validate automatic national search.",
+    "Uncalibrated sensitivity is not a coverage probability."
+  ]
+}

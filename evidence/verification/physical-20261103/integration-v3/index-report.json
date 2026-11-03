@@ -1,0 +1,40 @@
+{
+  "index_version": 2,
+  "sources": [
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/shared-multievent/four-1f03425/inputs/tracks.parquet",
+      "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258",
+      "bytes": 171645
+    }
+  ],
+  "coverage": {
+    "bounds": [
+      -180.0,
+      -85.0,
+      180.0,
+      85.0
+    ],
+    "time_range_s": [
+      1789999700.0,
+      1790001260.0
+    ],
+    "all_aircraft": true,
+    "source_kind": "complete_finite_synthetic_population",
+    "real_receiver_coverage": false
+  },
+  "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+  "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "max_gap_s": 30.0,
+  "max_flight_samples": 250000,
+  "input_hash": "4e3ee5c817108192d3a802256bdb26326dc6fd95585d2173d14ee3399c1af6bf",
+  "rows": 3252,
+  "invalid_rows": 0,
+  "segments": 12,
+  "altitude_basis_counts": {
+    "ellipsoidal": 3252
+  },
+  "jets_excluded": false,
+  "unknown_types_retained": true,
+  "geometry_clipped": false,
+  "continuous_geometry_bounds": true
+}

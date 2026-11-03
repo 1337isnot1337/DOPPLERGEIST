@@ -65,3 +65,15 @@ def test_evaluation_failure_preserves_successful_child_receipt(tmp_path, monkeyp
     assert result["status"] == "failed"
     assert result["report"]["sha256"] == replay.digest(tmp_path / "case/pipeline/report.json")["sha256"]
     assert "FileNotFoundError" in result["error"]
+
+
+def test_updated_error_thresholds_preserve_the_historical_faint_receipt():
+    reference = replay.ROOT / replay.CASES["reference-faint"]["baseline"]
+    original = reference.read_bytes()
+    report = json.loads(original)
+    evaluation = replay.evaluate("reference-faint", report)
+    assert evaluation["within_100_m"] is False
+    assert evaluation["within_500_m"] is True
+    assert evaluation["within_1000_m"] is True
+    assert evaluation["baseline_reproduced"] is True
+    assert reference.read_bytes() == original

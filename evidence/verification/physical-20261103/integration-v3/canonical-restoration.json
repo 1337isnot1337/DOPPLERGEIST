@@ -1,0 +1,11 @@
+{
+  "release_tag": "multi-event-fixtures-2026-11-03",
+  "generator_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "asset": "multi-event-4.tar.gz",
+  "asset_sha256": "aaff1ceaa00f07139e7cf9ee477a7183c463d7a59fd276ec46b93c9f98a0b101",
+  "files_verified": 9,
+  "input_audio_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "source_parquet_matches_prepared_index": true,
+  "destination": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/shared-multievent/four-canonical-1f03425",
+  "truth_handling": "Truth bytes verified against the release hash; labels not parsed for search preparation, and the truth directory will not be mounted to the backend."
+}
