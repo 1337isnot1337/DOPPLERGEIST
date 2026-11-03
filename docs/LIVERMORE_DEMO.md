@@ -40,8 +40,24 @@ plot does not rule them out.
 A separate fresh configured two-flyover replay on the same code placed its
 leading candidate 43.86 m from an approximate public reference, also with
 incomplete model support. Both are development examples, not automatic or
-independent real-world acceptance. The Livermore run reported 38.8 seconds on the
-local machine; runtime depends on hardware and load.
+independent real-world acceptance. The original Livermore run reported 38.8 seconds; the separate fresh replay used
+for the figure reported 20.7 seconds. Runtime depends on hardware and load.
+
+## Separate automatic MP3 upload
+
+The same real recording was also encoded to MP3 and submitted to the local API
+at `8c19362`. The upload workflow discovered two acoustic groups without supplied
+event windows or frequency bands. It used the roughly 10-second time interval,
+a reference-derived area and an index containing only the known N784MB track.
+One group was matched; the other was left unmatched. Its leading diagnostic
+candidate was about **158 m from the inferred reference**. This is a different
+run from the configured figure above, and the distance is not surveyed error.
+The result was **inconclusive / search_incomplete**: the single-aircraft index
+does not establish competing-flight coverage, and 91 score candidates and
+1,391 clock trials remained unclassified. All four local tiles were visited,
+but that does not make the overall search or physical-model assessment complete.
+The run reported 274.5 seconds total and 33.0 seconds in search on the local
+machine. No automatic location was accepted.
 
 ## Reproduce
 
