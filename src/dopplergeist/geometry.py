@@ -52,6 +52,9 @@ def ecef(lat, lon, height):
                      (n * (1 - e2) + height) * np.sin(lat)), axis=-1)
 
 
+_CANONICAL_ECEF = ecef
+
+
 def velocity_ecef(lat, lon, east, north, up):
     lat, lon = np.deg2rad(lat), np.deg2rad(lon)
     return np.stack((-np.sin(lon) * east - np.sin(lat) * np.cos(lon) * north + np.cos(lat) * np.cos(lon) * up,
@@ -149,10 +152,11 @@ class Track:
         """Prove all observers are beyond a validated track's range.
 
         Every instant lies at most half a native sample interval from one
-        endpoint. Subsonic speed therefore bounds each ECEF component's
-        displacement from an observed position by c * max_gap / 2. An axis
-        separation larger than the radius proves the entire cubic trajectory
-        and its sampled polyline cannot enter any observer's search sphere.
+        endpoint. Subsonic speed bounds its Euclidean displacement from that
+        endpoint by c * max_gap / 2. The sample box plus a ball of that radius
+        is convex, so it also encloses chords spanning several spline intervals.
+        Distance to the sample box therefore proves exclusion without building
+        spline bounds or using the looser axis-by-axis expansion.
         """
         try:
             self.validate_motion_support(c)
@@ -183,9 +187,15 @@ class Track:
                     float(np.max(np.abs(self._xyz_max))), abs(radius), abs(c * self._max_sample_gap))
         rounding = 64 * np.finfo(float).eps * scale
         margin = c * self._max_sample_gap / 2 + rounding
-        lower = self._xyz_min - margin - radius - rounding
-        upper = self._xyz_max + margin + radius + rounding
-        return bool(np.all(np.any((observers < lower) | (observers > upper), axis=-1)))
+        if radius < 0 or not np.all(np.isfinite(observers)):
+            # Keep the existing behavior for invalid distance/coordinate inputs.
+            lower = self._xyz_min - margin - radius - rounding
+            upper = self._xyz_max + margin + radius + rounding
+            return bool(np.all(np.any((observers < lower) | (observers > upper), axis=-1)))
+        separation = np.maximum(np.maximum(self._xyz_min - observers, observers - self._xyz_max), 0)
+        # hypot avoids overflowing the norm for finite, very distant inputs.
+        distance = np.hypot.reduce(separation, axis=-1)
+        return bool(np.all(distance > radius + margin + rounding))
 
     def _check_motion_support(self, receive_time, observer, c):
         """Reject possible arrivals from unsupported native emission intervals.
@@ -360,6 +370,9 @@ class Track:
 
 _NATIVE_POSITION = Track.position
 _NATIVE_POSITION_VELOCITY = Track._position_velocity
+_CANONICAL_ACOUSTIC_FUNCTIONS = (Track.acoustic, Track.position, Track.speed_vector,
+    Track._position_velocity, Track._check_motion_support, Track._check_motion_support_scalar,
+    Track._unsupported_motion_intervals, _try_native_acoustic, _packed_kinematics)
 
 
 def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):

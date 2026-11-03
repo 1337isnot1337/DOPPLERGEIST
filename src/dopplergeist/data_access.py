@@ -28,6 +28,19 @@ import requests
 from .geometry import Track
 from .tracks import _segment_velocity, adsblol_frame
 
+_index_backend_choice = os.environ.get("DOPPLERGEIST_INDEX_BACKEND", "auto")
+if _index_backend_choice not in {"auto", "python"}:
+    raise ValueError("DOPPLERGEIST_INDEX_BACKEND must be 'auto' or 'python'")
+_native_payload_columns = None
+if _index_backend_choice == "auto":
+    try:
+        from ._native_index import payload_columns as _native_payload_columns
+    except ImportError:
+        pass
+
+_PAYLOAD_COLUMNS = ("time_s", "lat", "lon", "alt_m", "east_mps", "north_mps", "up_mps",
+                    "typecode", "altitude_basis", "aircraft_class")
+
 CONUS = (-125.0, 24.0, -66.0, 50.0)
 INDEX_VERSION = 2
 
@@ -114,6 +127,13 @@ def _payload_frame(records):
     mixed schemas, integer position fields and unusual labels keep pandas'
     original dtype inference and failure behavior.
     """
+    if _native_payload_columns is not None:
+        values = _native_payload_columns(records)
+        if values is not None:
+            columns = {name: _IndexColumn(np.asarray(column, dtype=float if i < 7 else object))
+                       for i, (name, column) in enumerate(zip(_PAYLOAD_COLUMNS, values))
+                       if column is not None}
+            return _IndexColumns(columns, len(records))
     if type(records) is not list or not records or any(type(row) is not dict for row in records):
         return pd.DataFrame(records)
     absent = object()

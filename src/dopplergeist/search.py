@@ -1,4 +1,5 @@
 """Geometric event filters, silence constraints and locked multi-event scoring."""
+from collections import OrderedDict
 from itertools import product
 import math
 
@@ -8,8 +9,9 @@ from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
-from .geometry import AcousticSupportError, ecef
-from .matching import _native_validate_ridge_events
+from .geometry import AcousticSupportError, _CANONICAL_ECEF, ecef
+from .matching import _CANONICAL_NATIVE_EVENT_VALIDATOR, _native_validate_ridge_events
+from .native_cpa import try_cpa_edges
 
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
 _CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
@@ -90,7 +92,9 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
     point_ids=points.point_id.to_numpy(dtype=int)
     rows = _cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size,
                      _sample_cache=_sample_cache)
-    return pd.DataFrame(rows, columns=_CPA_COLUMNS) if rows else _EMPTY_CPA_TABLE.copy()
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
+    return pd.DataFrame(rows, columns=_CPA_COLUMNS)
 
 
 def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512, *,
@@ -146,24 +150,29 @@ class _PreparedCPATrack:
             counts=np.fromiter((len(a) for a in neighbours),dtype=int,count=len(neighbours))
             if not counts.sum():continue
             sample=np.concatenate(neighbours).astype(int)
-            observer_index=np.repeat(np.arange(len(obs)),counts)
-            distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
-            previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
-            following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+            projected = try_cpa_edges(pos, obs, counts, sample)
+            if projected is None:
+                observer_index=np.repeat(np.arange(len(obs)),counts)
+                distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
+                previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
+                following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+                eligible = np.flatnonzero(counts >= 2)
+                ends = np.cumsum(counts)[eligible]
+                starts = ends - counts[eligible]
             # An endpoint sample can be the sampled minimum even when the
             # continuous spline turns strictly inside its adjacent interval.
             # Check the endpoint range-rate signs before optimizing the actual
             # spline; an endpoint alone is not evidence of a complete pass.
-            eligible = np.flatnonzero(counts >= 2)
-            ends = np.cumsum(counts)[eligible]
-            starts = ends - counts[eligible]
             for end in (False, True):
-                edge_indices = ends - 1 if end else starts
-                adjacent = edge_indices - 1 if end else edge_indices + 1
-                mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
-                        & (previous[edge_indices] if end else following[edge_indices])
-                        & (distance2[edge_indices] <= distance2[adjacent]))
-                oi_edge = eligible[mask]
+                if projected is None:
+                    edge_indices = ends - 1 if end else starts
+                    adjacent = edge_indices - 1 if end else edge_indices + 1
+                    mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
+                            & (previous[edge_indices] if end else following[edge_indices])
+                            & (distance2[edge_indices] <= distance2[adjacent]))
+                    oi_edge = eligible[mask]
+                else:
+                    oi_edge = projected[0][end]
                 if not len(oi_edge):
                     continue
                 lo, hi = (t[-2], t[-1]) if end else (t[0], t[1])
@@ -184,25 +193,31 @@ class _PreparedCPATrack:
                         rows.append((int(point_ids[chosen[oi_edge[j]]]), track.id,
                                      float(when), float(when + distance/c), float(distance),
                                      float(np.linalg.norm(track.speed_vector(when)))))
-            minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
-                    (distance2<np.r_[distance2[1:],np.inf]))
-            indices=np.flatnonzero(minima)
-            if not len(indices):continue
-            k=sample[indices]
-            oi=observer_index[indices]
-            # Project onto both neighbouring polyline edges, never across a
-            # missing interval or between unrelated flight passes.
-            first=np.stack((pos[k-1],pos[k]),axis=1)
-            last=np.stack((pos[k],pos[k+1]),axis=1)
-            delta=last-first
-            residual=first-obs[oi,None,:]
-            fraction=np.clip(-np.sum(residual*delta,axis=2)/np.maximum(np.sum(delta**2,axis=2),1e-12),0,1)
-            d2=np.sum((residual+fraction[:,:,None]*delta)**2,axis=2)
-            edge=np.argmin(d2,axis=1)
-            n=np.arange(len(k))
-            distance=np.sqrt(d2[n,edge])
-            start=np.where(edge==0,k-1,k)
-            when=t[start]+fraction[n,edge]*(t[start+1]-t[start])
+            if projected is None:
+                minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
+                        (distance2<np.r_[distance2[1:],np.inf]))
+                indices=np.flatnonzero(minima)
+                if not len(indices):continue
+                k=sample[indices]
+                oi=observer_index[indices]
+                # Project onto both neighbouring polyline edges, never across a
+                # missing interval or between unrelated flight passes.
+                first=np.stack((pos[k-1],pos[k]),axis=1)
+                last=np.stack((pos[k],pos[k+1]),axis=1)
+                delta=last-first
+                residual=first-obs[oi,None,:]
+                fraction=np.clip(-np.sum(residual*delta,axis=2)/np.maximum(np.sum(delta**2,axis=2),1e-12),0,1)
+                d2=np.sum((residual+fraction[:,:,None]*delta)**2,axis=2)
+                edge=np.argmin(d2,axis=1)
+                n=np.arange(len(k))
+                distance=np.sqrt(d2[n,edge])
+                start=np.where(edge==0,k-1,k)
+                fraction = fraction[n, edge]
+            else:
+                _, oi, start, fraction, d2 = projected
+                if not len(oi):continue
+                distance=np.sqrt(d2)
+            when=t[start]+fraction*(t[start+1]-t[start])
             speed=np.linalg.norm(track.speed_vector(when),axis=1)
             for j in np.flatnonzero(distance<=max_distance):
                 rows.append((int(point_ids[chosen[oi[j]]]), track.id,
@@ -415,6 +430,10 @@ def _association_event_ceiling(diagnostic, score, frequency, event, limit):
     mutation checks while avoiding repeated validation of the same clock fit.
     Noncanonical numeric types retain the original validation and arithmetic.
     """
+    if _native_validate_ridge_events is not _CANONICAL_NATIVE_EVENT_VALIDATOR:
+        # A custom hook can change validity without changing scalar evidence.
+        # Preserve the full classifier and do not reuse an earlier hook's key.
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
     if (_native_validate_ridge_events is not None
             and _ridge_trial_classification is _CANONICAL_CEILING_FUNCTIONS[2]
             and _association_event_ceiling_uncached is _CANONICAL_CEILING_FUNCTIONS[1]
@@ -508,7 +527,9 @@ def _association_trial_bound(result, events):
 
 def _validate_score_ceiling_inputs(events, measurements):
     """Do not hide malformed fit inputs behind an unperformed-fit certificate."""
-    from .matching import _frequency_scale, _ridge_fit_inputs
+    from .matching import _frequency_scale, _prepared_score_tokens, _ridge_fit_inputs
+    if _prepared_score_tokens(measurements, events) is not None:
+        return
     for event, measurement in zip(events, measurements):
         value = _frequency_scale(event)
         if not isinstance(value, (int, float, np.number)) or isinstance(value, (bool, np.bool_)):
@@ -581,6 +602,14 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     from .acoustic_screen import ridge_trial_rejections
     from .batch_ridge import first_event_fits, _first_event_fits_with_ceilings
     from .matching import _frequency_scale, fit_ridge
+    from .trial_prefix import request
+
+    reusable = request(tracks, events, measurements, observer, starts, c, acoustic_batches,
+                       score_floor, use_dual, legacy_first_batch)
+    if reusable is not None:
+        previous = reusable.lookup()
+        if previous is not None:
+            return previous
 
     diagnostics = [[] for _ in starts]
     outcomes = [None] * len(starts)
@@ -590,10 +619,12 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     limits = [3 * _frequency_scale(event) for event in events] if score_floor is not None else []
     bound_enabled = bool(limits) and all(np.isfinite(value) and value > 0 for value in limits)
     batches = iter(acoustic_batches)
+    processed = 0
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
         if not active:
             break
         batch = next(batches)
+        processed = index + 1
         if use_dual and batch is not None:
             rejected, upper = ridge_trial_rejections(measurement, event, *batch,
                 score_floor=score_floor, group_count=len(events))
@@ -656,7 +687,38 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
             else:
                 outcomes[trial] = (_ridge_result(diagnostics[trial]), None, None)
         active = next_active
+    if reusable is not None:
+        reusable.remember(processed, outcomes, rejected_count, floor_count)
     return outcomes, rejected_count, floor_count
+
+
+def _candidate_observer(lat, lon, height):
+    """Reuse the scalar ECEF operation for private, ordinary receiver inputs."""
+    from .matching import _NATIVE_RIDGE_ERROR_POLICY, _ridge_fit_cache
+
+    cache = _ridge_fit_cache.get()
+    if (cache is None or not cache.score_inputs or cache.max_entries < 1
+            or ecef is not _CANONICAL_ECEF
+            or not all(type(value) is float and math.isfinite(value) for value in (lat, lon, height))
+            or not (-90 <= lat <= 90 and -180 <= lon <= 180 and abs(height) <= 1e7)
+            or np.geterr() != _NATIVE_RIDGE_ERROR_POLICY):
+        return ecef(lat, lon, height)
+    entries = getattr(cache, "observer_entries", None)
+    if entries is None:
+        entries = cache.observer_entries = OrderedDict()
+    # Hex preserves signed zero as well as every bit of each finite coordinate.
+    key = lat.hex(), lon.hex(), height.hex()
+    value = entries.get(key)
+    if value is None:
+        result = ecef(lat, lon, height)
+        value = np.frombuffer(result.tobytes(), dtype=result.dtype).reshape(result.shape)
+        entries[key] = value
+    entries.move_to_end(key)
+    while len(entries) > min(cache.max_entries, 256):
+        entries.popitem(last=False)
+    # Each scalar ECEF call used to return a fresh array. Keep that ownership
+    # contract, including for a caller that mutates its observer later.
+    return value.copy()
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
@@ -694,12 +756,20 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
         _validate_score_ceiling_inputs(events, measurements)
-    observer = ecef(point.lat,point.lon,point.elev_m)
+    observer = _candidate_observer(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
     anchor = time_origin if time_origin is not None else candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"]
-    shifts = np.linspace(-time_sweep_s,time_sweep_s,max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1)
-    if mode == "robust_ridge" and "recording_start_bounds_s" in candidate:
+    default_count = max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1
+    bounded_clock = mode == "robust_ridge" and "recording_start_bounds_s" in candidate
+    # The bounded clock below replaces this entire array. Retain its original
+    # arithmetic/validation for unusual scalar types, ranges and error policies.
+    ordinary_clock = (bounded_clock and type(time_sweep_s) in (float, int) and type(time_step_s) in (float, int)
+                      and 0 <= time_sweep_s <= 86400 and 1e-6 <= time_step_s <= 86400
+                      and default_count <= 4096
+                      and np.geterr() == {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"})
+    shifts = None if bounded_clock and ordinary_clock else np.linspace(-time_sweep_s,time_sweep_s,default_count)
+    if bounded_clock:
         lower, upper = candidate["recording_start_bounds_s"]
         # CPA intervals propose a shared clock; the physical model may move it
         # within the same declared sweep used by legacy scoring.
@@ -760,39 +830,42 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             legacy_first_batch and association and score_floor is not None and time_origin is None)
     for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
-            from .matching import score_ridges
-            def acoustic_at(index):
-                if lazy_batches is not None:
-                    while len(batches) <= index:
-                        batches.append(next(lazy_batches))
-                batch = batches[index]
-                return None if batch is None else (batch[0][trial], batch[1][trial])
-            precomputed = ([acoustic_at(index) for index in range(len(events))]
-                           if batched_trials is None and batches is not None and lazy_batches is None else None)
-            def dual_flags_at(index):
-                if index not in dual_flags:
-                    acoustic_at(index)
+            # Batched outcomes already contain all trial fits and bounds.
+            # Build scalar callbacks only when that path is used.
+            if batched_trials is None:
+                from .matching import score_ridges
+                def acoustic_at(index):
+                    if lazy_batches is not None:
+                        while len(batches) <= index:
+                            batches.append(next(lazy_batches))
                     batch = batches[index]
-                    if batch is None:
-                        dual_flags[index] = (np.zeros(len(shifts), dtype=bool),
-                                             np.full(len(shifts), np.nan))
-                    else:
-                        from .acoustic_screen import ridge_trial_rejections
-                        dual_flags[index] = ridge_trial_rejections(measurements[index], events[index], *batch,
-                                                                  score_floor=score_floor, group_count=len(events))
-                return dual_flags[index]
-            def dual_at(index):
-                nonlocal dual_pruned, floor_dual_pruned
-                rejections, bounds = dual_flags_at(index)
-                rejected = bool(rejections[trial])
-                dual_pruned += int(rejected)
-                if rejected:
-                    return -np.inf
-                upper = bounds[trial]
-                if np.isfinite(upper):
-                    floor_dual_pruned += 1
-                    return float(upper)
-                return None
+                    return None if batch is None else (batch[0][trial], batch[1][trial])
+                precomputed = ([acoustic_at(index) for index in range(len(events))]
+                               if batched_trials is None and batches is not None and lazy_batches is None else None)
+                def dual_flags_at(index):
+                    if index not in dual_flags:
+                        acoustic_at(index)
+                        batch = batches[index]
+                        if batch is None:
+                            dual_flags[index] = (np.zeros(len(shifts), dtype=bool),
+                                                 np.full(len(shifts), np.nan))
+                        else:
+                            from .acoustic_screen import ridge_trial_rejections
+                            dual_flags[index] = ridge_trial_rejections(measurements[index], events[index], *batch,
+                                                                      score_floor=score_floor, group_count=len(events))
+                    return dual_flags[index]
+                def dual_at(index):
+                    nonlocal dual_pruned, floor_dual_pruned
+                    rejections, bounds = dual_flags_at(index)
+                    rejected = bool(rejections[trial])
+                    dual_pruned += int(rejected)
+                    if rejected:
+                        return -np.inf
+                    upper = bounds[trial]
+                    if np.isfinite(upper):
+                        floor_dual_pruned += 1
+                        return float(upper)
+                    return None
             try:
                 if batched_trials is not None:
                     result, upper, error = batched_trials[trial]
