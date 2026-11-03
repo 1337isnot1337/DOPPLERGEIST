@@ -178,8 +178,11 @@ The product relays `finite_search_evidence` unchanged, preserves seed IDs throug
 refinement, and supplies `candidate_mode_ids` parallel to the wire candidates.
 
 For the explicitly declared evaluated-finite-grid scope, `assessed_mode_ids`
-requires an actually completed finite core score with full measured-trajectory
-support at the original seed/model and a valid trusted clock. It does not require
+requires the producer's explicit `core_assessed_mode_ids` mapping plus an actually
+completed finite core score with full measured-trajectory support at the original
+seed/model and a valid trusted clock. A returned fit alone does not establish
+classification of every bounded clock/optimizer trial; missing/malformed mappings
+or producer-omitted IDs remain unassessed. It does not require
 jointly optimizing every retained point. Failed, missing or unsupported core
 records are unassessed. Raw and refined representations retain their original
 mode ID and original-or-improved score; no association-only deduplication is used.

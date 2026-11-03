@@ -203,12 +203,16 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
     finite = search.get("finite_search_evidence")
     assessed_ids = set()
-    if isinstance(finite, dict):
+    producer_ids = search.get("core_assessed_mode_ids")
+    valid_core_mapping = (isinstance(producer_ids, list)
+                          and all(isinstance(identity, str) and identity for identity in producer_ids))
+    if isinstance(finite, dict) and valid_core_mapping:
+        producer_ids = set(producer_ids)
         for row in raw:
             identity = row.get("mode_id")
             groups = row.get("event_indices", range(len(prepared_events)))
             core = row.get("event_diagnostics", [])
-            if (isinstance(identity, str) and identity and row.get("score_kind") == finite.get("score_kind")
+            if (isinstance(identity, str) and identity in producer_ids and row.get("score_kind") == finite.get("score_kind")
                     and math.isfinite(row["score"]) and start_window[0] <= row["recording_start_time_s"] <= start_window[1]
                     and len(groups) == len(row["flight_ids"]) == len(core) and len(core) > 0
                     and all(isinstance(fit, dict) and fit.get("support_fraction") == 1.
@@ -315,6 +319,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             diagnostics[event_id] = evidence
     if finite is not None:
         diagnostics["finite_search_evidence"] = deepcopy(finite)
+        diagnostics["core_assessment_mapping_status"] = "present" if valid_core_mapping else "missing_or_invalid"
         diagnostics["assessed_mode_ids"] = sorted(assessed_ids)
         diagnostics["candidate_mode_ids"] = [row.get("mode_id") for row in rows]
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})

@@ -8,7 +8,8 @@ from aircraft_geoloc import automatic, matching
 from aircraft_geoloc.jobs import read_json
 
 
-@pytest.mark.parametrize("bad_core", [None, "partial_support", "missing_core", "missing_id", "near_cluster"])
+@pytest.mark.parametrize("bad_core", [None, "partial_support", "missing_core", "missing_id", "near_cluster",
+                                      "producer_unassessed_core", "missing_assessment_map", "malformed_assessment_map"])
 def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path, monkeypatch, bad_core):
     events = [{"event_id": f"event-{i}", "start_s": i*100., "end_s": i*100.+20., "band_hz": [90., 200.],
                "ridge": [{"time_s": i*100.+t, "frequency_hz": 140.-t} for t in (0., 10., 20.)]} for i in range(2)]
@@ -35,7 +36,14 @@ def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path
                 "discarded_count": 0, "best_discarded_score": None, "pruning_accounted_for": True,
                 "limitations": ["Evaluated points only; unperformed refinements and continuous space are not covered."]}
     search = {"ranked": rows, "status": "complete", "scoring_time_is_locked": True,
-              "alternative_modes_exhaustively_assessed": False, "finite_search_evidence": evidence}
+              "alternative_modes_exhaustively_assessed": False, "finite_search_evidence": evidence,
+              "core_assessed_mode_ids": ["mode-a", "mode-b"]}
+    if bad_core == "producer_unassessed_core":
+        search["core_assessed_mode_ids"] = ["mode-a"]
+    elif bad_core == "missing_assessment_map":
+        search.pop("core_assessed_mode_ids")
+    elif bad_core == "malformed_assessment_map":
+        search["core_assessed_mode_ids"] = "mode-a"
     before = deepcopy(search)
     state = {"recording": {"time_window": {"start_utc": "2026-09-21T14:13:20Z", "end_utc": "2026-09-21T14:13:20Z", "source": "user"}},
              "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
@@ -77,7 +85,8 @@ def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path
             assert final["candidates"][0]["score"] == -.1
     else:
         assert final["status"] == "inconclusive", final
-        assert diagnostics["assessed_mode_ids"] == ["mode-a"]
+        expected = [] if bad_core in ("missing_assessment_map", "malformed_assessment_map") else ["mode-a"]
+        assert diagnostics["assessed_mode_ids"] == expected
 
 
 def test_finite_scope_limitations_are_visible_in_coverage():
