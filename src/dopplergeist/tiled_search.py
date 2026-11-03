@@ -685,6 +685,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
+    from .checkpoint_resume import compatible_checkpoint_runs
+    compatible_runs = compatible_checkpoint_runs(output, run_hash)
     mode = parameters.get("mode", "brightness")
     score_kind = ("matched_group_support_minus_normalized_residual" if mode == "robust_ridge" and filters["association"] == "subsets"
                   else {"robust_ridge": "negative_robust_ridge_loss_hz", "ridge": "negative_ridge_rmse_hz",
@@ -711,7 +713,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         try:
             if checkpoint.exists():
                 record = json.loads(checkpoint.read_text())
-                if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
+                if record["run_hash"] not in compatible_runs or record["payload_hash"] != content_hash(record["payload"]):
                     raise DataUnavailable("Corrupt tile checkpoint")
                 prior = record["payload"]
                 for source in prior.get("terrain_files", []):
@@ -732,6 +734,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 continue
             try:
                 record = json.loads(marker.read_text())
+                if record.get("run_hash") in compatible_runs:
+                    record["run_hash"] = run_hash
                 parts = _split_tile_cells(cells)
                 children = ([[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)] if parts else
                             _clock_children(tile_id, cells, start_window, parameters, filters, events))

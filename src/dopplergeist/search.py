@@ -450,7 +450,7 @@ def _ridge_result(diagnostics):
 
 
 def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
-                         acoustic_batches, score_floor, use_dual):
+                         acoustic_batches, score_floor, use_dual, legacy_first_batch=False):
     """Batch only clocks that survive the preceding event's existing screen.
 
     Event order within each clock is unchanged. A later event sees precisely the
@@ -491,7 +491,8 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
         fitted = None
         if batch is not None and len(eligible) >= 4:
             fitted = first_event_fits(measurement, event,
-                                     batch[0][eligible], batch[1][eligible])
+                                     batch[0][eligible], batch[1][eligible],
+                                     legacy_arithmetic=legacy_first_batch and index == 0)
         remaining = len(events) - index - 1
         next_active = []
         for fit_index, trial in enumerate(eligible):
@@ -535,7 +536,7 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
                     time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0,
-                    score_floor=None):
+                    score_floor=None, legacy_first_batch=False):
     """Score one hypothesis; a bounded score-floor result has no numeric score."""
     all_events, all_measurements = events, measurements
     association = "event_indices" in candidate
@@ -630,7 +631,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             selected_tracks, events, measurements, observer, anchor + shifts, c,
             lazy_batches if lazy_batches is not None else batches,
             score_floor if association else None,
-            association and score_floor is not None and time_origin is None)
+            association and score_floor is not None and time_origin is None,
+            legacy_first_batch and association and score_floor is not None and time_origin is None)
     for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -688,7 +690,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                                 from .batch_ridge import first_event_fits
                                 factors, emissions = batches[0]
                                 fitted = first_event_fits(measurements[0], events[0],
-                                                          factors[eligible], emissions[eligible])
+                                                          factors[eligible], emissions[eligible],
+                                                          legacy_arithmetic=legacy_first_batch)
                                 if fitted is not None:
                                     first_fits = [None] * len(shifts)
                                     for index, fit in zip(eligible, fitted):
