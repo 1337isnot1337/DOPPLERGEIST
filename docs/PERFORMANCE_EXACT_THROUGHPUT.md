@@ -38,7 +38,7 @@ This comparison includes upstream improvements integrated during the task.
 The repeated comparison against `21262e` measures the additional gain from this implementation.
 The starting-main pair stays outside the repeated-pair statistics.
 
-### Final integration with PR225
+### Measured integration with PR225 (`d9649ee`)
 
 Main advanced to `d9649ee` after the repeated series.
 The final merge preserves its canonical-container checks and cache invalidation when the batch fitter changes.
@@ -58,6 +58,18 @@ PNG encoding metadata is outside that comparison.
 
 Both performance CI jobs now build an editable native installation for the source checkout that their benchmarks import.
 They assert the source path and loaded native backend before downloading inputs or running experiments.
+
+### Subsequent CLI and parallel-worker integration
+
+The branch also integrates main `a4d27b2`, including CLI controls and bounded DEM-affine scheduling.
+The scheduler enters the search only with multiple workers and cached terrain.
+The one-worker scientific search path used above stays unchanged; implementation and checkpoint fingerprints change as expected.
+
+The [worker integration control](../benchmarks/results/empty-worker-retention-20261103.json) replays 16 actual empty tiles and two populated tiles across two spawned lanes.
+The populated tiles score 300 candidates at their recorded clock.
+Serial and affine execution preserve every payload and all four retention tables exactly.
+Ordered delivery, cached results, stage resume checks, empty descriptors, and returned terrain-cache metadata pass.
+This control verifies integration and does not add a speed or location claim.
 
 ## Repeated scoring and fitting controls
 
@@ -311,6 +323,9 @@ Regenerate the fixture on another checkout because it contains an absolute index
 Use a new output filename for each comparison.
 
 ## Interpretation limits
+
+These HTTP measurements use one search worker.
+They do not measure the later DEM-affine scheduler.
 
 The regional bounds and recording clock come from the development hypothesis.
 Incomplete aircraft coverage leaves the result `inconclusive`, with `search_incomplete`.

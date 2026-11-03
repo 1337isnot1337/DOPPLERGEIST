@@ -79,5 +79,36 @@
     "private_worker_sqlite_files": 0
   },
   "storage_failure_check": "Read-only parent ledger rejected through DataUnavailable without changing committed evidence.",
-  "reproduction": "PYTHONPATH=src python scripts/benchmark_real_empty_workers.py --index REAL_INDEX.sqlite --fixture tests/data/real-empty-tile-workload.json --events tests/data/reference-cpa-real.json --baseline BASELINE_CHECKOUT --terrain-root TERRAIN_CACHE --output NEW_OUTPUT --passes 3 --tiles 256"
+  "reproduction": "PYTHONPATH=src python scripts/benchmark_real_empty_workers.py --index REAL_INDEX.sqlite --fixture tests/data/real-empty-tile-workload.json --events tests/data/reference-cpa-real.json --baseline BASELINE_CHECKOUT --terrain-root TERRAIN_CACHE --output NEW_OUTPUT --passes 3 --tiles 256",
+  "dem_affinity_integration": {
+    "upstream_main": "a4d27b2cacfe53fdcb4dfbce4d533d4c7eb9436d",
+    "spawned_worker_lanes": 2,
+    "empty": {
+      "tiles": 16,
+      "ordered_delivery": true,
+      "cached_handles": 1,
+      "payloads_exact": true,
+      "all_parent_tables_exact": true,
+      "all_parent_stages_resume_valid": true,
+      "empty_descriptors": 16,
+      "scored_candidates": 0,
+      "returned_cache_metadata": 16,
+      "resident_cache_keys": []
+    },
+    "populated": {
+      "tiles": 2,
+      "ordered_delivery": true,
+      "cached_handles": 1,
+      "payloads_exact": true,
+      "all_parent_tables_exact": true,
+      "all_parent_stages_resume_valid": true,
+      "empty_descriptors": 0,
+      "scored_candidates": 300,
+      "returned_cache_metadata": 2,
+      "resident_cache_keys": [
+        "Copernicus_DSM_COG_30_N40_00_W074_00_DEM"
+      ]
+    },
+    "scope": "Actual recorded tile worker regression; fixed recorded clock and restored GLO-90 terrain; not a localization or speed benchmark."
+  }
 }

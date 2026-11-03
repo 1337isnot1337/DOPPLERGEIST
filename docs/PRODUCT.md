@@ -44,6 +44,10 @@ with `DOPPLERGEIST_RIDGE_BACKEND=python`, for example:
 DOPPLERGEIST_RIDGE_BACKEND=python dopplergeist resume JOB_ID --jobs jobs
 ```
 
+For service-managed legacy resume, start the server with `DOPPLERGEIST_RIDGE_BACKEND=python`.
+Setting this variable on the resume client does not change the running server.
+Direct `resume --jobs` requires the service to release the job-store lock.
+
 The default, `DOPPLERGEIST_RIDGE_BACKEND=auto`, uses the native fitter when available.
 Only `auto` and `python` are accepted. Set the value before starting the process;
 the selected backend remains part of the checkpoint runtime identity.
@@ -67,7 +71,11 @@ dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
   --time-source 'Your evidence for this recording time'
 dopplergeist job JOB_ID --jobs jobs
 dopplergeist job JOB_ID --jobs jobs --watch --interval 10
+dopplergeist cancel JOB_ID
 dopplergeist resume JOB_ID --jobs jobs
+# If the upload service still owns the job store:
+dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765
+dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
@@ -77,6 +85,15 @@ and the age of the job status file on standard error. It then writes the final
 job JSON to standard output. Pieces can have different sizes and costs, so their
 rate is not an ETA; remotely staged work appears after it is imported. Pressing
 Ctrl-C stops the watcher without cancelling the analysis.
+
+`cancel` sends the cancellation request to the local service at
+`http://127.0.0.1:8765`. If `serve` uses a different port, pass its base URL with
+`--server-url`. The service must be running and managing the job directory.
+When `serve` owns the job-store lock, use the same `--server-url` option with
+`resume`; it prints the queued result after the service accepts the request.
+Monitor it with `job --watch` and the service's `--jobs` directory. Without
+`--server-url`, `resume --jobs` runs directly against a job store and requires
+that no service currently owns its lock.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not
