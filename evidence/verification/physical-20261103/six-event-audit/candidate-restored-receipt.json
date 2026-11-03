@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/audit_saved_six.py",
+    "--evidence",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/restored/verification",
+    "--output",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/candidate-audit-restored.json"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 0.12035163100154023,
+  "script_sha256": "77448faab677ad2c3bf2649183e7f2b8dcfc0a9f58c267226c7d5624edfe3f31",
+  "output_identical_to_git_evidence_audit": true
+}

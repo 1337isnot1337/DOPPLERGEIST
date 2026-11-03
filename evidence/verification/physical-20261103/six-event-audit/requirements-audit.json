@@ -1,0 +1,15 @@
+{
+  "scope": "Pinned requirement inventory inspection only; no installation or replay failure claim.",
+  "input_sha256": "a16519db55cbef33e21b79ca99685b7fb294d5d7ce5fa8cfa7c61ef3adec3f37",
+  "lines": 10,
+  "distinct_packages": 9,
+  "conflicting_exact_pins": {
+    "requests": [
+      "==2.31.0",
+      "==2.34.2"
+    ]
+  },
+  "native_imported_requests_version": "not recorded in the inspected distribution inventory",
+  "independent_audit_imported_requests_version": "2.34.2",
+  "note": "The two unequal exact requests pins cannot be satisfied together by a single fresh environment. The original artifact should be preserved; a separate installer lock/import provenance may resolve reproducibility."
+}

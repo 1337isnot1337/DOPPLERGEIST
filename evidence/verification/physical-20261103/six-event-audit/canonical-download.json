@@ -1,0 +1,9 @@
+{
+  "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/multi-event-fixtures-2026-11-03/multi-event-6.tar.gz",
+  "expected_bytes": 47353406,
+  "expected_sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+  "http_status": 200,
+  "bytes": 47353406,
+  "sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+  "elapsed_s": 2.3296104709988867
+}

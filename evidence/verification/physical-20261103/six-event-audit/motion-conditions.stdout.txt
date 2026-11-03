@@ -1,0 +1,1 @@
+{"tracks": 18, "intervals": 4860, "maximum_speed_m_s": 113.02499823952243, "all_tracks_numerically_subsonic": true, "all_selected_emission_residuals_small": true, "elapsed_s": 1.8007669119997445}

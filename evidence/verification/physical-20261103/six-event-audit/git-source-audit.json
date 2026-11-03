@@ -1,0 +1,14 @@
+{
+  "evidence_commit": "0ea65162092f854ad0f872133ae12b83a127edea",
+  "runtime_source_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "verified_native_git_payloads": 54,
+  "verified_runtime_source_files": 23,
+  "release_download_attempt": {
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/six-event-cli-replay-2026-11-03/six-event-cli-replay-20261103.tar.gz",
+    "http_status": 404,
+    "release_metadata_api_status": 404,
+    "first_attempt_partial_directory_preserved": true,
+    "coarse_archive_not_yet_independently_verified": true
+  },
+  "scope": "Passive Git evidence/source verification; neither archived scripts nor the pipeline were executed by this step."
+}

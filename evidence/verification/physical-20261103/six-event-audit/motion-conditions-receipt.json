@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/audit_motion_conditions.py",
+    "--root",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 2.009608592999939,
+  "script_sha256": "1786619e5eb2fbb8632bfb62072bd36a0f498786ef13d0ad561e0a225f37a838"
+}

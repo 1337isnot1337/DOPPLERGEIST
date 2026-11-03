@@ -1,0 +1,10 @@
+{
+  "url": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/download/six-event-cli-replay-2026-11-03/six-event-cli-replay-20261103.tar.gz",
+  "http_status": 200,
+  "bytes": 12564160,
+  "sha256": "e801c5d463a2bf7586a4aaae297573b3ad006eaabcf9df6cd88396b4eb6c566e",
+  "elapsed_s": 0.9560526149998623,
+  "expected_bytes": 12564160,
+  "expected_sha256": "e801c5d463a2bf7586a4aaae297573b3ad006eaabcf9df6cd88396b4eb6c566e",
+  "earlier_404_preserved_in": "git-source-audit.json"
+}

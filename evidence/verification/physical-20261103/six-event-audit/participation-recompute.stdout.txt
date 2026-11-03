@@ -1,0 +1,1 @@
+{"candidate_checks": 1, "proposed_groups": 6, "max_native_delta": 0.0, "coarse_remerge_exact": true, "elapsed_s": 1.4073246829993877}

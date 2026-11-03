@@ -1,0 +1,148 @@
+{
+  "scope": "Passive independent recomputation of saved candidate points and joins; no scientific or decision rerun",
+  "evidence_commit": "0ea65162092f854ad0f872133ae12b83a127edea",
+  "runtime_source_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "pyproj_version": "3.8.0",
+  "original_status": "inconclusive",
+  "original_reason_code": "ambiguous_locations",
+  "accepted_localization_at_threshold_m": {
+    "100": false,
+    "500": false,
+    "1000": false
+  },
+  "event_truth_join": [
+    {
+      "event_id": "event-0001",
+      "truth_event_index": 0,
+      "true_flight_id": "584c8b5ab114",
+      "interval_iou": 0.8206635077458366
+    },
+    {
+      "event_id": "event-0002",
+      "truth_event_index": 1,
+      "true_flight_id": "7b081392e2c2",
+      "interval_iou": 0.9176889655341587
+    },
+    {
+      "event_id": "event-0003",
+      "truth_event_index": 2,
+      "true_flight_id": "ccee360caf30",
+      "interval_iou": 0.9525486087522737
+    },
+    {
+      "event_id": "event-0004",
+      "truth_event_index": 3,
+      "true_flight_id": "5bd600870087",
+      "interval_iou": 0.9600545662919681
+    },
+    {
+      "event_id": "event-0005",
+      "truth_event_index": 4,
+      "true_flight_id": "90b36ba174b1",
+      "interval_iou": 0.8879691450113449
+    },
+    {
+      "event_id": "event-0006",
+      "truth_event_index": 5,
+      "true_flight_id": "ca4b1312e1cf",
+      "interval_iou": 0.9526868631994597
+    }
+  ],
+  "stages": {
+    "product": {
+      "records": 106,
+      "leading_point_error_m": 0.06124756332957973,
+      "minimum_point_error_m": 0.052531317652688855,
+      "maximum_point_error_m": 289.81835126416604,
+      "group_count_histogram": {
+        "4": 15,
+        "5": 62,
+        "6": 29
+      },
+      "point_counts_within_m": {
+        "100": 42,
+        "500": 106,
+        "1000": 106
+      },
+      "all_reported_associations_correct": true,
+      "correct_association_records": 106,
+      "incorrect_association_records": 0,
+      "all_clocks_match_supplied_epoch": true
+    },
+    "fine": {
+      "records": 100,
+      "leading_point_error_m": 21.885529691476,
+      "minimum_point_error_m": 21.885529691476,
+      "maximum_point_error_m": 289.81835126416604,
+      "group_count_histogram": {
+        "4": 15,
+        "5": 61,
+        "6": 24
+      },
+      "point_counts_within_m": {
+        "100": 36,
+        "500": 100,
+        "1000": 100
+      },
+      "all_reported_associations_correct": true,
+      "correct_association_records": 100,
+      "incorrect_association_records": 0,
+      "all_clocks_match_supplied_epoch": true
+    },
+    "coarse": {
+      "records": 91,
+      "leading_point_error_m": 353.45099828490504,
+      "minimum_point_error_m": 353.45099828490504,
+      "maximum_point_error_m": 1054597.509138892,
+      "group_count_histogram": {
+        "1": 28,
+        "2": 21,
+        "3": 20,
+        "4": 15,
+        "5": 6,
+        "6": 1
+      },
+      "point_counts_within_m": {
+        "100": 0,
+        "500": 63,
+        "1000": 63
+      },
+      "all_reported_associations_correct": false,
+      "correct_association_records": 72,
+      "incorrect_association_records": 19,
+      "all_clocks_match_supplied_epoch": true
+    }
+  },
+  "native_records_verified": 297,
+  "documented_record_count": 306,
+  "documentation_count_matches_native": false,
+  "saved_competitor_matching_indices": [
+    5
+  ],
+  "saved_competing_hypothesis": {
+    "separation_m": 21.94503373916175,
+    "score_gap": 0.03592574634727338,
+    "gap_units": "support_units_per_group",
+    "same_flight_association": true,
+    "checked_radius_m": 14.431168906046574
+  },
+  "search_stage_peak_rss_mib": 365.51171875,
+  "full_job_peak_rss_mib": null,
+  "truth_access_after_terminal": true,
+  "used_file_sha256": {
+    "terminal-result.json": "b7be4d5c567ac0bd5d64d11fb3663db22b180e20101219fe9f780674a75b16da",
+    "terminal-decision.json": "663a9008de9751236a393f9bcf0fef63ccf06b130a02b03897980208ecee692c",
+    "terminal-search-search-report.json": "2c18f5b492ad24c11bfa16a84f7c9cbb13c7a35a168b849dcfad47713964036b",
+    "terminal-run-receipt.json": "f500dc6ec5e2ad6f3ebdba63c16eb4333aac08f4cd89ed9df3b876390c74e9ba",
+    "postrun-truth.json": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9",
+    "postrun-evaluation.json": "1d2a5cb3518ad182b6f1d6aa79b0681c220634c7be1a3d278962991fcf27c66e",
+    "postrun-truth-access-receipt.json": "af919d9753a9d9e21cc4a74348e498fa8d261ba63fd990ad8e83dc13cdb0c352",
+    "terminal-request.json": "d8a4acb011ecf30fa7bf1524150971c06b0b688da333acb17ddb3416223c5b00",
+    "SIX_EVENT_RESULT.md": "009b17e07f16136294ea49f12d105d6d8aedc457e76b819520f8b9e7d970f5a3"
+  },
+  "limitations": [
+    "Finite synthetic population with a supplied exact clock, not independent real national validation.",
+    "Coarse tile payloads require a separate archive audit; summary counts alone do not verify them.",
+    "Recorded runtime isolation is not an experimenter-blind holdout."
+  ]
+}

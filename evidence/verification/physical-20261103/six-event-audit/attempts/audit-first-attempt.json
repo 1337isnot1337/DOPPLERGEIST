@@ -1,0 +1,8 @@
+{
+  "script_sha256": "486875aa414e2cea238e7b1aa759d8507c5699b3101d01bbd41072dd5ce48f08",
+  "exit_code": 1,
+  "failed_assertion": "assert correct == expected[\"correct_flight_associations\"] and all(correct)",
+  "reason": "Auditor overasserted that every coarse diagnostic candidate must have correct associations. Native evaluation correctly marks 19 of 100 coarse records incorrect. All 106 product and 100 fine records have correct associations; all 306 native correctness flags agree with independent recomputation.",
+  "correction": "Check each native truth flag without requiring every diagnostic candidate to succeed; retain per-stage incorrect counts and the original inconclusive decision.",
+  "scientific_outputs_changed": false
+}

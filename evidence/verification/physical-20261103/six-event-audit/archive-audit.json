@@ -1,0 +1,544 @@
+{
+  "scope": "Passive archive integrity, frozen runtime and checkpoint accounting; no new pipeline run or acceptance change.",
+  "checked_at_utc": "2026-11-03T03:28:01.829251+00:00",
+  "runtime_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "audit_script_sha256": "6d35251efde199332b9e86fbe00d43fe4b0dc713b716e9971c965aead7b49099",
+  "manifest_sha256": {
+    "release-manifest.json": "9fb08a1eb570365eb1e54908a9b3cdd3ed7780e4bafdf11bd3cbce1dc1dd2c18",
+    "canonical-release-manifest.json": "2d787ac061014319a5260c5e17a0e76fe362964b6b4385c3a0cb7e89b56ab82c"
+  },
+  "release": {
+    "archive_sha256": "e801c5d463a2bf7586a4aaae297573b3ad006eaabcf9df6cd88396b4eb6c566e",
+    "members_verified": 62,
+    "uncompressed_bytes": 21841667,
+    "files": [
+      {
+        "path": "verification/SHA256.json",
+        "bytes": 8380,
+        "sha256": "6daf897198fd0f54204325ff4dec6863ffee42087e7848e7f86753b34835be6d"
+      },
+      {
+        "path": "verification/coarse-checkpoint-archive-receipt.json",
+        "bytes": 570,
+        "sha256": "bafb4370299c69d6493bd4ed929b83ae73a12ede0f9cce5730519c9bf4497227"
+      },
+      {
+        "path": "verification/coarse-work-observation.json",
+        "bytes": 5039,
+        "sha256": "28d290300d631b734237697016e9065b1d129d75f67cc205f025db08040fbaf6"
+      },
+      {
+        "path": "verification/evaluate_candidate_points.py",
+        "bytes": 3463,
+        "sha256": "f642889173ea026523d5752db42d36c3acba8e9283a5a891f6acb08bb6d8e75d"
+      },
+      {
+        "path": "verification/index-preparation-receipt.json",
+        "bytes": 1275,
+        "sha256": "5341e0009ef7ef81031bcac8b1f47faae61354446ac7a77b732a6148c1eeef6b"
+      },
+      {
+        "path": "verification/installed-runtime-manifest.json",
+        "bytes": 3540,
+        "sha256": "673ccb8ee283e384ef2ad61729d9d5ae110b31eb4d713cedd09217b79a0df64e"
+      },
+      {
+        "path": "verification/integration-test-receipt.json",
+        "bytes": 563,
+        "sha256": "621c5d320aeaa9b7674f1d1278acf68fa3b90365987c08566182c134576d31d1"
+      },
+      {
+        "path": "verification/one-point-fit-cache-control.json",
+        "bytes": 1447,
+        "sha256": "a14e3cc89b0dc781a427d11174d40cdf2cbe8facf6cc93894a4cd5d6d4521044"
+      },
+      {
+        "path": "verification/one-point-fit-cache-control.log",
+        "bytes": 1447,
+        "sha256": "a14e3cc89b0dc781a427d11174d40cdf2cbe8facf6cc93894a4cd5d6d4521044"
+      },
+      {
+        "path": "verification/one-point-fit-profile-v2.json",
+        "bytes": 1280,
+        "sha256": "f75928bc5ee59529861ae742ba38d70ec4ae200d6b13ada2bfdabbe3263726a8"
+      },
+      {
+        "path": "verification/one-point-fit-profile-v2.log",
+        "bytes": 1280,
+        "sha256": "f75928bc5ee59529861ae742ba38d70ec4ae200d6b13ada2bfdabbe3263726a8"
+      },
+      {
+        "path": "verification/one-point-fit-profile.log",
+        "bytes": 374,
+        "sha256": "f2513dff6448e8de514850eccc1e7a0df9dc9c37550ac01e2e98f96365c60a06"
+      },
+      {
+        "path": "verification/one_point_fit_cache_control.py",
+        "bytes": 4172,
+        "sha256": "cd725fee1a37273e44a941cd1be65aa6aa51c37f22a296bbeeadda5626a2721f"
+      },
+      {
+        "path": "verification/one_point_fit_profile.py",
+        "bytes": 3587,
+        "sha256": "6b624aa1a08a65d12e095fd4f6abdd8af8a9b4bf4b63b14a2971d1db94c1dd49"
+      },
+      {
+        "path": "verification/one_point_fit_profile_v2.py",
+        "bytes": 3611,
+        "sha256": "c5f878ef18e6aaa2cdc669169c1fdb871dacb71436caf97b0c6ae9515a23e2cb"
+      },
+      {
+        "path": "verification/postrun-evaluation.json",
+        "bytes": 260900,
+        "sha256": "1d2a5cb3518ad182b6f1d6aa79b0681c220634c7be1a3d278962991fcf27c66e"
+      },
+      {
+        "path": "verification/postrun-truth-access-receipt.json",
+        "bytes": 721,
+        "sha256": "af919d9753a9d9e21cc4a74348e498fa8d261ba63fd990ad8e83dc13cdb0c352"
+      },
+      {
+        "path": "verification/postrun-truth.json",
+        "bytes": 2998,
+        "sha256": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9"
+      },
+      {
+        "path": "verification/runtime-input-manifest.json",
+        "bytes": 1269,
+        "sha256": "a8f05453c50d007e1d441d225dc1d02b25c666487365c316967f9bef96d8d71b"
+      },
+      {
+        "path": "verification/runtime-requirements.txt",
+        "bytes": 158,
+        "sha256": "a16519db55cbef33e21b79ca99685b7fb294d5d7ce5fa8cfa7c61ef3adec3f37"
+      },
+      {
+        "path": "verification/score_participation_check.py",
+        "bytes": 6292,
+        "sha256": "6e38ea29139b4fb10c7caf420ba45b1a37d7d5e6bdd2d6443dcbb0b7c59821a4"
+      },
+      {
+        "path": "verification/startup-failure-ffprobe-diagnostic.json",
+        "bytes": 1750,
+        "sha256": "d0df93925d3c9a2162032162f78898803ab4cab52aac15458cf1951eaf6a7c5e"
+      },
+      {
+        "path": "verification/startup-failure-namespace-runtime-preflight.json",
+        "bytes": 460,
+        "sha256": "787e8afe76a5780c9d934b75a9e7a91f92566f8f606f9780dba5a105541d5ecc"
+      },
+      {
+        "path": "verification/startup-failure-resource-usage.txt",
+        "bytes": 51,
+        "sha256": "25938fbe44d2c3b4c624a17a23365323cfd4c5b17ae4c728fcf0f860b9f152b7"
+      },
+      {
+        "path": "verification/startup-failure-run-receipt.json",
+        "bytes": 7877,
+        "sha256": "95fcd59014a2b1be1d48a97bd36a2490c2496bf4326092867f539df177130f60"
+      },
+      {
+        "path": "verification/startup-failure-runner.py",
+        "bytes": 4543,
+        "sha256": "7bba90cd9f38fd5c2dad5caa0d1d613132cd77a1b5f549ac8c5037f2b6b52e33"
+      },
+      {
+        "path": "verification/terminal-data-provenance.json",
+        "bytes": 1615,
+        "sha256": "04d842c38995da18ab043cde422517ca3ae0e20e2111aeea951ae7ec962fa34b"
+      },
+      {
+        "path": "verification/terminal-decision.json",
+        "bytes": 58499,
+        "sha256": "663a9008de9751236a393f9bcf0fef63ccf06b130a02b03897980208ecee692c"
+      },
+      {
+        "path": "verification/terminal-discovery-discovery.json",
+        "bytes": 610865,
+        "sha256": "244eefb4ab573f7cf8f3f83c8833c4072143a883a79594f94259655901108171"
+      },
+      {
+        "path": "verification/terminal-discovery-discovery.png",
+        "bytes": 82368,
+        "sha256": "3eede892cd487b6cc555940b9d1d8fe71bf016a32eee6b23359c12fbe4dc7621"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0001.png",
+        "bytes": 283376,
+        "sha256": "c258dbf26ed0f53b3d41c861500f3007476a338a77f4090fe7efd7afb49f39fe"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0002.png",
+        "bytes": 279849,
+        "sha256": "6dbf547013c1127c3bf8796788c8d17f0fff2bc94ae205e3191a1a986950698b"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0003.png",
+        "bytes": 274612,
+        "sha256": "6df369655dc9079853ec985ca4005ca61271b7304b7088919bad23384a553545"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0004.png",
+        "bytes": 272691,
+        "sha256": "aad6bb1aabde5d1a334d163611b285ba021a4ceede221de9fd2e81bef715f0d6"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0005.png",
+        "bytes": 266084,
+        "sha256": "e139720486ee4678fa0a6228bbab0a599c8aa94df7b5ad44d79797f3a25f2991"
+      },
+      {
+        "path": "verification/terminal-discovery-event-0006.png",
+        "bytes": 267701,
+        "sha256": "0e6b7291dc6b95600c6e9d62b4f35348bb72346c2b0137c38ed7e1e8e8484be5"
+      },
+      {
+        "path": "verification/terminal-input.json",
+        "bytes": 126,
+        "sha256": "5a3d437b42d13460ce1a479298fc5334f94dc214971828a235770f8828161469"
+      },
+      {
+        "path": "verification/terminal-intake-intake.json",
+        "bytes": 838,
+        "sha256": "bf2c323e3102fef79b612dc23fef70c2c20b172afcf1f4e54782306cae06a5e0"
+      },
+      {
+        "path": "verification/terminal-intake-recording.json",
+        "bytes": 379,
+        "sha256": "8d5ba1e963283003b6b6cf3c1e854edeba9cd71db07a6931b7ed5f17f9248d6a"
+      },
+      {
+        "path": "verification/terminal-namespace-accounting-probe-inner.txt",
+        "bytes": 52,
+        "sha256": "539a5d3d4d72fc8f66f62f42b68e7e14a83de067220ea9b5b2a7a170eadecf23"
+      },
+      {
+        "path": "verification/terminal-namespace-accounting-probe-outer.txt",
+        "bytes": 51,
+        "sha256": "25938fbe44d2c3b4c624a17a23365323cfd4c5b17ae4c728fcf0f860b9f152b7"
+      },
+      {
+        "path": "verification/terminal-namespace-accounting-probe.json",
+        "bytes": 383,
+        "sha256": "e0971030e21f535526c08792c8b1ad09f245890cea4d0d5667508848b68c2c79"
+      },
+      {
+        "path": "verification/terminal-operator.json",
+        "bytes": 247,
+        "sha256": "987a342832bd13f153e4aed718c247121cb2914b0a90800c55bfcdd947ae8a38"
+      },
+      {
+        "path": "verification/terminal-provenance.json",
+        "bytes": 2891,
+        "sha256": "d95027724c4e89c225f0994305898902619334189c043b4c9468c0615d92aa2c"
+      },
+      {
+        "path": "verification/terminal-refined-candidates.json",
+        "bytes": 600846,
+        "sha256": "cc065ba71c0df6207eefab3d73007f15c39373a8f4affcf95b501926c2614fb6"
+      },
+      {
+        "path": "verification/terminal-request.json",
+        "bytes": 341,
+        "sha256": "d8a4acb011ecf30fa7bf1524150971c06b0b688da333acb17ddb3416223c5b00"
+      },
+      {
+        "path": "verification/terminal-resource-usage.txt",
+        "bytes": 51,
+        "sha256": "e3a07fe957b659840ba1cb9a6d7ca43fe547944aaa9263a1c8d330d494e56fe5"
+      },
+      {
+        "path": "verification/terminal-result.json",
+        "bytes": 349644,
+        "sha256": "b7be4d5c567ac0bd5d64d11fb3663db22b180e20101219fe9f780674a75b16da"
+      },
+      {
+        "path": "verification/terminal-run-receipt.json",
+        "bytes": 7960,
+        "sha256": "f500dc6ec5e2ad6f3ebdba63c16eb4333aac08f4cd89ed9df3b876390c74e9ba"
+      },
+      {
+        "path": "verification/terminal-runner.py",
+        "bytes": 4598,
+        "sha256": "9fedc20ee135f15f66981cbc9a0098b80d820fe0f4f0f620459cbde89129e0c1"
+      },
+      {
+        "path": "verification/terminal-runtime-environment.json",
+        "bytes": 10690,
+        "sha256": "13595525b4771edd055aab98a53d1c4cfcb4a16072466953ab797903cdec2d96"
+      },
+      {
+        "path": "verification/terminal-runtime-postcheck.json",
+        "bytes": 199,
+        "sha256": "99d83cae35c13c5dac11afc71839500a59dfdbfaf937ed960921222136fad3e5"
+      },
+      {
+        "path": "verification/terminal-score-participation-check.json",
+        "bytes": 5103,
+        "sha256": "fb6c123c99c2382eacfc2fd3bc5729ce0fd61e32fdc8a9a1204c024a3c6d3b75"
+      },
+      {
+        "path": "verification/terminal-score-participation-check.log",
+        "bytes": 46,
+        "sha256": "3d7e4028c4b2e107e3d35cdeef7c2f374d2a1b3fd1c218c095f2390dfa32e241"
+      },
+      {
+        "path": "verification/terminal-search-search-report.json",
+        "bytes": 676719,
+        "sha256": "2c18f5b492ad24c11bfa16a84f7c9cbb13c7a35a168b849dcfad47713964036b"
+      },
+      {
+        "path": "verification/SIX_EVENT_PROTOCOL.md",
+        "bytes": 6720,
+        "sha256": "25f6926abbe8663a01f75cbb999a34a5ad8118283c395497ce3dba0007abc4e6"
+      },
+      {
+        "path": "verification/SIX_EVENT_RESULT.md",
+        "bytes": 9020,
+        "sha256": "009b17e07f16136294ea49f12d105d6d8aedc457e76b819520f8b9e7d970f5a3"
+      },
+      {
+        "path": "runtime/aircraft_geoloc_reproduction-0.1.0-py3-none-any.whl",
+        "bytes": 89948,
+        "sha256": "62d310e01d4a4e26317ad11b686e604bb79551c934efc73b02f6fc89bf1c28a8"
+      },
+      {
+        "path": "derived-inputs/flights-runtime-v2.sqlite",
+        "bytes": 323584,
+        "sha256": "3a7eea21f81c8822b203817bb3796b71f56d2e77e8d21c49c5de66000ebe0318"
+      },
+      {
+        "path": "derived-inputs/operator.json",
+        "bytes": 247,
+        "sha256": "987a342832bd13f153e4aed718c247121cb2914b0a90800c55bfcdd947ae8a38"
+      },
+      {
+        "path": "coarse/tile-checkpoints.tar.gz",
+        "bytes": 7757799,
+        "sha256": "9d4ed19173e7d86ef5f75594413a44f36f08c6f05fd76ab916d6e8a12937c3c4"
+      },
+      {
+        "path": "coarse/tile-checkpoints.jsonl",
+        "bytes": 9268478,
+        "sha256": "e440cc063cb409e24a4579e1a084c8849dacfcab5ada6231d05634fd1b7c484b"
+      }
+    ]
+  },
+  "canonical": {
+    "archive_sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+    "members_verified": 9,
+    "uncompressed_bytes": 50669250,
+    "files": [
+      {
+        "path": "generation.json",
+        "bytes": 1970,
+        "sha256": "7c83b7ffaafb4e7f47e91e2dc05f1d216e25e4666293a46608623ca4f240312b"
+      },
+      {
+        "path": "inputs/coverage.json",
+        "bytes": 241,
+        "sha256": "c294125f1631eec1c27f2e60243820bdd2d287592c61c5102bc7c67d941d7d81"
+      },
+      {
+        "path": "inputs/geoid.tif",
+        "bytes": 2509,
+        "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+      },
+      {
+        "path": "inputs/recording.mp3",
+        "bytes": 5601068,
+        "sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee"
+      },
+      {
+        "path": "inputs/request.json",
+        "bytes": 227,
+        "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+      },
+      {
+        "path": "inputs/terrain.tif",
+        "bytes": 2689,
+        "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+      },
+      {
+        "path": "inputs/tracks.parquet",
+        "bytes": 257468,
+        "sha256": "e3912ec68d790a9871c23f1298113f5d6ea276a89fc5b01b120d13f68175c69c"
+      },
+      {
+        "path": "renderer/recording.wav",
+        "bytes": 44800080,
+        "sha256": "1ef4233c118cc8b848f8f9443f58a058b013e0d227d9c7db89ff572e648f4c60"
+      },
+      {
+        "path": "truth/labels.json",
+        "bytes": 2998,
+        "sha256": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9"
+      }
+    ]
+  },
+  "wheel": {
+    "sha256": "62d310e01d4a4e26317ad11b686e604bb79551c934efc73b02f6fc89bf1c28a8",
+    "source_files_verified": 23,
+    "files": [
+      {
+        "path": "src/aircraft_geoloc/__init__.py",
+        "sha256": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+      },
+      {
+        "path": "src/aircraft_geoloc/audio.py",
+        "sha256": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+      },
+      {
+        "path": "src/aircraft_geoloc/automatic.py",
+        "sha256": "0aba452acfc9e9fb3cfd4fca093fefac83d3f4e4255451a2930d060105ac73ba"
+      },
+      {
+        "path": "src/aircraft_geoloc/cli.py",
+        "sha256": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+      },
+      {
+        "path": "src/aircraft_geoloc/confidence.py",
+        "sha256": "25997b9b2bb692374631be32a770fde0a991041413b929f6e1a833bd7fda6403"
+      },
+      {
+        "path": "src/aircraft_geoloc/contracts.py",
+        "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+      },
+      {
+        "path": "src/aircraft_geoloc/data_access.py",
+        "sha256": "0ed7a9ff8599efdff99b5cdc5efccb5426dc18f2ea82edbcc27604bd149b8445"
+      },
+      {
+        "path": "src/aircraft_geoloc/discovery.py",
+        "sha256": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7"
+      },
+      {
+        "path": "src/aircraft_geoloc/evaluation.py",
+        "sha256": "e0d43b2904ad3a6dba5ba743912313442bd4ec45c36eed1335194a55f255f478"
+      },
+      {
+        "path": "src/aircraft_geoloc/geometry.py",
+        "sha256": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+      },
+      {
+        "path": "src/aircraft_geoloc/intake.py",
+        "sha256": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648"
+      },
+      {
+        "path": "src/aircraft_geoloc/jobs.py",
+        "sha256": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+      },
+      {
+        "path": "src/aircraft_geoloc/matching.py",
+        "sha256": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce"
+      },
+      {
+        "path": "src/aircraft_geoloc/pipeline.py",
+        "sha256": "4ac427b412e50079dcfe3f72865b4ca627ddfcb85e619eb88f71dc21f637a4ab"
+      },
+      {
+        "path": "src/aircraft_geoloc/search.py",
+        "sha256": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b"
+      },
+      {
+        "path": "src/aircraft_geoloc/service.py",
+        "sha256": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d"
+      },
+      {
+        "path": "src/aircraft_geoloc/terrain.py",
+        "sha256": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+      },
+      {
+        "path": "src/aircraft_geoloc/tiled_search.py",
+        "sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870"
+      },
+      {
+        "path": "src/aircraft_geoloc/tracks.py",
+        "sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+      },
+      {
+        "path": "src/aircraft_geoloc/web/__init__.py",
+        "sha256": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+      },
+      {
+        "path": "src/aircraft_geoloc/web/app.js",
+        "sha256": "ed531d847ef6206f8b844278c0ead2c15e8f588144651fc6c888bbd4eeb95c2f"
+      },
+      {
+        "path": "src/aircraft_geoloc/web/index.html",
+        "sha256": "f3827cd477b0630aeba28cc284c4a4388715f2f884f218e040156fe1d1bb3be9"
+      },
+      {
+        "path": "src/aircraft_geoloc/web/style.css",
+        "sha256": "57936a98a266bbdf5090ecc6a6a52b707f59e89efcae10c6627a881236399c1e"
+      }
+    ]
+  },
+  "checkpoints": {
+    "members_verified": 76328,
+    "payload_hashes_verified": 76328,
+    "run_hashes": {
+      "d64e9ae49eb166d07727e8d8c6c5d4690d808ef934e5b6a86c95728be6016632": 76328
+    },
+    "grid_points": 15488,
+    "tiles_with_ranked_rows": 5,
+    "ranked_row_occurrences": 91,
+    "event_group_counts": {
+      "1": 28,
+      "2": 21,
+      "3": 20,
+      "4": 15,
+      "5": 6,
+      "6": 1
+    },
+    "track_work_evaluations": 1252,
+    "all_native_completeness_counts_match": true
+  },
+  "index": {
+    "sha256": "3a7eea21f81c8822b203817bb3796b71f56d2e77e8d21c49c5de66000ebe0318",
+    "sqlite_integrity": "ok",
+    "segment_payloads_verified": 18,
+    "canonical_tracks_source_hash_matches": true,
+    "metadata": {
+      "index_version": 2,
+      "sources": [
+        {
+          "path": "/inputs/tracks.parquet",
+          "sha256": "e3912ec68d790a9871c23f1298113f5d6ea276a89fc5b01b120d13f68175c69c",
+          "bytes": 257468
+        }
+      ],
+      "coverage": {
+        "bounds": [
+          -180.0,
+          -85.0,
+          180.0,
+          85.0
+        ],
+        "time_range_s": [
+          1789999700.0,
+          1790001700.0
+        ],
+        "all_aircraft": true,
+        "source_kind": "complete_finite_synthetic_population",
+        "real_receiver_coverage": false
+      },
+      "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+      "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "max_gap_s": 30.0,
+      "max_flight_samples": 250000,
+      "input_hash": "ebec36ca7311b67c062ec253625cc22fa80f6b11a4a6cee445123065acd6cea4",
+      "rows": 4878,
+      "invalid_rows": 0,
+      "segments": 18,
+      "altitude_basis_counts": {
+        "ellipsoidal": 4878
+      },
+      "jets_excluded": false,
+      "unknown_types_retained": true,
+      "geometry_clipped": false,
+      "continuous_geometry_bounds": true
+    }
+  },
+  "elapsed_s": 6.824970497998947
+}

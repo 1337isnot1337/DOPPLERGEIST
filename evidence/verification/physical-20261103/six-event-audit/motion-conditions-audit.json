@@ -1,0 +1,369 @@
+{
+  "scope": "Post-run numerical necessary-condition checks on the restored finite synthetic inputs and fixed leading search state. No production fix, formal interval certificate, real-source validation or decision change.",
+  "checked_at_utc": "2026-11-03T03:33:58.171820+00:00",
+  "runtime_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "script_sha256": "1786619e5eb2fbb8632bfb62072bd36a0f498786ef13d0ad561e0a225f37a838",
+  "method": "All native Hermite interval endpoints and real stationary roots of squared speed, with 33-point sample cross-check per interval; direct emission-time equation residual at every selected ridge sample.",
+  "sound_speed_m_s": 343.0,
+  "tracks": [
+    {
+      "track_id": "10ddde129f63",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 104.13150010257199,
+        "interval_index": 269,
+        "interval_s": [
+          1790001133.0,
+          1790001134.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.6964096206922099
+    },
+    {
+      "track_id": "2e14948f12a0",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 107.36486393218873,
+        "interval_index": 269,
+        "interval_s": [
+          1790001102.0,
+          1790001103.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.6869829039877879
+    },
+    {
+      "track_id": "37eb2ec6d862",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 78.29746466388322,
+        "interval_index": 269,
+        "interval_s": [
+          1790000284.0,
+          1790000285.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7717275082685621
+    },
+    {
+      "track_id": "39490fc22da5",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 98.32637449430842,
+        "interval_index": 269,
+        "interval_s": [
+          1790000971.0,
+          1790000972.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7133341851477888
+    },
+    {
+      "track_id": "4e3d87ed6e3f",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 101.74426192352082,
+        "interval_index": 269,
+        "interval_s": [
+          1790000998.0,
+          1790000999.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7033694987652455
+    },
+    {
+      "track_id": "50a80c1e9bf8",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 113.02499823952243,
+        "interval_index": 269,
+        "interval_s": [
+          1790001438.0,
+          1790001439.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.6704810546952699
+    },
+    {
+      "track_id": "584c8b5ab114",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 78.29746347830327,
+        "interval_index": 269,
+        "interval_s": [
+          1790000284.0,
+          1790000285.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7717275117250634
+    },
+    {
+      "track_id": "5963b2387c30",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 84.19842698282034,
+        "interval_index": 269,
+        "interval_s": [
+          1790000504.0,
+          1790000505.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7545235364932352
+    },
+    {
+      "track_id": "5bd600870087",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 96.03912011803568,
+        "interval_index": 269,
+        "interval_s": [
+          1790000944.0,
+          1790000945.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7200025652535402
+    },
+    {
+      "track_id": "7b081392e2c2",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 84.19843503027697,
+        "interval_index": 269,
+        "interval_s": [
+          1790000504.0,
+          1790000505.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7545235130312624
+    },
+    {
+      "track_id": "90b36ba174b1",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 101.97442002829725,
+        "interval_index": 269,
+        "interval_s": [
+          1790001164.0,
+          1790001165.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7026984838825153
+    },
+    {
+      "track_id": "b1703e44cbf7",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 84.19844873024982,
+        "interval_index": 269,
+        "interval_s": [
+          1790000504.0,
+          1790000505.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7545234730896506
+    },
+    {
+      "track_id": "b6b77399ad2b",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 109.95806092823005,
+        "interval_index": 269,
+        "interval_s": [
+          1790001411.0,
+          1790001412.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.6794225628914576
+    },
+    {
+      "track_id": "c462923f18b5",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 78.29747405533863,
+        "interval_index": 269,
+        "interval_s": [
+          1790000284.0,
+          1790000285.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7717274808882255
+    },
+    {
+      "track_id": "ca4b1312e1cf",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 107.91747851154989,
+        "interval_index": 269,
+        "interval_s": [
+          1790001384.0,
+          1790001385.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.6853717827651606
+    },
+    {
+      "track_id": "ccee360caf30",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 90.11307081868691,
+        "interval_index": 269,
+        "interval_s": [
+          1790000724.0,
+          1790000725.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7372796769134493
+    },
+    {
+      "track_id": "ceb5f8f549ef",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 96.17028922784421,
+        "interval_index": 269,
+        "interval_s": [
+          1790000662.0,
+          1790000663.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7196201480237778
+    },
+    {
+      "track_id": "f11e3201558c",
+      "intervals": 270,
+      "stationary_roots_considered": 0,
+      "maximum": {
+        "speed_m_s": 92.54684458098335,
+        "interval_index": 269,
+        "interval_s": [
+          1790000693.0,
+          1790000694.0
+        ],
+        "fraction": 1.0
+      },
+      "numerically_subsonic_at_c_343": true,
+      "minimum_observer_independent_arrival_derivative_bound": 0.7301841265860544
+    }
+  ],
+  "event_residuals": [
+    {
+      "event_index": 0,
+      "track_id": "584c8b5ab114",
+      "ridge_samples": 327,
+      "finite_samples": 327,
+      "maximum_receive_time_equation_residual_s": 1.4059972386348818e-07,
+      "maximum_receive_time_equation_residual_m": 4.8225705285176446e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    },
+    {
+      "event_index": 1,
+      "track_id": "7b081392e2c2",
+      "ridge_samples": 366,
+      "finite_samples": 366,
+      "maximum_receive_time_equation_residual_s": 1.4640793466469404e-07,
+      "maximum_receive_time_equation_residual_m": 5.0217921589990056e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    },
+    {
+      "event_index": 2,
+      "track_id": "ccee360caf30",
+      "ridge_samples": 380,
+      "finite_samples": 380,
+      "maximum_receive_time_equation_residual_s": 1.4385721058829404e-07,
+      "maximum_receive_time_equation_residual_m": 4.9343023231784855e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    },
+    {
+      "event_index": 3,
+      "track_id": "5bd600870087",
+      "ridge_samples": 379,
+      "finite_samples": 379,
+      "maximum_receive_time_equation_residual_s": 1.4906540712900096e-07,
+      "maximum_receive_time_equation_residual_m": 5.112943464524733e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    },
+    {
+      "event_index": 4,
+      "track_id": "90b36ba174b1",
+      "ridge_samples": 354,
+      "finite_samples": 354,
+      "maximum_receive_time_equation_residual_s": 1.503427498050769e-07,
+      "maximum_receive_time_equation_residual_m": 5.1567563183141374e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    },
+    {
+      "event_index": 5,
+      "track_id": "ca4b1312e1cf",
+      "ridge_samples": 379,
+      "finite_samples": 379,
+      "maximum_receive_time_equation_residual_s": 1.5075895731797573e-07,
+      "maximum_receive_time_equation_residual_m": 5.1710322360065675e-05,
+      "absolute_epoch_float_spacing_s": 2.384185791015625e-07,
+      "all_samples_within_five_epoch_ulps": true,
+      "all_factors_positive": true
+    }
+  ],
+  "all_tracks_numerically_subsonic": true,
+  "all_selected_emission_residuals_small": true,
+  "elapsed_s": 1.8007669119997445
+}

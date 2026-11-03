@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "release_tag": "multi-event-fixtures-2026-11-03",
+  "generator_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "source_video_included": false,
+  "scope": "synthetic development fixtures; truth bundled separately from inputs",
+  "assets": [
+    {
+      "name": "multi-event-3.tar.gz",
+      "bytes": 25010606,
+      "sha256": "e9da4ba1ec33c0a7a7c855a328a94a3429144bf1a469f27eb90ee57482129640",
+      "files": [
+        {
+          "path": "generation.json",
+          "bytes": 1969,
+          "sha256": "decf40973392e73ebb55a0c9fdfdbfdf67806f1039432cecd4cf0456ca6becd1"
+        },
+        {
+          "path": "inputs/coverage.json",
+          "bytes": 241,
+          "sha256": "dbd20c0ba30d041b377510499ee78cd17246bf4d5a2c3b4531d26da61da31e2d"
+        },
+        {
+          "path": "inputs/geoid.tif",
+          "bytes": 2509,
+          "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+        },
+        {
+          "path": "inputs/recording.mp3",
+          "bytes": 2960972,
+          "sha256": "1fed2fab5b8ee01eed774ad2bc1f82f87db85574100d2d818b6117a230193c61"
+        },
+        {
+          "path": "inputs/request.json",
+          "bytes": 227,
+          "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+        },
+        {
+          "path": "inputs/terrain.tif",
+          "bytes": 2689,
+          "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+        },
+        {
+          "path": "inputs/tracks.parquet",
+          "bytes": 131203,
+          "sha256": "123e06bf7f87f4dd09b9d671bd2ef59d4dfa5f22dbd7dffb7a4b27a65b91022d"
+        },
+        {
+          "path": "renderer/recording.wav",
+          "bytes": 23680080,
+          "sha256": "cb4738125e245b604fdf86ffd5d3351f47a2f6846bd92ef902ca7cc25f63920d"
+        },
+        {
+          "path": "truth/labels.json",
+          "bytes": 1668,
+          "sha256": "a26654c5d4a941b74a635d072b7e82b7707ea9038c0bdb21843a27eda84eb319"
+        }
+      ]
+    },
+    {
+      "name": "multi-event-4.tar.gz",
+      "bytes": 32451015,
+      "sha256": "aaff1ceaa00f07139e7cf9ee477a7183c463d7a59fd276ec46b93c9f98a0b101",
+      "files": [
+        {
+          "path": "generation.json",
+          "bytes": 1969,
+          "sha256": "35b3f3da9d743a30bad8c89ea0a1c8e7ba2acf0fa2dfd0369c5cfb8d94f22236"
+        },
+        {
+          "path": "inputs/coverage.json",
+          "bytes": 241,
+          "sha256": "714632e98da102bdd1dc5138148dd7f401d5d68304208a2d0eaf9c2849b532bb"
+        },
+        {
+          "path": "inputs/geoid.tif",
+          "bytes": 2509,
+          "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+        },
+        {
+          "path": "inputs/recording.mp3",
+          "bytes": 3841100,
+          "sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85"
+        },
+        {
+          "path": "inputs/request.json",
+          "bytes": 227,
+          "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+        },
+        {
+          "path": "inputs/terrain.tif",
+          "bytes": 2689,
+          "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+        },
+        {
+          "path": "inputs/tracks.parquet",
+          "bytes": 171645,
+          "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258"
+        },
+        {
+          "path": "renderer/recording.wav",
+          "bytes": 30720080,
+          "sha256": "a2783a2b3a08b454a3768b449db02786c75cf073c2e60e0870982e149fec3e2a"
+        },
+        {
+          "path": "truth/labels.json",
+          "bytes": 2109,
+          "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+        }
+      ]
+    },
+    {
+      "name": "multi-event-6.tar.gz",
+      "bytes": 47353406,
+      "sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+      "files": [
+        {
+          "path": "generation.json",
+          "bytes": 1970,
+          "sha256": "7c83b7ffaafb4e7f47e91e2dc05f1d216e25e4666293a46608623ca4f240312b"
+        },
+        {
+          "path": "inputs/coverage.json",
+          "bytes": 241,
+          "sha256": "c294125f1631eec1c27f2e60243820bdd2d287592c61c5102bc7c67d941d7d81"
+        },
+        {
+          "path": "inputs/geoid.tif",
+          "bytes": 2509,
+          "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+        },
+        {
+          "path": "inputs/recording.mp3",
+          "bytes": 5601068,
+          "sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee"
+        },
+        {
+          "path": "inputs/request.json",
+          "bytes": 227,
+          "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+        },
+        {
+          "path": "inputs/terrain.tif",
+          "bytes": 2689,
+          "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+        },
+        {
+          "path": "inputs/tracks.parquet",
+          "bytes": 257468,
+          "sha256": "e3912ec68d790a9871c23f1298113f5d6ea276a89fc5b01b120d13f68175c69c"
+        },
+        {
+          "path": "renderer/recording.wav",
+          "bytes": 44800080,
+          "sha256": "1ef4233c118cc8b848f8f9443f58a058b013e0d227d9c7db89ff572e648f4c60"
+        },
+        {
+          "path": "truth/labels.json",
+          "bytes": 2998,
+          "sha256": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9"
+        }
+      ]
+    }
+  ]
+}

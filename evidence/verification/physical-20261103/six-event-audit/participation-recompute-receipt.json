@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/recompute_participation.py",
+    "--root",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 1.6604617909997614
+}

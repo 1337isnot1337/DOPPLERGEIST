@@ -1,0 +1,8 @@
+{
+  "script_sha256": "adb002882ed9258864e8bf4aaf906950832058294af857a2ab84e42116a6e4c1",
+  "exit_code": 1,
+  "failed_assertion": "sum(stage record counts) == 306",
+  "finding": "The published document claims 306 retained product/fine/coarse records. Native arrays contain 106 product, 100 fine and 91 coarse records, totaling 297. Every independently recomputed native point error, association flag, group count, clock and threshold flag agrees for all 297 records.",
+  "prior_attempt_receipt_correction": "The first audit receipt incorrectly described 100 coarse rows. There are 91, with 19 rows having incorrect associations; those false flags are correctly recorded in the native evaluation.",
+  "scientific_outputs_changed": false
+}
