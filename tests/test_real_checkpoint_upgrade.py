@@ -9,7 +9,7 @@ import tempfile
 import pytest
 
 from dopplergeist.automatic import _load_audio_checkpoint
-from dopplergeist.checkpoint_resume import upgrade_legacy_job
+from dopplergeist.checkpoint_resume import compatible_checkpoint_runs, upgrade_legacy_job
 from dopplergeist.finite_search import RetentionLedger
 
 
@@ -40,6 +40,9 @@ def test_saved_scored_tile_and_ledger_survive_upgrade(request):
                   for name in ("stages", "records", "bounds")}
     report = upgrade_legacy_job(tmp_path)
     assert report["tiles_preserved"] == 1
+    assert (tmp_path / "search" / tile.name).read_bytes() == original
+    assert compatible_checkpoint_runs(tmp_path / "search", report["new_run_hash"]) == {
+        report["old_run_hash"], report["new_run_hash"]}
     assert json.loads((tmp_path / "search" / tile.name).read_text())["payload"] == payload
     assert (Path(report["previous_search"]) / tile.name).read_bytes() == original
     assert tile.read_bytes() == original

@@ -45,7 +45,9 @@ def upgrade_legacy_job(directory):
         return None
     if getattr(matching, "_native_fit_irls", None) is not None:
         raise ValueError("Legacy checkpoint continuation requires the Python ridge fitter")
-    if old["scoring"].get("mode") != "robust_ridge" or old.get("coarse_floor_policy") != "per_tile":
+    if (old["scoring"].get("mode") != "robust_ridge" or old.get("coarse_floor_policy") != "per_tile"
+            or old["scoring"].get("time_origin") is not None
+            or old.get("filters", {}).get("association") != "subsets"):
         raise ValueError("This legacy checkpoint mode has no compatible upgrade")
     runtime = {"python": platform.python_version(), "machine": platform.machine(),
                "packages": {name: version(name) for name in old["runtime"]["packages"]}}
@@ -93,15 +95,10 @@ def upgrade_legacy_job(directory):
         with sqlite3.connect(staged / "retention.sqlite") as target:
             source.backup(target)
             target.execute("UPDATE run SET identity=?", (new_hash,))
-    tiles = 0
-    for pattern in ("tile-*.json", "split-*.json"):
-        for path in staged.glob(pattern):
-            record = json.loads(path.read_text())
-            if record["run_hash"] != manifest["run_hash"]:
-                raise ValueError(f"Saved checkpoint has a different run identity: {path.name}")
-            record["run_hash"] = new_hash
-            write_json(path, record)
-            tiles += pattern == "tile-*.json"
+    # Keep saved payloads and their producer identity byte-for-byte. The search
+    # reader accepts this one explicitly compatible producer and still checks
+    # each payload and retention stage before reuse.
+    tiles = len(list(staged.glob("tile-*.json")))
     write_json(staged / "manifest.json", {"run_hash": new_hash, "configuration": current})
     report = {"version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
               "old_run_hash": manifest["run_hash"], "new_run_hash": new_hash,
@@ -126,3 +123,15 @@ def upgrade_legacy_job(directory):
             shutil.copy2(backup / name, directory / name)
         raise
     return report
+
+
+def compatible_checkpoint_runs(output, run_hash):
+    """Accept the validated legacy producer only for this exact upgraded run."""
+    accepted = {run_hash}
+    path = Path(output).parent / "checkpoint-upgrade.json"
+    if path.exists():
+        report = json.loads(path.read_text())
+        if (report.get("version") == 1 and report.get("new_run_hash") == run_hash
+                and report.get("legacy_first_batch") is True):
+            accepted.add(report["old_run_hash"])
+    return accepted
