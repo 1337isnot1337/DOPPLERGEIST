@@ -44,7 +44,7 @@ TIME_SOURCE = "Known sample-zero clock of the published independent synthetic ge
 AUDITED_BLOBS = {
     "scripts/verify_methodology.py": "bc349e9005bd9e14d980c857486f6927a641112d",
     "scripts/verify_upload_browser.py": "17f0bbef5fa8abf86fb9ae85cf662600c32cc104",
-    "scripts/make_multi_event_case.py": "48c809ac701919da3f209f67ccc5cf66d090463e",
+    "scripts/make_multi_event_case.py": "3add00adc99e10500f430a13eb351112b43c5345",
     "scripts/ci_checkpoint_replay.py": "1612021776965713e88c586563ab51d4b8682a8b",
     "src/aircraft_geoloc/service.py": "67b541805cb6ae14d56b5d4f03fcf7c2f84574fe",
     "src/aircraft_geoloc/jobs.py": "29e8aa37ff1b82daecdae45af908272e960755ab",
@@ -104,7 +104,7 @@ def normal_wire_request(value):
             "time_window": dict(window, source_detail=TIME_SOURCE)}
 
 
-def index_fixture(inputs, evaluation, index_path, report_path, event_count):
+def index_fixture(inputs, evaluation, index_path, report_path, event_count, fixture_variant="local-segments"):
     """No truth is read. Preserve all trajectory values except opaque ID/order."""
     import pandas as pd
     from aircraft_geoloc.data_access import FlightIndex
@@ -115,9 +115,32 @@ def index_fixture(inputs, evaluation, index_path, report_path, event_count):
     (inputs / "tracks.parquet").replace(source)
     frame = pd.read_parquet(source)
     counts = frame.groupby("flight_id", dropna=False).size()
-    if len(counts) != 3 * event_count or not (counts == 271).all():
+    coverage = read_json(inputs / "coverage.json")
+    samples_per_track = 271
+    if fixture_variant == "full-coverage":
+        import numpy as np
+        support = coverage.get("trajectory_support", {})
+        interval = coverage.get("time_range_s")
+        if (not isinstance(support, dict) or support.get("fixture_variant") != fixture_variant
+                or support.get("emission_interval_s") != interval or support.get("original_rows_preserved") is not True
+                or support.get("aircraft_count") != 3 * event_count
+                or not isinstance(interval, list) or len(interval) != 2
+                or not all(type(value) in (int, float) and math.isfinite(value) for value in interval)):
+            raise ValueError("Full-coverage fixture lacks its declared trajectory support certificate")
+        start, end = interval
+        samples_per_track = support.get("samples_per_track")
+        if (type(samples_per_track) is not int or not 271 < samples_per_track <= 250000
+                or end - start + 1 != samples_per_track):
+            raise ValueError("Full-coverage fixture has an invalid common emission grid")
+        expected_times = np.arange(start, end + 1, dtype=float)
+        if any(not np.array_equal(group.time_s.to_numpy(dtype=float), expected_times)
+               for _, group in frame.groupby("flight_id", sort=False)):
+            raise ValueError("An aircraft is missing part of the common emission grid")
+    elif fixture_variant != "local-segments":
+        raise ValueError("Unknown fixture variant")
+    if len(counts) != 3 * event_count or not (counts == samples_per_track).all():
         raise ValueError("Complete generated traffic inventory was not retained")
-    expected_types = {name: 813 for name in ["C172", "PC12", "A320", "", "C208", "B350"][:event_count]}
+    expected_types = {name: 3 * samples_per_track for name in ["C172", "PC12", "A320", "", "C208", "B350"][:event_count]}
     types = dict(Counter(frame["typecode"].fillna("").astype(str)))
     if types != expected_types or not (frame["altitude_basis"] == "ellipsoidal").all():
         raise ValueError("Aircraft classes or altitude basis differ from the fixture")
@@ -142,7 +165,6 @@ def index_fixture(inputs, evaluation, index_path, report_path, event_count):
         raise ValueError("Derived Parquet changed column values")
     write_json(evaluation / "flight-id-mapping.json", {"original_to_opaque": mapping,
                "order_randomized": True, "all_non_id_values_preserved": True})
-    coverage = read_json(inputs / "coverage.json")
     if (coverage.get("source_kind") != "complete_finite_synthetic_population"
             or coverage.get("all_aircraft") is not True or coverage.get("real_receiver_coverage") is not False):
         raise ValueError("Coverage must describe only the complete finite synthetic population")
@@ -156,7 +178,7 @@ def index_fixture(inputs, evaluation, index_path, report_path, event_count):
             or report.get("invalid_rows") != 0 or report.get("jets_excluded") is not False
             or report.get("unknown_types_retained") is not True or report.get("geometry_clipped") is not False):
         raise ValueError("Indexed/query traffic differs from the complete source inventory")
-    write_json(report_path, {"rows": len(frame), "tracks": len(expected), "rows_per_track": returned,
+    write_json(report_path, {"fixture_variant": fixture_variant, "rows": len(frame), "tracks": len(expected), "rows_per_track": returned,
         "typecode_rows": types, "all_non_id_values_preserved": True, "all_rows_retained": True,
         "original_parquet": file_record(source), "derived_parquet": file_record(target),
         "indexed_coverage": indexed_coverage, "index_report": report})
@@ -707,6 +729,7 @@ def child(argv):
     for name in ("inputs", "evaluation", "index", "report"):
         index.add_argument("--" + name, type=Path, required=True)
     index.add_argument("--events", type=int, required=True)
+    index.add_argument("--fixture-variant", choices=("local-segments", "full-coverage"), default="local-segments")
     product = sub.add_parser("_product")
     for name in ("audio", "output", "request", "operator", "lifecycle", "browser-python"):
         product.add_argument("--" + name, type=Path, required=True)
@@ -714,7 +737,7 @@ def child(argv):
     product.add_argument("--timeout-s", type=float, required=True)
     args = parser.parse_args(argv)
     if args.stage == "_index":
-        index_fixture(args.inputs, args.evaluation, args.index, args.report, args.events)
+        index_fixture(args.inputs, args.evaluation, args.index, args.report, args.events, args.fixture_variant)
         return 0
     return run_published_verifier(args)
 

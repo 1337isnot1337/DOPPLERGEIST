@@ -521,4 +521,18 @@ def test_cli_predeclares_strict_success_and_exposes_replay_parameters(tmp_path, 
     assert REPLAY.main(["--output", str(tmp_path / "new"), "--events", "6", "--seed", "23",
                         "--time-budget-s", "120"]) == 1
     assert captured["expect_status"] == "succeeded"
+    assert captured["fixture_variant"] == "local-segments"
     assert (captured["events"], captured["seed"], captured["timeout_s"]) == (6, 23, 120)
+
+
+def test_cli_requires_explicit_full_coverage_fixture_variant(tmp_path, monkeypatch):
+    captured = {}
+    def replay(args, repo):
+        captured.update(vars(args))
+        return 1
+    monkeypatch.setattr(REPLAY, "replay", replay)
+    assert REPLAY.main(["--output", str(tmp_path / "new"), "--fixture-variant", "full-coverage",
+                        "--time-budget-s", "1800"]) == 1
+    assert captured["fixture_variant"] == "full-coverage"
+    assert captured["timeout_s"] == 1800
+    assert captured["expect_status"] == "succeeded"

@@ -27,7 +27,7 @@ env:
 jobs:
   replay:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -55,7 +55,8 @@ jobs:
           python scripts/ci_http_replay.py \
             --output results/ci-http-four-events \
             --events 4 --seed 20261103 \
-            --expect-status succeeded --timeout-s 1200
+            --fixture-variant full-coverage \
+            --expect-status succeeded --timeout-s 1800
       - name: Preserve evidence, including unsuccessful localization
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

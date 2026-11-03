@@ -340,6 +340,7 @@ def replay(args, repo):
     receipt = {"schema_version": 1, "scope": "known-clock synthetic multi-event actual HTTP development replay",
         "started_utc": utc_now(), "expected_status": args.expect_status, "generated_event_count": args.events,
         "generator_seed": args.seed, "primary_threshold_m": UPLOAD.PRIMARY_THRESHOLD_M,
+        "fixture_variant": args.fixture_variant,
         "thresholds_m": list(UPLOAD.THRESHOLDS_M), "total_budget_s": args.timeout_s,
         "stages": [], "passed": False, "http_transport_passed": False, "supported_decision": False,
         "supported_localization_passed": False,
@@ -378,7 +379,8 @@ def replay(args, repo):
         env = dict(os.environ, PYTHONPATH=str(snapshot / "src"), MPLBACKEND="Agg", **helpers.HELPERS.THREAD_ENV)
         fixture = output / "fixture"
         generation = run("generation", [sys.executable, str(snapshot / "scripts/make_multi_event_case.py"),
-            "--output", str(fixture), "--events", str(args.events), "--seed", str(args.seed)], cap=300)
+            "--output", str(fixture), "--events", str(args.events), "--seed", str(args.seed),
+            "--fixture-variant", args.fixture_variant], cap=300)
         if generation.get("returncode") != 0 or generation.get("timed_out"):
             raise RuntimeError("Independent fixture generation failed")
         inputs, evaluation = fixture / "inputs", output / "evaluation"
@@ -388,10 +390,13 @@ def replay(args, repo):
         index = inputs / "flights.sqlite"
         indexing = run("indexing", [sys.executable, str(snapshot / "scripts/ci_upload_replay.py"), "_index",
             "--inputs", str(inputs), "--evaluation", str(evaluation), "--index", str(index),
-            "--report", str(output / "indexing.json"), "--events", str(args.events)], cap=180)
+            "--report", str(output / "indexing.json"), "--events", str(args.events),
+            "--fixture-variant", args.fixture_variant], cap=180)
         if indexing.get("returncode") != 0 or indexing.get("timed_out"):
             raise RuntimeError("Complete generated traffic indexing failed")
         receipt["indexing"] = read_json(output / "indexing.json")
+        if receipt["indexing"].get("fixture_variant") != args.fixture_variant:
+            raise ValueError("Indexed fixture variant differs from the predeclared protocol")
         receipt["input_files"] = {path.name: file_record(path) for path in sorted(inputs.iterdir()) if path.is_file()}
         wire = helpers.normal_wire_request(read_json(inputs / "request.json"))
         write_json(output / "wire-request.json", wire)
@@ -427,6 +432,8 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, required=True, help="New output directory; existing evidence is refused")
     parser.add_argument("--events", type=int, choices=(3, 4, 6), default=4)
     parser.add_argument("--seed", type=int, default=20261103)
+    parser.add_argument("--fixture-variant", choices=("local-segments", "full-coverage"), default="local-segments",
+        help="Predeclared fixture dataset; full-coverage adds certified sampled trajectory support")
     parser.add_argument("--timeout-s", "--time-budget-s", dest="timeout_s", type=float, default=1800,
         help="Total replay budget in seconds, including preparation and evaluation (default: 1800)")
     parser.add_argument("--expect-status", choices=sorted(UPLOAD.TERMINAL), default="succeeded",
