@@ -1,0 +1,76 @@
+name: Automatic synthetic methodology replay
+
+"on":
+  push:
+    branches: [worker/ci-automatic-20261102]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automatic-replay-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  NUMEXPR_NUM_THREADS: "1"
+  BLIS_NUM_THREADS: "1"
+
+jobs:
+  automatic:
+    name: Clean install, full tests, and automatic synthetic replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Record clean checkout and source hashes
+        run: |
+          mkdir -p results/ci-environment
+          git rev-parse HEAD > results/ci-environment/commit.txt
+          git status --porcelain > results/ci-environment/status-before.txt
+          git ls-files -z | xargs -0 sha256sum > results/ci-environment/source-sha256.txt
+          python --version > results/ci-environment/python-version.txt
+      - name: Install runtime and check dependencies
+        run: |
+          sudo apt-get update -qq 2>&1 | tee results/ci-environment/apt-update.log
+          sudo apt-get install -y ffmpeg 2>&1 | tee results/ci-environment/apt-install.log
+          python -m pip install -e . pytest 2>&1 | tee results/ci-environment/pip-install.log
+          python -m pip check 2>&1 | tee results/ci-environment/pip-check.log
+          python -m pip freeze --all > results/ci-environment/requirements-resolved.txt
+          ffmpeg -version > results/ci-environment/ffmpeg-version.txt
+      - name: Run full repository tests
+        run: python -m pytest -q --junitxml=results/ci-environment/pytest.xml 2>&1 | tee results/ci-environment/pytest.log
+      - name: Replay automatic synthetic methodology
+        timeout-minutes: 32
+        run: python scripts/ci_automatic_replay.py --output results/ci-automatic --timeout-s 1800 2>&1 | tee results/ci-environment/automatic-replay.log
+      - name: Upload receipts, logs, stage evidence, and source hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automatic-synthetic-methodology-${{ github.sha }}
+          path: |
+            results/ci-environment/
+            results/ci-automatic/
+            !results/**/*.[wW][aA][vV]
+            !results/**/*.[mM][pP]3
+            !results/**/__pycache__/**
+            !results/**/*.pyc
+            !results/**/*.pyo
+          if-no-files-found: error
+          retention-days: 30

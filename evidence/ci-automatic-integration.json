@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "scope": "Pinned producer integration for an actual automatic synthetic CLI replay",
+  "base_commit": "1145762fe7d2866a3c0cf9ab4bc9fba08a3d34a1",
+  "base_tree": "2c073a00af6166eacac6b502b94ffd49706e5503",
+  "producer_inputs": [
+    {
+      "path": "src/aircraft_geoloc/automatic.py",
+      "blob_sha": "10e95279fc4eb4343aca08418c1d6d2d5c413114",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/cli.py",
+      "blob_sha": "a28c8bbd68c7fc810dca6b55ce89124488066a1f",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/confidence.py",
+      "blob_sha": "ec42793dff931f217d0421aa02610cfa215f747b",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/discovery.py",
+      "blob_sha": "0a6a98667fae024e40395bfcd60e9f7b4e494a6f",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/jobs.py",
+      "blob_sha": "29e8aa37ff1b82daecdae45af908272e960755ab",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/service.py",
+      "blob_sha": "67b541805cb6ae14d56b5d4f03fcf7c2f84574fe",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/web/__init__.py",
+      "blob_sha": "5d6a00f9e470ee80f9dfe55534556d4f0c504dad",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/web/app.js",
+      "blob_sha": "b1fd365fbe241e307c59caf5269bbf3cce327f2c",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/web/index.html",
+      "blob_sha": "e4ec46f0ce6f9d7faa6bcbe9c60c64497dba2439",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/web/style.css",
+      "blob_sha": "efe8a382cdcd35343700ea77f2dae18bdc631317",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_automatic.py",
+      "blob_sha": "1de912130f069802d4cc9d2e2b2ab170ac3cf3ba",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_confidence.py",
+      "blob_sha": "8f56f86e389f5b113141c876b27c06c1c6c319e1",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_discovery.py",
+      "blob_sha": "92b42463be53828e6e627d75274417626033d94c",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_service.py",
+      "blob_sha": "a34d92b3c2915d5efcfa30bc009b53b049f0de93",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/data_access.py",
+      "blob_sha": "06d1268291b401748d077b6a64d2a49179c9a271",
+      "source_commit": "87a8dabf852402652b12a4176279708cd0f8add0"
+    },
+    {
+      "path": "src/aircraft_geoloc/tiled_search.py",
+      "blob_sha": "d90d75a28ec7db72bb5199c50a75a059f93da7b6",
+      "source_commit": "87a8dabf852402652b12a4176279708cd0f8add0"
+    },
+    {
+      "path": "tests/test_data_access.py",
+      "blob_sha": "03178ecfff53f4f8ca2cb9b5cbceecad7669a3f1",
+      "source_commit": "87a8dabf852402652b12a4176279708cd0f8add0"
+    },
+    {
+      "path": "tests/test_tiled_search.py",
+      "blob_sha": "da70a90d92eb25ba6a7109019f7643550b8c8ec8",
+      "source_commit": "87a8dabf852402652b12a4176279708cd0f8add0"
+    },
+    {
+      "path": "src/aircraft_geoloc/matching.py",
+      "blob_sha": "d087b93894c57263abde0d925e8e0c773325e742",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "src/aircraft_geoloc/search.py",
+      "blob_sha": "0fb3e83125d0154b29127d4270b11cafdddcb711",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_matching.py",
+      "blob_sha": "1686e50b750e1f8c0ea55af36d5c668fd2102df3",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "tests/test_association.py",
+      "blob_sha": "a76c03404f850732648adb8e907d1d58d58259c8",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    },
+    {
+      "path": "docs/MATCHING.md",
+      "blob_sha": "87ed3e79b2daf9037730e90a3c2c0bf02bb4daa2",
+      "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1"
+    }
+  ],
+  "preserved_main_files": [
+    {
+      "path": "src/aircraft_geoloc/tracks.py",
+      "blob_sha": "b9c81e54deabb8bbd7a4b20c8032aedfcc3676cc"
+    },
+    {
+      "path": "pyproject.toml",
+      "blob_sha": "5653b852ef3374218b38e8be2a9aadb586c04d88"
+    }
+  ],
+  "verification_files": [
+    "scripts/ci_checkpoint_replay.py",
+    "scripts/ci_automatic_replay.py",
+    "tests/test_ci_automatic_replay.py",
+    ".github/workflows/automatic-replay.yml",
+    "docs/CI_AUTOMATIC_REPLAY.md"
+  ],
+  "limitations": [
+    "Producer blobs are copied without changes from the listed published commits; this branch does not replace their owners' branches.",
+    "The full synthetic pipeline outcome has not yet been observed when this integration snapshot is created.",
+    "The current national search explicitly records that alternative modes were not exhaustively assessed; a close diagnostic point or inconsistent reported success cannot pass acceptance.",
+    "Synthetic replay does not establish independent real-recording accuracy or real nationwide data completeness."
+  ],
+  "search_integration": {
+    "source_commit": "53fefe67425bb9e83ce1fa4c743500e9843c01d1",
+    "base_is_ancestor": true,
+    "main_comparison": "Three additive association-scoring changes preserve the existing main search invariants."
+  }
+}

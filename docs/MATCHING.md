@@ -27,11 +27,15 @@ The score is negative penalized robust residual in Hz, summed over independent
 event groups. Higher is better; values and gaps are not probabilities, nor are
 they interchangeable with the legacy brightness/RMSE score scales.
 
-Numeric `quality` settings used by matching are `frequency_sigma_hz` (default
+Numeric `quality` settings used by matching are `frequency_loss_scale_hz` (default
 1 Hz), `source_drift_fraction` (default 0.02 over the event, maximum 0.1),
 `cpa_tolerance_s`, `speed_tolerance_mps` and `slant_tolerance_m` (default zero).
 `prepare_events` sets CPA tolerance to span the detected window. These are
 measurement/proposal settings, not post-hoc parameters selected using truth.
+It consumes discovery's `frequency_uncertainty_hz` as a loss scale with a 1 Hz
+floor when no explicit scale is supplied and preserves the diagnostic key;
+this is not a calibrated noise model. `frequency_sigma_hz` remains a legacy
+alias for explicitly supplied loss scales, without claiming statistical sigma.
 Pairing intersects the permitted recording-start intervals of all events,
 including any absolute-time constraint, so pairwise compatibility cannot
 manufacture a joint clock. Legacy scoring modes are preserved for replay.
@@ -66,3 +70,49 @@ finished. Those source-informed windows, bands, region and the faint event's
 derived clock remain development limitations. Both failures and successes must
 be reported. Automatic full-recording discovery and independent real/national
 acceptance are integration gates, not established by these replays.
+
+## Unmatched proposals
+
+`matching.association_candidates(table, events, ..., min_events=1, max_events=3,
+max_candidates=20000)` proposes subsets instead of requiring every acoustic
+proposal to be an aircraft. It examines subsets up to the declared event count
+and fails explicitly when candidate/work budgets are exceeded. The outer driver
+must mark that search incomplete. All original proposals remain in the event
+artifact. Each hypothesis carries ordered `event_indices`, and
+`score_candidate`/`refine_candidate` consume the complete event/measurement lists
+and select the corresponding subset internally. Scored rows expose matched and
+unmatched event IDs; repeated approaches retain their separate emission times.
+
+Partial associations use a separate score kind,
+`matched_group_support_minus_normalized_residual`. A matched group contributes
+`1 - robust_loss/(3*frequency_loss_scale_hz)` and must have loss below that threshold.
+This rewards multiple consistent independent events without promoting a perfect
+single-event fit over a good joint fit. It is an explicit ranking heuristic,
+not a likelihood, probability or calibrated false-match test. Different score
+kinds must not be mixed in a ranking. Confidence must still consider competing
+locations, matched group count, omitted proposals, source coverage and residual
+diagnostics. Single-event candidates remain available for a defensible known
+clock, and do not by themselves establish a supported location.
+
+## Full sensitivity scenarios
+
+`matching.profile_candidate(candidate, track_lookup, all_events,
+all_measurements, terrain, recording_start_window_s=...)` reruns the leading
+association under declared perturbations. It returns the nominal refined
+candidate with a `sensitivity` artifact containing every scenario, failed
+scenario, boundary flag, tested source and maximum displacement from nominal.
+It checks each matched ridge with positive/negative frequency offsets and
+linear tilts at the declared loss scale, a constant-source alternative, allowed
+clock endpoints, relative-height offsets (default 150 m), and sound-speed
+offsets (default 5 m/s). Every scenario uses one shared clock and stays inside
+the request window. An exact clock remains fixed. Defaults are declared
+engineering ranges, not estimated meteorology, a survey, or statistical coverage.
+
+`complete` requires finite support for every scenario and successful local
+optimization. `boundary_limited` remains separate. A missing/failed scenario
+cannot silently shrink the envelope; confidence must abstain when evidence is
+incomplete or exceeds its declared precision. This finite envelope does not
+cover every possible model error, and distant competing modes still require
+the outer search. The bounded source-frequency solve uses the exact optimum
+of its two-variable convex box problem; regression tests compare it against
+SciPy's independent constrained solver, including boundary optima.
