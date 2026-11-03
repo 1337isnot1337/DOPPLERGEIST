@@ -731,6 +731,21 @@ class CachedTerrain:
         try:
             stat = path.stat()
             signature = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns)
+            entry = self._tile_cache.get(path)
+            if entry is not None:
+                if entry[0] != signature:
+                    raise DataUnavailable(f"Terrain raster changed after caching: {path}")
+                self._tile_cache.move_to_end(path)
+                _, pixels, mask, crs, inverse, width, height = entry
+                x, y = _terrain_transformer(crs).transform(lon, lat)
+                col, row = inverse @ (np.asarray(x), np.asarray(y))
+                col, row = np.floor(col).astype(int), np.floor(row).astype(int)
+                if np.any((col < 0) | (col >= width) | (row < 0) | (row >= height)):
+                    raise DataUnavailable(f"Raster extent missing candidate points: {path}")
+                values = np.ma.array(pixels[row, col], mask=mask[row, col])
+                if np.ma.getmaskarray(values).any() or not np.isfinite(values).all():
+                    raise DataUnavailable(f"Raster nodata at candidate points: {path}")
+                return np.asarray(values, dtype=float)
             with rasterio.open(path) as raster:
                 x, y = _terrain_transformer(raster.crs).transform(lon, lat)
                 col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
@@ -742,22 +757,16 @@ class CachedTerrain:
                 limit = 32 * 1024 * 1024
                 size = raster.width * raster.height * (np.dtype(raster.dtypes[0]).itemsize + 1)
                 if path.name.startswith("Copernicus_DSM_COG_30_") and size <= limit:
-                    entry = self._tile_cache.pop(path, None)
-                    if entry is not None:
-                        self._tile_cache_bytes -= entry[1].nbytes + entry[2].nbytes
-                        if entry[0] != signature:
-                            raise DataUnavailable(f"Terrain raster changed after caching: {path}")
-                    if entry is None:
-                        while self._tile_cache and self._tile_cache_bytes + size > limit:
-                            _, old = self._tile_cache.popitem(last=False)
-                            self._tile_cache_bytes -= old[1].nbytes + old[2].nbytes
-                            del old
-                        tile = raster.read(1, masked=True)
-                        pixels, mask = np.asarray(tile), np.ma.getmaskarray(tile)
-                        after = path.stat()
-                        if signature != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns):
-                            raise DataUnavailable(f"Terrain raster changed while reading: {path}")
-                        entry = (signature, pixels, mask)
+                    while self._tile_cache and self._tile_cache_bytes + size > limit:
+                        _, old = self._tile_cache.popitem(last=False)
+                        self._tile_cache_bytes -= old[1].nbytes + old[2].nbytes
+                        del old
+                    tile = raster.read(1, masked=True)
+                    pixels, mask = np.asarray(tile), np.ma.getmaskarray(tile)
+                    after = path.stat()
+                    if signature != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns):
+                        raise DataUnavailable(f"Terrain raster changed while reading: {path}")
+                    entry = (signature, pixels, mask, raster.crs, ~raster.transform, raster.width, raster.height)
                     self._tile_cache[path] = entry
                     self._tile_cache_bytes += entry[1].nbytes + entry[2].nbytes
                     values = np.ma.array(entry[1][row, col], mask=entry[2][row, col])
