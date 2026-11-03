@@ -18,7 +18,7 @@ from dopplergeist.tracks import load_tracks
 # Image extent for the documented USGS NAIP request, WGS84.
 BBOX = (-121.82, 37.642, -121.74, 37.687)
 # Inferred from the dataset's reported track offsets; not measured microphone GPS.
-REFERENCE = (37.6632161, -121.7818757)
+REFERENCE = (37.66321511833046, -121.78187655936314)
 
 
 def main():
