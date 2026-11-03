@@ -99,32 +99,38 @@ class MissingData(ValueError):
     pass
 
 
-def _earliest_emission(lo, events, max_distance, c, filters):
-    """Retain the complete CPA and refinement envelope of all proposals."""
-    original = lo - max_distance / 300 - 30
+def _emission_interval(lo, hi, duration, events, max_distance, c, filters):
+    """Bound all clock-feasible CPAs, silence checks and refinement queries."""
     try:
         offset = float(filters.get("offset_tolerance_s", 5.0))
-        if not math.isfinite(offset) or offset < 0 or not math.isfinite(c) or c <= 0:
-            return original
+        if (not math.isfinite(offset) or offset < 0 or not math.isfinite(c) or c <= 0
+                or not math.isfinite(max_distance) or max_distance <= 0):
+            raise ValueError
         silence = filters.get("silence")
+        margin = 0.0
         if silence:
             if not isinstance(silence, dict):
-                return original
+                raise ValueError
             margin = float(silence.get("edge_margin_s", 60))
-            if not math.isfinite(margin) or margin < 0:
-                return original
+            if not math.isfinite(margin):
+                raise ValueError
+        extension = max(0.0, -margin)
         # Candidate association allows half the offset tolerance beyond each
         # event's CPA interval, then the wide-clock scorer allows a 5 s sweep.
-        earliest_cpa = min(e["cpa_receive_s"] - e["quality"]["cpa_tolerance_s"] for e in events)
-        # Round outward relative to the differently grouped Unix-time
-        # calculation in _decide, including floating-point error.
-        earliest_refinement = min(e["start_s"] for e in events) - max_distance / 300 - 121
-        candidate = earliest_cpa - offset / 2 - 5 - max_distance / c - 30
-        if not all(math.isfinite(x) for x in (earliest_cpa, earliest_refinement, candidate)):
-            return original
-        return max(original, lo + min(candidate, earliest_refinement))
-    except (KeyError, TypeError, ValueError):
-        return original
+        envelopes = [(float(e["cpa_receive_s"]), float(e["quality"]["cpa_tolerance_s"])) for e in events]
+        if not envelopes or any(not math.isfinite(t) or not math.isfinite(q) or q < 0 for t, q in envelopes):
+            raise ValueError
+        earliest_cpa = min(t - q for t, q in envelopes) - offset / 2 - 5 - extension
+        latest_cpa = max(t + q for t, q in envelopes) + offset / 2 + 5 + extension
+        earliest_refinement = min(e["start_s"] for e in events) - max_distance / 300 - 120
+        latest_refinement = max(e["end_s"] for e in events) + 120
+        first = lo + min(earliest_cpa - max_distance / c - 30, earliest_refinement) - 1
+        last = max(hi + duration + 30, hi + max(latest_cpa + 30, latest_refinement) + 1)
+        if not math.isfinite(first) or not math.isfinite(last) or first > last:
+            raise ValueError
+        return first, last
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        raise MissingData("Event and silence settings do not define a finite flight-data interval.") from exc
 
 
 def _search(request, recording, events, output, config, search_progress):
@@ -139,14 +145,17 @@ def _search(request, recording, events, output, config, search_progress):
     lo, hi = (utc_timestamp(window[name]).timestamp() for name in ("start_utc", "end_utc"))
     filters = {"association": "subsets", **config.get("filters", {})}
     filters.setdefault("max_events", len(prepared))
-    earliest = _earliest_emission(lo, prepared, max_distance, c, filters)
+    earliest, latest = _emission_interval(lo, hi, recording.metadata["duration_s"], prepared, max_distance, c, filters)
     if not config.get("flight_indexes") and not config.get("cache_root"):
         raise MissingData("Historical flight/terrain data are not configured. The operator must provide cache_root or prebuilt flight indexes with a terrain model.")
-    first_day = datetime.fromtimestamp(earliest, timezone.utc).date()
-    last_day = datetime.fromtimestamp(hi+recording.metadata["duration_s"]+30, timezone.utc).date()
+    try:
+        first_day = datetime.fromtimestamp(earliest, timezone.utc).date()
+        last_day = datetime.fromtimestamp(latest, timezone.utc).date()
+    except (OverflowError, OSError, ValueError) as exc:
+        raise MissingData("The event-derived flight-data interval is outside the supported calendar.") from exc
     acquisition_days = (last_day-first_day).days+1
     if not config.get("flight_indexes") and acquisition_days > config.get("max_acquisition_days", 3):
-        raise MissingData("Recording time window exceeds the configured historical-data acquisition budget. Supply a narrower defensible window.")
+        raise MissingData("Required historical-data interval exceeds the configured acquisition budget. Supply a narrower defensible recording-start window or review operator matching settings.")
     ground = config.get("terrain", {})
     hashes = {"terrain_configuration": ground}
     if ground.get("rasters") or "constant_m" in ground:
@@ -156,14 +165,14 @@ def _search(request, recording, events, output, config, search_progress):
             raise MissingData("A declared local terrain model requires prebuilt flight indexes.")
         indexes = [FlightIndex(path) for path in config["flight_indexes"]]
         terrain = Terrain(ground.get("rasters", []), ground.get("constant_m"), ground.get("geoid_raster"))
-        time_range = (earliest, hi+recording.metadata["duration_s"]+30)
+        time_range = (earliest, latest)
         bounds = request["search"].get("bounds_wsen", CONUS)
         hashes["terrain_rasters"] = {str(path): _digest(path) for path in ground.get("rasters", [])}
     else:
         bundle = acquire_inputs(request, recording.metadata, cache_root=config.get("cache_root", output / "cache"),
                                 index_paths=config.get("flight_indexes"), offline=config.get("offline", True),
                                 terrain_options=ground, max_sound_range_m=max_distance,
-                                earliest_emission_s=earliest)
+                                earliest_emission_s=earliest, latest_emission_s=latest)
         indexes, terrain, time_range, bounds = bundle.indexes, bundle.terrain, bundle.time_range_s, bundle.bounds
     if ground.get("geoid_raster"):
         hashes["geoid_sha256"] = _digest(ground["geoid_raster"])

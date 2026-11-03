@@ -552,12 +552,14 @@ class AcquiredInputs:
 
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
-                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None):
+                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None,
+                   latest_emission_s=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
     search input. Its source scope remains visible. The default obtains complete
     daily all-type archives once and reuses their disk indexes on later jobs.
+    Explicit emission bounds come from the matching and refinement envelopes.
     """
     from .contracts import utc_timestamp, validate_request, validate_recording
     request, recording = validate_request(request), validate_recording(recording)
@@ -566,11 +568,18 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         raise ValueError("A defensible recording-start time window is required")
     start, end = (utc_timestamp(window[k]).timestamp() for k in ("start_utc", "end_utc"))
     first = start - max_sound_range_m / 300.0 - 30.0
+    last = end + recording["duration_s"] + 30.0
     if earliest_emission_s is not None:
         if not np.isfinite(earliest_emission_s):
             raise ValueError("Earliest emission time must be finite")
-        first = max(first, earliest_emission_s)
-    times = (first, end + recording["duration_s"] + 30.0)
+        first = earliest_emission_s
+    if latest_emission_s is not None:
+        if not np.isfinite(latest_emission_s):
+            raise ValueError("Latest emission time must be finite")
+        last = max(last, latest_emission_s)
+    if first > last:
+        raise ValueError("Flight-data interval is reversed")
+    times = (first, last)
     root = Path(cache_root)
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
