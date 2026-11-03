@@ -152,6 +152,8 @@ def upgrade_legacy_job(directory):
             operator["resume_legacy_first_batch"] = True
         else:
             operator.pop("resume_legacy_first_batch", None)
+            if source_profile == "combined-cb996dc":
+                operator["filters"] = deepcopy(current["filters"])
         write_json(directory / "resume.json", audio)
         write_json(directory / "operator.json", operator)
         write_json(directory / "checkpoint-upgrade.json", report)

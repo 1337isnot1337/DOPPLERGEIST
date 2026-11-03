@@ -13,7 +13,7 @@ from dopplergeist.checkpoint_resume import compatible_checkpoint_runs, upgrade_l
 from dopplergeist.finite_search import RetentionLedger
 
 
-def test_saved_scored_tile_and_ledger_survive_upgrade(request):
+def test_saved_scored_tile_and_ledger_survive_upgrade(request, monkeypatch):
     location = os.environ.get("DOPPLERGEIST_REAL_SAVED_JOB")
     if not location:
         pytest.skip("Supply an actual stopped checkpoint-compatible job")
@@ -74,11 +74,54 @@ def test_saved_scored_tile_and_ledger_survive_upgrade(request):
         upgraded = json.loads((tmp_path / "search/manifest.json").read_text())
         assert report["compatible_source"] == "combined-cb996dc"
         assert report["legacy_first_batch"] is False
-        assert (upgraded["configuration"]["filters"]["min_events"]
+        assert operator["filters"] == upgraded["configuration"]["filters"]
+        assert (operator["filters"]["min_events"]
                 == payload["counts"]["minimum_matched_events"])
         assert "resume_legacy_first_batch" not in operator
-    _load_audio_checkpoint(tmp_path, json.loads((tmp_path / "request.json").read_text()), operator)
+    saved_request = json.loads((tmp_path / "request.json").read_text())
+    recording, events = _load_audio_checkpoint(tmp_path, saved_request, operator)
     assert upgrade_legacy_job(tmp_path) is None
+
+    if report["compatible_source"] == "combined-cb996dc":
+        reuse_name = os.environ.get("DOPPLERGEIST_REAL_REUSE_TILE", "tile-0_5.json")
+        reuse_tile = tmp_path / "search" / reuse_name
+        if not reuse_tile.exists():
+            pytest.skip(f"The real cache-reuse tile {reuse_name} is unavailable")
+        reuse_payload = json.loads(reuse_tile.read_text())["payload"]
+        if reuse_payload.get("ranked") or reuse_payload.get("counts", {}).get("candidates"):
+            pytest.skip(f"The real cache-reuse tile {reuse_name} is not empty")
+
+        from types import SimpleNamespace
+
+        from dopplergeist import data_access, tiled_search
+        from dopplergeist.automatic import _search
+
+        upgraded_manifest = json.loads((tmp_path / "search/manifest.json").read_text())
+        configuration = upgraded_manifest["configuration"]
+        cache_root = Path(operator["cache_root"])
+        indexes = [data_access.FlightIndex(path) for path in sorted(
+            (cache_root / "flights").glob("2026-09-*/staging-0/all-types-v2-*.sqlite"))]
+        by_hash = {index.report["input_hash"]: index for index in indexes}
+        indexes = [by_hash[item["input_hash"]] for item in configuration["indexes"]]
+        terrain = data_access.CachedTerrain(cache_root / "terrain", offline=True)
+        bundle = SimpleNamespace(indexes=indexes, terrain=terrain,
+                                 time_range_s=tuple(configuration["time_range_s"]),
+                                 bounds=tuple(configuration["bounds"]))
+        monkeypatch.setattr(data_access, "acquire_inputs", lambda *args, **kwargs: bundle)
+        tile_id = reuse_tile.stem.removeprefix("tile-")
+        cells = tuple(reuse_payload["cells"])
+
+        def one_saved_tile(*args, **kwargs):
+            yield tile_id, cells
+
+        monkeypatch.setattr(tiled_search, "grid_tiles", one_saved_tile)
+        execution_config = dict(operator, search_workers=1)
+        result, *_ = _search(saved_request, recording, events, tmp_path, execution_config,
+                             lambda *args, **kwargs: None)
+        assert result["run_hash"] == upgraded_manifest["run_hash"]
+        assert result["tiles_completed"] == 1
+        assert result["tiles_resumed"] == 1
+        assert result["tile_failures"] == []
 
 
 def test_combined_minimum_event_default_matches_real_checkpoint():
