@@ -50,6 +50,22 @@ association and position errors at 100/500/1,000 m. Check that later flyovers en
 the joint score/refinement; a narrow finalist contribution check may reuse the
 frozen search rather than duplicate the national sweep.
 
+Before the terminal result, the score-participation check is fixed as follows:
+take the leading search row and, if different, the first retained row matching
+all proposed groups. Recompute its score at the reported location and shared
+clock, then at four projected offsets of 100 m east/west/north/south. Keep the
+clock and flight assignment fixed and reuse only the normal bounded per-event
+source fits. Save every event's residual and normalized support contribution.
+This checks whether later groups enter the score and respond to geometry; it is
+not leave-one-flyover-out prediction, a new global search or a confidence claim.
+
+The first namespace launch terminated before decoding: FFprobe could not resolve
+`libblas.so.3`, whose system symlink traverses `/etc/alternatives`. Its failed job
+and direct diagnostic are preserved. Mounting that system symlink directory read
+only makes FFprobe and FFmpeg preflights pass. A second run uses a new output
+directory with the identical installed wheel, input bytes and work policy. The
+environment repair supplies no data or scientific hint to the backend.
+
 At the source freeze, finite-search decision semantics are still under producer
 review. A correct close hypothesis is not automatically an accepted result, and
 this run cannot establish independent national real-audio performance. Preserve
