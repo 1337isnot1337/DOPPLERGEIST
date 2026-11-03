@@ -13,7 +13,7 @@ from itertools import chain
 import os
 
 import numpy as np
-from pyproj import Transformer
+from pyproj import Geod, Transformer
 from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
@@ -682,9 +682,24 @@ def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         yield batch
 
 
+def _geographic_refinement_frame(candidate, radius_m, bounds_wsen):
+    west, south, east, north = bounds_wsen
+    lon0, lat0 = candidate["lon"], candidate["lat"]
+    if (not np.isfinite(bounds_wsen).all() or west >= east or south >= north
+            or not west <= lon0 <= east or not south <= lat0 <= north):
+        raise ValueError("Refinement seed must lie within finite, ordered geographic bounds")
+    geod = Geod(ellps="WGS84")
+    lon_scale = geod.inv(lon0, lat0, lon0 + 1, lat0)[2]
+    lat_scale = geod.inv(lon0, lat0, lon0, lat0 + 0.1)[2] * 10
+    limits = [(max(-radius_m, (west-lon0)*lon_scale), min(radius_m, (east-lon0)*lon_scale)),
+              (max(-radius_m, (south-lat0)*lat_scale), min(radius_m, (north-lat0)*lat_scale))]
+    return limits, (lon_scale, lat_scale)
+
+
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
-                     crs="EPSG:5070", c=343.0, recording_start_window_s=None):
+                     crs="EPSG:5070", c=343.0, recording_start_window_s=None,
+                     bounds_wsen=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
     A vertical offset changes the observer-to-track relative height; it is a
@@ -712,6 +727,13 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
         raise ValueError("Refinement clock bounds do not intersect the recording-start window")
     fixed_clock = lower == upper
     bounds = [(-radius_m, radius_m), (-radius_m, radius_m)]
+    if bounds_wsen is not None:
+        west, south, east, north = bounds_wsen
+        # Use east/north metre-scaled geographic coordinates so Powell's box
+        # constraints intersect the geographic rectangle exactly. A projected
+        # x/y rectangle does not align with lines of latitude and longitude.
+        lon0, lat0 = candidate["lon"], candidate["lat"]
+        bounds, (lon_scale, lat_scale) = _geographic_refinement_frame(candidate, radius_m, bounds_wsen)
     initial = np.zeros(2) if fixed_clock else np.array([0.0, 0.0, np.clip(0.0, lower, upper)])
     if not fixed_clock:
         bounds.append((lower, upper))
@@ -719,8 +741,12 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     for offset in altitude_offsets_m:
         def evaluate(parameters):
             dt = lower if fixed_clock else parameters[2]
-            latlon = inverse.transform(x0 + parameters[0], y0 + parameters[1])
-            lon, lat = latlon
+            if bounds_wsen is None:
+                lon, lat = inverse.transform(x0 + parameters[0], y0 + parameters[1])
+            else:
+                # Clip only roundoff at the closed geographic boundary.
+                lon = float(np.clip(lon0 + parameters[0]/lon_scale, west, east))
+                lat = float(np.clip(lat0 + parameters[1]/lat_scale, south, north))
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
                                   start + dt, c)
@@ -737,7 +763,8 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
         if not np.isfinite(score["score"]):
             continue
         dt = lower if fixed_clock else parameters[2]
-        spatial_boundary = bool(np.any(np.abs(parameters[:2]) >= radius_m * 0.98))
+        spatial_boundary = any(min(value-lo, hi-value) <= radius_m * 0.02
+                               for value, (lo, hi) in zip(parameters[:2], bounds[:2]))
         clock_boundary = bool(not fixed_clock and min(dt-lower, upper-dt) <= (upper-lower)*0.02)
         profiles.append(dict(score, lat=lat, lon=lon, elev_m=elevation,
             recording_start_time_s=float(start + dt), altitude_offset_m=float(offset),
@@ -763,7 +790,7 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                       recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
-                      c=343.0, crs="EPSG:5070"):
+                      c=343.0, crs="EPSG:5070", bounds_wsen=None):
     """Run declared perturbations, retaining failures and boundary limitations.
 
     These finite engineering scenarios are not a calibrated confidence region.
@@ -775,7 +802,7 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
         raise ValueError("Sensitivity ranges must be nonnegative and sound speed must remain positive")
     kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
                   altitude_offsets_m=(0.0,), crs=crs, c=c,
-                  recording_start_window_s=recording_start_window_s)
+                  recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen)
     nominal = refine_candidate(candidate, tracks, events, measurements, terrain, **kwargs)
     scenarios = [("nominal", "nominal", events, measurements, {})]
     for sign in (-1, 1):
