@@ -67,3 +67,25 @@ def test_real_batched_clock_scores_and_bounded_fallback(monkeypatch):
     with pytest.raises(AcousticSupportError):
         bad.acoustic(start + sample_times, observer)
     assert batch([bad], [measurements[0]], observer, np.array([start, start + 1.0])) == [None]
+
+
+def test_real_harmonic_group_uses_same_clock_and_fits(monkeypatch):
+    fixture_path = os.environ.get("DOPPLERGEIST_REAL_CPA_FIXTURE")
+    discovery_path = os.environ.get("DOPPLERGEIST_REAL_HARMONIC_DISCOVERY")
+    if not fixture_path or not discovery_path:
+        pytest.skip("set the real CPA fixture and harmonic discovery paths")
+    fixture = json.loads(Path(fixture_path).read_text())
+    events, measurements = prepare_events(json.loads(Path(discovery_path).read_text())["events"])
+    harmonic_index = next(i for i, event in enumerate(events) if len(event["event_ids"]) >= 3)
+    candidates, _ = association_candidates(pd.DataFrame(fixture["cpa_rows"]), events, max_candidates=20000)
+    candidate = next(c for c in candidates if harmonic_index in c["event_indices"])
+    tracks = {t.id: t for t in FlightIndex(fixture["real_index"]).query(
+        fixture["query_bounds"], fixture["query_time_s"])}
+    point = SimpleNamespace(**fixture["point"], x=0.0, y=0.0)
+    batched = score_candidate(candidate, point, tracks, events, measurements, mode="robust_ridge")
+    with monkeypatch.context() as patch:
+        patch.setattr(matching, "batch_acoustic_trials", lambda tracks, measurements, *args, **kwargs:
+                      [None] * len(measurements))
+        baseline = score_candidate(candidate, point, tracks, events, measurements, mode="robust_ridge")
+    assert json.dumps(batched, sort_keys=True, default=_json_default) == json.dumps(
+        baseline, sort_keys=True, default=_json_default)
