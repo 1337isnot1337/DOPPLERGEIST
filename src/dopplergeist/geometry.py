@@ -52,6 +52,9 @@ def ecef(lat, lon, height):
                      (n * (1 - e2) + height) * np.sin(lat)), axis=-1)
 
 
+_CANONICAL_ECEF = ecef
+
+
 def velocity_ecef(lat, lon, east, north, up):
     lat, lon = np.deg2rad(lat), np.deg2rad(lon)
     return np.stack((-np.sin(lon) * east - np.sin(lat) * np.cos(lon) * north + np.cos(lat) * np.cos(lon) * up,
@@ -360,6 +363,9 @@ class Track:
 
 _NATIVE_POSITION = Track.position
 _NATIVE_POSITION_VELOCITY = Track._position_velocity
+_CANONICAL_ACOUSTIC_FUNCTIONS = (Track.acoustic, Track.position, Track.speed_vector,
+    Track._position_velocity, Track._check_motion_support, Track._check_motion_support_scalar,
+    Track._unsupported_motion_intervals, _try_native_acoustic, _packed_kinematics)
 
 
 def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):

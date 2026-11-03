@@ -15,6 +15,7 @@ from .audio import Spectrum
 from .contracts import validate_event
 
 _HARMONIC_RATIOS = sorted({a / b for a in range(2, 9) for b in range(1, a) if a / b >= 1.2})
+_NORMALIZATION_FUNCTIONS = (np.median, np.abs, np.maximum, np.clip, np.isfinite)
 
 
 @dataclass(frozen=True)
@@ -56,9 +57,23 @@ def _spectrum(data, sr, start, settings):
     f, power = f[keep], power[keep]
     db = 10 * np.log10(power + np.finfo(np.float32).tiny)
     whitened = db - np.median(db, axis=1, keepdims=True)
-    center = np.median(whitened, axis=0, keepdims=True)
-    scale = 1.4826 * np.median(np.abs(whitened - center), axis=0, keepdims=True)
+    contiguous_columns = (
+        type(whitened) is np.ndarray and whitened.dtype == np.float32
+        and whitened.ndim == 2 and whitened.size > 0 and whitened.flags.c_contiguous
+        and all(current is original for current, original in zip(
+            (np.median, np.abs, np.maximum, np.clip, np.isfinite), _NORMALIZATION_FUNCTIONS))
+        and np.isfinite(whitened).all()
+    )
+    axis = 0
+    if contiguous_columns:
+        # Keep each frequency column contiguous for both partition reductions.
+        whitened = whitened.T.copy(order="C")
+        axis = 1
+    center = np.median(whitened, axis=axis, keepdims=True)
+    scale = 1.4826 * np.median(np.abs(whitened - center), axis=axis, keepdims=True)
     contrast = np.clip((whitened - center) / np.maximum(scale, 1.0), -4, 12)
+    if contiguous_columns:
+        contrast = contrast.T.copy(order="C")
     return Spectrum(t + start, f, db, contrast)
 
 

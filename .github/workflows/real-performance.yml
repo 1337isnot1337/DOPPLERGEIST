@@ -4,31 +4,40 @@ on:
     inputs:
       baseline:
         description: Exact baseline commit for both real-input comparisons
-        default: 27da08a878ac2ec90cd7e2c07f43765ceeea609b
+        default: ae7721b7d3099980b884175cde1a3b07fc3fb1b5
         required: true
       regional:
         description: Also compare the complete regional HTTP workflow
         type: boolean
         default: true
   push:
-    branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103, perf/single-pass-motion-20261103, perf/flight-sieve-reuse-20261103]
+    branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103, perf/single-pass-motion-20261103, perf/flight-sieve-reuse-20261103, perf/flight-sieve-94a6, perf/flight-sieve-combined-94a6, perf/prepared-flight-scoring-20261103, perf/prepared-flight-search-20261103, perf/integrated-search-47383f75]
     paths:
       - .github/workflows/real-performance.yml
       - src/dopplergeist/**
       - scripts/benchmark_prepared_measurements.py
+      - scripts/benchmark_prepared_flight_search.py
+      - scripts/prepare_flight_index.py
       - scripts/benchmark_real_cpa_rows.py
       - scripts/export_real_acoustic_controls.py
       - scripts/benchmark_real_regional_upload.py
       - scripts/benchmark_real_bounded_upload.py
+      - scripts/benchmark_real_bounded_comparison.py
+      - scripts/benchmark_real_refinement.py
+      - scripts/benchmark_real_discovery_normalization.py
       - scripts/prepare_reference_upload.py
       - scripts/restore_artifacts.py
       - scripts/compare_real_upload_performance.py
       - scripts/check_real_upload_arrays.py
       - pyproject.toml
       - tests/test_real_*.py
+      - tests/test_refinement_geographic_bounds.py
       - tests/data/real-ridge-batch-arithmetic.json
       - tests/data/reference-empty-tiles-real.json
       - tests/data/reference-retention-real.json
+      - tests/data/reference-cpa-real.json
+      - tests/data/real-refinement-profile.json
+      - tests/fixtures/real_discovery_normalization.json
 permissions:
   contents: read
 env:
@@ -38,7 +47,7 @@ env:
   NUMEXPR_NUM_THREADS: '1'
   CC: gcc
   PYTHONPATH: src
-  BASELINE_REF: ${{ inputs.baseline || '27da08a878ac2ec90cd7e2c07f43765ceeea609b' }}
+  BASELINE_REF: ${{ inputs.baseline || 'ae7721b7d3099980b884175cde1a3b07fc3fb1b5' }}
 jobs:
   compare:
     if: github.event_name != 'push' || github.ref != 'refs/heads/perf/real-pipeline-throughput-20261103'
@@ -56,12 +65,15 @@ jobs:
           python -m pip install 'setuptools>=68'
           python -m pip install --editable '.[test]'
           python - <<'PY'
-          from dopplergeist import matching, native_acoustic
+          from dopplergeist import matching, native_acoustic, native_cpa
           assert callable(matching._native_fit_irls), "Native ridge extension did not build"
+          assert callable(matching._native_fit_irls_batch), "Native batch fitter did not build"
           assert callable(matching._native_validate_ridge_events), "Native evidence validator did not build"
+          assert callable(matching._native_ridge_module.event_fit_reason), "Native diagnostic validator did not build"
           assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
           assert native_acoustic._native is not None, "Native acoustic extension did not build"
           assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
+          assert native_cpa._native is not None, "Native CPA extension did not build"
           print({"ridge_fit_backend": matching.RIDGE_FIT_BACKEND,
                  "acoustic_backend": native_acoustic.ACOUSTIC_BACKEND})
           PY
@@ -71,12 +83,12 @@ jobs:
         run: python scripts/restore_artifacts.py --bundle data-adsb-derived --bundle data-terrain
       - name: Prepare index and baseline
         run: |
-          python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           baseline_commit=$(git rev-parse --verify --end-of-options "${BASELINE_REF}^{commit}")
           git worktree add --detach "$RUNNER_TEMP/baseline" "$baseline_commit"
           if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
             (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
           fi
+          PYTHONPATH="$RUNNER_TEMP/baseline/src" python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           mkdir -p benchmark-inputs/reference-checkout
           ln -s "$GITHUB_WORKSPACE/evidence/results" benchmark-inputs/reference-checkout/results
           ln -s "$GITHUB_WORKSPACE/data" benchmark-inputs/reference-checkout/data
@@ -92,6 +104,12 @@ jobs:
             --full-day --max-tracks 2000 --max-samples 500000 --max-candidates 20000 \
             --anchor-window-s 1788864888.7151732 1788865236.7214916 \
             --include-track-query --output benchmark-inputs/dense-query.json
+      - name: Prepare reusable numeric trajectory inputs
+        run: |
+          python scripts/benchmark_prepared_flight_search.py prepare-index \
+            --source src --index benchmark-inputs/reference-region.sqlite \
+            --destination benchmark-inputs/reference-region-prepared.sqlite \
+            --output results/flight-preparation.json
       - name: Export real pipeline objective controls
         env:
           DOPPLERGEIST_RIDGE_BACKEND: python
@@ -100,15 +118,56 @@ jobs:
       - name: Real-input regression tests
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
+          DOPPLERGEIST_REAL_DENSE_QUERY: benchmark-inputs/dense-query.json
+          DOPPLERGEIST_REAL_DEVELOPMENT_INDEX: benchmark-inputs/reference-region.sqlite
           DOPPLERGEIST_REAL_REFERENCE_ROOT: benchmark-inputs/reference-checkout
           DOPPLERGEIST_REAL_REFERENCE_DISCOVERY: evidence/audio/w1-sensitivity-20261102/reference/discovery.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_native_ridge_long.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py tests/test_real_native_validation.py tests/test_real_index_columns.py tests/test_real_track_cache.py
+        run: >-
+          python -m pytest -q
+          tests/test_real_prepared_measurements.py
+          tests/test_real_geometry_kinematics.py
+          tests/test_real_batch_scalar_parity.py
+          tests/test_real_motion_support_batch.py
+          tests/test_real_single_pass_sieve.py
+          tests/test_real_refinement_lookup.py
+          tests/test_real_cpa_preparation.py
+          tests/test_real_partition_query.py
+          tests/test_real_native_cpa.py
+          tests/test_real_native_ridge.py
+          tests/test_real_native_ridge_batch.py
+          tests/test_real_native_prefix_integration.py
+          tests/test_real_native_ridge_long.py
+          tests/test_real_ridge_backend.py
+          tests/test_real_legacy_batch_cache.py
+          tests/test_real_native_acoustic.py
+          tests/test_real_native_acoustic_pipeline.py
+          tests/test_real_batch_ceilings.py
+          tests/test_real_acoustic_screen_cache.py
+          tests/test_real_cpa_spatial_sieve.py
+          tests/test_real_native_validation.py
+          tests/test_real_index_columns.py
+          tests/test_real_track_cache.py
+          tests/test_real_scalar_terrain.py
+          tests/test_real_scoring_inputs.py
+          tests/test_real_trial_prefix.py
+          tests/test_real_candidate_setup.py
+          tests/test_real_retention_batch.py
+          tests/test_real_native_convergence.py
+          tests/test_real_flight_payload.py
+          tests/test_real_prepared_index.py
+          tests/test_real_trial_vectors.py
+          tests/test_real_refinement_reuse.py
+          tests/test_refinement_geographic_bounds.py
+          tests/test_real_discovery_normalization.py
+          tests/test_real_association_budget.py
+          tests/test_real_association_clock_window.py
       - name: Verify the explicit Python fallback on recorded arithmetic
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
           DOPPLERGEIST_RIDGE_BACKEND: python
           DOPPLERGEIST_ACOUSTIC_BACKEND: python
-        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py
+          DOPPLERGEIST_CPA_BACKEND: python
+        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py tests/test_real_scoring_inputs.py tests/test_real_trial_prefix.py tests/test_real_candidate_setup.py
       - name: Compare real CPA preparation
         run: python scripts/benchmark_real_cpa_rows.py --baseline-source "$RUNNER_TEMP/baseline/src" --output results/cpa-rows.json --repeats 5 --iterations 20
       - name: Compare complete payloads and timings
@@ -121,14 +180,25 @@ jobs:
           if [ -f src/dopplergeist/_native_acoustic.c ]; then
             native_option+=(--require-current-native-acoustic)
           fi
+          if [ -f src/dopplergeist/_native_cpa.c ]; then
+            native_option+=(--require-current-native-cpa)
+          fi
           for width in 10 120; do
             taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 3 --timeout-s 600 --output "results/performance-$width" "${native_option[@]}"
           done
           taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py compare \
-            --fixture benchmark-inputs/dense-query.json --include-track-query \
+            --fixture benchmark-inputs/dense-query.json --include-track-query --clock-partition-query \
             --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src \
             --repeats 3 --timeout-s 600 --output results/performance-dense-query \
             "${native_option[@]}"
+          taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_flight_search.py compare \
+            --fixture benchmark-inputs/dense-query.json \
+            --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src \
+            --baseline-index benchmark-inputs/reference-region-prepared.sqlite \
+            --current-index benchmark-inputs/reference-region-prepared.sqlite \
+            --preparation-report results/flight-preparation.json \
+            --repeats 3 --timeout-s 600 --output results/performance-prepared-flight-search \
+            --require-native --require-native-acoustic --require-current-prepared
       - name: Profile remaining point work outside the timing comparison
         run: |
           python -m cProfile -o results/current-point.prof scripts/benchmark_prepared_measurements.py _worker --source src --fixture benchmark-inputs/point-120.json --output results/current-point-profile --require-native --require-native-acoustic
@@ -167,6 +237,7 @@ jobs:
           path: |
             results/cpa-rows.json
             results/real-acoustic-controls.json
+            results/flight-preparation.json
             results/performance-*/comparison.json
             results/performance-*/*/summary.json
             results/current-point.prof

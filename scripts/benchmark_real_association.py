@@ -5,6 +5,7 @@ flight observations or proposal measurements are generated. This measures the
 join, not whole-search runtime or localization accuracy.
 """
 import argparse
+import gc
 import json
 from pathlib import Path
 import statistics
@@ -39,7 +40,13 @@ def main():
     sys.modules[baseline.__name__] = baseline
     exec(compile(source, "<baseline matching.py>", "exec"), baseline.__dict__)
     fixture = json.loads(args.fixture.read_text())
-    events, _ = prepare_events(fixture["events"])
+    # Archived CPA fixtures contain either original discovery records or their
+    # already prepared association settings. Preserve both observed formats.
+    recorded_events = fixture["events"]
+    if recorded_events and "ridge" in recorded_events[0]:
+        events, _ = prepare_events(recorded_events)
+    else:
+        events = recorded_events
     table = pd.DataFrame(fixture["cpa_rows"])
     reference, counts = baseline.association_candidates(table, events)
     if not reference:
@@ -92,6 +99,11 @@ def main():
     for repeat in range(args.repetitions):
         order = ("baseline", "optimized") if repeat % 2 == 0 else ("optimized", "baseline")
         for name in order:
+            # Release the previous result and begin each measured call at the
+            # same garbage-collector state. Otherwise a prior run can choose
+            # which arm pays for collecting thousands of candidate objects.
+            actual = None
+            gc.collect()
             wall, cpu = time.perf_counter(), time.process_time()
             actual = functions[name](table, events)
             run = {"implementation": name, "cpu_s": time.process_time()-cpu,
@@ -103,6 +115,7 @@ def main():
     medians = {name: statistics.median(r["cpu_s"] for r in runs if r["implementation"] == name)
                for name in functions}
     report = {"fixture": str(args.fixture), "baseline_ref": args.baseline_ref,
+              "garbage_collection_reset_before_each_run": True,
               "events": len(events), "cpa_rows": len(table), "candidates": len(reference),
               "exact_candidate_order_and_work_accounting": True, "checks": checks, "runs": runs,
               "median_cpu_s": medians, "cpu_speedup": medians["baseline"]/medians["optimized"]}

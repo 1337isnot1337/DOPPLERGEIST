@@ -1,5 +1,34 @@
 # Measured pipeline performance
 
+## Prepared flight inputs and exact search reuse
+
+[PR262](https://github.com/1337isnot1337/DOPPLERGEIST/pull/262) adds an optional
+prepared trajectory representation, vectorized conservative trial bounds, and
+exact native acoustic reuse. Against `994d1ee`, which already includes PR258,
+the historical instrumented dense workload falls from
+**33.986 to 26.794 seconds: a 1.268× diagnostic ratio, or 21.16% less elapsed time**.
+Final-runtime CI at `b98a0fa3` records **38.374 to 30.399 seconds,
+or a 1.262× diagnostic ratio / 20.78% less time**, and passes 168 recorded-input and fallback checks.
+All compared scientific outputs and logical retention records remain equal.
+
+The original prepared-flight harness wrapped numerical functions during these
+dense measurements. The wrappers add overhead and can disable optimizations
+guarded by function identity in the combined runtime. These figures retain
+diagnostic and exact-output value. They do not measure canonical production throughput.
+The [historical timing scope](PERFORMANCE_PREPARED_SEARCH.md#historical-timing-scope)
+explains the qualification and the corrected harness controls.
+
+The final implementation also reuses local terrain pixels and profile coordinate
+transforms, and arranges spectral median inputs contiguously. A completed
+intermediate HTTP series improves 9.56%. The final source has two complete exact
+HTTP pairs, both faster, followed by an interrupted third pair. The report keeps
+that incomplete series separate and makes no three-pair final HTTP claim.
+
+The [prepared-search guide](PERFORMANCE_PREPARED_SEARCH.md) gives the complete
+samples, preparation cost, storage tradeoff, HTTP measurements, operator steps,
+and reproduction commands. Its pinned baseline separates these gains from the
+earlier changes documented below. Component speedups are not multiplied.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
@@ -127,7 +156,8 @@ The separate cache-disabled query experiment uses CPU 0 and fresh index objects.
 Operating-system file caches are not purged; “cold” describes the application track cache, not cold storage.
 The host is shared, so CPU affinity does not imply exclusive machine access.
 Separate profiling and native-validator hit-rate diagnostics are excluded from timing medians.
-The comparison harness retains its lightweight operation counters and candidate capture in both timed arms.
+The reported PR258 runs used numerical operation counters and candidate capture in both timed arms.
+Current comparisons preserve numerical function identities; separate diagnostic workers collect wrapped counters, as described below.
 
 The local runtime is Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0, pandas 2.2.3, pyproj 3.8.0, pyarrow 26.0.1, and SQLite 3.53.1 on Linux x86-64.
 Native extensions use GCC with the existing strict floating-point build options.
@@ -166,7 +196,9 @@ taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py co
 
 Check native availability after installation; source updates require rebuilding the extension and restarting a running service.
 The runtime remains usable through its Python fallback, but that fallback does not receive the native evidence-validation saving.
-The comparison requires successful native operations in the measured current arm and refuses to report a speedup if any exact-output comparison fails.
+Current comparisons require the native ridge backend and successful native acoustic operations.
+A separate diagnostic worker verifies successful native ridge execution.
+The harness refuses to report a speedup if any exact-output comparison fails.
 The `Real performance comparison` workflow runs recorded regressions and these paired measurements, and preserves summaries as artifacts.
 
 ## Measured native computation and bounded reuse
@@ -1096,8 +1128,8 @@ requires its validated checkpoint compatibility path before resuming that job.
 
 ## Reproduce the optional native backends
 
-Installation builds the acoustic and ridge extensions when a compatible C compiler is available.
-The package remains usable when either optional extension cannot build.
+Installation builds the acoustic, ridge, and closest-approach (CPA) extensions when a compatible C compiler is available.
+The package remains usable when an optional extension cannot build.
 A source checkout used for timing must contain its own built extensions; an installed copy elsewhere does not establish native use.
 
 ```bash
@@ -1106,25 +1138,36 @@ CC=gcc python -m pip install --editable '.[test]'
 python - <<'PY'
 from dopplergeist.geometry import ACOUSTIC_BACKEND
 from dopplergeist.matching import RIDGE_FIT_BACKEND
+from dopplergeist.native_cpa import CPA_BACKEND
 print("Acoustic:", ACOUSTIC_BACKEND)
 print("Ridge:", RIDGE_FIT_BACKEND)
+print("CPA:", CPA_BACKEND)
 assert ACOUSTIC_BACKEND.startswith("native-c-")
 assert RIDGE_FIT_BACKEND.startswith("native-c-")
+assert CPA_BACKEND.startswith("native-c-")
 PY
 ```
 
 The native acoustic solver retains polynomial evaluation order, global Newton stopping, and Python motion-support diagnostics.
 The ridge extension retains the six IRLS iterations and reduction order.
-Both extensions disable floating-point reassociation and contraction.
+The CPA extension preserves the existing closest-approach selection and arithmetic order.
+All three extensions disable floating-point reassociation and contraction.
 Incompatible numeric representations use the existing Python implementations.
 Acoustic and scalar ridge calls also fall back for unsupported NumPy error policies.
 Batched ridge arithmetic retains its existing ignored-error block and restores the caller's policy for diagnostics.
 The optional ridge implementation is integrated from [PR228](https://github.com/1337isnot1337/DOPPLERGEIST/pull/228).
 
-Set `DOPPLERGEIST_ACOUSTIC_BACKEND=python` and `DOPPLERGEIST_RIDGE_BACKEND=python` before starting a process to force both Python implementations.
+Set all three selectors before starting a process to force the Python implementations:
+
+```bash
+export DOPPLERGEIST_ACOUSTIC_BACKEND=python
+export DOPPLERGEIST_RIDGE_BACKEND=python
+export DOPPLERGEIST_CPA_BACKEND=python
+```
+
 The default for each selector is `auto`; invalid selector values fail explicitly.
-The legacy checkpoint upgrade requires both Python backends and its original runtime and input controls.
-Ordinary checkpoints include the selected native binary identities and reject an implementation mismatch.
+The legacy checkpoint upgrade requires all three Python backends and its original runtime and input controls.
+Ordinary checkpoints include the selected backend and implementation identities and reject an implementation mismatch.
 
 ### Recorded-input scoring comparison
 
@@ -1155,7 +1198,21 @@ done
 
 The comparison alternates arm order in fresh worker processes.
 It compares every candidate, diagnostic, support record, ranking, and logical retention row exactly before reporting a speedup.
-Native success counters must increase inside the timed scoring call.
+Timed runs preserve the original numerical functions so guarded production optimizations remain active.
+Unmeasured scalar and native-ridge call counts are `null`, not zero.
+The native acoustic solver exposes an internal success counter without wrapping its numerical functions.
+Native ridge calls are checked in a separate diagnostic worker:
+
+```bash
+python scripts/benchmark_prepared_measurements.py diagnose \
+  --source src --fixture benchmark-inputs/point-120.json \
+  --instrument-numerics --require-native --require-native-acoustic \
+  --output results/native-scoring-operations
+```
+
+Numerical wrappers can disable guarded caches, so diagnostic counts describe that execution path only.
+Diagnostic timings do not establish a production speedup.
+The workflow checks that this diagnostic worker preserves the canonical worker's complete scientific outputs.
 Input loading is reported separately, and the RSS measurement covers the worker lifetime through scoring.
 
 The complete-fit cache shares its existing 4 MiB digest-key and serialized-payload budget with validated batch ceilings.
