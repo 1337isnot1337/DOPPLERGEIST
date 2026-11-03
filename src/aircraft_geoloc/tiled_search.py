@@ -164,6 +164,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     for candidate in candidates:
         settings = dict(parameters)
         if start_window:
+            if start_window[0] == start_window[1] and settings.get("time_origin") is None:
+                settings["time_origin"] = start_window[0]
             anchor = settings.get("time_origin")
             if anchor is None:
                 anchor_event = candidate.get("event_indices", [0])[0]
