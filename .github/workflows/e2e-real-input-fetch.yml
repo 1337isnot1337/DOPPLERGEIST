@@ -1,0 +1,80 @@
+name: Retrieve real acoustic research inputs
+on:
+  push:
+    branches: [worker/e2e-track-support-20261103]
+    paths: [.github/workflows/e2e-real-input-fetch.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-real-inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 5582002be34e0e1e9df6735e7a4227ca4c0fc899
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install metadata readers
+        run: python -m pip install numpy scipy openpyxl
+      - name: Retrieve original NASA companions and first fixed-wing recordings
+        run: python scripts/inspect_nasa_flyover_release.py --output real-inputs/nasa --first-fixed-wing
+      - name: Retrieve WSU public timing and position metadata
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import urllib.request, urllib.parse, json, hashlib
+          from html.parser import HTMLParser
+          from collections import deque
+          root='https://rds.westernsydney.edu.au/Centres/ICNS/2026/Jahir_Rodriguez/'
+          out=Path('real-inputs/wsu'); out.mkdir(parents=True, exist_ok=True)
+          session=root+'dataset/test_1/Oct_11_2024/'
+          queue=deque([(root+'README.md',0),(root+'code/io_utils.py',0),(root+'code/dataset_creation/create_dataset.py',0),(session,0)])
+          seen=set(); receipt=[]
+          class Links(HTMLParser):
+              def __init__(self): super().__init__(); self.links=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag=='a':
+                      self.links.extend(v for k,v in attrs if k=='href')
+          while queue and len(seen)<40:
+              url,depth=queue.popleft()
+              if url in seen: continue
+              seen.add(url); item={'url':url}
+              try:
+                  request=urllib.request.Request(url,headers={'User-Agent':'DOPPLERGEIST research metadata retrieval'})
+                  with urllib.request.urlopen(request,timeout=30) as response:
+                      declared=int(response.headers.get('Content-Length','0'))
+                      if declared>8*1024**2: raise ValueError('Metadata file exceeds 8 MiB limit')
+                      data=response.read(8*1024**2+1)
+                      if len(data)>8*1024**2: raise ValueError('Metadata response exceeds 8 MiB limit')
+                      item.update(status=response.status,content_type=response.headers.get('Content-Type'),bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+                  name=hashlib.sha256(url.encode()).hexdigest()[:12]+'-'+(Path(urllib.parse.urlparse(url).path).name or 'index')
+                  if url.endswith('/'): name+='.html'
+                  (out/name).write_bytes(data); item['local_file']=name
+                  if url.endswith('/') and depth<3:
+                      parser=Links(); parser.feed(data.decode('utf-8','replace'))
+                      item['links']=parser.links
+                      for href in parser.links:
+                          target=urllib.parse.urljoin(url,href)
+                          if not target.startswith(session) or '?' in target: continue
+                          if target.endswith('/') or Path(urllib.parse.urlparse(target).path).suffix.lower() in {'.json','.csv','.txt','.md'}:
+                              queue.append((target,depth+1))
+              except Exception as exc: item['error']=type(exc).__name__+': '+str(exc)
+              receipt.append(item); print(json.dumps(item),flush=True)
+              (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - name: Package metadata reader wheels for offline inspection
+        if: always()
+        run: python -m pip download --only-binary :all: --dest real-inputs/wheels openpyxl
+      - name: Preserve original real inputs and retrieval receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-public-real-inputs
+          path: real-inputs/
+          retention-days: 7
+          if-no-files-found: error
