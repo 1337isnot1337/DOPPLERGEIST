@@ -3,7 +3,7 @@
 These are internal data adapters, not a second pipeline request/result contract.
 Coverage describes the *source query*, never receiver/network completeness.
 """
-from collections import Counter
+from collections import Counter, OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -486,6 +486,8 @@ class CachedTerrain:
         self.root, self.offline = Path(root), offline
         self.root.mkdir(parents=True, exist_ok=True)
         self.files, self.ocean_tiles, self.failures = {}, set(), []
+        self._tile_cache = OrderedDict()
+        self._tile_cache_bytes = 0
         self.adopt_existing = adopt_existing
         catalog = self.root / "tileList.txt"
         self._file(self.base + "/tileList.txt", catalog, raster=False)
@@ -542,27 +544,54 @@ class CachedTerrain:
             raise DataUnavailable(f"Terrain coverage unavailable: {error}") from error
         return height.reshape(shape)
 
-    @staticmethod
-    def _raster_sample(path, lat, lon):
-        """Read only the local pixel window, including for the global geoid."""
+    def _raster_sample(self, path, lat, lon):
+        """Cache small DEM tiles; keep large rasters on bounded window reads."""
         import rasterio
         from rasterio.windows import Window
+        path = Path(path)
         if not len(lat):
             return np.array([])
         try:
+            stat = path.stat()
+            signature = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns)
             with rasterio.open(path) as raster:
                 x, y = _terrain_transformer(raster.crs).transform(lon, lat)
                 col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
                 col, row = np.floor(col).astype(int), np.floor(row).astype(int)
                 if np.any((col < 0) | (col >= raster.width) | (row < 0) | (row >= raster.height)):
                     raise DataUnavailable(f"Raster extent missing candidate points: {path}")
-                left, top, right, bottom = int(col.min()), int(row.min()), int(col.max()), int(row.max())
-                data = raster.read(1, window=Window(left, top, right-left+1, bottom-top+1), masked=True)
-                values = data[row-top, col-left]
+                # Keep at most 32 MiB of decoded DEM pixels and masks per
+                # terrain instance; global geoids retain window-only reads.
+                limit = 32 * 1024 * 1024
+                size = raster.width * raster.height * (np.dtype(raster.dtypes[0]).itemsize + 1)
+                if path.name.startswith("Copernicus_DSM_COG_30_") and size <= limit:
+                    entry = self._tile_cache.pop(path, None)
+                    if entry is not None:
+                        self._tile_cache_bytes -= entry[1].nbytes + entry[2].nbytes
+                        if entry[0] != signature:
+                            raise DataUnavailable(f"Terrain raster changed after caching: {path}")
+                    if entry is None:
+                        while self._tile_cache and self._tile_cache_bytes + size > limit:
+                            _, old = self._tile_cache.popitem(last=False)
+                            self._tile_cache_bytes -= old[1].nbytes + old[2].nbytes
+                            del old
+                        tile = raster.read(1, masked=True)
+                        pixels, mask = np.asarray(tile), np.ma.getmaskarray(tile)
+                        after = path.stat()
+                        if signature != (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns):
+                            raise DataUnavailable(f"Terrain raster changed while reading: {path}")
+                        entry = (signature, pixels, mask)
+                    self._tile_cache[path] = entry
+                    self._tile_cache_bytes += entry[1].nbytes + entry[2].nbytes
+                    values = np.ma.array(entry[1][row, col], mask=entry[2][row, col])
+                else:
+                    left, top, right, bottom = int(col.min()), int(row.min()), int(col.max()), int(row.max())
+                    data = raster.read(1, window=Window(left, top, right-left+1, bottom-top+1), masked=True)
+                    values = data[row-top, col-left]
                 if np.ma.getmaskarray(values).any() or not np.isfinite(values).all():
                     raise DataUnavailable(f"Raster nodata at candidate points: {path}")
                 return np.asarray(values, dtype=float)
-        except rasterio.errors.RasterioError as error:
+        except (rasterio.errors.RasterioError, OSError) as error:
             raise DataUnavailable(f"Cannot sample terrain raster: {path}") from error
 
     def provenance(self):
