@@ -19,22 +19,15 @@ import numpy as np
 import pandas as pd
 import requests
 
-from .geometry import Track, velocity_ecef
-from .tracks import adsblol_frame
+from .geometry import Track
+from .tracks import _segment_velocity, adsblol_frame
 
 CONUS = (-125.0, 24.0, -66.0, 50.0)
 INDEX_VERSION = 2
 
 
 def _frame_track(name, frame):
-    from . import tracks as normalizer
-    velocity, inferred = None, {}
-    if hasattr(normalizer, "_segment_velocity"):
-        velocity, inferred = normalizer._segment_velocity(frame)
-    else:
-        cols = ["east_mps", "north_mps", "up_mps"]
-        if set(cols).issubset(frame) and np.isfinite(frame[cols].to_numpy(dtype=float)).all():
-            velocity = velocity_ecef(frame.lat.to_numpy(), frame.lon.to_numpy(), *[frame[c].to_numpy() for c in cols])
+    velocity, inferred = _segment_velocity(frame)
     track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
                   str(frame.typecode.iloc[0] or "") if "typecode" in frame else "", velocity)
     track.altitude_basis = frame.altitude_basis.tolist() if "altitude_basis" in frame else ["unspecified"] * len(frame)
@@ -260,7 +253,7 @@ class FlightIndex:
                     invalid += int((~valid).sum())
                     clean = frame.loc[valid]
                     clean = clean.copy()
-                    clean["aircraft_class"] = clean.typecode.map(class_map).fillna("unclassified") if "typecode" in clean else "unclassified"
+                    clean["aircraft_class"] = clean.typecode.map(class_map).astype(object).fillna("unclassified") if "typecode" in clean else "unclassified"
                     altitude.update(clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)})
                     # pandas normalizes numpy scalars/NaNs to JSON numbers/null.
                     records = json.loads(clean.to_json(orient="records", double_precision=15))
@@ -374,7 +367,12 @@ class FlightCache:
                 write_json(release_path, response.json())
             except requests.RequestException as error:
                 raise DataUnavailable(f"Historical release unavailable: {day}") from error
-        release = json.loads(release_path.read_text())
+        try:
+            release = json.loads(release_path.read_text())
+        except (OSError, json.JSONDecodeError) as error:
+            raise DataUnavailable(f"Invalid historical release metadata: {release_path}") from error
+        if not isinstance(release, dict) or release.get("tag_name") != tag:
+            raise DataUnavailable(f"Historical release metadata does not match requested tag: {tag}")
         assets = sorted((a for a in release["assets"] if ".tar." in a["name"]), key=lambda a: a["name"])
         if not assets:
             raise DataUnavailable("Release has no split trace archive")
@@ -401,7 +399,8 @@ class FlightCache:
         class_map = {}
         for code, value in types.items():
             description = value.get("desc", "") if isinstance(value, dict) else (value[2] if len(value) > 2 else "")
-            class_map[code] = {"J": "jet", "T": "turboprop", "P": "piston"}.get(description[-1:], "unclassified")
+            # ICAO T also covers helicopter turboshafts; keep the family label broad.
+            class_map[code] = {"J": "jet", "T": "turbine", "P": "piston"}.get(description[-1:], "unclassified")
         return FlightIndex.build(index, archive_frames([s["path"] for s in sources]), sources=sources + [type_source],
                                  coverage=coverage, class_map=class_map)
 
