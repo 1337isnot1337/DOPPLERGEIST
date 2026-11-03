@@ -10,14 +10,14 @@ from aircraft_geoloc.contracts import validate_recording
 from aircraft_geoloc.intake import AudioIntakeError, intake_recording, source_hash
 
 
-@pytest.mark.skipif(sys.platform != "linux", reason="Linux ru_maxrss is measured in KiB")
+@pytest.mark.skipif(sys.platform != "linux", reason="Linux /proc resident-memory accounting")
 def test_chunk_iterator_does_not_retain_recording_sized_rss(tmp_path):
     # A synthetic raw-cache stress fixture, not a captured audio recording.
     cache = tmp_path / "long.f32"
     with cache.open("wb") as stream:
         stream.truncate(128 * 1024**2)
     script = """
-import json, resource, sys
+import json, sys
 from pathlib import Path
 from aircraft_geoloc.intake import IntakeRecording
 path = Path(sys.argv[1])
@@ -25,11 +25,16 @@ duration = path.stat().st_size / 4 / 4000
 metadata = dict(source_sha256="0" * 64, duration_s=duration, sample_rate_hz=4000,
                 channels=1, source_format="synthetic_raw_cache", time_window=None)
 recording = IntakeRecording(path, metadata, {})
-before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+def rss_kib():
+    for line in Path("/proc/self/status").read_text().splitlines():
+        if line.startswith("VmRSS:"):
+            return int(line.split()[1])
+before = peak = rss_kib()
 checksum = 0.0
 for start, samples in recording.iter_chunks():
     checksum += float(samples.sum())
-print(json.dumps(dict(growth_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss-before,
+    peak = max(peak, rss_kib())
+print(json.dumps(dict(growth_kib=peak-before,
                       last_end_s=start+len(samples)/4000, checksum=checksum)))
 """
     result = json.loads(subprocess.check_output([sys.executable, "-c", script, str(cache)], text=True))
