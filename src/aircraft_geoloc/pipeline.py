@@ -1,5 +1,4 @@
 """One command from recording + flight data to ranked, plotted locations."""
-import hashlib
 import json
 import time
 from pathlib import Path
@@ -9,6 +8,7 @@ import pandas as pd
 
 from .audio import measure
 from .geometry import ecef
+from .provenance import RunProvenance,implementation_provenance
 from .search import cpa_table,pair_candidates,rank_candidates
 from .terrain import Terrain,CopernicusTerrain,corridor_grid,refine_grid
 from .tracks import load_tracks,unix_time
@@ -21,12 +21,12 @@ def dump(path,value):
 def run(config_path,output_dir):
     began=time.monotonic()
     code_root=Path(__file__).resolve().parents[1]
-    code_digest=hashlib.sha256()
-    for source in sorted(code_root.rglob("*.py")):
-        code_digest.update(str(source.relative_to(code_root)).encode())
-        code_digest.update(source.read_bytes())
+    implementation=implementation_provenance(code_root)
     config_path=Path(config_path).resolve()
-    config=json.loads(config_path.read_text())
+    config_bytes=config_path.read_bytes()
+    config=json.loads(config_bytes)
+    provenance=RunProvenance(config_path,config_bytes)
+    provenance.collect_declared_inputs(config)
     output=Path(output_dir).resolve()
     output.mkdir(parents=True,exist_ok=True)
     def local(path):
@@ -54,7 +54,6 @@ def run(config_path,output_dir):
         raise ValueError("Events must be in chronological recording order")
     tracks=[]
     imports=[]
-    source_paths=[audio]
     origin=unix_time(config["recording_start_utc"]) if config.get("recording_start_utc") is not None else None
     bounds=config.get("grid",{}).get("bounds")
     track_bounds=None
@@ -71,7 +70,6 @@ def run(config_path,output_dir):
                                    bounds=track_bounds,time_range=time_range)
         tracks.extend(imported)
         imports.append(dict(report,path=str(path)))
-        source_paths.append(path)
     if len({t.id for t in tracks})!=len(tracks):
         raise ValueError("Flight IDs must identify unique imported trajectory segments")
     if not tracks:
@@ -136,17 +134,14 @@ def run(config_path,output_dir):
         best_pairs.setdefault(tuple(row["flight_ids"]),row)
     dump(output/"ranked.json",ranked)
     dump(output/"flight-combinations.json",list(best_pairs.values()))
-    provenance=[]
-    for path in source_paths:
-        with path.open("rb") as f:
-            digest=hashlib.file_digest(f,"sha256").hexdigest()
-        provenance.append({"path":str(path.resolve()),"sha256":digest})
-    report={"config":config,"measured_events":events,"imports":imports,"sources":provenance,
-            "implementation_sha256":code_digest.hexdigest(),
+    provenance.collect_terrain_inputs(ground,terrain)
+    report={"config":config,"measured_events":events,"imports":imports,"sources":provenance.sources,
+            "implementation_sha256":implementation["sha256"],
+            "implementation_sources":implementation["sources"],"provenance":provenance.declaration(),
             "coarse_filter_counts":counts,"scoring_filter_counts":fine_counts,
             "ranked_points":len(ranked),"flight_combinations":len(best_pairs),"best":ranked[0],
             "elapsed_s":time.monotonic()-began,
-            "scoring_time_is_locked":True,"ground_truth_used_by_search":False}
+            "scoring_time_is_locked":True}
     dump(output/"report.json",report)
     plot_results(output,ranked,tracks,measurements,c)
     print("Best:",json.dumps(ranked[0]),flush=True)
