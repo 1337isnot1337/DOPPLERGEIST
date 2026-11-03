@@ -1,0 +1,49 @@
+{
+  "comparison_scope": "Point errors relative to the documented references; not a sensitivity or acceptance calibration.",
+  "cases": [
+    {
+      "run": "real-release-parquet",
+      "scope": "configured_real_regression",
+      "point_error_m": 43.85847078233993,
+      "within_reference_thresholds_m": {
+        "100": true,
+        "500": true,
+        "1000": true
+      },
+      "supported_automatic_localization": null,
+      "independent_real_national_validation": false
+    },
+    {
+      "run": "real-fresh-raw",
+      "scope": "configured_real_regression",
+      "point_error_m": 43.85847078233993,
+      "within_reference_thresholds_m": {
+        "100": true,
+        "500": true,
+        "1000": true
+      },
+      "supported_automatic_localization": null,
+      "independent_real_national_validation": false
+    },
+    {
+      "run": "automatic-synthetic-87143f5",
+      "scope": "automatic_synthetic_regression",
+      "point_error_m": 0.6435930475006092,
+      "within_reference_thresholds_m": {
+        "100": true,
+        "500": true,
+        "1000": true
+      },
+      "supported_automatic_localization": false,
+      "independent_real_national_validation": false
+    }
+  ],
+  "automatic_status": "inconclusive",
+  "automatic_reason_code": "ambiguous_locations",
+  "historical_decision_policy_target_m": 100,
+  "current_project_acceptable_error_m": 1000,
+  "current_project_preferred_error_m": [
+    100,
+    500
+  ]
+}

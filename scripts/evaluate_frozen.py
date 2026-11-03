@@ -38,7 +38,8 @@ if __name__ == "__main__":
     manifest = json.loads((base / "frozen-manifest.json").read_text())
     truth = json.loads((base / "truth/frozen-labels.json").read_text())
     predictions = frozen_predictions(args.root)
-    result = evaluate(manifest, predictions, truth)
+    # Preserve the historical acceptance threshold while also reporting tiers.
+    result = evaluate(manifest, predictions, truth, threshold_m=100)
     result["evidence_sha256"] = {str(p.relative_to(args.root)): sha256(p)
         for p in sorted((args.root / "evidence/results").rglob("*.json"))}
     result["limits"].append("Frozen feature recall is annotation-band-assisted case detection, not automatic event-window recall.")

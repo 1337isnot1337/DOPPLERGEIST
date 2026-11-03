@@ -1,0 +1,126 @@
+{
+  "scope": "Real public-webcam intake/discovery/HTTP tests; no certified aircraft-negative or location labels",
+  "request_metadata": {
+    "schema_version": 1,
+    "search": {
+      "coverage": "conus"
+    }
+  },
+  "cases": [
+    {
+      "case_id": "webcam-001",
+      "site": "Times Square Street",
+      "audio_sha256": "b421fb88c369a1a470960a4da58289e2a2533e1c2b9b0ef1a349502bbbbf2349",
+      "bytes": 1775221,
+      "container_duration_s": 147.892245,
+      "media_probe_valid": true,
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "events": 0,
+      "runtime_s": 9.114015335013391,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "timing_limit": "Original audio-only capture may collapse source A/V offset; retained without clock/location claim."
+    },
+    {
+      "case_id": "webcam-002",
+      "site": "Times Square Street",
+      "audio_sha256": "402cc0ff42cf4839b7e8d08d3407e296183dc727aedacad07086e1eacc54ed7d",
+      "bytes": 1781803,
+      "container_duration_s": 148.453878,
+      "media_probe_valid": true,
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "events": 0,
+      "runtime_s": 12.237967302004108,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "timing_limit": "Original audio-only capture may collapse source A/V offset; retained without clock/location claim."
+    },
+    {
+      "case_id": "webcam-003",
+      "site": "Times Square Street",
+      "audio_sha256": "64ea7702bd3fbf52f4e630fb62b92adc877b801471a29240d91b4bdad4db042e",
+      "bytes": 671,
+      "container_duration_s": null,
+      "media_probe_valid": false,
+      "status": "failed",
+      "reason_code": "invalid_media",
+      "events": 0,
+      "runtime_s": 3.2939275139942765,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "timing_limit": "Original audio-only capture may collapse source A/V offset; retained without clock/location claim."
+    },
+    {
+      "case_id": "webcam-004",
+      "site": "Herald Square",
+      "audio_sha256": "09c2e6f93df43bc748fc8e168092c0e77dc2ca36e0a09ea0b342fa031a341577",
+      "bytes": 1800620,
+      "container_duration_s": 149.994,
+      "media_probe_valid": true,
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "events": 0,
+      "runtime_s": 6.586347941018175,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "timing_limit": "Original audio-only capture may collapse source A/V offset; retained without clock/location claim."
+    },
+    {
+      "case_id": "webcam-005",
+      "site": "Herald Square",
+      "audio_sha256": "bcf03d7a9ee849cf8268fd5426ce316519915ee4c90d6c6e603ce475b10da1b2",
+      "bytes": 908,
+      "container_duration_s": null,
+      "media_probe_valid": false,
+      "status": "failed",
+      "reason_code": "invalid_media",
+      "events": 0,
+      "runtime_s": 2.880529337009648,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "timing_limit": "Original audio-only capture may collapse source A/V offset; retained without clock/location claim."
+    },
+    {
+      "case_id": "webcam-corrected-herald",
+      "site": "Herald Square",
+      "audio_sha256": "ae0856bb4ec6187bc1b84eef992a9d10e73b276cf2de8d9f4cd36ba1f4ea98d0",
+      "decoded_duration_s": 150.0,
+      "capture_receipt_start_utc": "2026-11-03T01:13:04.963351Z",
+      "capture_receipt_finish_utc": "2026-11-03T01:15:19.815728Z",
+      "capture_elapsed_s": 134.85238375599147,
+      "source_timeline_preserved": true,
+      "capture_tool_commit": "654fecc",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "events": 0,
+      "runtime_s": 2.5531524200050626,
+      "original_preserved_and_http_readback_verified": true,
+      "location_accuracy_eligible": false,
+      "clock_established": false,
+      "map_marker_precision": "unestablished microphone uncertainty"
+    }
+  ],
+  "summary": {
+    "cases": 6,
+    "needs_input": 4,
+    "invalid_media_failures": 2,
+    "proposals": 0,
+    "accepted_locations": 0
+  },
+  "source_pages": [
+    "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+    "https://www.earthcam.com/usa/newyork/heraldsquare/?cam=heraldsquare_nyc"
+  ],
+  "limits": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ]
+}

@@ -283,6 +283,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
+    refinement_points_searched, refinement_points_skipped = 0, 0
     if ranked and budget.refine_spacing_m < budget.spacing_m:
         chosen, seen = [], set()
         for row in ranked:
@@ -295,16 +296,27 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         try:
             fine = budget.refine_spacing_m
             width = math.ceil(budget.spacing_m / fine)
+            completed_rectangles = []
             for row in chosen:
                 # Subdivide the refinement square as well, retaining hard grid limits.
                 cx, cy = round(row["x"] / fine), round(row["y"] / fine)
                 for y0 in range(cy - width, cy + width + 1, budget.tile_cells):
                     for x0 in range(cx - width, cx + width + 1, budget.tile_cells):
                         cells = (x0, y0, min(cx + width + 1, x0 + budget.tile_cells), min(cy + width + 1, y0 + budget.tile_cells))
-                        tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
                         points = tile_points(cells, fine, bounds, terrain, crs)
-                        rows, _ = _score(points, tracks, events, measurements, budget, parameters, filters, start_window) if len(points) else ([], {})
+                        keep = np.ones(len(points), dtype=bool)
+                        for left, bottom, right, top in completed_rectangles:
+                            keep &= ~((points.x >= left * fine) & (points.x < right * fine)
+                                      & (points.y >= bottom * fine) & (points.y < top * fine))
+                        refinement_points_skipped += int((~keep).sum())
+                        points = points[keep]
+                        if not len(points):
+                            continue
+                        tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
+                        rows, _ = _score(points, tracks, events, measurements, budget, parameters, filters, start_window)
+                        refinement_points_searched += len(points)
                         ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k)
+                completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
         except (DataUnavailable, ValueError, OSError) as error:
             refinement_failure = str(error)
     coverage = [i.coverage_for(bounds, time_range_s) for i in indexes]
@@ -328,6 +340,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "coarse_ranked": coarse, "tiles_total": total, "tiles_completed": done, "tiles_resumed": resumed,
               "tile_failures": failures, "unsearched_tiles": total - done, "grid_points_searched": points_searched,
               "data_coverage": coverage, "data_scope_complete": data_complete, "refinement_failure": refinement_failure,
+              "refinement_points_searched": refinement_points_searched, "refinement_points_skipped": refinement_points_skipped,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,
               "event_groups_proposed": len(events), "association_event_limit": event_limit,

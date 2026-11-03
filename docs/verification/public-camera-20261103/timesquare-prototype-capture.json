@@ -1,0 +1,24 @@
+{
+  "source_page": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+  "camera_name": "tsstreet",
+  "source_audio_advertised": "true",
+  "published_map_coordinate": {
+    "lat": 40.75941552728725,
+    "lon": -73.98521661758423,
+    "kind": "provider_map_marker",
+    "uncertainty_m": null
+  },
+  "capture_started_utc": "2026-11-03T00:50:08.276554+00:00",
+  "requested_duration_s": 300,
+  "recording_start_utc": null,
+  "clock_status": "unverified_live_stream_latency",
+  "hls_program_date_time_present": false,
+  "stream_url_sha256": "319e113b048dff4922e1c5d15dc438980f6199169869d16ab243c01cab19fbb7",
+  "stream_url_query_saved": false,
+  "source_page_sha256": "3e33f0a3f0e7f72f40b5f22091c346b91b872117171f71d709a3731229fe01fd",
+  "capture_finished_utc": "2026-11-03T00:54:50.100712+00:00",
+  "capture_elapsed_s": 281.82317261281423,
+  "ffmpeg_exit_code": 0,
+  "audio_sha256": "fb8be2a1ef326392734eb1a94cd3ab44acd4b9540266f377a5946c8c15b21789",
+  "audio_bytes": 2363373
+}
