@@ -37,6 +37,14 @@ To install the CLI without keeping a checkout, create a virtual environment and 
 
 Use a new output directory for each experiment. Automatic CI checks installation, source compilation, CLI help and packaged assets without generated data. The [real-world data policy](AGENTS.md#real-world-data-only) supersedes older blanket pytest instructions. For pinned environments and historical clean-install evidence, see [Setup](docs/SETUP.md). Native Windows execution remains unverified.
 
+### Analyze from the command line
+
+```bash
+.venv/bin/dopplergeist analyze path/to/recording.mp3 --jobs jobs
+```
+
+This scans the complete recording and saves an inspectable job. To permit historical search, add `--start-utc` and `--end-utc` for a defensible recording-start window, `--time-source` describing its evidence, and `--online` for public data acquisition. Missing clock evidence returns `needs_input`. Initial acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
+
 ### Discover events in a recording
 
 Automatic discovery scans an entire recording for moving acoustic frequency patterns **without hand-selecting event windows or frequency bands**. Replace `path/to/recording.mp3` with your real recording; this step needs no flight-data download or data-service credentials:
