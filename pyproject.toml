@@ -9,11 +9,17 @@ description = "Reproducible physics-based aircraft acoustic geolocation"
 requires-python = ">=3.11"
 dependencies = ["numpy", "scipy", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow"]
 
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
 [project.scripts]
 aircraft-geoloc = "aircraft_geoloc.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"aircraft_geoloc.web" = ["*.html", "*.js", "*.css"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

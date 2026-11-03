@@ -1,0 +1,52 @@
+{
+  "recording": {
+    "source_sha256": "372912c008ed61a49de647cd9a5cd1651d1ce952e4690a2fe6c1da0cd641140a",
+    "duration_s": 1180.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "wav",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 3.0,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 1,
+  "events": [
+    {
+      "event_id": "event-0001",
+      "start_s": 1068.5,
+      "end_s": 1112.0,
+      "band_hz": [
+        95.91251226514578,
+        122.00987541023642
+      ],
+      "quality": {
+        "median_contrast": 3.558435320854187,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9047619047619048,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 19.631563302129507
+      }
+    }
+  ],
+  "runtime_s": 10.57699873499223,
+  "peak_rss_kib": 163140,
+  "code_sha256": "9721a2483e3d91632027e5800bd460b1e9901d8c0daf8b5f0d2346cc26fb49bb",
+  "git_commit": "c7d88f6016812eac37d3eb1f6e6cfa848a562735",
+  "working_tree": "?? docs/AUDIO_INTAKE.md\n?? scripts/discover_audio.py\n?? src/aircraft_geoloc/discovery.py\n?? src/aircraft_geoloc/intake.py\n?? tests/test_discovery.py\n?? tests/test_intake.py",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}
