@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user"
+  },
+  "search": {
+    "coverage": "conus"
+  }
+}

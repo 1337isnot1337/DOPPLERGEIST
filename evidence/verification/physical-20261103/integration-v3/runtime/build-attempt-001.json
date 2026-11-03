@@ -1,0 +1,11 @@
+{
+  "source_commit": "3f4a6b1bc3447b4b996dd0402f3aa8f97b7765a1",
+  "stage": "local wheel preparation",
+  "command": [".venv/bin/python", "-m", "pip", "wheel", "--disable-pip-version-check", "--no-index", "--no-deps", "--no-build-isolation", "--no-cache-dir", "--wheel-dir", "wheels", "build-source-3f4a6b1bc344"],
+  "exit_code": 2,
+  "error": "pip._vendor.pyproject_hooks._impl.BackendUnavailable: Cannot import 'setuptools.build_meta'",
+  "cause": "The existing project virtual environment has no setuptools build backend.",
+  "network_used": false,
+  "source_worktree_modified": false,
+  "full_traceback_location": "Conversation tool result chunk 5d5ce0; this receipt preserves the exact terminal exception and command rather than reconstructing the traceback."
+}

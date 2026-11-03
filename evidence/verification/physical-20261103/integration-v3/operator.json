@@ -1,0 +1,21 @@
+{
+  "offline": true,
+  "flight_indexes": [
+    "/data/flight-index-v2.sqlite"
+  ],
+  "terrain": {
+    "rasters": [
+      "/inputs/terrain.tif"
+    ],
+    "geoid_raster": "/inputs/geoid.tif"
+  },
+  "refine_finalists": 20,
+  "refine_radius_m": 2000.0,
+  "search_budget": {
+    "tile_cells": 32,
+    "spacing_m": 2000.0,
+    "refine_spacing_m": 100.0,
+    "refine_finalists": 20,
+    "top_k": 200
+  }
+}

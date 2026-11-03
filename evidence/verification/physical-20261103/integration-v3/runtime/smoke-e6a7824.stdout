@@ -1,0 +1,131 @@
+{
+  "smoke_passed": true,
+  "python": "/runtime/bin/python3.12",
+  "prefix": "/runtime",
+  "pid": 2,
+  "cwd": "/work",
+  "sys_path": [
+    "",
+    "/app",
+    "/deps",
+    "/runtime/lib/python312.zip",
+    "/runtime/lib/python3.12",
+    "/runtime/lib/python3.12/lib-dynload",
+    "/runtime/lib/python3.12/site-packages"
+  ],
+  "environment_keys": [
+    "GDAL_CURL_CA_BUNDLE",
+    "LANG",
+    "LC_ALL",
+    "MPLCONFIGDIR",
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "PATH",
+    "PROJ_CURL_CA_BUNDLE",
+    "PWD",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONHOME",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "TMPDIR",
+    "XDG_CACHE_HOME"
+  ],
+  "modules": {
+    "numpy": {
+      "path": "/deps/numpy/__init__.py",
+      "version": "2.5.4"
+    },
+    "scipy": {
+      "path": "/deps/scipy/__init__.py",
+      "version": "1.18.1"
+    },
+    "rasterio": {
+      "path": "/deps/rasterio/__init__.py",
+      "version": "1.5.2"
+    },
+    "pyarrow": {
+      "path": "/deps/pyarrow/__init__.py",
+      "version": "26.0.0"
+    },
+    "pandas": {
+      "path": "/deps/pandas/__init__.py",
+      "version": "3.1.0"
+    },
+    "pyproj": {
+      "path": "/deps/pyproj/__init__.py",
+      "version": "3.8.0"
+    },
+    "soundfile": {
+      "path": "/deps/soundfile.py",
+      "version": "0.14.0"
+    },
+    "matplotlib": {
+      "path": "/deps/matplotlib/__init__.py",
+      "version": "3.11.2"
+    },
+    "aircraft_geoloc": {
+      "path": "/app/aircraft_geoloc/__init__.py",
+      "version": null
+    },
+    "aircraft_geoloc.cli": {
+      "path": "/app/aircraft_geoloc/cli.py",
+      "version": null
+    },
+    "aircraft_geoloc.jobs": {
+      "path": "/app/aircraft_geoloc/jobs.py",
+      "version": null
+    },
+    "aircraft_geoloc.service": {
+      "path": "/app/aircraft_geoloc/service.py",
+      "version": null
+    }
+  },
+  "editable_hooks_loaded": false,
+  "proc_empty": true,
+  "forbidden_paths_absent": [
+    "/workspace",
+    "/home",
+    "/root",
+    "/opt",
+    "/host",
+    "/inputs/truth",
+    "/inputs/truth.json",
+    "/inputs/evaluation",
+    "/inputs/renderer",
+    "/inputs/generation.json",
+    "/data/truth",
+    "/data/truth.json",
+    "/app/.git",
+    "/app/scripts",
+    "/app/tests"
+  ],
+  "home_env_absent": true,
+  "parquet_rows": 3252,
+  "raster": {
+    "shape": [
+      180,
+      360
+    ],
+    "crs": "EPSG:4326",
+    "finite_first_cell": true
+  },
+  "audio_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "ffprobe": {
+    "format": "mp3",
+    "duration": "960.192000",
+    "streams": [
+      {
+        "codec": "mp3",
+        "sample_rate": "8000",
+        "channels": 1
+      }
+    ]
+  },
+  "child": {
+    "python": "/runtime/bin/python3.12",
+    "jobs": "/app/aircraft_geoloc/jobs.py"
+  },
+  "cli_help_passed": true,
+  "scientific_jobs_submitted": 0,
+  "elapsed_s": 0.660197842999878
+}
