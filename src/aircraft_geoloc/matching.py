@@ -4,6 +4,7 @@ Scores are penalized residuals, never probabilities. Geometry from a straight-pa
 audio fit is a proposal diagnostic, not a reliable exclusion bound for real tracks.
 """
 from dataclasses import dataclass
+from itertools import combinations, product
 
 import numpy as np
 from pyproj import Transformer
@@ -15,6 +16,80 @@ from .geometry import ecef
 @dataclass
 class RidgeTimes:
     time: np.ndarray
+
+
+def _frequency_scale(event):
+    quality = event.get("quality", {})
+    return quality.get("frequency_loss_scale_hz", quality.get("frequency_sigma_hz",
+                       max(1.0, quality.get("frequency_uncertainty_hz", 1.0))))
+
+
+def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
+                           time_tolerance_s=5.0, silence=None, min_events=1,
+                           max_events=3, max_candidates=20000):
+    """Bounded subset hypotheses, retaining explicitly unmatched proposals.
+
+    Every subset within the declared maximum is considered; exceeding the work
+    budget fails explicitly so the outer search records incomplete coverage.
+    Geometry only proposes hypotheses. Acoustic scoring must reject poor fits.
+    """
+    from .search import filter_event
+    if not 1 <= min_events <= max_events or max_candidates < 1:
+        raise ValueError("Invalid association event/candidate budget")
+    filtered = [filter_event(table, e, time_origin, time_tolerance_s) for e in events]
+    grouped = [{p: frame.to_dict("records") for p, frame in f.groupby("point_id")} for f in filtered]
+    by_point = {p: frame for p, frame in table.groupby("point_id")}
+    candidates, examined = [], 0
+    for count in range(min(max_events, len(events)), min_events-1, -1):
+        for indices in combinations(range(len(events)), count):
+            common = set.intersection(*(set(grouped[i]) for i in indices))
+            for point_id in sorted(common):
+                for passes in product(*(grouped[i][point_id] for i in indices)):
+                    examined += 1
+                    if examined > max_candidates * 20:
+                        raise ValueError("Association work budget exceeded; search is incomplete")
+                    if len({(p["flight_id"], p["emission_time"]) for p in passes}) < count:
+                        continue
+                    starts = [p["receive_time"]-events[i]["cpa_receive_s"] for p, i in zip(passes, indices)]
+                    tolerance = [events[i].get("quality", {}).get("cpa_tolerance_s", 0)+offset_tolerance_s/2 for i in indices]
+                    lower = max(t-d for t, d in zip(starts, tolerance))
+                    upper = min(t+d for t, d in zip(starts, tolerance))
+                    if time_origin is not None:
+                        lower, upper = max(lower, time_origin-time_tolerance_s), min(upper, time_origin+time_tolerance_s)
+                    if lower > upper:
+                        continue
+                    if silence and count > 1:
+                        frame = by_point[point_id]
+                        margin = silence.get("edge_margin_s", 60)
+                        distance = max(p["distance_m"] for p in passes)*silence.get("distance_multiplier", 1)
+                        between = frame[(frame.receive_time > passes[0]["receive_time"]+margin) &
+                                        (frame.receive_time < passes[-1]["receive_time"]-margin) &
+                                        (frame.distance_m <= distance)]
+                        selected = {(p["flight_id"], p["emission_time"]) for p in passes}
+                        if any((r.flight_id, r.emission_time) not in selected for r in between.itertuples()):
+                            continue
+                    if len(candidates) >= max_candidates:
+                        raise ValueError("Association candidate budget exceeded; search is incomplete")
+                    candidates.append({"point_id": point_id, "passes": passes, "event_indices": list(indices),
+                                       "recording_start_bounds_s": [float(lower), float(upper)]})
+    return candidates, {"per_event_survivors": [len(f) for f in filtered], "survivors": len(candidates),
+                        "hypotheses_examined": examined, "max_matched_events": max_events,
+                        "unmatched_proposals_allowed": True}
+
+
+def association_score(result, events):
+    """Compare different matched subsets using bounded normalized support.
+
+    One well-fitted independent event contributes up to one unit. A poor event
+    invalidates that hypothesis; another subset can leave it unmatched. This is
+    a ranking heuristic, not a likelihood or a calibrated confidence statistic.
+    """
+    limits = [3 * _frequency_scale(e) for e in events]
+    losses = [-s for s in result["event_scores"]]
+    supported = all(np.isfinite(v) and v <= limit for v, limit in zip(losses, limits))
+    return dict(result, residual_score=result["score"],
+                score=float(sum(1-v/limit for v, limit in zip(losses, limits))) if supported else -np.inf,
+                score_kind="matched_group_support_minus_normalized_residual")
 
 
 def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
@@ -59,6 +134,7 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         start, end = min(e["start_s"] for e in members), max(e["end_s"] for e in members)
         center = float(reference.get("cpa_receive_s", (start + end) / 2))
         quality = dict(reference.get("quality", {}))
+        quality.setdefault("frequency_loss_scale_hz", _frequency_scale(reference))
         quality["cpa_tolerance_s"] = max(center - start, end - center)
         # A subsonic source gives f_source = f_received * (1 + v_radial/c).
         # These broad bounds are independent of an unreliable straight-pass fit.
@@ -132,7 +208,7 @@ def score_ridges(tracks, events, measurements, observer, recording_start_s, c=34
     for track, event, measurement in zip(tracks, events, measurements):
         quality = event.get("quality", {})
         diagnostics.append(fit_ridge(track, observer, measurement, recording_start_s,
-            event["f0_range_hz"], c, quality.get("frequency_sigma_hz", 1.0),
+            event["f0_range_hz"], c, _frequency_scale(event),
             quality.get("source_drift_fraction", 0.02)))
     return {"score": float(sum(d["score"] for d in diagnostics)),
             "event_scores": [d["score"] for d in diagnostics],
@@ -155,6 +231,9 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     x0, y0 = forward.transform(candidate["lon"], candidate["lat"])
     start = candidate["recording_start_time_s"]
     selected = [tracks[f] for f in candidate["flight_ids"]]
+    if "event_indices" in candidate:
+        events = [events[i] for i in candidate["event_indices"]]
+        measurements = [measurements[i] for i in candidate["event_indices"]]
     if radius_m <= 0 or clock_radius_s < 0 or 0.0 not in altitude_offsets_m:
         raise ValueError("Need positive spatial/nonnegative clock bounds and a nominal zero-altitude scenario")
     lower, upper = -clock_radius_s, clock_radius_s
@@ -179,6 +258,8 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
                                   start + dt, c)
+            if "event_indices" in candidate:
+                score = association_score(score, events)
             return score, lat, lon, elevation
         def objective(parameters):
             value = evaluate(parameters)[0]["score"]
