@@ -1,4 +1,5 @@
 """Geometric event filters, silence constraints and locked multi-event scoring."""
+from collections import OrderedDict
 from itertools import product
 import math
 
@@ -8,8 +9,8 @@ from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
-from .geometry import AcousticSupportError, ecef
-from .matching import _native_validate_ridge_events
+from .geometry import AcousticSupportError, _CANONICAL_ECEF, ecef
+from .matching import _CANONICAL_NATIVE_EVENT_VALIDATOR, _native_validate_ridge_events
 from .native_cpa import try_cpa_edges
 
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
@@ -91,7 +92,9 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
     point_ids=points.point_id.to_numpy(dtype=int)
     rows = _cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size,
                      _sample_cache=_sample_cache)
-    return pd.DataFrame(rows, columns=_CPA_COLUMNS) if rows else _EMPTY_CPA_TABLE.copy()
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
+    return pd.DataFrame(rows, columns=_CPA_COLUMNS)
 
 
 def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512, *,
@@ -427,6 +430,10 @@ def _association_event_ceiling(diagnostic, score, frequency, event, limit):
     mutation checks while avoiding repeated validation of the same clock fit.
     Noncanonical numeric types retain the original validation and arithmetic.
     """
+    if _native_validate_ridge_events is not _CANONICAL_NATIVE_EVENT_VALIDATOR:
+        # A custom hook can change validity without changing scalar evidence.
+        # Preserve the full classifier and do not reuse an earlier hook's key.
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
     if (_native_validate_ridge_events is not None
             and _ridge_trial_classification is _CANONICAL_CEILING_FUNCTIONS[2]
             and _association_event_ceiling_uncached is _CANONICAL_CEILING_FUNCTIONS[1]
@@ -520,7 +527,9 @@ def _association_trial_bound(result, events):
 
 def _validate_score_ceiling_inputs(events, measurements):
     """Do not hide malformed fit inputs behind an unperformed-fit certificate."""
-    from .matching import _frequency_scale, _ridge_fit_inputs
+    from .matching import _frequency_scale, _prepared_score_tokens, _ridge_fit_inputs
+    if _prepared_score_tokens(measurements, events) is not None:
+        return
     for event, measurement in zip(events, measurements):
         value = _frequency_scale(event)
         if not isinstance(value, (int, float, np.number)) or isinstance(value, (bool, np.bool_)):
@@ -593,6 +602,14 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     from .acoustic_screen import ridge_trial_rejections
     from .batch_ridge import first_event_fits, _first_event_fits_with_ceilings
     from .matching import _frequency_scale, fit_ridge
+    from .trial_prefix import request
+
+    reusable = request(tracks, events, measurements, observer, starts, c, acoustic_batches,
+                       score_floor, use_dual, legacy_first_batch)
+    if reusable is not None:
+        previous = reusable.lookup()
+        if previous is not None:
+            return previous
 
     diagnostics = [[] for _ in starts]
     outcomes = [None] * len(starts)
@@ -602,10 +619,12 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     limits = [3 * _frequency_scale(event) for event in events] if score_floor is not None else []
     bound_enabled = bool(limits) and all(np.isfinite(value) and value > 0 for value in limits)
     batches = iter(acoustic_batches)
+    processed = 0
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
         if not active:
             break
         batch = next(batches)
+        processed = index + 1
         if use_dual and batch is not None:
             rejected, upper = ridge_trial_rejections(measurement, event, *batch,
                 score_floor=score_floor, group_count=len(events))
@@ -668,7 +687,38 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
             else:
                 outcomes[trial] = (_ridge_result(diagnostics[trial]), None, None)
         active = next_active
+    if reusable is not None:
+        reusable.remember(processed, outcomes, rejected_count, floor_count)
     return outcomes, rejected_count, floor_count
+
+
+def _candidate_observer(lat, lon, height):
+    """Reuse the scalar ECEF operation for private, ordinary receiver inputs."""
+    from .matching import _NATIVE_RIDGE_ERROR_POLICY, _ridge_fit_cache
+
+    cache = _ridge_fit_cache.get()
+    if (cache is None or not cache.score_inputs or cache.max_entries < 1
+            or ecef is not _CANONICAL_ECEF
+            or not all(type(value) is float and math.isfinite(value) for value in (lat, lon, height))
+            or not (-90 <= lat <= 90 and -180 <= lon <= 180 and abs(height) <= 1e7)
+            or np.geterr() != _NATIVE_RIDGE_ERROR_POLICY):
+        return ecef(lat, lon, height)
+    entries = getattr(cache, "observer_entries", None)
+    if entries is None:
+        entries = cache.observer_entries = OrderedDict()
+    # Hex preserves signed zero as well as every bit of each finite coordinate.
+    key = lat.hex(), lon.hex(), height.hex()
+    value = entries.get(key)
+    if value is None:
+        result = ecef(lat, lon, height)
+        value = np.frombuffer(result.tobytes(), dtype=result.dtype).reshape(result.shape)
+        entries[key] = value
+    entries.move_to_end(key)
+    while len(entries) > min(cache.max_entries, 256):
+        entries.popitem(last=False)
+    # Each scalar ECEF call used to return a fresh array. Keep that ownership
+    # contract, including for a caller that mutates its observer later.
+    return value.copy()
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
@@ -706,12 +756,20 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
         _validate_score_ceiling_inputs(events, measurements)
-    observer = ecef(point.lat,point.lon,point.elev_m)
+    observer = _candidate_observer(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
     anchor = time_origin if time_origin is not None else candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"]
-    shifts = np.linspace(-time_sweep_s,time_sweep_s,max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1)
-    if mode == "robust_ridge" and "recording_start_bounds_s" in candidate:
+    default_count = max(1,int(np.ceil(2*time_sweep_s/time_step_s)))+1
+    bounded_clock = mode == "robust_ridge" and "recording_start_bounds_s" in candidate
+    # The bounded clock below replaces this entire array. Retain its original
+    # arithmetic/validation for unusual scalar types, ranges and error policies.
+    ordinary_clock = (bounded_clock and type(time_sweep_s) in (float, int) and type(time_step_s) in (float, int)
+                      and 0 <= time_sweep_s <= 86400 and 1e-6 <= time_step_s <= 86400
+                      and default_count <= 4096
+                      and np.geterr() == {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"})
+    shifts = None if bounded_clock and ordinary_clock else np.linspace(-time_sweep_s,time_sweep_s,default_count)
+    if bounded_clock:
         lower, upper = candidate["recording_start_bounds_s"]
         # CPA intervals propose a shared clock; the physical model may move it
         # within the same declared sweep used by legacy scoring.

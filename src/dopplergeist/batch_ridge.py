@@ -23,12 +23,20 @@ def _batch_fit_key(measurement, event, factors, emissions):
         raise TypeError("Uncached custom measurement time container")
     if type(event) is not dict or type(event.get("quality", {})) is not dict:
         raise TypeError("Uncached custom event container")
-    digest = hashlib.sha256()
-    settings = tuple(_fit_argument_key(value) for value in
-        (_frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02),
-         event["f0_range_hz"]))
-    digest.update(pickle.dumps(settings, protocol=5))
-    for array in (measurement[0].time, measurement[1], measurement[2], factors, emissions):
+    private = (matching._prepared_score_input(measurement, event)
+               if _fit_argument_key is matching._CANONICAL_SCORE_INPUT_FUNCTIONS[3]
+               and _frequency_scale is matching._CANONICAL_SCORE_INPUT_FUNCTIONS[0] else None)
+    if private is None:
+        digest = hashlib.sha256()
+        settings = tuple(_fit_argument_key(value) for value in
+            (_frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02),
+             event["f0_range_hz"]))
+        digest.update(pickle.dumps(settings, protocol=5))
+        arrays = (measurement[0].time, measurement[1], measurement[2], factors, emissions)
+    else:
+        digest = private.batch_digest.copy()
+        arrays = (factors, emissions)
+    for array in arrays:
         if type(array) is not np.ndarray or array.dtype.kind not in "biuf":
             raise TypeError("Uncached custom batch input")
         layout = (array.dtype.str, array.shape, array.strides, array.flags.aligned)
@@ -67,6 +75,7 @@ def _first_event_fits_with_ceilings(measurement, event, factors, emissions, limi
     bounds = event.get("f0_range_hz") if type(event) is dict else None
     quality = event.get("quality", {}) if type(event) is dict else None
     fraction = quality.get("source_drift_fraction", .02) if type(quality) is dict else None
+    native_validator = matching._CANONICAL_NATIVE_EVENT_VALIDATOR
     canonical = (
         first_event_fits is _CANONICAL_FIRST_EVENT_FITS
         and _first_event_fits_uncached is _CANONICAL_BATCH_FITTER
@@ -74,6 +83,9 @@ def _first_event_fits_with_ceilings(measurement, event, factors, emissions, limi
         and all(current is original for current, original in zip(
             (search._association_event_ceiling, search._association_event_ceiling_uncached,
              search._ridge_trial_classification), search._CANONICAL_CEILING_FUNCTIONS))
+        and matching._native_validate_ridge_events is native_validator
+        and search._native_validate_ridge_events is native_validator
+        and getattr(matching._native_ridge_module, "valid_ridge_events", None) is native_validator
         and type(limit) is float and math.isfinite(limit) and limit > 0
         and type(bounds) in (list, tuple) and len(bounds) == 2
         and all(type(value) is float for value in (*bounds, fraction))
@@ -93,11 +105,14 @@ def _cached_first_event_fits(measurement, event, factors, emissions, *,
     if cache is None or cache.max_entries < 1 or cache.batch_fit_limit <= 0:
         result = kernel(measurement, event, factors, emissions, **options)
         return result if ceiling_limit is None else (result, None)
-    # A changed fitter must not reuse its predecessor's snapshots.
-    if cache.batch_fit_function is not kernel:
+    # A changed Python or native fitter must not reuse its predecessor's snapshots.
+    if (cache.batch_fit_function is not kernel
+            or cache.batch_fit_backends[0] is not matching._native_fit_irls
+            or cache.batch_fit_backends[1] is not matching._native_fit_irls_batch):
         cache.batch_fit_entries.clear()
         cache.batch_fit_bytes = 0
         cache.batch_fit_function = kernel
+        cache.batch_fit_backends = (matching._native_fit_irls, matching._native_fit_irls_batch)
     try:
         key = _batch_fit_key(measurement, event, factors, emissions)
         if legacy_arithmetic:
@@ -121,8 +136,30 @@ def _cached_first_event_fits(measurement, event, factors, emissions, *,
     ceilings = None
     if result is not None:
         if ceiling_limit is not None:
-            from .search import _association_event_ceiling
-            ceilings = [_association_event_ceiling(fit, fit["score"], fit["f0_hz"], event, ceiling_limit)
+            from . import search
+
+            validator = search._association_event_ceiling
+            native_module, native_reason = matching._CANONICAL_PREFIX_FUNCTIONS[-2:]
+            native_validator = matching._CANONICAL_NATIVE_EVENT_VALIDATOR
+            if (native_validator is None
+                    and matching._native_validate_ridge_events is native_validator
+                    and search._native_validate_ridge_events is native_validator
+                    and getattr(matching._native_ridge_module, "valid_ridge_events", None) is native_validator
+                    and first_event_fits is _CANONICAL_FIRST_EVENT_FITS
+                    and kernel is _CANONICAL_BATCH_FITTER
+                    and _fit_diagnostics is _CANONICAL_FIT_DIAGNOSTICS
+                    and matching._native_fit_irls is matching._CANONICAL_NATIVE_IRLS
+                    and matching._native_ridge_module is native_module
+                    and getattr(native_module, "event_fit_reason", None) is native_reason
+                    and all(current is original for current, original in zip(
+                        (validator, search._association_event_ceiling_uncached,
+                         search._ridge_trial_classification), search._CANONICAL_CEILING_FUNCTIONS))
+                    and np.geterr() == matching._NATIVE_RIDGE_ERROR_POLICY):
+                # Without the native boolean fast path, this vector's own cache
+                # makes a second scalar evidence-key lookup unnecessary. Native
+                # validation instead uses the public scalar shortcut above.
+                validator = search._association_event_ceiling_uncached
+            ceilings = [validator(fit, fit["score"], fit["f0_hz"], event, ceiling_limit)
                         for fit in result]
         saved = result if ceiling_limit is None else _CeilingFitBatch(result, ceiling_limit, ceilings)
         snapshot = pickle.dumps(saved, protocol=5)
@@ -151,11 +188,18 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
     """
     sigma = _frequency_scale(event)
     fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
-    times, ridge, weights = _ridge_fit_inputs(measurement, sigma, fraction)
-    measured = np.isfinite(times) & np.isfinite(ridge) & (weights > 0)
+    private = (matching._prepared_score_input(measurement, event)
+               if _ridge_fit_inputs is matching._CANONICAL_SCORE_INPUT_FUNCTIONS[1]
+               and _frequency_scale is matching._CANONICAL_SCORE_INPUT_FUNCTIONS[0] else None)
+    if private is None:
+        times, ridge, weights = _ridge_fit_inputs(measurement, sigma, fraction)
+        measured = np.isfinite(times) & np.isfinite(ridge) & (weights > 0)
+        sample_count = measured.sum()
+    else:
+        sample_count = private.sample_count
     factors, emissions = np.asarray(factors, dtype=float), np.asarray(emissions, dtype=float)
-    if (measured.sum() < 10 or factors.ndim != 2 or emissions.shape != factors.shape
-            or factors.shape[1] != measured.sum() or not len(factors)
+    if (sample_count < 10 or factors.ndim != 2 or emissions.shape != factors.shape
+            or factors.shape[1] != sample_count or not len(factors)
             or not np.all(np.isfinite(factors)) or not np.all(factors > 0)
             or not np.all(np.isfinite(emissions)) or fraction <= 0):
         return None
@@ -163,8 +207,12 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
     # Keep scalar numeric promotion for noncanonical parameter types.
     if not legacy_arithmetic and any(type(value) not in (int, float) for value in (sigma, fraction, low, high)):
         return None
-    y, w = ridge[measured], weights[measured]
-    independent = len(np.unique(times[measured]))
+    if private is None:
+        y, w = ridge[measured], weights[measured]
+        independent = len(np.unique(times[measured]))
+    else:
+        _, y, w = private.selected
+        independent = private.independent
     diagnostic_error_policy = np.geterr()
     with np.errstate(over="ignore", invalid="ignore", divide="ignore", under="ignore"):
         w = w * independent / w.sum()
@@ -290,3 +338,7 @@ def _fit_diagnostics(score, alpha, beta, rmse, outlier, span, reference, cap, sa
 
 _CANONICAL_BATCH_FITTER = _first_event_fits_uncached
 _CANONICAL_FIT_DIAGNOSTICS = _fit_diagnostics
+_CANONICAL_PREFIX_FUNCTIONS = (
+    first_event_fits, _first_event_fits_with_ceilings, _cached_first_event_fits,
+    _first_event_fits_uncached, _fit_diagnostics, _batch_fit_key, _frequency_scale,
+    _ridge_fit_inputs, _fit_ridge_uncached)

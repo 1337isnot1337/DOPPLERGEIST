@@ -5,9 +5,17 @@
 #include <string.h>
 
 typedef struct {
+    PyObject *validation_keys[16];
     unsigned long long scalar_calls, scalar_successes;
     unsigned long long batch_calls, batch_rows, batch_successful_rows;
-} ridge_state;
+} RidgeModuleState;
+
+static const char *validation_names[] = {
+    "support_fraction", "score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+    "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz",
+    "outlier_fraction", "sample_count", "independent_sample_count", "optimizer_success",
+    "f0_range_hz", "quality", "source_drift_fraction"
+};
 
 static int
 get_vector(PyObject *object, Py_buffer *view)
@@ -235,7 +243,7 @@ fit_row(const Py_buffer *views, Py_ssize_t count, double lower, double upper,
 static PyObject *
 fit_irls(PyObject *self, PyObject *args)
 {
-    ridge_state *state = PyModule_GetState(self);
+    RidgeModuleState *state = PyModule_GetState(self);
     ++state->scalar_calls;
     PyObject *objects[4];
     double lower, upper, cap, sigma, output[5];
@@ -339,7 +347,7 @@ buffer_span(const Py_buffer *view, uintptr_t *begin, uintptr_t *end)
 static PyObject *
 fit_irls_batch(PyObject *self, PyObject *args)
 {
-    ridge_state *state = PyModule_GetState(self);
+    RidgeModuleState *state = PyModule_GetState(self);
     ++state->batch_calls;
     PyObject *objects[6];
     Py_buffer views[6] = {{0}};
@@ -420,7 +428,7 @@ done:
 static PyObject *
 fit_statistics(PyObject *self, PyObject *unused)
 {
-    ridge_state *state = PyModule_GetState(self);
+    RidgeModuleState *state = PyModule_GetState(self);
     return Py_BuildValue("{sK,sK,sK,sK,sK}",
                         "scalar_calls", state->scalar_calls,
                         "scalar_successes", state->scalar_successes,
@@ -429,106 +437,149 @@ fit_statistics(PyObject *self, PyObject *unused)
                         "batch_successful_rows", state->batch_successful_rows);
 }
 
-/* This is a positive-only shortcut for the Python evidence validator. Any
- * noncanonical or invalid value returns False, so Python retains its original
- * error reason, ordering, subclass behavior and unbounded-integer semantics.
- * No fit, score threshold or association arithmetic is performed here. */
+/* Only ordinary string-keyed dictionaries enter the fast validator. A custom
+ * key or container can execute Python during lookup and keeps the Python path. */
 static int
-plain_string_dict(PyObject *object)
+plain_dictionary(PyObject *object)
 {
     if (!PyDict_CheckExact(object)) return 0;
-    PyObject *key, *value;
     Py_ssize_t position = 0;
+    PyObject *key, *value;
     while (PyDict_Next(object, &position, &key, &value)) {
         if (!PyUnicode_CheckExact(key)) return 0;
     }
     return 1;
 }
 
-static int
-exact_finite_float(PyObject *object, double *value)
+static PyObject *
+sequence_item(PyObject *sequence, Py_ssize_t index)
 {
-    if (object == NULL || !PyFloat_CheckExact(object)) return 0;
-    *value = PyFloat_AS_DOUBLE(object);
-    return isfinite(*value);
+    return PyList_CheckExact(sequence) ? PyList_GET_ITEM(sequence, index) :
+                                       PyTuple_GET_ITEM(sequence, index);
 }
 
+/* Return 0 for valid evidence, a positive first-failure code, or -1 for
+ * Python fallback. Both public native interfaces share the same interned keys
+ * and exact-type guards. No evidence is cached or trusted because a fitter
+ * produced it; every call checks its current values. */
+static int
+ridge_event_reason(RidgeModuleState *state, PyObject *diagnostics, PyObject *scores,
+                   PyObject *frequencies, PyObject *events)
+{
+    if (!PyList_CheckExact(diagnostics) || !PyList_CheckExact(scores) ||
+        !PyList_CheckExact(frequencies) ||
+        !(PyList_CheckExact(events) || PyTuple_CheckExact(events))) return -1;
+    Py_ssize_t count = PyList_GET_SIZE(diagnostics);
+    Py_ssize_t event_count = PyList_CheckExact(events) ? PyList_GET_SIZE(events) :
+                                                     PyTuple_GET_SIZE(events);
+    if (PyList_GET_SIZE(scores) != count || PyList_GET_SIZE(frequencies) != count ||
+        event_count != count) return -1;
+
+    for (Py_ssize_t i = 0; i < count; ++i) {
+        PyObject *diagnostic = PyList_GET_ITEM(diagnostics, i);
+        PyObject *event = sequence_item(events, i);
+        PyObject *score_object = PyList_GET_ITEM(scores, i);
+        PyObject *frequency_object = PyList_GET_ITEM(frequencies, i);
+        if (!plain_dictionary(diagnostic) || !plain_dictionary(event) ||
+            !PyFloat_CheckExact(score_object) || !PyFloat_CheckExact(frequency_object)) {
+            return -1;
+        }
+        double values[10];
+        for (int j = 0; j < 10; ++j) {
+            PyObject *value = PyDict_GetItem(diagnostic, state->validation_keys[j]);
+            if (value == NULL || !PyFloat_CheckExact(value)) return -1;
+            values[j] = PyFloat_AS_DOUBLE(value);
+        }
+        PyObject *samples = PyDict_GetItem(diagnostic, state->validation_keys[10]);
+        PyObject *independent = PyDict_GetItem(diagnostic, state->validation_keys[11]);
+        if (samples == NULL || independent == NULL ||
+            !PyLong_CheckExact(samples) || !PyLong_CheckExact(independent)) return -1;
+        Py_ssize_t sample_count = PyLong_AsSsize_t(samples);
+        if (PyErr_Occurred()) { PyErr_Clear(); return -1; }
+        Py_ssize_t independent_count = PyLong_AsSsize_t(independent);
+        if (PyErr_Occurred()) { PyErr_Clear(); return -1; }
+        PyObject *optimizer = PyDict_GetItem(diagnostic, state->validation_keys[12]);
+        if (optimizer != NULL && !PyBool_Check(optimizer)) return -1;
+        PyObject *bounds = PyDict_GetItem(event, state->validation_keys[13]);
+        if (bounds == NULL || !(PyList_CheckExact(bounds) || PyTuple_CheckExact(bounds))) {
+            return -1;
+        }
+        Py_ssize_t size = PyList_CheckExact(bounds) ? PyList_GET_SIZE(bounds) : PyTuple_GET_SIZE(bounds);
+        if (size != 2) return -1;
+        PyObject *low_object = sequence_item(bounds, 0), *high_object = sequence_item(bounds, 1);
+        if (!PyFloat_CheckExact(low_object) || !PyFloat_CheckExact(high_object)) return -1;
+        double low = PyFloat_AS_DOUBLE(low_object), high = PyFloat_AS_DOUBLE(high_object);
+        double fraction = 0.02;
+        PyObject *quality = PyDict_GetItem(event, state->validation_keys[14]);
+        if (quality != NULL) {
+            if (!plain_dictionary(quality)) return -1;
+            PyObject *configured = PyDict_GetItem(quality, state->validation_keys[15]);
+            if (configured != NULL) {
+                if (!PyFloat_CheckExact(configured)) return -1;
+                fraction = PyFloat_AS_DOUBLE(configured);
+            }
+        }
+        double score = PyFloat_AS_DOUBLE(score_object), frequency = PyFloat_AS_DOUBLE(frequency_object);
+        if (!isfinite(values[0]) || values[0] != 1.0) return 1;
+        int finite = isfinite(score) && isfinite(frequency);
+        for (int j = 1; j < 10; ++j) finite = finite && isfinite(values[j]);
+        if (!finite) return 2;
+        if (independent_count < 1 || independent_count > sample_count || sample_count < 10 ||
+            values[6] <= 0.0 || values[7] < 0.0 || values[8] < 0.0 ||
+            !(0.0 <= values[9] && values[9] <= 1.0) || values[2] <= 0.0 || values[1] > 0.0) {
+            return 3;
+        }
+        if (optimizer == Py_False) return 4;
+        if (score != values[1] || frequency != values[2]) return 5;
+        if (!isfinite(low) || !isfinite(high) || !(0.0 < low && low <= high) ||
+            !(low <= frequency && frequency <= high) || !isfinite(fraction) ||
+            !(0.0 <= fraction && fraction <= 0.1)) return 6;
+        double drift = values[3], cap = values[7];
+        if (!(low * fraction <= cap && cap <= high * fraction) || fabs(drift) > cap) {
+            return 7;
+        }
+        if (fabs(values[4] * values[6] - drift) > 1e-12 + 1e-12 * fabs(drift)) {
+            return 8;
+        }
+    }
+    return 0;
+}
+
+/* Diagnostic compatibility API: preserve first-failure codes and tuple events.
+ * Score summation and association arithmetic remain in Python. */
+static PyObject *
+event_fit_reason(PyObject *self, PyObject *args)
+{
+    PyObject *diagnostics, *scores, *frequencies, *events;
+    RidgeModuleState *state = PyModule_GetState(self);
+    if (state == NULL) return NULL;
+    if (!PyArg_ParseTuple(args, "OOOO", &diagnostics, &scores, &frequencies, &events)) {
+        return NULL;
+    }
+    int reason = ridge_event_reason(state, diagnostics, scores, frequencies, events);
+    if (reason < 0) Py_RETURN_NONE;
+    return PyLong_FromLong(reason);
+}
+
+/* Positive-only upstream API. Invalid or noncanonical inputs retain Python's
+ * original failure ordering, custom behavior, and unbounded-integer semantics.
+ * Its outer event container remains an exact list, as on upstream main. */
 static PyObject *
 valid_ridge_events(PyObject *self, PyObject *args)
 {
     PyObject *diagnostics, *scores, *frequencies, *events;
+    RidgeModuleState *state = PyModule_GetState(self);
+    if (state == NULL) return NULL;
     if (!PyArg_ParseTuple(args, "OOOO", &diagnostics, &scores, &frequencies, &events)) {
         return NULL;
     }
-    if (!PyList_CheckExact(diagnostics) || !PyList_CheckExact(scores) ||
-        !PyList_CheckExact(frequencies) || !PyList_CheckExact(events)) Py_RETURN_FALSE;
-    Py_ssize_t count = PyList_GET_SIZE(events);
-    if (PyList_GET_SIZE(diagnostics) != count || PyList_GET_SIZE(scores) != count ||
-        PyList_GET_SIZE(frequencies) != count) Py_RETURN_FALSE;
-
-    static const char *fields[] = {
-        "support_fraction", "score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
-        "source_reference_emission_time_s", "source_span_s", "drift_bound_hz",
-        "rmse_hz", "outlier_fraction"
-    };
-    for (Py_ssize_t index = 0; index < count; ++index) {
-        PyObject *diagnostic = PyList_GET_ITEM(diagnostics, index);
-        PyObject *event = PyList_GET_ITEM(events, index);
-        if (!plain_string_dict(diagnostic) || !plain_string_dict(event)) Py_RETURN_FALSE;
-        double values[10], score, frequency;
-        for (int field = 0; field < 10; ++field) {
-            if (!exact_finite_float(PyDict_GetItemString(diagnostic, fields[field]),
-                                    &values[field])) Py_RETURN_FALSE;
-        }
-        if (!exact_finite_float(PyList_GET_ITEM(scores, index), &score) ||
-            !exact_finite_float(PyList_GET_ITEM(frequencies, index), &frequency)) Py_RETURN_FALSE;
-        if (values[0] != 1.0 || values[6] <= 0.0 || values[7] < 0.0 || values[8] < 0.0 ||
-            values[9] < 0.0 || values[9] > 1.0 || values[2] <= 0.0 || values[1] > 0.0 ||
-            score != values[1] || frequency != values[2]) Py_RETURN_FALSE;
-
-        PyObject *samples = PyDict_GetItemString(diagnostic, "sample_count");
-        PyObject *independent = PyDict_GetItemString(diagnostic, "independent_sample_count");
-        if (samples == NULL || independent == NULL || !PyLong_CheckExact(samples) ||
-            !PyLong_CheckExact(independent)) Py_RETURN_FALSE;
-        Py_ssize_t n = PyLong_AsSsize_t(samples);
-        if (n == -1 && PyErr_Occurred()) {
-            PyErr_Clear();
-            Py_RETURN_FALSE;
-        }
-        Py_ssize_t k = PyLong_AsSsize_t(independent);
-        if (k == -1 && PyErr_Occurred()) {
-            PyErr_Clear();
-            Py_RETURN_FALSE;
-        }
-        if (n < 10 || k < 1 || k > n) Py_RETURN_FALSE;
-        PyObject *optimizer = PyDict_GetItemString(diagnostic, "optimizer_success");
-        if (optimizer != NULL && optimizer != Py_True) Py_RETURN_FALSE;
-
-        PyObject *bounds = PyDict_GetItemString(event, "f0_range_hz");
-        if (bounds == NULL || !(PyList_CheckExact(bounds) || PyTuple_CheckExact(bounds))) Py_RETURN_FALSE;
-        int tuple_bounds = PyTuple_CheckExact(bounds);
-        Py_ssize_t bounds_count = tuple_bounds ? PyTuple_GET_SIZE(bounds) : PyList_GET_SIZE(bounds);
-        if (bounds_count != 2) Py_RETURN_FALSE;
-        double lower, upper, fraction = 0.02;
-        if (!exact_finite_float(tuple_bounds ? PyTuple_GET_ITEM(bounds, 0) : PyList_GET_ITEM(bounds, 0), &lower) ||
-            !exact_finite_float(tuple_bounds ? PyTuple_GET_ITEM(bounds, 1) : PyList_GET_ITEM(bounds, 1), &upper)) Py_RETURN_FALSE;
-        PyObject *quality = PyDict_GetItemString(event, "quality");
-        if (quality != NULL) {
-            if (!plain_string_dict(quality)) Py_RETURN_FALSE;
-            PyObject *configured = PyDict_GetItemString(quality, "source_drift_fraction");
-            if (configured != NULL && !exact_finite_float(configured, &fraction)) Py_RETURN_FALSE;
-        }
-        if (!(0.0 < lower && lower <= upper && lower <= frequency && frequency <= upper &&
-              0.0 <= fraction && fraction <= 0.1)) Py_RETURN_FALSE;
-        double drift = values[3], cap = values[7];
-        if (!(lower * fraction <= cap && cap <= upper * fraction) || fabs(drift) > cap) Py_RETURN_FALSE;
-        if (fabs(values[4] * values[6] - drift) > 1e-12 + 1e-12 * fabs(drift)) Py_RETURN_FALSE;
-    }
-    Py_RETURN_TRUE;
+    if (!PyList_CheckExact(events)) Py_RETURN_FALSE;
+    return PyBool_FromLong(ridge_event_reason(state, diagnostics, scores, frequencies, events) == 0);
 }
 
 static PyMethodDef methods[] = {
     {"fit_irls", fit_irls, METH_VARARGS, "Run six robust ridge-fit iterations in C."},
+    {"event_fit_reason", event_fit_reason, METH_VARARGS, "Validate canonical per-event fit evidence, or request Python fallback."},
     {"fit_irls_batch", fit_irls_batch, METH_VARARGS,
      "Run the same robust fit for contiguous clock rows with shared scratch storage."},
     {"fit_statistics", fit_statistics, METH_NOARGS, "Read native fit operation counters."},
@@ -537,12 +588,45 @@ static PyMethodDef methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+static int
+ridge_traverse(PyObject *module, visitproc visit, void *arg)
+{
+    RidgeModuleState *state = PyModule_GetState(module);
+    for (int i = 0; i < 16; ++i) Py_VISIT(state->validation_keys[i]);
+    return 0;
+}
+
+static int
+ridge_clear(PyObject *module)
+{
+    RidgeModuleState *state = PyModule_GetState(module);
+    for (int i = 0; i < 16; ++i) Py_CLEAR(state->validation_keys[i]);
+    return 0;
+}
+
+static void
+ridge_free(void *module)
+{
+    ridge_clear((PyObject *)module);
+}
+
 static struct PyModuleDef module = {
-    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, sizeof(ridge_state), methods
+    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, sizeof(RidgeModuleState), methods,
+    NULL, ridge_traverse, ridge_clear, ridge_free
 };
 
 PyMODINIT_FUNC
 PyInit__native_ridge(void)
 {
-    return PyModule_Create(&module);
+    PyObject *created = PyModule_Create(&module);
+    if (created == NULL) return NULL;
+    RidgeModuleState *state = PyModule_GetState(created);
+    for (int i = 0; i < 16; ++i) {
+        state->validation_keys[i] = PyUnicode_InternFromString(validation_names[i]);
+        if (state->validation_keys[i] == NULL) {
+            Py_DECREF(created);
+            return NULL;
+        }
+    }
+    return created;
 }

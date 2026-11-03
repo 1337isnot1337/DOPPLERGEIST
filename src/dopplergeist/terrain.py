@@ -1,4 +1,5 @@
 """Terrain sampling and common projected grids."""
+from collections import OrderedDict
 from functools import lru_cache
 from pathlib import Path
 
@@ -18,8 +19,90 @@ class Terrain:
         self.rasters = [rasterio.open(p) for p in (paths or [])]
         self.constant = constant_m
         self.geoid = Terrain([geoid_path]) if geoid_path else None
+        # Each sampler, including the optional geoid, retains at most 4 MiB
+        # of exact pixels and masks for scalar optimizer evaluations.
+        self._scalar_blocks = OrderedDict()
+        self._scalar_block_bytes = 0
+        self._scalar_cache_limit = 4 * 1024 * 1024
+        self._scalar_sources = {}
         if not self.rasters and constant_m is None:
             raise ValueError("Supply DEM raster paths or an explicit constant ground elevation")
+
+    @staticmethod
+    def _source_signature(paths):
+        result = []
+        for path in paths:
+            stat = path.stat()
+            result.append((stat.st_dev, stat.st_ino, stat.st_size,
+                           stat.st_mtime_ns, stat.st_ctime_ns))
+        return tuple(result)
+
+    def _scalar_pixel(self, raster, row, col):
+        """Return an unchanged pixel and mask, with bounded local-file reuse."""
+        from rasterio.io import DatasetReader
+        from rasterio.windows import Window
+
+        # Custom readers, writable/closed datasets and virtual sources retain
+        # their normal read behavior. A closed reader must not return old pixels.
+        cacheable = (self._scalar_cache_limit > 0 and
+                     type(raster) is DatasetReader and not raster.closed and
+                     raster.mode == "r" and raster.driver == "GTiff")
+        if cacheable and raster not in self._scalar_sources:
+            paths = tuple(Path(path) for path in raster.files)
+            try:
+                signature = self._source_signature(paths) if paths else None
+            except OSError:
+                signature = None
+            self._scalar_sources[raster] = ((paths, signature)
+                                             if signature is not None else None)
+        source = self._scalar_sources.get(raster) if cacheable else None
+        if source is None:
+            data = raster.read(1, window=Window(col, row, 1, 1), masked=True)
+            return np.asarray(data)[0, 0], np.ma.getmaskarray(data)[0, 0]
+
+        paths, signature = source
+        try:
+            unchanged = self._source_signature(paths) == signature
+        except OSError:
+            unchanged = False
+        if not unchanged:
+            raise ValueError(f"Terrain raster changed after caching: {raster.name}")
+
+        # Keep windows inside the same underlying storage block as the requested
+        # pixel, including striped TIFFs and blocks not divisible by 64.
+        size = 64
+        block_h, block_w = raster.block_shapes[0]
+        block_r, block_c = row // block_h * block_h, col // block_w * block_w
+        r0 = block_r + (row-block_r) // size * size
+        c0 = block_c + (col-block_c) // size * size
+        key = (raster, r0, c0)
+        entry = self._scalar_blocks.get(key)
+        if entry is None:
+            height = min(size, block_r+block_h-r0, raster.height-r0)
+            width = min(size, block_c+block_w-c0, raster.width-c0)
+            data = raster.read(1, window=Window(c0, r0, width, height), masked=True)
+            pixels, mask = np.asarray(data), np.ma.getmaskarray(data)
+            try:
+                unchanged = self._source_signature(paths) == signature
+            except OSError:
+                unchanged = False
+            if not unchanged:
+                raise ValueError(f"Terrain raster changed while reading: {raster.name}")
+            byte_count = pixels.nbytes + mask.nbytes
+            if byte_count <= self._scalar_cache_limit:
+                while self._scalar_blocks and (
+                        self._scalar_block_bytes + byte_count > self._scalar_cache_limit or
+                        len(self._scalar_blocks) >= 256):
+                    _, old = self._scalar_blocks.popitem(last=False)
+                    self._scalar_block_bytes -= old[0].nbytes + old[1].nbytes
+                pixels.flags.writeable = False
+                mask.flags.writeable = False
+                self._scalar_blocks[key] = (pixels, mask)
+                self._scalar_block_bytes += byte_count
+        else:
+            self._scalar_blocks.move_to_end(key)
+            pixels, mask = entry
+        return pixels[row-r0, col-c0], mask[row-r0, col-c0]
 
     def sample(self, lat, lon):
         from rasterio.windows import Window
@@ -31,6 +114,13 @@ class Terrain:
             x, y = transform.transform(lon.ravel(), lat.ravel())
             col,row=(~raster.transform) @ (np.asarray(x),np.asarray(y))
             col,row=np.floor(col).astype(int),np.floor(row).astype(int)
+            if lat.size == 1:
+                c, r = int(col[0]), int(row[0])
+                if 0 <= c < raster.width and 0 <= r < raster.height:
+                    value, masked = self._scalar_pixel(raster, r, c)
+                    if not masked:
+                        elevation.ravel()[0] = value
+                continue
             inside=(col>=0)&(col<raster.width)&(row>=0)&(row<raster.height)
             values=np.ma.masked_all(len(col))
             if np.any(inside):

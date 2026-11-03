@@ -532,6 +532,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if ledger is not None:
             ledger.record(stage, [], [], 0)
         return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported}
+    if parameters.get("mode") == "robust_ridge":
+        from .matching import _prepare_score_inputs
+        events, measurements = _prepare_score_inputs(events, measurements)
     table = pd.DataFrame({name: np.concatenate([batch[name] for batch in cpa_batches])
                           for name in _CPA_DTYPE.names}, copy=False)
     del cpa_batches, track_batches

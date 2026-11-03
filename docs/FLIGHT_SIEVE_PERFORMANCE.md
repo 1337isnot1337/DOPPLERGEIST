@@ -2,6 +2,40 @@
 
 ## Measured result
 
+The final integrated version combines these changes with the prepared-input and
+prefix-cache work from PR #256, pinned at
+`5eaee3a43120af13c9bc16ef7f03b782251cdac0`. Three alternating recorded-input pairs
+measured **1.70x faster query-through-retention processing** and **41% less CPU
+time**. These are direct measurements of the combined implementation; the
+individual speedups below are not multiplied.
+
+The timed source combined PR #256 at
+`4c213fa36777806bb24f4541eff3bc302fa24f6d` with these changes. The subsequent
+`5eaee3a` update preserves exact immutable NumPy `float64` metadata from live
+discovery, allowing prepared-input and prefix caches to remain eligible.
+Recorded JSON inputs do not retain that scalar type. Its recorded-input tests
+verify the live metadata behavior; the timing series was not rerun for this update.
+
+| Final integrated scope | Baseline | Integrated version | Improvement |
+| --- | ---: | ---: | ---: |
+| Complete measured CPU time | 33.451 s | 19.724 s | 1.70x |
+| Complete measured wall time | 33.505 s | 19.760 s | 1.70x |
+| Query and distance-sieve CPU time | 6.276 s | 0.345 s | 18.20x |
+| CPA, association scoring, and retention CPU time | 27.215 s | 19.379 s | 1.40x |
+| Worker peak resident memory | 498.375 MiB | 374.262 MiB | 24.9% less |
+
+Worker memory uses Linux `/proc/self/status` `VmHWM` after exec. It includes
+imports and input loading. It excludes the comparison parent's memory, which
+can otherwise contaminate `ru_maxrss` across fork/exec.
+
+The integrated code retains the existing scoring-cache implementation and adds
+native-batch identity to prepared-input, fit-snapshot, and prefix-cache guards.
+Changed custom hooks therefore invalidate reused fits and eliminated prefixes.
+The recorded-input integration suite passed 143 checks plus four subtests;
+three additional recorded hook regressions also passed.
+
+### Isolated contribution of this change
+
 The clock-partition query bound removes impossible whole flight segments before
 JSON decoding, spline construction, distance checks, and closest-approach work.
 The dense recorded replay queried **197 segments instead of 4,694**. It preserved

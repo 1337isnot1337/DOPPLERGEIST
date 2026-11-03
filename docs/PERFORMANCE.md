@@ -127,7 +127,8 @@ The separate cache-disabled query experiment uses CPU 0 and fresh index objects.
 Operating-system file caches are not purged; “cold” describes the application track cache, not cold storage.
 The host is shared, so CPU affinity does not imply exclusive machine access.
 Separate profiling and native-validator hit-rate diagnostics are excluded from timing medians.
-The comparison harness retains its lightweight operation counters and candidate capture in both timed arms.
+The reported PR258 runs used numerical operation counters and candidate capture in both timed arms.
+Current comparisons preserve numerical function identities; separate diagnostic workers collect wrapped counters, as described below.
 
 The local runtime is Python 3.12.14, NumPy 2.5.4, SciPy 1.17.0, pandas 2.2.3, pyproj 3.8.0, pyarrow 26.0.1, and SQLite 3.53.1 on Linux x86-64.
 Native extensions use GCC with the existing strict floating-point build options.
@@ -166,7 +167,9 @@ taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py co
 
 Check native availability after installation; source updates require rebuilding the extension and restarting a running service.
 The runtime remains usable through its Python fallback, but that fallback does not receive the native evidence-validation saving.
-The comparison requires successful native operations in the measured current arm and refuses to report a speedup if any exact-output comparison fails.
+Current comparisons require the native ridge backend and successful native acoustic operations.
+A separate diagnostic worker verifies successful native ridge execution.
+The harness refuses to report a speedup if any exact-output comparison fails.
 The `Real performance comparison` workflow runs recorded regressions and these paired measurements, and preserves summaries as artifacts.
 
 ## Measured native computation and bounded reuse
@@ -1155,7 +1158,21 @@ done
 
 The comparison alternates arm order in fresh worker processes.
 It compares every candidate, diagnostic, support record, ranking, and logical retention row exactly before reporting a speedup.
-Native success counters must increase inside the timed scoring call.
+Timed runs preserve the original numerical functions so guarded production optimizations remain active.
+Unmeasured scalar and native-ridge call counts are `null`, not zero.
+The native acoustic solver exposes an internal success counter without wrapping its numerical functions.
+Native ridge calls are checked in a separate diagnostic worker:
+
+```bash
+python scripts/benchmark_prepared_measurements.py diagnose \
+  --source src --fixture benchmark-inputs/point-120.json \
+  --instrument-numerics --require-native --require-native-acoustic \
+  --output results/native-scoring-operations
+```
+
+Numerical wrappers can disable guarded caches, so diagnostic counts describe that execution path only.
+Diagnostic timings do not establish a production speedup.
+The workflow checks that this diagnostic worker preserves the canonical worker's complete scientific outputs.
 Input loading is reported separately, and the RSS measurement covers the worker lifetime through scoring.
 
 The complete-fit cache shares its existing 4 MiB digest-key and serialized-payload budget with validated batch ceilings.
