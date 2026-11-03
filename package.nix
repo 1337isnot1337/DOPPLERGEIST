@@ -46,7 +46,12 @@ python314.pkgs.buildPythonApplication {
   meta = {
     description = "Aircraft acoustic geolocation using Doppler shifts";
     homepage = "https://github.com/1337isnot1337/DOPPLERGEIST";
-    license = lib.licenses.mit;
+    license = {
+      spdxId = "PolyForm-Noncommercial-1.0.0";
+      fullName = "PolyForm Noncommercial License 1.0.0";
+      url = "https://polyformproject.org/licenses/noncommercial/1.0.0";
+      free = false;
+    };
     maintainers = with lib.maintainers; [ kleindotc ];
     mainProgram = "dopplergeist";
     platforms = lib.platforms.linux;
