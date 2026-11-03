@@ -26,22 +26,20 @@ Dependencies are integration gates, not an instruction to spend days idle. Work
 on fixtures, adapters, diagnostics and reproducible baseline checks while waiting.
 Do not close a task using mocked outputs or a proposed design alone.
 
-## Suggested seven-agent deployment
+## Five swarm workers plus the primary integration agent
 
 | Agent role | Task sequence | Responsibility |
 | --- | --- | --- |
-| Integration lead | [DG-01](https://github.com/1337isnot1337/DOPPLERGEIST/issues/2) → [DG-12](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) | Own shared contracts first, coordinate PR order, then run final acceptance. |
-| Evaluation and confidence | [DG-02](https://github.com/1337isnot1337/DOPPLERGEIST/issues/3) → [DG-08](https://github.com/1337isnot1337/DOPPLERGEIST/issues/9) | Build fixtures/independent truth first; validate abstention and false matches after matching/search are available. |
-| Audio | [DG-03](https://github.com/1337isnot1337/DOPPLERGEIST/issues/4) → [DG-04](https://github.com/1337isnot1337/DOPPLERGEIST/issues/5) | Implement intake, then full-recording event discovery and harmonic grouping. |
-| Data and scale | [DG-05](https://github.com/1337isnot1337/DOPPLERGEIST/issues/6) → [DG-06](https://github.com/1337isnot1337/DOPPLERGEIST/issues/7) | Provide cached/indexed inputs, then bounded-memory national search. |
-| Matching | [DG-07](https://github.com/1337isnot1337/DOPPLERGEIST/issues/8) | Improve uncertain event-to-flight association and physical refinement; preserve locked clocks. |
-| Product | [DG-09](https://github.com/1337isnot1337/DOPPLERGEIST/issues/10) → [DG-10](https://github.com/1337isnot1337/DOPPLERGEIST/issues/11) | Build the actual service/CLI path, then upload UI; use contract fixtures while dependencies mature. |
-| Packaging | [DG-11](https://github.com/1337isnot1337/DOPPLERGEIST/issues/12) | Own install/CI/dependency coordination and checksum-verified artifact restoration. |
+| Worker 1: Audio | [DG-03 / #4](https://github.com/1337isnot1337/DOPPLERGEIST/issues/4) → [DG-04 / #5](https://github.com/1337isnot1337/DOPPLERGEIST/issues/5) | Intake, automatic event discovery and harmonic grouping |
+| Worker 2: Data and scale | [DG-05 / #6](https://github.com/1337isnot1337/DOPPLERGEIST/issues/6) → [DG-06 / #7](https://github.com/1337isnot1337/DOPPLERGEIST/issues/7) | Cached/indexed inputs and bounded-memory national search |
+| Worker 3: Matching | [DG-07 / #8](https://github.com/1337isnot1337/DOPPLERGEIST/issues/8) | Event-to-flight association and physical refinement |
+| Worker 4: Evaluation and confidence | [DG-02 / #3](https://github.com/1337isnot1337/DOPPLERGEIST/issues/3) → [DG-08 / #9](https://github.com/1337isnot1337/DOPPLERGEIST/issues/9) | Independent benchmarks, ambiguity and abstention |
+| Worker 5: Product | [DG-09 / #10](https://github.com/1337isnot1337/DOPPLERGEIST/issues/10) → [DG-10 / #11](https://github.com/1337isnot1337/DOPPLERGEIST/issues/11) | Actual orchestration/API and upload UI |
+| Primary integration agent | [DG-01 / #2](https://github.com/1337isnot1337/DOPPLERGEIST/issues/2), [DG-11 / #12](https://github.com/1337isnot1337/DOPPLERGEIST/issues/12), [DG-12 / #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) | Shared contracts, packaging/CI and final integration |
 
-With fewer agents, combine matching with integration and packaging with product.
-With more agents, split benchmark acquisition from its evaluation runner, or API
-from UI, after agreeing on ownership and contracts. Do not have several agents
-independently rewrite `audio.py`, `search.py` or `pipeline.py`.
+The user is launching five workers. This allocation supersedes the earlier
+seven-role suggestion. Do not have several agents independently rewrite
+`audio.py`, `search.py` or `pipeline.py`.
 
 ## Ready-to-copy assignment prompt
 
