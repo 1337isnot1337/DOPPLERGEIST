@@ -10,6 +10,11 @@ reference WAV used by the tests remains included.
 
 ## Download and restore
 
+For selective downloads and restoration that preserves existing files, use
+`python scripts/restore_artifacts.py --list`, then repeat `--bundle NAME` for the
+needed bundles. See [SETUP.md](SETUP.md) for examples. This checks bundle/file hashes
+and refuses conflicting files. The manual commands below overwrite matching paths.
+
 From the repository root, with GitHub CLI authenticated:
 
 ```bash
