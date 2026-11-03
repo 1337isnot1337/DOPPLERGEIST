@@ -63,6 +63,15 @@ representation must retain or improve each mode's original score, within numeric
 tolerance. These checks prevent a mapping or normalization error from hiding a
 better original grid hypothesis.
 
+For this narrow scope, a completed, fully supported core score at the frozen
+position/shared-clock/association/event subset and declared model counts as an
+assessment. Joint refinement of every retained point is not required. Failed,
+unvisited or unsupported core evaluations are unassessed. Unperformed refinements
+are explicit limitations, not an inferred continuous score bound. The leading
+estimate still needs successful complete measurement/model sensitivity profiles;
+all retained seeds remain in the ambiguity comparison. Do not turn on the old
+exhaustion/refinement boolean using this narrower meaning.
+
 ## Decision interpretation
 
 A supplied finite object takes precedence over an optimistic legacy boolean.
@@ -79,7 +88,8 @@ undergoes the existing position/association near-tie checks against the actual
 returned radius. Full measurement/model sensitivity and optimizer/boundary guards
 remain mandatory.
 
-An accepted finite object records its grid resolutions, counts, bound, limitations
+An accepted finite object uses policy version `engineering-v4-finite-grid` and
+records its grid resolutions, counts, bound, limitations
 and `continuous_space_uniqueness: not established` in the decision artifact. A
 passing result supports only these declared assumptions. There is no new claim
 that an uncalibrated radius guarantees the 1,000 m benchmark target.
