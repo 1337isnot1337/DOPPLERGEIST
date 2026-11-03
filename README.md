@@ -5,14 +5,17 @@ in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI). The pipeline
 measures Doppler curves, compares them with historical ADS-B trajectories, accounts
 for terrain and sound travel time, and ranks candidate recording positions.
 
-**The target is automatic MP3-to-location analysis, with 100 m error counting as
-success. Independent national real-audio accuracy is not yet verified.** Automatic
+**The target is automatic MP3-to-location analysis: up to 1 km error is acceptable,
+with 100–500 m or better preferred. Independent national real-audio accuracy is
+not yet verified.** Automatic
 event discovery, historical-data indexing, tiled search, partial event matching
 and physical sensitivity checks are implemented. The upload service and decision
 rules are being integrated in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19).
 The configured `run` CLI remains available for research replays. A defensible
 recording date or bounded time window is needed to select historical flight data;
-an undated audio file does not itself establish that clock.
+an undated audio file does not itself establish that clock. The joint analysis is
+being extended to use all supported independent flyovers, including three, four
+or more; harmonics and fragments of one flyover count once.
 
 ## Verified results
 
@@ -21,7 +24,7 @@ an undated audio file does not itself establish that clock.
 | Independent synthetic two-event audio | 21.89 m error; correct flight pair | Unknown recording start; three candidate regions; truth withheld from search |
 | Independent synthetic 60-second event | 40.87 m error; correct flight | Known recording start; manually selected event |
 | Original recording, two events | 43.86 m from published public-platform coordinate | Regional search; source-informed windows and bounds; reference coordinate is not surveyed ground truth |
-| Original recording, faint 60-second event | 357.47 m from the same reference | Regional search; clock borrowed from the two-event result; does not meet the 100 m target |
+| Original recording, faint 60-second event | 357.47 m from the same reference | Regional search; clock borrowed from the two-event result; exceeded the original checkpoint's 100 m threshold |
 | Separate 40-passage acoustic dataset | 33 detections; median speed error 6.85%, slant error 15.37% among detections | Annotation-assisted frequency bands; feature benchmark, not location validation |
 
 These are the original configured checkpoints. The independent clean replay

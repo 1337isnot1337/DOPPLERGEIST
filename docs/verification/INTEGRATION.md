@@ -18,6 +18,12 @@ index aircraft-class fallback; there were no failures or skips. Machine-readable
 record the exact source objects and environment. Test counts cover integration
 behavior; they do not establish real-world location accuracy.
 
+The user's updated acceptance target is at most 1,000 m error, with 100–500 m or
+better preferred. Future evaluations report 100/500/1,000 m thresholds and must
+exercise three, four and more independent flyovers without a fixed event cap.
+Older runs retain their original settings and thresholds; changing the target
+does not repair missing reference coordinates, clock evidence or flight coverage.
+
 Current real-data evidence is deliberately narrower:
 
 - The [clean configured replay](CLEAN_REPLAY.md) preserves both the regional
