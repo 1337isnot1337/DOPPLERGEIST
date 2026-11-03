@@ -58,7 +58,7 @@ def detection_counts(expected, observed, iou_threshold=0.3):
             "false_alarms": len(predictions) - hits}
 
 
-def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
+def evaluate(manifest, predictions, truth, threshold_m=1000, iou_threshold=0.3):
     """Join case-ID keyed result/truth dictionaries, preserving the manifest order.
 
     Eligible real cases require independently established clock and location.
@@ -67,6 +67,7 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
     """
     if not math.isfinite(threshold_m) or threshold_m <= 0:
         raise ValueError("Distance threshold must be positive and finite")
+    thresholds = sorted({100, 500, 1000, threshold_m})
     rows = []
     ids = [c["case_id"] for c in manifest["cases"]]
     if len(ids) != len(set(ids)):
@@ -106,6 +107,7 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
                 if not math.isfinite(best[name]) or not low <= best[name] <= high:
                     raise ValueError(f"Invalid {name} for {key}")
             row["diagnostic_best_candidate_error_m"] = distance_m([best["lat"], best["lon"]], label["location"])
+            row["diagnostic_within_thresholds_m"] = {str(t): row["diagnostic_best_candidate_error_m"] <= t for t in thresholds}
             if "flight_ids" in label:
                 row["diagnostic_flight_ids_correct"] = best.get("flight_ids") == label["flight_ids"]
         if located:
@@ -135,6 +137,11 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
         assessed = [r for r in selected if r["location_accuracy_eligible"] or
                     truth.get(r["case_id"], {}).get("expect_inconclusive", False)]
         false = sum(r.get("false_localization", False) for r in assessed)
+        def false_at(row, threshold):
+            label = truth.get(row["case_id"], {})
+            return row["location_returned"] and (label.get("expect_inconclusive", False) or
+                row.get("flight_ids_correct") is False or
+                (row["location_accuracy_eligible"] and row.get("location_error_m", math.inf) > threshold))
         return {"cases": n, "eligible_location_cases": len(eligible),
                 "successful_locations_within_threshold": sum(r.get("within_threshold", False) and
                     not r.get("false_localization", False) for r in fixes),
@@ -142,6 +149,9 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
                 "false_localizations": false,
                 "false_localization_rate": false / len(assessed) if assessed else None,
                 "false_localization_denominator": len(assessed),
+                "successful_locations_by_threshold_m": {str(t): sum(r.get("location_error_m", math.inf) <= t and
+                    r.get("flight_ids_correct") is not False for r in fixes) for t in thresholds},
+                "false_localizations_by_threshold_m": {str(t): sum(false_at(r, t) for r in assessed) for t in thresholds},
                 "inconclusive_rate": sum(r["status"] == "inconclusive" for r in selected) / n if n else None,
                 "execution_failures": sum(r["status"] in {"failed", "missing"} for r in selected),
                 "needs_input": sum(r["status"] == "needs_input" for r in selected),
@@ -149,7 +159,7 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
                 "detection_recall": tp / (tp + fn) if tp + fn else None,
                 "detection_precision": tp / (tp + fp) if tp + fp else None}
 
-    return {"schema_version": 1, "threshold_m": threshold_m, "event_iou_threshold": iou_threshold,
+    return {"schema_version": 1, "threshold_m": threshold_m, "distance_thresholds_m": thresholds, "event_iou_threshold": iou_threshold,
             "cases": rows, "summary": summarize(rows),
             "by_split": {split: summarize([r for r in rows if r["split"] == split])
                          for split in sorted({r["split"] for r in rows})},
