@@ -15,6 +15,15 @@ def test_real_passages_fit_association_budget_without_losing_hypotheses():
     # raised for this diagnostic only. Input location is not the recording truth.
     assert len(candidates) == 10549
     assert counts['work_units'] <= 400000
+    for candidate in candidates:
+        intervals = []
+        for event_index, passage in zip(candidate['event_indices'], candidate['passes']):
+            event = fixture['events'][event_index]
+            center = passage['receive_time'] - event['cpa_receive_s']
+            tolerance = event['quality']['cpa_tolerance_s'] + 2.5
+            intervals.append((center - tolerance, center + tolerance))
+        assert candidate['recording_start_bounds_s'] == [max(lo for lo, _ in intervals),
+                                                        min(hi for _, hi in intervals)]
     for index, event_indices, flight_ids in (
         (0, [0, 1, 2, 4, 5], ['06a128', 'ac79b1', 'a2587b', 'a4b49c', 'a97797']),
         (5274, [2, 5, 6, 7, 8], ['a82a7f', 'ada36a', 'a2db21', 'a8b805', 'a396a9']),
