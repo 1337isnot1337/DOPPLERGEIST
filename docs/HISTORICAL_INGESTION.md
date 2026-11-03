@@ -8,10 +8,14 @@ This preserves altitude calibration, segment boundary derivatives and passages
 that cross a query between recorded samples. The conservative continuous bounds
 and 30-second gap limit match the default `FlightIndex` build; a differently
 configured gap limit requires a new selection. The report records that limit.
-New Parquet files also embed the selection box, time interval, aircraft-type scope
-and gap limit. `FlightIndex.from_parquet` rejects coverage claims beyond those
+New Parquet files also embed the selection box, time interval intersected with
+the archive's named UTC day, the day itself, aircraft-type scope and gap limit. An interval with
+no overlap has empty declared coverage, even if the source contains neighboring
+observations. `FlightIndex.from_parquet` rejects coverage claims beyond those
 limits or an index gap that differs from the selection gap. Older or generic
 Parquet files without this metadata still rely on the caller's coverage evidence.
+Briefly emitted v1 selection metadata did not bind a source day; those tagged
+files are rejected and must be reingested before indexing.
 
 The ingestion report records
 `normalization_scope: full_native_trace_before_segment_selection`. Existing output or
