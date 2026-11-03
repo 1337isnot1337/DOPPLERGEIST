@@ -15,6 +15,12 @@ ranges, checks provider size/SHA-256, and streams gzip readsb traces into an ind
 All aircraft types remain eligible. The archive is downloaded once per day/provider;
 later uploads reuse the derived index without opening/downloading the archive.
 
+New daily archive indexes prepare traces and compute flight-segment geometry in
+separate processes, using the available CPU cores minus one for the SQLite writer
+(and at least one worker). Queued work is bounded and results are written in
+source order. SQLite writes and finalization still run in the writer process; a
+stopped partial index must be rebuilt.
+
 The on-disk SQLite index has spatial and time indexes, source hashes, explicit
 source scope, per-payload checksums and altitude/classification labels. Disk staging supports
 arbitrary input order. Query predicates select whole gap-split segments; they

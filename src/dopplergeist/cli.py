@@ -1,6 +1,7 @@
 import argparse
 import json
 import math
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 
@@ -23,6 +24,11 @@ def positive_runtime(value):
 
 def main():
     parser=argparse.ArgumentParser(description="Aircraft acoustic geolocation research pipeline")
+    try:
+        installed_version=version("dopplergeist")
+    except PackageNotFoundError:
+        installed_version="development"
+    parser.add_argument("--version",action="version",version=f"%(prog)s {installed_version}")
     sub=parser.add_subparsers(dest="command",required=True)
     run=sub.add_parser("run",help="Measure events, filter geometry, rank and refine locations")
     run.add_argument("config")

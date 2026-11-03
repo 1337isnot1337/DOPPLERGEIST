@@ -30,7 +30,10 @@ git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
 cd DOPPLERGEIST
 python -m venv .venv
 .venv/bin/python -m pip install .
+.venv/bin/dopplergeist --version
 ```
+
+To install the CLI without keeping a checkout, create a virtual environment and run `.venv/bin/python -m pip install "git+https://github.com/1337isnot1337/DOPPLERGEIST.git"`. The installed `dopplergeist` command works outside the repository.
 
 Use a new output directory for each experiment. Automatic CI checks installation, source compilation, CLI help and packaged assets without generated data. The [real-world data policy](AGENTS.md#real-world-data-only) supersedes older blanket pytest instructions. For pinned environments and historical clean-install evidence, see [Setup](docs/SETUP.md). Native Windows execution remains unverified.
 
@@ -62,12 +65,12 @@ Start the browser application:
 .venv/bin/dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
 ```
 
-Open `http://127.0.0.1:8765` and upload a recording. Supply a defensible UTC window for the **first audio sample** to permit historical flight search. Without that time evidence, the application returns `needs_input / recording_time_required`. It does not estimate a location. The `--online` option can download large aircraft and terrain datasets. See [Local upload workflow](docs/PRODUCT.md) for request fields, runtime limits and CLI alternatives.
+Open `http://127.0.0.1:8765` and upload a recording. Supply a defensible UTC window for the **first audio sample** to permit historical flight search. Without that time evidence, the application returns `needs_input / recording_time_required`. It does not estimate a location. The `--online` option can download aircraft and terrain data; archives and indexes can require tens of gigabytes or more and hours, and there is no automatic disk-space limit. See [Local upload workflow](docs/PRODUCT.md) for request fields, runtime limits and CLI alternatives.
 
 ## How it works
 
 1. **Measure the audio.** Decode the recording, identify frequency tracks, and group harmonics that belong to the same flyover.
-2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage. The default source is [ADSB.lol's 2026 historical flight archive](https://github.com/adsblol/globe_history_2026); see [acquisition and cache details](docs/DATA_AND_SCALE.md#acquisition).
+2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage. The default source is the appropriate yearly ADSB.lol historical flight archive, such as [2026](https://github.com/adsblol/globe_history_2026); see [acquisition and cache details](docs/DATA_AND_SCALE.md#acquisition).
 3. **Model the sound.** Predict Doppler frequency and arrival time from aircraft trajectories, receiver geometry, and sound propagation.
 4. **Compare locations.** Search candidate receiver positions, reconcile independent flyovers, and retain competing explanations rather than forcing an answer.
 
