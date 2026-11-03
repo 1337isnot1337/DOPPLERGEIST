@@ -43,3 +43,10 @@ plots are preserved. The focused render check passes1 test in8.62s, and the16s
 missing span is visually verified. This display correction does not alter event
 JSON or manufacture samples; the product's separate overlays must respect the
 same missing-observation boundary.
+
+The isolated follow-up starts from main374d1b3 with display patch7d072b5. Its first
+render harness failed before product execution because pytest's custom basetemp
+parent results/ did not exist. The original failure is retained. After mkdir -p
+results, the same focused check with a new output path passes1 test in4.83s
+(isolated-render-check.log). This was a runner setup correction, with no intake
+or detection failure. Discovery settings remain frozen for the new webcam batch.

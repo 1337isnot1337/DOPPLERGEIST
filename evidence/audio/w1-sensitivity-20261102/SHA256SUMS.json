@@ -1,5 +1,5 @@
 {
-  "README.md": "7b836ac87975c8d086fdeb9bbfbfb21868fded5a2385ae19d1b1f0480136159a",
+  "README.md": "f3de9f198d69e4108dd1c82f6969a06ff4925c3cd5b6854a58f8d28d8424d29b",
   "control-regression-predictions.json": "4f01f8727be598c1013552a2d90be9e5152c934072d79acf9086d48b3460df42",
   "control-regression-report.json": "4ec33cec0302f991ddf5e518b552bd964ffdf4e27f6bde320508cab5948d3d0f",
   "default-equivalence.json": "c8dcc2b28249862902d55de06503fc107fab345ce398c3bc3fd649533ce71085",
@@ -8,6 +8,8 @@
   "gap-plots/event-0003.png": "3a9efa3b70387e19ec3b7b8b90dda264b2e533220378386e09096c78516eff11",
   "gap-plots/event-0004.png": "218158b2d5ad8e360b65380b246067a0ac3fca4ad36ee874fd4757ee5bc5558e",
   "gap-plots/overview.png": "4a5a2506929d150bdbad80aa6b5dce20972ef8eb74d9c5013b2407452efbcd24",
+  "isolated-render-check.log": "aa11d11d505464b3696c2d3bb3ed35b6e70483020ba78710f25b64dcc52993bb",
+  "isolated-render-setup-failure.log": "91c73ec02daad1d80e4539e82490abfd909d8bf110554c916fac24566afc3841",
   "posthoc-evaluation.json": "63cb1c86ed885f8f23e79c2ee4eeef06af6330f9f58be807bc85e25f2c8937ad",
   "reference/discovery.json": "89281081ba16310e622a90001373bb1d21ad59eed5667842e98957753feab26c",
   "reference/discovery.png": "4217bda83f51186fa64915fb2feba13b65dfe8cea9c3031cb383c75a946b7dbf",
