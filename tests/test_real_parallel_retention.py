@@ -47,11 +47,12 @@ def test_real_retention_stages_survive_worker_import(tmp_path):
 def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
     import json
     import multiprocessing
+    import shutil
     from concurrent.futures import ProcessPoolExecutor
 
     from dopplergeist.data_access import FlightIndex, content_hash
     from dopplergeist.matching import prepare_events
-    from dopplergeist.parallel_tiles import initialize_tile_worker, ordered_tile_futures, score_tile
+    from dopplergeist.parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_futures, score_tile
     from dopplergeist.tiled_search import SearchBudget
 
     source = os.environ.get("DOPPLERGEIST_REAL_JOB_ROOT")
@@ -102,3 +103,50 @@ def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
         assert RetentionLedger(expected_db, run_hash, score_kind).stage_valid(stage, checksum)
         import_retention_stage(parent, worker_db, stage, checksum)
         assert parent.stage_valid(stage, checksum)
+
+    # A real tile with its terrain file deliberately unavailable must carry
+    # the provider failure back from the worker instead of losing provenance.
+    missing = tmp_path / "missing-terrain"
+    missing.mkdir()
+    for name in ("tileList.txt", "tileList.txt.sha256.json"):
+        shutil.copy2(cache / "terrain" / name, missing / name)
+    failure_args = list(args)
+    failure_args[1] = missing
+    failure_args[2] = {"offline": True, "geoid_path": cache / "terrain/us_nga_egm08_25.tif"}
+    with ProcessPoolExecutor(max_workers=1, mp_context=multiprocessing.get_context("spawn"),
+                             initializer=initialize_tile_worker, initargs=tuple(failure_args)) as pool:
+        future = pool.submit(score_tile, *stages[0])
+        with pytest.raises(TileFailure) as caught:
+            future.result()
+    assert "Terrain coverage unavailable" in str(caught.value)
+    assert caught.value.provenance["terrain_failures"]
+    assert any(Path(item["path"]).name == "tileList.txt" for item in caught.value.provenance["terrain_files"])
+
+
+def test_real_terrain_tracks_ocean_tiles_per_sample():
+    import json
+    import math
+
+    from dopplergeist.data_access import CachedTerrain
+
+    source = os.environ.get("DOPPLERGEIST_REAL_JOB_ROOT")
+    cache = os.environ.get("DOPPLERGEIST_REAL_CACHE_ROOT")
+    if not source or not cache:
+        pytest.skip("set the real job and cache roots")
+    job, cache = Path(source), Path(cache)
+    terrain = CachedTerrain(cache / "terrain", offline=True)
+    ocean_rows = json.loads((job / "search/tile-0_2.json").read_text())["payload"]["ranked"]
+    for row in ocean_rows:
+        north = math.floor(row["lat"]-1/2400)
+        east = math.floor(row["lon"]+1/2400)
+        tag = (f"Copernicus_DSM_COG_30_{'N' if north >= 0 else 'S'}{abs(north):02d}_00_"
+               f"{'E' if east >= 0 else 'W'}{abs(east):03d}_00_DEM")
+        if tag not in terrain.catalog:
+            break
+    else:
+        pytest.fail("the saved real tile no longer contains the expected ocean point")
+    land = json.loads((job / "search/tile--10_1.json").read_text())["payload"]["ranked"][0]
+    terrain.sample([row["lat"]], [row["lon"]])
+    assert terrain.last_sample_ocean_tiles == {tag}
+    terrain.sample([land["lat"]], [land["lon"]])
+    assert not terrain.last_sample_ocean_tiles and tag in terrain.ocean_tiles

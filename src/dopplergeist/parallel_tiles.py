@@ -5,9 +5,20 @@ import tempfile
 
 import pandas as pd
 
-from .data_access import CachedTerrain, FlightIndex
+from .data_access import CachedTerrain, DataUnavailable, FlightIndex
 from .finite_search import RetentionLedger
 from .tiled_search import _expanded_bounds, _score, _tracks, tile_points
+
+
+class TileFailure(DataUnavailable):
+    """Recoverable tile failure carrying the terrain provenance it observed."""
+
+    def __init__(self, message, provenance):
+        self.provenance = provenance
+        super().__init__(message, provenance)
+
+    def __str__(self):
+        return str(self.args[0])
 
 
 _worker = None
@@ -36,15 +47,27 @@ def score_tile(stage, cells, score_floor=None):
         raise RuntimeError("Tile worker was not initialized")
     state = _worker
     budget = state["budget"]
-    radius = max(event["slant_range_m"][1] for event in state["events"])
-    tracks = _tracks(state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
-                     state["time_range"], budget)
-    points = (tile_points(cells, budget.spacing_m, state["bounds"], state["terrain"], state["crs"])
-              if tracks else pd.DataFrame())
-    with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
-                                     dir=state["ledger_directory"], delete=False) as handle:
-        path = Path(handle.name)
+    terrain = state["terrain"]
+    terrain.last_sample_files = set()
+    terrain.last_sample_ocean_tiles = set()
+    failures_before = len(terrain.failures)
+    path = None
+
+    def observed_terrain():
+        names = getattr(terrain, "last_sample_files", set())
+        return {"terrain_files": [terrain.files[name] for name in sorted(names) if name in terrain.files],
+                "terrain_ocean_tiles": sorted(getattr(terrain, "last_sample_ocean_tiles", set())),
+                "terrain_failures": terrain.failures[failures_before:]}
+
     try:
+        radius = max(event["slant_range_m"][1] for event in state["events"])
+        tracks = _tracks(state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
+                         state["time_range"], budget)
+        points = (tile_points(cells, budget.spacing_m, state["bounds"], terrain, state["crs"])
+                  if tracks else pd.DataFrame())
+        with tempfile.NamedTemporaryFile(prefix="retention-", suffix=".sqlite",
+                                         dir=state["ledger_directory"], delete=False) as handle:
+            path = Path(handle.name)
         ledger = RetentionLedger(path, state["run_hash"], state["score_kind"])
         if len(points):
             kwargs = {"ledger": ledger, "stage": stage}
@@ -55,14 +78,18 @@ def score_tile(stage, cells, score_floor=None):
         else:
             rows, counts = [], {}
             ledger.record(stage, [], [], 0)
-        used = getattr(state["terrain"], "last_sample_files", set()) if len(points) else set()
-        terrain_files = [state["terrain"].files[name] for name in sorted(used)] if used else []
+        provenance = observed_terrain() if len(points) else {
+            "terrain_files": [], "terrain_ocean_tiles": [], "terrain_failures": []}
         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
-                   "cells": list(cells), "terrain_files": terrain_files,
-                   "retention_checksum": ledger.checksum(stage)}
+                   "cells": list(cells), **provenance, "retention_checksum": ledger.checksum(stage)}
         return payload, str(path)
+    except (DataUnavailable, ValueError, OSError) as error:
+        if path is not None:
+            path.unlink(missing_ok=True)
+        raise TileFailure(str(error), observed_terrain()) from error
     except BaseException:
-        path.unlink(missing_ok=True)
+        if path is not None:
+            path.unlink(missing_ok=True)
         raise
 
 
