@@ -1,4 +1,5 @@
 """Automatic stage orchestration; scientific producers own their algorithms."""
+from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -153,7 +154,14 @@ def _coverage(request, search, config):
         limitations.append(search.get("event_limit_reason") or "Not every proposed flyover group was considered within the configured budget.")
     if "constant_m" in config.get("terrain", {}):
         limitations.append("A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.")
-    if search.get("alternative_modes_exhaustively_assessed") is not True:
+    finite = search.get("finite_search_evidence")
+    if finite is not None:
+        descriptions = finite.get("limitations") if isinstance(finite, dict) else None
+        if isinstance(descriptions, list) and descriptions and all(isinstance(item, str) for item in descriptions):
+            limitations.extend(descriptions)
+        else:
+            limitations.append("Only evaluated grid points and bounded refinements are covered; continuous-space uniqueness is not established.")
+    elif search.get("alternative_modes_exhaustively_assessed") is not True:
         limitations.append("Candidate retention is bounded; exhaustive alternative-location assessment is not established.")
     missing = [str(item) for item in search.get("tile_failures", [])]
     if not search.get("data_scope_complete"):
@@ -172,6 +180,8 @@ def _comparable_refinement(candidate, original, prepared_events):
         candidate = association_score(candidate, chosen)
     if not math.isfinite(candidate["score"]):
         raise ValueError("Refinement no longer supports the matched event association")
+    if "mode_id" in original:
+        candidate = dict(candidate, mode_id=original["mode_id"])
     return candidate
 
 
@@ -184,6 +194,21 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
+    finite = search.get("finite_search_evidence")
+    assessed_ids = set()
+    if isinstance(finite, dict):
+        for row in raw:
+            identity = row.get("mode_id")
+            groups = row.get("event_indices", range(len(prepared_events)))
+            core = row.get("event_diagnostics", [])
+            if (isinstance(identity, str) and identity and row.get("score_kind") == finite.get("score_kind")
+                    and math.isfinite(row["score"]) and start_window[0] <= row["recording_start_time_s"] <= start_window[1]
+                    and len(groups) == len(row["flight_ids"]) == len(core) and len(core) > 0
+                    and all(isinstance(fit, dict) and fit.get("support_fraction") == 1.
+                            and not isinstance(fit.get("support_fraction"), bool)
+                            and isinstance(fit.get("score"), (int, float)) and not isinstance(fit["score"], bool)
+                            and math.isfinite(fit["score"]) for fit in core)):
+                assessed_ids.add(identity)
     # Refine global competing approaches with their original whole trajectories.
     # The index iterator is bounded by the same local acoustic support envelope.
     def mode_key(row):
@@ -280,6 +305,10 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     for event, evidence in zip(matched_events, best.get("event_diagnostics", [])):
         for event_id in event.get("event_ids", [event["event_id"]]):
             diagnostics[event_id] = evidence
+    if finite is not None:
+        diagnostics["finite_search_evidence"] = deepcopy(finite)
+        diagnostics["assessed_mode_ids"] = sorted(assessed_ids)
+        diagnostics["candidate_mode_ids"] = [row.get("mode_id") for row in rows]
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})
     decision_progress()
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)

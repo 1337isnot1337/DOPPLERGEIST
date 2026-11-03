@@ -157,3 +157,29 @@ established real recording truth/time, and nationwide real accuracy at the curre
 remain unverified. The measured ambiguity and partial-coverage outcomes must not
 be promoted to that acceptance claim. The historical manually configured regional
 result remains separate.
+
+## Accounted finite-search evidence
+
+The current integration consumes the optional artifact-only producer/decision
+contract in [FINITE_SEARCH_DECISION.md](FINITE_SEARCH_DECISION.md). The search
+producer assigns stable seed `mode_id` values including position, clock, event
+indices and flight/pass association, and records every lossy retention bound.
+The product relays `finite_search_evidence` unchanged, preserves seed IDs through
+refinement, and supplies `candidate_mode_ids` parallel to the wire candidates.
+
+For the explicitly declared evaluated-finite-grid scope, `assessed_mode_ids`
+requires an actually completed finite core score with full measured-trajectory
+support at the original seed/model and a valid trusted clock. It does not require
+jointly optimizing every retained point. Failed, missing or unsupported core
+records are unassessed. Raw and refined representations retain their original
+mode ID and original-or-improved score; no association-only deduplication is used.
+The accepted leading estimate still needs successful full sensitivity, datum,
+optimizer, clock, actual-radius and competing-mode checks.
+
+Unperformed refinements and continuous locations are outside that conditional
+finite claim. Their limitations are displayed in coverage and saved in the
+artifacts. The old `alternatives_evaluated` flag keeps its older meaning and is
+not flipped to force success. An absent finite object preserves old outcomes;
+missing mappings, incomplete work or an unaccounted near-tied discard remain
+inconclusive. Producer computation, consumer agreement and an actual integrated
+run are required before this optional path is considered deployed.
