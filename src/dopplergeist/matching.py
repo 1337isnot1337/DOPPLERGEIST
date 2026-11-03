@@ -692,8 +692,22 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     Returned radius describes the explored alternatives only. A boundary optimum
     warns callers that this local search has not enclosed the possible solution.
     """
-    forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
-    inverse = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    return _refine_candidate(candidate, tracks, events, measurements, terrain,
+        radius_m=radius_m, clock_radius_s=clock_radius_s,
+        altitude_offsets_m=altitude_offsets_m, crs=crs, c=c,
+        recording_start_window_s=recording_start_window_s)
+
+
+def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
+                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
+                      crs="EPSG:5070", c=343.0, recording_start_window_s=None, *,
+                      _transformers=None):
+    """Share coordinate operations only within one declared sensitivity profile."""
+    if _transformers is None:
+        forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+        inverse = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
+    else:
+        forward, inverse = _transformers
     x0, y0 = forward.transform(candidate["lon"], candidate["lat"])
     start = candidate["recording_start_time_s"]
     selected = [tracks[f] for f in candidate["flight_ids"]]
@@ -760,6 +774,9 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
                     "complete": len(profiles) == len(altitude_offsets_m) and all(p["optimizer_success"] for p in profiles)})
 
 
+_CANONICAL_REFINE_CANDIDATE = refine_candidate
+
+
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                       recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
@@ -776,7 +793,21 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
     kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
                   altitude_offsets_m=(0.0,), crs=crs, c=c,
                   recording_start_window_s=recording_start_window_s)
-    nominal = refine_candidate(candidate, tracks, events, measurements, terrain, **kwargs)
+    transformers = None
+
+    def refine(*args, **options):
+        nonlocal transformers
+        # Custom refiners keep the original dispatch and receive no private
+        # arguments. The standard path owns exactly one pair for this profile.
+        current_refiner = refine_candidate
+        if current_refiner is not _CANONICAL_REFINE_CANDIDATE:
+            return current_refiner(*args, **options)
+        if transformers is None:
+            transformers = (Transformer.from_crs("EPSG:4326", crs, always_xy=True),
+                            Transformer.from_crs(crs, "EPSG:4326", always_xy=True))
+        return _refine_candidate(*args, _transformers=transformers, **options)
+
+    nominal = refine(candidate, tracks, events, measurements, terrain, **kwargs)
     scenarios = [("nominal", "nominal", events, measurements, {})]
     for sign in (-1, 1):
         scenarios.append(("altitude", f"height_{sign:+d}", events, measurements,
@@ -833,7 +864,7 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                 scenario_tracks = dict(tracks)
                 if bias:
                     scenario_tracks[identity] = _altitude_bias(tracks[identity], bias)
-            row = nominal if source == "nominal" else refine_candidate(
+            row = nominal if source == "nominal" else refine(
                 candidate, scenario_tracks, scenario_events, scenario_measurements, terrain, **options)
             # Height scenarios return a nominal plus the perturbed-height fit;
             # retain the latter rather than silently measuring the nominal twice.

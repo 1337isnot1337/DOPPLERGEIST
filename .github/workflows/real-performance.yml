@@ -22,6 +22,9 @@ on:
       - scripts/export_real_acoustic_controls.py
       - scripts/benchmark_real_regional_upload.py
       - scripts/benchmark_real_bounded_upload.py
+      - scripts/benchmark_real_bounded_comparison.py
+      - scripts/benchmark_real_refinement.py
+      - scripts/benchmark_real_discovery_normalization.py
       - scripts/prepare_reference_upload.py
       - scripts/restore_artifacts.py
       - scripts/compare_real_upload_performance.py
@@ -31,6 +34,8 @@ on:
       - tests/data/real-ridge-batch-arithmetic.json
       - tests/data/reference-empty-tiles-real.json
       - tests/data/reference-retention-real.json
+      - tests/data/real-refinement-profile.json
+      - tests/fixtures/real_discovery_normalization.json
 permissions:
   contents: read
 env:
@@ -110,7 +115,7 @@ jobs:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
           DOPPLERGEIST_REAL_REFERENCE_ROOT: benchmark-inputs/reference-checkout
           DOPPLERGEIST_REAL_REFERENCE_DISCOVERY: evidence/audio/w1-sensitivity-20261102/reference/discovery.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_native_ridge_long.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py tests/test_real_native_validation.py tests/test_real_index_columns.py tests/test_real_track_cache.py tests/test_real_native_convergence.py tests/test_real_flight_payload.py tests/test_real_prepared_index.py tests/test_real_trial_vectors.py
+        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py tests/test_real_refinement_lookup.py tests/test_real_cpa_preparation.py tests/test_real_native_ridge.py tests/test_real_native_ridge_long.py tests/test_real_ridge_backend.py tests/test_real_legacy_batch_cache.py tests/test_real_native_acoustic.py tests/test_real_native_acoustic_pipeline.py tests/test_real_batch_ceilings.py tests/test_real_acoustic_screen_cache.py tests/test_real_cpa_spatial_sieve.py tests/test_real_native_validation.py tests/test_real_index_columns.py tests/test_real_track_cache.py tests/test_real_native_convergence.py tests/test_real_flight_payload.py tests/test_real_prepared_index.py tests/test_real_trial_vectors.py tests/test_real_refinement_reuse.py tests/test_real_discovery_normalization.py
       - name: Verify the explicit Python fallback on recorded arithmetic
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json

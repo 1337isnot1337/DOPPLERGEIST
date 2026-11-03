@@ -1,9 +1,15 @@
 """Terrain sampling and common projected grids."""
+from collections import OrderedDict
 from functools import lru_cache
 from pathlib import Path
+import stat
+from threading import RLock
+from weakref import ref
 
 import numpy as np
 from pyproj import Transformer
+
+_PIXEL_CACHE_MAX_ENTRIES = 1024
 
 
 @lru_cache(maxsize=32)
@@ -12,14 +18,93 @@ def _raster_transformer(crs):
     return Transformer.from_crs("EPSG:4326", crs, always_xy=True)
 
 
+def _raster_file_signature(paths):
+    """Notice replacement, writes, removal and new sidecars without reading data."""
+    try:
+        records = [path.stat() for path in paths]
+        if not stat.S_ISREG(records[0].st_mode):
+            return None
+        return tuple((record.st_dev, record.st_ino, record.st_size,
+                      record.st_mtime_ns, record.st_ctime_ns) for record in records)
+    except OSError:
+        return None
+
+
+def _raster_pixel_source(raster):
+    """Admit only an ordinary read-only single-file local GeoTIFF reader."""
+    from rasterio.io import DatasetReader
+    from rasterio._io import DatasetReaderBase
+
+    if (type(raster) is not DatasetReader or raster.closed or raster.mode != "r"
+            or DatasetReader.read is not DatasetReaderBase.read
+            or "read" in getattr(raster, "__dict__", {})
+            or raster.driver != "GTiff" or raster.files != [raster.name]):
+        return None
+    try:
+        path = Path(raster.name).absolute()
+        # Directory stamps also notice a mask/auxiliary file created later.
+        paths = (path, *dict.fromkeys((path.parent, path.resolve().parent)))
+        signature = _raster_file_signature(paths)
+        return (ref(raster), DatasetReader.read, paths, signature) if signature is not None else None
+    except (OSError, ValueError, TypeError):
+        return None
+
+
 class Terrain:
     def __init__(self, paths=None, constant_m=None, geoid_path=None):
         import rasterio
         self.rasters = [rasterio.open(p) for p in (paths or [])]
+        self._pixel_cache = OrderedDict()
+        self._pixel_cache_lock = RLock()
+        self._pixel_sources = {}
+        for raster in self.rasters:
+            source = _raster_pixel_source(raster)
+            if source is not None:
+                self._pixel_sources[id(raster)] = source
         self.constant = constant_m
         self.geoid = Terrain([geoid_path]) if geoid_path else None
         if not self.rasters and constant_m is None:
             raise ValueError("Supply DEM raster paths or an explicit constant ground elevation")
+
+    def _read_window(self, raster, window):
+        # Only reuse the exact 1x1 reads already requested by the original path.
+        # Array coordinates, floor arithmetic, masks and raster order stay there.
+        sources = getattr(self, "_pixel_sources", None)
+        source = sources.get(id(raster)) if sources is not None else None
+        if source is None or window.width != 1 or window.height != 1:
+            return raster.read(1, window=window, masked=True)
+        with self._pixel_cache_lock:
+            signature = _raster_file_signature(source[2])
+            if (raster is not source[0]() or raster.closed or raster.mode != "r"
+                    or type(raster).read is not source[1]
+                    or "read" in getattr(raster, "__dict__", {}) or signature != source[3]):
+                # Do not re-enable a changed reader: an open handle can still
+                # refer to the old inode after its path is replaced.
+                self._pixel_sources.pop(id(raster), None)
+                for key in list(self._pixel_cache):
+                    if key[0] == id(raster):
+                        del self._pixel_cache[key]
+                return raster.read(1, window=window, masked=True)
+            key = (id(raster), window.row_off, window.col_off)
+            if key in self._pixel_cache:
+                self._pixel_cache.move_to_end(key)
+                return self._pixel_cache[key]
+            data = raster.read(1, window=window, masked=True)
+            if _raster_file_signature(source[2]) != signature:
+                self._pixel_sources.pop(id(raster), None)
+                for old in list(self._pixel_cache):
+                    if old[0] == id(raster):
+                        del self._pixel_cache[old]
+                return raster.read(1, window=window, masked=True)
+            # The cache never escapes sample(). Returned elevations stay fresh
+            # and writable. Both numeric values and masks belong to this entry.
+            data.flags.writeable = False
+            if isinstance(data.mask, np.ndarray):
+                data.mask.flags.writeable = False
+            self._pixel_cache[key] = data
+            if len(self._pixel_cache) > _PIXEL_CACHE_MAX_ENTRIES:
+                self._pixel_cache.popitem(last=False)
+            return data
 
     def sample(self, lat, lon):
         from rasterio.windows import Window
@@ -37,7 +122,7 @@ class Terrain:
                 rows,cols=row[inside],col[inside]
                 r0,c0=int(rows.min()),int(cols.min())
                 window=Window(c0,r0,int(cols.max())-c0+1,int(rows.max())-r0+1)
-                data=raster.read(1,window=window,masked=True)
+                data=self._read_window(raster,window)
                 values[inside]=data[rows-r0,cols-c0]
             valid = ~np.ma.getmaskarray(values)
             flat = elevation.ravel()
