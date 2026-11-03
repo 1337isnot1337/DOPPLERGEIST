@@ -1,12 +1,13 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "dopplergeist"
 version = "0.1.0"
 description = "Reproducible physics-based aircraft acoustic geolocation"
-license = {text = "MIT"}
+license = "PolyForm-Noncommercial-1.0.0"
+license-files = ["LICENSE", "licenses/MIT-legacy.txt"]
 requires-python = ">=3.11"
 dependencies = ["numpy", "scipy", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow"]
 
