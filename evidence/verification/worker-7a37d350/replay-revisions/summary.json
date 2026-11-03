@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "case": "strict-local-31484",
+      "elapsed_s": 230.4970262700008,
+      "http_checks_passed": null,
+      "http_expectation_matched": null,
+      "leading_prediction_error_m": 0.07932759464807976,
+      "passed": false,
+      "reason_code": "ambiguous_locations",
+      "receipt_sha256": "8a4864733bfeee215e5ae64b215fe4c0420d8e4f7419d2760a8059f96c880b3c",
+      "status": "inconclusive",
+      "supported_localization_at_m": {
+        "100": false,
+        "1000": false,
+        "500": false
+      },
+      "supported_localization_passed": false
+    },
+    {
+      "case": "strict-hosted-31484",
+      "elapsed_s": 211.913849438,
+      "http_checks_passed": null,
+      "http_expectation_matched": null,
+      "leading_prediction_error_m": 0.07932759464807976,
+      "passed": false,
+      "reason_code": "ambiguous_locations",
+      "receipt_sha256": "dda7f3575eab2c6364d13a3bbd200736206fbf94fcff249d8166d6f0ef92c892",
+      "status": "inconclusive",
+      "supported_localization_at_m": {
+        "100": false,
+        "1000": false,
+        "500": false
+      },
+      "supported_localization_passed": false
+    },
+    {
+      "case": "finite-local-134f",
+      "elapsed_s": 255.46627763300057,
+      "http_checks_passed": true,
+      "http_expectation_matched": false,
+      "leading_prediction_error_m": 0.07932759464807976,
+      "passed": false,
+      "reason_code": "finite_search_incomplete",
+      "receipt_sha256": "193368b74e1f009e4ff62021b10ecbe65fb38fbf0591d851053e7ed97c025011",
+      "status": "inconclusive",
+      "supported_localization_at_m": {
+        "100": false,
+        "1000": false,
+        "500": false
+      },
+      "supported_localization_passed": false
+    },
+    {
+      "case": "finite-hosted-134f",
+      "elapsed_s": 357.38725547399997,
+      "http_checks_passed": true,
+      "http_expectation_matched": false,
+      "leading_prediction_error_m": 0.07993058330434617,
+      "passed": false,
+      "reason_code": "finite_search_incomplete",
+      "receipt_sha256": "420ae85c33d95578c9aa9bff17878cb234757af68fb4aee8d77b560ec227ac1b",
+      "status": "inconclusive",
+      "supported_localization_at_m": {
+        "100": false,
+        "1000": false,
+        "500": false
+      },
+      "supported_localization_passed": false
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Preserved earlier strict HTTP experiments; no prior result is replaced."
+}

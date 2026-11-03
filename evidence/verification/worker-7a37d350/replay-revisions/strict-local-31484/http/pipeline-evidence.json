@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "full_pipeline_observed": true,
+  "scientific_decision_expected": true,
+  "stages_verified": [
+    "automatic_provenance",
+    "intake",
+    "discovery",
+    "acquisition",
+    "search",
+    "refinement",
+    "decision"
+  ],
+  "artifacts": {
+    "provenance.json": {
+      "bytes": 3081,
+      "sha256": "00982d18afd42c962c7f020ea0fee78e9d34165f51074d12a3829b2747993364"
+    },
+    "input.json": {
+      "bytes": 126,
+      "sha256": "7d62b70820fd509483d83fb51d8d7262ec61d80a904a02dab179533c643b1828"
+    },
+    "request.json": {
+      "bytes": 442,
+      "sha256": "f3b9aad674d91ae66fe455d0548250e43a02b9b49f0ed8a02241235862ce2fe6"
+    },
+    "intake/recording.json": {
+      "bytes": 404,
+      "sha256": "1944760c756121870a34f3c7f5e034b4e7a415ba1bb11a514a3688a32d9fff7f"
+    },
+    "intake/intake.json": {
+      "bytes": 913,
+      "sha256": "db6a624b0976c972e3fbf812284e75026a906048f79eb1685ab728ad9305eb96"
+    },
+    "intake/recording.f32": {
+      "bytes": 15360000,
+      "sha256": "74604618cb5a375d912233e496b4d95c0ef59715fd525702de40352364cd8e67"
+    },
+    "discovery/discovery.json": {
+      "bytes": 413599,
+      "sha256": "47075a62f2edb50f859d6b0f66bf02dd616b5f311cb3cd3a7ef51fd3eb094286"
+    },
+    "data-provenance.json": {
+      "bytes": 1986,
+      "sha256": "0d81067bdafda6f319dce3521a14cf684d97fed320641532eea65b01337b722a"
+    },
+    "search/manifest.json": {
+      "bytes": 214638,
+      "sha256": "6d2beb058a5e1afcfb9c67f07895232f0402cfd308b284a990eb094c26d4d1c0"
+    },
+    "search/search-report.json": {
+      "bytes": 406167,
+      "sha256": "2462c556dcdaea42a85a00ae562da88f52595d5786d55ba4672f5c9ffacc8d8d"
+    },
+    "refined-candidates.json": {
+      "bytes": 434657,
+      "sha256": "52ef11143db25847ef6db165c823de74722e513bc1851af87711e306de712d3e"
+    },
+    "decision.json": {
+      "bytes": 57394,
+      "sha256": "ed5bac6df3a298503b755ceeadab6db0496aafdef6792684f019438b0727e057"
+    }
+  },
+  "errors": [],
+  "location_accuracy_evaluated": false,
+  "limitations": [
+    "Stage consistency does not independently reproduce decoding or scientific fitting.",
+    "No withheld-location comparison or accuracy evaluation is performed."
+  ]
+}

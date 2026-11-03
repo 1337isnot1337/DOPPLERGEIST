@@ -1,0 +1,262 @@
+{
+  "acceptance": {
+    "bytes": 1160489,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/acceptance.json",
+    "sha256": "fa43bb2301386ec45059061afe9506488421226a1cbfaa59117fc0bb6ffc8d13"
+  },
+  "audit_passed": true,
+  "candidate_semantic_differences": [],
+  "checks": {
+    "all_accuracy_tiers_accepted": true,
+    "all_candidate_semantics_recomputed": true,
+    "all_declared_tiles_complete": true,
+    "all_execution_stages_exit_zero": true,
+    "all_job_crosschecks_passed": true,
+    "all_raw_http_checks_passed": true,
+    "all_seven_stages_verified": true,
+    "clean_stop_before_truth": true,
+    "decision_matches_result": true,
+    "finite_evidence_complete_without_unknowns": true,
+    "finite_mode_counts_reconcile": true,
+    "finite_union_independently_recomputed": true,
+    "four_distinct_true_flyovers_supported": true,
+    "full_coverage_inventory_preserved": true,
+    "http_receipt_bound": true,
+    "known_clock_exact": true,
+    "leading_timing_also_passes_without_edge_tolerance": true,
+    "near_tie_indices_and_modes_match": true,
+    "persisted_result_matches_download": true,
+    "predeclared_budget_respected": true,
+    "predeclared_supported_success": true,
+    "real_and_browser_claims_remain_false": true,
+    "source_snapshot_unchanged": true,
+    "truth_or_manual_event_fields_absent_from_request": true,
+    "uncertainty_remains_uncalibrated": true,
+    "uninterrupted_execution": true,
+    "union_within_declared_target": true
+  },
+  "created_utc": "2026-11-03T04:12:13.952719+00:00",
+  "decision": {
+    "bytes": 59362,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/jobs/18f2211616414793a8e5d088257799f0/decision.json",
+    "sha256": "b72c16bbfb4c023ea10440acaf5078542b5d55d9d8f3602f45dd8bc43de22ad9"
+  },
+  "declared_edge_tolerance_s": 1.0,
+  "elapsed_s": 329.77454449200013,
+  "finite_evidence": {
+    "best_discarded_score": 2.097033056419206,
+    "complete": true,
+    "discarded_count": 6701,
+    "evaluated_modes": 6801,
+    "ledger_verified": true,
+    "physical_trials_independently_recomputed": false,
+    "retained_modes": 100,
+    "unclassified_score_candidates": 0
+  },
+  "finite_union": {
+    "base_profile_radius_m": 6.283345338474251,
+    "near_tied_mode_count": 5,
+    "near_tied_rows": [
+      {
+        "index": 0,
+        "mode_id": "mode-78cf9681d77b4a858a846ae8b499ad9d891d7664e084a94cf77fda7dba5a18f7",
+        "profile_radius_m": 6.283345338474251,
+        "required_radius_m": 6.283345338474251,
+        "separation_m": 0.0
+      },
+      {
+        "index": 1,
+        "mode_id": "mode-86001a7c3832e34a15db88d5ff13f27455abb526419c01a89db45ec92ed141a3",
+        "profile_radius_m": 6.285653885823718,
+        "required_radius_m": 6.286539826260727,
+        "separation_m": 0.0008859404370082369
+      },
+      {
+        "index": 2,
+        "mode_id": "mode-e53f9bc29841e44cc54e07bd86dac2b9fc75515cae1065db4c4c78ed8b4e7577",
+        "profile_radius_m": 6.275072357917949,
+        "required_radius_m": 6.2764501220084234,
+        "separation_m": 0.0013777640904742957
+      },
+      {
+        "index": 3,
+        "mode_id": "mode-d11e46a3d9a12118d829c0f58f32375e95f64547d28479b9258a89f4ac723729",
+        "profile_radius_m": 6.2761358898273345,
+        "required_radius_m": 6.2763985543390595,
+        "separation_m": 0.0002626645117250078
+      },
+      {
+        "index": 4,
+        "mode_id": "mode-853bccf989461c768ae5fbab73877de4cd06f24030d7d3aeabd8b618603bc828",
+        "profile_radius_m": 6.272583528180528,
+        "required_radius_m": 6.275107789419628,
+        "separation_m": 0.002524261239099812
+      },
+      {
+        "index": 5,
+        "mode_id": "mode-d11e46a3d9a12118d829c0f58f32375e95f64547d28479b9258a89f4ac723729",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 21.95985526854571,
+        "separation_m": 21.95985526854571
+      },
+      {
+        "index": 6,
+        "mode_id": "mode-853bccf989461c768ae5fbab73877de4cd06f24030d7d3aeabd8b618603bc828",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 82.89826978441177,
+        "separation_m": 82.89826978441177
+      },
+      {
+        "index": 7,
+        "mode_id": "mode-78cf9681d77b4a858a846ae8b499ad9d891d7664e084a94cf77fda7dba5a18f7",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 89.1241745989929,
+        "separation_m": 89.1241745989929
+      },
+      {
+        "index": 8,
+        "mode_id": "mode-86001a7c3832e34a15db88d5ff13f27455abb526419c01a89db45ec92ed141a3",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 115.69535542171717,
+        "separation_m": 115.69535542171717
+      },
+      {
+        "index": 9,
+        "mode_id": "mode-e53f9bc29841e44cc54e07bd86dac2b9fc75515cae1065db4c4c78ed8b4e7577",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 117.19570324924227,
+        "separation_m": 117.19570324924227
+      }
+    ],
+    "recomputed_radius_m": 117.19570324924227,
+    "reported_radius_m": 117.19570324924227
+  },
+  "job_id": "18f2211616414793a8e5d088257799f0",
+  "leading_candidate": {
+    "association_timing_compatible": true,
+    "clock_error_s": 0.0,
+    "error_m": 0.07932759464807976,
+    "groups": [
+      {
+        "compatible": true,
+        "flight_id": "adcd3888bbfa58c8f2caf67f4979b977",
+        "group_id": "harmonics-0001",
+        "other_true_interval_fractions": {
+          "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+          "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0,
+          "d76664195d727e5acff49e11f6208d56": 0.0
+        },
+        "ridge_times": 327,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "7e55f027ce5b196b026e6aa7ab9e5c34",
+        "group_id": "harmonics-0002",
+        "other_true_interval_fractions": {
+          "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+          "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0,
+          "d76664195d727e5acff49e11f6208d56": 0.0
+        },
+        "ridge_times": 366,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "d76664195d727e5acff49e11f6208d56",
+        "group_id": "harmonics-0003",
+        "other_true_interval_fractions": {
+          "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+          "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+          "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0
+        },
+        "ridge_times": 380,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "d009cff8d85bfdf8a9c6bcafe0b2f275",
+        "group_id": "harmonics-0004",
+        "other_true_interval_fractions": {
+          "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+          "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+          "d76664195d727e5acff49e11f6208d56": 0.0
+        },
+        "ridge_times": 379,
+        "target_interval_fraction": 1.0
+      }
+    ],
+    "independent_groups": 4,
+    "inside_clock_window": true,
+    "rank": 1,
+    "true_flight_set": true
+  },
+  "leading_zero_tolerance_interval_fractions": {
+    "harmonics-0001": {
+      "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+      "adcd3888bbfa58c8f2caf67f4979b977": 1.0,
+      "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0,
+      "d76664195d727e5acff49e11f6208d56": 0.0
+    },
+    "harmonics-0002": {
+      "7e55f027ce5b196b026e6aa7ab9e5c34": 1.0,
+      "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+      "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0,
+      "d76664195d727e5acff49e11f6208d56": 0.0
+    },
+    "harmonics-0003": {
+      "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+      "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+      "d009cff8d85bfdf8a9c6bcafe0b2f275": 0.0,
+      "d76664195d727e5acff49e11f6208d56": 1.0
+    },
+    "harmonics-0004": {
+      "7e55f027ce5b196b026e6aa7ab9e5c34": 0.0,
+      "adcd3888bbfa58c8f2caf67f4979b977": 0.0,
+      "d009cff8d85bfdf8a9c6bcafe0b2f275": 1.0,
+      "d76664195d727e5acff49e11f6208d56": 0.0
+    }
+  },
+  "limits": [
+    "No physical scoring trial was independently rerun by this audit.",
+    "Point-error tiers do not imply a 100 m uncertainty bound.",
+    "Finite union is uncalibrated and does not establish continuous-space uniqueness.",
+    "Exact known clock, constant synthetic terrain, and complete generated traffic remain fixture assumptions.",
+    "No independent real-recording localization claim follows from this synthetic success."
+  ],
+  "mapping": {
+    "bytes": 772,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/flight-id-mapping.json",
+    "sha256": "22bce5291ba769a3fdd715e0fc8ac5db9917c754217d152bc36fcb60abc7e14e"
+  },
+  "reason_code": "supported_by_evidence_checks",
+  "recomputed_candidates": 105,
+  "refinement": {
+    "bytes": 583560,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/jobs/18f2211616414793a8e5d088257799f0/refined-candidates.json",
+    "sha256": "1443a2411b262cd7131ab31c18bb3471524ce6c273e2a2b42e0798349777bac1"
+  },
+  "result": {
+    "bytes": 250816,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/result.json",
+    "sha256": "55b33a5c69233dfe13644eb652855a6bd9820fe38dcef94bb1499221d63117af"
+  },
+  "schema_version": 1,
+  "scope": "Independent receipt, geometry, clock, all-candidate ridge-window association, and finite-union semantic audit. Full inventory and SQLite audits are separate.",
+  "script": {
+    "bytes": 15026,
+    "path": "/workspace/scratch/7a37d350207f/audit_full_coverage_semantics_7a37d350.py",
+    "sha256": "813f7bb68902367a1c6c5b7767c05a3d4b83282a6135c5d32b6cb79508d29a4a"
+  },
+  "search_elapsed_s": 279.82824932600124,
+  "service_stopped_utc": "2026-11-03T04:08:47.639327Z",
+  "source_commit": "b6413a6fcb4abc43816ab439931af6433296032e",
+  "source_snapshot_sha256": "a46e1df0e84d7b73768a72ac0edc8ac8593e487b6ef9463bb9ec8b6a7b47f4e9",
+  "status": "succeeded",
+  "truth": {
+    "bytes": 2109,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/truth/labels.json",
+    "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+  },
+  "truth_load_started_utc": "2026-11-03T04:08:55.245794Z"
+}

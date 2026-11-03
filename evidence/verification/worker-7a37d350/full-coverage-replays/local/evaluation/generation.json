@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic multi-event development fixture",
+  "fixture_variant": "full-coverage",
+  "trajectory_support": {
+    "fixture_variant": "full-coverage",
+    "minimum_sound_speed_mps": 338.0,
+    "support_scope": "nominal_cpa_receiver_domain",
+    "receiver_domain": "Nominal coarse/fine CPA receivers within the declared range; no analytic refinement/profile receiver guarantee.",
+    "refinement_and_profile_support": "Separately checked by unchanged runtime fit and acceptance gates.",
+    "maximum_candidate_range_m": 20000.0,
+    "speed_bound_mps": 137.20000000000002,
+    "left_padding_s": 963,
+    "right_padding_s": 300,
+    "emission_interval_s": [
+      1789999037.0,
+      1790001260.0
+    ],
+    "guaranteed_receive_interval_s": [
+      1790000000.0,
+      1790000960.0
+    ],
+    "start_arrival_upper_bound_s": 1789999998.5254438,
+    "end_arrival_lower_bound_s": 1790001260.0,
+    "arrival_monotonicity_lower_bound": 0.5940828402366863,
+    "support_assumptions": [
+      "Receiver lies within the declared range of a track point or sampled CPA chord.",
+      "The serialized trajectory satisfies the continuous Hermite speed bound.",
+      "Receive times lie within the audio interval; sound speed is at least the declared minimum."
+    ],
+    "samples_per_track": 2224,
+    "aircraft_count": 12,
+    "maximum_hermite_speed_control_mps": 101.74426193081403,
+    "original_rows_preserved": true,
+    "position_join_tolerance_m": 1e-06,
+    "velocity_join_tolerance_mps": 1e-08,
+    "continuity": "C1 position/velocity joins; acceleration continuity is not asserted",
+    "tracks": [
+      {
+        "flight_id": "37eb2ec6d862",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 78.29746468567609,
+        "altitude_range_m": [
+          1007.9459385918453,
+          2070.424279745668
+        ],
+        "joins": [
+          {
+            "time_s": 1790000015.0,
+            "tangent_position_roundtrip_error_m": 1.4908435375971833e-08,
+            "velocity_roundtrip_error_mps": 5.687116766346677e-15
+          },
+          {
+            "time_s": 1790000285.0,
+            "tangent_position_roundtrip_error_m": 1.8651173342231693e-08,
+            "velocity_roundtrip_error_mps": 1.6091724337024826e-14
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "39490fc22da5",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 98.32637450330058,
+        "altitude_range_m": [
+          1542.1253877719864,
+          2963.95527850464
+        ],
+        "joins": [
+          {
+            "time_s": 1790000702.0,
+            "tangent_position_roundtrip_error_m": 2.188618363614848e-08,
+            "velocity_roundtrip_error_mps": 7.105427357601002e-15
+          },
+          {
+            "time_s": 1790000972.0,
+            "tangent_position_roundtrip_error_m": 2.0976598499280365e-08,
+            "velocity_roundtrip_error_mps": 0.0
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "4e3d87ed6e3f",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 101.74426193081403,
+        "altitude_range_m": [
+          1542.136577504687,
+          3017.268606843427
+        ],
+        "joins": [
+          {
+            "time_s": 1790000729.0,
+            "tangent_position_roundtrip_error_m": 2.888977037602309e-08,
+            "velocity_roundtrip_error_mps": 7.944109290391274e-15
+          },
+          {
+            "time_s": 1790000999.0,
+            "tangent_position_roundtrip_error_m": 2.895443540935337e-08,
+            "velocity_roundtrip_error_mps": 1.4210854715202004e-14
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "584c8b5ab114",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 78.29746349853403,
+        "altitude_range_m": [
+          1007.9656913150102,
+          2070.5450551481918
+        ],
+        "joins": [
+          {
+            "time_s": 1790000015.0,
+            "tangent_position_roundtrip_error_m": 1.3512203589591112e-08,
+            "velocity_roundtrip_error_mps": 1.7763568394002505e-15
+          },
+          {
+            "time_s": 1790000285.0,
+            "tangent_position_roundtrip_error_m": 1.6764210558072777e-08,
+            "velocity_roundtrip_error_mps": 3.552713678800501e-15
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "5963b2387c30",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 84.1984270270639,
+        "altitude_range_m": [
+          1208.0874633137137,
+          1884.1311412351206
+        ],
+        "joins": [
+          {
+            "time_s": 1790000235.0,
+            "tangent_position_roundtrip_error_m": 1.9563316868245606e-08,
+            "velocity_roundtrip_error_mps": 1.6758116906701664e-14
+          },
+          {
+            "time_s": 1790000505.0,
+            "tangent_position_roundtrip_error_m": 2.2356591902967176e-08,
+            "velocity_roundtrip_error_mps": 1.7763568394002505e-15
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "5bd600870087",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 96.03912012518992,
+        "altitude_range_m": [
+          1542.2418063422665,
+          2957.660508577712
+        ],
+        "joins": [
+          {
+            "time_s": 1790000675.0,
+            "tangent_position_roundtrip_error_m": 2.655928248176568e-08,
+            "velocity_roundtrip_error_mps": 1.5888218580782548e-14
+          },
+          {
+            "time_s": 1790000945.0,
+            "tangent_position_roundtrip_error_m": 2.6110272424064925e-08,
+            "velocity_roundtrip_error_mps": 7.160723346098895e-15
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "7b081392e2c2",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 84.19843507153087,
+        "altitude_range_m": [
+          1208.1140901818871,
+          1884.2747687716037
+        ],
+        "joins": [
+          {
+            "time_s": 1790000235.0,
+            "tangent_position_roundtrip_error_m": 1.679328846863043e-08,
+            "velocity_roundtrip_error_mps": 7.119291619286993e-15
+          },
+          {
+            "time_s": 1790000505.0,
+            "tangent_position_roundtrip_error_m": 2.002884928845481e-08,
+            "velocity_roundtrip_error_mps": 2.040878629308206e-14
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "b1703e44cbf7",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 84.19844876713852,
+        "altitude_range_m": [
+          1208.15759988036,
+          1884.5143405105919
+        ],
+        "joins": [
+          {
+            "time_s": 1790000235.0,
+            "tangent_position_roundtrip_error_m": 1.353826193400299e-08,
+            "velocity_roundtrip_error_mps": 1.0048591735576161e-14
+          },
+          {
+            "time_s": 1790000505.0,
+            "tangent_position_roundtrip_error_m": 1.736476538607198e-08,
+            "velocity_roundtrip_error_mps": 0.0
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "c462923f18b5",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 78.29747407223992,
+        "altitude_range_m": [
+          1007.9973001619801,
+          2070.7439990695566
+        ],
+        "joins": [
+          {
+            "time_s": 1790000015.0,
+            "tangent_position_roundtrip_error_m": 9.958243183058135e-09,
+            "velocity_roundtrip_error_mps": 1.434896150467636e-14
+          },
+          {
+            "time_s": 1790000285.0,
+            "tangent_position_roundtrip_error_m": 1.4096899955398388e-08,
+            "velocity_roundtrip_error_mps": 0.0
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "ccee360caf30",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 90.11307082563242,
+        "altitude_range_m": [
+          1383.303496451117,
+          2140.214205778204
+        ],
+        "joins": [
+          {
+            "time_s": 1790000455.0,
+            "tangent_position_roundtrip_error_m": 2.1887318929296024e-08,
+            "velocity_roundtrip_error_mps": 1.4238583238573986e-14
+          },
+          {
+            "time_s": 1790000725.0,
+            "tangent_position_roundtrip_error_m": 2.4704472376864204e-08,
+            "velocity_roundtrip_error_mps": 1.4432899320127035e-15
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "ceb5f8f549ef",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 96.17028923733693,
+        "altitude_range_m": [
+          1382.7875748788938,
+          2041.4465098902583
+        ],
+        "joins": [
+          {
+            "time_s": 1790000393.0,
+            "tangent_position_roundtrip_error_m": 2.3301683372253187e-08,
+            "velocity_roundtrip_error_mps": 4.440892098500626e-16
+          },
+          {
+            "time_s": 1790000663.0,
+            "tangent_position_roundtrip_error_m": 2.5146787411161898e-08,
+            "velocity_roundtrip_error_mps": 1.464821375527116e-14
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      },
+      {
+        "flight_id": "f11e3201558c",
+        "samples": 2224,
+        "original_samples": 271,
+        "original_rows_preserved": true,
+        "maximum_hermite_speed_control_mps": 92.5468445888921,
+        "altitude_range_m": [
+          1382.6702625835314,
+          2071.831446958706
+        ],
+        "joins": [
+          {
+            "time_s": 1790000424.0,
+            "tangent_position_roundtrip_error_m": 1.72562906716505e-08,
+            "velocity_roundtrip_error_mps": 1.4210854715202004e-14
+          },
+          {
+            "time_s": 1790000694.0,
+            "tangent_position_roundtrip_error_m": 1.871385147532479e-08,
+            "velocity_roundtrip_error_mps": 1.5888218580782548e-14
+          }
+        ],
+        "interpolant_position_and_velocity_continuous": true
+      }
+    ]
+  },
+  "seed": 20261103,
+  "event_count": 4,
+  "duration_s": 960,
+  "sample_rate_hz": 8000,
+  "generator_sha256": "8bec70122dc04fb0eaf626ea2a183561d547375d2c2d50ba07f1d3839ca4791d",
+  "encoder_command": [
+    "ffmpeg",
+    "-v",
+    "error",
+    "-nostdin",
+    "-i",
+    "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/fixture/renderer/recording.wav",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "32k",
+    "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/fixture/inputs/recording.mp3"
+  ],
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "input_files": {
+    "coverage.json": {
+      "sha256": "42d4f092d67369f51012661be70235fa692d043076b388e98df3ae240a037e5e",
+      "bytes": 1738
+    },
+    "geoid.tif": {
+      "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae",
+      "bytes": 2509
+    },
+    "recording.mp3": {
+      "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c",
+      "bytes": 3841101
+    },
+    "request.json": {
+      "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+      "bytes": 227
+    },
+    "terrain.tif": {
+      "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b",
+      "bytes": 2689
+    },
+    "tracks.parquet": {
+      "sha256": "9979eaf7713009e612e05ab2eb79e02978087e851077f83da900970d9a7cb23d",
+      "bytes": 1573776
+    }
+  },
+  "renderer_wav_sha256": "327cdb011a474679deb525079a3aa827342de76b67a4d195c55d8d0fef307753",
+  "truth_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+  "limits": [
+    "Finite synthetic traffic is not a real national archive.",
+    "The first two events have similar remote distractors; later passes differ.",
+    "Do not mount this manifest, generator, renderer or truth directory in a blinded search."
+  ]
+}

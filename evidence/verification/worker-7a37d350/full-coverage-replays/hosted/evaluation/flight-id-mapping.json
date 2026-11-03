@@ -1,0 +1,18 @@
+{
+  "original_to_opaque": {
+    "37eb2ec6d862": "72a6d50071fc60db880747cedfea020f",
+    "39490fc22da5": "e4acdd5b95e48a61c65f9aabbad577ae",
+    "4e3d87ed6e3f": "9cd4718b592381e7e46a7c8b176b8447",
+    "584c8b5ab114": "d32f2ee4d2b68e21230659ad050ca0b9",
+    "5963b2387c30": "8c282b85544e97374b74c92be657b9b3",
+    "5bd600870087": "852016973b75abbaccb6c8b5285f561c",
+    "7b081392e2c2": "058a8e27e498f178a750e6493793da28",
+    "b1703e44cbf7": "b26df4326b08537794aa0771704d2bf9",
+    "c462923f18b5": "0c249e819e6e7b2edd6fa355e9688517",
+    "ccee360caf30": "a4f81d799f0a7d77736f2d0087c7ae32",
+    "ceb5f8f549ef": "8a45738d4f5d59f0f34176ebf97a18ed",
+    "f11e3201558c": "5203d437e9af4a8de4c353601dd49edd"
+  },
+  "order_randomized": true,
+  "all_non_id_values_preserved": true
+}

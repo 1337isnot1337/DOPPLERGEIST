@@ -1,0 +1,89 @@
+{
+  "acceptance_sha256": "fa43bb2301386ec45059061afe9506488421226a1cbfaa59117fc0bb6ffc8d13",
+  "audit_passed": true,
+  "auditor_sha256": "0761705876ad5179b3fcc6a8250ce11bae5217a99230e0618aa239ccdcebe9e8",
+  "checks": {
+    "actual_nominal_operator_within_support_domain": true,
+    "actual_scored_receive_times_inside_certificate": true,
+    "all_tail_rows_follow_endpoint_tangents": true,
+    "continuous_speed_bound_independently_verified": true,
+    "coordinate_and_height_domain_valid": true,
+    "declared_variant_matches": true,
+    "every_original_observation_preserved": true,
+    "exact_common_time_grid": true,
+    "generated_geoid.tif_bound": true,
+    "generated_original_tracks_bound": true,
+    "generated_recording.mp3_bound": true,
+    "generated_request.json_bound": true,
+    "generated_terrain.tif_bound": true,
+    "generator_bound_to_executed_source": true,
+    "indexed_geometry_and_all_rows_preserved": true,
+    "input_audio_request_terrain_and_labels_preserved": true,
+    "labels_bound_to_generation": true,
+    "nominal_domain_explicit": true,
+    "predeclared_support_constants_match": true,
+    "published_maximum_speed_matches_actual": true,
+    "rendered_pcm_preserved": true,
+    "same_aircraft_inventory": true,
+    "solver_source_unchanged": true,
+    "support_certificate_forwarded_exactly": true,
+    "triangle_inequality_arrival_bound": true,
+    "wav_container_bound_to_generation": true
+  },
+  "current_run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350",
+  "generation_manifest_sha256": "e16f78edd5efef705182126fad097f0733dee48c17b93e9c57675b94132b1412",
+  "input_files": {
+    "geoid.tif": {
+      "actual_sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae",
+      "bytes_unchanged": true,
+      "original_sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+    },
+    "labels.json": {
+      "actual_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+      "bytes_unchanged": true,
+      "original_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    },
+    "recording.mp3": {
+      "actual_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c",
+      "bytes_unchanged": true,
+      "original_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+    },
+    "request.json": {
+      "actual_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+      "bytes_unchanged": true,
+      "original_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+    },
+    "terrain.tif": {
+      "actual_sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b",
+      "bytes_unchanged": true,
+      "original_sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+    }
+  },
+  "limitations": [
+    "This audits one additional synthetic-input variant, not independent real-world performance.",
+    "The analytic support certificate covers nominal CPA receivers; actual profile support is separately gated."
+  ],
+  "motion": {
+    "actual_rows": 26688,
+    "aircraft_count": 12,
+    "all_tail_position_error_m": 1.1362540948250092e-07,
+    "all_tail_velocity_error_mps": 3.6230712748823524e-14,
+    "altitude_range_m": [
+      1007.9459385918453,
+      3017.268606843427
+    ],
+    "left_padding_s": 963,
+    "maximum_continuous_speed_control_mps": 101.74426193081403,
+    "original_rows": 3252
+  },
+  "previous_run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350",
+  "scope": "Final-run full-support fixture preservation and independent serialized-motion audit",
+  "source_manifest_sha256": "03e4d15447089becb33c72f6c4cd438b5b796872cf12f48f5ea389481b74cb6b",
+  "wav_pcm": {
+    "container_byte_identity_claimed": false,
+    "pcm_sha256": "1cf717c20544dcbbd8806fdbec070b147797365dee9cdd23d819b9256ae1eba8",
+    "reason": "The FLOAT WAV PEAK chunk carries an encoder timestamp.",
+    "sample_rate_hz": 8000,
+    "samples": 7680000
+  }
+}

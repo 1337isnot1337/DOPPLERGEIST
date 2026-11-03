@@ -1,0 +1,93 @@
+{
+  "rows": 3252,
+  "tracks": 12,
+  "rows_per_track": {
+    "093f1bb1db1e78a875232a29a7b66154": 271,
+    "22f3f2f826623cc2405dea280869dc6c": 271,
+    "25efa387cce0dde01f167c807aeae27d": 271,
+    "2d6c4439b5ee3f6c7b570cc9d62f937f": 271,
+    "30b91308d5569124461659387c7fdc3d": 271,
+    "6675b160e10c9345c996660a1d578695": 271,
+    "6eb34d042edc0fdfb7c72ecbd57d24a5": 271,
+    "716ca6149a9511fde2930408bcb093e1": 271,
+    "76b22471df9fd2be802105eecbaa188a": 271,
+    "a75f6d091fd983857850b8872da851a9": 271,
+    "b5a57a2c485af9b0907d8311f715097d": 271,
+    "da56e2a5e1dc49be8772f0bdcd998a79": 271
+  },
+  "typecode_rows": {
+    "C172": 813,
+    "PC12": 813,
+    "A320": 813,
+    "": 813
+  },
+  "all_non_id_values_preserved": true,
+  "all_rows_retained": true,
+  "original_parquet": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/evaluation/original-tracks.parquet",
+    "bytes": 171645,
+    "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258"
+  },
+  "derived_parquet": {
+    "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/fixture/inputs/tracks.parquet",
+    "bytes": 173202,
+    "sha256": "dcb6e4c1a923482102c3bdd8689172124c4e4e5174eea5748c4041e06a2873b5"
+  },
+  "indexed_coverage": {
+    "bounds": [
+      -180.0,
+      -85.0,
+      180.0,
+      85.0
+    ],
+    "time_range_s": [
+      1789999700.0,
+      1790001260.0
+    ],
+    "all_aircraft": true,
+    "source_kind": "complete_finite_synthetic_population",
+    "real_receiver_coverage": false,
+    "synthetic": true
+  },
+  "index_report": {
+    "index_version": 2,
+    "sources": [
+      {
+        "path": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/fixture/inputs/tracks.parquet",
+        "sha256": "dcb6e4c1a923482102c3bdd8689172124c4e4e5174eea5748c4041e06a2873b5",
+        "bytes": 173202
+      }
+    ],
+    "coverage": {
+      "bounds": [
+        -180.0,
+        -85.0,
+        180.0,
+        85.0
+      ],
+      "time_range_s": [
+        1789999700.0,
+        1790001260.0
+      ],
+      "all_aircraft": true,
+      "source_kind": "complete_finite_synthetic_population",
+      "real_receiver_coverage": false,
+      "synthetic": true
+    },
+    "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "max_gap_s": 30.0,
+    "max_flight_samples": 250000,
+    "input_hash": "118701cfc19d628be109a95054b088a9e0aebf3c6d70c6ccaf754d65aa104340",
+    "rows": 3252,
+    "invalid_rows": 0,
+    "segments": 12,
+    "altitude_basis_counts": {
+      "ellipsoidal": 3252
+    },
+    "jets_excluded": false,
+    "unknown_types_retained": true,
+    "geometry_clipped": false,
+    "continuous_geometry_bounds": true
+  }
+}

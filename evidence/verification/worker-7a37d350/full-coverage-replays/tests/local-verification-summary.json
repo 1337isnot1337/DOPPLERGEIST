@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "source_commit": "b6413a6fcb4abc43816ab439931af6433296032e",
+  "source_tree": "69169d71301576b15f859879df8f5bf7165c7613",
+  "full_suite": {
+    "receipt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/pytest-all.xml",
+      "bytes": 78730,
+      "sha256": "63539dfffe309c21f30be67177faa529aa005d8951663135c557030ac62fc847"
+    },
+    "passed": 550,
+    "subtests_passed": 25,
+    "skipped": 1,
+    "elapsed_s": 86.46,
+    "junit_suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "1",
+        "tests": "576",
+        "time": "86.451",
+        "timestamp": "2026-11-03T00:01:50.022856-04:00",
+        "hostname": "05c893b10fbb"
+      }
+    ],
+    "skip_reasons": [
+      {
+        "type": "pytest.skip",
+        "message": "Live process-tree RSS is unavailable: proc_pid_namespace_mismatch"
+      }
+    ]
+  },
+  "focused_fixture_suite": {
+    "receipt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/pytest-focused-final.xml",
+      "bytes": 3343,
+      "sha256": "da27b82bc51e915db76ae6fbc38bcf1c5561f4c5d7044074a2de6bb9219d2ca1"
+    },
+    "passed": 21,
+    "elapsed_s": 11.78
+  },
+  "preflight": {
+    "preflight.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/preflight/preflight.json",
+      "bytes": 4690,
+      "sha256": "b4bb553ef70ff988e77f664d9dd7d8f3296098208a16c3ecfe13c7a32202019d"
+    },
+    "execution.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/preflight/execution.json",
+      "bytes": 1506,
+      "sha256": "1fc0f2d35390be9bfa34bb83ebab91f349f4f368d92dd51ec5ecfbe25fb472b7"
+    },
+    "source-manifest.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/preflight/source-manifest.json",
+      "bytes": 16259,
+      "sha256": "3542184d75f9a415441ee99624e9ff98672f726fd5169f50593615237e33dcb4"
+    }
+  },
+  "source_snapshot_sha256": "a46e1df0e84d7b73768a72ac0edc8ac8593e487b6ef9463bb9ec8b6a7b47f4e9",
+  "preservation": {
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/four-event-preservation-final.json",
+    "bytes": 20324,
+    "sha256": "957bbc32e422306ab850d53413ffab4dc2992cf317109624ae61168d91be8aaa"
+  },
+  "fixture_variant": "full-coverage",
+  "analytic_support_scope": "nominal_cpa_receiver_domain",
+  "actual_replay_output": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350",
+  "scope": "Committed source regression, fixture preservation and preflight receipts. Actual replay acceptance is reported separately."
+}

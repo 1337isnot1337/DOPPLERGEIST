@@ -1,0 +1,528 @@
+{
+  "files": [
+    {
+      "encoding": "identity",
+      "original_bytes": 2941,
+      "original_sha256": "68a958d36971d305bf9e54d79d0149191f6894502aa6cf183888edb62795c462",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/verification-summary.json",
+      "path": "tests/local-verification-summary.json",
+      "stored_bytes": 2941,
+      "stored_sha256": "68a958d36971d305bf9e54d79d0149191f6894502aa6cf183888edb62795c462"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 78730,
+      "original_sha256": "63539dfffe309c21f30be67177faa529aa005d8951663135c557030ac62fc847",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/pytest-all.xml",
+      "path": "tests/local-pytest.xml.gz",
+      "stored_bytes": 11590,
+      "stored_sha256": "a90d3d228075d9274c5eb07b5d4746832c0d5dde49e53ea515ec0daba0f26ebb"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 3343,
+      "original_sha256": "da27b82bc51e915db76ae6fbc38bcf1c5561f4c5d7044074a2de6bb9219d2ca1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/pytest-focused-final.xml",
+      "path": "tests/local-focused.xml",
+      "stored_bytes": 3343,
+      "stored_sha256": "da27b82bc51e915db76ae6fbc38bcf1c5561f4c5d7044074a2de6bb9219d2ca1"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4690,
+      "original_sha256": "b4bb553ef70ff988e77f664d9dd7d8f3296098208a16c3ecfe13c7a32202019d",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/preflight/preflight.json",
+      "path": "tests/local-preflight.json",
+      "stored_bytes": 4690,
+      "stored_sha256": "b4bb553ef70ff988e77f664d9dd7d8f3296098208a16c3ecfe13c7a32202019d"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 16259,
+      "original_sha256": "3542184d75f9a415441ee99624e9ff98672f726fd5169f50593615237e33dcb4",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/preflight/source-manifest.json",
+      "path": "tests/local-preflight-source-manifest.json",
+      "stored_bytes": 16259,
+      "stored_sha256": "3542184d75f9a415441ee99624e9ff98672f726fd5169f50593615237e33dcb4"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 20324,
+      "original_sha256": "957bbc32e422306ab850d53413ffab4dc2992cf317109624ae61168d91be8aaa",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/four-event-preservation-final.json",
+      "path": "audits/staged-four-event-preservation.json",
+      "stored_bytes": 20324,
+      "stored_sha256": "957bbc32e422306ab850d53413ffab4dc2992cf317109624ae61168d91be8aaa"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4315,
+      "original_sha256": "ee24018022b5938a984a2714809a1648fc61b2f0ecd4da89547778441c5670ce",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/fixture-preservation-audit-final.json",
+      "path": "audits/staged-independent-preservation.json",
+      "stored_bytes": 4315,
+      "stored_sha256": "ee24018022b5938a984a2714809a1648fc61b2f0ecd4da89547778441c5670ce"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 17594,
+      "original_sha256": "a1d27e9fa7e6dc2149192bb1fda3ddd67f0ce57f8ed83f5a822f70679fcee760",
+      "original_source_path": "/workspace/scratch/7a37d350207f/fixture_support_independent_audit-7a37d350.json",
+      "path": "audits/staged-independent-methodology.json",
+      "stored_bytes": 17594,
+      "stored_sha256": "a1d27e9fa7e6dc2149192bb1fda3ddd67f0ce57f8ed83f5a822f70679fcee760"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1160489,
+      "original_sha256": "fa43bb2301386ec45059061afe9506488421226a1cbfaa59117fc0bb6ffc8d13",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/acceptance.json",
+      "path": "local/acceptance.json.gz",
+      "stored_bytes": 233339,
+      "stored_sha256": "fcf0334ddc5f35c32af8b755e0e662344017edb6b46ca96ad63c36e53a8fba37"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1549,
+      "original_sha256": "50712166403b514610bb9cf18917d80bb9c07cd99a15a45fc1f59ce7e8a6ef3e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/protocol.json",
+      "path": "local/protocol.json",
+      "stored_bytes": 1549,
+      "stored_sha256": "50712166403b514610bb9cf18917d80bb9c07cd99a15a45fc1f59ce7e8a6ef3e"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 15539,
+      "original_sha256": "03e4d15447089becb33c72f6c4cd438b5b796872cf12f48f5ea389481b74cb6b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/source-manifest.json",
+      "path": "local/source-manifest.json",
+      "stored_bytes": 15539,
+      "stored_sha256": "03e4d15447089becb33c72f6c4cd438b5b796872cf12f48f5ea389481b74cb6b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1837083,
+      "original_sha256": "65b25b76c609e208c0502324246904c13cf7cb9fc5bc29723261d4eed0f7f67a",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/artifact-manifest.json",
+      "path": "local/artifact-manifest.json.gz",
+      "stored_bytes": 239293,
+      "stored_sha256": "24e198174dd93fc5844503a961d5318b3a968143e51d53b18746cdfd9b22e5fb"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 6159,
+      "original_sha256": "eaa4cefa1bdf1ea29fb6d623ddc4f661c959003dec8687649837aa21a61f541f",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/indexing.json",
+      "path": "local/indexing.json",
+      "stored_bytes": 6159,
+      "stored_sha256": "eaa4cefa1bdf1ea29fb6d623ddc4f661c959003dec8687649837aa21a61f541f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/wire-request.json",
+      "path": "local/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 555,
+      "original_sha256": "b2f5f3fbd81bc8ad13a68ba700822eb450493b92e072573a8113e6edaba4ec93",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/operator.json",
+      "path": "local/operator.json",
+      "stored_bytes": 555,
+      "stored_sha256": "b2f5f3fbd81bc8ad13a68ba700822eb450493b92e072573a8113e6edaba4ec93"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4949,
+      "original_sha256": "6769dc94a45306b645803c1a68e61e484b960eda23c862a1a6ba02d279eb934d",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/http-verification.json",
+      "path": "local/http/http-verification.json",
+      "stored_bytes": 4949,
+      "stored_sha256": "6769dc94a45306b645803c1a68e61e484b960eda23c862a1a6ba02d279eb934d"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 704803,
+      "original_sha256": "3a9d4b32b7c936e7f6ff5cf6542278a2ec1695ea11079e409749c2ec152dfaa1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/pipeline-evidence.json",
+      "path": "local/http/pipeline-evidence.json.gz",
+      "stored_bytes": 215730,
+      "stored_sha256": "bb77303b67470222644042c246355add717e89e1194939e716b41fac3b9e4400"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250816,
+      "original_sha256": "55b33a5c69233dfe13644eb652855a6bd9820fe38dcef94bb1499221d63117af",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/result.json",
+      "path": "local/http/result.json.gz",
+      "stored_bytes": 38631,
+      "stored_sha256": "64a536a4675a3918ffbae1f36c0767a8d6478e67be33fcd8753619d45049d413"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 13223,
+      "original_sha256": "e16f78edd5efef705182126fad097f0733dee48c17b93e9c57675b94132b1412",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/generation.json",
+      "path": "local/evaluation/generation.json",
+      "stored_bytes": 13223,
+      "stored_sha256": "e16f78edd5efef705182126fad097f0733dee48c17b93e9c57675b94132b1412"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 772,
+      "original_sha256": "22bce5291ba769a3fdd715e0fc8ac5db9917c754217d152bc36fcb60abc7e14e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/flight-id-mapping.json",
+      "path": "local/evaluation/flight-id-mapping.json",
+      "stored_bytes": 772,
+      "stored_sha256": "22bce5291ba769a3fdd715e0fc8ac5db9917c754217d152bc36fcb60abc7e14e"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2109,
+      "original_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/truth/labels.json",
+      "path": "local/evaluation/truth/labels.json",
+      "stored_bytes": 2109,
+      "stored_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1738,
+      "original_sha256": "42d4f092d67369f51012661be70235fa692d043076b388e98df3ae240a037e5e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/fixture/inputs/coverage.json",
+      "path": "local/fixture/inputs/coverage.json",
+      "stored_bytes": 1738,
+      "stored_sha256": "42d4f092d67369f51012661be70235fa692d043076b388e98df3ae240a037e5e"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 59362,
+      "original_sha256": "b72c16bbfb4c023ea10440acaf5078542b5d55d9d8f3602f45dd8bc43de22ad9",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/jobs/18f2211616414793a8e5d088257799f0/decision.json",
+      "path": "local/job/decision.json.gz",
+      "stored_bytes": 4502,
+      "stored_sha256": "b48f503327acc81bb9fce31d1d7056c4b7ce768d5451b7befd4b865a24d3cb77"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 583560,
+      "original_sha256": "1443a2411b262cd7131ab31c18bb3471524ce6c273e2a2b42e0798349777bac1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/jobs/18f2211616414793a8e5d088257799f0/refined-candidates.json",
+      "path": "local/job/refined-candidates.json.gz",
+      "stored_bytes": 68697,
+      "stored_sha256": "c0f334b06294a607d693170e4a90c4f0952604f71c8b4903f28f07efbce57f0b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 716349,
+      "original_sha256": "5d3b68fedd91e9f0b8582a9f0624f7161c06cc3a88aa13d58fb806d863a0c32c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/http/jobs/18f2211616414793a8e5d088257799f0/search/search-report.json",
+      "path": "local/job/search/search-report.json.gz",
+      "stored_bytes": 83825,
+      "stored_sha256": "5c0d449dc20240a7e9230034fdfa71755771f7b2e41318a8d9cd1d205964c8fa"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 8398,
+      "original_sha256": "8ca25334db10b29d656905dc5e9b8b6532a830384998579a52399fe887f99121",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/full-coverage-local-terminal-audit.json",
+      "path": "audits/local-terminal.json",
+      "stored_bytes": 8398,
+      "stored_sha256": "8ca25334db10b29d656905dc5e9b8b6532a830384998579a52399fe887f99121"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4077,
+      "original_sha256": "cb00b26e670bedf9bf3574ca561114de27c5dc7783c4d7e83ca44c40ccee0a9d",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/full-coverage-local-fixture-audit.json",
+      "path": "audits/local-fixture.json",
+      "stored_bytes": 4077,
+      "stored_sha256": "cb00b26e670bedf9bf3574ca561114de27c5dc7783c4d7e83ca44c40ccee0a9d"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 16329,
+      "original_sha256": "11e3e46f13d16690e7a12e459e1e9d01fd830b5beccf0be4c86ee44fabd11bcb",
+      "original_source_path": "/workspace/scratch/7a37d350207f/full_coverage_semantic_audit-7a37d350.json",
+      "path": "audits/local-semantic-initial.json",
+      "stored_bytes": 16329,
+      "stored_sha256": "11e3e46f13d16690e7a12e459e1e9d01fd830b5beccf0be4c86ee44fabd11bcb"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 10317,
+      "original_sha256": "e0738e7ea2e4c0bc43f15d934ce21e9ee3af78eb1e92f56bd0f1989ba8fa1de5",
+      "original_source_path": "/workspace/scratch/7a37d350207f/full_coverage_semantic_audit_corrected-7a37d350.json",
+      "path": "audits/local-semantic.json",
+      "stored_bytes": 10317,
+      "stored_sha256": "e0738e7ea2e4c0bc43f15d934ce21e9ee3af78eb1e92f56bd0f1989ba8fa1de5"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1561,
+      "original_sha256": "39e5dfe82ddbf46c9161b1977593d499d14851ecc1b205ecc209db6a60091086",
+      "original_source_path": "/workspace/scratch/7a37d350207f/full_coverage_semantic_audit_correction-7a37d350.json",
+      "path": "audits/local-semantic-correction.json",
+      "stored_bytes": 1561,
+      "stored_sha256": "39e5dfe82ddbf46c9161b1977593d499d14851ecc1b205ecc209db6a60091086"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14311,
+      "original_sha256": "1db62bca72c0ae6e0fb6feb09dc44a18bb8ad60614f715403eddfdafb7abbb13",
+      "original_source_path": "/workspace/scratch/7a37d350207f/audit_full_coverage_semantics_7a37d350_initial.py",
+      "path": "audits/audit_full_coverage_semantics_7a37d350_initial.py",
+      "stored_bytes": 14311,
+      "stored_sha256": "1db62bca72c0ae6e0fb6feb09dc44a18bb8ad60614f715403eddfdafb7abbb13"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 15026,
+      "original_sha256": "813f7bb68902367a1c6c5b7767c05a3d4b83282a6135c5d32b6cb79508d29a4a",
+      "original_source_path": "/workspace/scratch/7a37d350207f/audit_full_coverage_semantics_7a37d350.py",
+      "path": "audits/audit_full_coverage_semantics_7a37d350.py",
+      "stored_bytes": 15026,
+      "stored_sha256": "813f7bb68902367a1c6c5b7767c05a3d4b83282a6135c5d32b6cb79508d29a4a"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 19723,
+      "original_sha256": "edc9c056365f37c3262dd7529b4feede1c05312a09113f5204f8038026c83681",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/audit_terminal.py",
+      "path": "audits/audit_terminal.py",
+      "stored_bytes": 19723,
+      "stored_sha256": "edc9c056365f37c3262dd7529b4feede1c05312a09113f5204f8038026c83681"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 9936,
+      "original_sha256": "0761705876ad5179b3fcc6a8250ce11bae5217a99230e0618aa239ccdcebe9e8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/audit_fixture.py",
+      "path": "audits/audit_fixture.py",
+      "stored_bytes": 9936,
+      "stored_sha256": "0761705876ad5179b3fcc6a8250ce11bae5217a99230e0618aa239ccdcebe9e8"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1924,
+      "original_sha256": "04cbdf99a34b23662493c0d38a41a312198d796effcd515c73147ba52aa116be",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/final-handoff-checks.json",
+      "path": "tests/final-handoff-checks.json",
+      "stored_bytes": 1924,
+      "stored_sha256": "04cbdf99a34b23662493c0d38a41a312198d796effcd515c73147ba52aa116be"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 3717,
+      "original_sha256": "98e9e44f725d27f010ed76ca2326a49b312027a851eae3315cee7adf46bf145f",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/implementation-reproduction-note.md",
+      "path": "tests/implementation-reproduction-note.md",
+      "stored_bytes": 3717,
+      "stored_sha256": "98e9e44f725d27f010ed76ca2326a49b312027a851eae3315cee7adf46bf145f"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1158513,
+      "original_sha256": "fee5b38ecaf3c1c2040df3f39fcc2e9dee4e7c08614c116f0c765b7970504761",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/acceptance.json",
+      "path": "hosted/acceptance.json.gz",
+      "stored_bytes": 233368,
+      "stored_sha256": "45d51ab7f5a925447d547ddc6c621fca4afe84eb25683a021c70ea7e904cb1fb"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1549,
+      "original_sha256": "0a88a2866c6592a8d86868e93f47aea1d4d4a2ee01bc8e79007935ac61a79194",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/protocol.json",
+      "path": "hosted/protocol.json",
+      "stored_bytes": 1549,
+      "stored_sha256": "0a88a2866c6592a8d86868e93f47aea1d4d4a2ee01bc8e79007935ac61a79194"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14522,
+      "original_sha256": "56595a6684ae6e30677f6da98161bbee35ad45aa9ef0172521e9848a177aa212",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/source-manifest.json",
+      "path": "hosted/source-manifest.json",
+      "stored_bytes": 14522,
+      "stored_sha256": "56595a6684ae6e30677f6da98161bbee35ad45aa9ef0172521e9848a177aa212"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1711058,
+      "original_sha256": "31ac7e966b83cf072964a82afc8d0ff208f6c6f86495a316d1ff1c6d72775409",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/artifact-manifest.json",
+      "path": "hosted/artifact-manifest.json.gz",
+      "stored_bytes": 239394,
+      "stored_sha256": "cb0933287fc6475ca1ccc7f92e4d38241846f7f309fcc9c7f63071f428706606"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 6084,
+      "original_sha256": "75a8d1d7b915ebc1d4c0e196a36c8a51badec4f6e1b8e1e9882c5dd25b0f75b8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/indexing.json",
+      "path": "hosted/indexing.json",
+      "stored_bytes": 6084,
+      "stored_sha256": "75a8d1d7b915ebc1d4c0e196a36c8a51badec4f6e1b8e1e9882c5dd25b0f75b8"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/wire-request.json",
+      "path": "hosted/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 480,
+      "original_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/operator.json",
+      "path": "hosted/operator.json",
+      "stored_bytes": 480,
+      "stored_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4838,
+      "original_sha256": "be7696e9a70f43b1cabf10708301f56b3fa9f63dc51666208b337f065bb7bff6",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/http-verification.json",
+      "path": "hosted/http/http-verification.json",
+      "stored_bytes": 4838,
+      "stored_sha256": "be7696e9a70f43b1cabf10708301f56b3fa9f63dc51666208b337f065bb7bff6"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 704803,
+      "original_sha256": "7c62d5f401b52c2c5bb71386f334515741f206f7217db6d62f54e566120aaa73",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/pipeline-evidence.json",
+      "path": "hosted/http/pipeline-evidence.json.gz",
+      "stored_bytes": 215747,
+      "stored_sha256": "acbf961bae6ececc25ce24fde59ba17d07eb3a55a392911384a28cc1605698cc"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250858,
+      "original_sha256": "7ea9a912bb004ebcd4680d19808917bbf457f7b7bd0e31ed84b520039638fa50",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/result.json",
+      "path": "hosted/http/result.json.gz",
+      "stored_bytes": 38697,
+      "stored_sha256": "602c66487774a1985848574f76971256d5ba0c870618cf471fcad3d9abe3435f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 13173,
+      "original_sha256": "f500d45bd0379633df28f8279c5fd02c361ab9f8d5e56040fb23df0f19ee2391",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/evaluation/generation.json",
+      "path": "hosted/evaluation/generation.json",
+      "stored_bytes": 13173,
+      "stored_sha256": "f500d45bd0379633df28f8279c5fd02c361ab9f8d5e56040fb23df0f19ee2391"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 772,
+      "original_sha256": "9b28eb282e1d88aa4320e23e6159f0b7f486b200178dd04e66cc540e394b431b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/evaluation/flight-id-mapping.json",
+      "path": "hosted/evaluation/flight-id-mapping.json",
+      "stored_bytes": 772,
+      "stored_sha256": "9b28eb282e1d88aa4320e23e6159f0b7f486b200178dd04e66cc540e394b431b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2109,
+      "original_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/evaluation/truth/labels.json",
+      "path": "hosted/evaluation/truth/labels.json",
+      "stored_bytes": 2109,
+      "stored_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1738,
+      "original_sha256": "42d4f092d67369f51012661be70235fa692d043076b388e98df3ae240a037e5e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/fixture/inputs/coverage.json",
+      "path": "hosted/fixture/inputs/coverage.json",
+      "stored_bytes": 1738,
+      "stored_sha256": "42d4f092d67369f51012661be70235fa692d043076b388e98df3ae240a037e5e"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 59365,
+      "original_sha256": "74a05f272d5eec0bfaf9dfe3991b6065553a26ad9bc4adafef375260bda4254c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/jobs/7ff7c0bf5fbd428cbe1ec4ee282ff754/decision.json",
+      "path": "hosted/job/decision.json.gz",
+      "stored_bytes": 4486,
+      "stored_sha256": "c2f8125846cd7d3d74c80a531ba53960bc421576d064daef7e1ac64d5788af41"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 583498,
+      "original_sha256": "c86795f7c92938c6aa632c3b4034df7ebd08363b2afee73cd0fc0b438ffb5fe3",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/jobs/7ff7c0bf5fbd428cbe1ec4ee282ff754/refined-candidates.json",
+      "path": "hosted/job/refined-candidates.json.gz",
+      "stored_bytes": 68684,
+      "stored_sha256": "f0020f40499c4cbb272ce56d44e55e9fedc894106a469a11a2e10d5c390440a8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 716273,
+      "original_sha256": "8f774494a33cb6a88bbbae1d5a50943e4ef8db4cfedc62ce7b0b515558da93e8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/jobs/7ff7c0bf5fbd428cbe1ec4ee282ff754/search/search-report.json",
+      "path": "hosted/job/search/search-report.json.gz",
+      "stored_bytes": 83855,
+      "stored_sha256": "dd1dfdd2cb0d8ed43b6c7e3c5db094e371162aedb7112e46c9120f37079a20c4"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 8381,
+      "original_sha256": "ae84f43c4332bbc8c5e70abf0bb40c6085b1c0feb1ecd3db424041aec7741db8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/independent-terminal-audit.json",
+      "path": "audits/hosted-terminal.json",
+      "stored_bytes": 8381,
+      "stored_sha256": "ae84f43c4332bbc8c5e70abf0bb40c6085b1c0feb1ecd3db424041aec7741db8"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4063,
+      "original_sha256": "240eda25416cc94c9511cbe0ea65edf27840097af05616030efd752bc45a8cb4",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/independent-fixture-audit.json",
+      "path": "audits/hosted-fixture.json",
+      "stored_bytes": 4063,
+      "stored_sha256": "240eda25416cc94c9511cbe0ea65edf27840097af05616030efd752bc45a8cb4"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 10222,
+      "original_sha256": "00479de49684e57f1d02863dbad9efd4555f816c4b8cf87332fb45aff90d028d",
+      "original_source_path": "/workspace/scratch/7a37d350207f/hosted_full_coverage_semantic_audit-7a37d350.json",
+      "path": "audits/hosted-semantic.json",
+      "stored_bytes": 10222,
+      "stored_sha256": "00479de49684e57f1d02863dbad9efd4555f816c4b8cf87332fb45aff90d028d"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1504,
+      "original_sha256": "96a4569e22f94833e947913fad8cc9a262c200aac8d325caa11908a6ef6238fd",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/download-receipt.json",
+      "path": "hosted/download-receipt.json",
+      "stored_bytes": 1504,
+      "stored_sha256": "96a4569e22f94833e947913fad8cc9a262c200aac8d325caa11908a6ef6238fd"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 78443,
+      "original_sha256": "51e578db6fb05b13f7e8ad5cc28cea2233822d777d348ae7101b01e2eadbfbaf",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-runtime/pytest.xml",
+      "path": "tests/hosted-pytest.xml.gz",
+      "stored_bytes": 11335,
+      "stored_sha256": "a1ebb245cca905e58ad8b4c525a05693c5ac1b7ca17d35a2aef6f2675a7b22f2"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Full-coverage synthetic fixture revision; staged controls and final actual replay evidence remain separately identified."
+}

@@ -1,0 +1,49 @@
+{
+  "bounds": [
+    -180.0,
+    -85.0,
+    180.0,
+    85.0
+  ],
+  "time_range_s": [
+    1789999037.0,
+    1790001260.0
+  ],
+  "all_aircraft": true,
+  "source_kind": "complete_finite_synthetic_population",
+  "real_receiver_coverage": false,
+  "trajectory_support": {
+    "fixture_variant": "full-coverage",
+    "minimum_sound_speed_mps": 338.0,
+    "support_scope": "nominal_cpa_receiver_domain",
+    "receiver_domain": "Nominal coarse/fine CPA receivers within the declared range; no analytic refinement/profile receiver guarantee.",
+    "refinement_and_profile_support": "Separately checked by unchanged runtime fit and acceptance gates.",
+    "maximum_candidate_range_m": 20000.0,
+    "speed_bound_mps": 137.20000000000002,
+    "left_padding_s": 963,
+    "right_padding_s": 300,
+    "emission_interval_s": [
+      1789999037.0,
+      1790001260.0
+    ],
+    "guaranteed_receive_interval_s": [
+      1790000000.0,
+      1790000960.0
+    ],
+    "start_arrival_upper_bound_s": 1789999998.5254438,
+    "end_arrival_lower_bound_s": 1790001260.0,
+    "arrival_monotonicity_lower_bound": 0.5940828402366863,
+    "support_assumptions": [
+      "Receiver lies within the declared range of a track point or sampled CPA chord.",
+      "The serialized trajectory satisfies the continuous Hermite speed bound.",
+      "Receive times lie within the audio interval; sound speed is at least the declared minimum."
+    ],
+    "samples_per_track": 2224,
+    "aircraft_count": 12,
+    "maximum_hermite_speed_control_mps": 101.74426193081403,
+    "original_rows_preserved": true,
+    "position_join_tolerance_m": 1e-06,
+    "velocity_join_tolerance_mps": 1e-08,
+    "continuity": "C1 position/velocity joins; acceleration continuity is not asserted"
+  }
+}

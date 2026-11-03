@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scope": "known-clock synthetic multi-event actual HTTP development replay",
+  "started_utc": "2026-11-03T03:19:37.209749Z",
+  "expected_status": "succeeded",
+  "generated_event_count": 4,
+  "generator_seed": 20261103,
+  "primary_threshold_m": 1000,
+  "thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "total_budget_s": 1200.0,
+  "stages": [],
+  "passed": false,
+  "http_transport_passed": false,
+  "supported_decision": false,
+  "supported_localization_passed": false,
+  "supported_localization_at_m": {
+    "100": false,
+    "500": false,
+    "1000": false
+  },
+  "evaluation_truth_opened": false,
+  "evaluation_truth_loaded": false,
+  "browser_verified": false,
+  "independent_real_accuracy_verified": false,
+  "live_acquisition_verified": false,
+  "real_national_coverage_verified": false,
+  "limitations": [
+    "One finite synthetic development scene; no independent real holdout is evaluated.",
+    "The generator supplies the sample-zero clock; it is not inferred from audio.",
+    "All generated traffic is retained; completeness describes only this finite synthetic population.",
+    "Truth separation is procedural; no operating-system isolation of evaluation files is claimed.",
+    "An expected inconclusive response never passes supported-localization acceptance.",
+    "Process-tree RSS is unavailable when /proc PIDs do not match the process namespace; valid samples may miss peaks.",
+    "Native search-worker RSS does not establish the whole-pipeline peak."
+  ]
+}

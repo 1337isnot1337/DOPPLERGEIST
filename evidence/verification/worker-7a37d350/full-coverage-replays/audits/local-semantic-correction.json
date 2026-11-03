@@ -1,0 +1,23 @@
+{
+  "corrected_audit": {
+    "path": "full_coverage_semantic_audit_corrected-7a37d350.json",
+    "sha256": "e0738e7ea2e4c0bc43f15d934ce21e9ee3af78eb1e92f56bd0f1989ba8fa1de5"
+  },
+  "corrected_script": {
+    "path": "audit_full_coverage_semantics_7a37d350.py",
+    "sha256": "813f7bb68902367a1c6c5b7767c05a3d4b83282a6135c5d32b6cb79508d29a4a"
+  },
+  "created_utc": "2026-11-03T04:12:14.006228+00:00",
+  "error": "The initial auditor compared the 1-second recorded association edge tolerance to the complete 2-second discovery window. The frozen ci_http_replay.py explicitly defines the edge tolerance as half the discovery window. This caused the initial all-candidate semantic comparison to fail although every numeric ridge-window fraction already agreed.",
+  "initial_audit": {
+    "path": "full_coverage_semantic_audit-7a37d350.json",
+    "sha256": "11e3e46f13d16690e7a12e459e1e9d01fd830b5beccf0be4c86ee44fabd11bcb"
+  },
+  "initial_script": {
+    "path": "audit_full_coverage_semantics_7a37d350_initial.py",
+    "sha256": "1db62bca72c0ae6e0fb6feb09dc44a18bb8ad60614f715403eddfdafb7abbb13"
+  },
+  "resolution": "Use the predeclared half-window tolerance, preserve the initial audit and script, and run a separate corrected audit. The four winning groups also have 100% target-interval support and 0% other-interval support with zero edge tolerance. No project source, native evidence, or acceptance threshold was changed.",
+  "schema_version": 1,
+  "scope": "Correction to the independent auditor; native replay receipts and accepted outcome are unchanged."
+}

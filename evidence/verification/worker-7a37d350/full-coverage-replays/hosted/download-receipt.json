@@ -1,0 +1,39 @@
+{
+  "artifact": {
+    "archive_download_url": "https://api.github.com/repos/1337isnot1337/DOPPLERGEIST/actions/artifacts/13203940538/zip",
+    "created_at": "2026-11-03T04:13:16Z",
+    "digest": "sha256:6d30b62d564bb238a5e034e4ce91c947edf89eb3a9e35e8b7ed44693abe57198",
+    "expired": false,
+    "expires_at": "2026-12-03T04:13:08Z",
+    "id": 13203940538,
+    "name": "http-four-event-acceptance-e33e2f38068c704a1d9e5a8a76c41d73b8020f92",
+    "size_in_bytes": 89042803,
+    "updated_at": "2026-11-03T04:13:16Z",
+    "url": "https://api.github.com/repos/1337isnot1337/DOPPLERGEIST/actions/artifacts/13203940538",
+    "workflow_run": {
+      "head_branch": "worker/end-to-end-7a37d350",
+      "head_repository_id": 1443613311,
+      "head_sha": "e33e2f38068c704a1d9e5a8a76c41d73b8020f92",
+      "id": 41575931388,
+      "repository_id": 1443613311
+    }
+  },
+  "crc_and_member_paths_valid": true,
+  "digest_matches_github": true,
+  "downloaded_utc": "2026-11-03T04:13:55.062067+00:00",
+  "members": 5047,
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-11-03T04:04:29Z",
+    "head_sha": "e33e2f38068c704a1d9e5a8a76c41d73b8020f92",
+    "id": 41575931388,
+    "run_attempt": 1,
+    "status": "completed",
+    "tree": "69169d71301576b15f859879df8f5bf7165c7613",
+    "updated_at": "2026-11-03T04:13:19Z"
+  },
+  "signed_download_url_omitted": true,
+  "uncompressed_bytes": 249058293,
+  "zip_bytes": 89042803,
+  "zip_sha256": "6d30b62d564bb238a5e034e4ce91c947edf89eb3a9e35e8b7ed44693abe57198"
+}

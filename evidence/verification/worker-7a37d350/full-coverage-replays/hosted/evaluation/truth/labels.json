@@ -1,0 +1,108 @@
+{
+  "location": [
+    40.03173,
+    -100.01829
+  ],
+  "elevation_m": 120.0,
+  "recording_start_utc": "2026-09-21T14:13:20Z",
+  "events": [
+    {
+      "flight_id": "584c8b5ab114",
+      "start_s": 70.99792182628954,
+      "end_s": 272.05474772709624,
+      "center_emission_s": 150.0,
+      "source_frequency_hz": 135.0
+    },
+    {
+      "flight_id": "7b081392e2c2",
+      "start_s": 292.81694239312196,
+      "end_s": 493.8654533040145,
+      "center_emission_s": 370.0,
+      "source_frequency_hz": 158.0
+    },
+    {
+      "flight_id": "ccee360caf30",
+      "start_s": 514.6368775024087,
+      "end_s": 715.6764866524786,
+      "center_emission_s": 590.0,
+      "source_frequency_hz": 181.0
+    },
+    {
+      "flight_id": "5bd600870087",
+      "start_s": 736.4575865608538,
+      "end_s": 937.487826691294,
+      "center_emission_s": 810.0,
+      "source_frequency_hz": 204.0
+    }
+  ],
+  "traffic_identity_map": [
+    {
+      "flight_id": "584c8b5ab114",
+      "variant": 0,
+      "event": 0
+    },
+    {
+      "flight_id": "7b081392e2c2",
+      "variant": 0,
+      "event": 1
+    },
+    {
+      "flight_id": "ccee360caf30",
+      "variant": 0,
+      "event": 2
+    },
+    {
+      "flight_id": "5bd600870087",
+      "variant": 0,
+      "event": 3
+    },
+    {
+      "flight_id": "c462923f18b5",
+      "variant": 1,
+      "event": 0
+    },
+    {
+      "flight_id": "b1703e44cbf7",
+      "variant": 1,
+      "event": 1
+    },
+    {
+      "flight_id": "f11e3201558c",
+      "variant": 1,
+      "event": 2
+    },
+    {
+      "flight_id": "39490fc22da5",
+      "variant": 1,
+      "event": 3
+    },
+    {
+      "flight_id": "37eb2ec6d862",
+      "variant": 2,
+      "event": 0
+    },
+    {
+      "flight_id": "5963b2387c30",
+      "variant": 2,
+      "event": 1
+    },
+    {
+      "flight_id": "ceb5f8f549ef",
+      "variant": 2,
+      "event": 2
+    },
+    {
+      "flight_id": "4e3d87ed6e3f",
+      "variant": 2,
+      "event": 3
+    }
+  ],
+  "scope": "independent synthetic renderer",
+  "acceptable_error_m": 1000,
+  "preferred_error_m": 500,
+  "reported_thresholds_m": [
+    100,
+    500,
+    1000
+  ]
+}

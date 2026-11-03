@@ -1,0 +1,88 @@
+{
+  "aircraft_count": 12,
+  "all_six_nontrajectory_files_unchanged": false,
+  "altitude_range_m": [
+    1007.9459385918453,
+    3017.268606843427
+  ],
+  "declared_support": {
+    "continuity": "C1 position/velocity joins; acceleration continuity is not asserted",
+    "left_padding_s": 963,
+    "maximum_candidate_range_m": 20000.0,
+    "maximum_hermite_speed_control_mps": 101.74426193081403,
+    "minimum_sound_speed_mps": 338.0,
+    "right_padding_s": 300,
+    "speed_bound_mps": 137.20000000000002
+  },
+  "extended_rows": 26688,
+  "files": {
+    "inputs/geoid.tif": {
+      "frozen_original_sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae",
+      "identical": true,
+      "new_full_sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae",
+      "new_local_sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+    },
+    "inputs/recording.mp3": {
+      "frozen_original_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c",
+      "identical": true,
+      "new_full_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c",
+      "new_local_sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+    },
+    "inputs/request.json": {
+      "frozen_original_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+      "identical": true,
+      "new_full_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+      "new_local_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+    },
+    "inputs/terrain.tif": {
+      "frozen_original_sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b",
+      "identical": true,
+      "new_full_sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b",
+      "new_local_sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+    },
+    "renderer/recording.wav": {
+      "frozen_original_sha256": "83022eaf982d787c2cb3b806aab427dc46c7bf103fd0388749486a8853c683bc",
+      "identical": false,
+      "new_full_sha256": "acb6b2dc5717f8700ab7f1d75d95bf07cbc10d4b7ff1e24e8e63f9f8c9e7be62",
+      "new_local_sha256": "acb6b2dc5717f8700ab7f1d75d95bf07cbc10d4b7ff1e24e8e63f9f8c9e7be62"
+    },
+    "truth/labels.json": {
+      "frozen_original_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+      "identical": true,
+      "new_full_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+      "new_local_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    }
+  },
+  "frozen_run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350",
+  "generated_source_sha256": "6d2e3335703996c439a3f04e31c067e449a9dcc50c587a5c948e5fdceb7cd40a",
+  "independently_recomputed_physical_values": {
+    "all_tail_samples_maximum_tangent_position_error_m": 1.1362540948250092e-07,
+    "all_tail_samples_maximum_tangent_velocity_error_mps": 3.6230712748823524e-14,
+    "all_tracks_uniform_one_second_grid": true,
+    "maximum_continuous_speed_control_mps": 101.74426193081403,
+    "subsonic_speed_bound_satisfied": true,
+    "tail_samples_follow_declared_tangents": true
+  },
+  "limitations": [
+    "This is input-preservation validation, not an accepted localization result.",
+    "Analytic support scope is nominal range-gated CPA receivers; refined/profile support remains separately gated."
+  ],
+  "maximum_position_join_error_m": 2.895443540935337e-08,
+  "maximum_velocity_join_error_mps": 2.040878629308206e-14,
+  "new_full_fixture": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four",
+  "original_rows": 3252,
+  "original_rows_unchanged": true,
+  "rows_per_track": [
+    2224
+  ],
+  "same_aircraft_ids": true,
+  "scope": "New fixture preservation compared directly with frozen failed finite replay",
+  "signal_and_original_observations_preserved": true,
+  "wav_pcm": {
+    "container_difference": "Two bytes in the RIFF PEAK chunk timestamp at offsets60 and61; historical containers preserved.",
+    "exactly_equal": true,
+    "sample_count": 7680000,
+    "sample_rate_hz": 8000,
+    "sha256": "1cf717c20544dcbbd8806fdbec070b147797365dee9cdd23d819b9256ae1eba8"
+  }
+}

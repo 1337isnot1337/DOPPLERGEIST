@@ -1,0 +1,162 @@
+{
+  "fixture_variant": "full-coverage",
+  "rows": 26688,
+  "tracks": 12,
+  "rows_per_track": {
+    "33bf9caef49b11a3cc5c21c2d7f42e6d": 2224,
+    "3d805632ceef6a45777ca286abf9b5be": 2224,
+    "7c1b1ecbf577cf33fad64dab6ac76bf2": 2224,
+    "7e55f027ce5b196b026e6aa7ab9e5c34": 2224,
+    "9480b055cdb49101b41756f85e374eba": 2224,
+    "a69f760bbba02a8f02c7ed18e1449db2": 2224,
+    "adcd3888bbfa58c8f2caf67f4979b977": 2224,
+    "d009cff8d85bfdf8a9c6bcafe0b2f275": 2224,
+    "d2a453baf129911044af28f791bf568f": 2224,
+    "d76664195d727e5acff49e11f6208d56": 2224,
+    "df5398d00b5308a94579945b72ae0c29": 2224,
+    "f612bfc3528dcfb1a0e14d1c8cc6cf77": 2224
+  },
+  "typecode_rows": {
+    "C172": 6672,
+    "PC12": 6672,
+    "A320": 6672,
+    "": 6672
+  },
+  "all_non_id_values_preserved": true,
+  "all_rows_retained": true,
+  "original_parquet": {
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/evaluation/original-tracks.parquet",
+    "bytes": 1573776,
+    "sha256": "9979eaf7713009e612e05ab2eb79e02978087e851077f83da900970d9a7cb23d"
+  },
+  "derived_parquet": {
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/fixture/inputs/tracks.parquet",
+    "bytes": 1572671,
+    "sha256": "e624bf568e6ce5e64f7d062dd9f0eff73db99b9ced5a202d852cfc1e521ee918"
+  },
+  "indexed_coverage": {
+    "bounds": [
+      -180.0,
+      -85.0,
+      180.0,
+      85.0
+    ],
+    "time_range_s": [
+      1789999037.0,
+      1790001260.0
+    ],
+    "all_aircraft": true,
+    "source_kind": "complete_finite_synthetic_population",
+    "real_receiver_coverage": false,
+    "trajectory_support": {
+      "fixture_variant": "full-coverage",
+      "minimum_sound_speed_mps": 338.0,
+      "support_scope": "nominal_cpa_receiver_domain",
+      "receiver_domain": "Nominal coarse/fine CPA receivers within the declared range; no analytic refinement/profile receiver guarantee.",
+      "refinement_and_profile_support": "Separately checked by unchanged runtime fit and acceptance gates.",
+      "maximum_candidate_range_m": 20000.0,
+      "speed_bound_mps": 137.20000000000002,
+      "left_padding_s": 963,
+      "right_padding_s": 300,
+      "emission_interval_s": [
+        1789999037.0,
+        1790001260.0
+      ],
+      "guaranteed_receive_interval_s": [
+        1790000000.0,
+        1790000960.0
+      ],
+      "start_arrival_upper_bound_s": 1789999998.5254438,
+      "end_arrival_lower_bound_s": 1790001260.0,
+      "arrival_monotonicity_lower_bound": 0.5940828402366863,
+      "support_assumptions": [
+        "Receiver lies within the declared range of a track point or sampled CPA chord.",
+        "The serialized trajectory satisfies the continuous Hermite speed bound.",
+        "Receive times lie within the audio interval; sound speed is at least the declared minimum."
+      ],
+      "samples_per_track": 2224,
+      "aircraft_count": 12,
+      "maximum_hermite_speed_control_mps": 101.74426193081403,
+      "original_rows_preserved": true,
+      "position_join_tolerance_m": 1e-06,
+      "velocity_join_tolerance_mps": 1e-08,
+      "continuity": "C1 position/velocity joins; acceleration continuity is not asserted"
+    },
+    "synthetic": true
+  },
+  "index_report": {
+    "index_version": 2,
+    "sources": [
+      {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350/fixture/inputs/tracks.parquet",
+        "sha256": "e624bf568e6ce5e64f7d062dd9f0eff73db99b9ced5a202d852cfc1e521ee918",
+        "bytes": 1572671
+      }
+    ],
+    "coverage": {
+      "bounds": [
+        -180.0,
+        -85.0,
+        180.0,
+        85.0
+      ],
+      "time_range_s": [
+        1789999037.0,
+        1790001260.0
+      ],
+      "all_aircraft": true,
+      "source_kind": "complete_finite_synthetic_population",
+      "real_receiver_coverage": false,
+      "trajectory_support": {
+        "fixture_variant": "full-coverage",
+        "minimum_sound_speed_mps": 338.0,
+        "support_scope": "nominal_cpa_receiver_domain",
+        "receiver_domain": "Nominal coarse/fine CPA receivers within the declared range; no analytic refinement/profile receiver guarantee.",
+        "refinement_and_profile_support": "Separately checked by unchanged runtime fit and acceptance gates.",
+        "maximum_candidate_range_m": 20000.0,
+        "speed_bound_mps": 137.20000000000002,
+        "left_padding_s": 963,
+        "right_padding_s": 300,
+        "emission_interval_s": [
+          1789999037.0,
+          1790001260.0
+        ],
+        "guaranteed_receive_interval_s": [
+          1790000000.0,
+          1790000960.0
+        ],
+        "start_arrival_upper_bound_s": 1789999998.5254438,
+        "end_arrival_lower_bound_s": 1790001260.0,
+        "arrival_monotonicity_lower_bound": 0.5940828402366863,
+        "support_assumptions": [
+          "Receiver lies within the declared range of a track point or sampled CPA chord.",
+          "The serialized trajectory satisfies the continuous Hermite speed bound.",
+          "Receive times lie within the audio interval; sound speed is at least the declared minimum."
+        ],
+        "samples_per_track": 2224,
+        "aircraft_count": 12,
+        "maximum_hermite_speed_control_mps": 101.74426193081403,
+        "original_rows_preserved": true,
+        "position_join_tolerance_m": 1e-06,
+        "velocity_join_tolerance_mps": 1e-08,
+        "continuity": "C1 position/velocity joins; acceleration continuity is not asserted"
+      },
+      "synthetic": true
+    },
+    "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "max_gap_s": 30.0,
+    "max_flight_samples": 250000,
+    "input_hash": "66655bc5772f93acd1a6af89c734b76eefbcabde0b92cf37f971b5d25bbda2ad",
+    "rows": 26688,
+    "invalid_rows": 0,
+    "segments": 12,
+    "altitude_basis_counts": {
+      "ellipsoidal": 26688
+    },
+    "jets_excluded": false,
+    "unknown_types_retained": true,
+    "geometry_clipped": false,
+    "continuous_geometry_bounds": true
+  }
+}

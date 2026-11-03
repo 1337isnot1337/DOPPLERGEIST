@@ -1,0 +1,236 @@
+{
+  "artifact_inventory": {
+    "declared_files": 5041,
+    "errors": [],
+    "verified_bytes": 246957823,
+    "verified_files": 5041
+  },
+  "audit_passed": true,
+  "auditor_sha256": "edc9c056365f37c3262dd7529b4feede1c05312a09113f5204f8038026c83681",
+  "checks": {
+    "all_candidate_errors_flight_sets_clocks_recomputed": true,
+    "all_manifest_files_verified": true,
+    "all_runner_crosslinks_passed": true,
+    "clean_service_stop": true,
+    "competitive_association_changes_cannot_pass": true,
+    "competitive_dropped_modes_cannot_pass": true,
+    "diagnostic_threshold_counts_recomputed": true,
+    "executed_verifier_matches_snapshot": true,
+    "finite_union_members_recomputed": true,
+    "finite_union_radius_recomputed": true,
+    "finite_union_within_target_if_successful": true,
+    "full_scientific_stage_evidence_passed": true,
+    "http_receipt_bound": true,
+    "http_source_matches_snapshot": true,
+    "inventory_membership_complete": true,
+    "leading_prediction_error_recomputed": true,
+    "ledger_bound_matches_all_dropped_modes": true,
+    "ledger_distinct_counts": true,
+    "ledger_exact_seed_identities": true,
+    "ledger_group_counts_stable": true,
+    "ledger_integrity": true,
+    "ledger_read_only_bytes_unchanged": true,
+    "ledger_run_identity": true,
+    "manifest_bound_to_receipt": true,
+    "original_retained_set_present": true,
+    "retained_clock_trial_accounting": true,
+    "snapshot_package_hashes_match_http_provenance": true,
+    "snapshot_project_files_match_committed_source": true,
+    "source_inventory_verified": true,
+    "source_manifest_bound_to_receipt": true,
+    "source_snapshot_digest_verified": true,
+    "stage_artifacts_bound": true,
+    "stage_gate_bound_to_receipt": true,
+    "supported_finite_result_has_union": true,
+    "terminal_result_bound": true,
+    "truth_opened_after_stop": true,
+    "unknown_modes_cannot_pass": true,
+    "unknown_trials_preclude_finite_completeness": true,
+    "unsupported_status_has_no_accepted_tier": true
+  },
+  "created_utc": "2026-11-03T04:09:47.847931+00:00",
+  "finite_retention": {
+    "competitive_dropped_mode_count": 0,
+    "dropped_gap_per_maximum_group": 0.4649500542658541,
+    "dropped_mode_count": 6701,
+    "envelope": {
+      "different_association_indices": [],
+      "independent_point_plus_reported_profile_union_m": 117.19570324924227,
+      "near_tied_candidates": 10,
+      "published_union": {
+        "base_profile_radius_m": 6.283345338474251,
+        "base_reported_radius_m": 6.283345338474251,
+        "finite_point_extent_m": 117.19570324924227,
+        "included_candidate_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "included_mode_ids": [
+          "mode-78cf9681d77b4a858a846ae8b499ad9d891d7664e084a94cf77fda7dba5a18f7",
+          "mode-853bccf989461c768ae5fbab73877de4cd06f24030d7d3aeabd8b618603bc828",
+          "mode-86001a7c3832e34a15db88d5ff13f27455abb526419c01a89db45ec92ed141a3",
+          "mode-d11e46a3d9a12118d829c0f58f32375e95f64547d28479b9258a89f4ac723729",
+          "mode-e53f9bc29841e44cc54e07bd86dac2b9fc75515cae1065db4c4c78ed8b4e7577"
+        ],
+        "limitations": [
+          "Union covers evaluated same-association points and actually reported test envelopes.",
+          "Unperformed competitor profiles/refinements remain unbounded; no coverage probability is inferred."
+        ],
+        "radius_m": 117.19570324924227
+      }
+    },
+    "ledger_sha256": "d590b1c51a072627a20b661c188cdf5a2bf12cda4a241208891f8c426a4521f0",
+    "maximum_observed_dropped_score": 2.097033056419206,
+    "published_dropped_upper_bound": 2.097033056419206,
+    "record_occurrences": 250869,
+    "recorded_complete": true,
+    "retained_mode_count": 100,
+    "retained_trial_errors": [],
+    "retained_trial_totals": {
+      "evaluated": 200,
+      "rejected": 0,
+      "scheduled": 200,
+      "unknown": 0,
+      "unknown_reasons": {}
+    },
+    "stage_counts": {
+      "coarse": 4940,
+      "fine": 4,
+      "fine-global": 4,
+      "global": 4940
+    },
+    "top_dropped_modes": [
+      {
+        "event_groups": 3,
+        "mode_id": "mode-f1ef7af39e618005496e386c567d54ae65cee275881aa54008cc7523d924e3c3",
+        "score": 2.097033056419206
+      },
+      {
+        "event_groups": 4,
+        "mode_id": "mode-a42148b7911149c2262512f5d1ac48fb0858b0315b1b83de983cab253573e79d",
+        "score": 2.0968436844545484
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-afb42f5ea9edf5c8b19d5e553f5b6b277ebe28221d94d11e179566737206a240",
+        "score": 2.0966870687170722
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-8a5603dddf21131a149663b8c57eb9be0689a827ae43617a932b17744dd2391b",
+        "score": 2.0938607395527047
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-7bf87388f1599415dfbb687d3fb43e9d7e07d412439d27881d694601c915ba4d",
+        "score": 2.0851834913889435
+      }
+    ],
+    "unchanged_competition_threshold": 0.2,
+    "unclassified_score_candidates": 0,
+    "unique_evaluated_modes": 6801
+  },
+  "inventory_membership": {
+    "missing": [],
+    "unexpected": []
+  },
+  "limitations": [
+    "No pipeline, acoustic fit or physical trial is rerun.",
+    "Lifecycle ordering is bound to persisted receipts, not newly observed live process handles.",
+    "No continuous-space uniqueness, calibrated uncertainty or independent real-world accuracy is established."
+  ],
+  "outcome": {
+    "accepted_tiers": {
+      "100": true,
+      "1000": true,
+      "500": true
+    },
+    "candidate_count": 105,
+    "elapsed_s": 329.77454449200013,
+    "finite_search_verified": true,
+    "http_checks_passed": true,
+    "pipeline_evidence_passed": true,
+    "reason_code": "supported_by_evidence_checks",
+    "runner_passed": true,
+    "status": "succeeded",
+    "strict_expectation_matched": true,
+    "supported_decision": true
+  },
+  "receipt_sha256": "fa43bb2301386ec45059061afe9506488421226a1cbfaa59117fc0bb6ffc8d13",
+  "run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/http-full-coverage-7a37d350",
+  "runner_crosslinks": {
+    "all_discovered_events_retained": true,
+    "all_event_groups_considered": true,
+    "all_stage_artifacts_present": true,
+    "alternative_evidence_consistent": true,
+    "decision_consistent": true,
+    "evidence_collection_complete": true,
+    "http_result_matches_persisted": true,
+    "implementation_verified": true,
+    "job_identity_matches": true,
+    "leading_refinement_row_bound": true,
+    "nominal_joint_fit_recorded": true,
+    "normal_request_verified": true,
+    "operator_verified": true,
+    "scientific_stage_artifacts_unchanged": true,
+    "scientific_stage_gate_passed": true,
+    "search_consistent": true,
+    "source_snapshot_unchanged": true,
+    "uploaded_bytes_verified": true
+  },
+  "schema_version": 1,
+  "scope": "independent_terminal_binding_and_finite_retention_audit",
+  "source": {
+    "audited_against_commit": "b6413a6fcb4abc43816ab439931af6433296032e",
+    "audited_project_files": 34,
+    "commit": "b6413a6fcb4abc43816ab439931af6433296032e",
+    "equivalence_scope": "Exact source tree; commit history is not asserted equivalent.",
+    "project_mismatches": [],
+    "snapshot_sha256": "a46e1df0e84d7b73768a72ac0edc8ac8593e487b6ef9463bb9ec8b6a7b47f4e9",
+    "tree": "69169d71301576b15f859879df8f5bf7165c7613"
+  },
+  "source_inventory": {
+    "declared_files": 40,
+    "errors": [],
+    "verified_bytes": 510249,
+    "verified_files": 40
+  },
+  "stage_inventory": {
+    "declared_files": 4953,
+    "errors": [],
+    "verified_bytes": 194954445,
+    "verified_files": 4953
+  },
+  "withheld_truth_comparison": {
+    "candidate_count": 105,
+    "leading_error_m": 0.07932759464807976,
+    "leading_full_flight_set_correct": true,
+    "limitations": [
+      "Candidate rows are correlated hypotheses from one scene, not independent accuracy trials."
+    ],
+    "mismatches": [],
+    "reference_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+    "threshold_counts": {
+      "100": {
+        "all_candidates": 20,
+        "correct_full_flight_set": 8
+      },
+      "1000": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      },
+      "500": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      }
+    }
+  }
+}

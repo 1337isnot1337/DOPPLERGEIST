@@ -1,0 +1,52 @@
+{
+  "coarse_counts": {
+    "candidates": 4275,
+    "evaluated_rejections": 2563,
+    "unclassified_score_candidates": 1512
+  },
+  "coarse_retained_unknown_reasons": {},
+  "coarse_tiles_with_unknowns": 6,
+  "limitations": [
+    "Nonfinite or tile-pruned scorer rows are not persisted in coarse ranked lists; retained-row reasons cannot classify all aggregate unknown candidates."
+  ],
+  "most_unknown_tiles": [
+    {
+      "candidates": 1211,
+      "retained": 7,
+      "tile": "tile--21_36.json",
+      "unclassified": 756
+    },
+    {
+      "candidates": 643,
+      "retained": 1,
+      "tile": "tile-8_20.json",
+      "unclassified": 304
+    },
+    {
+      "candidates": 1452,
+      "retained": 23,
+      "tile": "tile--6_29.json",
+      "unclassified": 177
+    },
+    {
+      "candidates": 825,
+      "retained": 8,
+      "tile": "tile-8_21.json",
+      "unclassified": 177
+    },
+    {
+      "candidates": 131,
+      "retained": 0,
+      "tile": "tile--20_36.json",
+      "unclassified": 96
+    },
+    {
+      "candidates": 13,
+      "retained": 0,
+      "tile": "tile--5_29.json",
+      "unclassified": 2
+    }
+  ],
+  "samples": [],
+  "unknown_retained_coarse_rows": 0
+}

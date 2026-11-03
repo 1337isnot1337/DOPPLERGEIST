@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus"
+  },
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user",
+    "source_detail": "Known sample-zero clock of the published independent synthetic generator"
+  }
+}

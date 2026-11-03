@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T03:39:59.304828+00:00",
+  "scope": "Bounded audit of released source metadata and two screenshots; no location or clock inferred from acoustic fit",
+  "export_run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41573044968",
+  "export_artifact_id": 13201998196,
+  "export_commit": "293d09bdde2430b937a48ef91e9a98e67e5f53bb",
+  "release_asset_sha256": "0f5e7bf1dc9279b01ff10e2005a777b00b2835a0304aa5366cc333580e5135df",
+  "export_receipt": {
+    "path": "/workspace/scratch/7a37d350207f/source_provenance_7a37d350/provenance-export.json",
+    "sha256": "ed0fd27f0d2d5d37bd6cdbf246e5ccfaec958304f03e96d08945cdde9d9fcb1b"
+  },
+  "files": [
+    {
+      "path": "data/source/reference-recording.info.json",
+      "bytes": 888,
+      "sha256": "6791a2589a6240fe99daa848fc9913d875c13dc1ef4e808c91e728943b9cd7e6",
+      "matches_export": true
+    },
+    {
+      "path": "data/source/source-1441.png",
+      "bytes": 1163980,
+      "sha256": "e38043fbc514bcad66055401c0471f7f3791044091f586f9a20e7ee1c27a6ec8",
+      "matches_export": true
+    },
+    {
+      "path": "data/source/source_manifest.json",
+      "bytes": 373,
+      "sha256": "f225b1d456455f32e246a1fdb1a1649de0c5facf1d21046bf5bac3fd1abce113",
+      "matches_export": true
+    },
+    {
+      "path": "data/source/transcript.txt",
+      "bytes": 36381,
+      "sha256": "eca51167fb8bb454c31cf51235814274d736bc4e4027deb913b6ad72c9d3f4b3",
+      "matches_export": true
+    },
+    {
+      "path": "data/source/true_camera.png",
+      "bytes": 1951599,
+      "sha256": "254708d3aac1115407e92b785586656ed583a5a87b19c7d3bb4cda8c31ce1554",
+      "matches_export": true
+    },
+    {
+      "path": "data/source/video.info.json",
+      "bytes": 2863,
+      "sha256": "0b77d2f062ca6519c7fe3dc8150b75d8b0da2c5460425d3363de743c1994b6a0",
+      "matches_export": true
+    }
+  ],
+  "all_file_checks_passed": true,
+  "findings": {
+    "audio_documentary_link": {
+      "established": true,
+      "basis": "Method-video description explicitly links raw-audio video 4CxVxuMVkMc; both descriptive metadata records name colsto."
+    },
+    "recording_start_utc": {
+      "established": false,
+      "source_statement": "Transcript at 00:27 says September 8 in the continental US; no year/timezone or sample-zero UTC is supplied by that statement.",
+      "known_minute_statement": "Transcript at 23:06 proposes 20:37 UTC for a one-minute example, without a verified raw-sample interval or uncertainty.",
+      "metadata_limit": "Raw-audio metadata has an empty description, duration 3600 seconds, and upload/extraction times; these are not capture times.",
+      "plot_limit": "source-1441.png shows horizontal-axis ticks 4860 through 4900; their offset to the 3600-second raw-audio timeline is not established by this frame."
+    },
+    "microphone_position": {
+      "established": false,
+      "source_statement": "Transcript at 26:03-26:05 claims visual identification of the security camera after an audio-guided search.",
+      "image_limit": "true_camera.png shows a Street View pole/harbor scene and map context, but the camera/microphone, recorder coordinates and uncertainty bounds are not established by that frame.",
+      "public_platform_limit": "OspreyWatch nest3916 is the historical rounded platform reference; no supplied metadata identifies it as the recorder.",
+      "camera_lead_limit": "Official PSEG/OspreyWatch nest12532 pages document a public webcam, but these source files do not link that stream to the reference audio."
+    },
+    "independent_real_evaluation_eligible": false,
+    "eligible_bounded_position_and_clock_established": false,
+    "configured_regional_distance_m": 43.85847078233993,
+    "configured_regional_scope": "Source-informed regional replay compared with the rounded public-platform listing; not independent automatic real accuracy.",
+    "minimum_remaining_evidence": [
+      "A source record tying the preserved audio to an identified recorder/stream and its position region.",
+      "An independent recording date and sample-zero UTC interval, including clipping/stream-gap/offset uncertainty.",
+      "A supported automatic result under the declared search coverage and unchanged scientific gates."
+    ],
+    "corpus_size_requirement": "One qualifying real result can establish a first demonstration; a 12-recording corpus is a separate generalization program."
+  },
+  "prohibited_inferences_not_made": [
+    "No microphone coordinate or error radius inferred from candidate agreement or rounded coordinate precision.",
+    "No recording clock inferred from upload time, extraction time, Street View date, plot ticks, or the fitted clock.",
+    "No public webcam identity substituted for an undocumented source recorder."
+  ]
+}

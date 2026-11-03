@@ -1,0 +1,18 @@
+{
+  "original_to_opaque": {
+    "37eb2ec6d862": "33bf9caef49b11a3cc5c21c2d7f42e6d",
+    "39490fc22da5": "9480b055cdb49101b41756f85e374eba",
+    "4e3d87ed6e3f": "d2a453baf129911044af28f791bf568f",
+    "584c8b5ab114": "adcd3888bbfa58c8f2caf67f4979b977",
+    "5963b2387c30": "f612bfc3528dcfb1a0e14d1c8cc6cf77",
+    "5bd600870087": "d009cff8d85bfdf8a9c6bcafe0b2f275",
+    "7b081392e2c2": "7e55f027ce5b196b026e6aa7ab9e5c34",
+    "b1703e44cbf7": "a69f760bbba02a8f02c7ed18e1449db2",
+    "c462923f18b5": "df5398d00b5308a94579945b72ae0c29",
+    "ccee360caf30": "d76664195d727e5acff49e11f6208d56",
+    "ceb5f8f549ef": "3d805632ceef6a45777ca286abf9b5be",
+    "f11e3201558c": "7c1b1ecbf577cf33fad64dab6ac76bf2"
+  },
+  "order_randomized": true,
+  "all_non_id_values_preserved": true
+}

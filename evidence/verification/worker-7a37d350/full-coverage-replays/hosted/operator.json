@@ -1,0 +1,14 @@
+{
+  "flight_indexes": [
+    "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/fixture/inputs/flights.sqlite"
+  ],
+  "offline": true,
+  "terrain": {
+    "rasters": [
+      "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/fixture/inputs/terrain.tif"
+    ],
+    "geoid_raster": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-http-four-events/fixture/inputs/geoid.tif"
+  },
+  "sound_speed_mps": 343,
+  "max_distance_m": 20000
+}

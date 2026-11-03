@@ -1,0 +1,689 @@
+{
+  "excluded": [
+    "audio",
+    "flight indexes",
+    "spectral arrays",
+    "search tiles",
+    "SQLite ledger payloads"
+  ],
+  "files": [
+    {
+      "encoding": "gzip",
+      "original_bytes": 372822,
+      "original_sha256": "8a4864733bfeee215e5ae64b215fe4c0420d8e4f7419d2760a8059f96c880b3c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/acceptance.json",
+      "path": "strict-local-31484/acceptance.json.gz",
+      "stored_bytes": 15780,
+      "stored_sha256": "4cdcd6ca18254bbd65aa584b1be5f812904d4ce8a6a41e458b86f15e5d165964"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1511,
+      "original_sha256": "dca4a1b67ddc73c5b06885c6dcdba1e138b4d65854df21cc944da068a3327078",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/protocol.json",
+      "path": "strict-local-31484/protocol.json",
+      "stored_bytes": 1511,
+      "stored_sha256": "dca4a1b67ddc73c5b06885c6dcdba1e138b4d65854df21cc944da068a3327078"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14411,
+      "original_sha256": "7e38b3972f49c159922b381886257b2f8f84ca70b454d90f6a1dd609eda22fa3",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/source-manifest.json",
+      "path": "strict-local-31484/source-manifest.json",
+      "stored_bytes": 14411,
+      "stored_sha256": "7e38b3972f49c159922b381886257b2f8f84ca70b454d90f6a1dd609eda22fa3"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1745652,
+      "original_sha256": "6d08f5b98e56129052bea925f5ef6d1bf3218a912797fc3dd5ee346813d84517",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/artifact-manifest.json",
+      "path": "strict-local-31484/artifact-manifest.json.gz",
+      "stored_bytes": 239113,
+      "stored_sha256": "6d4bddf31c7de87e87b0043348aa064faa997fd4af3c394b6f5bffaf9328d4fd"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2847,
+      "original_sha256": "65f1e9648c26f94374616834f9275943c9ba5bdef0bc29bb12b74ea590c7efc1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/indexing.json",
+      "path": "strict-local-31484/indexing.json",
+      "stored_bytes": 2847,
+      "stored_sha256": "65f1e9648c26f94374616834f9275943c9ba5bdef0bc29bb12b74ea590c7efc1"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/wire-request.json",
+      "path": "strict-local-31484/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 501,
+      "original_sha256": "7161c3b756648f38bd8566c339d481e986dfbd7cfc271f2712130012307392ee",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/operator.json",
+      "path": "strict-local-31484/operator.json",
+      "stored_bytes": 501,
+      "stored_sha256": "7161c3b756648f38bd8566c339d481e986dfbd7cfc271f2712130012307392ee"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4801,
+      "original_sha256": "2bd2bac201001d98e152acaec81cf72ee3cb8b2b559ad170b8f4e72559167d33",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/http-verification.json",
+      "path": "strict-local-31484/http/http-verification.json",
+      "stored_bytes": 4801,
+      "stored_sha256": "2bd2bac201001d98e152acaec81cf72ee3cb8b2b559ad170b8f4e72559167d33"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2219,
+      "original_sha256": "e1aa8439377569c655147c02f73383d038c3b35efea2a692e180a816e3671613",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/pipeline-evidence.json",
+      "path": "strict-local-31484/http/pipeline-evidence.json",
+      "stored_bytes": 2219,
+      "stored_sha256": "e1aa8439377569c655147c02f73383d038c3b35efea2a692e180a816e3671613"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250453,
+      "original_sha256": "e20ccf1a50c8a4a0ac13f2d45d5ff0ee5b13902ffbd1f87c9aa5343f329c99c7",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/result.json",
+      "path": "strict-local-31484/http/result.json.gz",
+      "stored_bytes": 38392,
+      "stored_sha256": "6003615be281044d55e40e39b472d1def41bcfbd414fc1b89834bbcb2b048e3a"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 57394,
+      "original_sha256": "ed5bac6df3a298503b755ceeadab6db0496aafdef6792684f019438b0727e057",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/jobs/001a03672342447290e59c7dfc9f4179/decision.json",
+      "path": "strict-local-31484/job/decision.json.gz",
+      "stored_bytes": 3724,
+      "stored_sha256": "cac7f457614b35fc823cb19d2d023cad48bdf52bc213411b3641733ac2aec86e"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 434657,
+      "original_sha256": "52ef11143db25847ef6db165c823de74722e513bc1851af87711e306de712d3e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/jobs/001a03672342447290e59c7dfc9f4179/refined-candidates.json",
+      "path": "strict-local-31484/job/refined-candidates.json.gz",
+      "stored_bytes": 50432,
+      "stored_sha256": "e2fb8b966eb2c16efe0c300fc220dd97a2d2a7508f8be0bcfb99eec1da2115a8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 406167,
+      "original_sha256": "2462c556dcdaea42a85a00ae562da88f52595d5786d55ba4672f5c9ffacc8d8d",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/http/jobs/001a03672342447290e59c7dfc9f4179/search/search-report.json",
+      "path": "strict-local-31484/job/search/search-report.json.gz",
+      "stored_bytes": 45795,
+      "stored_sha256": "e5924eba9b56e53042d5189fbec2952192680de278147c48fe89fcd7a7c0f118"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 372305,
+      "original_sha256": "dda7f3575eab2c6364d13a3bbd200736206fbf94fcff249d8166d6f0ef92c892",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/acceptance.json",
+      "path": "strict-hosted-31484/acceptance.json.gz",
+      "stored_bytes": 15818,
+      "stored_sha256": "cba371cb9a52a682ac421bad605b47c6c041623b7f81d2cdfb5074f20f9e01d6"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1511,
+      "original_sha256": "aa451db4635198c581b0b77525b0be0cac0c756e5ab79b6989adb2e9d6977a77",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/protocol.json",
+      "path": "strict-hosted-31484/protocol.json",
+      "stored_bytes": 1511,
+      "stored_sha256": "aa451db4635198c581b0b77525b0be0cac0c756e5ab79b6989adb2e9d6977a77"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14131,
+      "original_sha256": "b834919f598796c80944253172b312dee547fc6692f20683a20d2372a09d2700",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/source-manifest.json",
+      "path": "strict-hosted-31484/source-manifest.json",
+      "stored_bytes": 14131,
+      "stored_sha256": "b834919f598796c80944253172b312dee547fc6692f20683a20d2372a09d2700"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1710379,
+      "original_sha256": "8344aad9f0507bed8c4a6e957c3aeda62d5a97812e8890185dbb114fbd600e40",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/artifact-manifest.json",
+      "path": "strict-hosted-31484/artifact-manifest.json.gz",
+      "stored_bytes": 239156,
+      "stored_sha256": "00f490e5150d605100846ebeb117cf8b3023c2e55b319181181aa68a4a3ea80b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2826,
+      "original_sha256": "7f16e310740a1cec184da651b9008b145fc34dda8265227af11894b8dfb092b0",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/indexing.json",
+      "path": "strict-hosted-31484/indexing.json",
+      "stored_bytes": 2826,
+      "stored_sha256": "7f16e310740a1cec184da651b9008b145fc34dda8265227af11894b8dfb092b0"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/wire-request.json",
+      "path": "strict-hosted-31484/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 480,
+      "original_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/operator.json",
+      "path": "strict-hosted-31484/operator.json",
+      "stored_bytes": 480,
+      "stored_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4739,
+      "original_sha256": "a4550e5af60ec49e41125507224ca8413407685e83d6cea7ddc186eacd9d2fd1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/http-verification.json",
+      "path": "strict-hosted-31484/http/http-verification.json",
+      "stored_bytes": 4739,
+      "stored_sha256": "a4550e5af60ec49e41125507224ca8413407685e83d6cea7ddc186eacd9d2fd1"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2219,
+      "original_sha256": "d8d1bf317f54e564c3f385a4ec190192579479726e44d1c76b401500cf69068b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/pipeline-evidence.json",
+      "path": "strict-hosted-31484/http/pipeline-evidence.json",
+      "stored_bytes": 2219,
+      "stored_sha256": "d8d1bf317f54e564c3f385a4ec190192579479726e44d1c76b401500cf69068b"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250453,
+      "original_sha256": "ec4ad6be0aca5784e071f5f56cad3bb2c9ec24e154653de4a54174c5ba948fb9",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/result.json",
+      "path": "strict-hosted-31484/http/result.json.gz",
+      "stored_bytes": 38387,
+      "stored_sha256": "1570fb3ec4f1ac367945991b64f2fbace623a1c896b813e3b84611203d8e740e"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 57394,
+      "original_sha256": "2a164b689d6fdf86c6a372c8f5baceb88ec7104f8bcad78b24e1c874dd407d6a",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/jobs/9025886c26594425af269804b3f200fa/decision.json",
+      "path": "strict-hosted-31484/job/decision.json.gz",
+      "stored_bytes": 3717,
+      "stored_sha256": "7392627e6e5c38e2aaa14754514e37c6e187ce9e710e0c78850abbde31b0b2f1"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 434657,
+      "original_sha256": "914cc0dcbb207dc89f07c5699edad3dc9b05865300b0cb534145aeaa27b31c07",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/jobs/9025886c26594425af269804b3f200fa/refined-candidates.json",
+      "path": "strict-hosted-31484/job/refined-candidates.json.gz",
+      "stored_bytes": 50436,
+      "stored_sha256": "128bc2b1d7249a357ad4a8a289b2bf923be1574b3056caf2a96cf2f1e28c34a0"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 406167,
+      "original_sha256": "a7d8a0ae231c0bb6dfe1a89ce5dfe632b8bb80ae0c157819e5e8cfa3481e15a3",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/http/jobs/9025886c26594425af269804b3f200fa/search/search-report.json",
+      "path": "strict-hosted-31484/job/search/search-report.json.gz",
+      "stored_bytes": 45803,
+      "stored_sha256": "c1ddd5267007fe76a999b3499ef8a8da60c5616972f352fe681a02c06b93a99e"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1155717,
+      "original_sha256": "193368b74e1f009e4ff62021b10ecbe65fb38fbf0591d851053e7ed97c025011",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/acceptance.json",
+      "path": "finite-local-134f/acceptance.json.gz",
+      "stored_bytes": 232569,
+      "stored_sha256": "4805e2694e0a852d4fda81112f6b7ce7e207776fbbbd57b270c12740aa89a929"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1511,
+      "original_sha256": "6997d5d123d6486d08e0dfc42c175a88188f6f05144b6024da725a213f04ba9c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/protocol.json",
+      "path": "finite-local-134f/protocol.json",
+      "stored_bytes": 1511,
+      "stored_sha256": "6997d5d123d6486d08e0dfc42c175a88188f6f05144b6024da725a213f04ba9c"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14889,
+      "original_sha256": "d28abf2307c6b9d65918e3a6fac0b5af2cb723a30ee326bc22b4e35a2aee7fb8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/source-manifest.json",
+      "path": "finite-local-134f/source-manifest.json",
+      "stored_bytes": 14889,
+      "stored_sha256": "d28abf2307c6b9d65918e3a6fac0b5af2cb723a30ee326bc22b4e35a2aee7fb8"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1756410,
+      "original_sha256": "e263d768870da97529746b2dd8d28cffacc5afc8a5cc9ba09173da02634e5717",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/artifact-manifest.json",
+      "path": "finite-local-134f/artifact-manifest.json.gz",
+      "stored_bytes": 238952,
+      "stored_sha256": "fbeacd91019b03f3c5dfd2a6063b2411ffccd3029295e202184caf151a9ad6d2"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2853,
+      "original_sha256": "573118a919b3453ce14c8a78bf5c1bab1ec9883b12d8a868117efcfd603e5180",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/indexing.json",
+      "path": "finite-local-134f/indexing.json",
+      "stored_bytes": 2853,
+      "stored_sha256": "573118a919b3453ce14c8a78bf5c1bab1ec9883b12d8a868117efcfd603e5180"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/wire-request.json",
+      "path": "finite-local-134f/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 507,
+      "original_sha256": "0215b38783b043a639bd67f8a1abaebe30d215c692529ce6703101b54e26a09f",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/operator.json",
+      "path": "finite-local-134f/operator.json",
+      "stored_bytes": 507,
+      "stored_sha256": "0215b38783b043a639bd67f8a1abaebe30d215c692529ce6703101b54e26a09f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4904,
+      "original_sha256": "36168bfd8f61968178010d57a728e3558dd08eea3ceb910223bf667ea597f1dc",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/http-verification.json",
+      "path": "finite-local-134f/http/http-verification.json",
+      "stored_bytes": 4904,
+      "stored_sha256": "36168bfd8f61968178010d57a728e3558dd08eea3ceb910223bf667ea597f1dc"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 704784,
+      "original_sha256": "1bdabb2777421630b8fd012304464402feba234b7a4c4279f48a312b47b0c558",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/pipeline-evidence.json",
+      "path": "finite-local-134f/http/pipeline-evidence.json.gz",
+      "stored_bytes": 215614,
+      "stored_sha256": "d1bac2029a5d21927201e1346a7f8b685e34555e5cf0f2ee06e57fad40a0fd87"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250876,
+      "original_sha256": "36cdf76c3ea0520ed0cf772807e52a28d26fa205bb9e2ab2e12f0ac4ae22be1c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/result.json",
+      "path": "finite-local-134f/http/result.json.gz",
+      "stored_bytes": 38647,
+      "stored_sha256": "e055fe43ff3d9e693c93172e7ec485fc5100dabd0bc2f273bd9ffaed28ffe61c"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 57195,
+      "original_sha256": "79ccf2ec6546cdec089fcc47ca5c79a48915fa81d4f8bff7032fa33db774bce8",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/jobs/6ebaeb47ce9e4abc8a2364eedf9b286e/decision.json",
+      "path": "finite-local-134f/job/decision.json.gz",
+      "stored_bytes": 3645,
+      "stored_sha256": "7ed000fdc2150de65a74a6176fadd11ed0da3635ddd16a5682459d076be24488"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 583701,
+      "original_sha256": "f16abdadaafa8f1fb347c4d470222db01a8a4270e1a66b22d0e21706fbf0053c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/jobs/6ebaeb47ce9e4abc8a2364eedf9b286e/refined-candidates.json",
+      "path": "finite-local-134f/job/refined-candidates.json.gz",
+      "stored_bytes": 68770,
+      "stored_sha256": "80f59ff343e6fd9cce743694ca4d4df2ccf522fc19f7e5b4284ae2370abce3e1"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 573663,
+      "original_sha256": "4653c9e3a41f2e8209caca01f8528c235db36e83e5fc8a35fbb940353ab4823b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/http/jobs/6ebaeb47ce9e4abc8a2364eedf9b286e/search/search-report.json",
+      "path": "finite-local-134f/job/search/search-report.json.gz",
+      "stored_bytes": 66165,
+      "stored_sha256": "eb1d1980d44a4a27d8cb19c6f02d1ec0b855f0f018afb14314170d1999abbe54"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1155033,
+      "original_sha256": "420ae85c33d95578c9aa9bff17878cb234757af68fb4aee8d77b560ec227ac1b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/acceptance.json",
+      "path": "finite-hosted-134f/acceptance.json.gz",
+      "stored_bytes": 232526,
+      "stored_sha256": "17b275eb1f1fb2b7e0e508d37c13c71ce236a794d7ad01f2a9496a759cd7793f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1511,
+      "original_sha256": "aaf5300f71bd3b21a18bb11986fb038c04b01eb5708ead55a0b1407d81911280",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/protocol.json",
+      "path": "finite-hosted-134f/protocol.json",
+      "stored_bytes": 1511,
+      "stored_sha256": "aaf5300f71bd3b21a18bb11986fb038c04b01eb5708ead55a0b1407d81911280"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 14521,
+      "original_sha256": "dd4de38359d7fa232a5f33dd3673b77bec304804ebff49fe25358281194835a6",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/source-manifest.json",
+      "path": "finite-hosted-134f/source-manifest.json",
+      "stored_bytes": 14521,
+      "stored_sha256": "dd4de38359d7fa232a5f33dd3673b77bec304804ebff49fe25358281194835a6"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 1711041,
+      "original_sha256": "13f1a0302154d991cac430f7efc71e26c6a37b0bea24cdbd342beae25f215998",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/artifact-manifest.json",
+      "path": "finite-hosted-134f/artifact-manifest.json.gz",
+      "stored_bytes": 239276,
+      "stored_sha256": "d16f7b326a103defa999331ca1f1fc385d5630bede484509a606b31b971f7b00"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2826,
+      "original_sha256": "8239616670aa96a988e16c1616ebf65a760d91246fd34e140b8317168dd90792",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/indexing.json",
+      "path": "finite-hosted-134f/indexing.json",
+      "stored_bytes": 2826,
+      "stored_sha256": "8239616670aa96a988e16c1616ebf65a760d91246fd34e140b8317168dd90792"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 291,
+      "original_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/wire-request.json",
+      "path": "finite-hosted-134f/wire-request.json",
+      "stored_bytes": 291,
+      "stored_sha256": "6f62b860f6f5c5335a1989c2cf53e01b2e635e171d0cddcfe64850de6be56c3b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 480,
+      "original_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/operator.json",
+      "path": "finite-hosted-134f/operator.json",
+      "stored_bytes": 480,
+      "stored_sha256": "46cb9fa087efc5535134880aff21944aa94abad66a6f4c9dd57fed7b7c88bf21"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4836,
+      "original_sha256": "58244b43e02f622d361bdc4fcf2be9f74e5bd838f86fd61cf16ee5ff7fcd03d5",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/http-verification.json",
+      "path": "finite-hosted-134f/http/http-verification.json",
+      "stored_bytes": 4836,
+      "stored_sha256": "58244b43e02f622d361bdc4fcf2be9f74e5bd838f86fd61cf16ee5ff7fcd03d5"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 704784,
+      "original_sha256": "ded7dea05bd0a1a29528ad4579a3ceffc09954c114b4c7a0c4a618f5129b0896",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/pipeline-evidence.json",
+      "path": "finite-hosted-134f/http/pipeline-evidence.json.gz",
+      "stored_bytes": 215549,
+      "stored_sha256": "69e71aa3d4af384691fdef2ad437d863fabd9aec83fb55ef41a2baefdf9952e6"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 250918,
+      "original_sha256": "456adb97fd8bb61a038ec1b9bd9fd60c0717063ea525bf57ba1a9d8fb5f21284",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/result.json",
+      "path": "finite-hosted-134f/http/result.json.gz",
+      "stored_bytes": 38705,
+      "stored_sha256": "0c95071fd9eb683cc485893d21901c2d608e882ce20ea6fc221288385c88e255"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 57197,
+      "original_sha256": "73470f816a0b338c4b678fa8d1852a45f5afb816791433ffbc044ea8a2b654e0",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/jobs/422ef946f1cf4a27a5b994ae8539af9d/decision.json",
+      "path": "finite-hosted-134f/job/decision.json.gz",
+      "stored_bytes": 3626,
+      "stored_sha256": "30189a553c7f9b8153fbb561b02e095b0da3fd266bbe940489bc9ca64c2438ad"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 583639,
+      "original_sha256": "7930c6f8f9d9d4c6f51f8b4d5de764c2c5669f4453f85eb8058a0e54f5c4d185",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/jobs/422ef946f1cf4a27a5b994ae8539af9d/refined-candidates.json",
+      "path": "finite-hosted-134f/job/refined-candidates.json.gz",
+      "stored_bytes": 68757,
+      "stored_sha256": "97022f94a8bce046fee315876b26892eea9b4326f9e9091f605817921bafa0fd"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 573606,
+      "original_sha256": "0cb370b7c6a2f3d2a05f56c6aa1284d5360d8516c4a7cd9980cfda33a73a06a0",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-four-events/http/jobs/422ef946f1cf4a27a5b994ae8539af9d/search/search-report.json",
+      "path": "finite-hosted-134f/job/search/search-report.json.gz",
+      "stored_bytes": 66183,
+      "stored_sha256": "4d3782dfb49c9789e0b9d3d5cde4228cbd519d1324093bfe0be4adcad990fc2f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 5902,
+      "original_sha256": "a7dd788d847fb322ef9c2461991d5c703e1ab9708935bd9a8f23df57d4f6b1ad",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350-independent-audit.json",
+      "path": "audits/strict-local-independent.json",
+      "stored_bytes": 5902,
+      "stored_sha256": "a7dd788d847fb322ef9c2461991d5c703e1ab9708935bd9a8f23df57d4f6b1ad"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2429,
+      "original_sha256": "dd8c4a71edb4631a218137f83ba443a99cee297562278fa14abe359d23872087",
+      "original_source_path": "/workspace/scratch/7a37d350207f/final_replay_audit-7a37d350.json",
+      "path": "audits/strict-local-semantic.json",
+      "stored_bytes": 2429,
+      "stored_sha256": "dd8c4a71edb4631a218137f83ba443a99cee297562278fa14abe359d23872087"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 6802,
+      "original_sha256": "eb7b47cdb8ea620101be570a074ad7d00a8ad6c1b343fce785c02bc949f97331",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/independent-audit.json",
+      "path": "audits/strict-hosted-independent.json",
+      "stored_bytes": 6802,
+      "stored_sha256": "eb7b47cdb8ea620101be570a074ad7d00a8ad6c1b343fce785c02bc949f97331"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2332,
+      "original_sha256": "11e92222652125f39fa55a7618f2fd5e3b4de87e5fd5854ee8e90b08ee856da0",
+      "original_source_path": "/workspace/scratch/7a37d350207f/hosted_semantic_audit-7a37d350.json",
+      "path": "audits/strict-hosted-semantic.json",
+      "stored_bytes": 2332,
+      "stored_sha256": "11e92222652125f39fa55a7618f2fd5e3b4de87e5fd5854ee8e90b08ee856da0"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 6899,
+      "original_sha256": "0348581f66c15181bcf6084b95578d4820e55a297485ac67ae417230ab80ddaf",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/local-terminal-audit.json",
+      "path": "audits/finite-local-independent.json",
+      "stored_bytes": 6899,
+      "stored_sha256": "0348581f66c15181bcf6084b95578d4820e55a297485ac67ae417230ab80ddaf"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 3168,
+      "original_sha256": "1810a4b3768f74d077755143a0d2b9048dec71a305b9753281b8d53b2514718f",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite_semantic_audit-7a37d350.json",
+      "path": "audits/finite-local-semantic.json",
+      "stored_bytes": 3168,
+      "stored_sha256": "1810a4b3768f74d077755143a0d2b9048dec71a305b9753281b8d53b2514718f"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 7062,
+      "original_sha256": "e866651a9cef758619438ba89eea92929467473343f9478f256a07dc5a9682e5",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/independent-audit.json",
+      "path": "audits/finite-hosted-independent.json",
+      "stored_bytes": 7062,
+      "stored_sha256": "e866651a9cef758619438ba89eea92929467473343f9478f256a07dc5a9682e5"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2634,
+      "original_sha256": "6b81bca294db121e519fc554b12bee7be238ff9a9c33d545b668c985c6fa0a31",
+      "original_source_path": "/workspace/scratch/7a37d350207f/hosted_finite_semantic_audit-7a37d350.json",
+      "path": "audits/finite-hosted-semantic.json",
+      "stored_bytes": 2634,
+      "stored_sha256": "6b81bca294db121e519fc554b12bee7be238ff9a9c33d545b668c985c6fa0a31"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 1176,
+      "original_sha256": "baefbcbd01e0a2148fa5b6716ec79e99bfbeb5c7b1999f3c6377d83aea33f33c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/finite-audit-7a37d350/coarse-unknown-diagnostics.json",
+      "path": "audits/finite-unknown-summary.json",
+      "stored_bytes": 1176,
+      "stored_sha256": "baefbcbd01e0a2148fa5b6716ec79e99bfbeb5c7b1999f3c6377d83aea33f33c"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 10368,
+      "original_sha256": "c7e684e64f2f2933b717518875326c850ccdeaa1542e450b4970a7f48b3b31b5",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-unknowns-7a37d350/unknown-diagnosis.json",
+      "path": "audits/finite-unknown-diagnosis.json",
+      "stored_bytes": 10368,
+      "stored_sha256": "c7e684e64f2f2933b717518875326c850ccdeaa1542e450b4970a7f48b3b31b5"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2023,
+      "original_sha256": "ed0fd27f0d2d5d37bd6cdbf246e5ccfaec958304f03e96d08945cdde9d9fcb1b",
+      "original_source_path": "/workspace/scratch/7a37d350207f/source_provenance_7a37d350/provenance-export.json",
+      "path": "source-provenance/export.json",
+      "stored_bytes": 2023,
+      "stored_sha256": "ed0fd27f0d2d5d37bd6cdbf246e5ccfaec958304f03e96d08945cdde9d9fcb1b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4788,
+      "original_sha256": "bfa7ccd29b7141efc88d370f859d3eb3cf72139bc675071337c57d9fbf0c995c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/reference_provenance_audit-7a37d350.json",
+      "path": "source-provenance/independent-audit.json",
+      "stored_bytes": 4788,
+      "stored_sha256": "bfa7ccd29b7141efc88d370f859d3eb3cf72139bc675071337c57d9fbf0c995c"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 2037,
+      "original_sha256": "6e92d4ae224b223ba062133e4b6edaffc6fc36e205a6e057ef05c1fd4d4c6882",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/worker-final-integration-7a37d350/verification-summary.json",
+      "path": "tests/strict-local-summary.json",
+      "stored_bytes": 2037,
+      "stored_sha256": "6e92d4ae224b223ba062133e4b6edaffc6fc36e205a6e057ef05c1fd4d4c6882"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 57186,
+      "original_sha256": "eb666575db07aeac2025da5405d8cd1bc5c310fdf03858377bcb4721a40dcd5e",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/worker-final-integration-7a37d350/pytest.xml",
+      "path": "tests/strict-local-pytest.xml.gz",
+      "stored_bytes": 9281,
+      "stored_sha256": "62aa7098b99a85195e39735e7e5f63788f32a8423f7acaf55ed8185638b40a98"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 56908,
+      "original_sha256": "c191350b67512c78e56cd7d3ea57cc2c7d53cc5bbb02406acf4c8cc96d4a77b1",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-runtime/pytest.xml",
+      "path": "tests/strict-hosted-pytest.xml.gz",
+      "stored_bytes": 9042,
+      "stored_sha256": "25fcb8aeb5dc00281e4fc4505f8faef792efd653dbcc097d5d21f48d3899d442"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 3233,
+      "original_sha256": "5d8fd42e05313a202c1a99ecacfe62ff7d1e5c71ecba474d5a2747e95c3216c9",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/verification-summary.json",
+      "path": "tests/finite-local-summary.json",
+      "stored_bytes": 3233,
+      "stored_sha256": "5d8fd42e05313a202c1a99ecacfe62ff7d1e5c71ecba474d5a2747e95c3216c9"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 76130,
+      "original_sha256": "790e6b205113051dbfdc980b196de5f9d4032249617f8b335c0c2addec9aaddd",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/pytest.xml",
+      "path": "tests/finite-local-pytest.xml.gz",
+      "stored_bytes": 11205,
+      "stored_sha256": "0da471121760405feb0aeedaf96b3a88eaa534804dd250288c59d3b427a0c4d5"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 23997,
+      "original_sha256": "f4578682b4f857c12989ee5dcbd75725a17781841c1edb36cf375a46d6299f30",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/pytest-final-focused.xml",
+      "path": "tests/finite-local-final-focused.xml",
+      "stored_bytes": 23997,
+      "stored_sha256": "f4578682b4f857c12989ee5dcbd75725a17781841c1edb36cf375a46d6299f30"
+    },
+    {
+      "encoding": "gzip",
+      "original_bytes": 76001,
+      "original_sha256": "a93a0b3b5795b80bdb37fc06b7c4157edceb8071efd8d3d4bbdde7dadd08a33a",
+      "original_source_path": "/workspace/scratch/7a37d350207f/ci-http-41573699946/extracted/ci-http-runtime/pytest.xml",
+      "path": "tests/finite-hosted-pytest.xml.gz",
+      "stored_bytes": 11090,
+      "stored_sha256": "ea0b75a34bcbffec2c46af2d1f0a936e5a567a8a845985b00b3eef46bdfc270b"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4570,
+      "original_sha256": "a65ab10a30134da7af46485ba0a1534b6b13b80f34e2580f5c1cb2c5f70441c3",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/worker-final-integration-7a37d350/preflight/preflight.json",
+      "path": "tests/strict-local-preflight.json",
+      "stored_bytes": 4570,
+      "stored_sha256": "a65ab10a30134da7af46485ba0a1534b6b13b80f34e2580f5c1cb2c5f70441c3"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 15347,
+      "original_sha256": "705b2257aa6291f96c211e7936e758f40d142cd523e1f87907e0377aa6a32bed",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/worker-final-integration-7a37d350/preflight/source-manifest.json",
+      "path": "tests/strict-local-source-manifest.json",
+      "stored_bytes": 15347,
+      "stored_sha256": "705b2257aa6291f96c211e7936e758f40d142cd523e1f87907e0377aa6a32bed"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 4620,
+      "original_sha256": "d9f1d3c63cace690c2cabe002cbc879fd8709c78e0731bd0d01f19832af5998c",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/preflight.json",
+      "path": "tests/finite-local-preflight.json",
+      "stored_bytes": 4620,
+      "stored_sha256": "d9f1d3c63cace690c2cabe002cbc879fd8709c78e0731bd0d01f19832af5998c"
+    },
+    {
+      "encoding": "identity",
+      "original_bytes": 15969,
+      "original_sha256": "69a19400683f6ca2c507d2bcef7e58c5fdaae8192a98b0c09f943205c65c3fc2",
+      "original_source_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/source-manifest.json",
+      "path": "tests/finite-local-source-manifest.json",
+      "stored_bytes": 15969,
+      "stored_sha256": "69a19400683f6ca2c507d2bcef7e58c5fdaae8192a98b0c09f943205c65c3fc2"
+    }
+  ],
+  "reproduction": "Source commits, protocols, input hashes, and complete artifact manifests identify each run.",
+  "schema_version": 1,
+  "scope": "Exact immutable receipts, compressed deterministically when larger than 50,000 bytes."
+}

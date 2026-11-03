@@ -1,0 +1,31 @@
+{
+  "packets": [
+    {
+      "allowed_unmanifested_metadata": [
+        "README.md",
+        "manifest.json",
+        "summary.json"
+      ],
+      "entries": 75,
+      "errors": [],
+      "manifest_sha256": "148155d103a5f4a4625d30b7c9b2b5a5d96e901c54164a43a44e57cb915b2f28",
+      "original_bytes": 17110843,
+      "packet": "replay-revisions",
+      "stored_bytes": 2783709
+    },
+    {
+      "allowed_unmanifested_metadata": [
+        "manifest.json",
+        "summary.json"
+      ],
+      "entries": 58,
+      "errors": [],
+      "manifest_sha256": "5eb8b9da34c0cd0b81689d99424612599eb00a759433667b21b92a7ae111da7d",
+      "original_bytes": 10945398,
+      "packet": "full-coverage-replays",
+      "stored_bytes": 2082568
+    }
+  ],
+  "passed": true,
+  "scope": "Independent compact-packet round-trip and original-byte audit"
+}

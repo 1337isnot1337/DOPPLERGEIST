@@ -1,0 +1,389 @@
+{
+  "run_hash": "515cf20fd08e99d8a6cdb29e8742a4f381a8cc55b8e4e8487aaaf223df4068c6",
+  "source_module": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/search.py",
+  "source_and_acoustic_measurements_match_frozen_manifest": true,
+  "scope": "Post-run observation of unchanged frozen scorer calls on all incomplete coarse tiles; no evaluation labels opened.",
+  "tiles": [
+    {
+      "tile": "tile--20_36.json",
+      "counts": {
+        "per_event_survivors": [
+          0,
+          69,
+          7,
+          34
+        ],
+        "survivors": 131,
+        "hypotheses_examined": 131,
+        "work_units": 645,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 142,
+        "candidates": 131,
+        "unclassified_score_candidates": 96,
+        "evaluated_rejections": 30
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    },
+    {
+      "tile": "tile--21_36.json",
+      "counts": {
+        "per_event_survivors": [
+          122,
+          147,
+          162,
+          122
+        ],
+        "survivors": 1211,
+        "hypotheses_examined": 1211,
+        "work_units": 5777,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 729,
+        "candidates": 1211,
+        "unclassified_score_candidates": 756,
+        "evaluated_rejections": 378
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    },
+    {
+      "tile": "tile--5_29.json",
+      "counts": {
+        "per_event_survivors": [
+          0,
+          4,
+          0,
+          7
+        ],
+        "survivors": 13,
+        "hypotheses_examined": 13,
+        "work_units": 65,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 13,
+        "candidates": 13,
+        "unclassified_score_candidates": 2,
+        "evaluated_rejections": 9
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    },
+    {
+      "tile": "tile--6_29.json",
+      "counts": {
+        "per_event_survivors": [
+          123,
+          168,
+          192,
+          192
+        ],
+        "survivors": 1452,
+        "hypotheses_examined": 1452,
+        "work_units": 6927,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 861,
+        "candidates": 1452,
+        "unclassified_score_candidates": 177,
+        "evaluated_rejections": 1216
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    },
+    {
+      "tile": "tile-8_20.json",
+      "counts": {
+        "per_event_survivors": [
+          74,
+          93,
+          79,
+          57
+        ],
+        "survivors": 643,
+        "hypotheses_examined": 643,
+        "work_units": 3108,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 414,
+        "candidates": 643,
+        "unclassified_score_candidates": 304,
+        "evaluated_rejections": 316
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    },
+    {
+      "tile": "tile-8_21.json",
+      "counts": {
+        "per_event_survivors": [
+          55,
+          100,
+          108,
+          120
+        ],
+        "survivors": 825,
+        "hypotheses_examined": 825,
+        "work_units": 3911,
+        "max_matched_events": 4,
+        "event_cap_limited": false,
+        "unmatched_proposals_allowed": true,
+        "cpa_rows": 458,
+        "candidates": 825,
+        "unclassified_score_candidates": 177,
+        "evaluated_rejections": 614
+      },
+      "recorded_counts_and_retained_rows_identical": true
+    }
+  ],
+  "unknown_trial_reasons": {
+    "incomplete_acoustic_support": 3024
+  },
+  "failed_event_fit_causes": {
+    "receive_samples_outside_recorded_track_support": 3534
+  },
+  "examples": [
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 275,
+      "nonfinite_factor_samples": 275,
+      "nonfinite_emission_samples": 275,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000095.9854085,
+        1790000341.8535266
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 275,
+      "nonfinite_factor_samples": 275,
+      "nonfinite_emission_samples": 275,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000095.9854085,
+        1790000341.8535266
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 304,
+      "nonfinite_factor_samples": 304,
+      "nonfinite_emission_samples": 304,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000448.4770029,
+        1790000741.8475268
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 304,
+      "nonfinite_factor_samples": 304,
+      "nonfinite_emission_samples": 304,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000448.4770029,
+        1790000741.8475268
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 272,
+      "nonfinite_factor_samples": 272,
+      "nonfinite_emission_samples": 272,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000100.9014997,
+        1790000343.301734
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 272,
+      "nonfinite_factor_samples": 272,
+      "nonfinite_emission_samples": 272,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000100.9014997,
+        1790000343.301734
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 308,
+      "nonfinite_factor_samples": 308,
+      "nonfinite_emission_samples": 308,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000450.226784,
+        1790000747.3958187
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 308,
+      "nonfinite_factor_samples": 308,
+      "nonfinite_emission_samples": 308,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000450.226784,
+        1790000747.3958187
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 291,
+      "nonfinite_factor_samples": 291,
+      "nonfinite_emission_samples": 291,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000441.5899236,
+        1790000734.470458
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "42834cb32c5e911946c2942f2c80bd60",
+      "measured_samples": 366,
+      "outside_support_samples": 291,
+      "nonfinite_factor_samples": 291,
+      "nonfinite_emission_samples": 291,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000393.0,
+        1790000663.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000441.5899236,
+        1790000734.470458
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 286,
+      "nonfinite_factor_samples": 286,
+      "nonfinite_emission_samples": 286,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000092.867163,
+        1790000336.1877909
+      ]
+    },
+    {
+      "tile": "tile--20_36.json",
+      "flight_id": "bedf2f19b58a404ae98c6d70ae7a3271",
+      "measured_samples": 366,
+      "outside_support_samples": 286,
+      "nonfinite_factor_samples": 286,
+      "nonfinite_emission_samples": 286,
+      "receive_interval_s": [
+        1790000296.5,
+        1790000479.0
+      ],
+      "track_emission_interval_s": [
+        1790000015.0,
+        1790000285.0
+      ],
+      "supported_arrival_interval_s": [
+        1790000092.867163,
+        1790000336.1877909
+      ]
+    }
+  ],
+  "elapsed_s": 23.111677304001205
+}

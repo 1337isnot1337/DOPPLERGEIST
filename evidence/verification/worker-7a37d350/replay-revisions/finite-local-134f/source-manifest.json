@@ -1,0 +1,242 @@
+{
+  "checkout": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite",
+  "git": {
+    "commit": "6a90d254e41ff4c6e61ae6763da3375809aed905",
+    "status": ""
+  },
+  "snapshot_sha256": "ba781d4ff630a37fb8139d534bea1a99544690c40f2fb42717084b9196d3ba53",
+  "files": {
+    "ci_checkpoint_replay.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/ci_checkpoint_replay.py",
+      "bytes": 19223,
+      "sha256": "e8298c908e7cbd4c63d2400c8ddb061354a8c3b5fd3dfaa3ab45532f2b36e22b"
+    },
+    "pyproject.toml": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/pyproject.toml",
+      "bytes": 668,
+      "sha256": "c6941c17ac72bbf87fca8fe8b18ed223faa738a2ebb2859eceda28e90e9da7e0"
+    },
+    "scripts/ci_checkpoint_replay.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/ci_checkpoint_replay.py",
+      "bytes": 19223,
+      "sha256": "e8298c908e7cbd4c63d2400c8ddb061354a8c3b5fd3dfaa3ab45532f2b36e22b"
+    },
+    "scripts/ci_http_replay.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/ci_http_replay.py",
+      "bytes": 27553,
+      "sha256": "a963800f8af6e7f36161163fa05b21f7b6af818682774d3ddf0816522b39b734"
+    },
+    "scripts/ci_upload_replay.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/ci_upload_replay.py",
+      "bytes": 41398,
+      "sha256": "3f497d035d8fed80424aafab7f196021efecbea3dcb75e08bb085bfa68429989"
+    },
+    "scripts/make_multi_event_case.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/make_multi_event_case.py",
+      "bytes": 9352,
+      "sha256": "55c6af189b150f1b8bf18a1c32258d00e9407545d97c3923b8d38d28bd0a7d13"
+    },
+    "scripts/verify_methodology.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/verify_methodology.py",
+      "bytes": 20075,
+      "sha256": "eb0cc72e509a882b0a2ddcbfd77b01fc0380d1fb168214e1143eb736caa26948"
+    },
+    "scripts/verify_upload_browser.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/verify_upload_browser.py",
+      "bytes": 7017,
+      "sha256": "e42941cda3e1e744be636ae56389c36cd6caf089edcd6397c4773883b0d0cd3d"
+    },
+    "scripts/verify_upload_http.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/scripts/verify_upload_http.py",
+      "bytes": 53617,
+      "sha256": "a9ea8829975f9cbaff69159b4ad23eaeab48ae89e25b65e4cc587c7c166bc223"
+    },
+    "src/aircraft_geoloc/__init__.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/__init__.py",
+      "bytes": 50,
+      "sha256": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+    },
+    "src/aircraft_geoloc/audio.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/audio.py",
+      "bytes": 8315,
+      "sha256": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+    },
+    "src/aircraft_geoloc/automatic.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/automatic.py",
+      "bytes": 22146,
+      "sha256": "d905f1e8f63b3d57fac247dcb35636e1e8a6d3d58ae1486424e5cd0088cb1ac5"
+    },
+    "src/aircraft_geoloc/cli.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/cli.py",
+      "bytes": 4131,
+      "sha256": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+    },
+    "src/aircraft_geoloc/confidence.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/confidence.py",
+      "bytes": 22231,
+      "sha256": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6"
+    },
+    "src/aircraft_geoloc/contracts.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/contracts.py",
+      "bytes": 15115,
+      "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+    },
+    "src/aircraft_geoloc/data_access.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/data_access.py",
+      "bytes": 29737,
+      "sha256": "de2e000afd87c7718fb67b965c7cdceea7a90378b8cdcdf0f7226ea8ca94f080"
+    },
+    "src/aircraft_geoloc/discovery.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/discovery.py",
+      "bytes": 18254,
+      "sha256": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7"
+    },
+    "src/aircraft_geoloc/evaluation.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/evaluation.py",
+      "bytes": 9477,
+      "sha256": "2186f839677883a3095a5d233921b4323d054f2c9101f7ee0c2773b10b2323fd"
+    },
+    "src/aircraft_geoloc/finite_search.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/finite_search.py",
+      "bytes": 9565,
+      "sha256": "95fa6eec1a6de4d88f2d56173c6e87c9c45f20786593c3690850a0411dc8e5b0"
+    },
+    "src/aircraft_geoloc/geometry.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/geometry.py",
+      "bytes": 5992,
+      "sha256": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+    },
+    "src/aircraft_geoloc/intake.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/intake.py",
+      "bytes": 9437,
+      "sha256": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781"
+    },
+    "src/aircraft_geoloc/jobs.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/jobs.py",
+      "bytes": 10569,
+      "sha256": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+    },
+    "src/aircraft_geoloc/matching.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/matching.py",
+      "bytes": 28154,
+      "sha256": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce"
+    },
+    "src/aircraft_geoloc/pipeline.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/pipeline.py",
+      "bytes": 9503,
+      "sha256": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d"
+    },
+    "src/aircraft_geoloc/provenance.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/provenance.py",
+      "bytes": 6124,
+      "sha256": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea"
+    },
+    "src/aircraft_geoloc/search.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/search.py",
+      "bytes": 22845,
+      "sha256": "430d1a1a0dcceb46afe5ce203072164b0931b662228202a5bf5f448b3086615f"
+    },
+    "src/aircraft_geoloc/service.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/service.py",
+      "bytes": 6516,
+      "sha256": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d"
+    },
+    "src/aircraft_geoloc/terrain.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/terrain.py",
+      "bytes": 8519,
+      "sha256": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+    },
+    "src/aircraft_geoloc/tiled_search.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/tiled_search.py",
+      "bytes": 26307,
+      "sha256": "f3a90c08de0ad5fbe714935c8a03bbab6c325dba99fcb640f272de72e756e3a6"
+    },
+    "src/aircraft_geoloc/tracks.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/tracks.py",
+      "bytes": 7434,
+      "sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+    },
+    "src/aircraft_geoloc/web/__init__.py": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/web/__init__.py",
+      "bytes": 38,
+      "sha256": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+    },
+    "src/aircraft_geoloc/web/app.js": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/web/app.js",
+      "bytes": 9314,
+      "sha256": "c9075975143d6faaf5ed1fa23b076bb57a0fa38b3858610a7c9755c00f6c54d4"
+    },
+    "src/aircraft_geoloc/web/index.html": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/web/index.html",
+      "bytes": 3575,
+      "sha256": "35cc114ec2eb4818757faa7f462ae273ab3b49621f374f5ef7b4e22ee2700be3"
+    },
+    "src/aircraft_geoloc/web/style.css": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc/web/style.css",
+      "bytes": 4599,
+      "sha256": "57936a98a266bbdf5090ecc6a6a52b707f59e89efcae10c6627a881236399c1e"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/PKG-INFO": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/PKG-INFO",
+      "bytes": 433,
+      "sha256": "1869cf34e577b10afb28955bbc7a14928574db830d97acb381f4c559282c8792"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt",
+      "bytes": 2256,
+      "sha256": "ca2132485710d02f55d4601d159be3a6d4ef7e092d9809e697d2ceac93b2b196"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/entry_points.txt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/entry_points.txt",
+      "bytes": 61,
+      "sha256": "4e76b710462f001e64e2610e5825e8c664f25a4d0180b79bde36646699042dcb"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/requires.txt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/requires.txt",
+      "bytes": 91,
+      "sha256": "b86a70c60df483877a15c9af90a79fd3eecbf866d0f3d66ad298f7a7dfc41287"
+    },
+    "src/aircraft_geoloc_reproduction.egg-info/top_level.txt": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/top_level.txt",
+      "bytes": 16,
+      "sha256": "f78e0bfd2f6ced36348301c041d51ecf06e9d3f55cf5c0d5a5801dc397ed1243"
+    }
+  },
+  "expected_pipeline_implementation_sha256": "9b3e8ac4ff52c07ba9671a369cba02dca0935daf26ff6ef2fa49ce57b7393139",
+  "audited_git_blobs": {
+    "scripts/verify_methodology.py": "bc349e9005bd9e14d980c857486f6927a641112d",
+    "scripts/verify_upload_browser.py": "17f0bbef5fa8abf86fb9ae85cf662600c32cc104",
+    "scripts/make_multi_event_case.py": "48c809ac701919da3f209f67ccc5cf66d090463e",
+    "scripts/ci_checkpoint_replay.py": "1612021776965713e88c586563ab51d4b8682a8b",
+    "src/aircraft_geoloc/service.py": "67b541805cb6ae14d56b5d4f03fcf7c2f84574fe",
+    "src/aircraft_geoloc/jobs.py": "29e8aa37ff1b82daecdae45af908272e960755ab"
+  },
+  "expected_implementation_files": {
+    "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+    "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "automatic.py": "d905f1e8f63b3d57fac247dcb35636e1e8a6d3d58ae1486424e5cd0088cb1ac5",
+    "cli.py": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+    "confidence.py": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6",
+    "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+    "data_access.py": "de2e000afd87c7718fb67b965c7cdceea7a90378b8cdcdf0f7226ea8ca94f080",
+    "discovery.py": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+    "evaluation.py": "2186f839677883a3095a5d233921b4323d054f2c9101f7ee0c2773b10b2323fd",
+    "finite_search.py": "95fa6eec1a6de4d88f2d56173c6e87c9c45f20786593c3690850a0411dc8e5b0",
+    "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "intake.py": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781",
+    "jobs.py": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+    "matching.py": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+    "pipeline.py": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d",
+    "provenance.py": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea",
+    "search.py": "430d1a1a0dcceb46afe5ce203072164b0931b662228202a5bf5f448b3086615f",
+    "service.py": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+    "terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+    "tiled_search.py": "f3a90c08de0ad5fbe714935c8a03bbab6c325dba99fcb640f272de72e756e3a6",
+    "tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+  }
+}

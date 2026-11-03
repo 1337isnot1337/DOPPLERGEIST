@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T03:30:16.811060+00:00",
+  "scope": "Independent semantic acceptance and JUnit audit of hosted artifact receipts; not a complete artifact inventory audit",
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41571753852",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "run_head_sha": "31484bf0266007ab20fadc628a5e6a6376f71b88",
+  "acceptance_sha256": "dda7f3575eab2c6364d13a3bbd200736206fbf94fcff249d8166d6f0ef92c892",
+  "acceptance_path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-four-events/acceptance.json",
+  "checks": {
+    "published_clean_source": true,
+    "same_pipeline_digest_as_local": true,
+    "strict_succeeded_expectation": true,
+    "completed_without_supported_claim": true,
+    "native_inconclusive_consistent": true,
+    "expectation_gate_failed": true,
+    "raw_http_checks_passed": true,
+    "seven_stages_observed": true,
+    "eighteen_crosslinks_passed": true,
+    "clean_shutdown_before_truth": true,
+    "no_handled_interruption": true,
+    "bounded_stage_exits": true,
+    "complete_declared_tiles": true,
+    "no_exhaustive_mode_claim": true,
+    "diagnostic_matches_local": true,
+    "junit_no_failed_error_skipped_cases": true,
+    "source_snapshot_recorded_unchanged": true
+  },
+  "checks_passed": true,
+  "outcome": {
+    "supported_localization": false,
+    "producer_status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "elapsed_s": 211.913849438,
+    "search_elapsed_s": 175.24116735699997,
+    "diagnostic_distance_m": 0.07932759464807976,
+    "clock_error_s": 0.0
+  },
+  "junit": {
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41571753852/extracted/ci-http-runtime/pytest.xml",
+    "suite_count": 437,
+    "unique_testcase_elements": 412,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_s": 65.262
+  },
+  "limitations": [
+    "This audit checks persisted receipt semantics and does not replay the scientific computation.",
+    "The separate primary artifact auditor reported an omitted hidden manager lock; complete transferred-artifact integrity must not be assumed.",
+    "Zero clock error reflects supplied exact synthetic sample-zero UTC.",
+    "The inconclusive diagnostic coordinate is not an accepted localization."
+  ]
+}

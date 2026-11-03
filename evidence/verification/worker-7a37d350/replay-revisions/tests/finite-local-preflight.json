@@ -1,0 +1,68 @@
+{
+  "status": "passed",
+  "modules": {
+    "contracts": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/contracts.py",
+      "bytes": 15115,
+      "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+    },
+    "intake": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/intake.py",
+      "bytes": 9437,
+      "sha256": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781"
+    },
+    "discovery": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/discovery.py",
+      "bytes": 18254,
+      "sha256": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7"
+    },
+    "data_access": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/data_access.py",
+      "bytes": 29737,
+      "sha256": "de2e000afd87c7718fb67b965c7cdceea7a90378b8cdcdf0f7226ea8ca94f080"
+    },
+    "tiled_search": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/tiled_search.py",
+      "bytes": 26307,
+      "sha256": "f3a90c08de0ad5fbe714935c8a03bbab6c325dba99fcb640f272de72e756e3a6"
+    },
+    "matching": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/matching.py",
+      "bytes": 28154,
+      "sha256": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce"
+    },
+    "confidence": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/confidence.py",
+      "bytes": 22231,
+      "sha256": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6"
+    },
+    "automatic": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/automatic.py",
+      "bytes": 22146,
+      "sha256": "d905f1e8f63b3d57fac247dcb35636e1e8a6d3d58ae1486424e5cd0088cb1ac5"
+    },
+    "jobs": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/jobs.py",
+      "bytes": 10569,
+      "sha256": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+    },
+    "cli": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/implementation/src/aircraft_geoloc/cli.py",
+      "bytes": 4131,
+      "sha256": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+    }
+  },
+  "signatures": {
+    "intake.intake_recording": "(source, output_dir, *, time_window=None, sample_rate_hz=4000)",
+    "discovery.discover_events": "(recording, *, output_dir=None, settings=None)",
+    "data_access.FlightIndex": "(path)",
+    "data_access.acquire_inputs": "(request, recording, *, cache_root, index_paths=None, offline=False, terrain_options=None, max_sound_range_m=20000.0)",
+    "tiled_search.SearchBudget": "(spacing_m: float = 2000.0, tile_cells: int = 32, max_tracks_per_tile: int = 2000, max_track_samples_per_tile: int = 500000, max_cpa_rows: int = 100000, max_candidates_per_tile: int = 20000, top_k: int = 100, refine_spacing_m: float = 100.0, refine_finalists: int = 10, cpa_step_s: float = 2.0, max_tiles: int | None = None) -> None",
+    "tiled_search.search_national": "(indexes, terrain, events, measurements, *, time_range_s, output_dir, bounds=(-125.0, 24.0, -66.0, 50.0), budget=None, scoring=None, filters=None, crs='EPSG:5070', input_hashes=None)",
+    "matching.prepare_events": "(detected_events, c=343.0, max_distance_m=20000.0)",
+    "matching.refine_candidate": "(candidate, tracks, events, measurements, terrain, radius_m=500.0, clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0), crs='EPSG:5070', c=343.0, recording_start_window_s=None)",
+    "confidence.decide_location": "(events, candidates, coverage, *, matching_diagnostics=None, policy=None)",
+    "jobs.JobManager": "(root, config=None, *, max_pending=4, max_runtime_s=3600, max_upload_bytes=104857600)"
+  },
+  "numerical_stages_executed": false
+}

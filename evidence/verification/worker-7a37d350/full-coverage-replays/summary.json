@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "elapsed_s": 329.77454449200013,
+      "environment": "local",
+      "finite_search_verified": true,
+      "leading_prediction_error_m": 0.07932759464807976,
+      "passed": true,
+      "reason_code": "supported_by_evidence_checks",
+      "receipt_sha256": "fa43bb2301386ec45059061afe9506488421226a1cbfaa59117fc0bb6ffc8d13",
+      "reported_uncertainty": {
+        "kind": "sensitivity",
+        "method": "finite_mode_and_tested_profile_union",
+        "radius_m": 117.19570324924227
+      },
+      "status": "succeeded",
+      "supported_localization_at_m": {
+        "100": true,
+        "1000": true,
+        "500": true
+      }
+    },
+    {
+      "elapsed_s": 372.59730909999996,
+      "environment": "hosted",
+      "finite_search_verified": true,
+      "leading_prediction_error_m": 0.07993058330434617,
+      "passed": true,
+      "reason_code": "supported_by_evidence_checks",
+      "receipt_sha256": "fee5b38ecaf3c1c2040df3f39fcc2e9dee4e7c08614c116f0c765b7970504761",
+      "reported_uncertainty": {
+        "kind": "sensitivity",
+        "method": "finite_mode_and_tested_profile_union",
+        "radius_m": 117.19575435008896
+      },
+      "status": "succeeded",
+      "supported_localization_at_m": {
+        "100": true,
+        "1000": true,
+        "500": true
+      }
+    }
+  ],
+  "schema_version": 1,
+  "scope": "One known-clock finite synthetic four-event fixture repeated locally and in CI; no independent real-world accuracy claim.",
+  "tested_published_commit": "e33e2f38068c704a1d9e5a8a76c41d73b8020f92",
+  "tested_tree": "69169d71301576b15f859879df8f5bf7165c7613"
+}

@@ -1,0 +1,262 @@
+{
+  "acceptance": {
+    "bytes": 1158513,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/acceptance.json",
+    "sha256": "fee5b38ecaf3c1c2040df3f39fcc2e9dee4e7c08614c116f0c765b7970504761"
+  },
+  "audit_passed": true,
+  "candidate_semantic_differences": [],
+  "checks": {
+    "all_accuracy_tiers_accepted": true,
+    "all_candidate_semantics_recomputed": true,
+    "all_declared_tiles_complete": true,
+    "all_execution_stages_exit_zero": true,
+    "all_job_crosschecks_passed": true,
+    "all_raw_http_checks_passed": true,
+    "all_seven_stages_verified": true,
+    "clean_stop_before_truth": true,
+    "decision_matches_result": true,
+    "finite_evidence_complete_without_unknowns": true,
+    "finite_mode_counts_reconcile": true,
+    "finite_union_independently_recomputed": true,
+    "four_distinct_true_flyovers_supported": true,
+    "full_coverage_inventory_preserved": true,
+    "http_receipt_bound": true,
+    "known_clock_exact": true,
+    "leading_timing_also_passes_without_edge_tolerance": true,
+    "near_tie_indices_and_modes_match": true,
+    "persisted_result_matches_download": true,
+    "predeclared_budget_respected": true,
+    "predeclared_supported_success": true,
+    "real_and_browser_claims_remain_false": true,
+    "source_snapshot_unchanged": true,
+    "truth_or_manual_event_fields_absent_from_request": true,
+    "uncertainty_remains_uncalibrated": true,
+    "uninterrupted_execution": true,
+    "union_within_declared_target": true
+  },
+  "created_utc": "2026-11-03T04:14:49.055167+00:00",
+  "decision": {
+    "bytes": 59365,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/jobs/7ff7c0bf5fbd428cbe1ec4ee282ff754/decision.json",
+    "sha256": "74a05f272d5eec0bfaf9dfe3991b6065553a26ad9bc4adafef375260bda4254c"
+  },
+  "declared_edge_tolerance_s": 1.0,
+  "elapsed_s": 372.59730909999996,
+  "finite_evidence": {
+    "best_discarded_score": 2.097033095684769,
+    "complete": true,
+    "discarded_count": 6701,
+    "evaluated_modes": 6801,
+    "ledger_verified": true,
+    "physical_trials_independently_recomputed": false,
+    "retained_modes": 100,
+    "unclassified_score_candidates": 0
+  },
+  "finite_union": {
+    "base_profile_radius_m": 6.268946589875684,
+    "near_tied_mode_count": 5,
+    "near_tied_rows": [
+      {
+        "index": 0,
+        "mode_id": "mode-b38d5eb32f52bbd2333fd1027f6c096805ae5ca68c1edb7d10b9658652b8f1aa",
+        "profile_radius_m": 6.268946589875684,
+        "required_radius_m": 6.268946589875684,
+        "separation_m": 0.0
+      },
+      {
+        "index": 1,
+        "mode_id": "mode-66afd1b858769110ad7f61ff1e71796933578986a35114093cc1f31d28e005ac",
+        "profile_radius_m": 6.272910211805378,
+        "required_radius_m": 6.273445177827413,
+        "separation_m": 0.0005349660220351579
+      },
+      {
+        "index": 2,
+        "mode_id": "mode-9b386187fd42dd709d7124b26d0d4fb6d96232fd340ded8a644c9fa1f76f52b2",
+        "profile_radius_m": 6.2817507570174795,
+        "required_radius_m": 6.282779622738732,
+        "separation_m": 0.001028865721253078
+      },
+      {
+        "index": 3,
+        "mode_id": "mode-f90a8f0398a7d7f49b8cf0077e16cf7f7c63febf8cf0104f33b47637e4af350f",
+        "profile_radius_m": 6.274892127378487,
+        "required_radius_m": 6.27589352360163,
+        "separation_m": 0.0010013962231434647
+      },
+      {
+        "index": 4,
+        "mode_id": "mode-dc21c171c88d3299f4c2ebca0d3e11ff1795cbd3e10f4699ddd1363c4f8d599c",
+        "profile_radius_m": 6.27276546835607,
+        "required_radius_m": 6.273918485891977,
+        "separation_m": 0.0011530175359076742
+      },
+      {
+        "index": 5,
+        "mode_id": "mode-dc21c171c88d3299f4c2ebca0d3e11ff1795cbd3e10f4699ddd1363c4f8d599c",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 21.960276635521613,
+        "separation_m": 21.960276635521613
+      },
+      {
+        "index": 6,
+        "mode_id": "mode-f90a8f0398a7d7f49b8cf0077e16cf7f7c63febf8cf0104f33b47637e4af350f",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 82.89842078446404,
+        "separation_m": 82.89842078446404
+      },
+      {
+        "index": 7,
+        "mode_id": "mode-66afd1b858769110ad7f61ff1e71796933578986a35114093cc1f31d28e005ac",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 89.12345513672597,
+        "separation_m": 89.12345513672597
+      },
+      {
+        "index": 8,
+        "mode_id": "mode-b38d5eb32f52bbd2333fd1027f6c096805ae5ca68c1edb7d10b9658652b8f1aa",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 115.69606960318923,
+        "separation_m": 115.69606960318923
+      },
+      {
+        "index": 9,
+        "mode_id": "mode-9b386187fd42dd709d7124b26d0d4fb6d96232fd340ded8a644c9fa1f76f52b2",
+        "profile_radius_m": 0.0,
+        "required_radius_m": 117.19575435008896,
+        "separation_m": 117.19575435008896
+      }
+    ],
+    "recomputed_radius_m": 117.19575435008896,
+    "reported_radius_m": 117.19575435008896
+  },
+  "job_id": "7ff7c0bf5fbd428cbe1ec4ee282ff754",
+  "leading_candidate": {
+    "association_timing_compatible": true,
+    "clock_error_s": 0.0,
+    "error_m": 0.07993058330434617,
+    "groups": [
+      {
+        "compatible": true,
+        "flight_id": "d32f2ee4d2b68e21230659ad050ca0b9",
+        "group_id": "harmonics-0001",
+        "other_true_interval_fractions": {
+          "058a8e27e498f178a750e6493793da28": 0.0,
+          "852016973b75abbaccb6c8b5285f561c": 0.0,
+          "a4f81d799f0a7d77736f2d0087c7ae32": 0.0
+        },
+        "ridge_times": 327,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "058a8e27e498f178a750e6493793da28",
+        "group_id": "harmonics-0002",
+        "other_true_interval_fractions": {
+          "852016973b75abbaccb6c8b5285f561c": 0.0,
+          "a4f81d799f0a7d77736f2d0087c7ae32": 0.0,
+          "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+        },
+        "ridge_times": 366,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "a4f81d799f0a7d77736f2d0087c7ae32",
+        "group_id": "harmonics-0003",
+        "other_true_interval_fractions": {
+          "058a8e27e498f178a750e6493793da28": 0.0,
+          "852016973b75abbaccb6c8b5285f561c": 0.0,
+          "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+        },
+        "ridge_times": 380,
+        "target_interval_fraction": 1.0
+      },
+      {
+        "compatible": true,
+        "flight_id": "852016973b75abbaccb6c8b5285f561c",
+        "group_id": "harmonics-0004",
+        "other_true_interval_fractions": {
+          "058a8e27e498f178a750e6493793da28": 0.0,
+          "a4f81d799f0a7d77736f2d0087c7ae32": 0.0,
+          "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+        },
+        "ridge_times": 379,
+        "target_interval_fraction": 1.0
+      }
+    ],
+    "independent_groups": 4,
+    "inside_clock_window": true,
+    "rank": 1,
+    "true_flight_set": true
+  },
+  "leading_zero_tolerance_interval_fractions": {
+    "harmonics-0001": {
+      "058a8e27e498f178a750e6493793da28": 0.0,
+      "852016973b75abbaccb6c8b5285f561c": 0.0,
+      "a4f81d799f0a7d77736f2d0087c7ae32": 0.0,
+      "d32f2ee4d2b68e21230659ad050ca0b9": 1.0
+    },
+    "harmonics-0002": {
+      "058a8e27e498f178a750e6493793da28": 1.0,
+      "852016973b75abbaccb6c8b5285f561c": 0.0,
+      "a4f81d799f0a7d77736f2d0087c7ae32": 0.0,
+      "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+    },
+    "harmonics-0003": {
+      "058a8e27e498f178a750e6493793da28": 0.0,
+      "852016973b75abbaccb6c8b5285f561c": 0.0,
+      "a4f81d799f0a7d77736f2d0087c7ae32": 1.0,
+      "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+    },
+    "harmonics-0004": {
+      "058a8e27e498f178a750e6493793da28": 0.0,
+      "852016973b75abbaccb6c8b5285f561c": 1.0,
+      "a4f81d799f0a7d77736f2d0087c7ae32": 0.0,
+      "d32f2ee4d2b68e21230659ad050ca0b9": 0.0
+    }
+  },
+  "limits": [
+    "No physical scoring trial was independently rerun by this audit.",
+    "Point-error tiers do not imply a 100 m uncertainty bound.",
+    "Finite union is uncalibrated and does not establish continuous-space uniqueness.",
+    "Exact known clock, constant synthetic terrain, and complete generated traffic remain fixture assumptions.",
+    "No independent real-recording localization claim follows from this synthetic success."
+  ],
+  "mapping": {
+    "bytes": 772,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/evaluation/flight-id-mapping.json",
+    "sha256": "9b28eb282e1d88aa4320e23e6159f0b7f486b200178dd04e66cc540e394b431b"
+  },
+  "reason_code": "supported_by_evidence_checks",
+  "recomputed_candidates": 105,
+  "refinement": {
+    "bytes": 583498,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/jobs/7ff7c0bf5fbd428cbe1ec4ee282ff754/refined-candidates.json",
+    "sha256": "c86795f7c92938c6aa632c3b4034df7ebd08363b2afee73cd0fc0b438ffb5fe3"
+  },
+  "result": {
+    "bytes": 250858,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/http/result.json",
+    "sha256": "7ea9a912bb004ebcd4680d19808917bbf457f7b7bd0e31ed84b520039638fa50"
+  },
+  "schema_version": 1,
+  "scope": "Independent receipt, geometry, clock, all-candidate ridge-window association, and finite-union semantic audit. Full inventory and SQLite audits are separate.",
+  "script": {
+    "bytes": 15026,
+    "path": "/workspace/scratch/7a37d350207f/audit_full_coverage_semantics_7a37d350.py",
+    "sha256": "813f7bb68902367a1c6c5b7767c05a3d4b83282a6135c5d32b6cb79508d29a4a"
+  },
+  "search_elapsed_s": 313.851646524,
+  "service_stopped_utc": "2026-11-03T04:12:54.569747Z",
+  "source_commit": "e33e2f38068c704a1d9e5a8a76c41d73b8020f92",
+  "source_snapshot_sha256": "fdf6b9e2d562fcceff44f881503a8859b6289c229209a9c013fb998f8bd415b1",
+  "status": "succeeded",
+  "truth": {
+    "bytes": 2109,
+    "path": "/workspace/scratch/7a37d350207f/ci-http-41575931388/extracted/ci-http-four-events/evaluation/truth/labels.json",
+    "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+  },
+  "truth_load_started_utc": "2026-11-03T04:13:06.497307Z"
+}

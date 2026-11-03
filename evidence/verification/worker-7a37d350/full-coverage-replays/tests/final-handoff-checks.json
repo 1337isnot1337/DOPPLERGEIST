@@ -1,0 +1,41 @@
+{
+  "checked_utc": "2026-11-03T04:11:32.564492+00:00",
+  "passed": true,
+  "checks": {
+    "documented_protocol_matches_successful_run": true,
+    "legacy_default_preserved": true,
+    "strict_success_default_preserved": true,
+    "source_clean": true,
+    "source_commit_matches": true,
+    "source_tree_matches": true,
+    "service_listener_closed": true,
+    "job_manager_lock_released": true,
+    "lock_artifact_bytes_unchanged": true,
+    "service_wait_completed_cleanly": true,
+    "worker_shutdown_gate_passed": true,
+    "terminal_result_preserved": true,
+    "replay_process_reaped": true
+  },
+  "source_commit": "b6413a6fcb4abc43816ab439931af6433296032e",
+  "source_tree": "69169d71301576b15f859879df8f5bf7165c7613",
+  "documented_command": "python scripts/ci_http_replay.py \\\n  --output results/http-full-coverage-new \\\n  --events 4 --seed 20261103 \\\n  --fixture-variant full-coverage \\\n  --expect-status succeeded --timeout-s 1800",
+  "cli_defaults": {
+    "--events": 4,
+    "--seed": 20261103,
+    "--fixture-variant": "local-segments",
+    "--timeout-s": 1800,
+    "--expect-status": "succeeded"
+  },
+  "successful_protocol": {
+    "--events": "4",
+    "--seed": "20261103",
+    "--fixture-variant": "full-coverage",
+    "--expect-status": "succeeded",
+    "--timeout-s": "1800"
+  },
+  "loopback_port": 36193,
+  "connect_ex_result": 111,
+  "job_manager_lock_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "worker_lifecycle_basis": "Frozen JobManager._run waits for the analysis subprocess; serve finally calls manager.close, which joins management threads before its recorded zero exit.",
+  "process_inventory_limitation": "/proc PID namespace mismatch prevents a reliable independent process-list census. Shutdown is established by the actual process waits, audited join lifecycle, released manager lock and closed listener; no /proc-derived absence claim is made."
+}

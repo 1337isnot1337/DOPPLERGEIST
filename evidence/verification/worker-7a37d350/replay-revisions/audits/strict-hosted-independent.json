@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "audit_status": "complete",
+  "audit_passed": false,
+  "run_id": 41571753852,
+  "artifact_id": 13201134321,
+  "download": {
+    "run_id": 41571753852,
+    "artifact_id": 13201134321,
+    "published_commit": "31484bf0266007ab20fadc628a5e6a6376f71b88",
+    "zip_bytes": 59230481,
+    "zip_sha256": "7fa09687a9264920b5741194eeb6cac19a6f4b8059954b067765b7b726875d1f",
+    "zip_members": 5044,
+    "uncompressed_bytes": 68020176,
+    "zip_integrity_passed": true,
+    "safe_paths_verified": true,
+    "download_url_omitted": true
+  },
+  "declared_artifact_files": 5039,
+  "verified_artifact_files": 5038,
+  "verified_artifact_bytes": 65878042,
+  "missing_manifest_members": [
+    {
+      "path": "http/jobs/.manager.lock",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "mismatches": [],
+  "unexpected_members": [],
+  "checks": {
+    "present_payload_hashes_match": true,
+    "all_manifest_members_present": false,
+    "membership_complete": false,
+    "snapshot_files_match": true,
+    "project_source_matches_reviewed_tree": true,
+    "snapshot_digest_matches": true,
+    "http_source_matches": true,
+    "verifier_binding": true,
+    "job_payloads_match": true,
+    "scientific_payloads_match": true,
+    "source_published_commit_clean": true,
+    "acceptance_binds_manifest": true,
+    "all105_distances_clocks_flight_sets_match": true,
+    "all18_job_checks_passed": true,
+    "raw_http_checks_passed": true,
+    "seven_stage_gate_passed": true,
+    "terminal_results_equal": true,
+    "cleanup_before_truth": true,
+    "hosted_tests_pass": true,
+    "strict_scientific_failure_preserved": true
+  },
+  "receipts": {
+    "acceptance.json": {
+      "bytes": 372305,
+      "sha256": "dda7f3575eab2c6364d13a3bbd200736206fbf94fcff249d8166d6f0ef92c892"
+    },
+    "artifact-manifest.json": {
+      "bytes": 1710379,
+      "sha256": "8344aad9f0507bed8c4a6e957c3aeda62d5a97812e8890185dbb114fbd600e40"
+    },
+    "source-manifest.json": {
+      "bytes": 14131,
+      "sha256": "b834919f598796c80944253172b312dee547fc6692f20683a20d2372a09d2700"
+    },
+    "http/http-verification.json": {
+      "bytes": 4739,
+      "sha256": "a4550e5af60ec49e41125507224ca8413407685e83d6cea7ddc186eacd9d2fd1"
+    },
+    "http/pipeline-evidence.json": {
+      "bytes": 2219,
+      "sha256": "d8d1bf317f54e564c3f385a4ec190192579479726e44d1c76b401500cf69068b"
+    },
+    "http/job-manifest.json": {
+      "bytes": 705683,
+      "sha256": "240279e85a4afa24e0b2107df3dd8a40ce35f53142214aa663c8fb6c107117bd"
+    },
+    "candidate-evaluations.json": {
+      "bytes": 305948,
+      "sha256": "c6fc3944831420d4db532c9356251622ede4d3e1e7beca8281eb126f344b6205"
+    }
+  },
+  "published_commit": "31484bf0266007ab20fadc628a5e6a6376f71b88",
+  "reviewed_tree": "157207dc059781f40443c2766a8e2ae315f50020",
+  "source_snapshot_sha256": "8bccd173b180dd68b45b1cdea6328fee31894c374095e06c9a5d577e4c3aeb99",
+  "snapshot_mismatches": [],
+  "committed_source_mismatches": [],
+  "generated_package_metadata": [
+    "src/aircraft_geoloc_reproduction.egg-info/PKG-INFO",
+    "src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/entry_points.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/requires.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/top_level.txt"
+  ],
+  "verified_snapshot_files": 39,
+  "verified_job_files": 4965,
+  "verified_stage_artifacts": 12,
+  "audit_completed_utc": "2026-11-03T03:31:04.691214+00:00",
+  "scientific_payload_and_receipt_binding_passed": true,
+  "numeric_mismatches": [],
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "437",
+    "time": "65.262",
+    "timestamp": "2026-11-03T03:22:40.854212+00:00",
+    "hostname": "runnervm48cm3"
+  },
+  "outcome": {
+    "status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "passed": false,
+    "supported_localization_at_m": {
+      "100": false,
+      "500": false,
+      "1000": false
+    },
+    "leading_diagnostic_error_m": 0.07932759464807976,
+    "leading_clock_error_s": 0.0,
+    "elapsed_s": 211.913849438,
+    "search": {
+      "status": "complete",
+      "tiles_total": 4940,
+      "tiles_completed": 4940,
+      "tiles_resumed": 0,
+      "unsearched_tiles": 0,
+      "grid_points_searched": 28672,
+      "refinement_points_searched": 1681,
+      "refinement_points_skipped": 15129,
+      "elapsed_s": 175.24116735699997,
+      "process_peak_rss_mib": 430.85546875,
+      "candidate_retention_limit": 100,
+      "all_event_groups_considered": true,
+      "alternative_modes_exhaustively_assessed": false,
+      "data_scope_complete": true,
+      "tile_failures": [],
+      "refinement_failure": null,
+      "run_hash": "2929c0404987c3d1cd4f0d11fa233f9ab76f83202053c510777c1fdb384fd8f8"
+    },
+    "memory": [
+      {
+        "stage": "generation",
+        "peak_sampled_process_tree_rss_bytes": 529707008,
+        "memory_measurement_status": "available",
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice; exited or inaccessible processes may be omitted"
+      },
+      {
+        "stage": "indexing",
+        "peak_sampled_process_tree_rss_bytes": 287866880,
+        "memory_measurement_status": "available",
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice; exited or inaccessible processes may be omitted"
+      },
+      {
+        "stage": "http-upload",
+        "peak_sampled_process_tree_rss_bytes": 501772288,
+        "memory_measurement_status": "available",
+        "memory_measurement": "Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice; exited or inaccessible processes may be omitted"
+      }
+    ]
+  },
+  "limitations": [
+    "Artifact omits the zero-byte runtime .manager.lock listed in its manifest; full packaging completeness fails and no replacement was fabricated.",
+    "Audit verifies recorded evidence and numerical post-search comparisons; it does not independently rerun acoustic fitting or observe historical process handles.",
+    "Hosted replay repeats the same seeded synthetic scene and is not an independent real recording.",
+    "Generated install metadata varies by environment but is bound by the source manifest; project code matches the reviewed tree.",
+    "RSS samples concern each child process tree, omit the outer orchestrator, may miss peaks and may double-count shared pages.",
+    "No supported localization, calibrated radius, browser verification, live acquisition or independent real GPS/UTC accuracy is established."
+  ]
+}

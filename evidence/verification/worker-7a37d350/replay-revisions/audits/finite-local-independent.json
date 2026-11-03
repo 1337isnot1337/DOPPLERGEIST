@@ -1,0 +1,202 @@
+{
+  "artifact_inventory": {
+    "declared_files": 5041,
+    "errors": [],
+    "verified_bytes": 139839336,
+    "verified_files": 5041
+  },
+  "audit_passed": true,
+  "checks": {
+    "all_candidate_errors_flight_sets_clocks_recomputed": true,
+    "all_manifest_files_verified": true,
+    "all_runner_crosslinks_passed": true,
+    "clean_service_stop": true,
+    "competitive_association_changes_cannot_pass": true,
+    "competitive_dropped_modes_cannot_pass": true,
+    "diagnostic_threshold_counts_recomputed": true,
+    "executed_verifier_matches_snapshot": true,
+    "full_scientific_stage_evidence_passed": true,
+    "http_receipt_bound": true,
+    "http_source_matches_snapshot": true,
+    "inventory_membership_complete": true,
+    "leading_prediction_error_recomputed": true,
+    "ledger_bound_matches_all_dropped_modes": true,
+    "ledger_distinct_counts": true,
+    "ledger_exact_seed_identities": true,
+    "ledger_group_counts_stable": true,
+    "ledger_integrity": true,
+    "ledger_read_only_bytes_unchanged": true,
+    "ledger_run_identity": true,
+    "manifest_bound_to_receipt": true,
+    "original_retained_set_present": true,
+    "retained_clock_trial_accounting": true,
+    "snapshot_package_hashes_match_http_provenance": true,
+    "snapshot_project_files_match_committed_source": true,
+    "source_inventory_verified": true,
+    "source_manifest_bound_to_receipt": true,
+    "source_snapshot_digest_verified": true,
+    "stage_artifacts_bound": true,
+    "stage_gate_bound_to_receipt": true,
+    "supported_finite_result_has_union": true,
+    "terminal_result_bound": true,
+    "truth_opened_after_stop": true,
+    "unknown_modes_cannot_pass": true,
+    "unknown_trials_preclude_finite_completeness": true,
+    "unsupported_status_has_no_accepted_tier": true
+  },
+  "created_utc": "2026-11-03T03:46:10.528285+00:00",
+  "finite_retention": {
+    "competitive_dropped_mode_count": 0,
+    "dropped_gap_per_maximum_group": 0.4649500542658541,
+    "dropped_mode_count": 6609,
+    "envelope": {
+      "different_association_indices": [],
+      "independent_point_plus_reported_profile_union_m": 117.19570324924227,
+      "near_tied_candidates": 10,
+      "published_union": null
+    },
+    "ledger_sha256": "1c9a20778f003adbc8b79af9be5c9db9ad504c595f65ebf2f9f6fca7cef18e40",
+    "maximum_observed_dropped_score": 2.097033056419206,
+    "published_dropped_upper_bound": null,
+    "record_occurrences": 96950,
+    "recorded_complete": false,
+    "retained_mode_count": 100,
+    "retained_trial_errors": [],
+    "retained_trial_totals": {
+      "evaluated": 200,
+      "rejected": 0,
+      "scheduled": 200,
+      "unknown": 0,
+      "unknown_reasons": {}
+    },
+    "stage_counts": {
+      "coarse": 4940,
+      "fine": 4,
+      "fine-global": 4,
+      "global": 4940
+    },
+    "top_dropped_modes": [
+      {
+        "event_groups": 3,
+        "mode_id": "mode-d749620e8ed9cb86e57089ad7188dcc5f50518574adf0b69497807016d2f1396",
+        "score": 2.097033056419206
+      },
+      {
+        "event_groups": 4,
+        "mode_id": "mode-41d89d9fa7f5b86145ef04a7e58845a0db33073dc2bb34ec663f6288c051380f",
+        "score": 2.0968436844545484
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-14bbbc185b39657e2fdb48ad3dfb652d53e9c392f998aec27b9707356093a639",
+        "score": 2.0966870687170722
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-fd61e44fb60991731001c3393f6fba775cdd3540df13eda059dcfa8abc6ef488",
+        "score": 2.0938607395527047
+      },
+      {
+        "event_groups": 3,
+        "mode_id": "mode-8f61b56054531d566eed6bdaf1902c33b60aaf790c33ecbc768441553c38b51b",
+        "score": 2.0851834913889435
+      }
+    ],
+    "unchanged_competition_threshold": 0.2,
+    "unclassified_score_candidates": 1512,
+    "unique_evaluated_modes": 6709
+  },
+  "inventory_membership": {
+    "missing": [],
+    "unexpected": []
+  },
+  "limitations": [
+    "No pipeline, acoustic fit or physical trial is rerun.",
+    "Lifecycle ordering is bound to persisted receipts, not newly observed live process handles.",
+    "No continuous-space uniqueness, calibrated uncertainty or independent real-world accuracy is established."
+  ],
+  "outcome": {
+    "accepted_tiers": {
+      "100": false,
+      "1000": false,
+      "500": false
+    },
+    "candidate_count": 105,
+    "elapsed_s": 255.46627763300057,
+    "finite_search_verified": false,
+    "http_checks_passed": true,
+    "pipeline_evidence_passed": true,
+    "reason_code": "finite_search_incomplete",
+    "runner_passed": false,
+    "status": "inconclusive",
+    "strict_expectation_matched": false,
+    "supported_decision": false
+  },
+  "receipt_sha256": "193368b74e1f009e4ff62021b10ecbe65fb38fbf0591d851053e7ed97c025011",
+  "run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350",
+  "runner_crosslinks": {
+    "all_discovered_events_retained": true,
+    "all_event_groups_considered": true,
+    "all_stage_artifacts_present": true,
+    "alternative_evidence_consistent": true,
+    "decision_consistent": true,
+    "evidence_collection_complete": true,
+    "http_result_matches_persisted": true,
+    "implementation_verified": true,
+    "job_identity_matches": true,
+    "leading_refinement_row_bound": true,
+    "nominal_joint_fit_recorded": true,
+    "normal_request_verified": true,
+    "operator_verified": true,
+    "scientific_stage_artifacts_unchanged": true,
+    "scientific_stage_gate_passed": true,
+    "search_consistent": true,
+    "source_snapshot_unchanged": true,
+    "uploaded_bytes_verified": true
+  },
+  "schema_version": 1,
+  "scope": "independent_terminal_binding_and_finite_retention_audit",
+  "source": {
+    "audited_project_files": 34,
+    "commit": "6a90d254e41ff4c6e61ae6763da3375809aed905",
+    "project_mismatches": [],
+    "snapshot_sha256": "ba781d4ff630a37fb8139d534bea1a99544690c40f2fb42717084b9196d3ba53",
+    "tree": "b009d69fdd85c692d004626c902cc8cf6485184d"
+  },
+  "source_inventory": {
+    "declared_files": 40,
+    "errors": [],
+    "verified_bytes": 498931,
+    "verified_files": 40
+  },
+  "stage_inventory": {
+    "declared_files": 4953,
+    "errors": [],
+    "verified_bytes": 92078810,
+    "verified_files": 4953
+  },
+  "withheld_truth_comparison": {
+    "candidate_count": 105,
+    "leading_error_m": 0.07932759464807976,
+    "leading_full_flight_set_correct": true,
+    "limitations": [
+      "Candidate rows are correlated hypotheses from one scene, not independent accuracy trials."
+    ],
+    "mismatches": [],
+    "reference_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+    "threshold_counts": {
+      "100": {
+        "all_candidates": 20,
+        "correct_full_flight_set": 8
+      },
+      "1000": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      },
+      "500": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      }
+    }
+  }
+}

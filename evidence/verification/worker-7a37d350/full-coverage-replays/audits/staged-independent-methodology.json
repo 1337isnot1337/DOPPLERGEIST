@@ -1,0 +1,461 @@
+{
+  "audit_passed": true,
+  "checks": {
+    "all_aircraft_ids_retained": true,
+    "all_common_one_second_grids": true,
+    "all_original_serialized_values_preserved": true,
+    "all_original_spline_coefficients_preserved": true,
+    "c1_tangent_join_tolerances": true,
+    "continuous_altitude_clearance_conservative": true,
+    "continuous_speed_below_declared_bound": true,
+    "entire_recording_inside_monotone_arrival_interval": true,
+    "generation_matches_observed_source": true,
+    "geoid_bytes_preserved": true,
+    "left_padding_matches_conservative_formula": true,
+    "mp3_bytes_preserved": true,
+    "nominal_domain_and_separate_profile_gates_explicit": true,
+    "normal_certificate_excludes_per_aircraft_mapping": true,
+    "plan_matches_recomputed_start_bound": true,
+    "plan_uses_minimum_sound_speed_338": true,
+    "request_bytes_preserved": true,
+    "terrain_bytes_preserved": true,
+    "truth_bytes_preserved": true,
+    "wav_samples_and_all_non_timestamp_metadata_preserved": true
+  },
+  "created_utc": "2026-11-03T04:02:12.529871+00:00",
+  "extended_tracks": {
+    "bytes": 1573776,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/inputs/tracks.parquet",
+    "sha256": "9979eaf7713009e612e05ab2eb79e02978087e851077f83da900970d9a7cb23d"
+  },
+  "generation": {
+    "bytes": 13255,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/generation.json",
+    "sha256": "b063aa082590e9faede7cc6a2d25c68607124f7d3fc5fec543d94e9ebdea0a73"
+  },
+  "input_invariance": {
+    "geoid": [
+      {
+        "bytes": 2509,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/fixture/inputs/geoid.tif",
+        "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+      },
+      {
+        "bytes": 2509,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/inputs/geoid.tif",
+        "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+      }
+    ],
+    "mp3": [
+      {
+        "bytes": 3841101,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/fixture/inputs/recording.mp3",
+        "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+      },
+      {
+        "bytes": 3841101,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/inputs/recording.mp3",
+        "sha256": "9d96ddb1aad4156511b5549b3523bd8293d0a03625a12a21e806f5667f4f1e4c"
+      }
+    ],
+    "request": [
+      {
+        "bytes": 227,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/fixture/inputs/request.json",
+        "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+      },
+      {
+        "bytes": 227,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/inputs/request.json",
+        "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+      }
+    ],
+    "terrain": [
+      {
+        "bytes": 2689,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/fixture/inputs/terrain.tif",
+        "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+      },
+      {
+        "bytes": 2689,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/inputs/terrain.tif",
+        "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+      }
+    ],
+    "truth": [
+      {
+        "bytes": 2109,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/evaluation/truth/labels.json",
+        "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+      },
+      {
+        "bytes": 2109,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/truth/labels.json",
+        "sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+      }
+    ]
+  },
+  "limits": [
+    "This is a different trajectory dataset from the historical local-segments replay.",
+    "The temporal proof covers nominal CPA receivers within 20 km of a track point or sampled chord, receive times inside the declared recording interval, and c >= 338 m/s.",
+    "Refinement/profile evaluations remain subject to unchanged runtime support and acceptance gates.",
+    "The certificate does not establish solver convergence, exhaustive continuous uniqueness, calibrated uncertainty, or real-data localization."
+  ],
+  "original_tracks": {
+    "bytes": 171645,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/evaluation/original-tracks.parquet",
+    "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258"
+  },
+  "renderer_wav_complete_file_bytes_equal": false,
+  "renderer_wav_scope": "Only the wall-clock PEAK timestamp differs. Audio data and every other WAV byte match; no WAV file was modified.",
+  "renderer_wavs": [
+    {
+      "chunks": [
+        {
+          "bytes": 16,
+          "name": "fmt ",
+          "sha256": "2d3abfa737cc3a868faa95b58a7db5c3f1fe3d1c8d91bbff8354964e4f31ef43"
+        },
+        {
+          "bytes": 4,
+          "name": "fact",
+          "sha256": "b9ecaa747172ce61a576edae5acf999db2b5b44c8cc5c723adee245c7d79dc2a"
+        },
+        {
+          "bytes": 16,
+          "name": "PEAK",
+          "sha256": "3caf17744917b08526a65c1cb102435744c84ec692ce7974129eaad2e53e4b0f"
+        },
+        {
+          "bytes": 30720000,
+          "name": "data",
+          "sha256": "1cf717c20544dcbbd8806fdbec070b147797365dee9cdd23d819b9256ae1eba8"
+        }
+      ],
+      "file": {
+        "bytes": 30720080,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350/fixture/renderer/recording.wav",
+        "sha256": "83022eaf982d787c2cb3b806aab427dc46c7bf103fd0388749486a8853c683bc"
+      },
+      "sha256_excluding_only_peak_timestamp": "4e636c45483e51729d3bd46760d4abc99f1b70d728c2d159239fdfb1602a942f"
+    },
+    {
+      "chunks": [
+        {
+          "bytes": 16,
+          "name": "fmt ",
+          "sha256": "2d3abfa737cc3a868faa95b58a7db5c3f1fe3d1c8d91bbff8354964e4f31ef43"
+        },
+        {
+          "bytes": 4,
+          "name": "fact",
+          "sha256": "b9ecaa747172ce61a576edae5acf999db2b5b44c8cc5c723adee245c7d79dc2a"
+        },
+        {
+          "bytes": 16,
+          "name": "PEAK",
+          "sha256": "0856b8b5df142d75e83bb8eb1cafa1f982529d4f44fadd25e33222e371ea2ccb"
+        },
+        {
+          "bytes": 30720000,
+          "name": "data",
+          "sha256": "1cf717c20544dcbbd8806fdbec070b147797365dee9cdd23d819b9256ae1eba8"
+        }
+      ],
+      "file": {
+        "bytes": 30720080,
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/results/fixture-support-validation-7a37d350/full-four-final/renderer/recording.wav",
+        "sha256": "5aee0c8a867c3049e1e8fbbb10adc9250eb5f3e9a8244e9b4c7d3842b329fff6"
+      },
+      "sha256_excluding_only_peak_timestamp": "4e636c45483e51729d3bd46760d4abc99f1b70d728c2d159239fdfb1602a942f"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Independent pre-run audit of the new four-event full-coverage fixture. No localization outcome is inferred.",
+  "source": {
+    "bytes": 18282,
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-fixture-support/scripts/make_multi_event_case.py",
+    "sha256": "8bec70122dc04fb0eaf626ea2a183561d547375d2c2d50ba07f1d3839ca4791d"
+  },
+  "static_code_findings": {
+    "cpa_range_metric": "search.cpa_table and cpa_table_dense both filter ECEF chord distance <= max_distance; the bound holds for every convex combination of sampled track points.",
+    "default_max_distance_m": 20000,
+    "flight_index_max_gap_s": 30,
+    "full_track_query": "FlightIndex.query returns complete intersecting segments rather than clipping times.",
+    "gap_comparison": "All added and retained sample intervals are 1 s, below the 30 s split threshold."
+  },
+  "support_summary": {
+    "aircraft": 12,
+    "arrival_derivative_lower_bound": 0.5940828402366863,
+    "continuous_height_lower_bound_m": 957.0738076264383,
+    "declared_speed_bound_mps": 137.20000000000002,
+    "emission_interval_s": [
+      1789999037.0,
+      1790001260.0
+    ],
+    "end_arrival_lower_bound_relative_s": 1260,
+    "extended_rows": 26688,
+    "independently_recomputed_speed_bound_mps": 101.74426193081403,
+    "left_padding_s": 963,
+    "maximum_candidate_range_m": 20000.0,
+    "minimum_sound_speed_mps": 338.0,
+    "original_rows": 3252,
+    "receive_duration_s": 960,
+    "right_padding_s": 300,
+    "start_arrival_upper_bound_relative_s": -1.4745562130176495
+  },
+  "tracks": [
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "37eb2ec6d862",
+      "joins": [
+        {
+          "position_error_m": 1.4908435375971833e-08,
+          "velocity_error_mps": 5.687116766346677e-15
+        },
+        {
+          "position_error_m": 1.8651173342231693e-08,
+          "velocity_error_mps": 1.6091724337024826e-14
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 78.29746468567609,
+      "maximum_sample_altitude_m": 2070.424279745668,
+      "minimum_sample_altitude_m": 1007.9459385918453,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "39490fc22da5",
+      "joins": [
+        {
+          "position_error_m": 2.188618363614848e-08,
+          "velocity_error_mps": 7.105427357601002e-15
+        },
+        {
+          "position_error_m": 2.0976598499280365e-08,
+          "velocity_error_mps": 0.0
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 98.32637450330058,
+      "maximum_sample_altitude_m": 2963.95527850464,
+      "minimum_sample_altitude_m": 1542.1253877719864,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "4e3d87ed6e3f",
+      "joins": [
+        {
+          "position_error_m": 2.888977037602309e-08,
+          "velocity_error_mps": 7.944109290391274e-15
+        },
+        {
+          "position_error_m": 2.895443540935337e-08,
+          "velocity_error_mps": 1.4210854715202004e-14
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 101.74426193081403,
+      "maximum_sample_altitude_m": 3017.268606843427,
+      "minimum_sample_altitude_m": 1542.136577504687,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "584c8b5ab114",
+      "joins": [
+        {
+          "position_error_m": 1.3512203589591112e-08,
+          "velocity_error_mps": 1.7763568394002505e-15
+        },
+        {
+          "position_error_m": 1.6764210558072777e-08,
+          "velocity_error_mps": 3.552713678800501e-15
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 78.29746349853403,
+      "maximum_sample_altitude_m": 2070.5450551481918,
+      "minimum_sample_altitude_m": 1007.9656913150102,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "5963b2387c30",
+      "joins": [
+        {
+          "position_error_m": 1.9563316868245606e-08,
+          "velocity_error_mps": 1.6758116906701664e-14
+        },
+        {
+          "position_error_m": 2.2356591902967176e-08,
+          "velocity_error_mps": 1.7763568394002505e-15
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 84.1984270270639,
+      "maximum_sample_altitude_m": 1884.1311412351206,
+      "minimum_sample_altitude_m": 1208.0874633137137,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "5bd600870087",
+      "joins": [
+        {
+          "position_error_m": 2.655928248176568e-08,
+          "velocity_error_mps": 1.5888218580782548e-14
+        },
+        {
+          "position_error_m": 2.6110272424064925e-08,
+          "velocity_error_mps": 7.160723346098895e-15
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 96.03912012518992,
+      "maximum_sample_altitude_m": 2957.660508577712,
+      "minimum_sample_altitude_m": 1542.2418063422665,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "7b081392e2c2",
+      "joins": [
+        {
+          "position_error_m": 1.679328846863043e-08,
+          "velocity_error_mps": 7.119291619286993e-15
+        },
+        {
+          "position_error_m": 2.002884928845481e-08,
+          "velocity_error_mps": 2.040878629308206e-14
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 84.19843507153087,
+      "maximum_sample_altitude_m": 1884.2747687716037,
+      "minimum_sample_altitude_m": 1208.1140901818871,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "b1703e44cbf7",
+      "joins": [
+        {
+          "position_error_m": 1.353826193400299e-08,
+          "velocity_error_mps": 1.0048591735576161e-14
+        },
+        {
+          "position_error_m": 1.736476538607198e-08,
+          "velocity_error_mps": 0.0
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 84.19844876713852,
+      "maximum_sample_altitude_m": 1884.5143405105919,
+      "minimum_sample_altitude_m": 1208.15759988036,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "c462923f18b5",
+      "joins": [
+        {
+          "position_error_m": 9.958243183058135e-09,
+          "velocity_error_mps": 1.434896150467636e-14
+        },
+        {
+          "position_error_m": 1.4096899955398388e-08,
+          "velocity_error_mps": 0.0
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 78.29747407223992,
+      "maximum_sample_altitude_m": 2070.7439990695566,
+      "minimum_sample_altitude_m": 1007.9973001619801,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "ccee360caf30",
+      "joins": [
+        {
+          "position_error_m": 2.1887318929296024e-08,
+          "velocity_error_mps": 1.4238583238573986e-14
+        },
+        {
+          "position_error_m": 2.4704472376864204e-08,
+          "velocity_error_mps": 1.4432899320127035e-15
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 90.11307082563242,
+      "maximum_sample_altitude_m": 2140.214205778204,
+      "minimum_sample_altitude_m": 1383.303496451117,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "ceb5f8f549ef",
+      "joins": [
+        {
+          "position_error_m": 2.3301683372253187e-08,
+          "velocity_error_mps": 4.440892098500626e-16
+        },
+        {
+          "position_error_m": 2.5146787411161898e-08,
+          "velocity_error_mps": 1.464821375527116e-14
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 96.17028923733693,
+      "maximum_sample_altitude_m": 2041.4465098902583,
+      "minimum_sample_altitude_m": 1382.7875748788938,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    },
+    {
+      "common_one_second_grid": true,
+      "every_original_value_and_dtype_preserved": true,
+      "extended_rows": 2224,
+      "flight_id": "f11e3201558c",
+      "joins": [
+        {
+          "position_error_m": 1.72562906716505e-08,
+          "velocity_error_mps": 1.4210854715202004e-14
+        },
+        {
+          "position_error_m": 1.871385147532479e-08,
+          "velocity_error_mps": 1.5888218580782548e-14
+        }
+      ],
+      "maximum_continuous_speed_control_mps": 92.5468445888921,
+      "maximum_sample_altitude_m": 2071.831446958706,
+      "minimum_sample_altitude_m": 1382.6702625835314,
+      "original_rows": 271,
+      "original_spline_coefficients_exact": true
+    }
+  ]
+}

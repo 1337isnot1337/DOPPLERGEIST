@@ -41,6 +41,22 @@ The original real two-event and faint-event winners reproduce in a clean environ
 
 Automatic discovery on the separate 40-WAV collection proposed events in 28 recordings and none in 12; it produced 102 proposals overall. These proposals are **not certified aircraft detections**. See [discovery evidence](docs/AUDIO_DISCOVERY.md). The [integration receipts](docs/verification/INTEGRATION.md) distinguish tested `main` revisions from separate product-review combinations. Scores and finite sensitivity envelopes are **not calibrated location probabilities**.
 
+### Worker integration evidence: PR 86
+
+This review branch includes a strict four-event HTTP replay, finite-search ledger
+and uncertainty checks, and shutdown-before-evaluation evidence. Earlier local
+and hosted strict runs completed every pipeline stage but remained inconclusive;
+their close diagnostic coordinates did not pass localization acceptance.
+The explicit `full-coverage` fixture passes strict local and hosted replays with
+all four true flyovers. Point errors are 0.0793 m and 0.0799 m; both runs return
+an approximately 117.2 m uncalibrated sensitivity radius. The 100/500/1,000 m flags
+measure observed point error, not three confidence guarantees. These are repeats
+of one synthetic case with a supplied exact clock and constant terrain.
+See the [worker verification report](docs/verification/WORKER_7A37D350.md) and
+[preserved revision receipts](evidence/verification/worker-7a37d350/replay-revisions/README.md)
+for exact source identities, all outcomes, and remaining real-recording provenance
+requirements. This entry describes [PR 86](https://github.com/1337isnot1337/DOPPLERGEIST/pull/86).
+
 ## Install and use the current `main` branch
 
 Requires Python 3.11 or newer, `ffmpeg` and `ffprobe`. Run these commands from the repository root:

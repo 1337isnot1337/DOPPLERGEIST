@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source_commit": "6a90d254e41ff4c6e61ae6763da3375809aed905",
+  "source_tree": "b009d69fdd85c692d004626c902cc8cf6485184d",
+  "predecessor_full_suite": {
+    "file": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/pytest.xml",
+      "bytes": 76130,
+      "sha256": "790e6b205113051dbfdc980b196de5f9d4032249617f8b335c0c2addec9aaddd"
+    },
+    "junit_suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "1",
+        "tests": "559",
+        "time": "70.425",
+        "timestamp": "2026-11-02T23:38:51.825658-04:00",
+        "hostname": "05c893b10fbb"
+      }
+    ],
+    "skipped": [
+      {
+        "type": "pytest.skip",
+        "message": "Live process-tree RSS is unavailable: proc_pid_namespace_mismatch"
+      }
+    ],
+    "source_commit": "5d461fc3266d7ed7b684e2efa26068355577af9d",
+    "source_tree": "00083aca37cb31cce29487db674a295b010b6ba6",
+    "pytest_reported": {
+      "passed": 533,
+      "skipped": 1,
+      "subtests_passed": 25,
+      "elapsed_s": 70.43
+    }
+  },
+  "final_focused_suite": {
+    "file": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/pytest-final-focused.xml",
+      "bytes": 23997,
+      "sha256": "f4578682b4f857c12989ee5dcbd75725a17781841c1edb36cf375a46d6299f30"
+    },
+    "junit_suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "156",
+        "time": "18.631",
+        "timestamp": "2026-11-02T23:40:32.606331-04:00",
+        "hostname": "05c893b10fbb"
+      }
+    ],
+    "skipped": [],
+    "paths": [
+      "tests/test_verify_upload_http.py",
+      "tests/test_ci_http_replay.py"
+    ],
+    "pytest_reported": {
+      "passed": 156,
+      "elapsed_s": 18.69
+    }
+  },
+  "final_preflight": {
+    "preflight.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/preflight.json",
+      "bytes": 4620,
+      "sha256": "d9f1d3c63cace690c2cabe002cbc879fd8709c78e0731bd0d01f19832af5998c"
+    },
+    "execution.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/execution.json",
+      "bytes": 1496,
+      "sha256": "07cc97d2ee53480d665b9c18f76b6aefd65b4a971239182a9c48b1d4f48f0291"
+    },
+    "source-manifest.json": {
+      "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/worker-finite-combined-7a37d350/preflight-final/source-manifest.json",
+      "bytes": 15969,
+      "sha256": "69a19400683f6ca2c507d2bcef7e58c5fdaae8192a98b0c09f943205c65c3fc2"
+    }
+  },
+  "final_snapshot_sha256": "ba781d4ff630a37fb8139d534bea1a99544690c40f2fb42717084b9196d3ba53",
+  "scope": "The full local suite ran on the immediately preceding tree. The final narrow null-field consistency change was checked by the complete focused verifier and runner suites and a fresh preflight; no full-suite rerun is claimed for the final tree.",
+  "actual_replay_directory": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-finite/results/http-finite-7a37d350"
+}

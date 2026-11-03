@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "audit_completed_utc": "2026-11-03T03:25:28.706832+00:00",
+  "audit_scope": "Independent terminal source/artifact/receipt binding and numerical distance/clock/flight-set audit; no new scientific search",
+  "run": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350",
+  "job_id": "001a03672342447290e59c7dfc9f4179",
+  "executed_commit": "0d294857e6ca53d94e821ba5a9e3c6d84432ad70",
+  "published_commit_with_identical_tree": "31484bf0266007ab20fadc628a5e6a6376f71b88",
+  "tree": "157207dc059781f40443c2766a8e2ae315f50020",
+  "source_snapshot_sha256": "774ae33a792254783de63f557d621f27fb82c9abf4c74b66fb3ee74d763fd586",
+  "audit_passed": true,
+  "checks": {
+    "terminal_and_finalized": true,
+    "source_commit_recorded_clean": true,
+    "published_tree_equals_executed_tree": true,
+    "all_manifest_payloads_match": true,
+    "manifest_membership_complete": true,
+    "acceptance_binds_artifact_manifest": true,
+    "frozen_source_files_match_manifest": true,
+    "frozen_source_snapshot_digest_matches": true,
+    "frozen_project_sources_match_tested_commit": true,
+    "http_implementation_hashes_match_frozen_package": true,
+    "verifier_hash_matches_frozen_file": true,
+    "job_manifest_hashes_match": true,
+    "job_identity_consistent": true,
+    "terminal_http_and_persisted_result_equal": true,
+    "embedded_http_receipt_matches_raw": true,
+    "all_18_runner_job_checks_true": true,
+    "seven_stage_gate_passed": true,
+    "stage_artifacts_bind_to_job_manifest": true,
+    "raw_http_checks_passed": true,
+    "strict_expected_success_was_not_met": true,
+    "no_false_localization_acceptance": true,
+    "no_interruption_or_forced_cleanup": true,
+    "cleanup_before_truth": true,
+    "execution_is_completed_expected_abstention": true,
+    "time_budget_respected": true,
+    "normal_request_preserved": true,
+    "original_download_and_input_bytes_match": true,
+    "finite_generated_scope_complete": true,
+    "unassessed_alternatives_not_marked_exhaustive": true,
+    "evaluations_preserved": true,
+    "all_candidate_distances_clocks_and_flight_sets_independently_match": true,
+    "reported_threshold_counts_match": true,
+    "leading_error_matches_all_receipts": true,
+    "external_memory_unavailability_preserved": true,
+    "original_acceptance_bytes_unchanged": true
+  },
+  "errors": [],
+  "bound_receipts": {
+    "acceptance.json": {
+      "bytes": 372822,
+      "sha256": "8a4864733bfeee215e5ae64b215fe4c0420d8e4f7419d2760a8059f96c880b3c"
+    },
+    "artifact-manifest.json": {
+      "bytes": 1745652,
+      "sha256": "6d08f5b98e56129052bea925f5ef6d1bf3218a912797fc3dd5ee346813d84517"
+    },
+    "source-manifest.json": {
+      "bytes": 14411,
+      "sha256": "7e38b3972f49c159922b381886257b2f8f84ca70b454d90f6a1dd609eda22fa3"
+    },
+    "http/http-verification.json": {
+      "bytes": 4801,
+      "sha256": "2bd2bac201001d98e152acaec81cf72ee3cb8b2b559ad170b8f4e72559167d33"
+    },
+    "http/job-manifest.json": {
+      "bytes": 705683,
+      "sha256": "cb6f35acca5c719788b13db3d5b6ccbce5c08bd2793db204cb4c3b0dd9ea358f"
+    },
+    "http/pipeline-evidence.json": {
+      "bytes": 2219,
+      "sha256": "e1aa8439377569c655147c02f73383d038c3b35efea2a692e180a816e3671613"
+    },
+    "candidate-evaluations.json": {
+      "bytes": 305948,
+      "sha256": "383a2a17dc9ff0f23a0aef2b27da4e0877eeff92e9f36185f12b219a99cee093"
+    }
+  },
+  "verified_artifact_files": 5039,
+  "verified_artifact_bytes": 65755120,
+  "verified_job_files": 4965,
+  "verified_stage_artifacts": 12,
+  "verified_snapshot_files": 39,
+  "generated_package_metadata_files": [
+    "src/aircraft_geoloc_reproduction.egg-info/PKG-INFO",
+    "src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/entry_points.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/requires.txt",
+    "src/aircraft_geoloc_reproduction.egg-info/top_level.txt"
+  ],
+  "outcome": {
+    "status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "strict_acceptance_passed": false,
+    "http_checks_passed": true,
+    "pipeline_evidence_passed": true,
+    "full_pipeline_observed": true,
+    "expected_status": "succeeded",
+    "expectation_matched": false,
+    "supported_localization_at_m": {
+      "100": false,
+      "500": false,
+      "1000": false
+    },
+    "leading_diagnostic_error_m": 0.07932759464807976,
+    "leading_diagnostic_clock_error_s": 0.0,
+    "threshold_counts": {
+      "100": {
+        "all_candidates": 20,
+        "correct_full_flight_set": 8
+      },
+      "500": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      },
+      "1000": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      }
+    },
+    "elapsed_s": 230.4970262700008,
+    "search_elapsed_s": 189.43406654499995,
+    "search_worker_peak_mib": 344.49609375
+  },
+  "limitations": [
+    "This audit does not independently rerun decoding, discovery, physical scoring, or inference.",
+    "The 105 candidates are hypotheses from one synthetic scene, not independent recordings.",
+    "Cleanup timing is checked from completed receipts and the reviewed lifecycle; this audit did not observe historical process handles.",
+    "Labels were opened by this audit only after the completed run and its recorded clean shutdown. Truth separation remains procedural, not OS isolation.",
+    "Flight-data completeness applies only to the generated synthetic population; no live acquisition or national real-data completeness is established.",
+    "Native search-worker RSS is scoped through search completion and includes its inherited high-water mark; no whole-pipeline peak is established.",
+    "No supported localization, calibrated uncertainty, independent real GPS/UTC accuracy, or browser verification is established."
+  ]
+}

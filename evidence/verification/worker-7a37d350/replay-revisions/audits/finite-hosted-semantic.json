@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T03:54:34.167118+00:00",
+  "scope": "Independent hosted finite-replay semantic audit and leading geodesic/clock recomputation; excludes full artifact and ledger sweep",
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41573699946",
+  "run_conclusion": "failure",
+  "artifact_id": 13203250961,
+  "acceptance_sha256": "420ae85c33d95578c9aa9bff17878cb234757af68fb4aee8d77b560ec227ac1b",
+  "checks": {
+    "clean_published_commit": true,
+    "expected_pipeline_digest": true,
+    "completed_strict_protocol": true,
+    "raw_http_and_stages_pass": true,
+    "all_eighteen_crosslinks_pass": true,
+    "native_incomplete_consistent": true,
+    "no_supported_localization": true,
+    "strict_expectation_fails": true,
+    "ledger_audit_does_not_claim_complete": true,
+    "same_recorded_unknown_and_retention_counts": true,
+    "all_retained_modes_assessed": true,
+    "no_finite_union_claim": true,
+    "leading_geodesic_recomputed": true,
+    "supplied_clock_error_recomputed": true,
+    "clean_shutdown_before_truth": true,
+    "no_interruption_and_within_budget": true,
+    "junit_clean": true
+  },
+  "checks_passed": true,
+  "outcome": {
+    "status": "inconclusive",
+    "reason_code": "finite_search_incomplete",
+    "accepted": false,
+    "supported_localization_at_m": {
+      "100": false,
+      "500": false,
+      "1000": false
+    },
+    "elapsed_s": 357.38725547399997,
+    "search_elapsed_s": 298.876393295,
+    "diagnostic_point_error_m": 0.07993058330434617,
+    "supplied_clock_error_s": 0.0,
+    "tested_profile_radius_m": 6.268946589875684,
+    "published_finite_union_radius_m": null,
+    "finite_evidence": {
+      "ledger_verified": true,
+      "complete": false,
+      "retained_modes": 100,
+      "evaluated_modes": 6709,
+      "discarded_count": 6609,
+      "best_discarded_score": null,
+      "unclassified_score_candidates": 1512,
+      "physical_trials_independently_recomputed": false
+    }
+  },
+  "junit": {
+    "testcase_elements": 535,
+    "suite_count": 560,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_s": 99.319
+  },
+  "limitations": [
+    "No supported point or uncertainty claim exists despite a close diagnostic coordinate.",
+    "Population completeness does not establish per-aircraft temporal support; the original fixture records each flyover only from -135 to +135 seconds.",
+    "Exact supplied synthetic clock, flat terrain and synthetic traffic are separate from independent real localization.",
+    "The separate full inventory/ledger audit is required for complete artifact integrity."
+  ]
+}

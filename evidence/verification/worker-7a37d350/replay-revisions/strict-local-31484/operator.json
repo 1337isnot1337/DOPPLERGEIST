@@ -1,0 +1,14 @@
+{
+  "flight_indexes": [
+    "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/fixture/inputs/flights.sqlite"
+  ],
+  "offline": true,
+  "terrain": {
+    "rasters": [
+      "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/fixture/inputs/terrain.tif"
+    ],
+    "geoid_raster": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-final/results/http-final-7a37d350/fixture/inputs/geoid.tif"
+  },
+  "sound_speed_mps": 343,
+  "max_distance_m": 20000
+}
