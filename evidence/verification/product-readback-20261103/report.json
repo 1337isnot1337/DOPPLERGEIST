@@ -1,0 +1,69 @@
+{
+  "scope": "unchanged_terminal_job_readback_only",
+  "command": [
+    "/home/cinna/DOPPLERGEIST-product-readback/.artifacts/readback-venv/bin/python",
+    "-m",
+    "aircraft_geoloc.cli",
+    "serve",
+    "--jobs",
+    "/home/cinna/DOPPLERGEIST/results/product-readback-20261103/jobs",
+    "--port",
+    "46943"
+  ],
+  "passed": true,
+  "browser": "156.0.8078.4",
+  "status": "inconclusive",
+  "candidate_count": 106,
+  "initially_visible_candidates": 5,
+  "expanded_visible_candidates": 106,
+  "mobile_collapsed": {
+    "viewport_width": 390,
+    "document_width": 390
+  },
+  "mobile_expanded": {
+    "viewport_width": 390,
+    "document_width": 390
+  },
+  "artifact_count": 14,
+  "reloaded_job_verified": true,
+  "javascript_errors": [],
+  "radius_readback": [
+    {
+      "input_index": 0,
+      "radius_m": 109.48503096371469,
+      "displayed_m": "109",
+      "method": "declared_perturbation_profiles"
+    },
+    {
+      "input_index": 1,
+      "radius_m": 109.50793793224034,
+      "displayed_m": "110",
+      "method": "profiled_relative_altitude_offsets"
+    },
+    {
+      "input_index": 2,
+      "radius_m": 109.50793793224034,
+      "displayed_m": "110",
+      "method": "profiled_relative_altitude_offsets"
+    },
+    {
+      "input_index": 3,
+      "radius_m": 101.65245092809191,
+      "displayed_m": "102",
+      "method": "profiled_relative_altitude_offsets"
+    },
+    {
+      "input_index": 4,
+      "radius_m": 115.57626565360792,
+      "displayed_m": "116",
+      "method": "profiled_relative_altitude_offsets"
+    },
+    {
+      "input_index": 5,
+      "radius_m": 115.59318859916031,
+      "displayed_m": "116",
+      "method": "profiled_relative_altitude_offsets"
+    }
+  ],
+  "all_job_bytes_unchanged": true
+}

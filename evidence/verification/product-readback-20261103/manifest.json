@@ -1,0 +1,46 @@
+{
+  "input-manifest.json": {
+    "bytes": 1302,
+    "sha256": "468cdb588e76ac8495fa0953ec88546236dc53cabb8a2315dfa16264fbe25cd8"
+  },
+  "installed-code.json": {
+    "bytes": 2305,
+    "sha256": "477178aaa1affadd5530ad06a062aa06b405a19e221aa83f32491ec07d8bfdee"
+  },
+  "api-result.json": {
+    "bytes": 64196,
+    "sha256": "b37cb61c4eccf8e5e0b1dedd6f1ea8e49381caff2f29d43764c707e582ed5f3c"
+  },
+  "verifier-suite.log": {
+    "bytes": 99,
+    "sha256": "d913aefbb30f886a6b069f2429a2c2d289a8e02a9ecc65b1182f687d41756a10"
+  },
+  "mobile.png": {
+    "bytes": 424659,
+    "sha256": "2439860d48612b457f794e5c31439515c85f7b0a074caa72d4893db31f13082f"
+  },
+  "artifact-roundtrip.json": {
+    "bytes": 2359,
+    "sha256": "20f0c2128179f8f57d68d96d4c006956a73c143aa4d42fa9e4c867045c2f7f94"
+  },
+  "page.txt": {
+    "bytes": 3356,
+    "sha256": "0d6ec5fe1fbb70f8f0aa4d13a8e8f5c1786f7c29635e7a9d0144c9f1a6eaed70"
+  },
+  "report.json": {
+    "bytes": 1737,
+    "sha256": "0669ea5d0673dd1e8ff88f06363267c08e1cb8bed3fabaf8ee7ae7c21ebdce27"
+  },
+  "server.log": {
+    "bytes": 109,
+    "sha256": "585f5900c4e765063fd698a8a4eacd542ec15626cd3f1f6fe701aa74fb2366dd"
+  },
+  "desktop.png": {
+    "bytes": 593168,
+    "sha256": "5ef437eba729afc270746e361513188d64ac9475de5d9d6fa31f6a2c9dad9760"
+  },
+  "mobile-expanded-viewport.png": {
+    "bytes": 80532,
+    "sha256": "a089a7f42284269192a287b8276a45cfbf7b5b86311a48c2a6c4b2b88d3695eb"
+  }
+}

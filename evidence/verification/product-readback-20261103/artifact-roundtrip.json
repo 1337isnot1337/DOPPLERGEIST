@@ -1,0 +1,86 @@
+[
+  {
+    "path": "data-provenance.json",
+    "bytes": 1544,
+    "sha256": "2d2d16fc61965c8ec16e5483deaa6ed6967149dd9e6675353729a286e206297d",
+    "http_status": 200
+  },
+  {
+    "path": "decision.json",
+    "bytes": 42201,
+    "sha256": "9cbcf5d74c0cc1623bc9afe62847a6662bddd72e6f87698652e199aea6cf18cc",
+    "http_status": 200
+  },
+  {
+    "path": "discovery/discovery.json",
+    "bytes": 38117,
+    "sha256": "33c9d24e1a48e1722e3fd051c811573b90b696f15cfb7e363ab044289721ce4f",
+    "http_status": 200
+  },
+  {
+    "path": "discovery/discovery.png",
+    "bytes": 49884,
+    "sha256": "2dec1d5f649174f8532dd2233c11f008b57872398bfd4cf344ef662428da7ab4",
+    "http_status": 200
+  },
+  {
+    "path": "discovery/event-0001.png",
+    "bytes": 91078,
+    "sha256": "4080d1d4722b3b9c3b6decea60bc3d030ef5ebbb48f81147c61a35ea938ae3f0",
+    "http_status": 200
+  },
+  {
+    "path": "discovery/event-0002.png",
+    "bytes": 100061,
+    "sha256": "88d2fda6cecb79063dfe4ab95b468079a82acc67f982717c657252dac5d47821",
+    "http_status": 200
+  },
+  {
+    "path": "input.json",
+    "bytes": 126,
+    "sha256": "578fbd4e15b7617d5d3af2b482d293ea64bb3dfdd34785af14fb432fd9c2eb3e",
+    "http_status": 200
+  },
+  {
+    "path": "intake/intake.json",
+    "bytes": 914,
+    "sha256": "b8c10055220db06ab1227cd767317b0220fa69a8c977bf96a956531d72c023cd",
+    "http_status": 200
+  },
+  {
+    "path": "intake/recording.json",
+    "bytes": 373,
+    "sha256": "aea62978dc21b0199db1ff4d5b93759eba565f3231a4e7b5f896950130c3e092",
+    "http_status": 200
+  },
+  {
+    "path": "provenance.json",
+    "bytes": 3071,
+    "sha256": "f8f82fad63e6c63ca79e1f760780c17180d60ee2fdf59640562c577b22c8591d",
+    "http_status": 200
+  },
+  {
+    "path": "refined-candidates.json",
+    "bytes": 223265,
+    "sha256": "93ca230a0c83a8ced8f8b0941da352272e4191b7091645d462df15068af334b3",
+    "http_status": 200
+  },
+  {
+    "path": "request.json",
+    "bytes": 412,
+    "sha256": "6f06d359d58c2f1d1ff5f151b2a4b019b901c8100ee83c84a6b47cb046b3a510",
+    "http_status": 200
+  },
+  {
+    "path": "result.json",
+    "bytes": 64196,
+    "sha256": "b37cb61c4eccf8e5e0b1dedd6f1ea8e49381caff2f29d43764c707e582ed5f3c",
+    "http_status": 200
+  },
+  {
+    "path": "search/search-report.json",
+    "bytes": 201272,
+    "sha256": "221da7459f538bea16ff06336c2d5574fdd61077baf28b8a5b4459688c439a71",
+    "http_status": 200
+  }
+]

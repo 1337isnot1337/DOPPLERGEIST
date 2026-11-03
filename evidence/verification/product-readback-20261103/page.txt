@@ -1,0 +1,107 @@
+DOPPLERGEIST
+
+ACOUSTIC GEOLOCATION
+
+Find the flights.
+Test the location.
+
+Upload a recording to discover aircraft Doppler curves, search historical flight tracks, and inspect the evidence. When the evidence cannot support a location, the result is inconclusive.
+
+Search coverage: contiguous United States (CONUS). Location goal: 100–500 m or better preferred; up to 1,000 m acceptable. Nationwide accuracy remains under evaluation.
+
+New analysis
+↑
+Choose an MP3 recording
+Your original file is preserved with the job.
+When did the recording start?
+
+Enter UTC, including the date. A window is allowed. File creation and upload times do not establish recording time. Leave blank if unknown; analysis will request this evidence before searching.
+
+Earliest start (UTC)
+Latest start (UTC)
+How is this time known? Optional
+
+Up to 100 MB per file. Analysis budget: 60 minutes per job.
+
+Upload & analyze
+→
+
+Analysis
+
+JOB 4ca3dab06e3a4f9d9ed7e43c8f278900
+
+Inconclusive
+complete
+
+Competing hypotheses fit nearly as well; no unique precise location is supported.
+
+Search & data coverage
+
+Requested area: contiguous United States (CONUS)
+
+Search complete · Data available
+
+Historical receiver archives may omit aircraft or trajectory samples.
+
+A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.
+
+Candidate retention is bounded; exhaustive alternative-location assessment is not established.
+
+Location hypotheses · result remains inconclusive
+1. 35.000046, -90.000014
+
+Sensitivity radius: 109 m · declared perturbation profiles
+
+Score -0.18246 (negative robust ridge loss hz); not a probability.
+
+Flights: flight-03e7946316, flight-8b94291144 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+2. 35.000046, -90.000014
+
+Sensitivity radius: 110 m · profiled relative altitude offsets
+
+Score -0.18246 (negative robust ridge loss hz); not a probability.
+
+Flights: flight-03e7946316, flight-8b94291144 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+3. 35.000046, -90.000014
+
+Sensitivity radius: 110 m · profiled relative altitude offsets
+
+Score -0.18246 (negative robust ridge loss hz); not a probability.
+
+Flights: flight-ba84ee900f, flight-8b94291144 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+4. 40.031708, -100.018224
+
+Sensitivity radius: 102 m · profiled relative altitude offsets
+
+Score -0.18311 (negative robust ridge loss hz); not a probability.
+
+Flights: flight-7a660f3b1f, flight-1224c40f40 · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+5. 43.000116, -112.000112
+
+Sensitivity radius: 116 m · profiled relative altitude offsets
+
+Score -0.19503 (negative robust ridge loss hz); not a probability.
+
+Flights: flight-292b6a0505, flight-bda514219f · Recording start: 2026-09-21T14:13:20Z
+
+View coordinate on OpenStreetMap
+101 additional hypotheses
+2 detected Doppler curves
+event-0001 · 143.0–182.0 s · 111–156 Hz · group harmonics-0001
+event-0002 · 1048.0–1102.5 s · 97–142 Hz · group harmonics-0002
+discovery/discovery.png
+discovery/event-0001.png
+discovery/event-0002.png
+Download run artifacts
+
+Recent jobs on this browser
+4ca3dab06e3a
+Scores rank hypotheses; they are not probabilities. An inconclusive result can include alternatives without supporting a precise location.

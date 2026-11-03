@@ -194,3 +194,36 @@ The browser harness records the artifact count and keeps the default collapsed
 download list when there are more than 200 entries, bounding screenshot memory.
 It does not truncate candidate hypotheses or count an inconclusive job as a
 supported location. Confidence and UI owners were notified through discussion #39.
+## Completed-result browser readback, 2026-11-03
+
+`scripts/verify_result_browser.py` copies an unchanged terminal job into a new
+directory, serves it with the selected installed Python environment, and checks
+the real API, artifact downloads and headless browser. It does not perform a new
+upload or scientific run. Output directories must be new; input fixture and copied
+job bytes must remain unchanged.
+
+The actual W5 106-candidate ambiguity job
+`4ca3dab06e3a4f9d9ed7e43c8f278900` passed against a wheel built from
+`57909c355fb696802ad82f7f65784e92c54e181f`. All 24 installed Python/web files
+matched source bytes, with `PYTHONPATH` removed for the service. Five candidates
+were initially visible; clicking the additional-hypotheses summary exposed all
+106, including the last rank. At a 390 px viewport the document width was 390 px
+both before and after expansion, resolving the earlier measured 412 px overflow.
+All 14 available artifact downloads matched their original hashes; all 14 copied
+job files remained unchanged. Reload restored the same inconclusive job, and no
+JavaScript errors occurred. Six existing reported sensitivity radii/methods were
+also checked against the displayed cards. This old result does not test the
+pending finite-mode union decision or establish an affirmative location.
+
+```bash
+PLAYWRIGHT_BROWSERS_PATH=/path/to/browser-cache /path/to/browser-venv/bin/python \
+  scripts/verify_result_browser.py \
+  --python /path/to/installed-wheel-venv/bin/python \
+  --fixture /path/to/unchanged/jobs/4ca3dab06e3a4f9d9ed7e43c8f278900 \
+  --output results/new-terminal-readback
+```
+
+Receipts, source/package hashes and desktop/mobile screenshots are under
+`evidence/verification/product-readback-20261103/`. The full Playwright trace and
+copied job remain local in `results/product-readback-20261103/`.
+
