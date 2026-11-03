@@ -4,6 +4,7 @@ import math
 
 import numpy as np
 import pandas as pd
+from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
@@ -101,6 +102,41 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
             distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
             previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
             following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+            # An endpoint sample can be the sampled minimum even when the
+            # continuous spline turns strictly inside its adjacent interval.
+            # Check the endpoint range-rate signs before optimizing the actual
+            # spline; an endpoint alone is not evidence of a complete pass.
+            eligible = np.flatnonzero(counts >= 2)
+            ends = np.cumsum(counts)[eligible]
+            starts = ends - counts[eligible]
+            for end in (False, True):
+                edge_indices = ends - 1 if end else starts
+                adjacent = edge_indices - 1 if end else edge_indices + 1
+                mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
+                        & (previous[edge_indices] if end else following[edge_indices])
+                        & (distance2[edge_indices] <= distance2[adjacent]))
+                oi_edge = eligible[mask]
+                if not len(oi_edge):
+                    continue
+                lo, hi = (t[-2], t[-1]) if end else (t[0], t[1])
+                endpoints = pos[[-2, -1]] if end else pos[[0, 1]]
+                velocities = track.speed_vector(np.array([lo, hi]))
+                radial_start = np.sum((endpoints[0] - obs[oi_edge]) * velocities[0], axis=1)
+                radial_end = np.sum((endpoints[1] - obs[oi_edge]) * velocities[1], axis=1)
+                for j in np.flatnonzero((radial_start < 0) & (radial_end > 0)):
+                    observer = obs[oi_edge[j]]
+                    fit = minimize_scalar(lambda dt: np.sum((track.position(lo + dt) - observer) ** 2),
+                                          bounds=(0, hi-lo), method="bounded", options={"xatol": 0.001})
+                    when = lo + fit.x
+                    if not fit.success or not lo < when < hi or not np.isfinite(fit.fun):
+                        raise AcousticSupportError(track.id, "cpa_endpoint_solver_not_converged",
+                                                   emission_intervals_s=[[float(lo), float(hi)]])
+                    distance = np.sqrt(fit.fun)
+                    if distance <= max_distance:
+                        rows.append({"point_id": int(point_ids[chosen[oi_edge[j]]]), "flight_id": track.id,
+                                     "emission_time": float(when), "receive_time": float(when + distance/c),
+                                     "distance_m": float(distance),
+                                     "speed_mps": float(np.linalg.norm(track.speed_vector(when)))})
             minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
                     (distance2<np.r_[distance2[1:],np.inf]))
             indices=np.flatnonzero(minima)
