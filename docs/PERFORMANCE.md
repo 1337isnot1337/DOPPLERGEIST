@@ -291,6 +291,9 @@ associations, the merged scoring optimizations took 94.00 CPU seconds versus
 243.29 seconds for the earlier two-event-filtering version. All 100 retained
 candidates, retention checksum, and shared count fields matched exactly. The
 older version also emitted a `minimum_matched_events` diagnostic, now retained
-by this branch. This single measurement does not establish a nationwide runtime.
+by this branch. A subsequent run with this combined branch took 103.41 CPU
+seconds, 2.35 times faster than the earlier version, with the entire tile
+payload and retention checksum exactly equal. These individual measurements do
+not establish a nationwide runtime.
 The [benchmark receipt](../benchmarks/results/combined-dense-20261103.json)
 records the source revisions and scope.
