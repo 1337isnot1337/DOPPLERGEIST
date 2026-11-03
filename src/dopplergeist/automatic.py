@@ -71,7 +71,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     progress("discovery", 0.15, recording=recording.metadata)
     events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
     state["events"] = events
-    provenance["discovered_events"] = len(events)
+    provenance["discovered_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
+    provenance["discovered_ridges"] = len(events)
     if recording.time_status == "needs_input":
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
     if not events:
