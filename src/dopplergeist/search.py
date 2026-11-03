@@ -10,6 +10,10 @@ from scipy.spatial import cKDTree
 
 from .geometry import AcousticSupportError, ecef
 
+_CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
+_CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
+                       for name in _CPA_COLUMNS])
+
 
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
     """Vectorized piecewise-linear CPA prefilter; supports repeated local passes.
@@ -81,6 +85,17 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
     """
     observers=ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     point_ids=points.point_id.to_numpy(dtype=int)
+    return pd.DataFrame(_cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size),
+                        columns=_CPA_COLUMNS)
+
+
+def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512):
+    """Return the same ordered CPA records without allocating per-track tables.
+
+    Tiled scoring already has ECEF observers and needs to isolate unsupported
+    tracks. It can reuse those observers and materialize one table after the
+    bounded per-track work instead of rebuilding a DataFrame for every query.
+    """
     rows=[]
     for track in tracks:
         track.validate_motion_support(c)
@@ -133,10 +148,9 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
                                                    emission_intervals_s=[[float(lo), float(hi)]])
                     distance = np.sqrt(fit.fun)
                     if distance <= max_distance:
-                        rows.append({"point_id": int(point_ids[chosen[oi_edge[j]]]), "flight_id": track.id,
-                                     "emission_time": float(when), "receive_time": float(when + distance/c),
-                                     "distance_m": float(distance),
-                                     "speed_mps": float(np.linalg.norm(track.speed_vector(when)))})
+                        rows.append((int(point_ids[chosen[oi_edge[j]]]), track.id,
+                                     float(when), float(when + distance/c), float(distance),
+                                     float(np.linalg.norm(track.speed_vector(when)))))
             minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
                     (distance2<np.r_[distance2[1:],np.inf]))
             indices=np.flatnonzero(minima)
@@ -158,17 +172,27 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
             when=t[start]+fraction[n,edge]*(t[start+1]-t[start])
             speed=np.linalg.norm(track.speed_vector(when),axis=1)
             for j in np.flatnonzero(distance<=max_distance):
-                rows.append({"point_id":int(point_ids[chosen[oi[j]]]),"flight_id":track.id,
-                             "emission_time":float(when[j]),"receive_time":float(when[j]+distance[j]/c),
-                             "distance_m":float(distance[j]),"speed_mps":float(speed[j])})
-    result=pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
-    if not result.empty:
+                rows.append((int(point_ids[chosen[oi[j]]]), track.id,
+                             float(when[j]), float(when[j]+distance[j]/c),
+                             float(distance[j]), float(speed[j])))
+    if rows:
         # A CPA exactly at a sample can be proposed twice under roundoff.
-        result=result.sort_values(["point_id","flight_id","emission_time"])
-        duplicate=(result.point_id.eq(result.point_id.shift())&result.flight_id.eq(result.flight_id.shift())&
-                   result.emission_time.diff().abs().lt(step_s*1.1))
-        result=result[~duplicate].reset_index(drop=True)
-    return result
+        rows.sort(key=lambda row: (row[0], row[1], row[2]))
+        duplicate_tolerance = step_s*1.1
+        previous, retained = None, []
+        for row in rows:
+            # Match pandas' shifted int64 IDs (which become float64) and the
+            # original float64-difference promotion against the caller's step.
+            duplicate = (previous is not None and float(row[0]) == float(previous[0])
+                         and row[1] == previous[1]
+                         and np.float64(abs(row[2]-previous[2])) < duplicate_tolerance)
+            if not duplicate:
+                retained.append(row)
+            # Match the original simultaneous adjacent-row mask, including a
+            # chain of close proposals: compare with the preceding raw row.
+            previous = row
+        return retained
+    return rows
 
 
 def filter_event(table, event, time_origin=None, time_tolerance=5.0):

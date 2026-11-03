@@ -3,31 +3,34 @@ on:
   workflow_dispatch:
     inputs:
       baseline:
-        description: Scalar-consistent baseline commit
-        default: d7cc1dd2e8089768253492b3269dfae97b3ad1a4
+        description: Exact baseline commit for both real-input comparisons
+        default: 833c96c98366e18cc93562499f169d45bc0a9e06
         required: true
+      regional:
+        description: Also compare the complete regional HTTP workflow
+        type: boolean
+        default: true
   push:
-    branches: [perf/measured-hotpath-20261103]
+    branches: [perf/measured-hotpath-20261103, perf/single-pass-motion-20261103]
     paths:
       - .github/workflows/real-performance.yml
-      - src/dopplergeist/geometry.py
-      - src/dopplergeist/matching.py
-      - src/dopplergeist/batch_ridge.py
-      - src/dopplergeist/search.py
+      - src/dopplergeist/**
       - scripts/benchmark_prepared_measurements.py
+      - scripts/benchmark_real_cpa_rows.py
+      - scripts/benchmark_real_regional_upload.py
       - tests/test_real_*.py
 permissions:
   contents: read
+env:
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONPATH: src
+  BASELINE_REF: ${{ inputs.baseline || '833c96c98366e18cc93562499f169d45bc0a9e06' }}
 jobs:
   compare:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      OPENBLAS_NUM_THREADS: '1'
-      OMP_NUM_THREADS: '1'
-      MKL_NUM_THREADS: '1'
-      PYTHONPATH: src
-      BASELINE_REF: ${{ inputs.baseline || 'd7cc1dd2e8089768253492b3269dfae97b3ad1a4' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,8 +38,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install runtime
-        run: python -m pip install '.[test]'
+      - name: Install runtime and source-tree extensions
+        run: python -m pip install --editable '.[test]'
       - name: Restore public recorded observations
         env:
           GH_TOKEN: ${{ github.token }}
@@ -46,6 +49,9 @@ jobs:
           python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           baseline_commit=$(git rev-parse --verify --end-of-options "${BASELINE_REF}^{commit}")
           git worktree add --detach "$RUNNER_TEMP/baseline" "$baseline_commit"
+          if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
+            (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
+          fi
       - name: Freeze real workloads
         run: |
           for width in 120 10; do
@@ -54,17 +60,24 @@ jobs:
       - name: Real-input regression tests
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py
+        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py tests/test_real_motion_support_batch.py tests/test_real_single_pass_sieve.py
+      - name: Compare real CPA preparation
+        run: python scripts/benchmark_real_cpa_rows.py --baseline-source "$RUNNER_TEMP/baseline/src" --output results/cpa-rows.json --repeats 5 --iterations 20
       - name: Compare complete payloads and timings
         run: |
+          native_option=()
+          if [ -f src/dopplergeist/_native_ridge.c ]; then
+            native_option=(--require-current-native)
+          fi
           for width in 10 120; do
-            python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 2 --timeout-s 600 --output "results/performance-$width"
+            python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 2 --timeout-s 600 --output "results/performance-$width" "${native_option[@]}"
           done
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: real-performance-summary
           path: |
+            results/cpa-rows.json
             results/performance-*/comparison.json
             results/performance-*/*/summary.json
           if-no-files-found: ignore
@@ -74,5 +87,72 @@ jobs:
         with:
           name: real-performance-failure-diagnostics
           path: results/performance-*
+          if-no-files-found: ignore
+          retention-days: 3
+  regional:
+    if: github.ref == 'refs/heads/perf/single-pass-motion-20261103' || (github.event_name == 'workflow_dispatch' && inputs.regional)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install runtime and source-tree extensions
+        run: |
+          python -m pip install --editable '.[test]'
+          if ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+      - name: Restore the complete real recording and observed inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/restore_artifacts.py --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+      - name: Prepare common inputs and the baseline
+        run: |
+          python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
+          baseline_commit=$(git rev-parse --verify --end-of-options "${BASELINE_REF}^{commit}")
+          git worktree add --detach "$RUNNER_TEMP/baseline" "$baseline_commit"
+          if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
+            (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("benchmark-inputs/operator.json")
+          operator = json.loads(path.read_text())
+          operator["search_workers"] = 1
+          path.write_text(json.dumps(operator, indent=2) + "\n")
+          PY
+          ffmpeg -nostdin -i data/source/reference-recording.wav -ac 1 -ar 48000 -c:a libmp3lame -b:a 96k benchmark-inputs/reference.mp3
+      - name: Measure both complete HTTP arms
+        run: |
+          python scripts/benchmark_real_regional_upload.py --source "$RUNNER_TEMP/baseline/src" --audio benchmark-inputs/reference.mp3 --request benchmarks/reference-regional-upload-request.json --operator benchmark-inputs/operator.json --output results/regional-baseline --timeout-s 600 --threads 1
+          python scripts/benchmark_real_regional_upload.py --source src --audio benchmark-inputs/reference.mp3 --request benchmarks/reference-regional-upload-request.json --operator benchmark-inputs/operator.json --output results/regional-current --timeout-s 600 --threads 1
+      - name: Require complete scientific parity
+        run: python scripts/benchmark_real_regional_upload.py --compare results/regional-baseline results/regional-current --output results/regional-comparison.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: real-regional-summary
+          path: |
+            results/regional-*/timing.json
+            results/regional-*/result.json
+            results/regional-*/http-verification.json
+            results/regional-*/pipeline-evidence.json
+            results/regional-comparison.json
+          if-no-files-found: ignore
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: real-regional-failure-diagnostics
+          path: |
+            results/regional-*/jobs/*/search/search-report.json
+            results/regional-*/jobs/*/provenance.json
+            results/regional-*/*.log
           if-no-files-found: ignore
           retention-days: 3

@@ -24,7 +24,7 @@ from .finite_search import RetentionLedger, bounded_assessment, classified_asses
 from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
-from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
+from .search import _CPA_DTYPE, _cpa_rows, filter_association_event, pair_candidates, score_candidate
 
 
 def _support_error(error):
@@ -221,18 +221,27 @@ def _track_geometry_digest(track):
     return digest.hexdigest()
 
 
-def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None, c=343.0):
+def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None, c=343.0,
+            overload_observers=None):
     tracks, identities, samples = [], {}, 0
     queried, queried_samples = 0, 0
 
+    def distant(track):
+        try:
+            return track.outside_observer_radius(observers, radius, c)
+        except AcousticSupportError:
+            # Keep unsupported tracks so the ordinary scorer records their
+            # missing support, even when they appear distant.
+            return False
+
     for index in indexes:
         for track in index.query(bounds, time_range):
-            if observers is not None:
+            if observers is not None or overload_observers is not None:
                 queried += 1
                 queried_samples += len(track.time)
-                # The retry may inspect extra distant tracks, but it must not
-                # turn the original per-tile limits into unbounded work.
-                if (queried > 20 * budget.max_tracks_per_tile
+                # The distance sieve may inspect extra distant tracks, but it
+                # must retain the same bounded scan as the former retry.
+                if observers is not None and (queried > 20 * budget.max_tracks_per_tile
                         or queried_samples > 20 * budget.max_track_samples_per_tile):
                     raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
             # Same track from overlapping daily/source coverage must be identical;
@@ -243,35 +252,45 @@ def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None,
                 if _track_geometry_digest(track) != previous_signature:
                     raise DataUnavailable(f"Conflicting flight segment identity: {track.id}")
                 continue
-            if observers is not None:
-                try:
-                    distant = track.outside_observer_radius(observers, radius, c)
-                except AcousticSupportError:
-                    # Keep unsupported tracks so the ordinary scorer records
-                    # their missing support, even when they appear distant.
-                    distant = False
-                if distant:
-                    identities[track.id] = _track_geometry_digest(track)
-                    continue
+            if observers is not None and distant(track):
+                identities[track.id] = _track_geometry_digest(track)
+                continue
             identities[track.id] = track
             tracks.append(track)
             samples += len(track.time)
             if len(tracks) > budget.max_tracks_per_tile or samples > budget.max_track_samples_per_tile:
-                raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
+                if observers is None and overload_observers is not None:
+                    # Reuse the already decoded prefix and continue this query.
+                    # Sampling terrain remains lazy for ordinary and empty tiles.
+                    observers = overload_observers()
+                    if (queried > 20 * budget.max_tracks_per_tile
+                            or queried_samples > 20 * budget.max_track_samples_per_tile):
+                        raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
+                    retained, samples = [], 0
+                    for buffered in tracks:
+                        if distant(buffered):
+                            identities[buffered.id] = _track_geometry_digest(buffered)
+                        else:
+                            retained.append(buffered)
+                            samples += len(buffered.time)
+                    tracks = retained
+                    del buffered
+                if len(tracks) > budget.max_tracks_per_tile or samples > budget.max_track_samples_per_tile:
+                    raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
     return tracks
 
 
 def _tracks_for_points(indexes, bounds, time_range, budget, points, terrain, radius, c):
-    """Retry an overloaded query after the scorer's conservative distance test."""
-    try:
-        return _tracks(indexes, bounds, time_range, budget), points
-    except DataUnavailable as error:
-        if str(error) != "Tile track/sample memory budget exceeded; reduce tile_cells":
-            raise
-    if "elev_m" not in points:
-        points = _sample_tile_terrain(points, terrain)
-    observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
-    return _tracks(indexes, bounds, time_range, budget, observers=observers, radius=radius, c=c), points
+    """Switch overloaded queries to the conservative sieve without rereading."""
+    def overload_observers():
+        nonlocal points
+        if "elev_m" not in points:
+            points = _sample_tile_terrain(points, terrain)
+        return ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
+
+    tracks = _tracks(indexes, bounds, time_range, budget, radius=radius, c=c,
+                     overload_observers=overload_observers)
+    return tracks, points
 
 
 def _association_clock_window(start_window, sweep_s):
@@ -334,7 +353,8 @@ def _clock_children(tile_id, cells, start_window, parameters, filters, events):
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None, anchor_window=None):
     radius = max(e["slant_range_m"][1] for e in events)
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
-    tables, count = [], 0
+    point_ids = points.point_id.to_numpy(dtype=int)
+    cpa_batches, count = [], 0
     unsupported = []
     # Bound materialized CPA rows before pairing; one track at a time keeps the
     # national traffic count out of the CPA tensor/list allocation.
@@ -345,17 +365,20 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         # Even a pathological looping track cannot allocate an unbounded list
         # of minima before we inspect the returned table.
         chunk_points = max(1, budget.max_cpa_rows // samples)
-        track_tables, track_rows = [], 0
+        track_batches, track_rows = [], 0
         try:
             if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
                 continue
             for first in range(0, len(points), chunk_points):
-                table = cpa_table([track], points.iloc[first:first + chunk_points], radius, parameters.get("c", 343.0), budget.cpa_step_s)
-                track_rows += len(table)
+                rows = _cpa_rows([track], observers[first:first + chunk_points],
+                                 point_ids[first:first + chunk_points], radius,
+                                 parameters.get("c", 343.0), budget.cpa_step_s)
+                track_rows += len(rows)
                 if count + track_rows > budget.max_cpa_rows:
                     raise DataUnavailable("Tile CPA-row memory budget exceeded")
-                if len(table):
-                    track_tables.append(table)
+                if rows:
+                    track_batches.append(np.array(rows, dtype=_CPA_DTYPE))
+                del rows
         except AcousticSupportError as error:
             # The typed failure does not identify an exact bad interval. Keep
             # the entire track/stage as explicitly unassessed, and retain rows
@@ -368,12 +391,13 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 "receiver_point_count": len(points), "coverage_envelope": "whole_track_whole_stage_conservative"})
             continue
         count += track_rows
-        tables.extend(track_tables)
-    if not tables:
+        cpa_batches.extend(track_batches)
+    if not cpa_batches:
         if ledger is not None:
             ledger.record(stage, [], [], 0)
         return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported}
-    table = pd.concat(tables, ignore_index=True)
+    table = pd.DataFrame.from_records(np.concatenate(cpa_batches))
+    del cpa_batches, track_batches
     kwargs = dict(offset_tolerance_s=filters.get("offset_tolerance_s", 5.0),
                   time_origin=parameters.get("time_origin"), time_tolerance_s=filters.get("time_tolerance_s", 5.0),
                   silence=filters.get("silence"))

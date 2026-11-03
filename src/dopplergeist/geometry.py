@@ -14,6 +14,7 @@ from scipy.signal import find_peaks
 
 _EMISSION_ITERATION_TOLERANCE_S = 1e-7
 _PACKED_KINEMATICS_MAX_INTERVALS = 4096
+_MOTION_SUPPORT_INTERVAL_BATCH = 1024
 
 
 @lru_cache(maxsize=8)
@@ -115,17 +116,20 @@ class Track:
         """
         limit = c*(1-1e-10)
         suspicious = np.flatnonzero(self._speed_upper >= limit)
-        for i in suspicious:
+        if not len(suspicious):
+            return suspicious
+        # Extrema do not change with the sound-speed threshold. Only compute
+        # the intervals that have not been solved on an earlier query.
+        for i in suspicious[np.isnan(self._speed_peak[suspicious])]:
             dt = self.time[i+1]-self.time[i]
-            if np.isnan(self._speed_peak[i]):
-                a, b, d = self.derivative.c[:, i]
-                a, b = a*dt**2, b*dt
-                stationary = [2*np.dot(b, d), 2*(np.dot(b, b)+2*np.dot(a, d)),
-                              6*np.dot(a, b), 4*np.dot(a, a)]
-                roots = np.polynomial.polynomial.polyroots(stationary)
-                samples = [0., 1.] + [float(r.real) for r in roots
-                    if abs(r.imag) <= 1e-8 and 0 < r.real < 1]
-                self._speed_peak[i] = max(np.linalg.norm((a*u+b)*u+d) for u in samples)
+            a, b, d = self.derivative.c[:, i]
+            a, b = a*dt**2, b*dt
+            stationary = [2*np.dot(b, d), 2*(np.dot(b, b)+2*np.dot(a, d)),
+                          6*np.dot(a, b), 4*np.dot(a, a)]
+            roots = np.polynomial.polynomial.polyroots(stationary)
+            samples = [0., 1.] + [float(r.real) for r in roots
+                if abs(r.imag) <= 1e-8 and 0 < r.real < 1]
+            self._speed_peak[i] = max(np.linalg.norm((a*u+b)*u+d) for u in samples)
         return suspicious[self._speed_peak[suspicious] >= limit]
 
     def validate_motion_support(self, c=343.0):
@@ -187,8 +191,59 @@ class Track:
         Bezier position boxes conservatively enclose affected arrival times,
         without assuming monotonic propagation in an unsupported interval.
         """
+        indices = self._unsupported_motion_intervals(c)
+        if not len(indices):
+            return
+        # Tiny queries are cheaper in the original scalar loop than through
+        # the temporary arrays and sorted-time lookup used by a larger batch.
+        if len(indices) <= 2:
+            return self._check_motion_support_scalar(indices, receive_time, observer, c)
+        query = np.asarray(receive_time).ravel()
+        if not len(query):
+            return
+        if not np.all(query[:-1] <= query[1:]):
+            query = np.sort(query)
         emissions, arrivals = [], []
-        for i in self._unsupported_motion_intervals(c):
+        # Fixed-size interval blocks bound the temporary Bezier arrays while
+        # retaining every unsupported interval in its original order.
+        for first in range(0, len(indices), _MOTION_SUPPORT_INTERVAL_BATCH):
+            selected = indices[first:first+_MOTION_SUPPORT_INTERVAL_BATCH]
+            endpoints = np.column_stack((selected, selected+1))
+            times = self.time[endpoints]
+            dt = (times[:, 1]-times[:, 0])[:, None]
+            p0, p1 = self.xyz[selected], self.xyz[selected+1]
+            velocity = self.speed_vector(times)
+            controls = np.stack((p0, p0+dt*velocity[:, 0]/3,
+                                 p1-dt*velocity[:, 1]/3, p1), axis=1)
+            lo, hi = controls.min(axis=1), controls.max(axis=1)
+            nearest = np.maximum(np.maximum(lo-observer, observer-hi), 0)
+            farthest = np.maximum(np.abs(lo-observer), np.abs(hi-observer))
+            # Keep the scalar norm reduction used by the original interval loop.
+            # Array-axis reductions can round differently from the 1-D dot product.
+            near = np.fromiter((np.linalg.norm(row) for row in nearest), nearest.dtype, len(selected))
+            far = np.fromiter((np.linalg.norm(row) for row in farthest), farthest.dtype, len(selected))
+            arrival_lo = times[:, 0]+near/c
+            arrival_hi = times[:, 1]+far/c
+            tolerance = np.maximum(1e-7, 4*np.abs(np.spacing(
+                np.maximum(np.abs(arrival_lo), np.abs(arrival_hi)))))
+            lower, upper = arrival_lo-tolerance, arrival_hi+tolerance
+            # Any receive sample lies in an interval iff its first sample at or
+            # above the lower endpoint is also at or below the upper endpoint.
+            # This avoids an interval-by-sample comparison matrix and preserves
+            # inclusive endpoints and repeated times.
+            following = np.searchsorted(query, lower)
+            overlaps = ((following < len(query)) &
+                        (query[np.minimum(following, len(query)-1)] <= upper))
+            if np.any(overlaps):
+                emissions.extend(times[overlaps].tolist())
+                arrivals.extend(np.column_stack((lower[overlaps], upper[overlaps])).astype(float).tolist())
+        if emissions:
+            raise AcousticSupportError(self.id, "non_subsonic_motion",
+                emission_intervals_s=emissions, receive_intervals_s=arrivals)
+
+    def _check_motion_support_scalar(self, indices, receive_time, observer, c):
+        emissions, arrivals = [], []
+        for i in indices:
             dt = self.time[i+1]-self.time[i]
             p0, p1 = self.xyz[i:i+2]
             v0, v1 = self.speed_vector(self.time[i:i+2])
@@ -198,7 +253,6 @@ class Track:
             farthest = np.maximum(np.abs(lo-observer), np.abs(hi-observer))
             arrival_lo = self.time[i]+np.linalg.norm(nearest)/c
             arrival_hi = self.time[i+1]+np.linalg.norm(farthest)/c
-            # Enlarge for Unix-epoch rounding rather than excluding an endpoint.
             tolerance = max(1e-7, 4*abs(np.spacing(max(abs(arrival_lo), abs(arrival_hi)))))
             if np.any((receive_time >= arrival_lo-tolerance) & (receive_time <= arrival_hi+tolerance)):
                 emissions.append([float(self.time[i]), float(self.time[i+1])])
