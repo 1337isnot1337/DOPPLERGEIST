@@ -61,7 +61,8 @@ def bounded_assessment(row):
     if (not isinstance(assessment, dict) or assessment.get("complete") is not False
             or assessment.get("unknown_score_bound_kind") != kind
             or row.get("score_kind") != kind
-            or assessment.get("unknown_score_bound_method") != "nonnegative_loss_and_validated_event_fits"
+            or assessment.get("unknown_score_bound_method") not in
+               ("nonnegative_loss_and_validated_event_fits", "group_count_ceiling")
             or not isinstance(indices, list) or not indices
             or any(type(i) is not int or i < 0 for i in indices) or indices != sorted(set(indices))
             or len(row.get("flight_ids", [])) != len(indices)):
@@ -80,6 +81,13 @@ def bounded_assessment(row):
     if not 0 < unknown == bounded or rejected > bounded:
         return False
     upper = assessment.get("unknown_score_upper_bound")
+    if assessment["unknown_score_bound_method"] == "group_count_ceiling":
+        # This method skips every fit, so only the trivial per-group ceiling is valid.
+        return (row.get("score") is None
+                and assessment["evaluated_trials"] == 0 and assessment["rejected_trials"] == 0
+                and unknown == scheduled and assessment["bounded_unknown_rejections"] == 0
+                and isinstance(upper, (int, float)) and not isinstance(upper, bool)
+                and math.isfinite(upper) and upper == len(indices))
     if rejected == bounded:
         return upper is None
     return (isinstance(upper, (int, float)) and not isinstance(upper, bool)

@@ -1,0 +1,436 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-11-03",
+  "scope": "Real-data operational verification and explicitly limited localization experiments",
+  "accepted_automatic_real_location_established": false,
+  "independent_national_accuracy_established": false,
+  "source_revision_basis": "Configured/undated backend and HTTP backend/verifier revisions were checked against recorded source hashes. Browser revision is inferred separately; no source-file hash manifest is duplicated here.",
+  "raw_artifact_locations": {
+    "reference_experiments": "/dev/shm/dopplergeist-e2e-0158",
+    "wsu_experiment": "/dev/shm/dopplergeist-wsu-0158",
+    "limit": "These workspace paths identify original outputs; this file preserves compact results, not a copy of raw recordings or run directories."
+  },
+  "reference_recording": {
+    "source_url": "https://www.youtube.com/watch?v=4CxVxuMVkMc",
+    "original_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "complete_mp3_sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+    "complete_mp3_bytes": 42085293,
+    "conversion": "Complete source WAV converted to MP3 without event or frequency selection"
+  },
+  "public_comparison_reference": {
+    "lat": 40.8766,
+    "lon": -73.5247,
+    "source_url": "https://app.osprey-watch.org/nest/3916",
+    "limit": "Rounded public reference; not a surveyed microphone position; uncertainty unquantified. Distance tiers are diagnostic comparisons, not accepted benchmark performance."
+  },
+  "configured_replay": {
+    "source_revision": "1aa763bde2cd0e0ca7e8c7a492748a21e953c3f2",
+    "entry_point": "dopplergeist run data/source/reproduce-local.json",
+    "raw_artifact_subdirectory": "results/configured-reference",
+    "scope": "configured_research_ranking",
+    "exit_code": 0,
+    "pipeline_elapsed_s": 48.44553686099971,
+    "process_elapsed_s": 51.39583562400003,
+    "process_peak_rss_kib": 822336,
+    "observations": 583176,
+    "trajectory_segments": 3587,
+    "manually_configured_events": 2,
+    "ranked_points": 283,
+    "accepted_location": false,
+    "model_support_complete": false,
+    "model_assessment_complete": false,
+    "best": {
+      "lat": 40.87693175890468,
+      "lon": -73.52498229500986,
+      "flight_ids": [
+        "a1dfeb:1",
+        "ace391:3"
+      ],
+      "recording_start_time_s": 1788898649.6620934,
+      "score": 5.608620381268416
+    },
+    "distance_to_unsurveyed_public_reference_m": 43.85847078233993,
+    "diagnostic_reference_distance_tiers": {
+      "within_100_m": true,
+      "within_500_m": true,
+      "within_1000_m": true
+    },
+    "eligible_for_independent_accuracy": false,
+    "unsupported_cpa_work_evaluations": 684,
+    "unreported_candidate_clock_envelopes": 290,
+    "limit": "Historical source-informed regional bounds and manual event windows/bands; reproduces a ranked hypothesis, not automatic independent localization."
+  },
+  "undated_negative_control": {
+    "backend_source_revision": "1aa763bde2cd0e0ca7e8c7a492748a21e953c3f2",
+    "verifier_code_later_committed_at": "a6614246c11f102ca382daee58df3e93129817a7",
+    "raw_artifact_subdirectory": "results/undated-strict",
+    "started_utc": "2026-11-03T05:23:06.899786Z",
+    "elapsed_s": 22.97885105199748,
+    "status": "needs_input",
+    "reason_code": "recording_time_required",
+    "http_checks_passed": true,
+    "pipeline_evidence_passed": true,
+    "candidate_count": 0,
+    "full_pipeline_requirements_met": false,
+    "verification_passed": false,
+    "supported_decision": false,
+    "verified_stages": [
+      "automatic_provenance",
+      "intake",
+      "discovery"
+    ],
+    "independent_event_groups": 16,
+    "ridge_records": 18,
+    "observed_verifier_exit_code": 1,
+    "expected_control_outcome_observed": true,
+    "regression": "The pre-patch inspector rejected these same real artifacts by comparing 16 independent groups with 18 ridge records. The patched inspector passes the evidence; strict full-path mode correctly rejects this early exit.",
+    "decoded_duration_s": 3600.1845
+  },
+  "automatic_http_configuration": {
+    "request": {
+      "schema_version": 1,
+      "search": {
+        "coverage": "conus"
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Development replay window around the historical two-event fitted recording start, 2026-09-08T20:17:29.662Z. This is source-informed timing, not an independently measured recording clock."
+      }
+    },
+    "event_and_frequency_selection": "automatic_whole_recording",
+    "flight_data_scope": "Regional real observations; incomplete for requested CONUS coverage",
+    "terrain": "One regional Copernicus raster plus EGM96 geoid; no constant-height fallback",
+    "search_budget": {
+      "spacing_m": 2000,
+      "tile_cells": 16,
+      "max_tracks_per_tile": 2000,
+      "max_track_samples_per_tile": 500000,
+      "max_cpa_rows": 100000,
+      "max_candidates_per_tile": 20000,
+      "top_k": 20,
+      "refine_spacing_m": 500,
+      "refine_finalists": 3,
+      "cpa_step_s": 2.0,
+      "max_tiles": null
+    },
+    "timing_limit": "The 20-second start interval uses the historical fitted clock, not an independent recording-clock measurement."
+  },
+  "automatic_http_runs": [
+    {
+      "run": "full-real-upload",
+      "source_revision": "a6614246c11f102ca382daee58df3e93129817a7",
+      "job_id": "656c4d0366f946e2b5cecde816796fb5",
+      "started_utc": "2026-11-03T05:24:16.299207Z",
+      "elapsed_s": 253.70854865300134,
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "supported_decision": false,
+      "candidate_count": 23,
+      "verified_stages": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "scientific_status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "independent_event_groups": 16,
+      "ridge_records": 18,
+      "all_proposed_event_groups_considered": true,
+      "leading_diagnostic_candidate": {
+        "lat": 40.29036692309594,
+        "lon": -73.39639659006407,
+        "score": 1.876204051040268,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0007",
+          "event-0010",
+          "event-0012"
+        ],
+        "flight_ids": [
+          "a069fe",
+          "a50e36:1",
+          "a2b407"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:27.487467Z"
+      },
+      "leading_distance_to_unsurveyed_public_reference_m": 65998.78178232844,
+      "diagnostic_reference_distance_tiers": {
+        "within_100_m": false,
+        "within_500_m": false,
+        "within_1000_m": false
+      },
+      "eligible_for_independent_accuracy": false,
+      "search": {
+        "tiles_total": 19278,
+        "tiles_completed": 19190,
+        "grid_points_searched": 256,
+        "refinement_points_searched": 243,
+        "elapsed_s": 170.59513875800258,
+        "process_peak_rss_mib": 413.1328125,
+        "data_scope_complete": false,
+        "model_support_complete": false,
+        "model_assessment_complete": false,
+        "tiles_failed": 88,
+        "failed_tiles_by_reason": {
+          "missing_dem": 86,
+          "association_candidate_budget": 2
+        },
+        "candidate_budget_failure_tiles": [
+          "58_67",
+          "58_68"
+        ],
+        "point_count_scope": "grid_points_searched counts coarse grid points. Refinement points are separate stage counts; the two grids can overlap. Completed tiles include empty tiles and do not establish nationwide evaluated locations or data coverage.",
+        "model_work": {
+          "unsupported_cpa_track_evaluations": 58,
+          "unclassified_score_candidates": 1113,
+          "evaluated_trials": 32846,
+          "rejected_trials": 31416,
+          "unknown_trials": 17298,
+          "unreported_trial_envelopes": 0
+        }
+      },
+      "final_refinement_failures": [],
+      "service_exit_code": 0,
+      "forced_kill": false,
+      "terminal_result_preserved": true,
+      "decoded_duration_s": 3600.1845
+    },
+    {
+      "run": "integrated-real-upload",
+      "source_revision": "7df7c0427c4dee8371a26c846480119faf0a4198",
+      "job_id": "f458e3e22fc14eeb852c1c3eaa994d05",
+      "started_utc": "2026-11-03T05:34:53.500493Z",
+      "elapsed_s": 223.66514769600326,
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "supported_decision": false,
+      "candidate_count": 23,
+      "verified_stages": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "scientific_status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "independent_event_groups": 16,
+      "ridge_records": 18,
+      "all_proposed_event_groups_considered": true,
+      "leading_diagnostic_candidate": {
+        "lat": 40.29036692309594,
+        "lon": -73.39639659006407,
+        "score": 1.876204051040268,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0007",
+          "event-0010",
+          "event-0012"
+        ],
+        "flight_ids": [
+          "a069fe",
+          "a50e36:1",
+          "a2b407"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:27.487467Z"
+      },
+      "leading_distance_to_unsurveyed_public_reference_m": 65998.78178232844,
+      "diagnostic_reference_distance_tiers": {
+        "within_100_m": false,
+        "within_500_m": false,
+        "within_1000_m": false
+      },
+      "eligible_for_independent_accuracy": false,
+      "search": {
+        "tiles_total": 19278,
+        "tiles_completed": 19190,
+        "grid_points_searched": 256,
+        "refinement_points_searched": 243,
+        "elapsed_s": 150.93368178899982,
+        "process_peak_rss_mib": 413.0,
+        "data_scope_complete": false,
+        "model_support_complete": false,
+        "model_assessment_complete": false,
+        "tiles_failed": 88,
+        "failed_tiles_by_reason": {
+          "missing_dem": 86,
+          "association_candidate_budget": 2
+        },
+        "candidate_budget_failure_tiles": [
+          "58_67",
+          "58_68"
+        ],
+        "point_count_scope": "grid_points_searched counts coarse grid points. Refinement points are separate stage counts; the two grids can overlap. Completed tiles include empty tiles and do not establish nationwide evaluated locations or data coverage.",
+        "model_work": {
+          "unsupported_cpa_track_evaluations": 58,
+          "unclassified_score_candidates": 1113,
+          "evaluated_trials": 32846,
+          "rejected_trials": 31416,
+          "unknown_trials": 17298,
+          "unreported_trial_envelopes": 0
+        }
+      },
+      "final_refinement_failures": [],
+      "service_exit_code": 0,
+      "forced_kill": false,
+      "terminal_result_preserved": true,
+      "decoded_duration_s": 3600.1845,
+      "process_elapsed_s": 223.74997905599957,
+      "process_peak_child_rss_kib": 422912,
+      "observed_verifier_exit_code": 0,
+      "comparison_to_first_http_run": {
+        "audio_identical": true,
+        "request_identical": true,
+        "operator_identical": true,
+        "discovery_events_identical": true,
+        "all_ranked_candidates_identical": true
+      }
+    }
+  ],
+  "dense_tile_diagnostic": {
+    "source_run": "full-real-upload",
+    "raw_artifact_subdirectory": "tile-pressure-58_68",
+    "tile": "58_68",
+    "receiver_points": 256,
+    "cpa_rows": 42595,
+    "candidate_cap": 20000,
+    "individual_points_exceeding_cap": 56,
+    "enumerated_candidates_at_remaining_points": 468937,
+    "smaller_partition_failures": {
+      "16": {
+        "partitions": 1,
+        "over_capacity_or_containing_failed_point": 1
+      },
+      "8": {
+        "partitions": 4,
+        "over_capacity_or_containing_failed_point": 4
+      },
+      "4": {
+        "partitions": 16,
+        "over_capacity_or_containing_failed_point": 9
+      },
+      "2": {
+        "partitions": 64,
+        "over_capacity_or_containing_failed_point": 22
+      },
+      "1": {
+        "partitions": 256,
+        "over_capacity_or_containing_failed_point": 56
+      }
+    },
+    "limit": "Diagnostic enumeration on real observations; no new scientific scoring. Subdivision alone does not remove candidate-budget failures.",
+    "source_run_revision": "a6614246c11f102ca382daee58df3e93129817a7",
+    "partition_count_basis": "Aggregated per-point enumeration totals; these partition counts are not separate tiled search replays."
+  },
+  "wsu_real_session": {
+    "dataset_doi": "https://doi.org/10.26183/07nm-4p35",
+    "discovery_source_revision": "1aa763bde2cd0e0ca7e8c7a492748a21e953c3f2",
+    "conditional_search_source_revision": "a6614246c11f102ca382daee58df3e93129817a7",
+    "runner_first_committed_at": "69273215b80641133d14e6238143060a8c4b75d0",
+    "scope": "real_WSU_supplied_trajectory_published_relative_alignment",
+    "complete_recording_duration_s": 246.8,
+    "microphone_channel_one_based": 1,
+    "automatic_proposals": 4,
+    "proposal_windows_s": [
+      [
+        60.0,
+        80.5
+      ],
+      [
+        60.5,
+        80.0
+      ],
+      [
+        60.5,
+        82.0
+      ],
+      [
+        60.5,
+        80.0
+      ]
+    ],
+    "published_trajectory_audio_time_bounds_s": [
+      78.1,
+      241.1
+    ],
+    "measured_trajectory_rows": 1631,
+    "source_drift_fractions": [
+      0.0,
+      0.02
+    ],
+    "attempted_grid_fits": 4992,
+    "supported_grid_fits": 0,
+    "unknown_grid_fits": 4992,
+    "status": "no_supported_fit",
+    "accepted_location": false,
+    "distance_error_evaluated": false,
+    "diagnostic_reference_distance_tiers": {
+      "within_100_m": null,
+      "within_500_m": null,
+      "within_1000_m": null
+    },
+    "eligible_for_independent_accuracy": false,
+    "limits": [
+      "All detected ridges begin before published trajectory support; no fully supported fit.",
+      "Supplied-track experiment outside the CONUS product path; no measured absolute-clock or height-datum uncertainty.",
+      "Reference coordinates were read only after the conditional search; no independent accepted location."
+    ]
+  },
+  "saved_job_browser_reload_runs": [
+    {
+      "source_revision": "69273215b80641133d14e6238143060a8c4b75d0",
+      "source_revision_inferred_from_local_reflog_and_result_timestamp": true,
+      "source_revision_limit": "The browser receipt did not capture Git HEAD. Its timestamp falls after this commit and before the next commit; only documentation edits intervened.",
+      "source_run": "full-real-upload",
+      "raw_artifact_subdirectory": "results/saved-job-browser",
+      "passed": true,
+      "job_id": "656c4d0366f946e2b5cecde816796fb5",
+      "status": "inconclusive",
+      "candidate_count": 23,
+      "event_groups": 16,
+      "ridge_records": 18,
+      "reload_preserved_result": true,
+      "browser_version": "156.0.8078.80",
+      "page_errors": [],
+      "pipeline_rerun": false,
+      "supported_location": false,
+      "runner_scope": "Separate Chromium saved-job rendering/reload check; not a second upload or pipeline execution"
+    },
+    {
+      "source_revision": "7df7c0427c4dee8371a26c846480119faf0a4198",
+      "source_revision_inferred_from_local_reflog_and_result_timestamp": false,
+      "source_run": "integrated-real-upload",
+      "raw_artifact_subdirectory": "results/integrated-browser",
+      "passed": true,
+      "job_id": "f458e3e22fc14eeb852c1c3eaa994d05",
+      "status": "inconclusive",
+      "candidate_count": 23,
+      "event_groups": 16,
+      "ridge_records": 18,
+      "all_candidate_cards_verified": 23,
+      "reload_preserved_result": true,
+      "browser_version": "156.0.8078.80",
+      "page_errors": [],
+      "mutating_requests": [],
+      "pipeline_rerun": false,
+      "supported_location": false,
+      "service_returncode": 0,
+      "job_artifact_count": 19249,
+      "job_artifacts_unchanged": true,
+      "backend_unchanged": true,
+      "recorded_backend_matches_completed_http_run": true,
+      "recorded_frontend_matches_source_revision": true,
+      "runner_scope": "Separate Chromium saved-job rendering and reload check; no new upload, no mutating requests and no pipeline rerun"
+    }
+  ]
+}

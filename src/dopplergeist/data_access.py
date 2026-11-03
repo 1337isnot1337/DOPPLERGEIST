@@ -697,6 +697,7 @@ class CachedTerrain:
         # Their outer edges are shifted north/west by half a GLO90 pixel.
         degrees = np.column_stack((np.floor(lat - 1 / 2400).astype(int), np.floor(lon + 1 / 2400).astype(int)))
         self.last_sample_files = {"tileList.txt", self.geoid_path.name}
+        self.last_sample_ocean_tiles = set()
         tiles, inverse = np.unique(degrees, axis=0, return_inverse=True)
         height = np.zeros(len(lat))
         try:
@@ -704,6 +705,7 @@ class CachedTerrain:
                 tag = f"Copernicus_DSM_COG_30_{'N' if north >= 0 else 'S'}{abs(north):02d}_00_{'E' if east >= 0 else 'W'}{abs(east):03d}_00_DEM"
                 if tag not in self.catalog:
                     self.ocean_tiles.add(tag)
+                    self.last_sample_ocean_tiles.add(tag)
                     continue
                 path = self._file(f"{self.base}/{tag}/{tag}.tif", self.root / f"{tag}.tif", raster=True)
                 self.last_sample_files.add(path.name)

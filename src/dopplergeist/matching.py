@@ -106,16 +106,19 @@ def _frequency_scale(event):
                        max(1.0, quality.get("frequency_uncertainty_hz", 1.0))))
 
 
-def _source_fit(factor, u, y, weight, bounds, cap, scale):
+def _source_fit(factor, u, y, weight, bounds, cap, scale, basis=None):
     """Exact two-variable box least squares; avoid iterative bounded solves."""
-    a = np.sum(weight*factor**2)
-    r = np.sum(weight*factor*y)
+    factor2, u2 = (factor**2, u**2) if basis is None else basis
+    weighted_factor2 = weight*factor2
+    weighted_factor = weight*factor
+    a = np.sum(weighted_factor2)
+    r = np.sum(weighted_factor*y)
     if not cap:
         return np.array([np.clip(r/a, *bounds), 0.0])
-    b = np.sum(weight*factor**2*u)
+    b = np.sum(weighted_factor2*u)
     prior = (2*scale/cap)**2
-    d = np.sum(weight*factor**2*u**2)+prior
-    s = np.sum(weight*factor*u*y)
+    d = np.sum(weighted_factor2*u2)+prior
+    s = np.sum(weighted_factor*u*y)
     determinant = a*d-b*b
     unconstrained = np.array([(r*d-s*b)/determinant, (s*a-r*b)/determinant])
     if bounds[0] <= unconstrained[0] <= bounds[1] and abs(unconstrained[1]) <= cap:
@@ -355,14 +358,8 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     return [settings[i] for i in order], [measurements[i] for i in order]
 
 
-def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=343.0,
-                        sigma_hz=1.0, drift_fraction=0.02, acoustic_result=None):
-    """Bounded linear source drift at emission time, with robust residual loss.
-
-    Drift is bounded to a fraction of source frequency over the measured event.
-    It cannot supply independent event time shifts or arbitrary curve warping.
-    Zero-weight samples are missing evidence; negative/nonfinite weights fail.
-    """
+def _ridge_fit_inputs(measurement, sigma_hz, drift_fraction):
+    """Validate the same measurement/model domain for fits and score ceilings."""
     spec, ridge, weight, _ = measurement
     times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
     if times.shape != ridge.shape or times.shape != weight.shape or times.ndim != 1:
@@ -371,6 +368,18 @@ def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=3
         raise ValueError("Need positive frequency uncertainty and drift fraction in [0, 0.1]")
     if not np.all(np.isfinite(weight)) or np.any(weight < 0):
         raise ValueError("Ridge weights must be finite and nonnegative")
+    return times, ridge, weight
+
+
+def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=343.0,
+                        sigma_hz=1.0, drift_fraction=0.02, acoustic_result=None):
+    """Bounded linear source drift at emission time, with robust residual loss.
+
+    Drift is bounded to a fraction of source frequency over the measured event.
+    It cannot supply independent event time shifts or arbitrary curve warping.
+    Zero-weight samples are missing evidence; negative/nonfinite weights fail.
+    """
+    times, ridge, weight = _ridge_fit_inputs(measurement, sigma_hz, drift_fraction)
     measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
     failed = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
     if measured.sum() < 10:
@@ -390,8 +399,9 @@ def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=3
     u = (emission - (emission.min() + emission.max()) / 2) / span
     cap = float(np.clip(np.median(y / factor), *f0_bounds)) * drift_fraction
     effective = w.copy()
+    basis = (factor**2, u**2)
     for _ in range(6):
-        fit = _source_fit(factor, u, y, effective, f0_bounds, cap, sigma_hz)
+        fit = _source_fit(factor, u, y, effective, f0_bounds, cap, sigma_hz, basis)
         residual = factor*(fit[0]+fit[1]*u)-y
         effective = w / np.sqrt(1 + (residual / sigma_hz) ** 2)
     loss = np.average(2 * sigma_hz**2 * (np.sqrt(1 + (residual / sigma_hz)**2) - 1), weights=w)
@@ -439,13 +449,18 @@ def score_ridges(tracks, events, measurements, observer, recording_start_s, c=34
 
 def batch_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_samples=262144):
     """Evaluate repeated receive times together, falling back on support errors."""
+    return list(_iter_acoustic_trials(tracks, measurements, observer, starts, c, max_samples))
+
+
+def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_samples=262144):
+    """Defer each group's batch until a surviving trial actually needs it."""
     from .geometry import AcousticSupportError
 
     starts = np.asarray(starts, dtype=float)
     if starts.ndim != 1 or not np.all(np.isfinite(starts)):
-        return [None] * len(measurements)
+        yield from (None for _ in measurements)
+        return
     remaining = max_samples
-    batches = []
     for track, measurement in zip(tracks, measurements):
         spec, ridge, weight, _ = measurement
         times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
@@ -454,26 +469,25 @@ def batch_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         # Negative or lower-precision epochs retain the per-trial path.
         if (track.time[0] < 0 or
                 np.spacing(track.time[0]) <= 2 * _EMISSION_ITERATION_TOLERANCE_S):
-            batches.append(None)
+            yield None
             continue
         if times.shape != ridge.shape or times.shape != weight.shape or times.ndim != 1:
-            batches.append(None)
+            yield None
             continue
         measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
         size = len(starts) * int(measured.sum())
         if measured.sum() < 10 or not np.all(np.isfinite(weight)) or np.any(weight < 0) or size > remaining:
-            batches.append(None)
+            yield None
             continue
         receive = starts[:, None] + times[measured][None, :]
         unique, inverse = np.unique(receive, return_inverse=True)
         try:
             factor, emission, _ = track.acoustic(unique, observer, c)
         except AcousticSupportError:
-            batches.append(None)
+            yield None
             continue
-        batches.append((factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)))
         remaining -= size
-    return batches
+        yield factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)
 
 
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,

@@ -67,6 +67,40 @@ def _key(row):
             tuple(seed["position"]), seed["recording_start_time_s"])
 
 
+class _RetainedScoreFloor:
+    """A lower bound on the kth score from distinct, assessed modes only."""
+
+    def __init__(self, top_k, initial=None):
+        self.top_k, self.initial = top_k, initial
+        self.scores = {}
+        self.value = initial
+
+    def observe(self, row):
+        if (row.get("core_assessment_complete") is not True
+                or row.get("score_kind") != "matched_group_support_minus_normalized_residual"
+                or not math.isfinite(row["score"])):
+            return
+        identity, score = identify_mode(row), row["score"]
+        if (identity not in self.scores and len(self.scores) == self.top_k
+                and score <= min(self.scores.values())):
+            return
+        self.scores[identity] = max(score, self.scores.get(identity, -math.inf))
+        if len(self.scores) > self.top_k:
+            del self.scores[min(self.scores, key=self.scores.get)]
+        if len(self.scores) == self.top_k:
+            local = min(self.scores.values())
+            self.value = local if self.initial is None else max(local, self.initial)
+
+
+def _retained_score_floor(rows, top_k):
+    # merge_candidates already returned distinct, ordered modes, at most top_k.
+    if len(rows) != top_k or any(row.get("core_assessment_complete") is not True
+            or row.get("score_kind") != "matched_group_support_minus_normalized_residual"
+            or not math.isfinite(row["score"]) for row in rows):
+        return None
+    return min(row["score"] for row in rows)
+
+
 def merge_candidates(rows, top_k, *, ledger=None, stage=None, bounds=()):
     unique, occurrences = {}, 0
     for row in rows:
@@ -154,8 +188,24 @@ def _tracks(indexes, bounds, time_range, budget):
     return tracks
 
 
+def _association_clock_window(start_window, sweep_s):
+    """Enclose every association clock that could reach the scoring window."""
+    lower, upper = map(float, start_window)
+    if not all(math.isfinite(v) for v in (lower, upper, sweep_s)) or lower > upper or sweep_s < 0:
+        raise ValueError("Recording clock bounds and sweep must be finite and ordered")
+    # Association intervals are expanded by the scorer before intersection with
+    # the requested window. Prune only outside that expanded envelope. Round
+    # both the envelope and its center/radius representation outward at Unix
+    # timestamp precision, so an inclusive endpoint cannot disappear.
+    lower = math.nextafter(lower - sweep_s, -math.inf)
+    upper = math.nextafter(upper + sweep_s, math.inf)
+    center = lower + (upper - lower) / 2
+    tolerance = math.nextafter(max(center - lower, upper - center), math.inf)
+    return center, tolerance
+
+
 @_cache_ridge_fits
-def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None):
+def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None):
     radius = max(e["slant_range_m"][1] for e in events)
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     tables, count = [], 0
@@ -204,6 +254,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     subset = filters.get("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full") == "subsets"
     if subset:
         from .matching import association_candidates
+        if start_window is not None and kwargs["time_origin"] is None:
+            kwargs["time_origin"], kwargs["time_tolerance_s"] = _association_clock_window(
+                start_window, parameters.get("time_sweep_s", 5.0))
         candidates, counts = association_candidates(table, events, **kwargs,
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)
@@ -216,8 +269,16 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if upper > budget.max_candidates_per_tile:
             raise DataUnavailable("Tile candidate memory budget exceeded; reduce tile_cells")
         candidates, counts = pair_candidates(table, events, **kwargs)
+    screened = subset and parameters.get("mode") == "robust_ridge"
+    # Every accepted association has a nonnegative score, even before K modes
+    # exist. A strict zero floor can reject only residual-incompatible trials.
+    cutoff = _RetainedScoreFloor(budget.top_k, 0.0 if score_floor is None else max(0.0, score_floor)) if screened else None
+    if screened:
+        # Find competitive multi-group modes before spending fits on singletons.
+        # All remaining modes still receive a score or a persisted score bound.
+        candidates.sort(key=lambda candidate: (candidate["point_id"], -len(candidate["event_indices"])))
     # Attach approach identities before scoring, since legacy rank drops passes.
-    ranked, unclassified, rejected = [], 0, 0
+    ranked, unclassified, rejected, retention_pruned = [], 0, 0, 0
     bounds = []
     trial_counts = dict(evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
     unclassified_assessments = []
@@ -246,6 +307,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             else:
                 settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
         point = lookup[candidate["point_id"]]
+        if cutoff is not None and cutoff.value is not None:
+            settings["score_floor"] = cutoff.value
         try:
             row = score_candidate(scoring_candidate, point, track_lookup, events, measurements, **settings)
         except AcousticSupportError as error:
@@ -256,11 +319,14 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                        event_indices=candidate.get("event_indices", list(range(len(events)))),
                        support_failure=_support_error(error))
         row["pass_emission_times_s"] = [float(p["emission_time"]) for p in candidate["passes"]]
+        finite_score = row["score"] is not None and math.isfinite(row["score"])
         known = (classified_assessment(row) if settings.get("mode") == "robust_ridge" else
-                 settings.get("time_origin") is not None and settings.get("time_sweep_s", 5) == 0 and math.isfinite(row["score"]))
-        row["core_assessment_complete"] = bool(known and math.isfinite(row["score"]))
+                 settings.get("time_origin") is not None and settings.get("time_sweep_s", 5) == 0 and finite_score)
+        row["core_assessment_complete"] = bool(known and finite_score)
         if settings.get("mode") == "robust_ridge":
             assessment = row.get("scoring_assessment")
+            if isinstance(assessment, dict) and assessment.get("unknown_score_bound_method") == "group_count_ceiling":
+                assessment["retention_score_floor"] = settings["score_floor"]
             if isinstance(assessment, dict) and all(type(assessment.get(k)) is int and assessment[k] >= 0
                                                   for k in ("evaluated_trials", "rejected_trials", "unknown_trials")):
                 for key in ("evaluated_trials", "rejected_trials", "unknown_trials"):
@@ -279,18 +345,22 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 "recording_start_bounds_s": scoring_candidate.get("recording_start_bounds_s"),
                 "clock_settings": {k: settings.get(k) for k in ("time_origin", "time_sweep_s", "time_step_s")},
                 "scoring_assessment": row.get("scoring_assessment"), "support_failure": row.get("support_failure"),
-                "finite_best": math.isfinite(row["score"])}
+                "finite_best": finite_score}
             unclassified_assessments.append(detail)
             if bounded_assessment(row):
                 bounds.append({"bound_id": "bound-" + content_hash(detail), "detail": detail,
                                "groups_count": len(detail["event_indices"]),
                                "upper_score": detail["scoring_assessment"]["unknown_score_upper_bound"]})
-        if math.isfinite(row["score"]):
+                retention_pruned += "retention_score_floor" in detail["scoring_assessment"]
+        if finite_score:
             ranked.append(row)
+            if cutoff is not None:
+                cutoff.observe(row)
         elif known:
             rejected += 1
     kept = merge_candidates(ranked, budget.top_k, ledger=ledger, stage=stage, bounds=bounds)
     return kept, dict(counts, cpa_rows=count, candidates=len(candidates), unclassified_score_candidates=unclassified,
+                      retention_score_pruned_candidates=retention_pruned,
                       bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
                       unclassified_candidate_assessments=unclassified_assessments, **trial_counts)
@@ -309,7 +379,8 @@ def _record_support(output, stage, counts, summary):
 
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
-                    bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None):
+                    bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None,
+                    workers=None):
     """Bounded outer driver using existing physical CPA/locked-event scoring.
 
     `events, measurements` come from `matching.prepare_events`. `time_range_s`
@@ -340,8 +411,28 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     if filters["association"] == "full":
         event_limit = len(events)
     event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
+    import os
+    from contextlib import nullcontext
+    from .data_access import CachedTerrain, _index_pool
+    from .parallel_retention import import_retention_stage
+    from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
+    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
+    available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
+    if workers is None:
+        workers = max(1, available - 1)
+    if type(workers) is not int or workers < 1:
+        raise ValueError("workers must be a positive integer")
+    workers = min(workers, total, budget.max_tiles or total)
+    parallel = workers > 1 and type(terrain) is CachedTerrain
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
+    manifest = output / "manifest.json"
+    floor_policy = "per_tile" if parallel else "global_and_per_tile"
+    if not parallel and manifest.exists():
+        previous = json.loads(manifest.read_text())
+        if previous.get("configuration", {}).get("coarse_floor_policy") == "per_tile":
+            floor_policy = "per_tile"
     # Include actual acoustic measurements and implementation files in resume
     # identity; a detector/scorer change must never reuse stale tile scores.
     acoustic = []
@@ -362,10 +453,10 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
                 "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
+                "coarse_floor_policy": floor_policy,
                 "runtime": {"python": platform.python_version(), "machine": platform.machine(),
                             "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}}
     run_hash = content_hash(identity)
-    manifest = output / "manifest.json"
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
     write_json(manifest, {"run_hash": run_hash, "configuration": identity})
@@ -378,49 +469,107 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
                    bounded_score_candidates=0, unbounded_score_candidates=0,
                    evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
-    xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
-    total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
     radius = max(e["slant_range_m"][1] for e in events)
-    for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
-        if budget.max_tiles is not None and number >= budget.max_tiles:
-            break
-        checkpoint = output / f"tile-{tile_id}.json"
-        stage = f"coarse:{tile_id}"
+
+    def restore_terrain(provenance):
+        if type(terrain) is CachedTerrain:
+            for source in provenance.get("terrain_files", []):
+                terrain.files[Path(source["path"]).name] = source
+            terrain.ocean_tiles.update(provenance.get("terrain_ocean_tiles", []))
+            terrain.failures.extend(provenance.get("terrain_failures", []))
+
+    def tile_requests():
+        for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
+            if budget.max_tiles is not None and number >= budget.max_tiles:
+                break
+            stage = f"coarse:{tile_id}"
+            checkpoint = output / f"tile-{tile_id}.json"
+            cached = None
+            try:
+                if checkpoint.exists():
+                    record = json.loads(checkpoint.read_text())
+                    if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
+                        raise DataUnavailable("Corrupt tile checkpoint")
+                    prior = record["payload"]
+                    for source in prior.get("terrain_files", []):
+                        if sha256(source["path"]) != source["sha256"]:
+                            raise DataUnavailable("Terrain changed since tile checkpoint")
+                    if ledger.stage_valid(stage, prior.get("retention_checksum")):
+                        cached = checkpoint
+            except (DataUnavailable, ValueError, OSError) as error:
+                cached = error
+            yield stage, cells, cached, None
+
+    if parallel:
+        terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
+                           "adopt_existing": terrain.adopt_existing}
+        initargs = ([index.path for index in indexes], terrain.root, terrain_options, events, measurements,
+                    bounds, time_range_s, budget, parameters, filters, start_window, crs,
+                    output / ".tile-workers", run_hash, score_kind)
+        context = _index_pool(workers, initialize_tile_worker, initargs)
+    else:
+        context = nullcontext(None)
+    def finish_tile(stage, cells, future):
+        checkpoint = output / f"tile-{stage[len('coarse:'):]}.json"
+        payload = None
         try:
-            payload = None
-            if checkpoint.exists():
-                record = json.loads(checkpoint.read_text())
-                if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
-                    raise DataUnavailable("Corrupt tile checkpoint")
-                cached = record["payload"]
-                for source in cached.get("terrain_files", []):
-                    if sha256(source["path"]) != source["sha256"]:
-                        raise DataUnavailable("Terrain changed since tile checkpoint")
-                if ledger.stage_valid(stage, cached.get("retention_checksum")):
-                    payload = cached
-                    resumed += 1
-            if payload is None:
-                tracks = _tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
-                points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
-                if len(points):
-                    rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                          ledger=ledger, stage=stage)
-                else:
-                    rows, counts = [], {}
-                    ledger.record(stage, [], [], 0)
-                used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
-                terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
-                payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
-                           "cells": list(cells), "terrain_files": terrain_files,
-                           "retention_checksum": ledger.checksum(stage)}
-                write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
-            done += 1
-            points_searched += payload["grid_points"]
-            _record_support(output, stage, payload["counts"], support)
-            ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
-                                      ledger=ledger, stage=f"global:{tile_id}")
+            payload, worker_path = future.result()
+            import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
+            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+            try:
+                Path(worker_path).unlink()
+            except OSError:
+                pass
+            return checkpoint
         except (DataUnavailable, ValueError, OSError) as error:
-            failures.append({"tile": tile_id, "reason": str(error)})
+            if payload is not None and not isinstance(error, TileFailure):
+                provenance = {key: payload.get(key, []) for key in
+                              ("terrain_files", "terrain_ocean_tiles", "terrain_failures")}
+                return TileFailure(str(error), provenance)
+            return error
+
+    with context as pool:
+        requests = tile_requests()
+        results = (ordered_tile_results(pool, requests, workers, finish_tile) if pool is not None else
+                   ((stage, cells, cached, cached is not None) for stage, cells, cached, _ in requests))
+        for stage, cells, prepared, was_cached in results:
+            tile_id = stage[len("coarse:"):]
+            checkpoint = output / f"tile-{tile_id}.json"
+            try:
+                if isinstance(prepared, BaseException):
+                    raise prepared
+                if prepared is not None:
+                    payload = json.loads(prepared.read_text())["payload"]
+                    if was_cached:
+                        resumed += 1
+                    restore_terrain(payload)
+                else:
+                    tracks = _tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
+                    points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
+                    if len(points):
+                        rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
+                                              ledger=ledger, stage=stage,
+                                              score_floor=(_retained_score_floor(ranked, budget.top_k)
+                                                           if floor_policy == "global_and_per_tile" else None))
+                    else:
+                        rows, counts = [], {}
+                        ledger.record(stage, [], [], 0)
+                    used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
+                    terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
+                    oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if len(points) else []
+                    payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
+                               "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
+                               "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
+                    write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+                done += 1
+                points_searched += payload["grid_points"]
+                _record_support(output, stage, payload["counts"], support)
+                ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
+                                          ledger=ledger, stage=f"global:{tile_id}")
+            except (DataUnavailable, ValueError, OSError) as error:
+                if isinstance(error, TileFailure):
+                    restore_terrain(error.provenance)
+                failures.append({"tile": tile_id, "reason": str(error)})
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
@@ -457,7 +606,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
                         stage = f"fine:{seed_index}:{x0}:{y0}"
                         rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                              ledger=ledger, stage=stage)
+                                              ledger=ledger, stage=stage,
+                                              score_floor=_retained_score_floor(ranked, budget.top_k))
                         _record_support(output, stage, counts, support)
                         fine_stages += 1
                         refinement_points_searched += len(points)
@@ -526,7 +676,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "all_event_groups_considered": not event_limit_applied,
               "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
-              "bounded_concurrency": 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
+              "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
     write_json(output / "search-report.json", report)
     return report
