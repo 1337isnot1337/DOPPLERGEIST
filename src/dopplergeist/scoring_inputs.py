@@ -14,12 +14,14 @@ _SETTING_KEYS = ("frequency_loss_scale_hz", "frequency_sigma_hz",
 
 def _plain_copy(value, remaining):
     """Copy JSON-like builtin containers without invoking custom copy hooks."""
-    if type(value) not in (str, float, int, bool, type(None), list, tuple, dict):
+    # Live discovery's support_fraction can be an immutable NumPy float64.
+    # Keep its exact type and bits; serializing it first would hide this case.
+    if type(value) not in (str, float, int, bool, type(None), np.float64, list, tuple, dict):
         raise TypeError("Custom scoring input retains its original path")
     remaining[0] -= sys.getsizeof(value)
     if remaining[0] < 0:
         raise TypeError("Prepared scoring input budget exceeded")
-    if type(value) in (str, float, int, bool, type(None)):
+    if type(value) in (str, float, int, bool, type(None), np.float64):
         return value
     if type(value) in (list, tuple):
         copied = [_plain_copy(item, remaining) for item in value]

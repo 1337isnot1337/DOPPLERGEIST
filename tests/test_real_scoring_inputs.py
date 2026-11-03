@@ -50,6 +50,30 @@ def test_recorded_snapshot_is_private_and_immutable():
     assert matching._ridge_fit_cache.get() is None
 
 
+def test_live_discovery_scalar_metadata_keeps_prepared_fits_eligible():
+    event, measurement = recorded()
+    fixture = json.loads((Path(__file__).parent / "data/real-ridge-batch-arithmetic.json").read_text())
+    factors, emissions = np.asarray(fixture["factors"]), np.asarray(fixture["emissions"])
+    # JSON erases discovery's NumPy scalar type. Restore that type on the same
+    # observed support fraction, without changing any measured numeric value.
+    support = np.float64(event["quality"]["support_fraction"])
+    event["quality"]["support_fraction"] = support
+    expected = batch_ridge.first_event_fits(measurement, event, factors, emissions)
+
+    @matching._cache_ridge_fits
+    def run():
+        events, measurements = matching._prepare_score_inputs([event], [measurement])
+        copied_event, copied = events[0], measurements[0]
+        assert matching._prepared_score_token(copied, copied_event) is not None
+        retained = copied_event["quality"]["support_fraction"]
+        assert type(retained) is np.float64 and retained.tobytes() == support.tobytes()
+        assert batch_ridge.first_event_fits(copied, copied_event, factors, emissions) == expected
+        event["quality"]["support_fraction"] = np.nextafter(support, np.inf)
+        assert copied_event["quality"]["support_fraction"] is support
+
+    run()
+
+
 @pytest.mark.parametrize("changed", ["bounds", "fraction", "scale", "time", "shape", "dtype"])
 def test_recorded_snapshot_token_rejects_changed_settings_or_view_metadata(changed):
     event, measurement = recorded()
@@ -74,7 +98,7 @@ def test_recorded_snapshot_token_rejects_changed_settings_or_view_metadata(chang
     run()
 
 
-@pytest.mark.parametrize("kind", ["weight", "bounds", "noncontiguous", "custom", "budget"])
+@pytest.mark.parametrize("kind", ["weight", "bounds", "noncontiguous", "custom", "numpy_subclass", "budget"])
 def test_unsupported_recorded_inputs_keep_the_original_path(kind):
     event, measurement = recorded()
     if kind == "weight":
@@ -91,6 +115,11 @@ def test_unsupported_recorded_inputs_keep_the_original_path(kind):
             def __sizeof__(self):
                 raise AssertionError("Custom size hook executed")
         event = dict(event, ignored_custom_metadata=Custom())
+    elif kind == "numpy_subclass":
+        class Custom(np.float64):
+            def __sizeof__(self):
+                raise AssertionError("Custom scalar size hook executed")
+        event["quality"]["support_fraction"] = Custom(event["quality"]["support_fraction"])
 
     @matching._cache_ridge_fits
     def run():
