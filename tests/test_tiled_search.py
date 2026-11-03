@@ -1,0 +1,105 @@
+from dataclasses import replace
+from types import SimpleNamespace
+
+import numpy as np
+import pandas as pd
+from pyproj import Transformer
+import pytest
+
+from aircraft_geoloc.audio import Spectrum
+from aircraft_geoloc.data_access import DataUnavailable, FlightIndex
+from aircraft_geoloc.geometry import Track, ecef
+from aircraft_geoloc.terrain import Terrain
+from aircraft_geoloc.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
+
+
+def scenario(tmp_path):
+    inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
+    # Winning receiver x=0 is exactly on tile boundaries for all tile sizes.
+    lon, lat = inverse.transform(0, 1900000)
+    origin = 1800000000.
+    frames, tracks, events, measurements = [], [], [], []
+    observer = ecef(lat, lon, 0)
+    for number, center in enumerate([150., 650.]):
+        t = np.arange(center - 150, center + 151, 5)
+        x = (t - center) * 80
+        y = np.full(len(t), 1900000 + number * 200)
+        flon, flat = inverse.transform(x, y)
+        track = Track(f"flight{number}", t + origin, flat, flon, np.full(len(t), 1200))
+        tracks.append(track)
+        frames.append(pd.DataFrame({"flight_id": track.id, "time_s": track.time, "lat": flat,
+                                    "lon": flon, "alt_m": 1200, "altitude_basis": "ellipsoidal"}))
+        received = t[24:37]
+        factor, _, _ = track.acoustic(origin + received, observer)
+        spectrum = Spectrum(received, np.arange(80, 161), np.zeros((81, len(received))), np.zeros((81, len(received))))
+        ridge = factor * 120
+        measurements.append((spectrum, ridge, np.ones(len(ridge)), {}))
+        cpa = track.closest_approaches(observer, 4000)[0]["receive_time"] - origin
+        events.append({"start_s": float(received[0]), "end_s": float(received[-1]), "cpa_receive_s": cpa,
+                       "speed_range_mps": [50, 110], "slant_range_m": [500, 4000], "f0_range_hz": [115, 125]})
+    bounds = inverse.transform_bounds(-2200, 1897800, 2200, 1902200, densify_pts=21)
+    times = [origin, origin + 801]
+    index = FlightIndex.build(tmp_path / "flights.sqlite", frames, sources=[],
+                              coverage={"bounds": [-125, 24, -66, 50], "time_range_s": times, "all_aircraft": True})
+    return index, tracks, events, measurements, bounds, times, origin
+
+
+def compact(rows):
+    return [(tuple(r["flight_ids"]), r["x"], r["y"], round(r["score"], 8), round(r["recording_start_time_s"], 5)) for r in rows]
+
+
+def test_tiled_equals_untiled_boundary_and_locked_timing(tmp_path):
+    index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
+    terrain = Terrain(constant_m=0)
+    budget = SearchBudget(spacing_m=1000, tile_cells=2, top_k=200, refine_spacing_m=1000)
+    settings = {"mode": "ridge", "time_origin": origin, "time_sweep_s": 0}
+    all_points = pd.concat([tile_points(cells, 1000, bounds, terrain, "EPSG:5070") for _, cells in grid_tiles(bounds, 1000, 2)], ignore_index=True)
+    all_points["point_id"] = np.arange(len(all_points))
+    expected, _ = _score(all_points, tracks, events, measurements, budget, settings, {})
+    result = search_national([index], terrain, events, measurements, time_range_s=times, output_dir=tmp_path / "run",
+                             bounds=bounds, budget=budget, scoring=settings)
+    assert result["status"] == "complete"
+    assert compact(result["ranked"]) == compact(expected)
+    assert result["ranked"][0]["x"] == 0 and result["ranked"][0]["y"] == 1900000
+    replay = search_national([index], terrain, events, measurements, time_range_s=times, output_dir=tmp_path / "run",
+                             bounds=bounds, budget=budget, scoring=settings)
+    assert replay["tiles_resumed"] == replay["tiles_total"]
+    assert compact(replay["ranked"]) == compact(result["ranked"])
+    with pytest.raises(DataUnavailable, match="mismatch"):
+        search_national([index], terrain, events, measurements, time_range_s=times, output_dir=tmp_path / "run",
+                        bounds=bounds, budget=replace(budget, spacing_m=900), scoring=settings)
+
+
+def test_budget_exhaustion_and_source_holes_are_partial(tmp_path):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
+    kwargs = dict(time_range_s=times, bounds=bounds, scoring={"mode": "ridge", "time_origin": origin, "time_sweep_s": 0})
+    limited = search_national([index], Terrain(constant_m=0), events, measurements, output_dir=tmp_path / "limited",
+                              budget=SearchBudget(max_tiles=1, tile_cells=1, refine_spacing_m=2000), **kwargs)
+    assert limited["status"] == "partial" and limited["unsearched_tiles"] > 0
+    overloaded = search_national([index], Terrain(constant_m=0), events, measurements, output_dir=tmp_path / "overloaded",
+                                 budget=SearchBudget(max_tracks_per_tile=1, tile_cells=4, refine_spacing_m=2000), **kwargs)
+    assert overloaded["status"] == "partial" and overloaded["tile_failures"]
+    # A source scope ending before the query cannot establish complete coverage.
+    kwargs["time_range_s"] = [times[0], times[1] + 1]
+    missing = search_national([index], Terrain(constant_m=0), events, measurements, output_dir=tmp_path / "missing",
+                             budget=SearchBudget(refine_spacing_m=2000), **kwargs)
+    assert not missing["data_scope_complete"] and missing["status"] == "partial"
+
+
+def test_merge_is_deterministic_and_preserves_repeat_approaches():
+    base = {"score": 1., "flight_ids": ["a"], "x": 0., "y": 0., "recording_start_time_s": 0.}
+    first = dict(base, pass_emission_times_s=[100.])
+    second = dict(base, pass_emission_times_s=[300.])
+    assert merge_candidates([second, first, first], 10) == [first, second]
+    assert merge_candidates([first, second], 10) == merge_candidates([second, first], 10)
+
+
+def test_ridge_only_adapter_and_exact_recording_clock(tmp_path):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
+    measurements = [(SimpleNamespace(time=spec.time), ridge, weight, fit) for spec, ridge, weight, fit in measurements]
+    result = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
+                             output_dir=tmp_path / "ridge-only", bounds=bounds,
+                             budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=1000),
+                             scoring={"mode": "ridge", "recording_start_window_s": [origin, origin]})
+    assert result["ranked"]
+    assert all(row["recording_start_time_s"] == origin for row in result["ranked"])
