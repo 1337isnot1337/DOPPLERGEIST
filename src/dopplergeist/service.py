@@ -47,7 +47,9 @@ class Handler(BaseHTTPRequestHandler):
         manager = self.server.manager
         if self.command == "GET" and parts == ["api", "capabilities"]:
             return self._reply({"schema_version": 1, "coverage": "conus", "max_upload_bytes": manager.max_upload_bytes,
-                                "max_runtime_s": manager.max_runtime_s, "max_pending": manager.max_pending})
+                                "max_runtime_s": manager.max_runtime_s, "max_pending": manager.max_pending,
+                                "provider_configured": bool(manager.config.get("cache_root") or manager.config.get("flight_indexes")),
+                                "online_enabled": not bool(manager.config.get("offline", True))})
         if self.command == "POST" and parts == ["api", "jobs"]:
             if self.headers.get("Transfer-Encoding"):
                 raise ValueError("Use a Content-Length upload")

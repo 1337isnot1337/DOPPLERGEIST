@@ -104,8 +104,8 @@ def test_adapter_retains_jet_with_misleading_straight_geometry_and_merges_harmon
     assert abs(one["score"] - two["score"]) < 1e-8
     inconsistent = detected("bad", 2)
     for p in inconsistent["ridge"]:
-        p["frequency_hz"] *= 0.75
-    with pytest.raises(ValueError, match="integer"):
+        p["frequency_hz"] *= 0.73
+    with pytest.raises(ValueError, match="supported frequency ratio"):
         prepare_events([detected(), inconsistent])
 
 

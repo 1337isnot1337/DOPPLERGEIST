@@ -15,6 +15,8 @@ class Terrain:
             raise ValueError("Supply DEM raster paths or an explicit constant ground elevation")
 
     def sample(self, lat, lon):
+        from rasterio.windows import Window
+
         lat, lon = np.broadcast_arrays(lat, lon)
         elevation = np.full(lat.shape, np.nan)
         for raster in self.rasters:
@@ -24,8 +26,12 @@ class Terrain:
             col,row=np.floor(col).astype(int),np.floor(row).astype(int)
             inside=(col>=0)&(col<raster.width)&(row>=0)&(row<raster.height)
             values=np.ma.masked_all(len(col))
-            data=raster.read(1,masked=True)
-            values[inside]=data[row[inside],col[inside]]
+            if np.any(inside):
+                rows,cols=row[inside],col[inside]
+                r0,c0=int(rows.min()),int(cols.min())
+                window=Window(c0,r0,int(cols.max())-c0+1,int(rows.max())-r0+1)
+                data=raster.read(1,window=window,masked=True)
+                values[inside]=data[rows-r0,cols-c0]
             valid = ~np.ma.getmaskarray(values)
             flat = elevation.ravel()
             flat[valid] = np.asarray(values)[valid]

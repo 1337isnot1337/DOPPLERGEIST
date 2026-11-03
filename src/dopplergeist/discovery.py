@@ -251,7 +251,8 @@ def discover_events(recording, *, output_dir=None, settings=None):
     """Return shared DetectedEvent dictionaries from a disk-backed recording.
 
     Fixed defaults scan 40–1600 Hz in overlapping chunks; no event hints, flight
-    data or truth paths are accepted. Harmonics become one independent event.
+    data or truth paths are accepted. Each measured ridge gets a record; a
+    shared harmonic_group_id makes those records one independent proposal.
     Optional diagnostics retain all measured harmonic ridges and chunk counts.
     """
     settings = settings or DiscoverySettings()
@@ -276,19 +277,22 @@ def discover_events(recording, *, output_dir=None, settings=None):
     fragment_links = []
     paths = _stitch_fragments(paths, settings, fragment_links)
     groups = _harmonic_groups(paths)
-    events = []
+    events, event_groups = [], []
     for index, group in enumerate(groups):
-        points = group[0]
-        t, f, weight = points.T
         orders = {1.0}
         for harmonic in group[1:]:
-            _, base_f, harmonic_f = _overlap(points, harmonic)
+            _, base_f, harmonic_f = _overlap(group[0], harmonic)
             ratio = np.median(harmonic_f / base_f)
             orders.add(min(_HARMONIC_RATIOS, key=lambda value: abs(value - ratio)))
-        margin = 2 / settings.window_s
-        smooth = ndimage.median_filter(f, size=5, mode="nearest")
-        frequency_scale = float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth))))
-        event = {"event_id": f"event-{index + 1:04d}", "harmonic_group_id": f"harmonics-{index + 1:04d}",
+        for harmonic_index, points in enumerate(group):
+            t, f, weight = points.T
+            margin = 2 / settings.window_s
+            smooth = ndimage.median_filter(f, size=5, mode="nearest")
+            frequency_scale = float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth))))
+            event_id = f"event-{index + 1:04d}"
+            if harmonic_index:
+                event_id += f"-harmonic-{harmonic_index + 1}"
+            event = {"event_id": event_id, "harmonic_group_id": f"harmonics-{index + 1:04d}",
                  "start_s": max(0.0, float(t[0] - settings.window_s / 2)),
                  "end_s": min(recording.metadata["duration_s"], float(t[-1] + settings.window_s / 2)),
                  "band_hz": [max(0.01, float(f.min() - margin)), float(f.max() + margin)],
@@ -302,7 +306,8 @@ def discover_events(recording, *, output_dir=None, settings=None):
                              "fragment_count": float(1 + np.sum(np.diff(t) > settings.max_gap_s)),
                              "max_observed_gap_s": float(np.max(np.diff(t))),
                              "frequency_drop_hz": float(np.median(f[:max(3, len(f) // 6)]) - np.median(f[-max(3, len(f) // 6):]))}}
-        events.append(validate_event(event))
+            events.append(validate_event(event))
+            event_groups.append(group)
     if output:
         diagnostics = {"source_sha256": recording.metadata["source_sha256"], "settings": asdict(settings),
                        "events": events, "chunks": chunks, "ridge_count": len(paths),
@@ -311,8 +316,9 @@ def discover_events(recording, *, output_dir=None, settings=None):
                        "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"}
         (output / "discovery.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
         _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
-        for event, group in zip(events, groups):
-            np.savetxt(output / f"{event['event_id']}.csv", group[0], delimiter=",",
+        for event, group in zip(events, event_groups):
+            points = np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]])
+            np.savetxt(output / f"{event['event_id']}.csv", points, delimiter=",",
                        header="time_s,frequency_hz,weight", comments="")
             _plot_event(recording, group, event, settings, output / f"{event['event_id']}.png")
     return events
