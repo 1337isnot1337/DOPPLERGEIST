@@ -22,7 +22,8 @@ from verify_upload_browser import verify_candidate_cards
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    with path.open("rb") as source:
+        return hashlib.file_digest(source, "sha256").hexdigest()
 
 
 def write(path, value):
@@ -89,11 +90,18 @@ def main():
                     private = context.request.get(f"{base}/api/jobs/{job_id}/artifacts/operator.json")
                     assert private.status == 404, "Private operator configuration is downloadable"
                     for item in listing:
-                        downloaded = context.request.get(f"{base}/api/jobs/{job_id}/artifacts/{quote(item['path'], safe='/')}")
-                        body = downloaded.body()
-                        sha = hashlib.sha256(body).hexdigest()
-                        assert downloaded.ok and len(body) == item["bytes"] and sha == original[item["path"]], item["path"]
-                        downloads.append({**item, "sha256": sha, "http_status": downloaded.status})
+                        url = f"{base}/api/jobs/{job_id}/artifacts/{quote(item['path'], safe='/')}"
+                        checksum, size = hashlib.sha256(), 0
+                        # Stream real recordings/caches instead of transferring
+                        # large binary bodies through the browser RPC channel.
+                        with urlopen(url, timeout=30) as downloaded:
+                            while block := downloaded.read(1024 * 1024):
+                                checksum.update(block)
+                                size += len(block)
+                            status = downloaded.status
+                        sha = checksum.hexdigest()
+                        assert status == 200 and size == item["bytes"] and sha == original[item["path"]], item["path"]
+                        downloads.append({**item, "sha256": sha, "http_status": status})
                     write(output / "artifact-roundtrip.json", downloads)
                     page.goto(f"{base}/?job={job_id}", wait_until="networkidle")
                     display = expected["status"].replace("_", " ")
