@@ -1,0 +1,23 @@
+{
+  "audio_sha256": "1ec874ef851b82976aadaafa9aec6505aaba435cffb51548c485432165be1f7b",
+  "audio_bytes": 40436,
+  "request_sha256": "885f84c9ee87c2fcead8725bea5e5d9a486e66b6b5fd38d853b1a5a35d518cb3",
+  "url": "http://127.0.0.1:18876",
+  "runner_sha256": "51a25b4ffab7167f42edf61c6061a36bdad6beb0eb4b6778b9b81df60754aafc",
+  "truth_sent_to_server": false,
+  "case_passed": false,
+  "job_id": "abccf53cde54483196cf8fa7363ba8ce",
+  "status": "needs_input",
+  "reason_code": "recording_time_required",
+  "coverage": {
+    "search_complete": false,
+    "data_status": "unavailable",
+    "limitations": [],
+    "requested_area": {
+      "coverage": "conus"
+    }
+  },
+  "upload_roundtrip_verified": true,
+  "scope": "One actual upload and artifact roundtrip; reference provenance and search/data coverage require separate review. HTTP delivery is not browser interaction or national holdout validation.",
+  "elapsed_s": 10.373394589987583
+}

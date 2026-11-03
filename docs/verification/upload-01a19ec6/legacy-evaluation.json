@@ -1,0 +1,156 @@
+[
+  {
+    "case": "synthetic-two-events-rerun",
+    "error_m": 15.395598179748822,
+    "elapsed_s": 138.32842717299354,
+    "best": {
+      "score": 4.500836580174317,
+      "event_scores": [
+        2.129073880643107,
+        2.3717626995312098
+      ],
+      "f0_hz": [
+        135.0,
+        115.0
+      ],
+      "recording_start_time_s": 1790000000.0638065,
+      "time_adjustment_s": 1.5,
+      "point_id": 122,
+      "lat": 40.03179231669141,
+      "lon": -100.01845112928773,
+      "elev_m": 120.0,
+      "x": -339800.0,
+      "y": 1897725.0,
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ]
+    },
+    "sources": [
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/synthetic/recording.wav",
+        "sha256": "6d56119526a0b142b52780b23e57719e5132a96c11827188ea2f91145c33ca2a"
+      },
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/synthetic/tracks.csv",
+        "sha256": "a406060a16e1622ad9ab89cb297ba7376f3939d177506a529b7fab27550f42af"
+      }
+    ],
+    "implementation_sha256": "730f773aa918b8900e04d7c6c5f3a25406e0570c721ec7d5993f30dd56b115d4",
+    "scope": "synthetic with selected event settings"
+  },
+  {
+    "case": "synthetic-minute",
+    "error_m": 40.87444831462204,
+    "elapsed_s": 12.085777074011276,
+    "best": {
+      "score": -0.12777456051000627,
+      "event_scores": [
+        -0.12777456051000627
+      ],
+      "f0_hz": [
+        135.05888588159837
+      ],
+      "recording_start_time_s": 1790000000.5,
+      "time_adjustment_s": 0.5,
+      "point_id": 139,
+      "lat": 40.03158825366124,
+      "lon": -100.01784804510696,
+      "elev_m": 120.0,
+      "x": -339750.0,
+      "y": 1897700.0,
+      "flight_ids": [
+        "true-A"
+      ]
+    },
+    "sources": [
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/synthetic/recording.wav",
+        "sha256": "6d56119526a0b142b52780b23e57719e5132a96c11827188ea2f91145c33ca2a"
+      },
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/synthetic/tracks.csv",
+        "sha256": "a406060a16e1622ad9ab89cb297ba7376f3939d177506a529b7fab27550f42af"
+      }
+    ],
+    "implementation_sha256": "730f773aa918b8900e04d7c6c5f3a25406e0570c721ec7d5993f30dd56b115d4",
+    "scope": "synthetic with selected event settings"
+  },
+  {
+    "case": "reference",
+    "error_m": 43.85847078233993,
+    "elapsed_s": 108.0048250569962,
+    "best": {
+      "score": 5.608620381268417,
+      "event_scores": [
+        2.62630103588047,
+        2.982319345387947
+      ],
+      "f0_hz": [
+        112.4,
+        126.0
+      ],
+      "recording_start_time_s": 1788898649.6620934,
+      "time_adjustment_s": -0.5,
+      "point_id": 41,
+      "lat": 40.87693175890468,
+      "lon": -73.52498229500986,
+      "elev_m": -31.25569725036621,
+      "x": 1861200.0,
+      "y": 2206325.0,
+      "flight_ids": [
+        "a1dfeb:1",
+        "ace391:3"
+      ]
+    },
+    "sources": [
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/source/reference-recording.wav",
+        "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+      },
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/adsb/2026-09-08/reference-region.parquet",
+        "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0"
+      }
+    ],
+    "implementation_sha256": "730f773aa918b8900e04d7c6c5f3a25406e0570c721ec7d5993f30dd56b115d4",
+    "scope": "source-assisted regional real recording; approximate map reference and inferred clock"
+  },
+  {
+    "case": "faint",
+    "error_m": 357.4686768823865,
+    "elapsed_s": 294.52583653701004,
+    "best": {
+      "score": -2.4296749185036983,
+      "event_scores": [
+        -2.4296749185036983
+      ],
+      "f0_hz": [
+        390.76743821007324
+      ],
+      "recording_start_time_s": 1788898650.5,
+      "time_adjustment_s": 0.5,
+      "point_id": 73,
+      "lat": 40.878427510058614,
+      "lon": -73.52819115491744,
+      "elev_m": -31.25569725036621,
+      "x": 1860900.0,
+      "y": 2206425.0,
+      "flight_ids": [
+        "a38237"
+      ]
+    },
+    "sources": [
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/source/reference-recording.wav",
+        "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+      },
+      {
+        "path": "/home/cinna/dopplergeist-e2e-01a19ec6/data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+        "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154"
+      }
+    ],
+    "implementation_sha256": "730f773aa918b8900e04d7c6c5f3a25406e0570c721ec7d5993f30dd56b115d4",
+    "scope": "source-assisted regional real recording; approximate map reference and inferred clock"
+  }
+]

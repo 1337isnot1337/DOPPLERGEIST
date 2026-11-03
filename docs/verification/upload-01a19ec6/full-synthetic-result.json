@@ -1,0 +1,1536 @@
+{
+  "schema_version": 1,
+  "job_id": "bf7506d534aa444fb4002350e95792b0",
+  "status": "inconclusive",
+  "coverage": {
+    "search_complete": true,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "recording": {
+    "source_sha256": "51732e0015f300144c1fe34f0d5117c18ba595f61b5c9758796b6931f5683d9e",
+    "duration_s": 1180.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": {
+      "start_utc": "2026-09-21T14:13:20Z",
+      "end_utc": "2026-09-21T14:13:20Z",
+      "source": "user",
+      "source_detail": "Synthetic renderer epoch; synthetic verification only."
+    }
+  },
+  "events": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 143.0,
+      "end_s": 180.5,
+      "band_hz": [
+        111.9922614172101,
+        155.68607839941978
+      ],
+      "ridge": [
+        {
+          "time_s": 144.0,
+          "frequency_hz": 154.68607839941978,
+          "weight": 3.2758147716522217
+        },
+        {
+          "time_s": 144.5,
+          "frequency_hz": 154.4951081071049,
+          "weight": 3.6695609092712402
+        },
+        {
+          "time_s": 146.0,
+          "frequency_hz": 151.75,
+          "weight": 3.1983532905578613
+        },
+        {
+          "time_s": 148.0,
+          "frequency_hz": 148.30719839036465,
+          "weight": 3.225649833679199
+        },
+        {
+          "time_s": 148.5,
+          "frequency_hz": 147.19032914936543,
+          "weight": 3.420161485671997
+        },
+        {
+          "time_s": 149.0,
+          "frequency_hz": 146.5772834122181,
+          "weight": 3.166734218597412
+        },
+        {
+          "time_s": 149.5,
+          "frequency_hz": 145.42799408733845,
+          "weight": 3.2354068756103516
+        },
+        {
+          "time_s": 150.0,
+          "frequency_hz": 144.408888541162,
+          "weight": 3.341273546218872
+        },
+        {
+          "time_s": 150.5,
+          "frequency_hz": 143.53087658807635,
+          "weight": 3.7034294605255127
+        },
+        {
+          "time_s": 151.0,
+          "frequency_hz": 142.6351402848959,
+          "weight": 3.8842720985412598
+        },
+        {
+          "time_s": 151.5,
+          "frequency_hz": 142.0041096918285,
+          "weight": 3.465885639190674
+        },
+        {
+          "time_s": 152.0,
+          "frequency_hz": 140.70446933805943,
+          "weight": 3.3693742752075195
+        },
+        {
+          "time_s": 152.5,
+          "frequency_hz": 139.70183850824833,
+          "weight": 3.088223934173584
+        },
+        {
+          "time_s": 153.0,
+          "frequency_hz": 138.8396204560995,
+          "weight": 3.6879544258117676
+        },
+        {
+          "time_s": 153.5,
+          "frequency_hz": 138.13518524169922,
+          "weight": 3.5498921871185303
+        },
+        {
+          "time_s": 154.0,
+          "frequency_hz": 137.25,
+          "weight": 3.056752920150757
+        },
+        {
+          "time_s": 154.5,
+          "frequency_hz": 136.20741347968578,
+          "weight": 3.2947733402252197
+        },
+        {
+          "time_s": 155.0,
+          "frequency_hz": 135.46406965702772,
+          "weight": 3.416307210922241
+        },
+        {
+          "time_s": 155.5,
+          "frequency_hz": 134.2995384633541,
+          "weight": 3.595942735671997
+        },
+        {
+          "time_s": 156.0,
+          "frequency_hz": 133.68139526247978,
+          "weight": 3.434363842010498
+        },
+        {
+          "time_s": 156.5,
+          "frequency_hz": 132.7275236696005,
+          "weight": 3.09264874458313
+        },
+        {
+          "time_s": 157.0,
+          "frequency_hz": 131.85916727781296,
+          "weight": 3.512213706970215
+        },
+        {
+          "time_s": 157.5,
+          "frequency_hz": 131.15640096366405,
+          "weight": 3.597870111465454
+        },
+        {
+          "time_s": 158.0,
+          "frequency_hz": 130.4156919196248,
+          "weight": 3.6522722244262695
+        },
+        {
+          "time_s": 158.5,
+          "frequency_hz": 129.69280713796616,
+          "weight": 3.731837749481201
+        },
+        {
+          "time_s": 159.0,
+          "frequency_hz": 128.75,
+          "weight": 3.383575439453125
+        },
+        {
+          "time_s": 159.5,
+          "frequency_hz": 128.12276262044907,
+          "weight": 3.7750961780548096
+        },
+        {
+          "time_s": 160.0,
+          "frequency_hz": 127.46810539066792,
+          "weight": 3.7305970191955566
+        },
+        {
+          "time_s": 160.5,
+          "frequency_hz": 126.8359581977129,
+          "weight": 3.583390235900879
+        },
+        {
+          "time_s": 161.0,
+          "frequency_hz": 126.21171478927135,
+          "weight": 3.32718563079834
+        },
+        {
+          "time_s": 161.5,
+          "frequency_hz": 125.51548437029123,
+          "weight": 3.383937358856201
+        },
+        {
+          "time_s": 162.0,
+          "frequency_hz": 124.82682338356972,
+          "weight": 3.870548725128174
+        },
+        {
+          "time_s": 162.5,
+          "frequency_hz": 124.4157634228468,
+          "weight": 3.7665352821350098
+        },
+        {
+          "time_s": 163.0,
+          "frequency_hz": 123.75,
+          "weight": 3.292381763458252
+        },
+        {
+          "time_s": 163.5,
+          "frequency_hz": 123.21722340583801,
+          "weight": 3.3799941539764404
+        },
+        {
+          "time_s": 164.0,
+          "frequency_hz": 122.54954653978348,
+          "weight": 3.596088409423828
+        },
+        {
+          "time_s": 164.5,
+          "frequency_hz": 122.0896019116044,
+          "weight": 3.536637783050537
+        },
+        {
+          "time_s": 165.0,
+          "frequency_hz": 121.68076118826866,
+          "weight": 3.543731927871704
+        },
+        {
+          "time_s": 165.5,
+          "frequency_hz": 121.20652021467686,
+          "weight": 3.4101579189300537
+        },
+        {
+          "time_s": 166.0,
+          "frequency_hz": 120.76580993831158,
+          "weight": 3.4697632789611816
+        },
+        {
+          "time_s": 166.5,
+          "frequency_hz": 120.19862288236618,
+          "weight": 3.162551164627075
+        },
+        {
+          "time_s": 167.0,
+          "frequency_hz": 119.8322094976902,
+          "weight": 3.319871425628662
+        },
+        {
+          "time_s": 167.5,
+          "frequency_hz": 119.4265963435173,
+          "weight": 3.215244770050049
+        },
+        {
+          "time_s": 168.0,
+          "frequency_hz": 118.96287016570568,
+          "weight": 3.783355712890625
+        },
+        {
+          "time_s": 168.5,
+          "frequency_hz": 118.65531758964062,
+          "weight": 3.5024757385253906
+        },
+        {
+          "time_s": 169.0,
+          "frequency_hz": 118.12590059638023,
+          "weight": 3.4649064540863037
+        },
+        {
+          "time_s": 169.5,
+          "frequency_hz": 117.80577564239502,
+          "weight": 3.657116174697876
+        },
+        {
+          "time_s": 170.0,
+          "frequency_hz": 117.66896010935307,
+          "weight": 3.6630656719207764
+        },
+        {
+          "time_s": 170.5,
+          "frequency_hz": 117.28246559202671,
+          "weight": 3.225541830062866
+        },
+        {
+          "time_s": 171.0,
+          "frequency_hz": 116.81354306638241,
+          "weight": 3.2971677780151367
+        },
+        {
+          "time_s": 171.5,
+          "frequency_hz": 116.62574145197868,
+          "weight": 3.5636537075042725
+        },
+        {
+          "time_s": 172.0,
+          "frequency_hz": 116.34029752016068,
+          "weight": 3.1338229179382324
+        },
+        {
+          "time_s": 173.0,
+          "frequency_hz": 115.65485461056232,
+          "weight": 3.116325855255127
+        },
+        {
+          "time_s": 173.5,
+          "frequency_hz": 115.51920034363866,
+          "weight": 3.326258659362793
+        },
+        {
+          "time_s": 175.5,
+          "frequency_hz": 114.33000564575195,
+          "weight": 3.1225297451019287
+        },
+        {
+          "time_s": 176.0,
+          "frequency_hz": 114.21486555039883,
+          "weight": 3.38515043258667
+        },
+        {
+          "time_s": 176.5,
+          "frequency_hz": 114.08837907761335,
+          "weight": 3.4117538928985596
+        },
+        {
+          "time_s": 177.0,
+          "frequency_hz": 113.95464664697647,
+          "weight": 3.1835670471191406
+        },
+        {
+          "time_s": 178.0,
+          "frequency_hz": 113.49762975261547,
+          "weight": 3.0210206508636475
+        },
+        {
+          "time_s": 178.5,
+          "frequency_hz": 113.14568772912025,
+          "weight": 3.098278522491455
+        },
+        {
+          "time_s": 179.0,
+          "frequency_hz": 112.996849529678,
+          "weight": 3.4906704425811768
+        },
+        {
+          "time_s": 179.5,
+          "frequency_hz": 112.9922614172101,
+          "weight": 3.149142265319824
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.4109559059143066,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8611111111111112,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 32.86229341849685
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "harmonic_group_id": "harmonics-0002",
+      "start_s": 1038.5,
+      "end_s": 1112.0,
+      "band_hz": [
+        95.91250202804804,
+        145.54432466253638
+      ],
+      "ridge": [
+        {
+          "time_s": 1039.5,
+          "frequency_hz": 144.54432466253638,
+          "weight": 3.0053508281707764
+        },
+        {
+          "time_s": 1040.0,
+          "frequency_hz": 144.52936496026814,
+          "weight": 3.081935167312622
+        },
+        {
+          "time_s": 1040.5,
+          "frequency_hz": 144.38410378992558,
+          "weight": 3.030940532684326
+        },
+        {
+          "time_s": 1042.0,
+          "frequency_hz": 143.8409492969513,
+          "weight": 3.227895975112915
+        },
+        {
+          "time_s": 1042.5,
+          "frequency_hz": 143.89552149176598,
+          "weight": 3.1521286964416504
+        },
+        {
+          "time_s": 1043.5,
+          "frequency_hz": 143.59315133094788,
+          "weight": 3.074970006942749
+        },
+        {
+          "time_s": 1044.0,
+          "frequency_hz": 143.37775663286448,
+          "weight": 3.276244640350342
+        },
+        {
+          "time_s": 1045.0,
+          "frequency_hz": 143.1808643490076,
+          "weight": 3.075326442718506
+        },
+        {
+          "time_s": 1045.5,
+          "frequency_hz": 142.9732752367854,
+          "weight": 3.093088388442993
+        },
+        {
+          "time_s": 1046.0,
+          "frequency_hz": 142.84056878089905,
+          "weight": 3.004110813140869
+        },
+        {
+          "time_s": 1047.0,
+          "frequency_hz": 142.34072710573673,
+          "weight": 3.0874385833740234
+        },
+        {
+          "time_s": 1049.0,
+          "frequency_hz": 141.5308301243931,
+          "weight": 3.4489009380340576
+        },
+        {
+          "time_s": 1049.5,
+          "frequency_hz": 141.38220577687025,
+          "weight": 3.8690390586853027
+        },
+        {
+          "time_s": 1050.0,
+          "frequency_hz": 141.18223574757576,
+          "weight": 3.8407649993896484
+        },
+        {
+          "time_s": 1050.5,
+          "frequency_hz": 140.84458234906197,
+          "weight": 3.4008331298828125
+        },
+        {
+          "time_s": 1051.0,
+          "frequency_hz": 140.7400430291891,
+          "weight": 3.7166712284088135
+        },
+        {
+          "time_s": 1051.5,
+          "frequency_hz": 140.36288891732693,
+          "weight": 3.8254573345184326
+        },
+        {
+          "time_s": 1052.0,
+          "frequency_hz": 140.0838209912181,
+          "weight": 3.752955436706543
+        },
+        {
+          "time_s": 1052.5,
+          "frequency_hz": 139.9735063817352,
+          "weight": 3.58137845993042
+        },
+        {
+          "time_s": 1053.0,
+          "frequency_hz": 139.44627816602588,
+          "weight": 3.529751777648926
+        },
+        {
+          "time_s": 1053.5,
+          "frequency_hz": 139.2316074371338,
+          "weight": 3.4312822818756104
+        },
+        {
+          "time_s": 1054.0,
+          "frequency_hz": 138.87336678802967,
+          "weight": 3.559333562850952
+        },
+        {
+          "time_s": 1054.5,
+          "frequency_hz": 138.66119024157524,
+          "weight": 3.9315693378448486
+        },
+        {
+          "time_s": 1055.0,
+          "frequency_hz": 138.35780557990074,
+          "weight": 3.413696050643921
+        },
+        {
+          "time_s": 1055.5,
+          "frequency_hz": 137.8479392081499,
+          "weight": 3.280148983001709
+        },
+        {
+          "time_s": 1056.0,
+          "frequency_hz": 137.55854004248977,
+          "weight": 3.592733383178711
+        },
+        {
+          "time_s": 1056.5,
+          "frequency_hz": 137.16748629510403,
+          "weight": 3.2611684799194336
+        },
+        {
+          "time_s": 1057.5,
+          "frequency_hz": 136.37436328828335,
+          "weight": 3.4457366466522217
+        },
+        {
+          "time_s": 1058.0,
+          "frequency_hz": 135.83766275644302,
+          "weight": 3.5072474479675293
+        },
+        {
+          "time_s": 1058.5,
+          "frequency_hz": 135.42560731619596,
+          "weight": 3.614720344543457
+        },
+        {
+          "time_s": 1059.0,
+          "frequency_hz": 135.05446930229664,
+          "weight": 3.668148994445801
+        },
+        {
+          "time_s": 1059.5,
+          "frequency_hz": 134.35928119719028,
+          "weight": 3.4916188716888428
+        },
+        {
+          "time_s": 1060.0,
+          "frequency_hz": 133.9645962268114,
+          "weight": 3.815995693206787
+        },
+        {
+          "time_s": 1060.5,
+          "frequency_hz": 133.5166701860726,
+          "weight": 3.641279935836792
+        },
+        {
+          "time_s": 1061.0,
+          "frequency_hz": 132.90626383572817,
+          "weight": 3.5603325366973877
+        },
+        {
+          "time_s": 1061.5,
+          "frequency_hz": 132.35377152264118,
+          "weight": 3.452205181121826
+        },
+        {
+          "time_s": 1062.0,
+          "frequency_hz": 131.6569975465536,
+          "weight": 3.665170192718506
+        },
+        {
+          "time_s": 1062.5,
+          "frequency_hz": 131.2020987123251,
+          "weight": 3.4791762828826904
+        },
+        {
+          "time_s": 1063.0,
+          "frequency_hz": 130.49136140476912,
+          "weight": 3.579850912094116
+        },
+        {
+          "time_s": 1063.5,
+          "frequency_hz": 129.98015345074236,
+          "weight": 3.5267012119293213
+        },
+        {
+          "time_s": 1064.0,
+          "frequency_hz": 129.25,
+          "weight": 3.2653539180755615
+        },
+        {
+          "time_s": 1064.5,
+          "frequency_hz": 128.58414760231972,
+          "weight": 3.142388105392456
+        },
+        {
+          "time_s": 1065.0,
+          "frequency_hz": 127.80093720555305,
+          "weight": 3.4623372554779053
+        },
+        {
+          "time_s": 1065.5,
+          "frequency_hz": 127.22752103209496,
+          "weight": 3.729712724685669
+        },
+        {
+          "time_s": 1066.0,
+          "frequency_hz": 126.46972567774355,
+          "weight": 3.2709479331970215
+        },
+        {
+          "time_s": 1066.5,
+          "frequency_hz": 125.65992426872253,
+          "weight": 3.5150036811828613
+        },
+        {
+          "time_s": 1067.0,
+          "frequency_hz": 125.00823943410069,
+          "weight": 3.6343095302581787
+        },
+        {
+          "time_s": 1068.0,
+          "frequency_hz": 123.4286677017808,
+          "weight": 3.0392396450042725
+        },
+        {
+          "time_s": 1069.5,
+          "frequency_hz": 121.01008614804596,
+          "weight": 3.549726724624634
+        },
+        {
+          "time_s": 1070.0,
+          "frequency_hz": 120.53492984548211,
+          "weight": 3.214277744293213
+        },
+        {
+          "time_s": 1070.5,
+          "frequency_hz": 119.5485055744648,
+          "weight": 3.43043851852417
+        },
+        {
+          "time_s": 1071.0,
+          "frequency_hz": 118.95456567034125,
+          "weight": 3.6086723804473877
+        },
+        {
+          "time_s": 1071.5,
+          "frequency_hz": 118.19708067178726,
+          "weight": 3.680199384689331
+        },
+        {
+          "time_s": 1072.0,
+          "frequency_hz": 117.42575029283762,
+          "weight": 3.2015485763549805
+        },
+        {
+          "time_s": 1072.5,
+          "frequency_hz": 116.56326227635145,
+          "weight": 3.5774941444396973
+        },
+        {
+          "time_s": 1073.0,
+          "frequency_hz": 116.06949792057276,
+          "weight": 3.2456281185150146
+        },
+        {
+          "time_s": 1073.5,
+          "frequency_hz": 115.02496813610196,
+          "weight": 3.405076742172241
+        },
+        {
+          "time_s": 1074.0,
+          "frequency_hz": 114.50961809419096,
+          "weight": 3.5844266414642334
+        },
+        {
+          "time_s": 1074.5,
+          "frequency_hz": 113.90369235724211,
+          "weight": 3.3840813636779785
+        },
+        {
+          "time_s": 1075.0,
+          "frequency_hz": 113.02963981963694,
+          "weight": 3.4294052124023438
+        },
+        {
+          "time_s": 1075.5,
+          "frequency_hz": 112.49854211811908,
+          "weight": 3.4400758743286133
+        },
+        {
+          "time_s": 1076.0,
+          "frequency_hz": 111.83507314324379,
+          "weight": 3.4853756427764893
+        },
+        {
+          "time_s": 1077.0,
+          "frequency_hz": 110.520591462031,
+          "weight": 3.671539306640625
+        },
+        {
+          "time_s": 1077.5,
+          "frequency_hz": 110.09323009848595,
+          "weight": 3.8683533668518066
+        },
+        {
+          "time_s": 1078.0,
+          "frequency_hz": 109.48238776810467,
+          "weight": 3.476454496383667
+        },
+        {
+          "time_s": 1078.5,
+          "frequency_hz": 108.896991930902,
+          "weight": 3.5037171840667725
+        },
+        {
+          "time_s": 1079.0,
+          "frequency_hz": 108.28758232295513,
+          "weight": 3.7181499004364014
+        },
+        {
+          "time_s": 1079.5,
+          "frequency_hz": 107.82816302776337,
+          "weight": 3.8734471797943115
+        },
+        {
+          "time_s": 1080.0,
+          "frequency_hz": 107.46158800274134,
+          "weight": 3.5583231449127197
+        },
+        {
+          "time_s": 1080.5,
+          "frequency_hz": 106.96557288989425,
+          "weight": 3.29693341255188
+        },
+        {
+          "time_s": 1081.0,
+          "frequency_hz": 106.45857526734471,
+          "weight": 3.7417120933532715
+        },
+        {
+          "time_s": 1081.5,
+          "frequency_hz": 106.0683621019125,
+          "weight": 3.4619150161743164
+        },
+        {
+          "time_s": 1082.0,
+          "frequency_hz": 105.58494196087122,
+          "weight": 3.612621545791626
+        },
+        {
+          "time_s": 1082.5,
+          "frequency_hz": 105.18447262048721,
+          "weight": 3.5726430416107178
+        },
+        {
+          "time_s": 1083.0,
+          "frequency_hz": 104.75,
+          "weight": 3.646059989929199
+        },
+        {
+          "time_s": 1083.5,
+          "frequency_hz": 104.42067615687847,
+          "weight": 4.161412715911865
+        },
+        {
+          "time_s": 1084.0,
+          "frequency_hz": 104.08851291239262,
+          "weight": 4.26527214050293
+        },
+        {
+          "time_s": 1084.5,
+          "frequency_hz": 103.75881361961365,
+          "weight": 4.021363735198975
+        },
+        {
+          "time_s": 1085.0,
+          "frequency_hz": 103.51570395380259,
+          "weight": 3.8434667587280273
+        },
+        {
+          "time_s": 1085.5,
+          "frequency_hz": 103.17365625500679,
+          "weight": 3.8319272994995117
+        },
+        {
+          "time_s": 1086.0,
+          "frequency_hz": 102.83725728094578,
+          "weight": 3.8289294242858887
+        },
+        {
+          "time_s": 1086.5,
+          "frequency_hz": 102.5271973516792,
+          "weight": 3.7680468559265137
+        },
+        {
+          "time_s": 1087.0,
+          "frequency_hz": 102.29971817135811,
+          "weight": 3.523205280303955
+        },
+        {
+          "time_s": 1087.5,
+          "frequency_hz": 102.00495367916301,
+          "weight": 3.787001132965088
+        },
+        {
+          "time_s": 1088.0,
+          "frequency_hz": 101.80665192008018,
+          "weight": 3.879063129425049
+        },
+        {
+          "time_s": 1088.5,
+          "frequency_hz": 101.58554305881262,
+          "weight": 3.9994451999664307
+        },
+        {
+          "time_s": 1089.0,
+          "frequency_hz": 101.38483410328627,
+          "weight": 3.6816532611846924
+        },
+        {
+          "time_s": 1089.5,
+          "frequency_hz": 101.09493210166693,
+          "weight": 3.7647132873535156
+        },
+        {
+          "time_s": 1090.0,
+          "frequency_hz": 100.9111153036356,
+          "weight": 3.7794253826141357
+        },
+        {
+          "time_s": 1090.5,
+          "frequency_hz": 100.75,
+          "weight": 3.8222808837890625
+        },
+        {
+          "time_s": 1091.0,
+          "frequency_hz": 100.44980632141232,
+          "weight": 3.885768175125122
+        },
+        {
+          "time_s": 1091.5,
+          "frequency_hz": 100.30424699187279,
+          "weight": 3.5421974658966064
+        },
+        {
+          "time_s": 1092.0,
+          "frequency_hz": 100.23821613192558,
+          "weight": 3.870072841644287
+        },
+        {
+          "time_s": 1092.5,
+          "frequency_hz": 99.97684820368886,
+          "weight": 3.8613383769989014
+        },
+        {
+          "time_s": 1093.0,
+          "frequency_hz": 99.80152995884418,
+          "weight": 3.8751816749572754
+        },
+        {
+          "time_s": 1093.5,
+          "frequency_hz": 99.78872947394848,
+          "weight": 3.802563428878784
+        },
+        {
+          "time_s": 1094.0,
+          "frequency_hz": 99.53581286594272,
+          "weight": 3.9405593872070312
+        },
+        {
+          "time_s": 1094.5,
+          "frequency_hz": 99.34433801472187,
+          "weight": 3.7176907062530518
+        },
+        {
+          "time_s": 1095.0,
+          "frequency_hz": 99.22839829325676,
+          "weight": 3.142082929611206
+        },
+        {
+          "time_s": 1095.5,
+          "frequency_hz": 99.17366129159927,
+          "weight": 3.673820734024048
+        },
+        {
+          "time_s": 1096.0,
+          "frequency_hz": 99.02067910321057,
+          "weight": 3.6543970108032227
+        },
+        {
+          "time_s": 1096.5,
+          "frequency_hz": 98.85040524601936,
+          "weight": 3.47244930267334
+        },
+        {
+          "time_s": 1097.0,
+          "frequency_hz": 98.89694181084633,
+          "weight": 3.4890806674957275
+        },
+        {
+          "time_s": 1097.5,
+          "frequency_hz": 98.69691079854965,
+          "weight": 3.0581836700439453
+        },
+        {
+          "time_s": 1098.0,
+          "frequency_hz": 98.59139056503773,
+          "weight": 3.4554309844970703
+        },
+        {
+          "time_s": 1098.5,
+          "frequency_hz": 98.49194981809705,
+          "weight": 3.1768949031829834
+        },
+        {
+          "time_s": 1099.0,
+          "frequency_hz": 98.3714299350977,
+          "weight": 3.248613119125366
+        },
+        {
+          "time_s": 1099.5,
+          "frequency_hz": 98.32925461232662,
+          "weight": 3.740492105484009
+        },
+        {
+          "time_s": 1100.0,
+          "frequency_hz": 98.1728576272726,
+          "weight": 3.5529255867004395
+        },
+        {
+          "time_s": 1100.5,
+          "frequency_hz": 98.05781313031912,
+          "weight": 3.506347179412842
+        },
+        {
+          "time_s": 1101.0,
+          "frequency_hz": 98.05395504459739,
+          "weight": 3.2976245880126953
+        },
+        {
+          "time_s": 1101.5,
+          "frequency_hz": 98.02191442251205,
+          "weight": 3.2726316452026367
+        },
+        {
+          "time_s": 1102.0,
+          "frequency_hz": 97.81458614766598,
+          "weight": 3.000751495361328
+        },
+        {
+          "time_s": 1103.5,
+          "frequency_hz": 97.72000731527805,
+          "weight": 3.1215052604675293
+        },
+        {
+          "time_s": 1104.0,
+          "frequency_hz": 97.52158454619348,
+          "weight": 3.298783302307129
+        },
+        {
+          "time_s": 1104.5,
+          "frequency_hz": 97.58510445058346,
+          "weight": 3.5588219165802
+        },
+        {
+          "time_s": 1105.0,
+          "frequency_hz": 97.55758512020111,
+          "weight": 3.5938854217529297
+        },
+        {
+          "time_s": 1105.5,
+          "frequency_hz": 97.35043627023697,
+          "weight": 3.3567018508911133
+        },
+        {
+          "time_s": 1106.0,
+          "frequency_hz": 97.37534049153328,
+          "weight": 3.299208879470825
+        },
+        {
+          "time_s": 1106.5,
+          "frequency_hz": 97.32883973419666,
+          "weight": 3.058379650115967
+        },
+        {
+          "time_s": 1108.5,
+          "frequency_hz": 97.02888228185475,
+          "weight": 3.0846199989318848
+        },
+        {
+          "time_s": 1109.0,
+          "frequency_hz": 97.03278112411499,
+          "weight": 3.398118495941162
+        },
+        {
+          "time_s": 1109.5,
+          "frequency_hz": 97.07075209915638,
+          "weight": 3.1003546714782715
+        },
+        {
+          "time_s": 1111.0,
+          "frequency_hz": 96.91250202804804,
+          "weight": 3.2443127632141113
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.524953246116638,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8611111111111112,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 44.938092060387135
+      }
+    }
+  ],
+  "stage": "complete",
+  "progress": 1,
+  "artifacts": {
+    "provenance": "provenance.json",
+    "request": "request.json",
+    "intake": "intake/intake.json",
+    "recording": "intake/recording.json",
+    "discovery": "discovery/discovery.json",
+    "discovery_plot": "discovery/discovery.png",
+    "search_report": "search/search-report.json",
+    "refinement": "refined-candidates.json",
+    "data_provenance": "data-provenance.json",
+    "decision": "decision.json",
+    "event-0001-spectrogram": "discovery/event-0001-spectrogram.png",
+    "event-0001": "discovery/event-0001.png",
+    "event-0002-spectrogram": "discovery/event-0002-spectrogram.png",
+    "event-0002": "discovery/event-0002.png"
+  },
+  "candidates": [
+    {
+      "lat": 40.03171551213249,
+      "lon": -100.01822773042097,
+      "score": -0.1748330800096914,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 109.74459915651127,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 43.000130177653176,
+      "lon": -112.00007927574578,
+      "score": -0.18741496874160582,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 118.43360404999935,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 43.00013019635798,
+      "lon": -112.00007932273428,
+      "score": -0.18741498324207873,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 118.43235594583506,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": -0.24347511259416688,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.000340301288176,
+      "lon": -111.99985571667271,
+      "score": -0.28744174247217613,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00019029518254,
+      "lon": -112.00107148245839,
+      "score": -0.40791450058034784,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413,
+      "score": -0.4278470177479039,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413,
+      "score": -0.4278470177479039,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": -0.43561025292531264,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706,
+      "score": -0.5114700641902679,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706,
+      "score": -0.5114700641902679,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605,
+      "score": -0.5170064160823291,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605,
+      "score": -0.5170064160823291,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378,
+      "score": -0.5175919782870998,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378,
+      "score": -0.5175919782870998,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": -0.5829041475835429,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99945778861459,
+      "lon": -111.99964907553621,
+      "score": -0.6449493766359201,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": -0.6578271529704529,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00049029613849,
+      "lon": -111.99863994559982,
+      "score": -0.6672458355103398,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173,
+      "score": -0.7151676829171381,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173,
+      "score": -0.7151676829171381,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.999307784632556,
+      "lon": -112.00086482621806,
+      "score": -0.7315647417401965,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": -0.7456468802405695,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00004027782172,
+      "lon": -112.00228724295647,
+      "score": -0.785417987035644,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": -0.8061038293896331,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538,
+      "score": -0.8250277575776613,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538,
+      "score": -0.8250277575776613,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.999607781341446,
+      "lon": -111.99843331956731,
+      "score": -0.8357941401076415,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.001222814839394,
+      "lon": -112.00006236309645,
+      "score": -0.8420185118577806,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false2-A",
+        "false2-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": -0.8614967128362181,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261,
+      "score": -0.862018993393495,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "false1-A",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261,
+      "score": -0.862018993393495,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "known-jet",
+        "false1-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": -0.8798961539383718,
+      "score_kind": "negative_robust_ridge_loss_hz",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "true-A",
+        "true-B"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    }
+  ],
+  "reason_code": "ambiguous_locations",
+  "message": "Competing hypotheses fit nearly as well; no unique precise location is supported."
+}

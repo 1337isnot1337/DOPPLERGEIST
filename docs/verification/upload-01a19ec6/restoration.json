@@ -1,0 +1,20 @@
+[
+  {
+    "asset": "data-source.tar.gz",
+    "sha256": "0f5e7bf1dc9279b01ff10e2005a777b00b2835a0304aa5366cc333580e5135df",
+    "bytes": 257168360,
+    "elapsed_s": 6.81948722602101
+  },
+  {
+    "asset": "data-adsb-derived.tar.gz",
+    "sha256": "1f8a03daf8cd851b33f19a47ae65eb4d20d59ce48956e99d51aac7517302d6a6",
+    "bytes": 1234649883,
+    "elapsed_s": 24.88437224298832
+  },
+  {
+    "asset": "data-terrain.tar.gz",
+    "sha256": "852ac2e0e6e9040efb277692d57751d1f7b57ed0538edf9b249fc0ded81fd965",
+    "bytes": 25353456,
+    "elapsed_s": 0.27576518699061126
+  }
+]

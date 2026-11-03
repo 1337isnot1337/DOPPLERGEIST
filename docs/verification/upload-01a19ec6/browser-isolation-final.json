@@ -1,0 +1,28 @@
+{
+  "title": "DOPPLERGEIST \u00b7 Aircraft sound locator",
+  "url": "http://127.0.0.1:18876/?job=413aec09ec1c43a9b5093dd441b9ae63",
+  "job_id": "413aec09ec1c43a9b5093dd441b9ae63",
+  "status": "Needs Input",
+  "message": "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.",
+  "required_input": "Required input: time_window. Add the evidence to a new analysis; this run is preserved.",
+  "artifact_links": [
+    "discovery/discovery.json",
+    "discovery/discovery.png",
+    "input.json",
+    "input.mp3",
+    "intake/intake.json",
+    "intake/recording.f32",
+    "intake/recording.json",
+    "provenance.json",
+    "request.json",
+    "result.json",
+    "worker.log"
+  ],
+  "page_errors": [],
+  "isolated_wayland_display": "wayland-2",
+  "isolated_compositor": "efb50993780079460b0cbed1363e2166a2de1d9f_1793666062_1190144911",
+  "scope": "Actual browser upload, displayed result and original download; no accuracy claim.",
+  "runner_sha256": "c6b6fddda0602ad4f257bdc18d9ddcb926fa86f089f08345f157fa49c2e22961",
+  "source_sha256": "1ec874ef851b82976aadaafa9aec6505aaba435cffb51548c485432165be1f7b",
+  "download_sha256": "1ec874ef851b82976aadaafa9aec6505aaba435cffb51548c485432165be1f7b"
+}

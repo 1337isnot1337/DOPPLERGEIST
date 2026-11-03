@@ -1,0 +1,25 @@
+{
+  "title": "DOPPLERGEIST \u00b7 Aircraft sound locator",
+  "url": "http://127.0.0.1:18876/?job=97988e75aaf842b2a42383e3e774e5e8",
+  "job_id": "97988e75aaf842b2a42383e3e774e5e8",
+  "status": "Inconclusive",
+  "message": "No supported moving-tone Doppler events were discovered in the recording.",
+  "required_input": "",
+  "artifact_links": [
+    "discovery/discovery.json",
+    "discovery/discovery.png",
+    "input.json",
+    "input.mp3",
+    "intake/intake.json",
+    "intake/recording.f32",
+    "intake/recording.json",
+    "provenance.json",
+    "request.json",
+    "result.json",
+    "worker.log"
+  ],
+  "page_errors": [],
+  "scope": "Actual browser upload, displayed result and original download; no accuracy claim.",
+  "source_sha256": "1ec874ef851b82976aadaafa9aec6505aaba435cffb51548c485432165be1f7b",
+  "download_sha256": "1ec874ef851b82976aadaafa9aec6505aaba435cffb51548c485432165be1f7b"
+}

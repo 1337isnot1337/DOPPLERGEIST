@@ -1,0 +1,31 @@
+{
+  "audio_sha256": "51732e0015f300144c1fe34f0d5117c18ba595f61b5c9758796b6931f5683d9e",
+  "audio_bytes": 9440972,
+  "request_sha256": "eb188108dc0f768fd25850971db863a170587aea47038c18ecb985ac5cdd720c",
+  "url": "http://127.0.0.1:18876",
+  "runner_sha256": "063abf6ebb98f1506cafdccd87d927fa7019547e37059b3388f1624b6f2fbf9c",
+  "truth_sent_to_server": false,
+  "case_passed": false,
+  "job_id": "bf7506d534aa444fb4002350e95792b0",
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "coverage": {
+    "search_complete": true,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "upload_roundtrip_verified": true,
+  "reference_sha256": "377bbc1306548f3258431b3247443113b894feb94731f7c9d5ac9b2b56f316ae",
+  "reference_provenance": null,
+  "location_error_m": 5.553088436321734,
+  "evaluation_target": "leading_unaccepted_hypothesis",
+  "scope": "One actual upload and artifact roundtrip; reference provenance and search/data coverage require separate review. HTTP delivery is not browser interaction or national holdout validation.",
+  "elapsed_s": 1128.6004847429867
+}
