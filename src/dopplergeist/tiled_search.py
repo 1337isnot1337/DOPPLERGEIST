@@ -391,11 +391,14 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         # of minima before we inspect the returned table.
         chunk_points = max(1, budget.max_cpa_rows // samples)
         track_tables, track_rows = [], 0
+        sample_cache = {}
         try:
             if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
                 continue
             for first in range(0, len(points), chunk_points):
-                table = cpa_table([track], points.iloc[first:first + chunk_points], radius, parameters.get("c", 343.0), budget.cpa_step_s)
+                table = cpa_table([track], points.iloc[first:first + chunk_points], radius,
+                                  parameters.get("c", 343.0), budget.cpa_step_s,
+                                  _sample_cache=sample_cache)
                 track_rows += len(table)
                 if count + track_rows > budget.max_cpa_rows:
                     raise DataUnavailable("Tile CPA-row memory budget exceeded")
