@@ -1,0 +1,48 @@
+"""Run blind full-file intake/discovery into a fresh diagnostic directory.
+
+No annotations, coordinates, flight IDs or per-case frequency/time hints are read.
+Evaluate its output against withheld labels in a separate process.
+"""
+import argparse
+from dataclasses import asdict
+import hashlib
+import json
+from pathlib import Path
+import resource
+import subprocess
+import time
+
+from aircraft_geoloc.discovery import DiscoverySettings, discover_events
+from aircraft_geoloc.intake import intake_recording
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("audio")
+    parser.add_argument("--output", required=True)
+    args = parser.parse_args()
+    output = Path(args.output)
+    output.mkdir(parents=True, exist_ok=False)
+    began = time.monotonic()
+    recording = intake_recording(args.audio, output / "intake")
+    events = discover_events(recording, output_dir=output / "discovery")
+    root = Path(__file__).resolve().parents[1]
+    sources = sorted((root / "src" / "aircraft_geoloc").glob("*.py"))
+    code_hash = hashlib.sha256()
+    for path in sources:
+        code_hash.update(path.name.encode())
+        code_hash.update(path.read_bytes())
+    result = {"recording": recording.metadata, "time_status": recording.time_status,
+              "settings": asdict(DiscoverySettings()), "events_found": len(events),
+              "events": [{k: event[k] for k in ("event_id", "start_s", "end_s", "band_hz", "quality")} for event in events],
+              "runtime_s": time.monotonic() - began, "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+              "code_sha256": code_hash.hexdigest(),
+              "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
+              "working_tree": subprocess.check_output(["git", "status", "--short"], cwd=root, text=True).strip(),
+              "scope": "Blind acoustic discovery only; no aircraft association or location estimate"}
+    (output / "summary.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()

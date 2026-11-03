@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "case_id": "public-001",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-001.json",
+      "audio_sha256": "27629dee59acf4877ac3094f9b6db46189b1f6572bf2ceecff06360caaee49bd",
+      "duration_s": 49.93835416666667
+    },
+    {
+      "case_id": "public-002",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-002.json",
+      "audio_sha256": "cfd03401b5f891020d76c12000a7552be0c549f65b8e67dc571f06258f0178ac",
+      "duration_s": 60.526666666666664
+    },
+    {
+      "case_id": "public-003",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-003.json",
+      "audio_sha256": "f0a78abf7fb124e0688ce82d0eb6410475b840188209b5e07dc21519c8bfa3df",
+      "duration_s": 91.92004166666666
+    },
+    {
+      "case_id": "public-004",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-004.json",
+      "audio_sha256": "c28412b7c3de34b006b40bf6fe005ba042145ee4d480547a0647091e531a5b3b",
+      "duration_s": 93.22035416666667
+    },
+    {
+      "case_id": "public-005",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-005.json",
+      "audio_sha256": "e47eb35b076a9fbeb4983498221f6853d1d0cc9d8af7259a430557a100bed293",
+      "duration_s": 56.43991666666667
+    },
+    {
+      "case_id": "public-006",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-006.json",
+      "audio_sha256": "c0366b111fbf82877bcaba53aa53a99602f9f5512513bc996e629aa04633d37e",
+      "duration_s": 85.2326875
+    },
+    {
+      "case_id": "public-007",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-007.json",
+      "audio_sha256": "8d23e3aa36ad439801fcbec6ef3f7f80647ed70d3b9ed11157539e72e771b38b",
+      "duration_s": 68.02666666666667
+    },
+    {
+      "case_id": "public-008",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-008.json",
+      "audio_sha256": "81da035ff6af575fcaded1a4dfc3162bb6377a033c0d840af490eba47a879998",
+      "duration_s": 77.43079166666666
+    },
+    {
+      "case_id": "public-009",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-009.json",
+      "audio_sha256": "ec5ff2e4d78d68521c7f65fcf030c7b49131c18cb3c018900e61cf06382bcdf7",
+      "duration_s": 132.41560416666667
+    },
+    {
+      "case_id": "public-010",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-010.json",
+      "audio_sha256": "e71592a17f8b1d82746f3915af9810066afefb54810443efe99fd0e081606319",
+      "duration_s": 151.92039583333334
+    },
+    {
+      "case_id": "public-011",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-011.json",
+      "audio_sha256": "b04a46541d3adf35419faf1e15ca5f02cfd93b4f99f2c3d5cd25dce5531066c8",
+      "duration_s": 60.8981875
+    },
+    {
+      "case_id": "public-012",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-012.json",
+      "audio_sha256": "a5e4bad00fc1382824218e92f0da9ffb97223e5dfcccd35cf22bf0e354b72c8f",
+      "duration_s": 101.57954166666667
+    },
+    {
+      "case_id": "public-013",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-013.json",
+      "audio_sha256": "7202a8a4332765074c85af28ade258f41170f62e5356c4bf866f5775d25d1429",
+      "duration_s": 143.37547916666668
+    },
+    {
+      "case_id": "public-014",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-014.json",
+      "audio_sha256": "fe241d8839128daf85de79606f0663333c6c32a40d50ab5043f32d36586440ac",
+      "duration_s": 147.045375
+    },
+    {
+      "case_id": "public-015",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-015.json",
+      "audio_sha256": "02d2acc40e897b4b3a83c05f2ec89af4c10f0ccb17a1ea0a8fa7f1530e72eb39",
+      "duration_s": 74.00004166666666
+    },
+    {
+      "case_id": "public-016",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-016.json",
+      "audio_sha256": "427a7575ec97a84feb8fe81f7fb8b1cff5a122e79223fba11d5327c0ba9e1179",
+      "duration_s": 129.62925
+    },
+    {
+      "case_id": "public-017",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-017.json",
+      "audio_sha256": "8edaf3c4a5a6f4370b979842bc38b3755a3930f8befa017795991d3d8224a657",
+      "duration_s": 77.925375
+    },
+    {
+      "case_id": "public-018",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-018.json",
+      "audio_sha256": "2002081930df3f5b6e6ea9a6e6ce97fe65a712c9e02fe720f12f2f45e0602e81",
+      "duration_s": 64.61333333333333
+    },
+    {
+      "case_id": "public-019",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-019.json",
+      "audio_sha256": "46b7905f230dc5cc8dc0e9485a88ab2b3b544737d62c20b96b34ea2d460b84c9",
+      "duration_s": 181.4561875
+    },
+    {
+      "case_id": "public-020",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-020.json",
+      "audio_sha256": "520153c1e15d1ebf75cb713ca3fb158ecd73594a5dd8a6490b1baee4e2a98036",
+      "duration_s": 95.2636875
+    },
+    {
+      "case_id": "public-021",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-021.json",
+      "audio_sha256": "9a800515b85817e09b418ff125a3d71723fd9922b978a317017bf5098ed77c0b",
+      "duration_s": 77.92533333333333
+    },
+    {
+      "case_id": "public-022",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-022.json",
+      "audio_sha256": "9164e2702d0e24b9620f4511a1ee21758a7d501cb00867dd04089ca0b846e30f",
+      "duration_s": 112.539375
+    },
+    {
+      "case_id": "public-023",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-023.json",
+      "audio_sha256": "7b34ab4933a7c4193f9e668d42fa4d7cb94a0b754b25eb84ebddbca227419b7a",
+      "duration_s": 109.0099375
+    },
+    {
+      "case_id": "public-024",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-024.json",
+      "audio_sha256": "a06237f42d5789ff0b868e636b45f86974f61c4318f6ddb01865129245111ee5",
+      "duration_s": 74.08708333333334
+    },
+    {
+      "case_id": "public-025",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-025.json",
+      "audio_sha256": "a19c78d9d147a6e8b4b2c495bd344787363875ea411e3af21b59490517832495",
+      "duration_s": 114.44802083333333
+    },
+    {
+      "case_id": "public-026",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-026.json",
+      "audio_sha256": "676e3cb4e34941760a1f3df031d551e0aa7e1d69d4e9085a05a91e2029a87c19",
+      "duration_s": 98.42164583333333
+    },
+    {
+      "case_id": "public-027",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-027.json",
+      "audio_sha256": "7834bad6d620df2143b396325fd861d6581d5ad25dd9bcfa997eb953d13a65f5",
+      "duration_s": 137.488
+    },
+    {
+      "case_id": "public-028",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-028.json",
+      "audio_sha256": "3cfa0ca3a58db714074487004ca3b7505ab9ee4e4882b7efbfdf62f8d7f1a426",
+      "duration_s": 47.33775
+    },
+    {
+      "case_id": "public-029",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-029.json",
+      "audio_sha256": "032ff198c6c85997758a2893641d7a87cb21d9f4bb847dd261cca8fd67df2ae8",
+      "duration_s": 119.22666666666667
+    },
+    {
+      "case_id": "public-030",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-030.json",
+      "audio_sha256": "d2e839c8a95f53824cabb294748aaf63f5714a2add6a414c4f8cdd4c4db9e293",
+      "duration_s": 92.09066666666666
+    },
+    {
+      "case_id": "public-031",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-031.json",
+      "audio_sha256": "0fdf8b328b9e02ff83144b634f5a6ced115cac4672b89557e1aae3151ab7612d",
+      "duration_s": 68.36802083333333
+    },
+    {
+      "case_id": "public-032",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-032.json",
+      "audio_sha256": "c732dff1b19142894931fcd87febdb70a18daa472c316e5c6f36ac6dfe3debc1",
+      "duration_s": 64.24183333333333
+    },
+    {
+      "case_id": "public-033",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-033.json",
+      "audio_sha256": "e9e57696eb1d1a80eaf4688f4bce068398afcf6f9bb8732d72dba8833837255e",
+      "duration_s": 41.77435416666667
+    },
+    {
+      "case_id": "public-034",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-034.json",
+      "audio_sha256": "56aef7ec190822a03f78764d5d91d22c1f8181e4b672a453c04c899d2cb0a0c9",
+      "duration_s": 80.0314375
+    },
+    {
+      "case_id": "public-035",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-035.json",
+      "audio_sha256": "bea85232822bb0702e9af8c825934aa27cf04bbb0665db8e15ceae87f552e690",
+      "duration_s": 48.91202083333334
+    },
+    {
+      "case_id": "public-036",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-036.json",
+      "audio_sha256": "70dc6c4edc47d56c85c8d24ae6ac34a640bfaa5bbf23a908f2dd2244d7534e06",
+      "duration_s": 79.84566666666667
+    },
+    {
+      "case_id": "public-037",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-037.json",
+      "audio_sha256": "e9ba69a70a8a2c2eb79c06094e9c250c7490af738871ed03b52ba1bd809e94a2",
+      "duration_s": 40.6476875
+    },
+    {
+      "case_id": "public-038",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-038.json",
+      "audio_sha256": "10b83e163e84784d5d9952857160fb17d30dc6a1687c6fa159c0d54c3078323d",
+      "duration_s": 46.223145833333334
+    },
+    {
+      "case_id": "public-039",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-039.json",
+      "audio_sha256": "2f374f6244cfe5dad8a200b427e392a4c64540d4cb0bc4a621e34aac229c3ea4",
+      "duration_s": 105.4805
+    },
+    {
+      "case_id": "public-040",
+      "split": "development",
+      "scope": "blind_public_audio_features_only",
+      "request": "public-040.json",
+      "audio_sha256": "87ccca3294b374e3a8c4ae7362c5d67c3cfa12bdf4ddaa576a06d07ff60be8c2",
+      "duration_s": 104.36595833333334
+    }
+  ]
+}
