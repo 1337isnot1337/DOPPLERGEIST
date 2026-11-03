@@ -11,6 +11,11 @@ from scipy.spatial import cKDTree
 from .geometry import AcousticSupportError, ecef
 
 
+# Most national track/receiver chunks are empty; construct their schema once.
+_EMPTY_CPA_TABLE = pd.DataFrame(columns=[
+    "point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"])
+
+
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
     """Vectorized piecewise-linear CPA prefilter; supports repeated local passes.
 
@@ -161,6 +166,8 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
                 rows.append({"point_id":int(point_ids[chosen[oi[j]]]),"flight_id":track.id,
                              "emission_time":float(when[j]),"receive_time":float(when[j]+distance[j]/c),
                              "distance_m":float(distance[j]),"speed_mps":float(speed[j])})
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
     result=pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
     if not result.empty:
         # A CPA exactly at a sample can be proposed twice under roundoff.
