@@ -122,3 +122,33 @@ def test_analysis_wall_time_budget_is_terminal_and_persistent(tmp_path):
         assert not manager._processes
     finally:
         manager.close()
+
+
+def test_resume_preserves_original_and_checks_input(tmp_path, monkeypatch):
+    monkeypatch.setattr(JobManager, "_run", lambda self, directory: None)
+    manager = JobManager(tmp_path, {"search_budget": {"tile_cells": 16}})
+    try:
+        job = manager.submit({"schema_version": 1}, io.BytesIO(b"original"), 8)
+        old = manager.directory(job["job_id"])
+        result(old, "inconclusive", reason_code="work_limit", message="Time limit.")
+        with pytest.raises(ValueError, match="No search checkpoints"):
+            manager.resume(job["job_id"])
+        (old / "search").mkdir()
+        (old / "search" / "manifest.json").write_text('{"run_hash":"saved"}')
+        (old / "search" / "retention.sqlite").write_bytes(b"ledger")
+        (old / "search" / "tile-1.json").write_text("original checkpoint")
+        resumed = manager.resume(job["job_id"])
+        new = manager.directory(resumed["job_id"])
+        assert new != old and manager.get(job["job_id"])["reason_code"] == "work_limit"
+        assert (new / "input.mp3").read_bytes() == b"original"
+        assert read_json(new / "operator.json") == read_json(old / "operator.json")
+        assert read_json(new / "request.json")["audio_path"] == str(new / "input.mp3")
+        (new / "search" / "tile-1.json").write_text("new checkpoint")
+        assert (old / "search" / "tile-1.json").read_text() == "original checkpoint"
+        (old / "input.mp3").write_bytes(b"changed!")
+        with pytest.raises(ValueError, match="audio has changed"):
+            manager.resume(job["job_id"])
+        with pytest.raises(ValueError, match="Only a job stopped"):
+            manager.resume(resumed["job_id"])
+    finally:
+        manager.close()

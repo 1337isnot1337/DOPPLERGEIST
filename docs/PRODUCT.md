@@ -35,7 +35,17 @@ dopplergeist analyze recording.mp3 --jobs jobs --config operator.json \
   --start-utc 2026-09-08T20:00:00Z --end-utc 2026-09-08T20:05:00Z \
   --time-source 'Recorder clock and recording log'
 dopplergeist job JOB_ID --jobs jobs
+dopplergeist resume JOB_ID --jobs jobs --max-runtime 3600
 ```
+
+`resume` applies only to a job stopped by its wall-time limit after search
+checkpoints were written. It creates a new job, retaining the old result and
+copying its original recording, request, operator configuration and search
+checkpoints. Intake and discovery run again; the search checks the recorded
+inputs, settings, implementation and individual tile records before reuse. A
+changed implementation or input fails the checkpoint check rather than mixing
+results. A fixed `max_tiles` limit is not extended by resuming. Resume is
+currently available from the CLI, not the upload interface.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not

@@ -31,6 +31,10 @@ def main():
     job=sub.add_parser("job",help="Read a persisted job result without rerunning it")
     job.add_argument("job_id")
     job.add_argument("--jobs",default="jobs")
+    resume=sub.add_parser("resume",help="Continue a wall-time-limited job using its search checkpoints")
+    resume.add_argument("job_id")
+    resume.add_argument("--jobs",default="jobs")
+    resume.add_argument("--max-runtime",type=float,default=3600,help="New wall-time limit in seconds")
     args=parser.parse_args()
     if args.command=="run":
         from .pipeline import run
@@ -73,6 +77,14 @@ def main():
         except ValueError:
             parser.error("job_id must be the 32-character job identifier")
         print(json.dumps(read_json(Path(args.jobs)/args.job_id/"result.json"),indent=2))
+    elif args.command=="resume":
+        from .jobs import JobManager
+        manager=JobManager(args.jobs,max_runtime_s=args.max_runtime)
+        try:
+            queued=manager.resume(args.job_id)
+            print(json.dumps(manager.wait(queued["job_id"]),indent=2))
+        finally:
+            manager.close()
 
 
 if __name__=="__main__":

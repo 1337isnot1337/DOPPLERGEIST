@@ -6,6 +6,7 @@ import json
 import math
 import os
 from pathlib import Path
+import shutil
 import signal
 import subprocess
 import sys
@@ -81,7 +82,7 @@ class JobManager:
     def get(self, job_id):
         return read_json(self.directory(job_id) / "result.json")
 
-    def submit(self, metadata, source, size, *, suffix=".mp3"):
+    def submit(self, metadata, source, size, *, suffix=".mp3", _search_seed=None, _config=None):
         """Copy exactly size bytes from a binary stream before launching analysis."""
         if size <= 0 or size > self.max_upload_bytes:
             raise ValueError(f"Audio size must be 1..{self.max_upload_bytes} bytes")
@@ -109,13 +110,42 @@ class JobManager:
                     remaining -= len(block)
             request["audio_path"] = str(audio)
             write_json(directory / "request.json", request)
-            write_json(directory / "operator.json", self.config)
+            write_json(directory / "operator.json", self.config if _config is None else _config)
             write_json(directory / "input.json", {"sha256": digest.hexdigest(), "bytes": size, "path": audio.name})
+            if _search_seed is not None:
+                shutil.copytree(_search_seed, directory / "search")
             queued = result(directory, "queued", stage="queued", progress=0)
             thread = threading.Thread(target=self._run, args=(directory,), daemon=True)
             self._threads[job_id] = thread
             thread.start()
             return queued
+
+    def resume(self, job_id):
+        """Start a new job from a stopped wall-time-limited search's checkpoints."""
+        with self._mutex:
+            directory = self.directory(job_id)
+            old = self.get(job_id)
+            if old["status"] != "inconclusive" or old.get("reason_code") != "work_limit":
+                raise ValueError("Only a job stopped by its wall-time limit can be resumed")
+            search = directory / "search"
+            if (not (search / "manifest.json").is_file() or not (search / "retention.sqlite").is_file()
+                    or not any(search.glob("tile-*.json"))):
+                raise ValueError("No search checkpoints are available for this job")
+            original = read_json(directory / "input.json")
+            audio = directory / original["path"]
+            if audio.parent != directory or not audio.is_file():
+                raise ValueError("Original job audio is unavailable")
+            if audio.stat().st_size != original["bytes"]:
+                raise ValueError("Original job audio has changed")
+            request = read_json(directory / "request.json")
+            config = read_json(directory / "operator.json")
+            with audio.open("rb") as source:
+                digest = hashlib.file_digest(source, "sha256").hexdigest()
+                if digest != original["sha256"]:
+                    raise ValueError("Original job audio has changed")
+                source.seek(0)
+                return self.submit(request, source, original["bytes"], suffix=audio.suffix,
+                                   _search_seed=search, _config=config)
 
     def _run(self, directory):
         try:
