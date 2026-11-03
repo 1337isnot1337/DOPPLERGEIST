@@ -1,0 +1,51 @@
+{
+  "scope": "Combined owner-authored finite/physical/outer/product stack with actual defective-plus-clean track regression; software gate only",
+  "source_commit": "5be9ec4732d118f4ed9b3d5cd59362e71e84faad",
+  "source_tree": "7f0839d503c58ef61ee2fba4d24d0888a6f5ed7d",
+  "dependencies": {
+    "main": "789ff01",
+    "product": "f64c899",
+    "outer_support": "4cd0ba3",
+    "physical_support": "fa966ce",
+    "historical_ingestion": "3627492"
+  },
+  "intermediate_source": "0b74efa",
+  "intermediate_tests": 336,
+  "final_tests": 337,
+  "subtests": 6,
+  "final_seconds": 109.57,
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w1-actual-motion-support-20261103/tests.xml",
+  "source_sha256": {
+    "src/aircraft_geoloc/__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+    "src/aircraft_geoloc/audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "src/aircraft_geoloc/automatic.py": "902f7959491f2118a29574909181eddeda22843608f88d1c17a736a423b53887",
+    "src/aircraft_geoloc/cli.py": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+    "src/aircraft_geoloc/confidence.py": "fe45e81d9dd026d1eae093eeca41c42238eb117a3919c68b1d6cbc637de162f6",
+    "src/aircraft_geoloc/contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+    "src/aircraft_geoloc/data_access.py": "de2e000afd87c7718fb67b965c7cdceea7a90378b8cdcdf0f7226ea8ca94f080",
+    "src/aircraft_geoloc/discovery.py": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+    "src/aircraft_geoloc/evaluation.py": "2186f839677883a3095a5d233921b4323d054f2c9101f7ee0c2773b10b2323fd",
+    "src/aircraft_geoloc/finite_search.py": "56ebb30f08bd09dca44a92314b7969a1c8a1410f8711946444dfbbe00df81efd",
+    "src/aircraft_geoloc/geometry.py": "1508ff56d9f52f94cd1916db1c77045462dd2271930362883fec6bfd69bda2c9",
+    "src/aircraft_geoloc/intake.py": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781",
+    "src/aircraft_geoloc/jobs.py": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+    "src/aircraft_geoloc/matching.py": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+    "src/aircraft_geoloc/pipeline.py": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d",
+    "src/aircraft_geoloc/provenance.py": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea",
+    "src/aircraft_geoloc/search.py": "9ae76b197d2d7a8f03bfee9d379429053dcd565526c8cac6b0b19a1d8eb15830",
+    "src/aircraft_geoloc/service.py": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+    "src/aircraft_geoloc/terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+    "src/aircraft_geoloc/tiled_search.py": "dfe1735707a6dd37227f6a3bec50acb5826fa193455f56bbdafe02990ef14805",
+    "src/aircraft_geoloc/tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "src/aircraft_geoloc/web/__init__.py": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400",
+    "src/aircraft_geoloc/web/app.js": "c9075975143d6faaf5ed1fa23b076bb57a0fa38b3858610a7c9755c00f6c54d4",
+    "src/aircraft_geoloc/web/index.html": "35cc114ec2eb4818757faa7f462ae273ab3b49621f374f5ef7b4e22ee2700be3",
+    "src/aircraft_geoloc/web/style.css": "57936a98a266bbdf5090ecc6a6a52b707f59e89efcae10c6627a881236399c1e"
+  },
+  "limitations": [
+    "No new national or accepted real-audio replay was run in this gate.",
+    "Exact nested-subset dominance policy remains unresolved; conservative veto stays.",
+    "W5 unreported_trial_envelopes display/transport follow-up and W4 bridge b43cf02 are not in this frozen source.",
+    "Independent GPS/sample-zero UTC field eligibility remains unproven."
+  ]
+}
