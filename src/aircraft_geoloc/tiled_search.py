@@ -4,9 +4,11 @@ Only the receiver grid is partitioned. Every tile sees all overlapping original
 flight segments and the same event clocks, propagation model and scoring units.
 """
 from dataclasses import asdict, dataclass
+from importlib.metadata import version
 import itertools
 import json
 import math
+import platform
 from pathlib import Path
 import resource
 import time
@@ -261,7 +263,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": sha256(i.path)} for i in indexes],
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
-                "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules}
+                "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
+                "runtime": {"python": platform.python_version(), "machine": platform.machine(),
+                            "packages": {name: version(name) for name in ("numpy", "scipy", "pandas", "pyproj", "rasterio", "pyarrow")}}}
     run_hash = content_hash(identity)
     manifest = output / "manifest.json"
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
