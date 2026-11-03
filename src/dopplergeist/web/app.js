@@ -31,6 +31,7 @@ function renderRecent() {
 async function artifacts(id) {
   const response = await api(`/api/jobs/${id}/artifacts`);
   if (id !== activeJob) return;
+  $('resume').hidden = !['cancelled', 'failed', 'inconclusive'].includes($('status').textContent) || !response.artifacts.some(item => item.path === 'resume.json');
   $('artifacts').replaceChildren(); $('diagnostics').replaceChildren();
   for (const item of response.artifacts) {
     const href = `/api/jobs/${id}/artifacts/${item.path.split('/').map(encodeURIComponent).join('/')}`;
@@ -50,6 +51,7 @@ function render(value) {
   $('stage').textContent = value.stage || '';
   $('progress').value = value.progress || (terminal.has(value.status) ? 1 : 0);
   $('cancel').hidden = terminal.has(value.status);
+  $('resume').hidden = true;
   $('message').textContent = value.message || 'Analysis is running. You can return to this job using its saved link.';
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
@@ -139,6 +141,10 @@ $('upload-form').addEventListener('submit', async event => {
 });
 $('cancel').addEventListener('click', async () => {
   try { const value = await api(`/api/jobs/${activeJob}/cancel`, {method: 'POST'}); render(value); await artifacts(activeJob); }
+  catch (error) { $('connection').textContent = error.message; }
+});
+$('resume').addEventListener('click', async () => {
+  try { const value = await api(`/api/jobs/${activeJob}/resume`, {method: 'POST'}); render(value); poll(activeJob); }
   catch (error) { $('connection').textContent = error.message; }
 });
 api('/api/capabilities').then(value => {

@@ -22,7 +22,13 @@ Open `http://127.0.0.1:8765`. The same persistent directory must be supplied aft
 restarting. Each upload gets a new job ID and its own original file, normalized
 request, provenance, intermediate diagnostics, result and worker log. Completed
 jobs are read back without rerunning. Interrupted jobs are explicitly failed;
-they are never silently replayed. Cancelling preserves partial artifacts.
+they are never silently replayed. Stopping preserves partial artifacts. After
+whole-recording discovery finishes, the job writes an atomic `resume.json`.
+Use **Resume job** to continue a stopped job with that checkpoint. Completed
+audio discovery is reused, as are valid completed search tiles; a partially
+processed stage or tile is repeated. Input, detector and checkpoint integrity
+are checked before reuse; incompatible search checkpoints fail explicitly.
+Stopping before discovery completes cannot resume from that stage.
 
 The server binds to loopback. It runs one analysis process at a time, accepts up
 to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
@@ -42,6 +48,7 @@ dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
   --start-utc "$RECORDING_START_UTC_MIN" --end-utc "$RECORDING_START_UTC_MAX" \
   --time-source 'Your evidence for this recording time'
 dopplergeist job JOB_ID --jobs jobs
+dopplergeist resume JOB_ID --jobs jobs
 ```
 
 The UTC window bounds the recording start, not the event occurrence or upload.
@@ -58,6 +65,7 @@ An inconclusive result may retain candidate hypotheses for inspection.
   and sets that path. Returns HTTP 202 and a shared queued `JobResult`.
 - `GET /api/jobs/{id}`: the current shared `JobResult`.
 - `POST /api/jobs/{id}/cancel`: cancel a queued/running job; terminal jobs remain.
+- `POST /api/jobs/{id}/resume`: explicitly continue a stopped job with a valid completed audio checkpoint.
 - `GET /api/jobs/{id}/artifacts`: relative file paths and byte counts.
 - `GET /api/jobs/{id}/artifacts/{path}`: download one artifact. Private operator
   configuration is excluded. Paths cannot escape the job directory.

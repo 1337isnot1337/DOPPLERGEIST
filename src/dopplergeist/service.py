@@ -68,6 +68,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._reply(manager.get(job_id))
             if self.command == "POST" and parts[3:] == ["cancel"]:
                 return self._reply(manager.cancel(job_id))
+            if self.command == "POST" and parts[3:] == ["resume"]:
+                return self._reply(manager.resume(job_id), 202)
             if self.command == "GET" and parts[3:] == ["artifacts"]:
                 directory = manager.directory(job_id)
                 artifacts = []
