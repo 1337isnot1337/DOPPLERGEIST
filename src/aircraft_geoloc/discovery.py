@@ -24,7 +24,7 @@ class DiscoverySettings:
     max_frequency_hz: float = 1600.0
     window_s: float = 2.0
     hop_s: float = 0.5
-    min_contrast: float = 3.0
+    min_contrast: float = 2.5
     min_duration_s: float = 12.0
     min_support: float = 0.65
     min_drop_hz: float = 4.0

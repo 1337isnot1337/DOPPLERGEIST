@@ -95,3 +95,15 @@ carry the same resolution/robust-deviation diagnostic, with no statistical or
 probability calibration implied by the field name. Matching applies its >=1 Hz
 loss-scale floor. Later tests against the already public DG-02 controls are
 regressions, not newly held-out accuracy evidence.
+
+Sensitivity follow-up lowers the global seed contrast threshold from3.0 to2.5.
+At this setting the full synthetic recording still yields2 groups, with first
+ridge support extended from143–180.5s to119–196s. The reference emits16 proposals,
+including a short1265.5–1282s ridge in the documented faint passage; post-run
+comparison with the archived manual ridge gives median absolute difference
+0.692Hz over23 points (90th percentile2.139Hz). This is acoustic overlap with an
+existing development measurement, not independently known aircraft or location
+truth. Fourteen known synthetic controls retain8 hits/0 misses/0 false alarms.
+The extra unverified reference proposals remain a matching/search cost. Earlier
+3.0-threshold evidence and the faint-pass miss stay preserved; no held-out or
+100m localization claim follows from this development tuning.
