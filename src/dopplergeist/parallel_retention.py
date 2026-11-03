@@ -21,8 +21,8 @@ def import_retention_stage(ledger, worker_path, stage, expected_checksum):
         try:
             db.execute("ATTACH DATABASE ? AS worker", (str(worker_path),))
             db.execute("BEGIN")
-            identity = db.execute("SELECT identity, score_kind FROM worker.run").fetchone()
-            if identity != (ledger.run_hash, ledger.score_kind):
+            identity = db.execute("SELECT identity, score_kind FROM worker.run").fetchall()
+            if identity != [(ledger.run_hash, ledger.score_kind)]:
                 raise DataUnavailable("Worker retention ledger identity mismatch")
             stage_row = db.execute(
                 "SELECT checksum, kept, occurrences, duplicates FROM worker.stages WHERE name=?", (stage,)
