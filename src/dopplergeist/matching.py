@@ -40,6 +40,8 @@ else:
     RIDGE_FIT_BACKEND = f"native-c-irls-v2-pairwise:{_native_binary_hash}"
 
 _native_validate_ridge_events = getattr(_native_ridge_module, "valid_ridge_events", None)
+_native_fit_irls_batch = getattr(_native_ridge_module, "fit_irls_batch", None)
+_CANONICAL_NATIVE_FIT_IRLS = _native_fit_irls
 
 _NATIVE_RIDGE_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
 

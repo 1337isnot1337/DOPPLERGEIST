@@ -1,7 +1,13 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <math.h>
+#include <stdint.h>
 #include <string.h>
+
+typedef struct {
+    unsigned long long scalar_calls, scalar_successes;
+    unsigned long long batch_calls, batch_rows, batch_successful_rows;
+} ridge_state;
 
 static int
 get_vector(PyObject *object, Py_buffer *view)
@@ -151,43 +157,13 @@ source_fit(const Py_buffer *factor, const Py_buffer *u, const Py_buffer *y,
     }
 }
 
-static PyObject *
-fit_irls(PyObject *self, PyObject *args)
+/* One numerical implementation serves scalar and batch entry points. The caller
+ * owns the six scratch vectors, so a batch does not allocate them per clock. */
+static int
+fit_row(const Py_buffer *views, Py_ssize_t count, double lower, double upper,
+        double cap, double sigma, Py_ssize_t independent_samples,
+        double *effective, double *output)
 {
-    PyObject *objects[4];
-    double lower, upper, cap, sigma;
-    Py_ssize_t independent_samples;
-    Py_buffer views[4] = {{0}};
-    int acquired = 0;
-    double *effective = NULL;
-    PyObject *result = NULL;
-
-    if (!PyArg_ParseTuple(args, "OOOOddddn", &objects[0], &objects[1],
-                          &objects[2], &objects[3], &lower, &upper, &cap,
-                          &sigma, &independent_samples)) {
-        return NULL;
-    }
-    for (int i = 0; i < 4; ++i) {
-        if (get_vector(objects[i], &views[i]) < 0) goto done;
-        ++acquired;
-    }
-    Py_ssize_t count = views[0].shape[0];
-    if (count == 0 || views[1].shape[0] != count || views[2].shape[0] != count ||
-        views[3].shape[0] != count || !isfinite(lower) || !isfinite(upper) ||
-        lower > upper || !isfinite(cap) || cap < 0.0 || !isfinite(sigma) ||
-        sigma <= 0.0 || independent_samples < 1) {
-        PyErr_SetString(PyExc_ValueError, "invalid robust ridge-fit inputs");
-        goto done;
-    }
-    if ((size_t)count > SIZE_MAX / (6 * sizeof(double))) {
-        PyErr_NoMemory();
-        goto done;
-    }
-    effective = PyMem_Malloc((size_t)count * 6 * sizeof(double));
-    if (effective == NULL) {
-        PyErr_NoMemory();
-        goto done;
-    }
     int valid = 1;
     for (Py_ssize_t i = 0; i < count; ++i) {
         double fi = at(&views[0], i), ui = at(&views[1], i);
@@ -199,18 +175,13 @@ fit_irls(PyObject *self, PyObject *args)
         }
         effective[i] = wi;
     }
-    if (!valid) {
-        Py_INCREF(Py_None);
-        result = Py_None;
-        goto done;
-    }
+    if (!valid) return 0;
 
     double f0 = NAN, drift = NAN, loss = NAN, rmse = NAN, outlier_fraction = NAN;
     double *scratch = effective + count;
     double prior = cap == 0.0 ? 0.0 : scalar_square(2.0 * sigma / cap);
     double loss_scale = 2.0 * scalar_square(sigma);
     valid = 1;
-    Py_BEGIN_ALLOW_THREADS
     for (int iteration = 0; iteration < 6; ++iteration) {
         source_fit(&views[0], &views[1], &views[2], effective, scratch, count,
                    lower, upper, cap, prior, &f0, &drift);
@@ -253,9 +224,60 @@ fit_irls(PyObject *self, PyObject *args)
         loss = -sqrt(loss + penalty);
         valid = isfinite(loss) && isfinite(rmse) && isfinite(outlier_fraction);
     }
-    Py_END_ALLOW_THREADS
+    output[0] = loss;
+    output[1] = f0;
+    output[2] = drift;
+    output[3] = rmse;
+    output[4] = outlier_fraction;
+    return valid;
+}
 
-    if (valid) result = Py_BuildValue("(ddddd)", loss, f0, drift, rmse, outlier_fraction);
+static PyObject *
+fit_irls(PyObject *self, PyObject *args)
+{
+    ridge_state *state = PyModule_GetState(self);
+    ++state->scalar_calls;
+    PyObject *objects[4];
+    double lower, upper, cap, sigma, output[5];
+    Py_ssize_t independent_samples;
+    Py_buffer views[4] = {{0}};
+    int acquired = 0;
+    double *effective = NULL;
+    PyObject *result = NULL;
+
+    if (!PyArg_ParseTuple(args, "OOOOddddn", &objects[0], &objects[1],
+                          &objects[2], &objects[3], &lower, &upper, &cap,
+                          &sigma, &independent_samples)) return NULL;
+    for (int i = 0; i < 4; ++i) {
+        if (get_vector(objects[i], &views[i]) < 0) goto done;
+        ++acquired;
+    }
+    Py_ssize_t count = views[0].shape[0];
+    if (count == 0 || views[1].shape[0] != count || views[2].shape[0] != count ||
+        views[3].shape[0] != count || !isfinite(lower) || !isfinite(upper) ||
+        lower > upper || !isfinite(cap) || cap < 0.0 || !isfinite(sigma) ||
+        sigma <= 0.0 || independent_samples < 1) {
+        PyErr_SetString(PyExc_ValueError, "invalid robust ridge-fit inputs");
+        goto done;
+    }
+    if ((size_t)count > SIZE_MAX / (6 * sizeof(double))) {
+        PyErr_NoMemory();
+        goto done;
+    }
+    effective = PyMem_Malloc((size_t)count * 6 * sizeof(double));
+    if (effective == NULL) {
+        PyErr_NoMemory();
+        goto done;
+    }
+    int valid;
+    Py_BEGIN_ALLOW_THREADS
+    valid = fit_row(views, count, lower, upper, cap, sigma, independent_samples,
+                    effective, output);
+    Py_END_ALLOW_THREADS
+    if (valid) {
+        ++state->scalar_successes;
+        result = Py_BuildValue("(ddddd)", output[0], output[1], output[2], output[3], output[4]);
+    }
     else {
         Py_INCREF(Py_None);
         result = Py_None;
@@ -265,6 +287,146 @@ done:
     PyMem_Free(effective);
     for (int i = 0; i < acquired; ++i) PyBuffer_Release(&views[i]);
     return result;
+}
+
+static int
+get_matrix(PyObject *object, Py_buffer *view, int writable)
+{
+    int flags = PyBUF_FORMAT | PyBUF_ND | PyBUF_STRIDES;
+    if (writable) flags |= PyBUF_WRITABLE;
+    if (PyObject_GetBuffer(object, view, flags) < 0) return -1;
+    if (view->ndim != 2 || view->itemsize != (Py_ssize_t)sizeof(double) ||
+        view->shape == NULL || view->strides == NULL || view->format == NULL ||
+        strcmp(view->format, "d") != 0 || !PyBuffer_IsContiguous(view, 'C')) {
+        PyBuffer_Release(view);
+        view->obj = NULL;
+        PyErr_SetString(PyExc_TypeError, "expected a contiguous native float64 matrix");
+        return -1;
+    }
+    return 0;
+}
+
+/* Include the holes between strided elements. A conservative span is enough to
+ * prove that writing a result cannot change a later row's input. */
+static int
+buffer_span(const Py_buffer *view, uintptr_t *begin, uintptr_t *end)
+{
+    uintptr_t low = (uintptr_t)view->buf, high = low;
+    if (view->buf == NULL || view->itemsize <= 0) return 0;
+    for (int axis = 0; axis < view->ndim; ++axis) {
+        if (view->shape[axis] <= 0 ||
+            (view->suboffsets != NULL && view->suboffsets[axis] >= 0)) return 0;
+        Py_ssize_t stride = view->strides[axis];
+        uintptr_t magnitude = stride >= 0 ? (uintptr_t)stride :
+                              (uintptr_t)(-(stride + 1)) + 1;
+        uintptr_t steps = (uintptr_t)(view->shape[axis] - 1);
+        if (magnitude != 0 && steps > UINTPTR_MAX / magnitude) return 0;
+        uintptr_t offset = steps * magnitude;
+        if (stride < 0) {
+            if (low < offset) return 0;
+            low -= offset;
+        } else {
+            if (high > UINTPTR_MAX - offset) return 0;
+            high += offset;
+        }
+    }
+    if (high > UINTPTR_MAX - (uintptr_t)view->itemsize) return 0;
+    *begin = low;
+    *end = high + (uintptr_t)view->itemsize;
+    return 1;
+}
+
+static PyObject *
+fit_irls_batch(PyObject *self, PyObject *args)
+{
+    ridge_state *state = PyModule_GetState(self);
+    ++state->batch_calls;
+    PyObject *objects[6];
+    Py_buffer views[6] = {{0}};
+    double lower, upper, sigma;
+    Py_ssize_t independent_samples;
+    int acquired = 0, valid = 1;
+    double *scratch = NULL;
+    PyObject *result = NULL;
+    if (!PyArg_ParseTuple(args, "OOOOOdddnO", &objects[0], &objects[1], &objects[2],
+                          &objects[3], &objects[4], &lower, &upper, &sigma,
+                          &independent_samples, &objects[5])) return NULL;
+    for (int i = 0; i < 6; ++i) {
+        int status = (i < 2 || i == 5) ? get_matrix(objects[i], &views[i], i == 5) :
+                                               get_vector(objects[i], &views[i]);
+        if (status < 0) goto done;
+        ++acquired;
+    }
+    Py_ssize_t rows = views[0].shape[0], count = views[0].shape[1];
+    if (rows == 0 || count == 0 || views[1].shape[0] != rows || views[1].shape[1] != count ||
+        views[2].shape[0] != count || views[3].shape[0] != count || views[4].shape[0] != rows ||
+        views[5].shape[0] != rows || views[5].shape[1] != 5 ||
+        !isfinite(lower) || !isfinite(upper) || lower > upper ||
+        !isfinite(sigma) || sigma <= 0.0 || independent_samples < 1) {
+        PyErr_SetString(PyExc_ValueError, "invalid robust ridge-fit batch inputs");
+        goto done;
+    }
+    uintptr_t output_begin, output_end;
+    if (!buffer_span(&views[5], &output_begin, &output_end)) {
+        PyErr_SetString(PyExc_ValueError, "unsupported robust ridge-fit output buffer");
+        goto done;
+    }
+    for (int i = 0; i < 5; ++i) {
+        uintptr_t input_begin, input_end;
+        if (!buffer_span(&views[i], &input_begin, &input_end) ||
+            (output_begin < input_end && input_begin < output_end)) {
+            PyErr_SetString(PyExc_ValueError, "robust ridge-fit output must not overlap inputs");
+            goto done;
+        }
+    }
+    if ((size_t)count > SIZE_MAX / (6 * sizeof(double))) {
+        PyErr_NoMemory();
+        goto done;
+    }
+    scratch = PyMem_Malloc((size_t)count * 6 * sizeof(double));
+    if (scratch == NULL) {
+        PyErr_NoMemory();
+        goto done;
+    }
+    Py_buffer row_views[4] = {views[0], views[1], views[2], views[3]};
+    row_views[0].strides = views[0].strides + 1;
+    row_views[1].strides = views[1].strides + 1;
+    state->batch_rows += (unsigned long long)rows;
+    Py_BEGIN_ALLOW_THREADS
+    for (Py_ssize_t row = 0; row < rows; ++row) {
+        double cap = at(&views[4], row), output[5];
+        if (!isfinite(cap) || cap < 0.0) {
+            valid = 0;
+            break;
+        }
+        row_views[0].buf = (char *)views[0].buf + row * views[0].strides[0];
+        row_views[1].buf = (char *)views[1].buf + row * views[1].strides[0];
+        if (!fit_row(row_views, count, lower, upper, cap, sigma,
+                     independent_samples, scratch, output)) {
+            valid = 0;
+            break;
+        }
+        memcpy((char *)views[5].buf + row * views[5].strides[0], output, sizeof(output));
+    }
+    Py_END_ALLOW_THREADS
+    if (valid) state->batch_successful_rows += (unsigned long long)rows;
+    result = PyBool_FromLong(valid);
+done:
+    PyMem_Free(scratch);
+    for (int i = 0; i < acquired; ++i) PyBuffer_Release(&views[i]);
+    return result;
+}
+
+static PyObject *
+fit_statistics(PyObject *self, PyObject *unused)
+{
+    ridge_state *state = PyModule_GetState(self);
+    return Py_BuildValue("{sK,sK,sK,sK,sK}",
+                        "scalar_calls", state->scalar_calls,
+                        "scalar_successes", state->scalar_successes,
+                        "batch_calls", state->batch_calls,
+                        "batch_rows", state->batch_rows,
+                        "batch_successful_rows", state->batch_successful_rows);
 }
 
 /* This is a positive-only shortcut for the Python evidence validator. Any
@@ -367,13 +529,16 @@ valid_ridge_events(PyObject *self, PyObject *args)
 
 static PyMethodDef methods[] = {
     {"fit_irls", fit_irls, METH_VARARGS, "Run six robust ridge-fit iterations in C."},
+    {"fit_irls_batch", fit_irls_batch, METH_VARARGS,
+     "Run the same robust fit for contiguous clock rows with shared scratch storage."},
+    {"fit_statistics", fit_statistics, METH_NOARGS, "Read native fit operation counters."},
     {"valid_ridge_events", valid_ridge_events, METH_VARARGS,
      "Recognize valid canonical ridge evidence; other inputs retain Python validation."},
     {NULL, NULL, 0, NULL}
 };
 
 static struct PyModuleDef module = {
-    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, -1, methods
+    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, sizeof(ridge_state), methods
 };
 
 PyMODINIT_FUNC

@@ -185,12 +185,19 @@ def _first_event_fits_uncached(measurement, event, factors, emissions, *, legacy
                 and factors.flags.aligned and emissions.flags.aligned):
             native_rows = []
             try:
-                for factor, normalized_time, bound in zip(factors, u, cap):
-                    fit = native(factor, normalized_time, y, w, low, high,
-                                 float(bound), sigma, independent)
-                    if fit is None:
-                        break
-                    native_rows.append(fit)
+                batch = matching._native_fit_irls_batch
+                if batch is not None and native is matching._CANONICAL_NATIVE_FIT_IRLS:
+                    output = np.empty((len(factors), 5), dtype=float)
+                    if batch(factors, u, y, w, cap, low, high, sigma, independent, output):
+                        native_rows = output
+                else:
+                    # Preserve custom scalar hooks and older installed binaries.
+                    for factor, normalized_time, bound in zip(factors, u, cap):
+                        fit = native(factor, normalized_time, y, w, low, high,
+                                     float(bound), sigma, independent)
+                        if fit is None:
+                            break
+                        native_rows.append(fit)
                 if len(native_rows) == len(factors):
                     score, alpha, beta, rmse, outlier = np.asarray(native_rows, dtype=float).T
                     if all(np.all(np.isfinite(value)) for value in

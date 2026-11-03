@@ -10,6 +10,7 @@ from scipy.spatial import cKDTree
 
 from .geometry import AcousticSupportError, ecef
 from .matching import _native_validate_ridge_events
+from .native_cpa import try_cpa_edges
 
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
 _CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
@@ -146,24 +147,29 @@ class _PreparedCPATrack:
             counts=np.fromiter((len(a) for a in neighbours),dtype=int,count=len(neighbours))
             if not counts.sum():continue
             sample=np.concatenate(neighbours).astype(int)
-            observer_index=np.repeat(np.arange(len(obs)),counts)
-            distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
-            previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
-            following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+            projected = try_cpa_edges(pos, obs, counts, sample)
+            if projected is None:
+                observer_index=np.repeat(np.arange(len(obs)),counts)
+                distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
+                previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
+                following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+                eligible = np.flatnonzero(counts >= 2)
+                ends = np.cumsum(counts)[eligible]
+                starts = ends - counts[eligible]
             # An endpoint sample can be the sampled minimum even when the
             # continuous spline turns strictly inside its adjacent interval.
             # Check the endpoint range-rate signs before optimizing the actual
             # spline; an endpoint alone is not evidence of a complete pass.
-            eligible = np.flatnonzero(counts >= 2)
-            ends = np.cumsum(counts)[eligible]
-            starts = ends - counts[eligible]
             for end in (False, True):
-                edge_indices = ends - 1 if end else starts
-                adjacent = edge_indices - 1 if end else edge_indices + 1
-                mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
-                        & (previous[edge_indices] if end else following[edge_indices])
-                        & (distance2[edge_indices] <= distance2[adjacent]))
-                oi_edge = eligible[mask]
+                if projected is None:
+                    edge_indices = ends - 1 if end else starts
+                    adjacent = edge_indices - 1 if end else edge_indices + 1
+                    mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
+                            & (previous[edge_indices] if end else following[edge_indices])
+                            & (distance2[edge_indices] <= distance2[adjacent]))
+                    oi_edge = eligible[mask]
+                else:
+                    oi_edge = projected[0][end]
                 if not len(oi_edge):
                     continue
                 lo, hi = (t[-2], t[-1]) if end else (t[0], t[1])
@@ -184,25 +190,31 @@ class _PreparedCPATrack:
                         rows.append((int(point_ids[chosen[oi_edge[j]]]), track.id,
                                      float(when), float(when + distance/c), float(distance),
                                      float(np.linalg.norm(track.speed_vector(when)))))
-            minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
-                    (distance2<np.r_[distance2[1:],np.inf]))
-            indices=np.flatnonzero(minima)
-            if not len(indices):continue
-            k=sample[indices]
-            oi=observer_index[indices]
-            # Project onto both neighbouring polyline edges, never across a
-            # missing interval or between unrelated flight passes.
-            first=np.stack((pos[k-1],pos[k]),axis=1)
-            last=np.stack((pos[k],pos[k+1]),axis=1)
-            delta=last-first
-            residual=first-obs[oi,None,:]
-            fraction=np.clip(-np.sum(residual*delta,axis=2)/np.maximum(np.sum(delta**2,axis=2),1e-12),0,1)
-            d2=np.sum((residual+fraction[:,:,None]*delta)**2,axis=2)
-            edge=np.argmin(d2,axis=1)
-            n=np.arange(len(k))
-            distance=np.sqrt(d2[n,edge])
-            start=np.where(edge==0,k-1,k)
-            when=t[start]+fraction[n,edge]*(t[start+1]-t[start])
+            if projected is None:
+                minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
+                        (distance2<np.r_[distance2[1:],np.inf]))
+                indices=np.flatnonzero(minima)
+                if not len(indices):continue
+                k=sample[indices]
+                oi=observer_index[indices]
+                # Project onto both neighbouring polyline edges, never across a
+                # missing interval or between unrelated flight passes.
+                first=np.stack((pos[k-1],pos[k]),axis=1)
+                last=np.stack((pos[k],pos[k+1]),axis=1)
+                delta=last-first
+                residual=first-obs[oi,None,:]
+                fraction=np.clip(-np.sum(residual*delta,axis=2)/np.maximum(np.sum(delta**2,axis=2),1e-12),0,1)
+                d2=np.sum((residual+fraction[:,:,None]*delta)**2,axis=2)
+                edge=np.argmin(d2,axis=1)
+                n=np.arange(len(k))
+                distance=np.sqrt(d2[n,edge])
+                start=np.where(edge==0,k-1,k)
+                fraction = fraction[n, edge]
+            else:
+                _, oi, start, fraction, d2 = projected
+                if not len(oi):continue
+                distance=np.sqrt(d2)
+            when=t[start]+fraction*(t[start+1]-t[start])
             speed=np.linalg.norm(track.speed_vector(when),axis=1)
             for j in np.flatnonzero(distance<=max_distance):
                 rows.append((int(point_ids[chosen[oi[j]]]), track.id,
