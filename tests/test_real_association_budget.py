@@ -68,6 +68,13 @@ def test_real_anchor_partitions_preserve_candidates_and_clock_intervals(silence)
         assert all(anchor(candidate) >= boundary for candidate in right)
         assert records(left + right) == expected
 
+    clock = table.iloc[0].receive_time - events[0]['cpa_receive_s']
+    fixed = dict(kwargs, time_origin=clock, time_tolerance_s=3)
+    baseline, _ = association_candidates(table, events, **fixed)
+    left, _ = association_candidates(table, events, anchor_window=(-math.inf, clock), **fixed)
+    right, _ = association_candidates(table, events, anchor_window=(clock, math.inf), **fixed)
+    assert baseline and records(left + right) == records(baseline)
+
     for invalid in ((1, 1), (1, 0), (math.nan, 1)):
         with pytest.raises(ValueError, match='Anchor window'):
             association_candidates(table, events, anchor_window=invalid, **kwargs)
