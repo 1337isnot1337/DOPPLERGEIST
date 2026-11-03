@@ -39,6 +39,21 @@ floor. Retained candidates matched exactly on a 468-association real point
 (37.77 → 28.23 CPU seconds) and a 2,443-association real clock partition
 (158.01 → 149.56 CPU seconds). These single paired measurements are not a
 nationwide speed or accuracy estimate.
+PR #213 skips empty event/clock traversal frames during association construction.
+On one recorded-input fixture with 15 independent groups, 35 CPA rows and 10,549
+candidates, all candidates, ordering and work accounting matched the baseline
+across 15 boundary and budget cases. Five alternating runs reduced median CPU
+for association construction from 0.578 to 0.336 seconds (1.72×). Reproduce with
+[`benchmark_real_association.py`](../scripts/benchmark_real_association.py) and
+a saved real fixture in the `benchmark_real_clock_batch.py` format:
+
+```bash
+PYTHONPATH=src python scripts/benchmark_real_association.py \
+  REAL_FIXTURE.json NEW_RESULT.json --baseline-ref adbfb3e --repetitions 5
+```
+
+This is a regional stage measurement, not nationwide throughput or localization
+accuracy.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
