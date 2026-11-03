@@ -1,7 +1,10 @@
 # Checkpoint: 2026-11-02
 
-The implementation campaign is paused at this handoff. Publishing the existing
-code and artifacts does not mark the automatic-upload objective complete.
+The implementation campaign is active with five swarm workers and the primary
+integration agent. The [task plan](AGENT_TASKS.md) and GitHub issue #1 track current
+ownership. Publishing the checkpoint does not mark the automatic-upload objective
+complete. Shared contracts and whole-recording intake have landed; the remaining
+automatic stages are being implemented and integrated.
 
 ## Acceptance target
 
