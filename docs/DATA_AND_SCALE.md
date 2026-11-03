@@ -90,9 +90,19 @@ motion remain in the result so their uncertainty is recorded. If a recognized
 capacity limit is still exceeded, the search divides the tile into smaller
 nonoverlapping grid rectangles and checkpoints each completed piece. Fine search
 also divides overloaded rectangles.
-A capacity failure at a single grid cell, missing data, and other errors remain
+If an unknown-clock, robust subset search still exceeds its association-count
+limit at one cell, it partitions first-passage clock anchors into checkpointed,
+half-open ranges. Each candidate belongs to one range and retains its full fit
+interval. Other single-cell capacity failures, missing data, and errors remain
 visible as incomplete work. Reducing `tile_cells` trades scheduling overhead for
 smaller working sets.
+
+On one overloaded full-day cell from the original recording and historical
+traffic, eight clock ranges reproduced all 23,136 unpartitioned associations;
+142 tracks had unsupported motion. A separate real-data engineering replay
+matched leading scores, resumed saved ranges, rejected a corrupt split marker,
+and imported two ranges computed on another host. These checks establish neither
+a nationwide runtime nor a location.
 
 Workers retain private score ledgers. The parent verifies their identities and
 checksums before importing a completed tile, and merges rankings in deterministic
