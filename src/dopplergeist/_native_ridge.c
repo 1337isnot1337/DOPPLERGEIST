@@ -113,6 +113,7 @@ source_fit(const Py_buffer *factor, const Py_buffer *u, const Py_buffer *y,
         !isfinite(b) || !isfinite(d) || !isfinite(s)) return;
     double unconstrained_f = (r * d - s * b) / determinant;
     double unconstrained_drift = (s * a - r * b) / determinant;
+    if (!isfinite(unconstrained_f) || !isfinite(unconstrained_drift)) return;
     if (lower <= unconstrained_f && unconstrained_f <= upper && fabs(unconstrained_drift) <= cap) {
         *f0 = unconstrained_f;
         *drift = unconstrained_drift;
