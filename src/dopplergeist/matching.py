@@ -4,6 +4,7 @@ Scores are penalized residuals, never probabilities. Geometry from a straight-pa
 audio fit is a proposal diagnostic, not a reliable exclusion bound for real tracks.
 """
 from collections import OrderedDict
+from bisect import bisect_left, bisect_right
 from contextvars import ContextVar
 from copy import deepcopy
 from dataclasses import dataclass
@@ -174,15 +175,37 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
         frame = filter_event(table, event, time_origin, time_tolerance_s)
         reserve(len(frame))
         survivors.append(len(frame))
-        grouped.append({p: [records[i] for i in group.index] for p, group in frame.groupby("point_id")})
+        groups = {}
+        tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
+        for point, group in frame.groupby("point_id"):
+            indices = list(group.index)
+            reserve(len(indices) * max(1, len(indices).bit_length()))
+            ordered = sorted((records[i]["receive_time"] - event["cpa_receive_s"], i) for i in indices)
+            groups[point] = ([start - tolerance for start, _ in ordered],
+                             [start + tolerance for start, _ in ordered],
+                             [index for _, index in ordered])
+        grouped.append(groups)
     by_point = {p: frame for p, frame in table.groupby("point_id")}
+
+    def indexed_options(index, point_id, lower, upper):
+        starts, ends, indices = grouped[index][point_id]
+        # These endpoints use exactly the arithmetic of the intersection below,
+        # including floating-point rounding at inclusive boundaries.
+        left = bisect_left(ends, lower)
+        right = bisect_right(starts, upper)
+        # The returned original-order slice must itself fit the work budget;
+        # reserve before allocating and sorting it at every branch.
+        selected = max(0, right - left)
+        reserve(selected * max(1, selected.bit_length()))
+        return chain((records[i] for i in sorted(indices[left:right])), [None])
+
     for point_id in sorted(set().union(*(g.keys() for g in grouped))):
         available = [i for i, group in enumerate(grouped) if point_id in group]
         if len(available) < min_events:
             continue
         lower, upper = (-np.inf, np.inf) if time_origin is None else (time_origin-time_tolerance_s, time_origin+time_tolerance_s)
         path, used = [], set()
-        frames = [(0, iter(chain(grouped[available[0]][point_id], [None])), lower, upper, 0)]
+        frames = [(0, iter(indexed_options(available[0], point_id, lower, upper)), lower, upper, 0)]
         while frames:
             cursor, options, lower, upper, depth = frames[-1]
             while len(path) > depth:
@@ -211,7 +234,7 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             if len(path)+len(available)-following < min_events:
                 continue
             if following < len(available) and len(path) < max_events:
-                frames.append((following, iter(chain(grouped[available[following]][point_id], [None])), lo, hi, len(path)))
+                frames.append((following, iter(indexed_options(available[following], point_id, lo, hi)), lo, hi, len(path)))
                 continue
             if len(path) < min_events:
                 continue
