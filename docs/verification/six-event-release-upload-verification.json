@@ -5,9 +5,27 @@
   "target_commitish": "39634c3fc565a3d025a661f90eddae54430591f9",
   "assets": [
     {
+      "name": "dependency-pin-correction.json",
+      "bytes": 2941,
+      "sha256": "cc70207ab3c4f67aa0918091838ea892743e1fa7f2532efea933b3a47295d7a5",
+      "github_digest_verified": true
+    },
+    {
+      "name": "DEPENDENCY_SHA256SUMS",
+      "bytes": 195,
+      "sha256": "b8cd0cda2c95ccbdef5f8b4a7059ebfd1975d74cf49a1479e527728019983f63",
+      "github_digest_verified": true
+    },
+    {
       "name": "manifest.json",
       "bytes": 13134,
       "sha256": "9fb08a1eb570365eb1e54908a9b3cdd3ed7780e4bafdf11bd3cbce1dc1dd2c18",
+      "github_digest_verified": true
+    },
+    {
+      "name": "runtime-requirements-active.txt",
+      "bytes": 141,
+      "sha256": "659f33e40d1c4234b8ac313430a45cf1603e2fb04318a751ab08b11be00ae439",
       "github_digest_verified": true
     },
     {
@@ -23,5 +41,7 @@
       "github_digest_verified": true
     }
   ],
-  "all_remote_sizes_states_and_sha256_digests_verified": true
+  "all_remote_sizes_states_and_sha256_digests_verified": true,
+  "original_three_assets_preserved": true,
+  "dependency_correction_is_separate_from_original_bundle": true
 }

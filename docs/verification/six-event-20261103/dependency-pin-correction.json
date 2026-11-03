@@ -1,0 +1,93 @@
+{
+  "scope": "dependency pin export correction only; original job, wheel and input bytes unchanged",
+  "original_export_sha256": "a16519db55cbef33e21b79ca99685b7fb294d5d7ce5fa8cfa7c61ef3adec3f37",
+  "original_export_issue": "Metadata enumeration included Requests 2.31.0 from the system and 2.34.2 from private dependencies; both were exported as simultaneous pins.",
+  "corrected_requirements_asset": "runtime-requirements-active.txt",
+  "corrected_requirements_sha256": "659f33e40d1c4234b8ac313430a45cf1603e2fb04318a751ab08b11be00ae439",
+  "active_imports_verified_in_original_read_only_namespace": true,
+  "active_dependencies": [
+    {
+      "name": "numpy",
+      "active_version": "2.5.4",
+      "module_path": "/runtime/deps/numpy/__init__.py",
+      "visible_distribution_versions": [
+        "2.5.4"
+      ]
+    },
+    {
+      "name": "scipy",
+      "active_version": "1.18.1",
+      "module_path": "/runtime/deps/scipy/__init__.py",
+      "visible_distribution_versions": [
+        "1.18.1"
+      ]
+    },
+    {
+      "name": "pandas",
+      "active_version": "3.1.0",
+      "module_path": "/runtime/deps/pandas/__init__.py",
+      "visible_distribution_versions": [
+        "3.1.0"
+      ]
+    },
+    {
+      "name": "soundfile",
+      "active_version": "0.14.0",
+      "module_path": "/runtime/deps/soundfile.py",
+      "visible_distribution_versions": [
+        "0.14.0"
+      ]
+    },
+    {
+      "name": "pyproj",
+      "active_version": "3.8.0",
+      "module_path": "/runtime/deps/pyproj/__init__.py",
+      "visible_distribution_versions": [
+        "3.8.0"
+      ]
+    },
+    {
+      "name": "rasterio",
+      "active_version": "1.5.2",
+      "module_path": "/runtime/deps/rasterio/__init__.py",
+      "visible_distribution_versions": [
+        "1.5.2"
+      ]
+    },
+    {
+      "name": "matplotlib",
+      "active_version": "3.11.2",
+      "module_path": "/runtime/deps/matplotlib/__init__.py",
+      "visible_distribution_versions": [
+        "3.11.2"
+      ]
+    },
+    {
+      "name": "requests",
+      "active_version": "2.34.2",
+      "module_path": "/runtime/deps/requests/__init__.py",
+      "visible_distribution_versions": [
+        "2.31.0",
+        "2.34.2"
+      ]
+    },
+    {
+      "name": "pyarrow",
+      "active_version": "26.0.0",
+      "module_path": "/runtime/deps/pyarrow/__init__.py",
+      "visible_distribution_versions": [
+        "26.0.0"
+      ]
+    }
+  ],
+  "original_bundle_preserved": true,
+  "full_resolution_check": {
+    "status": "passed",
+    "python": "3.12.3",
+    "installed_environment_modified": false,
+    "command": "python -m pip install --dry-run --ignore-installed --no-cache-dir --only-binary=:all: --report <private-report> -r runtime-requirements-active.txt",
+    "resolved_direct_and_transitive_packages": 28,
+    "direct_pins_match_active_namespace_imports": true,
+    "resolution_report_sha256": "8b49cbdc81ffbb7a8a3b3cf79423c2016c4dcc2308253b0cdc8a8a82d1080527"
+  }
+}

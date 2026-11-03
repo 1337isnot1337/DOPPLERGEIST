@@ -131,8 +131,14 @@ dependencies. Keep the evidence/label directories outside the namespace. The
 actual namespace command, manifests and runner are saved in the terminal receipt.
 Host paths in the historical runner need to be mapped to the new installation;
 they are implementation paths, not scientific search constraints. Install the
-nine pinned runtime dependencies from `runtime-requirements.txt`; the full
-155-distribution inventory is also recorded.
+nine pinned runtime dependencies from the attached
+`runtime-requirements-active.txt` or the corrected Git `runtime-requirements.txt`.
+The first bundle's export included both the system Requests 2.31.0 metadata and
+the active private Requests 2.34.2 metadata as simultaneous pins. The original
+bundle is preserved; `dependency-pin-correction.json` records the correction and
+the actual imported module paths/versions. The executed replay used private
+Requests 2.34.2, and the wheel/input/results are unchanged. The full metadata
+inventory remains useful provenance, but is not a list of active imports.
 
 The portable evaluator in `six-event-20261103/evaluate_candidate_points.py`
 reproduces all six event joins and all 306 retained product/fine/coarse candidate

@@ -10,6 +10,11 @@
     "sha256": "28d290300d631b734237697016e9065b1d129d75f67cc205f025db08040fbaf6"
   },
   {
+    "path": "dependency-pin-correction.json",
+    "bytes": 2941,
+    "sha256": "cc70207ab3c4f67aa0918091838ea892743e1fa7f2532efea933b3a47295d7a5"
+  },
+  {
     "path": "evaluate_candidate_points.py",
     "bytes": 3463,
     "sha256": "f642889173ea026523d5752db42d36c3acba8e9283a5a891f6acb08bb6d8e75d"
@@ -91,8 +96,8 @@
   },
   {
     "path": "runtime-requirements.txt",
-    "bytes": 158,
-    "sha256": "a16519db55cbef33e21b79ca99685b7fb294d5d7ce5fa8cfa7c61ef3adec3f37"
+    "bytes": 141,
+    "sha256": "659f33e40d1c4234b8ac313430a45cf1603e2fb04318a751ab08b11be00ae439"
   },
   {
     "path": "score_participation_check.py",
