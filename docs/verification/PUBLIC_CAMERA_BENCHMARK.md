@@ -88,7 +88,11 @@ with unknown microphone uncertainty.
 The Las Vegas sign camera's public metadata advertises no audio. Its attempted
 capture is recorded as `source_has_no_advertised_audio`, not a detector miss.
 Herald Square is owned by another coordinated capture worker. No detector
-parameters were tuned on these clips. There is no event-count cap in this capture
+parameters were tuned on these clips. A separate full-band decoded-audio check
+measured Times Square at approximately -85.9 dBFS RMS and the Liberty view at
+-56.2 dBFS RMS (16 kHz mono; no physical SPL calibration). Both contain nonzero
+audio, but the very quiet Times Square channel is a further limit on treating
+zero proposals as evidence about aircraft detection. There is no event-count cap in this capture
 or verification wrapper; all supported independent proposals are left to the
 shared all-event association/search path.
 
