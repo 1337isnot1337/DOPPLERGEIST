@@ -54,6 +54,7 @@ def adsblol_frame(d):
         geom=p[10] if len(p)>10 else None
         if geom is not None and not (p[6]&8):
             offsets.append((p[0],geom-p[3]))
+    offset_array = np.asarray(offsets) if offsets else None
     rows = []
     for p in valid:
         metadata = p[8] if len(p) > 8 and isinstance(p[8], dict) else {}
@@ -63,7 +64,7 @@ def adsblol_frame(d):
         elif geom is not None:
             altitude,basis=geom,"ellipsoidal"
         elif offsets:
-            altitude=p[3]+np.interp(p[0],*[np.array(offsets)[:,i] for i in [0,1]])
+            altitude=p[3]+np.interp(p[0],offset_array[:,0],offset_array[:,1])
             basis="ellipsoidal_interpolated"
         else:
             altitude,basis=p[3],"barometric"

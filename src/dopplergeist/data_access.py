@@ -26,6 +26,16 @@ from .tracks import _segment_velocity, adsblol_frame
 CONUS = (-125.0, 24.0, -66.0, 50.0)
 INDEX_VERSION = 2
 
+# These exact source versions differ only in whether the same altitude-offset
+# arrays are allocated once per trace or once per interpolated row.  Keep the
+# mapping keyed by the current complete source hash: any later normalizer edit
+# falls back to the ordinary conservative mismatch behavior.
+_EQUIVALENT_NORMALIZERS = {
+    "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0": (
+        "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    ),
+}
+
 
 def _frame_track(name, frame):
     velocity, inferred = _segment_velocity(frame)
@@ -41,6 +51,12 @@ def _frame_track(name, frame):
 def _ecef_to_geographic():
     from pyproj import Transformer
     return Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True)
+
+
+@lru_cache(maxsize=32)
+def _terrain_transformer(crs):
+    from pyproj import Transformer
+    return Transformer.from_crs("EPSG:4326", crs, always_xy=True)
 
 
 def _continuous_bounds(track):
@@ -325,8 +341,10 @@ class FlightIndex:
                 WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
                 AND s.start<=? AND s.end>=? ORDER BY s.name"""
             params = (east, west, north, south, end, start)
+            current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
+            compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
             if (not self.report.get("continuous_geometry_bounds") or
-                    self.report.get("normalizer_sha256") != sha256(Path(__file__).with_name("tracks.py"))):
+                    self.report.get("normalizer_sha256") not in compatible):
                 # Old indexes used sample-only bounds or different derivatives.
                 # Disable unsafe spatial pruning, preserving explicit budgets.
                 sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
@@ -363,6 +381,20 @@ class FlightCache:
         index = directory / f"all-types-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
         if index.exists():
             return FlightIndex(index)
+        for old_hash in _EQUIVALENT_NORMALIZERS.get(normalizer_hash, ()):
+            old_index = directory / f"all-types-v{INDEX_VERSION}-{old_hash[:12]}.sqlite"
+            if old_index.exists():
+                existing = FlightIndex(old_index)
+                start = pd.Timestamp(day.isoformat(), tz="UTC").timestamp()
+                try:
+                    full_day = existing.coverage_for((-180, -90, 180, 90), (start, start + 86400))["scope_complete"]
+                except (KeyError, TypeError, ValueError):
+                    full_day = False
+                if (existing.report.get("index_version") != INDEX_VERSION or
+                        existing.report.get("normalizer_sha256") != old_hash or
+                        existing.report.get("coverage", {}).get("release_tag") != tag or not full_day):
+                    raise DataUnavailable("Compatible flight index metadata mismatch")
+                return existing
         release_path = directory / "release.json"
         if not release_path.exists():
             if self.offline:
@@ -485,12 +517,11 @@ class CachedTerrain:
         """Read only the local pixel window, including for the global geoid."""
         import rasterio
         from rasterio.windows import Window
-        from pyproj import Transformer
         if not len(lat):
             return np.array([])
         try:
             with rasterio.open(path) as raster:
-                x, y = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True).transform(lon, lat)
+                x, y = _terrain_transformer(raster.crs).transform(lon, lat)
                 col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
                 col, row = np.floor(col).astype(int), np.floor(row).astype(int)
                 if np.any((col < 0) | (col >= raster.width) | (row < 0) | (row >= raster.height)):
@@ -521,7 +552,7 @@ class AcquiredInputs:
 
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
-                   terrain_options=None, max_sound_range_m=20000.0):
+                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
@@ -534,7 +565,12 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     if window is None:
         raise ValueError("A defensible recording-start time window is required")
     start, end = (utc_timestamp(window[k]).timestamp() for k in ("start_utc", "end_utc"))
-    times = (start - max_sound_range_m / 300.0 - 30.0, end + recording["duration_s"] + 30.0)
+    first = start - max_sound_range_m / 300.0 - 30.0
+    if earliest_emission_s is not None:
+        if not np.isfinite(earliest_emission_s):
+            raise ValueError("Earliest emission time must be finite")
+        first = max(first, earliest_emission_s)
+    times = (first, end + recording["duration_s"] + 30.0)
     root = Path(cache_root)
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
