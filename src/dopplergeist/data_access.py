@@ -552,7 +552,8 @@ class AcquiredInputs:
 
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
-                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None):
+                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None,
+                   latest_emission_s=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
@@ -569,8 +570,17 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     if earliest_emission_s is not None:
         if not np.isfinite(earliest_emission_s):
             raise ValueError("Earliest emission time must be finite")
-        first = max(first, earliest_emission_s)
-    times = (first, end + recording["duration_s"] + 30.0)
+        # The caller's bound covers its actual CPA and refinement queries. It
+        # can be earlier or later than the generic whole-recording estimate.
+        first = earliest_emission_s
+    last = end + recording["duration_s"] + 30.0
+    if latest_emission_s is not None:
+        if not np.isfinite(latest_emission_s):
+            raise ValueError("Latest emission time must be finite")
+        last = max(last, latest_emission_s)
+    if first > last:
+        raise ValueError("Required emission interval must be ordered")
+    times = (first, last)
     root = Path(cache_root)
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
