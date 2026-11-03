@@ -291,8 +291,12 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
         # The returned original-order slice must itself fit the work budget;
         # reserve before allocating and sorting it at every branch.
         selected = max(0, right - left)
-        reserve(selected * max(1, selected.bit_length()))
-        return chain((records[i] for i in sorted(indices[left:right])), [None])
+        if selected:
+            reserve(selected * selected.bit_length())
+        return sorted(indices[left:right])
+
+    def row_options(indices):
+        return chain((records[i] for i in indices), [None])
 
     for point_id in sorted(set().union(*(g.keys() for g in grouped))):
         available = [i for i, group in enumerate(grouped) if point_id in group]
@@ -301,7 +305,7 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
         lower, upper = (-np.inf, np.inf) if time_origin is None else (time_origin-time_tolerance_s, time_origin+time_tolerance_s)
         path, used = [], set()
         option_lo, option_hi = anchor_window if anchor_window is not None else (lower, upper)
-        frames = [(0, iter(indexed_options(available[0], point_id, option_lo, option_hi)), lower, upper, 0)]
+        frames = [(0, row_options(indexed_options(available[0], point_id, option_lo, option_hi)), lower, upper, 0)]
         while frames:
             cursor, options, lower, upper, depth = frames[-1]
             while len(path) > depth:
@@ -331,9 +335,25 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             following = cursor+1
             if len(path)+len(available)-following < min_events:
                 continue
-            if following < len(available) and len(path) < max_events:
+            while following < len(available) and len(path) < max_events:
                 option_lo, option_hi = anchor_window if not path and anchor_window is not None else (lo, hi)
-                frames.append((following, iter(indexed_options(available[following], point_id, option_lo, option_hi)), lo, hi, len(path)))
+                indices = indexed_options(available[following], point_id, option_lo, option_hi)
+                if indices:
+                    frame = (following, row_options(indices), lo, hi, len(path))
+                    if row is None:
+                        # None is the last choice, so its exhausted parent does
+                        # not need to remain on the stack while skipping ahead.
+                        frames[-1] = frame
+                    else:
+                        frames.append(frame)
+                    break
+                # An empty interval has only the unmatched choice. Charge that
+                # visit exactly as before, without a frame/iterator round trip.
+                reserve(1)
+                following += 1
+                if len(path)+len(available)-following < min_events:
+                    break
+            if following < len(available) and len(path) < max_events:
                 continue
             if len(path) < min_events:
                 continue

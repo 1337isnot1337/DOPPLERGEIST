@@ -8,7 +8,14 @@ on:
         required: true
   push:
     branches: [perf/measured-hotpath-20261103]
-    paths: [.github/workflows/real-performance.yml]
+    paths:
+      - .github/workflows/real-performance.yml
+      - src/dopplergeist/geometry.py
+      - src/dopplergeist/matching.py
+      - src/dopplergeist/batch_ridge.py
+      - src/dopplergeist/search.py
+      - scripts/benchmark_prepared_measurements.py
+      - tests/test_real_*.py
 permissions:
   contents: read
 jobs:

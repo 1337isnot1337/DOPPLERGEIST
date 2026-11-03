@@ -148,10 +148,26 @@ cannot enter Top-K. While fitting a shared-clock trial, validated residuals can
 tighten that ceiling or establish a residual rejection before the remaining
 groups are fitted. Comparisons are strict, so ties remain eligible. Acoustic
 batches for later groups are deferred until a surviving trial needs them.
-For the first event, a measured-ridge loss bound can screen individual clocks;
-the remaining supported clocks are fitted together. Representative batched
-fits are checked against the scalar fitter, with fallback for mismatches or
-unsupported and numerically degenerate batches.
+
+At each event group, the scorer fits only the shared-clock trials that survive
+earlier groups and the acoustic bound. It reuses validated group contributions
+and preserves the order and upward rounding of the conservative score ceiling.
+If the product of clock trials and event groups exceeds 4,096, the scorer keeps
+the scalar traversal.
+
+Batch arithmetic matches the scalar model and uses Python `float` powers.
+Regression tests compare every fitted clock in the recorded-data test batches
+with the scalar fitter. Unsupported, nonfinite or degenerate batches use scalar
+fitting. The same fallback handles overflowing powers, zero drift bounds and
+noncanonical numeric parameters.
+
+A replay at one source-informed receiver point used 16 event groups and 3,905
+associations. Across three alternating pairs, median CPU time fell from 68.9247
+to 25.5895 seconds, a 2.6935× speedup. All candidate results, diagnostics, support
+records and retention data matched the baseline with the separate correction to
+scalar rounding. A narrower clock window had a smaller change: 4.6782 to 4.0092 CPU
+seconds. The [performance report](PERFORMANCE.md) gives the inputs, procedure and
+limits.
 
 When an event's conservative loss bound alone makes the association unable to
 reach the current Top-K floor, the scorer may also skip that clock and retain a
@@ -265,3 +281,4 @@ The diagnostic contains measured event ridges, observed `cpa_rows`, one receiver
 matching/scoring modules with the current fitter and requires identical shared
 geometry. Timing includes scoring with a bounded fit cache. Scaling experiments
 and location-accuracy evidence must be labelled separately.
+
