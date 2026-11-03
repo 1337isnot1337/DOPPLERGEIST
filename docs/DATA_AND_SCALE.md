@@ -210,6 +210,9 @@ Reports distinguish complete/partial computation, source scope, missing tiles,
 refinement failure, runtime and Linux process peak RSS. A complete tile is never
 labelled a complete national search. The product/confidence workers translate
 this internal report to the shared coverage and result contracts.
+On Linux, process peak RSS uses the process's post-exec `VmHWM`; it does not
+include worker processes or FFmpeg. Earlier `getrusage` receipts can inherit a
+larger pre-exec high-water mark and should not be compared as measured peaks.
 Search progress counts grid-cell work, not elapsed time or a guarantee that all
 data and model support are complete; dense cells may take much longer to process.
 

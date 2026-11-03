@@ -8,12 +8,12 @@ from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
-import resource
 import subprocess
 import time
 
 from dopplergeist.discovery import DiscoverySettings, discover_events
 from dopplergeist.intake import intake_recording
+from dopplergeist.resource_usage import process_peak_rss_kib
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     result = {"recording": recording.metadata, "time_status": recording.time_status,
               "settings": asdict(DiscoverySettings()), "events_found": len(events),
               "events": [{k: event[k] for k in ("event_id", "start_s", "end_s", "band_hz", "quality")} for event in events],
-              "runtime_s": time.monotonic() - began, "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
+              "runtime_s": time.monotonic() - began, "peak_rss_kib": process_peak_rss_kib(),
               "code_sha256": code_hash.hexdigest(),
               "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
               "working_tree": subprocess.check_output(["git", "status", "--short"], cwd=root, text=True).strip(),
