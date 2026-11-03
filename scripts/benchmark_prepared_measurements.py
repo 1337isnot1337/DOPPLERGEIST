@@ -44,6 +44,37 @@ def canonical(value):
                       allow_nan=True, default=json_scalar)
 
 
+def query_tracks(index, points, events, budget, scoring, bounds, time_range):
+    """Count actual index traversal while exercising the production overload path."""
+    from dopplergeist.tiled_search import _tracks_for_points
+
+    if "elev_m" not in points:
+        raise ValueError("The recorded receiver hypothesis must include its elevation")
+    operations = {"query_calls": 0, "decoded_track_yields": 0, "decoded_sample_yields": 0}
+    inventory = {}
+
+    class CountedIndex:
+        def query(self, query_bounds, query_time):
+            operations["query_calls"] += 1
+            for track in index.query(query_bounds, query_time):
+                operations["decoded_track_yields"] += 1
+                operations["decoded_sample_yields"] += len(track.time)
+                inventory[track.id] = len(track.time)
+                yield track
+
+    radius = max(event["slant_range_m"][1] for event in events)
+    tracks, points = _tracks_for_points(
+        [CountedIndex()], bounds, time_range, budget, points, None, radius,
+        scoring.get("c", 343.0))
+    accounting = {
+        "queried_track_ids": sorted(inventory),
+        "queried_trajectory_samples": sum(inventory.values()),
+        "selected_track_ids": [track.id for track in tracks],
+        "selected_trajectory_samples": sum(len(track.time) for track in tracks),
+    }
+    return tracks, points, operations, accounting
+
+
 def prepare(args):
     import pandas as pd
     from dopplergeist.data_access import FlightIndex
@@ -69,15 +100,26 @@ def prepare(args):
     budget = SearchBudget(max_tracks_per_tile=args.max_tracks,
                           max_track_samples_per_tile=args.max_samples,
                           max_candidates_per_tile=args.max_candidates, top_k=args.top_k)
-    tracks, samples = [], 0
-    for track in index.query(query_bounds, query_time):
-        tracks.append(track)
-        samples += len(track.time)
-        if len(tracks) > args.max_tracks or samples > args.max_samples:
-            raise ValueError("Declared trajectory budget exceeded; no input was silently truncated")
+    points = pd.DataFrame([point])
+    query_preparation = None
+    if args.include_track_query:
+        tracks, points, query_operations, query_accounting = query_tracks(
+            index, points, events, budget, {"mode": "robust_ridge"}, query_bounds, query_time)
+        samples = query_accounting["selected_trajectory_samples"]
+        query_preparation = {
+            "queried_trajectories": len(query_accounting["queried_track_ids"]),
+            "queried_trajectory_samples": query_accounting["queried_trajectory_samples"],
+            "operations": query_operations,
+        }
+    else:
+        tracks, samples = [], 0
+        for track in index.query(query_bounds, query_time):
+            tracks.append(track)
+            samples += len(track.time)
+            if len(tracks) > args.max_tracks or samples > args.max_samples:
+                raise ValueError("Declared trajectory budget exceeded; no input was silently truncated")
     if not tracks:
         raise ValueError("The declared real-data query returned no trajectories")
-    points = pd.DataFrame([point])
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     radius = max(e["slant_range_m"][1] for e in events)
     tables, unsupported, row_count = [], [], 0
@@ -97,7 +139,9 @@ def prepare(args):
     if not tables:
         raise ValueError("The real-data point has no supported CPA rows")
     fixture = {
-        "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+        "scope": ("Recorded-input computation comparison; source-informed receiver, no recording-clock prior or accuracy claim"
+                  if args.full_day else
+                  "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim"),
         "discovery_source": str(args.discovery.resolve()),
         "reference_report": str(args.reference_report.resolve()),
         "real_index": str(args.index.resolve()), "index_input_hash": index.report["input_hash"],
@@ -113,9 +157,16 @@ def prepare(args):
                    "ridge_samples": sum(len(measurement[1]) for measurement in measurements),
                    "cpa_rows": row_count, "unsupported_cpa_tracks": len(unsupported)},
     }
+    if args.anchor_window_s is not None:
+        fixture["anchor_window_s"] = args.anchor_window_s
+        fixture["scope"] += ". One association-anchor partition. Physical fit intervals remain unchanged."
+    if query_preparation is not None:
+        fixture["track_query_preparation"] = query_preparation
     write_new(args.output, fixture)
     print(json.dumps({"fixture": str(args.output), **fixture["counts"],
-                      "scope": fixture["scope"]}), flush=True)
+                      "scope": fixture["scope"],
+                      **({"track_query_preparation": query_preparation}
+                         if query_preparation is not None else {})}), flush=True)
 
 
 def worker(args):
@@ -131,26 +182,28 @@ def worker(args):
     if Path(dopplergeist.__file__).resolve().parent != source / "dopplergeist":
         raise RuntimeError("Comparison imported a different source tree")
     native_fit = getattr(matching, "_native_fit_irls", None)
-    backend = getattr(matching, "RIDGE_FIT_BACKEND", "python-irls-v1")
+    ridge_backend = getattr(matching, "RIDGE_FIT_BACKEND", "python-irls-v1")
     acoustic_backend = getattr(geometry, "ACOUSTIC_BACKEND", "python-acoustic-v1")
     try:
         from dopplergeist.native_acoustic import _native as native_acoustic
     except ImportError:
         native_acoustic = None
     if args.require_native and not callable(native_fit):
-        raise RuntimeError("The source-tree native fitter is unavailable; build it in place before timing")
+        raise RuntimeError("The selected source's native ridge fitter is unavailable")
     if args.require_native_acoustic and native_acoustic is None:
-        raise RuntimeError("The source-tree native acoustic solver is unavailable; build it in place before timing")
+        raise RuntimeError("The selected source's native acoustic solver is unavailable")
     fixture = json.loads(args.fixture.read_text())
     index = FlightIndex(args.index or fixture["real_index"])
     if index.report["input_hash"] != fixture["index_input_hash"]:
         raise ValueError("The real trajectory index no longer matches the fixture")
     budget = tiled_search.SearchBudget(**fixture["budget"])
     loaded_at = time.perf_counter()
-    tracks = list(index.lookup(fixture["track_ids"], max_tracks=budget.max_tracks_per_tile,
-                               max_samples=budget.max_track_samples_per_tile))
-    if sorted(track.id for track in tracks) != sorted(fixture["track_ids"]):
-        raise ValueError("The index is missing a recorded trajectory")
+    tracks = None
+    if not args.include_track_query:
+        tracks = list(index.lookup(fixture["track_ids"], max_tracks=budget.max_tracks_per_tile,
+                                   max_samples=budget.max_track_samples_per_tile))
+        if sorted(track.id for track in tracks) != sorted(fixture["track_ids"]):
+            raise ValueError("The index is missing a recorded trajectory")
     events, measurements = matching.prepare_events(fixture["events"])
     points = pd.DataFrame([fixture["point"]])
     load_seconds = time.perf_counter() - loaded_at
@@ -164,6 +217,41 @@ def worker(args):
     all_rows = []
     original_fit, original_acoustic = matching._fit_ridge_uncached, Track.acoustic
     original_score = tiled_search.score_candidate
+    phase_seconds, phase_patches = {}, []
+
+    def timed_phase(name, function):
+        def run(*values, **options):
+            began, cpu = time.perf_counter(), time.process_time()
+            try:
+                return function(*values, **options)
+            finally:
+                phase = phase_seconds.setdefault(name, {"wall_seconds": 0.0, "cpu_seconds": 0.0, "calls": 0})
+                phase["wall_seconds"] += time.perf_counter() - began
+                phase["cpu_seconds"] += time.process_time() - cpu
+                phase["calls"] += 1
+        return run
+
+    if args.stage_timing:
+        phase_targets = [
+            (Track, "outside_observer_radius", "distance_sieve"),
+            (matching, "association_candidates", "association_enumeration"),
+            (tiled_search, "merge_candidates", "retention"),
+        ]
+        if callable(getattr(tiled_search, "cpa_table", None)):
+            phase_targets.append((tiled_search, "cpa_table", "closest_approach"))
+        else:
+            prepared_cpa = getattr(tiled_search, "_PreparedCPATrack", None)
+            if prepared_cpa is not None:
+                phase_targets.extend([
+                    (prepared_cpa, "__init__", "closest_approach_preparation"),
+                    (prepared_cpa, "raw_rows", "closest_approach"),
+                ])
+        for owner, attribute, name in phase_targets:
+            function = getattr(owner, attribute, None)
+            if function is not None:
+                phase_patches.append((owner, attribute, function))
+                setattr(owner, attribute, timed_phase(name, function))
+    score_function = timed_phase("candidate_scoring", original_score) if args.stage_timing else original_score
 
     def counted_fit(*values, **options):
         operations["scalar_fit_calls"] += 1
@@ -183,7 +271,7 @@ def worker(args):
     def captured_score(*values, **options):
         operations["scored_candidates"] += 1
         try:
-            result = original_score(*values, **options)
+            result = score_function(*values, **options)
         except AcousticSupportError as error:
             all_rows.append({"support_failure": tiled_search._support_error(error)})
             raise
@@ -191,23 +279,52 @@ def worker(args):
         return result
 
     matching._fit_ridge_uncached, Track.acoustic = counted_fit, counted_acoustic
+    tiled_search.score_candidate = captured_score
     if callable(native_fit):
         matching._native_fit_irls = counted_native
-    tiled_search.score_candidate = captured_score
     native_acoustic_before = native_acoustic.successful_calls() if native_acoustic is not None else 0
+    query_accounting, query_operations, execution_stages = None, None, {}
     began, cpu = time.perf_counter(), time.process_time()
     try:
+        if args.include_track_query:
+            query_began, query_cpu = time.perf_counter(), time.process_time()
+            tracks, points, query_operations, query_accounting = query_tracks(
+                index, points, events, budget, fixture["scoring"],
+                fixture["query_bounds"], fixture["query_time_s"])
+            execution_stages["track_query_and_distance_sieve"] = {
+                "wall_seconds": time.perf_counter() - query_began,
+                "cpu_seconds": time.process_time() - query_cpu,
+            }
+            if query_accounting["selected_track_ids"] != fixture["track_ids"]:
+                raise AssertionError("The real query changed the ordered selected-track inventory")
+            if query_accounting["selected_trajectory_samples"] != fixture["counts"]["trajectory_samples"]:
+                raise AssertionError("The real query changed the selected trajectory sample count")
+            prepared_query = fixture.get("track_query_preparation")
+            if prepared_query is not None:
+                if (len(query_accounting["queried_track_ids"]) != prepared_query["queried_trajectories"]
+                        or query_accounting["queried_trajectory_samples"] != prepared_query["queried_trajectory_samples"]):
+                    raise AssertionError("The real query changed the complete observed-track inventory")
+            scoring_began, scoring_cpu = time.perf_counter(), time.process_time()
+        partition = ({"anchor_window": fixture["anchor_window_s"]}
+                     if "anchor_window_s" in fixture else {})
         ranked, counts = tiled_search._score(
             points, tracks, events, measurements, budget, fixture["scoring"], {},
-            start_window=fixture["recording_start_window_s"], ledger=ledger, stage=stage)
+            start_window=fixture["recording_start_window_s"], ledger=ledger, stage=stage, **partition)
+        if args.include_track_query:
+            execution_stages["cpa_association_scoring_and_retention"] = {
+                "wall_seconds": time.perf_counter() - scoring_began,
+                "cpu_seconds": time.process_time() - scoring_cpu,
+            }
     finally:
         elapsed, cpu_seconds = time.perf_counter() - began, time.process_time() - cpu
-        if native_acoustic is not None:
-            operations["native_acoustic_successes"] = native_acoustic.successful_calls() - native_acoustic_before
         matching._fit_ridge_uncached, Track.acoustic = original_fit, original_acoustic
+        tiled_search.score_candidate = original_score
         if callable(native_fit):
             matching._native_fit_irls = native_fit
-        tiled_search.score_candidate = original_score
+        if native_acoustic is not None:
+            operations["native_acoustic_successes"] = native_acoustic.successful_calls() - native_acoustic_before
+        for owner, attribute, function in reversed(phase_patches):
+            setattr(owner, attribute, function)
     expected_counts = fixture.get("expected_counts")
     if expected_counts is not None:
         actual_counts = {"cpa_rows": counts["cpa_rows"],
@@ -226,22 +343,37 @@ def worker(args):
     if not operations["scored_candidates"]:
         raise AssertionError("The benchmark did not score any real associations")
     if args.require_native and not operations["native_fit_successes"]:
-        raise AssertionError("The native fitter was available but no successful native fit was timed")
+        raise AssertionError("No successful native ridge fit occurred inside the timed scoring call")
     if args.require_native_acoustic and not operations["native_acoustic_successes"]:
-        raise AssertionError("The native acoustic solver was available but no successful native solve was timed")
+        raise AssertionError("No successful native acoustic solve occurred inside the timed scoring call")
     with ledger.connect() as database:
         retention = {name: database.execute(f"SELECT * FROM {name} ORDER BY 1,2").fetchall()
                      for name in ("records", "bounds", "stages")}
-    write_new(args.output / "results.json", {"ranked": ranked, "counts": counts,
-              "all_scored_candidates": all_rows, "retention": retention})
+    results = {"ranked": ranked, "counts": counts,
+               "all_scored_candidates": all_rows, "retention": retention}
+    if query_accounting is not None:
+        results["track_query_accounting"] = query_accounting
+    write_new(args.output / "results.json", results)
     summary = {"wall_seconds": elapsed, "cpu_seconds": cpu_seconds,
                "load_seconds_excluded": load_seconds, "operations": operations,
-               "ridge_fit_backend": backend, "native_extension_available": callable(native_fit),
-               "acoustic_backend": acoustic_backend,
+               "ridge_fit_backend": ridge_backend, "acoustic_backend": acoustic_backend,
+               "native_extension_available": callable(native_fit),
                "peak_rss_mib": peak_rss_mib,
                "peak_rss_scope": ("Worker lifetime through scoring, including imports and input loading"
                                   if peak_rss_mib is not None else "Unavailable on this platform"),
                "retained": len(ranked), "independent_groups": len(events), "scope": fixture["scope"]}
+    if "anchor_window_s" in fixture:
+        summary["anchor_window_s"] = fixture["anchor_window_s"]
+    if args.include_track_query:
+        summary["track_query_operations"] = query_operations
+        summary["execution_stage_seconds"] = execution_stages
+        summary["timing_scope"] = (
+            "Initial local index traversal and conservative distance sieve, followed by complete "
+            "CPA/association scoring and retention. Excludes imports, index metadata, event "
+            "preparation, downloads, terrain sampling, audio discovery, and refinement.")
+    if args.stage_timing:
+        summary["phase_seconds"] = phase_seconds
+        summary["phase_timing_scope"] = "Inclusive instrumented call times; overlapping phases must not be summed."
     write_new(args.output / "summary.json", summary)
     print(json.dumps(summary), flush=True)
 
@@ -261,6 +393,10 @@ def compare(args):
                        "--fixture", str(args.fixture.resolve()), "--output", str(output.resolve())]
             if args.index:
                 command.extend(["--index", str(args.index.resolve())])
+            if args.stage_timing:
+                command.append("--stage-timing")
+            if args.include_track_query:
+                command.append("--include-track-query")
             if name == "current" and args.require_current_native:
                 command.append("--require-native")
             if name == "current" and args.require_current_native_acoustic:
@@ -270,7 +406,7 @@ def compare(args):
             if expected is None:
                 expected = payload
             elif payload != expected:
-                raise AssertionError(f"Exact candidate, diagnostic, support, or retention mismatch: {output}")
+                raise AssertionError(f"Exact selected-track, candidate, diagnostic, support, or retention mismatch: {output}")
             summary = json.loads((output / "summary.json").read_text())
             runs.append({"source": name, "repetition": repetition + 1, **summary})
     medians = {}
@@ -285,6 +421,16 @@ def compare(args):
               "speedup": {metric: medians["baseline"][metric] / medians["current"][metric]
                           for metric in ("wall_seconds", "cpu_seconds")},
               "scope": runs[0]["scope"], "runs": runs}
+    if args.include_track_query:
+        report["timing_scope"] = runs[0]["timing_scope"]
+        report["track_query_included"] = True
+        report["execution_stage_medians"] = {
+            name: {stage: {metric: statistics.median(
+                row["execution_stage_seconds"][stage][metric]
+                for row in runs if row["source"] == name)
+                for metric in ("wall_seconds", "cpu_seconds")}
+                for stage in runs[0]["execution_stage_seconds"]}
+            for name in sources}
     write_new(args.output / "comparison.json", report)
     print(json.dumps({key: report[key] for key in ("identical_results", "medians", "speedup", "scope")}), flush=True)
 
@@ -299,6 +445,10 @@ def main():
                              default=ROOT / "evidence/results/reference-local/report.json")
     preparation.add_argument("--clock-half-width-s", type=float, default=120.0)
     preparation.add_argument("--full-day", action="store_true", help="Use all indexed times with an unknown clock")
+    preparation.add_argument("--anchor-window-s", nargs=2, type=float, metavar=("LOW", "HIGH"),
+                             help="Optional half-open association ownership partition; physical fit windows remain unchanged")
+    preparation.add_argument("--include-track-query", action="store_true",
+                             help="Prepare the production query/sieve workload; budgets bound retained tracks, including overloaded queries")
     preparation.add_argument("--max-tracks", type=int, default=5000)
     preparation.add_argument("--max-samples", type=int, default=1000000)
     preparation.add_argument("--max-candidates", type=int, default=20000)
@@ -312,21 +462,31 @@ def main():
     comparison.add_argument("--repeats", type=int, default=3)
     comparison.add_argument("--timeout-s", type=float, default=600.0)
     comparison.add_argument("--output", required=True, type=Path)
+    comparison.add_argument("--stage-timing", action="store_true",
+                            help="Collect inclusive phase times in a separate diagnostic run")
+    comparison.add_argument("--include-track-query", action="store_true",
+                            help="Include initial index traversal and the production overload sieve in each timed worker")
     comparison.add_argument("--require-current-native", action="store_true",
-                            help="Fail unless the timed current worker actually uses its native fitter")
+                            help="Require successful native ridge fits inside each current scoring run")
     comparison.add_argument("--require-current-native-acoustic", action="store_true",
-                            help="Fail unless the timed current worker actually uses its native acoustic solver")
+                            help="Require successful native acoustic solves inside each current scoring run")
     internal = commands.add_parser("_worker", help=argparse.SUPPRESS)
     internal.add_argument("--source", required=True, type=Path)
     internal.add_argument("--fixture", required=True, type=Path)
     internal.add_argument("--index", type=Path)
     internal.add_argument("--output", required=True, type=Path)
+    internal.add_argument("--stage-timing", action="store_true", help=argparse.SUPPRESS)
+    internal.add_argument("--include-track-query", action="store_true", help=argparse.SUPPRESS)
     internal.add_argument("--require-native", action="store_true", help=argparse.SUPPRESS)
     internal.add_argument("--require-native-acoustic", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.command == "prepare":
         if args.clock_half_width_s < 0:
             parser.error("--clock-half-width-s must be nonnegative")
+        if (args.anchor_window_s is not None
+                and (not all(math.isfinite(value) for value in args.anchor_window_s)
+                     or args.anchor_window_s[0] >= args.anchor_window_s[1])):
+            parser.error("--anchor-window-s requires finite increasing endpoints")
         sys.path.insert(0, str(ROOT / "src"))
         prepare(args)
     elif args.command == "compare":
@@ -339,4 +499,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

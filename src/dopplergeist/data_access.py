@@ -63,6 +63,81 @@ def _frame_track(name, frame):
     return track
 
 
+class _IndexColumn:
+    """The column operations used by the unchanged track normalization code."""
+
+    __slots__ = ("values",)
+
+    def __init__(self, values):
+        self.values = values
+
+    def to_numpy(self, dtype=None):
+        return np.asarray(self.values, dtype=dtype)
+
+    @property
+    def iloc(self):
+        return self.values
+
+    def tolist(self):
+        return self.values.tolist()
+
+
+class _IndexColumns:
+    """A bounded column view of one canonical decoded index segment."""
+
+    __slots__ = ("columns", "count")
+
+    def __init__(self, columns, count):
+        self.columns, self.count = columns, count
+
+    def __len__(self):
+        return self.count
+
+    def __contains__(self, name):
+        return name in self.columns
+
+    def __getitem__(self, name):
+        return self.columns[name]
+
+    def __getattr__(self, name):
+        try:
+            return self.columns[name]
+        except KeyError:
+            raise AttributeError(name) from None
+
+
+def _payload_frame(records):
+    """Avoid pandas construction for canonical float64/string index records.
+
+    Both paths still use _frame_track and _segment_velocity. Restrict this
+    shortcut to representations whose pandas column conversion is exact;
+    mixed schemas, integer position fields and unusual labels keep pandas'
+    original dtype inference and failure behavior.
+    """
+    if type(records) is not list or not records or any(type(row) is not dict for row in records):
+        return pd.DataFrame(records)
+    absent = object()
+    columns = {}
+    for name in ("time_s", "lat", "lon", "alt_m"):
+        values = [row.get(name, absent) for row in records]
+        if any(type(value) is not float for value in values):
+            return pd.DataFrame(records)
+        columns[name] = _IndexColumn(np.asarray(values, dtype=float))
+    for name in ("east_mps", "north_mps", "up_mps", "typecode", "altitude_basis", "aircraft_class"):
+        values = [row.get(name, absent) for row in records]
+        if all(value is absent for value in values):
+            continue
+        numeric = name in ("east_mps", "north_mps", "up_mps")
+        if numeric:
+            canonical = all(type(value) is float or value is None for value in values)
+        else:
+            canonical = all(type(value) is str for value in values)
+        if not canonical:
+            return pd.DataFrame(records)
+        columns[name] = _IndexColumn(np.asarray(values, dtype=float if numeric else object))
+    return _IndexColumns(columns, len(records))
+
+
 @lru_cache(maxsize=1)
 def _ecef_to_geographic():
     from pyproj import Transformer
@@ -444,7 +519,7 @@ class FlightIndex:
                     cache_scan["used"].add(key)
         if entry is not None:
             return pickle.loads(cached)
-        frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
+        frame = _payload_frame(json.loads(gzip.decompress(payload)))
         if max_samples is not None and len(frame) > max_samples:
             raise DataUnavailable("Flight lookup sample budget exceeded")
         track = _frame_track(name, frame)
