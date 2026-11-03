@@ -97,6 +97,7 @@ class JobManager:
             directory = self.root / job_id
             directory.mkdir(mode=0o700)
             self._uploads += 1
+        reserved = True
         try:
             suffix = suffix.lower() if suffix.lower() in {".mp3", ".wav", ".flac", ".m4a", ".ogg"} else ".mp3"
             audio = directory / ("input" + suffix)
@@ -123,11 +124,15 @@ class JobManager:
                 thread = threading.Thread(target=self._run, args=(directory,), daemon=True)
                 self._threads[job_id] = thread
                 thread.start()
+                self._uploads -= 1
+                reserved = False
+                self._uploads_changed.notify_all()
                 return queued
         finally:
-            with self._uploads_changed:
-                self._uploads -= 1
-                self._uploads_changed.notify_all()
+            if reserved:
+                with self._uploads_changed:
+                    self._uploads -= 1
+                    self._uploads_changed.notify_all()
 
     def _run(self, directory):
         try:
