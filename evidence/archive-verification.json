@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-02",
+  "checks": [
+    {
+      "asset": "data-source.tar.gz",
+      "files_verified": 54,
+      "passed": true
+    },
+    {
+      "asset": "data-research.tar.gz",
+      "files_verified": 375,
+      "passed": true
+    },
+    {
+      "asset": "data-terrain.tar.gz",
+      "files_verified": 6,
+      "passed": true
+    },
+    {
+      "asset": "data-synthetic.tar.gz",
+      "files_verified": 6,
+      "passed": true
+    },
+    {
+      "asset": "data-adsb-derived.tar.gz",
+      "files_verified": 8,
+      "passed": true
+    },
+    {
+      "asset": "results.tar.gz",
+      "files_verified": 287,
+      "passed": true
+    }
+  ],
+  "raw_archive_parts": "Unchanged files; local packaging hashes recorded in artifact-manifest.json. Remote verification is pending."
+}

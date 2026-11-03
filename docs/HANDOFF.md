@@ -1,5 +1,8 @@
 # Implementation handoff
 
+The [swarm task plan](AGENT_TASKS.md) provides 12 actionable GitHub issues,
+dependencies, suggested agent allocation and a copyable assignment prompt.
+
 ## Read first
 
 The user wants a full MP3-upload-to-location pipeline, with automatic Doppler-event

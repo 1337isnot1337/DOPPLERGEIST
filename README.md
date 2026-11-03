@@ -26,7 +26,9 @@ The real two-event result has been reproduced with the faster CPA implementation
 at the same winning point and score. No blind nationwide real-audio run has been
 completed. Scores are ranking statistics, not calibrated probabilities.
 
-Start with [the implementation handoff](docs/HANDOFF.md),
+For parallel implementation, start with the [agent task plan](docs/AGENT_TASKS.md)
+and [tracking issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
+Then read [the implementation handoff](docs/HANDOFF.md),
 [current evidence](docs/PROGRESS.md), and [the reconstructed methodology](docs/METHODOLOGY.md).
 Readable reports and plots are checked into [evidence/results](evidence/results).
 Large inputs and complete outputs are in the
