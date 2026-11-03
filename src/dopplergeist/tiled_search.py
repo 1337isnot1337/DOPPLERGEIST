@@ -697,6 +697,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     import os
     from contextlib import ExitStack, nullcontext
     from .data_access import CachedTerrain
+    from .terrain import Terrain
     from .parallel_retention import import_retention_stage
     from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results, tile_worker_lanes
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
@@ -724,7 +725,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     if type(workers) is not int or workers < 1:
         raise ValueError("workers must be a positive integer")
     workers = min(workers, total, budget.max_tiles or total)
-    parallel = workers > 1 and type(terrain) is CachedTerrain
+    parallel = workers > 1 and type(terrain) in (CachedTerrain, Terrain)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     manifest = output / "manifest.json"
@@ -837,14 +838,21 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         return iy, ix, tuple(4 + int(p[1:]) if p.startswith("t") else int(p) for p in path)
 
     if parallel:
-        terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
-                           "adopt_existing": terrain.adopt_existing}
-        initargs = ([index.path for index in indexes], terrain.root, terrain_options, events, measurements,
+        if type(terrain) is CachedTerrain:
+            terrain_kind, terrain_root = "cached", terrain.root
+            terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
+                               "adopt_existing": terrain.adopt_existing}
+            dem_keys = lambda cells: _tile_dem_keys(cells, budget.spacing_m, bounds, crs, terrain.catalog)
+        else:
+            terrain_kind, terrain_root = "explicit", None
+            paths = [raster.name for raster in terrain.rasters]
+            geoid_path = terrain.geoid.rasters[0].name if terrain.geoid else None
+            terrain_options = {"paths": paths, "constant_m": terrain.constant, "geoid_path": geoid_path}
+            dem_keys = lambda cells: tuple(Path(path).stem for path in paths)
+        initargs = ([index.path for index in indexes], terrain_root, terrain_options, events, measurements,
                     bounds, time_range_s, budget, parameters, filters, start_window, crs,
-                    output / ".tile-workers", run_hash, score_kind)
-        context = tile_worker_lanes(
-            workers, initialize_tile_worker, initargs,
-            lambda cells: _tile_dem_keys(cells, budget.spacing_m, bounds, crs, terrain.catalog))
+                    output / ".tile-workers", run_hash, score_kind, terrain_kind)
+        context = tile_worker_lanes(workers, initialize_tile_worker, initargs, dem_keys)
     else:
         context = nullcontext(None)
     def finish_tile(stage, cells, future):
