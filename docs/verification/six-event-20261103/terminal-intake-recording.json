@@ -1,0 +1,13 @@
+{
+  "source_sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee",
+  "duration_s": 1400.0,
+  "sample_rate_hz": 4000,
+  "channels": 1,
+  "source_format": "mp3",
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user",
+    "source_detail": "Declared clock in the frozen synthetic fixture"
+  }
+}

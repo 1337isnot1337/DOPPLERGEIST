@@ -1,0 +1,10 @@
+{
+  "scope": "separate64MiBallocation/0.3CPU-second namespace measurement-control; not original job resource measurement",
+  "returncode": 0,
+  "process_report": {
+    "self_peak_rss_kib": 76128,
+    "allocated_bytes": 67108864
+  },
+  "outer_time": "max_rss_kib=2092\nuser_cpu_s=0.00\nsystem_cpu_s=0.00\n",
+  "inner_time": "max_rss_kib=76128\nuser_cpu_s=0.21\nsystem_cpu_s=0.15\n"
+}

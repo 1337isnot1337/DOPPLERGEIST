@@ -1,0 +1,15 @@
+{
+  "flight_indexes": [
+    "/inputs/flights-runtime-v2.sqlite"
+  ],
+  "terrain": {
+    "rasters": [
+      "/inputs/terrain.tif"
+    ],
+    "geoid_raster": "/inputs/geoid.tif"
+  },
+  "search_budget": {
+    "tile_cells": 8
+  },
+  "offline": true
+}

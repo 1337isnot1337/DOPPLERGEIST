@@ -8,6 +8,8 @@ from aircraft_geoloc.data_access import FlightIndex
 from aircraft_geoloc.geometry import ecef
 from aircraft_geoloc.matching import prepare_events, score_ridges, association_score
 from aircraft_geoloc.terrain import Terrain
+from aircraft_geoloc.tiled_search import merge_candidates
+from aircraft_geoloc.data_access import content_hash
 
 root = Path('/outputs')
 jobs = list(root.glob('jobs/*/result.json'))
@@ -15,7 +17,30 @@ assert len(jobs) == 1
 job = jobs[0].parent
 result = json.loads(jobs[0].read_text())
 assert result['status'] in {'failed', 'inconclusive', 'succeeded', 'needs_input', 'cancelled'}
-search = json.loads((job/'search/search-report.json').read_text())
+search_path = job/'search/search-report.json'
+if search_path.exists():
+    search = json.loads(search_path.read_text())
+    ranking_scope = 'original terminal search report'
+else:
+    # A work-limit result can precede report publication. Recover completed
+    # coarse scores only; this performs no search or coordinate optimization.
+    identity = json.loads((job/'search/manifest.json').read_text())['configuration']
+    ranked, checkpoints, grid_points = [], 0, 0
+    for path in sorted((job/'search').glob('tile-*.json')):
+        record = json.loads(path.read_text())
+        payload = record['payload']
+        assert record['payload_hash'] == content_hash(payload)
+        checkpoints += 1
+        grid_points += payload.get('grid_points', 0)
+        if payload.get('ranked'):
+            ranked = merge_candidates(ranked + payload['ranked'], identity['budget']['top_k'])
+    search = {'status':'coarse_only_after_terminal', 'ranked':ranked,
+              'tile_checkpoints_read':checkpoints, 'coarse_grid_points':grid_points,
+              'refinement_complete':False, 'original_job_status':result['status'],
+              'original_job_reason_code':result.get('reason_code'),
+              'scope':'reconstruction of already-produced coarse scores, never an accepted pipeline result'}
+    (root/'coarse-postrun-reconstruction.json').write_text(json.dumps(search,indent=2)+'\n')
+    ranking_scope = 'post-terminal reconstruction of completed coarse checkpoints; refinement not assessed'
 discovery = json.loads((job/'discovery/discovery.json').read_text())
 events, measurements = prepare_events(discovery['events'])
 rows = search.get('ranked', [])
@@ -32,6 +57,7 @@ xy = Transformer.from_crs('EPSG:4326', 'EPSG:5070', always_xy=True)
 ll = Transformer.from_crs('EPSG:5070', 'EPSG:4326', always_xy=True)
 out = {'scope': 'fixed reported location and shared clock; bounded source fits reused; no coordinate/clock optimization, truth, leave-one-out prediction or acceptance change',
        'selection': 'leading search row, plus first all-group row if different',
+       'ranking_scope':ranking_scope,
        'proposed_group_count': len(events), 'candidate_checks': []}
 for row in selected:
     indices = row.get('event_indices', list(range(len(events))))
