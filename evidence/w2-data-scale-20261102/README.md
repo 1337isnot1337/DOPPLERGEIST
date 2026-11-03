@@ -59,6 +59,15 @@ traffic, not automatic audio detection, narrow-mode recall, DEM accuracy or
 100 m national localization. The 20 km coarse spacing deliberately limits the
 resource trial and is insufficient to certify a precision target.
 
+`model-failure-audit.json` and its exact runner inspect those failed tiles. Four
+source segments have severe disagreement between supplied velocity at sample
+knots and modeled between-sample motion, including a C172 segment with a sampled
+14,600 m/s Hermite speed. This does not imply actual supersonic aircraft.
+Position jumps, motion/identity defects and historical null-to-zero conversion
+need fresh raw-source investigation. The follow-up is
+[issue #64](https://github.com/1337isnot1337/DOPPLERGEIST/issues/64); the existing
+partial outcome remains unchanged.
+
 `scale-v1-*` and `index-v1-report.json` preserve the earlier development run:
 3,188 of 3,192 tiles completed, four explicit model failures, 1,341.626 s and
 259.0 MiB peak RSS. It used obsolete sample-only bounds and predates the corrected

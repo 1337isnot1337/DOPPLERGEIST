@@ -105,6 +105,10 @@
       "bytes": 28386,
       "sha256": "4e3b83a4ee8feec1a56c6698aafc1770da8a98f0dfda43ab34f34dc04e81602d"
     },
+    "hermes-updated-threshold-assessment.json": {
+      "bytes": 631,
+      "sha256": "c7e38688de5dedb527d865115e922be4b45efcf3de7bc3e8f19bfaeaabb1b061"
+    },
     "index-v1-report.json": {
       "bytes": 1132,
       "sha256": "a086747c6ea6faac0bfd6c7dcce5fc45984d6d03bc26975120348fe445501810"
@@ -112,6 +116,30 @@
     "index-v2-report.json": {
       "bytes": 1368,
       "sha256": "4b66722662f4bc0bdd37873d9deead54ac303b030878e4ba100b01a2d94b2f29"
+    },
+    "model-failure-audit-v2.json": {
+      "bytes": 1908,
+      "sha256": "418e61259ed9377e5bc6fba06fe8a489c9a067c995f6c18cf07fd1bb6f1a7b9b"
+    },
+    "model-failure-audit-v2.log": {
+      "bytes": 1908,
+      "sha256": "418e61259ed9377e5bc6fba06fe8a489c9a067c995f6c18cf07fd1bb6f1a7b9b"
+    },
+    "model-failure-audit-v2.py": {
+      "bytes": 2901,
+      "sha256": "56ed71f8c11cd829a9ae285d9d81983fc137029cae6b309b4ceab58282f737fb"
+    },
+    "model-failure-audit.json": {
+      "bytes": 1839,
+      "sha256": "de7b8b00cab49554c232d5b2e7654146b871570d58ff85bb7e28af50df993a60"
+    },
+    "model-failure-audit.log": {
+      "bytes": 1839,
+      "sha256": "de7b8b00cab49554c232d5b2e7654146b871570d58ff85bb7e28af50df993a60"
+    },
+    "model-failure-audit.py": {
+      "bytes": 2760,
+      "sha256": "4969f73f9b528cea3f8f4f0050137ca80b244188fc92b7432df9204db9a72c1a"
     },
     "regional-query-v2.json": {
       "bytes": 418,
