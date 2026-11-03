@@ -1,0 +1,17 @@
+{
+  "additional_read_only_mount": "/etc/alternatives",
+  "checks": [
+    {
+      "name": "probe",
+      "returncode": 0,
+      "stdout": "{\n    \"programs\": [\n\n    ],\n    \"streams\": [\n        {\n            \"codec_name\": \"mp3\"\n        }\n    ],\n    \"format\": {\n        \"duration\": \"1400.184000\"\n    }\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "decode",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

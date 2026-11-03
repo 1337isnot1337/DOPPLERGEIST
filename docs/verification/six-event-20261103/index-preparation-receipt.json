@@ -1,0 +1,46 @@
+{
+  "elapsed_s": 0.4230034479405731,
+  "index_report": {
+    "index_version": 2,
+    "sources": [
+      {
+        "path": "/inputs/tracks.parquet",
+        "sha256": "e3912ec68d790a9871c23f1298113f5d6ea276a89fc5b01b120d13f68175c69c",
+        "bytes": 257468
+      }
+    ],
+    "coverage": {
+      "bounds": [
+        -180.0,
+        -85.0,
+        180.0,
+        85.0
+      ],
+      "time_range_s": [
+        1789999700.0,
+        1790001700.0
+      ],
+      "all_aircraft": true,
+      "source_kind": "complete_finite_synthetic_population",
+      "real_receiver_coverage": false
+    },
+    "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "max_gap_s": 30.0,
+    "max_flight_samples": 250000,
+    "input_hash": "ebec36ca7311b67c062ec253625cc22fa80f6b11a4a6cee445123065acd6cea4",
+    "rows": 4878,
+    "invalid_rows": 0,
+    "segments": 18,
+    "altitude_basis_counts": {
+      "ellipsoidal": 4878
+    },
+    "jets_excluded": false,
+    "unknown_types_retained": true,
+    "geometry_clipped": false,
+    "continuous_geometry_bounds": true
+  },
+  "home_visible": false,
+  "truth_visible": false,
+  "auth_environment_present": false
+}

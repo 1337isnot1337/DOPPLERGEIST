@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "path": "coverage.json",
+      "bytes": 241,
+      "sha256": "c294125f1631eec1c27f2e60243820bdd2d287592c61c5102bc7c67d941d7d81"
+    },
+    {
+      "path": "flights-runtime-v2.sqlite",
+      "bytes": 323584,
+      "sha256": "3a7eea21f81c8822b203817bb3796b71f56d2e77e8d21c49c5de66000ebe0318"
+    },
+    {
+      "path": "geoid.tif",
+      "bytes": 2509,
+      "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae"
+    },
+    {
+      "path": "operator.json",
+      "bytes": 247,
+      "sha256": "987a342832bd13f153e4aed718c247121cb2914b0a90800c55bfcdd947ae8a38"
+    },
+    {
+      "path": "recording.mp3",
+      "bytes": 5601068,
+      "sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee"
+    },
+    {
+      "path": "request.json",
+      "bytes": 227,
+      "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+    },
+    {
+      "path": "terrain.tif",
+      "bytes": 2689,
+      "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b"
+    },
+    {
+      "path": "tracks.parquet",
+      "bytes": 257468,
+      "sha256": "e3912ec68d790a9871c23f1298113f5d6ea276a89fc5b01b120d13f68175c69c"
+    }
+  ],
+  "truth_present": false,
+  "renderer_present": false
+}
