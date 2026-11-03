@@ -238,28 +238,9 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     subset_scores = best["score_kind"] == "matched_group_support_minus_normalized_residual"
     if best["score_kind"] != "negative_robust_ridge_loss_hz" and not subset_scores:
         return result("unsupported_score_kind", "This ranking score has no declared ambiguity threshold in the decision policy.")
-    # Alternatives must fit inside the envelope around the returned point.
-    # Two overlapping target-radius circles do not establish that containment.
-    ambiguity_radius_m = min(policy.target_radius_m,
-                             best.get("uncertainty", {}).get("radius_m", policy.target_radius_m))
-    for alternative in candidates[1:]:
-        # Raw losses require equal event sets; subset support has declared units.
-        if not subset_scores and set(alternative["event_ids"]) != set(best["event_ids"]):
-            return result("incomparable_candidates", "Competing candidates do not explain the same event set.")
-        separation = abs(Geod(ellps="WGS84").inv(best["lon"], best["lat"], alternative["lon"], alternative["lat"])[2])
-        same_flights = dict(zip(best["event_ids"], best["flight_ids"])) == dict(zip(alternative["event_ids"], alternative["flight_ids"]))
-        alternative_groups = {lookup[key].get("harmonic_group_id", key) for key in alternative["event_ids"]}
-        gap = (best["score"] - alternative["score"]) / max(len(groups), len(alternative_groups))
-        threshold = policy.near_tie_support_per_group if subset_scores else policy.near_tie_loss_per_event_hz
-        units = "support_units_per_group" if subset_scores else "loss_hz_per_group"
-        if (separation > ambiguity_radius_m or not same_flights) and _near_tied(gap, threshold):
-            diagnostics["competing_hypothesis"] = {"separation_m": separation, "score_gap": gap, "gap_units": units,
-                                                   "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
-            return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
-                          "Competing hypotheses fit nearly as well; no unique precise location is supported.")
     finite = evidence.get("finite_search_evidence")
     if finite is not None:
-        diagnostics["policy_version"] = "engineering-v4-finite-grid"
+        diagnostics["policy_version"] = "engineering-v5-finite-envelope"
         try:
             counts = [len({lookup[key].get("harmonic_group_id", key) for key in candidate["event_ids"]}) for candidate in candidates]
             reason, details = _finite_search(finite, evidence, candidates, counts, policy)
@@ -270,7 +251,30 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         if reason:
             return result(reason, "The finite search does not yet exclude unassessed or discarded competing hypotheses.")
         diagnostics["limitations"].append("Only the declared finite grids/refinements were compared; continuous-space uniqueness is not established.")
-    elif evidence.get("alternatives_evaluated") is not True:
+    # Alternatives must fit inside the envelope around the returned point.
+    # Two overlapping target-radius circles do not establish that containment.
+    ambiguity_radius_m = min(policy.target_radius_m,
+                             best.get("uncertainty", {}).get("radius_m", policy.target_radius_m))
+    near_points = [(0, 0.0)]
+    for index, alternative in enumerate(candidates[1:], 1):
+        # Raw losses require equal event sets; subset support has declared units.
+        if not subset_scores and set(alternative["event_ids"]) != set(best["event_ids"]):
+            return result("incomparable_candidates", "Competing candidates do not explain the same event set.")
+        separation = abs(Geod(ellps="WGS84").inv(best["lon"], best["lat"], alternative["lon"], alternative["lat"])[2])
+        same_flights = dict(zip(best["event_ids"], best["flight_ids"])) == dict(zip(alternative["event_ids"], alternative["flight_ids"]))
+        alternative_groups = {lookup[key].get("harmonic_group_id", key) for key in alternative["event_ids"]}
+        gap = (best["score"] - alternative["score"]) / max(len(groups), len(alternative_groups))
+        threshold = policy.near_tie_support_per_group if subset_scores else policy.near_tie_loss_per_event_hz
+        units = "support_units_per_group" if subset_scores else "loss_hz_per_group"
+        tied = _near_tied(gap, threshold)
+        if tied and (not same_flights or (finite is None and separation > ambiguity_radius_m)):
+            diagnostics["competing_hypothesis"] = {"separation_m": separation, "score_gap": gap, "gap_units": units,
+                                                   "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
+            return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
+                          "Competing hypotheses fit nearly as well; no unique precise location is supported.")
+        if tied:
+            near_points.append((index, separation))
+    if finite is None and evidence.get("alternatives_evaluated") is not True:
         return result("alternatives_not_assessed", "The retained competing hypotheses have not all been assessed.")
     sensitivity = evidence.get("sensitivity", {})
     if not isinstance(sensitivity, dict):
@@ -297,6 +301,26 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     diagnostics["radius_m"] = uncertainty["radius_m"]
     if uncertainty["radius_m"] > policy.target_radius_m:
         return result("location_uncertainty_too_large", "Spatial sensitivity exceeds the declared precision target.")
+    if finite is not None:
+        base_radius = uncertainty["radius_m"]
+        union_radius = max(distance + candidates[index].get("uncertainty", {}).get("radius_m", 0.)
+                           for index, distance in near_points)
+        union_radius = max(base_radius, union_radius)
+        diagnostics["finite_envelope"] = {
+            "base_profile_radius_m": radius, "base_reported_radius_m": base_radius,
+            "finite_point_extent_m": max(distance for _, distance in near_points),
+            "radius_m": union_radius, "included_candidate_indices": [index for index, _ in near_points],
+            "included_mode_ids": sorted({evidence["candidate_mode_ids"][index] for index, _ in near_points}),
+            "limitations": ["Union covers evaluated same-association points and actually reported test envelopes.",
+                            "Unperformed competitor profiles/refinements remain unbounded; no coverage probability is inferred."]}
+        diagnostics["radius_m"] = union_radius
+        if union_radius > policy.target_radius_m:
+            return result("ambiguous_locations", "Near-tied finite hypotheses and reported test envelopes exceed the precision target.")
+        best["uncertainty"] = {"kind": "sensitivity", "radius_m": union_radius,
+                               "method": "finite_mode_and_tested_profile_union"}
     message = ("Location passes the evaluated finite-grid and sensitivity checks; its uncertainty remains uncalibrated."
                if finite is not None else "Location passes the declared evidence checks; its sensitivity remains uncalibrated.")
-    return result("supported_by_evidence_checks", message, "succeeded")
+    decision = result("supported_by_evidence_checks", message, "succeeded")
+    if finite is not None:
+        decision["candidates"] = candidates
+    return decision

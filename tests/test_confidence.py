@@ -191,7 +191,7 @@ def test_finite_search_can_pass_without_claiming_continuous_exhaustion():
     bundle = finite_evidence()
     result = decide(bundle)
     assert result["status"] == "succeeded"
-    assert result["diagnostics"]["policy_version"] == "engineering-v4-finite-grid"
+    assert result["diagnostics"]["policy_version"] == "engineering-v5-finite-envelope"
     assert result["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
     bundle[3]["sensitivity"]["sources"] = ["altitude"]
     assert decide(bundle)["reason_code"] == "uncertainty_not_established"
@@ -236,3 +236,57 @@ def test_malformed_finite_flags_fail_instead_of_looking_like_insufficient_data()
     result = decide(bundle)
     assert result["status"] == "failed"
     assert result["reason_code"] == "invalid_evidence"
+
+
+def near_finite_points(distance_m=90.):
+    from pyproj import Geod
+    bundle = finite_evidence()
+    best, alternative = bundle[1]
+    alternative["lon"], alternative["lat"], _ = Geod(ellps="WGS84").fwd(best["lon"], best["lat"], 90., distance_m)
+    alternative["score"] = -1.2
+    bundle[3]["finite_search_evidence"]["retained_modes"][1]["score"] = -1.2
+    return bundle
+
+
+def test_finite_near_cluster_returns_a_copied_honest_envelope():
+    bundle = near_finite_points()
+    before = deepcopy(bundle)
+    result = decide(bundle)
+    assert result["status"] == "succeeded"
+    returned = result["candidates"]
+    assert 159.999 < returned[0]["uncertainty"]["radius_m"] < 160.001
+    assert returned[0]["uncertainty"]["kind"] == "sensitivity"
+    assert returned[0]["uncertainty"]["method"] == "finite_mode_and_tested_profile_union"
+    assert result["diagnostics"]["finite_envelope"]["included_mode_ids"] == ["a", "b"]
+    for original, candidate in zip(before[1], returned):
+        assert {k: v for k, v in original.items() if k != "uncertainty"} == {k: v for k, v in candidate.items() if k != "uncertainty"}
+    assert bundle == before
+    assert validate_result({"schema_version": 1, "job_id": "finite-envelope", "status": "succeeded",
+                            "events": bundle[0], "coverage": bundle[2], "candidates": returned})["candidates"] == returned
+
+
+def test_finite_union_keeps_distant_and_different_association_vetoes():
+    distant = near_finite_points(2000.)
+    assert decide(distant)["reason_code"] == "ambiguous_locations"
+    different = near_finite_points(30.)
+    different[1][1]["flight_ids"] = ["x", "y"]
+    assert decide(different)["reason_code"] == "ambiguous_flight_match"
+    narrow = near_finite_points()
+    result = decide_location(*narrow[:3], matching_diagnostics=narrow[3], policy=DecisionPolicy(target_radius_m=100.))
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == "ambiguous_locations"
+
+
+@pytest.mark.parametrize("kind,reason", [("incomplete", "uncertainty_not_established"),
+    ("boundary", "refinement_boundary_limited"), ("missing_sources", "uncertainty_not_established"),
+    ("missing_uncertainty", "uncertainty_not_established"), ("ledger", "finite_search_incomplete")])
+def test_union_cannot_repair_missing_or_clipped_leading_evidence(kind, reason):
+    bundle = near_finite_points()
+    if kind == "incomplete": bundle[3]["sensitivity"]["complete"] = False
+    elif kind == "boundary": bundle[3]["sensitivity"]["boundary_limited"] = True
+    elif kind == "missing_sources": bundle[3]["sensitivity"]["sources"] = ["altitude"]
+    elif kind == "missing_uncertainty": bundle[1][0].pop("uncertainty")
+    elif kind == "ledger": bundle[3]["finite_search_evidence"]["complete"] = False
+    result = decide(bundle)
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == reason
