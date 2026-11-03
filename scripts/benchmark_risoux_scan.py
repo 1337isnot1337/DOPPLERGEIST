@@ -71,6 +71,7 @@ def main(output):
             for number, case in enumerate(cases, 1):
                 identifier = case["opaque_id"]
                 row = {"opaque_id": identifier, "case_number": number}
+                unavailable = None
                 try:
                     raw = archive.read(case["name"])  # zipfile verifies this member's CRC.
                     if len(raw) != case["size"]:
@@ -90,9 +91,19 @@ def main(output):
                                scanner_result=scan["scanner_result"], proposal_count=scan["proposal_count"])
                 except Exception as error:
                     row.update(status="error", error=str(error))
+                    status = getattr(getattr(error, "response", None), "status_code", None)
+                    if status in (429, 500, 502, 503, 504):
+                        unavailable = status
                 log.write(json.dumps(row) + "\n")
                 log.flush()
                 print(number, len(cases), identifier, row["status"], row.get("scanner_result", ""), flush=True)
+                if unavailable is not None:
+                    for remaining_number, remaining in enumerate(cases[number:], number + 1):
+                        log.write(json.dumps({"opaque_id": remaining["opaque_id"], "case_number": remaining_number,
+                                              "status": "not_attempted", "reason": f"source_http_{unavailable}"}) + "\n")
+                    log.flush()
+                    print(f"Stopped after source HTTP {unavailable}; remaining cases were not attempted", flush=True)
+                    break
 
 
 if __name__ == "__main__":
