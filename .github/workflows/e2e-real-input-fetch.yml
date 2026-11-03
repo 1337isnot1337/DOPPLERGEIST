@@ -69,7 +69,8 @@ jobs:
           PY
       - name: Package metadata reader wheels for offline inspection
         if: always()
-        run: python -m pip download --only-binary :all: --dest real-inputs/wheels openpyxl
+        run: |
+          python -m pip download --only-binary :all: --dest real-inputs/wheels openpyxl
       - name: Preserve original real inputs and retrieval receipts
         if: always()
         uses: actions/upload-artifact@v4
