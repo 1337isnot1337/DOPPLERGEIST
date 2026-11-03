@@ -20,7 +20,7 @@ from pyproj import Transformer
 
 from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
-from .geometry import AcousticSupportError
+from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
 
@@ -157,6 +157,7 @@ def _tracks(indexes, bounds, time_range, budget):
 @_cache_ridge_fits
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None):
     radius = max(e["slant_range_m"][1] for e in events)
+    observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     tables, count = [], 0
     unsupported = []
     # Bound materialized CPA rows before pairing; one track at a time keeps the
@@ -170,6 +171,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         chunk_points = max(1, budget.max_cpa_rows // samples)
         track_tables, track_rows = [], 0
         try:
+            if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
+                continue
             for first in range(0, len(points), chunk_points):
                 table = cpa_table([track], points.iloc[first:first + chunk_points], radius, parameters.get("c", 343.0), budget.cpa_step_s)
                 track_rows += len(table)

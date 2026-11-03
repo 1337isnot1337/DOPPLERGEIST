@@ -55,6 +55,9 @@ class Track:
         if not np.all(np.isfinite(np.column_stack((self.time, self.lat, self.lon, self.altitude)))):
             raise ValueError(f"{self.id}: nonfinite track data")
         self.xyz = ecef(self.lat, self.lon, self.altitude)
+        self._xyz_min = self.xyz.min(axis=0)
+        self._xyz_max = self.xyz.max(axis=0)
+        self._max_sample_gap = float(np.max(np.diff(self.time)))
         self.origin = self.time[0]
         self.relative_time = self.time - self.origin
         v = self.velocity
@@ -110,6 +113,26 @@ class Track:
         if len(indices):
             raise AcousticSupportError(self.id, "non_subsonic_motion",
                 emission_intervals_s=[[float(self.time[i]), float(self.time[i+1])] for i in indices])
+
+    def outside_observer_radius(self, observers, radius, c=343.0):
+        """Prove all observers are beyond a validated track's range.
+
+        Every instant lies at most half a native sample interval from one
+        endpoint. Subsonic speed therefore bounds each ECEF component's
+        displacement from an observed position by c * max_gap / 2. An axis
+        separation larger than the radius proves the entire cubic trajectory
+        and its sampled polyline cannot enter any observer's search sphere.
+        """
+        self.validate_motion_support(c)
+        if not np.isfinite(radius):
+            return False
+        scale = max(1.0, float(np.max(np.abs(self._xyz_min))),
+                    float(np.max(np.abs(self._xyz_max))), abs(radius), abs(c * self._max_sample_gap))
+        rounding = 64 * np.finfo(float).eps * scale
+        margin = c * self._max_sample_gap / 2 + rounding
+        lower = self._xyz_min - margin - radius - rounding
+        upper = self._xyz_max + margin + radius + rounding
+        return bool(np.all(np.any((observers < lower) | (observers > upper), axis=-1)))
 
     def _check_motion_support(self, receive_time, observer, c):
         """Reject possible arrivals from unsupported native emission intervals.
