@@ -101,6 +101,12 @@ Large research inputs live in checksummed release assets. With an authenticated 
 
 The restorer checks hashes and preserves conflicting local files. The original source YouTube MP4 is not redistributed. See [artifact restoration](docs/ARTIFACTS.md) and the [checkpoint release](https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/checkpoint-2026-11-02).
 
+## License
+
+DOPPLERGEIST code is licensed under the [MIT License](LICENSE). External
+recordings, flight and terrain data, and other third-party materials retain
+their own rights and terms.
+
 ## Documentation and references
 
 - [Methodology](docs/METHODOLOGY.md) — geometry, Doppler and acoustic propagation
