@@ -149,3 +149,32 @@ def test_terrain_degree_boundary_uses_published_cog_extent(tmp_path):
     terrain = CachedTerrain(tmp_path, offline=True, geoid_path=tmp_path / "geoid.tif", adopt_existing=True)
     assert terrain.sample([40.], [-99.5]).tolist() == [70.]
     assert tag in str(terrain.provenance()["files"])
+
+
+def test_index_bounds_include_hermite_excursion_between_samples(tmp_path):
+    from pyproj import Transformer
+    from aircraft_geoloc.geometry import Track, velocity_ecef
+    frame = pd.DataFrame({"flight_id": ["turn"] * 3, "time_s": [0., 10., 20.],
+                          "lat": [40.] * 3, "lon": [-100.] * 3, "alt_m": [1000.] * 3,
+                          "east_mps": [300., -300., 300.], "north_mps": [0.] * 3, "up_mps": [0.] * 3})
+    velocity = velocity_ecef(frame.lat.to_numpy(), frame.lon.to_numpy(), frame.east_mps.to_numpy(), np.zeros(3), np.zeros(3))
+    oracle = Track("turn", frame.time_s, frame.lat, frame.lon, frame.alt_m, velocity=velocity)
+    lon, lat, _ = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True).transform(*oracle.position(5))
+    assert lon > -99.995  # the whole measured-position box is far outside this query
+    index = FlightIndex.build(tmp_path / "curve.sqlite", [frame], sources=[], coverage={})
+    found = list(index.query([lon-.00001, lat-.00001, lon+.00001, lat+.00001], [4., 6.]))
+    assert len(found) == 1
+    assert np.allclose(found[0].position(5), oracle.position(5))
+
+
+def test_index_partial_velocity_inference_preserves_measured_zero(tmp_path):
+    frame = pd.DataFrame({"flight_id": ["partial"] * 3, "time_s": [0., 5., 10.],
+                          "lat": [40.] * 3, "lon": [-100., -99.999, -99.998], "alt_m": [1000., 1050., 1100.],
+                          "east_mps": [np.nan] * 3, "north_mps": [np.nan] * 3, "up_mps": [0.] * 3})
+    index = FlightIndex.build(tmp_path / "partial.sqlite", [frame], sources=[], coverage={})
+    track = list(index.query([-101, 39, -99, 41], [0, 10]))[0]
+    lat, lon = np.deg2rad([40., -99.999])
+    vertical = np.array([np.cos(lat)*np.cos(lon), np.cos(lat)*np.sin(lon), np.sin(lat)])
+    assert abs(np.dot(track.speed_vector(5), vertical)) < 1e-9
+    assert np.linalg.norm(track.speed_vector(5)) > 10
+    assert track.velocity_inferred_components["up_mps"] == 0

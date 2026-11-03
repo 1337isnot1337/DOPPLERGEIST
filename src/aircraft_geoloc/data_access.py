@@ -23,7 +23,53 @@ from .geometry import Track, velocity_ecef
 from .tracks import adsblol_frame
 
 CONUS = (-125.0, 24.0, -66.0, 50.0)
-INDEX_VERSION = 1
+INDEX_VERSION = 2
+
+
+def _frame_track(name, frame):
+    from . import tracks as normalizer
+    velocity, inferred = None, {}
+    if hasattr(normalizer, "_segment_velocity"):
+        velocity, inferred = normalizer._segment_velocity(frame)
+    else:
+        cols = ["east_mps", "north_mps", "up_mps"]
+        if set(cols).issubset(frame) and np.isfinite(frame[cols].to_numpy(dtype=float)).all():
+            velocity = velocity_ecef(frame.lat.to_numpy(), frame.lon.to_numpy(), *[frame[c].to_numpy() for c in cols])
+    track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
+                  str(frame.typecode.iloc[0] or "") if "typecode" in frame else "", velocity)
+    track.altitude_basis = frame.altitude_basis.tolist() if "altitude_basis" in frame else ["unspecified"] * len(frame)
+    track.aircraft_class = frame.aircraft_class.iloc[0] if "aircraft_class" in frame else "unclassified"
+    track.velocity_inferred_components = inferred
+    return track
+
+
+def _continuous_bounds(track):
+    """Bound entire Hermite curves using their cubic Bezier control hulls.
+
+    Each curve lies inside a ball enclosing its four ECEF control points.
+    Longitude extrema of that ball are analytic; latitude uses a conservative
+    5500 km lower bound on geodetic curvature radii outside the 6000 km sphere.
+    Invalid/underground extreme curves fall back to a global box, never a miss.
+    """
+    from pyproj import Transformer
+    p0, p1 = track.xyz[:-1], track.xyz[1:]
+    dt = np.diff(track.time)[:, None]
+    velocity = track.speed_vector(track.time)
+    controls = np.stack((p0, p0 + velocity[:-1] * dt / 3, p1 - velocity[1:] * dt / 3, p1), axis=1)
+    centers = (p0 + p1) / 2
+    radius = np.linalg.norm(controls - centers[:, None, :], axis=2).max(axis=1)
+    if np.any(np.linalg.norm(centers, axis=1) - radius < 6000000):
+        return (-180., 180., -90., 90.)
+    lon, lat, _ = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True).transform(*centers.T)
+    latitude_pad = np.rad2deg(radius / 5500000)
+    horizontal = np.linalg.norm(centers[:, :2], axis=1)
+    if np.any(radius >= horizontal):
+        return (-180., 180., max(-90., float(np.min(lat - latitude_pad))), min(90., float(np.max(lat + latitude_pad))))
+    longitude_pad = np.rad2deg(np.arcsin(radius / horizontal))
+    west, east = float(np.min(lon-longitude_pad)), float(np.max(lon+longitude_pad))
+    if west < -180 or east > 180:
+        west, east = -180., 180.
+    return (west, east, max(-90., float(np.min(lat-latitude_pad))), min(90., float(np.max(lat+latitude_pad))))
 
 
 class DataUnavailable(RuntimeError):
@@ -162,7 +208,7 @@ class FlightIndex:
         try:
             with self.connect() as db:
                 self.report = json.loads(db.execute("SELECT value FROM metadata").fetchone()[0])
-            if self.report["index_version"] != INDEX_VERSION:
+            if self.report["index_version"] not in (1, INDEX_VERSION):
                 raise DataUnavailable("Flight index version mismatch")
         except (sqlite3.DatabaseError, TypeError, KeyError, json.JSONDecodeError) as error:
             raise DataUnavailable(f"Invalid flight index: {path}") from error
@@ -181,6 +227,7 @@ class FlightIndex:
         path.parent.mkdir(parents=True, exist_ok=True)
         class_map = class_map or {}
         identity = {"index_version": INDEX_VERSION, "sources": sources, "coverage": coverage,
+                    "normalizer_sha256": sha256(Path(__file__).with_name("tracks.py")),
                     "classification_map_hash": content_hash(class_map),
                     "max_gap_s": max_gap_s, "max_flight_samples": max_flight_samples}
         with cache_lock(path.with_suffix(".lock")):
@@ -234,15 +281,16 @@ class FlightIndex:
                             continue
                         namespace = coverage.get("release_tag", "")
                         name = flight + (f"@{namespace}" if namespace else "") + (f":{index}" if groups.max() else "")
+                        track = _frame_track(name, chunk)
                         payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), mtime=0)
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
                                          (name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]), payload, hashlib.sha256(payload).hexdigest()))
-                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, float(chunk.lon.min()), float(chunk.lon.max()), float(chunk.lat.min()), float(chunk.lat.max())))
+                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track)))
                         segments += 1
                 db.execute("DROP TABLE samples")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
                               segments=segments, altitude_basis_counts=dict(altitude), jets_excluded=False,
-                              unknown_types_retained=True, geometry_clipped=False)
+                              unknown_types_retained=True, geometry_clipped=False, continuous_geometry_bounds=True)
                 db.execute("INSERT INTO metadata VALUES(?)", (json.dumps(report),))
                 db.commit()
                 db.execute("VACUUM")
@@ -277,19 +325,18 @@ class FlightIndex:
             sql = """SELECT s.name,s.payload,s.payload_hash FROM segments s JOIN spatial r ON s.id=r.id
                 WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
                 AND s.start<=? AND s.end>=? ORDER BY s.name"""
-            for name, payload, expected in db.execute(sql, (east, west, north, south, end, start)):
+            params = (east, west, north, south, end, start)
+            if (not self.report.get("continuous_geometry_bounds") or
+                    self.report.get("normalizer_sha256") != sha256(Path(__file__).with_name("tracks.py"))):
+                # Old indexes used sample-only bounds or different derivatives.
+                # Disable unsafe spatial pruning, preserving explicit budgets.
+                sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
+                params = (end, start)
+            for name, payload, expected in db.execute(sql, params):
                 if hashlib.sha256(payload).hexdigest() != expected:
                     raise DataUnavailable(f"Corrupt flight payload: {name}")
                 frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
-                velocity = None
-                cols = ["east_mps", "north_mps", "up_mps"]
-                if set(cols).issubset(frame) and np.isfinite(frame[cols].to_numpy(dtype=float)).all():
-                    velocity = velocity_ecef(frame.lat.to_numpy(), frame.lon.to_numpy(), *[frame[c].to_numpy() for c in cols])
-                track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
-                              str(frame.typecode.iloc[0] or "") if "typecode" in frame else "", velocity)
-                track.altitude_basis = frame.altitude_basis.tolist() if "altitude_basis" in frame else ["unspecified"] * len(frame)
-                track.aircraft_class = frame.aircraft_class.iloc[0] if "aircraft_class" in frame else "unclassified"
-                yield track
+                yield _frame_track(name, frame)
 
     def coverage_for(self, bounds, time_range):
         source = self.report["coverage"]
@@ -314,7 +361,7 @@ class FlightCache:
         directory = self.root / day.isoformat() / provider
         directory.mkdir(parents=True, exist_ok=True)
         normalizer_hash = sha256(normalizer.__file__)
-        index = directory / f"all-types-v1-{normalizer_hash[:12]}.sqlite"
+        index = directory / f"all-types-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
         if index.exists():
             return FlightIndex(index)
         release_path = directory / "release.json"
@@ -403,7 +450,6 @@ class CachedTerrain:
         return path
 
     def sample(self, lat, lon):
-        from .terrain import Terrain
         lat, lon = np.broadcast_arrays(lat, lon)
         shape = lat.shape
         lat, lon = lat.ravel(), lon.ravel()
@@ -422,22 +468,36 @@ class CachedTerrain:
                 path = self._file(f"{self.base}/{tag}/{tag}.tif", self.root / f"{tag}.tif", raster=True)
                 self.last_sample_files.add(path.name)
                 selected = inverse == i
-                sampler = Terrain([path])
-                try:
-                    height[selected] = sampler.sample(lat[selected], lon[selected])
-                finally:
-                    for raster in sampler.rasters:
-                        raster.close()
-            sampler = Terrain([self.geoid_path])
-            try:
-                height += sampler.sample(lat, lon)
-            finally:
-                for raster in sampler.rasters:
-                    raster.close()
+                height[selected] = self._raster_sample(path, lat[selected], lon[selected])
+            height += self._raster_sample(self.geoid_path, lat, lon)
         except (DataUnavailable, ValueError) as error:
             self.failures.append(str(error))
             raise DataUnavailable(f"Terrain coverage unavailable: {error}") from error
         return height.reshape(shape)
+
+    @staticmethod
+    def _raster_sample(path, lat, lon):
+        """Read only the local pixel window, including for the global geoid."""
+        import rasterio
+        from rasterio.windows import Window
+        from pyproj import Transformer
+        if not len(lat):
+            return np.array([])
+        try:
+            with rasterio.open(path) as raster:
+                x, y = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True).transform(lon, lat)
+                col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
+                col, row = np.floor(col).astype(int), np.floor(row).astype(int)
+                if np.any((col < 0) | (col >= raster.width) | (row < 0) | (row >= raster.height)):
+                    raise DataUnavailable(f"Raster extent missing candidate points: {path}")
+                left, top, right, bottom = int(col.min()), int(row.min()), int(col.max()), int(row.max())
+                data = raster.read(1, window=Window(left, top, right-left+1, bottom-top+1), masked=True)
+                values = data[row-top, col-left]
+                if np.ma.getmaskarray(values).any() or not np.isfinite(values).all():
+                    raise DataUnavailable(f"Raster nodata at candidate points: {path}")
+                return np.asarray(values, dtype=float)
+        except rasterio.errors.RasterioError as error:
+            raise DataUnavailable(f"Cannot sample terrain raster: {path}") from error
 
     def provenance(self):
         return {"provider": "Copernicus GLO-90", "vertical_datum": "EGM2008 converted to ellipsoidal",
