@@ -4,7 +4,7 @@
 
 DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations. The application runs locally; there are no plans for a hosted service.
 
-**Experimental software.** Configured localization replays and automatic audio-event discovery are available on `main`. The complete automatic MP3-to-location workflow is still under integration, and independent nationwide accuracy on real recordings has not been established. A plausible coordinate alone is insufficient evidence for a location.
+**Experimental software.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not been established. A plausible coordinate alone is insufficient evidence for a location.
 
 [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
 
@@ -40,6 +40,19 @@ Automatic discovery scans an entire recording for moving acoustic frequency patt
 
 Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`. **These are acoustic event proposals, not coordinates or certified aircraft detections.** See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
 
+### Analyze an upload locally
+
+```bash
+.venv/bin/aircraft-geoloc serve --jobs jobs --config path/to/operator.json
+```
+
+Open `http://127.0.0.1:8765` to upload audio and supply a defensible recording-start
+UTC window. The application discovers events, searches the configured flight data,
+refines hypotheses and returns a supported or inconclusive decision. See
+[Local upload workflow](docs/PRODUCT.md) for operator configuration, the equivalent
+`analyze` CLI command, saved jobs and cancellation. Flight and terrain data must be
+configured; installing the application alone does not supply a historical archive.
+
 ## How it works
 
 1. **Measure the audio.** Decode the recording, identify frequency tracks, and group harmonics that belong to the same flyover.
@@ -51,8 +64,8 @@ The central complication is that the plane **moves while its sound travels**. DO
 
 ## Capabilities and limits
 
-- **Available on `main`:** `aircraft-geoloc run` for configured localization experiments, `measure` for selected acoustic events, and `scripts/discover_audio.py` for whole-recording intake and discovery. Flight indexing, bounded tiled search, multi-flyover matching, physical refinement and conservative decision logic exist as components.
-- **Under integration:** the local upload interface, persistent jobs and automatic `analyze`, `serve` and `job` commands remain in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19). They are not supported commands on `main`. [Upload verification](https://github.com/1337isnot1337/DOPPLERGEIST/pull/32) and [final acceptance](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) remain separate gates.
+- **Available on `main`:** the local upload interface, persistent jobs, HTTP API and automatic `analyze`, `serve` and `job` commands, plus `run` for configured localization experiments, `measure` for selected acoustic events, and `scripts/discover_audio.py` for discovery alone. Automatic jobs connect intake, discovery, flight indexing, tiled search, multi-flyover matching, physical refinement and conservative decisions.
+- **Still open:** [end-to-end acceptance](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13), independent real recordings and robustness evaluation. Landing the application does not establish accuracy or calibrated confidence.
 - **Not independently validated:** nationwide geolocation accuracy on real recordings, calibrated location probabilities, and the false-localization rate of the acceptance rules.
 
 The target is a supported location estimate within **1,000 m**, preferably **100–500 m or better**, using real recordings without truth-informed event selection or geographic bounds. Evaluation reports 100/500/1,000 m thresholds without rewriting historical experiments' original thresholds.

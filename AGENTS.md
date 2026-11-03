@@ -9,7 +9,8 @@ reports with their original thresholds. Read
 `docs/AGENT_TASKS.md`, `docs/HANDOFF.md`, the assigned GitHub issue and relevant
 source before editing. The configured research CLI takes manual event settings;
 that does not describe the status of the whole project. Whole-recording intake,
-automatic discovery and bounded tiled search are implemented on `main`. Check
+automatic discovery, bounded tiled search and the local upload application
+(`analyze`, `serve`, `job`) are implemented on `main`. Check
 the README, a pinned source revision and current PR state before describing the
 product integration or an acceptance gate as complete or missing. The
 [2026-11-03 verification note](docs/VERIFICATION_2026-11-03.md) separates these scopes.
