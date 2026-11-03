@@ -14,6 +14,7 @@ from .spectral_grid import best_frequency
 
 
 SCORE_KIND = "sum_of_event_mean_spectral_contrast"
+SAMPLE_SUM_SCORE_KIND = "sum_of_time_bin_spectral_contrast"
 
 
 class _SpectralWorkLimit(ValueError):
@@ -87,6 +88,8 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
     normalization. It is not the unnormalized sum of all time bins, a likelihood,
     or a ridge loss. It cannot reuse ridge-score pruning/confidence bounds.
     Location and event associations are conditional on the supplied modes.
+    In addition to the existing per-event-mean sum, report the sum of all
+    sampled contrast values using the same evaluated clocks and frequencies.
     Sums are ranked only within identical event-index sets. ranked is populated
     only when every supplied mode has the same valid event set; mixed subsets
     have separate rankings_by_event_set and no combined ranking.
@@ -114,6 +117,7 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
     if not events or len(set(groups)) != len(groups):
         raise ValueError("Supply nonempty independent groups; harmonics count once")
     report = {"status": "inconclusive", "score_kind": SCORE_KIND,
+        "sample_sum_score_kind": SAMPLE_SUM_SCORE_KIND, "sample_sum_ranked": [],
         "location_decision": "not_evaluated", "candidate_mode_count": len(candidates),
         "prepared_group_count": len(events), "all_modes_compared": False,
         "ranking_scope": "within_identical_event_sets",
@@ -135,6 +139,8 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
             "Ranks are conditional on retained locations, associations, clock grids and spectral windows.",
             "Unmatched proposals are not established absent flights.",
             "Spectral sums from different matched event sets do not define a global winner.",
+            "Time-bin sums depend on the spectral window, hop and contrast normalization; the source video's exact brightness scaling is unspecified.",
+            "The common clock maximizes the combined score; the source video describes choosing the first event's alignment before locking later events.",
             "One reference-band curve is scored per group; additional harmonic curves are not jointly scored here.",
             "The fixed spectral band and 95 percent time-bin support rule define scorable frequency curves.",
             "Ridge retention bounds do not bound this spectral statistic; location acceptance is not evaluated."]}
@@ -150,7 +156,7 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
     if abs(len(samples)/sr-duration) > 1/sr:
         raise ValueError("Decoded sample cache differs from recording duration")
     work = report["work"]
-    states, allocated_trials, rankings = [], 0, {}
+    states, allocated_trials, rankings, sample_rankings, time_bins = [], 0, {}, {}, {}
     for index, row in enumerate(candidates):
         mode = {"input_index": index, "input_mode_id": row.get("mode_id"),
                 "status": "unsupported", "reason_counts": {}}
@@ -164,6 +170,7 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
             mode.update(event_indices=indices, flight_ids=list(row["flight_ids"]),
                         unmatched_event_indices=[i for i in range(len(events)) if i not in indices])
             rankings.setdefault(tuple(indices), [])
+            sample_rankings.setdefault(tuple(indices), [])
             selected = [tracks[identifier] for identifier in row["flight_ids"]]
             observer = ecef(row["lat"], row["lon"], row["elev_m"])
             clock = float(row["recording_start_time_s"])
@@ -230,6 +237,7 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
                 state["attempted"][slot] = True
                 state["reasons"][f"spectral_support_unavailable: {error}"] += len(state["clocks"])
             continue
+        time_bins[event_index] = len(spectrum.time)
         cells = frequency_count*len(spectrum.time)
         detail.update(status="prepared", time_bins=len(spectrum.time),
             time_extent_s=[float(spectrum.time[0]), float(spectrum.time[-1])],
@@ -291,11 +299,26 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
             recording_start_time_s=float(state["clocks"][trial]),
             complete=mode["complete"], unknown_clock_trials=mode["unknown_clock_trials"])
         rankings[tuple(state["indices"])].append(ranked)
+        weights = np.asarray([time_bins[i] for i in state["indices"]])
+        sample_scores = state["scores"][:, valid] * weights[:, None]
+        sample_totals = sample_scores.sum(axis=0)
+        sample_best = int(np.argmax(sample_totals))
+        sample_trial = int(trials[sample_best])
+        sample_ranked = dict(ranked, score_kind=SAMPLE_SUM_SCORE_KIND,
+            score=float(sample_totals[sample_best]),
+            event_scores=sample_scores[:, sample_best].tolist(),
+            f0_hz=state["frequencies"][:, sample_trial].tolist(),
+            recording_start_time_s=float(state["clocks"][sample_trial]))
+        sample_rankings[tuple(state["indices"])].append(sample_ranked)
     for indices, rows in sorted(rankings.items()):
         rows.sort(key=lambda row: (-row["score"], row["input_index"]))
-        report["rankings_by_event_set"].append({"event_indices": list(indices), "ranked": rows})
+        summed = sample_rankings[indices]
+        summed.sort(key=lambda row: (-row["score"], row["input_index"]))
+        report["rankings_by_event_set"].append({"event_indices": list(indices), "ranked": rows,
+                                                 "sample_sum_ranked": summed})
     if len(rankings) == 1 and all("event_indices" in mode for mode in report["modes"]):
         report["ranked"] = next(iter(rankings.values()))
+        report["sample_sum_ranked"] = next(iter(sample_rankings.values()))
     report["all_modes_compared"] = bool(candidates and
         all(mode.get("complete") is True for mode in report["modes"]))
     if report["all_modes_compared"]:
