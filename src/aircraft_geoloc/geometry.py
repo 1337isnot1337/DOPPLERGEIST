@@ -12,6 +12,13 @@ from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 
 
+class AcousticSupportError(ValueError):
+    """A trajectory cannot support the assumed emission-time acoustic model."""
+    def __init__(self, track_id, reason):
+        self.track_id, self.reason = track_id, reason
+        super().__init__(f"{track_id}: {reason}")
+
+
 def ecef(lat, lon, height):
     lat, lon, height = np.broadcast_arrays(np.deg2rad(lat), np.deg2rad(lon), height)
     a, e2 = 6378137.0, 6.6943799901413165e-3
@@ -79,7 +86,7 @@ class Track:
             radial = np.sum(delta * self.speed_vector(tau), axis=-1) / distance
             derivative = 1 + radial / c
             if np.any(derivative <= 0):
-                raise ValueError("Acoustic model requires a subsonic source")
+                raise AcousticSupportError(self.id, "non_monotone_arrival")
             correction = (tau - t + distance / c) / derivative
             tau = np.clip(tau - correction, start, end)
             if np.max(np.abs(correction)) < 1e-7:

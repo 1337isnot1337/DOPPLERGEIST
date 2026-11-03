@@ -6,7 +6,7 @@ import pandas as pd
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
-from .geometry import ecef
+from .geometry import AcousticSupportError, ecef
 
 
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
@@ -251,14 +251,32 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         else:
             shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
     best = {"score":-np.inf}
+    assessment = {"complete": False, "evaluated_trials": 0, "rejected_trials": 0,
+                  "unknown_trials": 0, "reasons": []}
+    reasons = set()
     for shift in shifts:
         if mode == "robust_ridge":
             from .matching import score_ridges
-            result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
-                                  events,measurements,observer,anchor+shift,c)
+            try:
+                result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
+                                      events,measurements,observer,anchor+shift,c)
+            except AcousticSupportError as error:
+                assessment["unknown_trials"] += 1
+                reasons.add(str(error))
+                continue
+            supported = all(d.get("support_fraction") == 1 and np.isfinite(d["score"])
+                            for d in result["event_diagnostics"])
             if association:
                 from .matching import association_score
                 result = association_score(result, events)
+            if not supported or np.isnan(result["score"]) or result["score"] == np.inf:
+                assessment["unknown_trials"] += 1
+                reasons.add("incomplete_ridge_or_trajectory_support")
+            elif result["score"] == -np.inf:
+                assessment["rejected_trials"] += 1
+                reasons.add("acoustic_loss_exceeds_limit")
+            else:
+                assessment["evaluated_trials"] += 1
             if result["score"] > best["score"]:
                 best = dict(result,recording_start_time_s=float(anchor+shift),time_adjustment_s=float(shift))
             continue
@@ -273,6 +291,13 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if total>best["score"]:
             best = {"score":total,"event_scores":scores,"f0_hz":f0s,
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
+    if mode == "robust_ridge":
+        if not len(shifts):
+            assessment["unknown_trials"] = 1
+            reasons.add("no_clock_trials")
+        assessment["complete"] = assessment["unknown_trials"] == 0
+        assessment["reasons"] = sorted(reasons)
+        best["scoring_assessment"] = assessment
     return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])
 
