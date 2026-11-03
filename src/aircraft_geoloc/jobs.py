@@ -3,6 +3,7 @@ import argparse
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -33,15 +34,21 @@ def result(job_dir, status, **fields):
     return value
 
 
+def _evidence(value):
+    return {key: value[key] for key in ("recording", "events", "candidates", "coverage", "artifacts") if key in value}
+
+
 class JobManager:
     def __init__(self, root, config=None, *, max_pending=4, max_runtime_s=3600, max_upload_bytes=100*1024*1024):
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.config = config or {}
+        if not isinstance(self.config, dict):
+            raise ValueError("Operator configuration must be a JSON object")
         self.max_pending = max_pending
         self.max_runtime_s = max_runtime_s
         self.max_upload_bytes = max_upload_bytes
-        if min(max_pending, max_runtime_s, max_upload_bytes) <= 0:
+        if any(not math.isfinite(value) or value <= 0 for value in (max_pending, max_runtime_s, max_upload_bytes)):
             raise ValueError("Job limits must be positive")
         self._lockfile = (self.root / ".manager.lock").open("a")
         try:
@@ -58,7 +65,7 @@ class JobManager:
         for path in self.root.glob("*/result.json"):
             old = read_json(path)
             if old["status"] not in TERMINAL:
-                result(path.parent, "failed", reason_code="interrupted", message="Service stopped before completion; submit a new job to retry.")
+                result(path.parent, "failed", reason_code="interrupted", message="Service stopped before completion; submit a new job to retry.", **_evidence(old))
 
     def directory(self, job_id):
         try:
@@ -129,14 +136,14 @@ class JobManager:
                     self._stop(process)
                     with self._mutex:
                         if self.get(directory.name)["status"] not in TERMINAL:
-                            result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.")
+                            result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.", **_evidence(self.get(directory.name)))
                 with self._mutex:
                     if self.get(directory.name)["status"] not in TERMINAL:
-                        result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.")
+                        result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.", **_evidence(self.get(directory.name)))
         except Exception as exc:
             with self._mutex:
                 if self.get(directory.name)["status"] not in TERMINAL:
-                    result(directory, "failed", reason_code="worker_launch", message=f"Could not run analysis: {exc}")
+                    result(directory, "failed", reason_code="worker_launch", message=f"Could not run analysis: {exc}", **_evidence(self.get(directory.name)))
         finally:
             with self._mutex:
                 self._processes.pop(directory.name, None)
@@ -162,7 +169,7 @@ class JobManager:
             process = self._processes.get(job_id)
             if process:
                 self._stop(process)
-            return result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.")
+            return result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(self.get(job_id)))
 
     def wait(self, job_id):
         thread = self._threads.get(job_id)
@@ -207,15 +214,15 @@ def execute(directory, parent_pid=None):
         progress("intake", 0.02)
         final = analyze(request, directory, config, progress)
         if (directory / "cancel").exists():
-            result(directory, "cancelled", message="Cancelled by the user.")
+            result(directory, "cancelled", message="Cancelled by the user.", **_evidence(read_json(directory / "result.json")))
         else:
             result(directory, **final)
     except InterruptedError:
-        result(directory, "cancelled", message="Cancelled by the user.")
+        result(directory, "cancelled", message="Cancelled by the user.", **_evidence(read_json(directory / "result.json")))
     except Exception as exc:
         import traceback
         traceback.print_exc()
-        result(directory, "failed", reason_code="processing_error", message=f"{type(exc).__name__}: {exc}")
+        result(directory, "failed", reason_code="processing_error", message=f"{type(exc).__name__}: {exc}", **_evidence(read_json(directory / "result.json")))
 
 
 if __name__ == "__main__":

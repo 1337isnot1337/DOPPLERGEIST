@@ -64,3 +64,51 @@ curl -H 'Content-Type: application/octet-stream' \
 `tests/test_service.py` checks HTTP transport, original preservation, state
 readback, cancellation, interrupted jobs, path restrictions and input validation.
 These transport tests do not establish scientific localization accuracy.
+
+## Provider and search configuration
+
+An operator configures data once; users upload audio without choosing trajectory
+files. The normal acquisition path delegates to `data_access.acquire_inputs`:
+
+```json
+{
+  "cache_root": "/absolute/path/to/dopplergeist-cache",
+  "offline": false,
+  "terrain": {},
+  "search_budget": {
+    "spacing_m": 2000,
+    "tile_cells": 32,
+    "top_k": 100,
+    "refine_spacing_m": 100
+  }
+}
+```
+
+This acquires public ADSB.lol all-type daily archives and Copernicus terrain/geoid
+inputs, then reuses their indexed cache. It can require substantial disk space and
+time. `offline` defaults to true; online retrieval is an explicit operator choice.
+No hidden account credentials or paid fallback are used. The default acquisition
+window budget is three days (`max_acquisition_days`); wider recording windows need
+a narrower defensible input or an explicit operator budget change. Do not put
+credentials in this configuration.
+
+For existing offline data, supply `flight_indexes` (paths to Worker 2 FlightIndex
+SQLite files). Terrain may use the cached provider options (`geoid_path`,
+`adopt_existing`) or a declared local override: `{"rasters":["/dem.tif"],
+"geoid_raster":"/geoid.tif"}`. A `{"constant_m":0}` terrain override exists for
+synthetic/flat-ground experiments and is labelled as a limitation in the result.
+Local overrides require prebuilt indexes and retain their actual coverage.
+
+`search_budget.max_tiles` bounds tile work. Reaching a tile, memory, data or wall
+time limit leaves incomplete coverage and cannot produce a supported national
+location. Full search completion does not prove the archive captured every real
+aircraft. Grid finalists undergo jointly constrained position/clock refinement;
+`refine_finalists` (default 5) limits physical sensitivity refinement. Unassessed
+retained approaches prevent an affirmative confidence decision.
+
+The automatic path always uses one shared clock inside the supplied start window
+and robust ridge loss. Every discovered event remains in the diagnostics. A
+location requires the confidence producer's evidence checks, including independent
+events, alternative hypotheses, complete coverage, residuals and measurement/model
+sensitivity. A small altitude-only profile is insufficient. The final decision
+and full candidate/refinement diagnostics are saved as downloadable JSON.

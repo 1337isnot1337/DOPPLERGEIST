@@ -53,6 +53,18 @@ function render(value) {
   $('message').textContent = value.message || 'Analysis is running. You can return to this job using its saved link.';
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
+  $('coverage').replaceChildren();
+  if (value.coverage) {
+    const coverage = value.coverage;
+    const card = node('div', undefined, 'candidate');
+    card.append(node('strong', 'Search & data coverage'));
+    const bounds = coverage.requested_area?.bounds_wsen;
+    card.append(node('p', bounds ? `Requested CONUS subset (west, south, east, north): ${bounds.join(', ')}` : 'Requested area: contiguous United States (CONUS)'));
+    card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
+    for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
+    if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
+    $('coverage').append(card);
+  }
   $('candidates').replaceChildren();
   if (value.candidates?.length) {
     $('candidates').append(node('h3', value.status === 'succeeded' ? 'Supported location & alternatives' : 'Location hypotheses · result remains inconclusive'));
