@@ -9,6 +9,7 @@ from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
 from .geometry import AcousticSupportError, ecef
+from .matching import _native_validate_ridge_events
 
 _CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
 _CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
@@ -339,7 +340,13 @@ def _ridge_trial_classification(result, events, association):
         return "unknown", "missing_event_fit_evidence"
     fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
               "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
-    for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
+    # The optional native path recognizes only valid evidence in plain core
+    # containers. Invalid or custom inputs retain the exact Python validation
+    # below, including error precedence and subclass/numeric-type behavior.
+    validated = (_native_validate_ridge_events is not None and
+                 _native_validate_ridge_events(diagnostics, scores, frequencies, events))
+    pending = () if validated else zip(diagnostics, scores, frequencies, events)
+    for diagnostic, score, frequency, event in pending:
         if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
                 or diagnostic["support_fraction"] != 1.0):
             return "unknown", "incomplete_acoustic_support"
@@ -408,6 +415,14 @@ def _association_event_ceiling(diagnostic, score, frequency, event, limit):
     mutation checks while avoiding repeated validation of the same clock fit.
     Noncanonical numeric types retain the original validation and arithmetic.
     """
+    if (_native_validate_ridge_events is not None
+            and _ridge_trial_classification is _CANONICAL_CEILING_FUNCTIONS[2]
+            and _association_event_ceiling_uncached is _CANONICAL_CEILING_FUNCTIONS[1]
+            and type(limit) is float and math.isfinite(limit) and limit > 0
+            and _native_validate_ridge_events([diagnostic], [score], [frequency], [event])):
+        if -score > limit:
+            return -np.inf
+        return float(np.nextafter(1 - (-score) / limit, np.inf))
     from .matching import _ridge_fit_cache
     cache = _ridge_fit_cache.get()
     if (cache is None or cache.max_entries <= 0 or type(diagnostic) is not dict

@@ -39,6 +39,8 @@ else:
     _native_binary_hash = hashlib.sha256(Path(_native_ridge_module.__file__).read_bytes()).hexdigest()
     RIDGE_FIT_BACKEND = f"native-c-irls-v2-pairwise:{_native_binary_hash}"
 
+_native_validate_ridge_events = getattr(_native_ridge_module, "valid_ridge_events", None)
+
 _NATIVE_RIDGE_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
 
 
