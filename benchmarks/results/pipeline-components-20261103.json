@@ -6,18 +6,16 @@
     "core_changes": "a2236ac",
     "core_with_main": "fa19b59492a15ca3f3dd526bed5706b770793a58",
     "combined_http": "00727d4",
-    "combined_scoring_dependency": "3725e9d2027d979e579ba9c347fb688ebf0895c3"
+    "combined_scoring_dependency": "3725e9d2027d979e579ba9c347fb688ebf0895c3",
+    "corrected_baseline": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+    "complete_batch_cache_measured_local": "b3875b33c255e49c0a461879ef107a1ea804e205",
+    "complete_batch_cache_measured_public": "f4f8bede6529481810a2984479246f9faf2122ae",
+    "latest_verified_local": "ef30def85a59f4046f72b01b92569709654bf7af",
+    "latest_verified_public": "a3ba35342e491556973be34022f3e0a10ac1f6f4",
+    "current_main_integrated_local": "ef30def85a59f4046f72b01b92569709654bf7af"
   },
   "runtime": {
-    "numerical_packages": {
-      "numpy": "2.3.5",
-      "scipy": "1.17.0",
-      "pandas": "2.2.3",
-      "pyarrow": "26.0.1",
-      "pyproj": "3.8.0",
-      "rasterio": "1.5.2",
-      "soundfile": "0.14.0"
-    },
+    "numerical_packages": {"numpy": "2.3.5", "scipy": "1.17.0", "pandas": "2.2.3", "pyarrow": "26.0.1", "pyproj": "3.8.0", "rasterio": "1.5.2", "soundfile": "0.14.0"},
     "numerical_threads": 1,
     "audio_helpers_search_python": "3.12.14",
     "cache_empty_tiles_configured_http_python": "3.12.3",
@@ -39,36 +37,18 @@
     "discovery": {
       "baseline": {
         "trials": [
-          {
-            "wall_s": 9.284779882999942,
-            "cpu_s": 9.239130253999999
-          },
-          {
-            "wall_s": 7.356600091000018,
-            "cpu_s": 7.355370614000002
-          },
-          {
-            "wall_s": 6.731685112999912,
-            "cpu_s": 6.730280811
-          }
+          {"wall_s": 9.284779882999942, "cpu_s": 9.239130253999999},
+          {"wall_s": 7.356600091000018, "cpu_s": 7.355370614000002},
+          {"wall_s": 6.731685112999912, "cpu_s": 6.730280811}
         ],
         "median_wall_s": 7.356600091000018,
         "median_cpu_s": 7.355370614000002
       },
       "current": {
         "trials": [
-          {
-            "wall_s": 6.414081021000015,
-            "cpu_s": 6.4099143330000015
-          },
-          {
-            "wall_s": 5.961681690000091,
-            "cpu_s": 5.953134779000003
-          },
-          {
-            "wall_s": 6.04402048999998,
-            "cpu_s": 6.043257627000003
-          }
+          {"wall_s": 6.414081021000015, "cpu_s": 6.4099143330000015},
+          {"wall_s": 5.961681690000091, "cpu_s": 5.953134779000003},
+          {"wall_s": 6.04402048999998, "cpu_s": 6.043257627000003}
         ],
         "median_wall_s": 6.04402048999998,
         "median_cpu_s": 6.043257627000003
@@ -82,43 +62,22 @@
     "configured_ridges": [
       {
         "event": 1,
-        "spectrum_shape": [
-          921,
-          713
-        ],
+        "spectrum_shape": [921, 713],
         "exact_frequency_and_weight_match": true,
         "baseline": {
           "trials": [
-            {
-              "wall_s": 0.18297023399998125,
-              "cpu_s": 0.1829722699999934
-            },
-            {
-              "wall_s": 0.17685444400001415,
-              "cpu_s": 0.17680868999999433
-            },
-            {
-              "wall_s": 0.18520073299998785,
-              "cpu_s": 0.18520574200000084
-            }
+            {"wall_s": 0.18297023399998125, "cpu_s": 0.1829722699999934},
+            {"wall_s": 0.17685444400001415, "cpu_s": 0.17680868999999433},
+            {"wall_s": 0.18520073299998785, "cpu_s": 0.18520574200000084}
           ],
           "median_wall_s": 0.18297023399998125,
           "median_cpu_s": 0.1829722699999934
         },
         "current": {
           "trials": [
-            {
-              "wall_s": 0.058338671999990765,
-              "cpu_s": 0.05833744499999938
-            },
-            {
-              "wall_s": 0.06065663100002894,
-              "cpu_s": 0.0606612240000004
-            },
-            {
-              "wall_s": 0.06332199999997101,
-              "cpu_s": 0.06331132200000411
-            }
+            {"wall_s": 0.058338671999990765, "cpu_s": 0.05833744499999938},
+            {"wall_s": 0.06065663100002894, "cpu_s": 0.0606612240000004},
+            {"wall_s": 0.06332199999997101, "cpu_s": 0.06331132200000411}
           ],
           "median_wall_s": 0.06065663100002894,
           "median_cpu_s": 0.0606612240000004
@@ -128,43 +87,22 @@
       },
       {
         "event": 2,
-        "spectrum_shape": [
-          721,
-          333
-        ],
+        "spectrum_shape": [721, 333],
         "exact_frequency_and_weight_match": true,
         "baseline": {
           "trials": [
-            {
-              "wall_s": 0.07580405500004872,
-              "cpu_s": 0.07584756099999623
-            },
-            {
-              "wall_s": 0.0735758349999287,
-              "cpu_s": 0.07330923200000683
-            },
-            {
-              "wall_s": 0.0675049259999696,
-              "cpu_s": 0.06750940799999938
-            }
+            {"wall_s": 0.07580405500004872, "cpu_s": 0.07584756099999623},
+            {"wall_s": 0.0735758349999287, "cpu_s": 0.07330923200000683},
+            {"wall_s": 0.0675049259999696, "cpu_s": 0.06750940799999938}
           ],
           "median_wall_s": 0.0735758349999287,
           "median_cpu_s": 0.07330923200000683
         },
         "current": {
           "trials": [
-            {
-              "wall_s": 0.029976841999996395,
-              "cpu_s": 0.02998151999999976
-            },
-            {
-              "wall_s": 0.025200435999977344,
-              "cpu_s": 0.02520547499999992
-            },
-            {
-              "wall_s": 0.025601695999966978,
-              "cpu_s": 0.025605783999999687
-            }
+            {"wall_s": 0.029976841999996395, "cpu_s": 0.02998151999999976},
+            {"wall_s": 0.025200435999977344, "cpu_s": 0.02520547499999992},
+            {"wall_s": 0.025601695999966978, "cpu_s": 0.025605783999999687}
           ],
           "median_wall_s": 0.025601695999966978,
           "median_cpu_s": 0.025605783999999687
@@ -176,9 +114,7 @@
   },
   "helpers": {
     "scope": "Real observations and archived candidate coordinates; component timings only",
-    "cpu_affinity": [
-      6
-    ],
+    "cpu_affinity": [6],
     "tracks": 214,
     "samples": 71571,
     "independent_decodes_exact": true,
@@ -190,43 +126,19 @@
     "identity_digest": {
       "trials": {
         "baseline": [
-          {
-            "wall_s": 0.7115346380001029,
-            "cpu_s": 0.7115334740000003
-          },
-          {
-            "wall_s": 0.6816926090000379,
-            "cpu_s": 0.6816836399999993
-          },
-          {
-            "wall_s": 0.7168531109998639,
-            "cpu_s": 0.7168470490000001
-          }
+          {"wall_s": 0.7115346380001029, "cpu_s": 0.7115334740000003},
+          {"wall_s": 0.6816926090000379, "cpu_s": 0.6816836399999993},
+          {"wall_s": 0.7168531109998639, "cpu_s": 0.7168470490000001}
         ],
         "current": [
-          {
-            "wall_s": 0.011288004000107321,
-            "cpu_s": 0.011292508000000367
-          },
-          {
-            "wall_s": 0.009811315999968429,
-            "cpu_s": 0.009814100999999908
-          },
-          {
-            "wall_s": 0.010700293999889254,
-            "cpu_s": 0.010702902000000236
-          }
+          {"wall_s": 0.011288004000107321, "cpu_s": 0.011292508000000367},
+          {"wall_s": 0.009811315999968429, "cpu_s": 0.009814100999999908},
+          {"wall_s": 0.010700293999889254, "cpu_s": 0.010702902000000236}
         ]
       },
       "median": {
-        "baseline": {
-          "wall_s": 0.7115346380001029,
-          "cpu_s": 0.7115334740000003
-        },
-        "current": {
-          "wall_s": 0.010700293999889254,
-          "cpu_s": 0.010702902000000236
-        }
+        "baseline": {"wall_s": 0.7115346380001029, "cpu_s": 0.7115334740000003},
+        "current": {"wall_s": 0.010700293999889254, "cpu_s": 0.010702902000000236}
       },
       "wall_speedup": 66.49673719315255,
       "cpu_speedup": 66.48042502864968
@@ -234,87 +146,36 @@
     "duplicate_index_query": {
       "trials": {
         "baseline": [
-          {
-            "wall_s": 2.97018349699988,
-            "cpu_s": 2.9699184150000004
-          },
-          {
-            "wall_s": 2.807910829000093,
-            "cpu_s": 2.8075487179999996
-          },
-          {
-            "wall_s": 3.2889418439999645,
-            "cpu_s": 3.288740260999999
-          }
+          {"wall_s": 2.97018349699988, "cpu_s": 2.9699184150000004},
+          {"wall_s": 2.807910829000093, "cpu_s": 2.8075487179999996},
+          {"wall_s": 3.2889418439999645, "cpu_s": 3.288740260999999}
         ],
         "current": [
-          {
-            "wall_s": 1.3139952129999983,
-            "cpu_s": 1.3139138050000003
-          },
-          {
-            "wall_s": 1.490499765000095,
-            "cpu_s": 1.490374632
-          },
-          {
-            "wall_s": 1.762300514000117,
-            "cpu_s": 1.7621483060000003
-          }
+          {"wall_s": 1.3139952129999983, "cpu_s": 1.3139138050000003},
+          {"wall_s": 1.490499765000095, "cpu_s": 1.490374632},
+          {"wall_s": 1.762300514000117, "cpu_s": 1.7621483060000003}
         ]
       },
-      "median": {
-        "baseline": {
-          "wall_s": 2.97018349699988,
-          "cpu_s": 2.9699184150000004
-        },
-        "current": {
-          "wall_s": 1.490499765000095,
-          "cpu_s": 1.490374632
-        }
-      },
+      "median": {"baseline": {"wall_s": 2.97018349699988, "cpu_s": 2.9699184150000004}, "current": {"wall_s": 1.490499765000095, "cpu_s": 1.490374632}},
       "wall_speedup": 1.9927433514219242,
       "cpu_speedup": 1.9927328010236829
     },
     "terrain_scalar_queries": {
       "trials": {
         "baseline": [
-          {
-            "wall_s": 0.4443265560000782,
-            "cpu_s": 0.44422315499999954
-          },
-          {
-            "wall_s": 0.48182881100001396,
-            "cpu_s": 0.4817972530000034
-          },
-          {
-            "wall_s": 0.49004781799999364,
-            "cpu_s": 0.4900461589999985
-          }
+          {"wall_s": 0.4443265560000782, "cpu_s": 0.44422315499999954},
+          {"wall_s": 0.48182881100001396, "cpu_s": 0.4817972530000034},
+          {"wall_s": 0.49004781799999364, "cpu_s": 0.4900461589999985}
         ],
         "current": [
-          {
-            "wall_s": 0.1664448099998026,
-            "cpu_s": 0.1664502170000013
-          },
-          {
-            "wall_s": 0.1315762229999109,
-            "cpu_s": 0.13158169000000086
-          },
-          {
-            "wall_s": 0.1506844049999927,
-            "cpu_s": 0.15069019499999925
-          }
+          {"wall_s": 0.1664448099998026, "cpu_s": 0.1664502170000013},
+          {"wall_s": 0.1315762229999109, "cpu_s": 0.13158169000000086},
+          {"wall_s": 0.1506844049999927, "cpu_s": 0.15069019499999925}
         ]
       },
       "median": {
-        "baseline": {
-          "wall_s": 0.48182881100001396,
-          "cpu_s": 0.4817972530000034
-        },
-        "current": {
-          "wall_s": 0.1506844049999927,
-          "cpu_s": 0.15069019499999925
-        }
+        "baseline": {"wall_s": 0.48182881100001396, "cpu_s": 0.4817972530000034},
+        "current": {"wall_s": 0.1506844049999927, "cpu_s": 0.15069019499999925}
       },
       "wall_speedup": 3.197602372986357,
       "cpu_speedup": 3.1972700878116576
@@ -322,97 +183,44 @@
     "terrain_vector_query": {
       "trials": {
         "baseline": [
-          {
-            "wall_s": 0.0019550570000319567,
-            "cpu_s": 0.0019570879999974977
-          },
-          {
-            "wall_s": 0.0018791140000757878,
-            "cpu_s": 0.0018804039999977817
-          },
-          {
-            "wall_s": 0.0031173479999324627,
-            "cpu_s": 0.003119555000001384
-          }
+          {"wall_s": 0.0019550570000319567, "cpu_s": 0.0019570879999974977},
+          {"wall_s": 0.0018791140000757878, "cpu_s": 0.0018804039999977817},
+          {"wall_s": 0.0031173479999324627, "cpu_s": 0.003119555000001384}
         ],
         "current": [
-          {
-            "wall_s": 0.000638515999980882,
-            "cpu_s": 0.0006401309999972682
-          },
-          {
-            "wall_s": 0.00037645799989149964,
-            "cpu_s": 0.0003774209999996003
-          },
-          {
-            "wall_s": 0.0004980270000487508,
-            "cpu_s": 0.0004988109999999324
-          }
+          {"wall_s": 0.000638515999980882, "cpu_s": 0.0006401309999972682},
+          {"wall_s": 0.00037645799989149964, "cpu_s": 0.0003774209999996003},
+          {"wall_s": 0.0004980270000487508, "cpu_s": 0.0004988109999999324}
         ]
       },
       "median": {
-        "baseline": {
-          "wall_s": 0.0019550570000319567,
-          "cpu_s": 0.0019570879999974977
-        },
-        "current": {
-          "wall_s": 0.0004980270000487508,
-          "cpu_s": 0.0004988109999999324
-        }
+        "baseline": {"wall_s": 0.0019550570000319567, "cpu_s": 0.0019570879999974977},
+        "current": {"wall_s": 0.0004980270000487508, "cpu_s": 0.0004988109999999324}
       },
       "wall_speedup": 3.925604434780806,
       "cpu_speedup": 3.92350609749537
     },
-    "terrain_transform_cache": {
-      "hits": 1704,
-      "misses": 2,
-      "maxsize": 32,
-      "currsize": 2
-    }
+    "terrain_transform_cache": {"hits": 1704, "misses": 2, "maxsize": 32, "currsize": 2}
   },
   "empty_tiles": {
     "scope": "Recorded empty coarse tiles with receiver cells; includes geometry, real index queries, coarse/global stages, checksums and checkpoint writes; excludes progress/resume reads",
     "tiles": 256,
     "batch_size": 32,
     "passes": 3,
-    "runtime": {
-      "python": "3.12.3",
-      "sqlite": "3.45.1"
-    },
+    "runtime": {"python": "3.12.3", "sqlite": "3.45.1"},
     "timings": {
       "ordinary": [
-        {
-          "wall_s": 2.1692930350000097,
-          "cpu_s": 1.09747029
-        },
-        {
-          "wall_s": 2.009673713999746,
-          "cpu_s": 1.0613797029999992
-        },
-        {
-          "wall_s": 2.317755713999759,
-          "cpu_s": 1.1247887930000005
-        }
+        {"wall_s": 2.1692930350000097, "cpu_s": 1.09747029},
+        {"wall_s": 2.009673713999746, "cpu_s": 1.0613797029999992},
+        {"wall_s": 2.317755713999759, "cpu_s": 1.1247887930000005}
       ],
       "batched": [
-        {
-          "wall_s": 0.7647061020002184,
-          "cpu_s": 0.741824603
-        },
-        {
-          "wall_s": 0.7330908949998047,
-          "cpu_s": 0.7171870200000003
-        },
-        {
-          "wall_s": 0.928092106999884,
-          "cpu_s": 0.8675067000000007
-        }
+        {"wall_s": 0.7647061020002184, "cpu_s": 0.741824603},
+        {"wall_s": 0.7330908949998047, "cpu_s": 0.7171870200000003},
+        {"wall_s": 0.928092106999884, "cpu_s": 0.8675067000000007}
       ]
     },
-    "median_wall_s": {
-      "ordinary": 2.1692930350000097,
-      "batched": 0.7647061020002184
-    },
+    "median_wall_s": {"ordinary": 2.1692930350000097, "batched": 0.7647061020002184},
     "speedup": 2.836767000192435,
     "all_checkpoints_match_recorded_tiles": true,
     "all_ledger_tables_match": true,
@@ -422,16 +230,8 @@
   "track_cache": {
     "regional": {
       "scope": "Repeated real trajectory query; excludes acquisition, audio and scoring",
-      "bounds": [
-        -74.299988,
-        40.100005,
-        -72.700011,
-        41.599964
-      ],
-      "time_range_s": [
-        1788898500.0,
-        1788902400.0
-      ],
+      "bounds": [-74.299988, 40.100005, -72.700011, 41.599964],
+      "time_range_s": [1788898500.0, 1788902400.0],
       "passes": {
         "uncached": [
           {
@@ -511,34 +311,17 @@
         ]
       },
       "same_geometry_and_labels": true,
-      "median_warm_query_s": {
-        "uncached": 1.567756417000055,
-        "cached": 0.10096911500022543
-      },
+      "median_warm_query_s": {"uncached": 1.567756417000055, "cached": 0.10096911500022543},
       "warm_query_speedup": 15.527088823117394,
-      "first_query_s": {
-        "uncached": 1.5943461480001133,
-        "cached": 1.5197348029996647
-      },
-      "all_query_passes_s": {
-        "uncached": 6.264586015000532,
-        "cached": 1.8259196939993672
-      },
+      "first_query_s": {"uncached": 1.5943461480001133, "cached": 1.5197348029996647},
+      "all_query_passes_s": {"uncached": 6.264586015000532, "cached": 1.8259196939993672},
       "all_passes_speedup_including_cold_cache": 3.4309208863830256,
       "comparison": "Cache off/on in the same final source, one cold decoded-cache query and three warm queries; operating-system cache is uncontrolled."
     },
     "full_day": {
       "scope": "Repeated real trajectory query; excludes acquisition, audio and scoring",
-      "bounds": [
-        -74.05,
-        40.55,
-        -73.55,
-        41.05
-      ],
-      "time_range_s": [
-        1788825600.0,
-        1788912000.0
-      ],
+      "bounds": [-74.05, 40.55, -73.55, 41.05],
+      "time_range_s": [1788825600.0, 1788912000.0],
       "passes": {
         "uncached": [
           {
@@ -618,55 +401,28 @@
         ]
       },
       "same_geometry_and_labels": true,
-      "median_warm_query_s": {
-        "uncached": 4.72467777699967,
-        "cached": 2.744923665999977
-      },
+      "median_warm_query_s": {"uncached": 4.72467777699967, "cached": 2.744923665999977},
       "warm_query_speedup": 1.72124195493009,
-      "first_query_s": {
-        "uncached": 4.041226284999993,
-        "cached": 4.936198077999961
-      },
-      "all_query_passes_s": {
-        "uncached": 18.17114843399986,
-        "cached": 13.417552545000035
-      },
+      "first_query_s": {"uncached": 4.041226284999993, "cached": 4.936198077999961},
+      "all_query_passes_s": {"uncached": 18.17114843399986, "cached": 13.417552545000035},
       "all_passes_speedup_including_cold_cache": 1.3542818910570409,
-      "comparison": "Cache off/on in the same final source, one cold decoded-cache query and three warm queries; operating-system cache is uncontrolled."
+      "comparison": "Cache off/on in the same final source, one cold decoded-cache query and three warm queries; operating-system cache is uncontrolled.",
+      "cold_query_regression": {
+        "observations_per_arm": 1,
+        "cached_to_uncached_wall_ratio": 1.221460450339511,
+        "wall_increase_fraction": 0.221460450339511,
+        "note": "The first decoded-cache query was slower with caching in this observation; the four-pass total and warm medians remain separate controls. Operating-system cache was uncontrolled."
+      }
     }
   },
   "configured_workers": {
     "scope": "Full configured reference replay using original audio, observations and source-informed event/grid settings; not automatic or independent localization validation",
     "upstream_parallelism": "PR #210, merged in adbfb3e; final local performance changes active in both controls",
-    "runtime": {
-      "python": "3.12.3",
-      "sqlite": "3.45.1",
-      "blas_threads": 1,
-      "cpu_affinity": {
-        "workers_1": [
-          4
-        ],
-        "workers_4": [
-          4,
-          5,
-          7,
-          8
-        ]
-      }
-    },
+    "runtime": {"python": "3.12.3", "sqlite": "3.45.1", "blas_threads": 1, "cpu_affinity": {"workers_1": [4], "workers_4": [4, 5, 7, 8]}},
     "measurement_design": "One sequential pair with fresh process/output directories; all scientific settings identical; worker count is the only setting changed",
-    "workers": [
-      1,
-      4
-    ],
-    "process_wall_s": [
-      63.080272204000266,
-      50.85959439999988
-    ],
-    "report_elapsed_s": [
-      60.038204577000215,
-      47.425417169999946
-    ],
+    "workers": [1, 4],
+    "process_wall_s": [63.080272204000266, 50.85959439999988],
+    "report_elapsed_s": [60.038204577000215, 47.425417169999946],
     "process_wall_speedup": 1.240282643779802,
     "process_wall_reduction_fraction": 0.19373216660319692,
     "same_scientific_json": true,
@@ -695,11 +451,7 @@
           "wall_seconds": 16.130660911000177,
           "cpu_seconds": 16.091403776,
           "load_seconds_excluded": 1.0451894960001482,
-          "operations": {
-            "scalar_fit_calls": 68,
-            "acoustic_calls": 397,
-            "scored_candidates": 1927
-          },
+          "operations": {"scalar_fit_calls": 68, "acoustic_calls": 397, "scored_candidates": 1927},
           "peak_rss_mib": 230.953125,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 100,
@@ -710,11 +462,7 @@
           "wall_seconds": 19.287786888000028,
           "cpu_seconds": 19.256217652,
           "load_seconds_excluded": 0.9172454069998821,
-          "operations": {
-            "scalar_fit_calls": 6493,
-            "acoustic_calls": 397,
-            "scored_candidates": 1927
-          },
+          "operations": {"scalar_fit_calls": 6493, "acoustic_calls": 397, "scored_candidates": 1927},
           "peak_rss_mib": 255.4375,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 100,
@@ -725,11 +473,7 @@
           "wall_seconds": 35.92530473200031,
           "cpu_seconds": 35.877964218,
           "load_seconds_excluded": 0.9022394250000616,
-          "operations": {
-            "scalar_fit_calls": 32255,
-            "acoustic_calls": 397,
-            "scored_candidates": 1927
-          },
+          "operations": {"scalar_fit_calls": 32255, "acoustic_calls": 397, "scored_candidates": 1927},
           "peak_rss_mib": 241.79296875,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 100,
@@ -740,11 +484,7 @@
           "wall_seconds": 36.8815337570004,
           "cpu_seconds": 36.826490442,
           "load_seconds_excluded": 0.840361995999956,
-          "operations": {
-            "scalar_fit_calls": 32255,
-            "acoustic_calls": 397,
-            "scored_candidates": 1927
-          },
+          "operations": {"scalar_fit_calls": 32255, "acoustic_calls": 397, "scored_candidates": 1927},
           "peak_rss_mib": 241.58984375,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 100,
@@ -836,14 +576,8 @@
           }
         ]
       },
-      "corrected_to_pr212": {
-        "difference_count": 0,
-        "first_differences": []
-      },
-      "original_to_exact": {
-        "difference_count": 0,
-        "first_differences": []
-      },
+      "corrected_to_pr212": {"difference_count": 0, "first_differences": []},
+      "original_to_exact": {"difference_count": 0, "first_differences": []},
       "pr212_cpu_speedup_over_exact": 1.1966773017479218,
       "pr212_cpu_speedup_over_original": 2.2296354449517484
     },
@@ -855,11 +589,7 @@
           "wall_seconds": 3.6900103289999606,
           "cpu_seconds": 3.683335948,
           "load_seconds_excluded": 0.9317238620001262,
-          "operations": {
-            "scalar_fit_calls": 2191,
-            "acoustic_calls": 297,
-            "scored_candidates": 206
-          },
+          "operations": {"scalar_fit_calls": 2191, "acoustic_calls": 297, "scored_candidates": 206},
           "peak_rss_mib": 205.8359375,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 28,
@@ -870,11 +600,7 @@
           "wall_seconds": 3.1404853110002477,
           "cpu_seconds": 3.130182064,
           "load_seconds_excluded": 0.7733666260000973,
-          "operations": {
-            "scalar_fit_calls": 2191,
-            "acoustic_calls": 297,
-            "scored_candidates": 206
-          },
+          "operations": {"scalar_fit_calls": 2191, "acoustic_calls": 297, "scored_candidates": 206},
           "peak_rss_mib": 206.23046875,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 28,
@@ -885,11 +611,7 @@
           "wall_seconds": 2.685179932999745,
           "cpu_seconds": 2.6791283659999996,
           "load_seconds_excluded": 0.8818394079999052,
-          "operations": {
-            "scalar_fit_calls": 1161,
-            "acoustic_calls": 297,
-            "scored_candidates": 206
-          },
+          "operations": {"scalar_fit_calls": 1161, "acoustic_calls": 297, "scored_candidates": 206},
           "peak_rss_mib": 225.56640625,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 28,
@@ -900,11 +622,7 @@
           "wall_seconds": 2.034704806999798,
           "cpu_seconds": 2.030037885,
           "load_seconds_excluded": 0.7205967680001777,
-          "operations": {
-            "scalar_fit_calls": 437,
-            "acoustic_calls": 297,
-            "scored_candidates": 206
-          },
+          "operations": {"scalar_fit_calls": 437, "acoustic_calls": 297, "scored_candidates": 206},
           "peak_rss_mib": 203.91015625,
           "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading",
           "retained": 28,
@@ -916,28 +634,18 @@
       "pr212_equal_corrected_baseline": true,
       "pr212_retained_equal_original": true,
       "pr212_accounting_equal_original": true,
-      "original_to_corrected": {
-        "difference_count": 0,
-        "first_differences": []
-      },
-      "corrected_to_pr212": {
-        "difference_count": 0,
-        "first_differences": []
-      },
-      "original_to_exact": {
-        "difference_count": 0,
-        "first_differences": []
-      },
+      "original_to_corrected": {"difference_count": 0, "first_differences": []},
+      "corrected_to_pr212": {"difference_count": 0, "first_differences": []},
+      "original_to_exact": {"difference_count": 0, "first_differences": []},
       "pr212_cpu_speedup_over_exact": 1.31974303819458,
       "pr212_cpu_speedup_over_original": 1.5419328314653595
     }
   },
   "verification": {
-    "focused_real_tests": 23,
+    "focused_real_tests": 36,
     "result": "passed",
-    "elapsed_s": 2.47,
-    "source": "fa19b594",
-    "cli_help": "passed",
+    "elapsed_s": 34.39,
+    "source": "ef30def85a59f4046f72b01b92569709654bf7af",
     "synthetic_suites_run": false,
     "upstream_discovery_integration": {
       "source": "dcddc56",
@@ -949,29 +657,230 @@
       "scope": "Integration parity only; repeated headline timings remain unchanged"
     },
     "hosted_installation_and_static_checks": {
+      "source": "a3ba35342e491556973be34022f3e0a10ac1f6f4",
+      "python": ["3.11", "3.14"],
+      "result": "success",
+      "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41669485319",
+      "scope": "Hosted installation and static checks on the public source identical to local ef30 integration."
+    },
+    "earlier_focused_checks": {"focused_real_tests": 23, "result": "passed", "elapsed_s": 2.47, "source": "fa19b594", "cli_help": "passed", "synthetic_suites_run": false},
+    "scope": "Focused recorded-input checks on the stated source; no synthetic suites run. Earlier component and hosted validation evidence is retained separately.",
+    "newer_integration": {
+      "source": "ef30def85a59f4046f72b01b92569709654bf7af",
+      "result": "passed",
+      "note": "Upstream main integration after the frozen timings; no speedup is attributed to its optional detail-plot or cached-DEM policy changes.",
+      "focused_real_tests": 36,
+      "elapsed_s": 34.39,
+      "evidence_file": "results/performance-20261103/final-core-upstream-integration-tests.txt",
+      "runtime_and_command": "Same focused recorded-input command and runtime as the 9a46b7b verification.",
+      "scope": "Integration correctness only; no new benchmark claim.",
+      "terrain_test_scope": "Existing real terrain helper checks passed with restored GLO30/EGM96. The PR224 cache-hit check requires actual GLO90 tiles unavailable here and was not run or included in the 36 passed checks.",
+      "public_source": "a3ba35342e491556973be34022f3e0a10ac1f6f4",
+      "runtime": {"python": "3.12.3", "sqlite": "3.45.1", "cpu_affinity": [5], "numerical_threads": 1},
+      "fixture_scope": "Separate recorded CPA fixture with a 120-second clock half-width and 100 CPA rows; not the dense timing fixture with 117 CPA rows and 1927 associations.",
+      "source_compilation": "passed",
+      "cli_help": "passed"
+    },
+    "before_current_main_integration": {
+      "focused_real_tests": 36,
+      "result": "passed",
+      "elapsed_s": 34.8,
+      "source": "9a46b7bca7aba5cf07eff637b7ab92a911e29768",
+      "public_source": "01775bb127ea5534617c7843ce1b45de7b2d5ce0",
+      "local_and_public_production_code_trees_identical": true
+    },
+    "earlier_hosted_installation_and_static_checks": {
       "source": "f805f6f",
-      "python": [
-        "3.11",
-        "3.14"
-      ],
+      "python": ["3.11", "3.14"],
       "result": "success",
       "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41662314741"
+    },
+    "public_source": "a3ba35342e491556973be34022f3e0a10ac1f6f4",
+    "local_and_public_production_code_trees_identical": true,
+    "prior_published_hosted_checks": {
+      "source": "01775bb127ea5534617c7843ce1b45de7b2d5ce0",
+      "python": ["3.11", "3.14"],
+      "result": "success",
+      "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41667738741",
+      "scope": "Hosted installation and static checks on the stated published source; separate from the later local ef30 integration checks."
     }
   },
   "full_workflow": {
-    "status": "in_progress",
-    "fresh_run_speedup": null
+    "status": "regional_completed_conus_interrupted",
+    "regional": {
+      "scope": "One sequential pair of fresh complete-HTTP regional runs, scalar-corrected baseline versus optimized source. Source-informed region and clock; no nationwide completion or location-accuracy claim.",
+      "sources": {
+        "baseline": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+        "current": "b3875b33c255e49c0a461879ef107a1ea804e205",
+        "current_public_same_tree": "f4f8bede6529481810a2984479246f9faf2122ae"
+      },
+      "recording": {
+        "sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "bytes": 43202925,
+        "whole_recording": true,
+        "ridges": 17,
+        "independent_groups": 15
+      },
+      "shared_request": {
+        "schema_version": 1,
+        "search": {"coverage": "conus", "bounds_wsen": [-73.545, 40.865, -73.505, 40.895]},
+        "time_window": {
+          "start_utc": "2026-09-08T20:17:20Z",
+          "end_utc": "2026-09-08T20:17:40Z",
+          "source": "user",
+          "source_detail": "Source-informed regional runtime control using the historical fitted clock and the published four-point receiver region; not independent timing evidence or a location-accuracy evaluation."
+        }
+      },
+      "shared_controls": {
+        "same_request_operator_inputs_and_verifier": true,
+        "old_detail_plot_policy_in_both_arms": true,
+        "numerical_threads": 1,
+        "cpu_affinity": [4],
+        "python": "3.12.3",
+        "sqlite": "3.45.1",
+        "order": ["baseline", "current"],
+        "fresh_run": true,
+        "resumed": false
+      },
+      "timing": {
+        "http_receipt_wall_s": {"baseline": 261.83560908399977, "current": 148.5474333660004},
+        "process_wall_s": {"baseline": 261.88677473699954, "current": 148.58661683400078},
+        "process_and_children_cpu_s": {"baseline": 260.24960599999997, "current": 147.840564},
+        "http_wall_speedup": 1.7626397383714663,
+        "http_wall_reduction_fraction": 0.43266909384221786,
+        "cpu_speedup": 1.7603396453492965,
+        "observed_stage_wall_s": {
+          "baseline": {
+            "queued": 0.25183987617492676,
+            "intake": 9.347695112228394,
+            "discovery": 12.949244022369385,
+            "acquisition": 0.8528048992156982,
+            "search": 150.67920804023743,
+            "refinement": 81.49950098991394
+          },
+          "current": {
+            "queued": 0.2516360282897949,
+            "intake": 8.840994834899902,
+            "discovery": 11.950153112411499,
+            "acquisition": 0.8292410373687744,
+            "search": 59.789710998535156,
+            "refinement": 60.71662783622742
+          }
+        },
+        "stage_timing_limit": "HTTP polling transitions have sampling uncertainty. Separate per-stage CPU was not measured. Decision was verified but too short to appear as a distinct observed interval."
+      },
+      "parity": {
+        "strict_comparator_passed": true,
+        "semantic_differences": 0,
+        "artifacts": {"json": 20, "sqlite": 1, "root_json": 3},
+        "logical_retention_rows": {
+          "baseline_rows": {"bounds": 29738, "records": 852, "run": 1, "stages": 12},
+          "current_rows": {"bounds": 29738, "records": 852, "run": 1, "stages": 12}
+        },
+        "all_scientific_numeric_differences_would_fail": true
+      },
+      "same_work": {
+        "tiles": 2,
+        "coarse_points": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "retained_hypotheses": 20,
+        "refined_hypotheses": 3,
+        "unrefined_hypotheses": 17,
+        "returned_candidates": 23,
+        "all_15_groups_considered": true,
+        "tile_failures": 0,
+        "refinement_failures": 0
+      },
+      "verification": {
+        "stages": ["automatic_provenance", "intake", "discovery", "acquisition", "search", "refinement", "decision"],
+        "full_pipeline_verified": {"baseline": true, "current": true},
+        "both_sources_unchanged": true,
+        "both_services_stopped_cleanly": true
+      },
+      "outcome": {"status": "inconclusive", "reason_code": "search_incomplete", "supported_location": false},
+      "excluded_claims": [
+        "No full CONUS speedup.",
+        "Not a comparison against untouched 7a8dd27: both arms share the scalar-power arithmetic correction.",
+        "The latest-main PR #215 optional detail-plot policy is excluded from this timing.",
+        "The four-point region and historical clock are source-informed development controls, not independent accuracy evidence."
+      ],
+      "status": "completed",
+      "evidence_file": "results/performance-20261103/regional-http-control/outcome-handoff.json"
+    },
+    "conus": {
+      "status": "both_interrupted_incomplete",
+      "completed": false,
+      "nationwide_speedup": null,
+      "baseline": {
+        "source": "7a8dd27979bd9a984c8675c38a00dfbf98a5b01e",
+        "original_http_timeout_s": 900,
+        "resumed": true,
+        "status": "interrupted_incomplete",
+        "worker_shutdown_confirmed": true,
+        "original_http_receipt_unchanged": true,
+        "implementation_unchanged": true,
+        "exact_cumulative_active_wall_s": null,
+        "exact_cumulative_cpu_s": null,
+        "accounting_complete": false,
+        "preserved_before_resume_snapshot": true,
+        "stale_job_status": "running",
+        "stale_job_stage": "search",
+        "evidence_file": "results/performance-20261103/baseline-upload-system-sqlite/continuation.json"
+      },
+      "combined": {
+        "source": "00727d46aa51691389b453573b6c6644538a9fd5",
+        "status": "interrupted_incomplete",
+        "service_and_worker_shutdown_confirmed": true,
+        "http_verification_receipt_present": false,
+        "implementation_unchanged": true,
+        "final_process_wall_s": null,
+        "final_process_cpu_s": null,
+        "stale_job_status": "running",
+        "stale_job_stage": "search",
+        "evidence_file": "results/performance-20261103/combined-upload/interruption.json"
+      },
+      "accounting_note": "Both obsolete nationwide runs were intentionally stopped after the final regional comparison completed. Exact resumed/final CPU and wall accounting were unavailable after owner-session interruption. Unknowns remain null; no nationwide ratio is inferred.",
+      "final_shared_prefix": {
+        "scope": "Completed nonempty tile JSON only; top-level run_hash is the sole normalization. No SQLite access.",
+        "observed_utc": "2026-11-03T15:52:56.809020+00:00",
+        "completed_tiles": {"baseline": 19276, "combined": 19347},
+        "nonempty_tiles": {"baseline": 87, "combined": 158},
+        "shared_nonempty_tiles": 87,
+        "exact_tiles": 86,
+        "tiles_with_known_isolated_arithmetic_correction": 1,
+        "complete_workflow_comparison": false,
+        "monitor_status": "Stopped after both workflows were interrupted; this is the final completed-prefix comparison.",
+        "evidence_file": "results/performance-20261103/live-tile-comparison.json",
+        "known_difference": "Original power arithmetic versus the separately isolated scalar correction; see isolated_arithmetic_difference. This is not full-workflow parity."
+      }
+    },
+    "isolated_arithmetic_difference": {
+      "scope": "Exact single-candidate replay of one completed full-workflow tile bound divergence; measured recording and observed tracks only",
+      "tile": "tile-58_67~3~2~2~0.json",
+      "events": 15,
+      "selected_events": 6,
+      "clock_trials": 33,
+      "parameters": {"mode": "robust_ridge", "c": 343.0, "time_origin": null, "time_sweep_s": 0, "time_step_s": 0.5, "score_floor": 3.790701351729499},
+      "original_reproduces_recorded_assessment": true,
+      "combined_reproduces_recorded_assessment": true,
+      "corrected_and_combined_complete_payload_equal": true,
+      "unknown_score_upper_bound": {"original": 3.785201622023032, "corrected": 3.7852016220230325, "combined": 3.7852016220230325}
+    }
   },
   "preserved_failures": [
     "Two original-baseline runs stopped after SQLite retention-database errors under Python 3.12.14 / SQLite 3.53.1. Root cause is unestablished.",
-    "The system-runtime baseline reached the 900-second HTTP timeout. A separate continuation retains its original source and inputs; its cumulative active cost is not a fresh-run timing."
+    "The system-runtime original baseline reached the 900-second HTTP timeout. Its separately preserved/resumed continuation was later intentionally interrupted; exact final CPU and active wall accounting are unavailable. Original failed receipt and partial artifacts are unchanged.",
+    "The obsolete combined nationwide run was intentionally interrupted before a normal final HTTP receipt. Both nationwide runs remain incomplete; no nationwide speedup is claimed."
   ],
   "published_sources": {
     "core": {
-      "commit": "f805f6fc6bb72195bdf3c982f359b3201259a5c2",
-      "local_equivalent": "dcddc56fd8ca76d326cdf0fa008299c4bedd092c",
+      "commit": "a3ba35342e491556973be34022f3e0a10ac1f6f4",
+      "local_equivalent": "ef30def85a59f4046f72b01b92569709654bf7af",
       "branch": "perf/pipeline-core-20261103",
-      "pull_request": 222
+      "pull_request": 222,
+      "production_code_trees_identical": true,
+      "tree": "0672ae1bc4b35c905553668c3a5450f521a741cd"
     },
     "exact_alternative": {
       "commit": "c1b7e93ed47ae26beffcf07fdf3ee9ebe639b955",
@@ -982,6 +891,320 @@
       "commit": "bee7793cf539d4d48fe2fb888f223c1e403a71ef",
       "local_equivalent": "00727d46aa51691389b453573b6c6644538a9fd5",
       "branch": "perf/pipeline-combined-20261103"
+    },
+    "core_before_final_cache": {
+      "commit": "f805f6fc6bb72195bdf3c982f359b3201259a5c2",
+      "local_equivalent": "dcddc56fd8ca76d326cdf0fa008299c4bedd092c",
+      "branch": "perf/pipeline-core-20261103",
+      "pull_request": 222
+    },
+    "complete_batch_cache_measured": {
+      "commit": "f4f8bede6529481810a2984479246f9faf2122ae",
+      "local_equivalent": "b3875b33c255e49c0a461879ef107a1ea804e205",
+      "same_tree": true,
+      "tree_prefix": "281917b3",
+      "scope": "Frozen source used for the final direct/incremental scoring controls and fresh regional HTTP pair; excludes later plot and terrain policies."
+    },
+    "core_before_current_main_integration": {
+      "commit": "01775bb127ea5534617c7843ce1b45de7b2d5ce0",
+      "local_equivalent": "9a46b7bca7aba5cf07eff637b7ab92a911e29768",
+      "branch": "perf/pipeline-core-20261103",
+      "pull_request": 222,
+      "production_code_trees_identical": true
+    }
+  },
+  "complete_batch_fit_cache": {
+    "scope": "Complete scoring calls on actual measured WAV ridges and archived trajectories. Input loading is excluded from scoring time and listed separately. Exact full scoring payloads and logical retention ledgers are compared. Source-informed development controls; no independent accuracy or coverage claim.",
+    "method": "Three alternating separately loaded process pairs for each workload and source comparison; direct corrected-baseline comparison and incremental staged-source comparison are separate measurements, not multiplied component ratios.",
+    "runtime": {"python": "3.12.14", "sqlite": "3.53.1", "interpreter": ".venv/bin/python", "cpu_affinity": [6], "numerical_threads": 1},
+    "memory_scope": "Peak RSS covers each worker through scoring, including imports and input loading. Whole-batch cache keys and serialized values have a 4 MiB bound and a 4096-entry cap; this is not a process RSS limit.",
+    "workloads": {
+      "dense": {
+        "recorded_fixture": "tests/data/real-search-workloads.json",
+        "case": "previous-fit",
+        "receiver": {"point_id": 0, "lat": 40.87693175890468, "lon": -73.52498229500986, "elev_m": -31.25569725036621, "x": 1861200.0000000002, "y": 2206325.0},
+        "query_bounds": [-73.87498229500986, 40.62693175890468, -73.17498229500987, 41.12693175890468],
+        "query_time_s": [1788897749.6620934, 1788903449.6620934],
+        "recording_start_window_s": [1788898589.6620934, 1788898709.6620934],
+        "scoring": {"mode": "robust_ridge", "time_sweep_s": 5.0, "time_step_s": 0.5},
+        "budget": {
+          "spacing_m": 2000.0,
+          "tile_cells": 32,
+          "max_tracks_per_tile": 2000,
+          "max_track_samples_per_tile": 500000,
+          "max_cpa_rows": 100000,
+          "max_candidates_per_tile": 20000,
+          "top_k": 100,
+          "refine_spacing_m": 100.0,
+          "refine_finalists": 10,
+          "cpa_step_s": 2.0,
+          "max_tiles": null
+        },
+        "tracks": 214,
+        "cpa_rows": 117,
+        "independent_groups": 16,
+        "index_input_hash": "db5e5207045e1a8df431fc697faa89bb8abb54d8a4001b4c114a68f48d0f9cf5"
+      },
+      "sparse": {
+        "recorded_fixture": "tests/data/real-search-workloads.json",
+        "case": "offset",
+        "receiver": {
+          "point_id": 0,
+          "lat": 40.92693175890468,
+          "lon": -73.62498229500986,
+          "elev_m": -31.25569725036621,
+          "x": 1851766.6081146488,
+          "y": 2209815.459900246
+        },
+        "query_bounds": [-73.97498229500985, 40.67693175890468, -73.27498229500986, 41.17693175890468],
+        "query_time_s": [1788897749.6620934, 1788903449.6620934],
+        "recording_start_window_s": [1788898589.6620934, 1788898709.6620934],
+        "scoring": {"mode": "robust_ridge", "time_sweep_s": 5.0, "time_step_s": 0.5},
+        "budget": {
+          "spacing_m": 2000.0,
+          "tile_cells": 32,
+          "max_tracks_per_tile": 2000,
+          "max_track_samples_per_tile": 500000,
+          "max_cpa_rows": 100000,
+          "max_candidates_per_tile": 20000,
+          "top_k": 100,
+          "refine_spacing_m": 100.0,
+          "refine_finalists": 10,
+          "cpa_step_s": 2.0,
+          "max_tiles": null
+        },
+        "tracks": 219,
+        "cpa_rows": 65,
+        "independent_groups": 16,
+        "index_input_hash": "db5e5207045e1a8df431fc697faa89bb8abb54d8a4001b4c114a68f48d0f9cf5"
+      }
+    },
+    "direct_corrected_baseline_vs_final": {
+      "dense": {
+        "evidence_file": "results/performance-20261103/final-vs-corrected-dense/comparison.json",
+        "sources": {
+          "baseline": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+          "current_local": "b3875b33c255e49c0a461879ef107a1ea804e205",
+          "current_public_same_tree": "f4f8bede6529481810a2984479246f9faf2122ae"
+        },
+        "pairs": 3,
+        "execution_order": [["baseline", 1], ["current", 1], ["current", 2], ["baseline", 2], ["baseline", 3], ["current", 3]],
+        "identical_complete_scoring_payload_and_logical_ledger": true,
+        "trial_columns": ["repetition", "wall_seconds", "cpu_seconds", "load_seconds_excluded", "peak_rss_mib"],
+        "arms": {
+          "baseline": {
+            "trials": [
+              [1, 41.877357143000154, 41.797612093, 0.8798064109996631, 238.52734375],
+              [2, 42.3366397359996, 42.278674718, 1.0127933430003395, 238.390625],
+              [3, 44.282740023999395, 44.191715982, 0.9212628499999482, 238.515625]
+            ],
+            "median": {"wall_seconds": 42.3366397359996, "cpu_seconds": 42.278674718, "peak_rss_mib": 238.515625},
+            "range": {
+              "wall_seconds": [41.877357143000154, 44.282740023999395],
+              "cpu_seconds": [41.797612093, 44.191715982],
+              "load_seconds_excluded": [0.8798064109996631, 1.0127933430003395],
+              "peak_rss_mib": [238.390625, 238.52734375]
+            },
+            "operations": {"scalar_fit_calls": 32255, "acoustic_calls": 397, "scored_candidates": 1927},
+            "retained": 100,
+            "independent_groups": 16
+          },
+          "current": {
+            "trials": [
+              [1, 8.67482166300033, 8.657842997, 0.9213413339994077, 251.375],
+              [2, 8.879541235999568, 8.85910787, 0.9957017219994668, 251.58203125],
+              [3, 10.369414620000498, 10.352624918, 0.9889024980002432, 251.4609375]
+            ],
+            "median": {"wall_seconds": 8.879541235999568, "cpu_seconds": 8.85910787, "peak_rss_mib": 251.4609375},
+            "range": {
+              "wall_seconds": [8.67482166300033, 10.369414620000498],
+              "cpu_seconds": [8.657842997, 10.352624918],
+              "load_seconds_excluded": [0.9213413339994077, 0.9957017219994668],
+              "peak_rss_mib": [251.375, 251.58203125]
+            },
+            "operations": {"scalar_fit_calls": 68, "acoustic_calls": 397, "scored_candidates": 1927},
+            "retained": 100,
+            "independent_groups": 16
+          }
+        },
+        "speedup": {"wall_seconds": 4.767885931353949, "cpu_seconds": 4.772339984838676}
+      },
+      "sparse": {
+        "evidence_file": "results/performance-20261103/final-vs-corrected-sparse/comparison.json",
+        "sources": {
+          "baseline": "d7cc1dd2e8089768253492b3269dfae97b3ad1a4",
+          "current_local": "b3875b33c255e49c0a461879ef107a1ea804e205",
+          "current_public_same_tree": "f4f8bede6529481810a2984479246f9faf2122ae"
+        },
+        "pairs": 3,
+        "execution_order": [["baseline", 1], ["current", 1], ["current", 2], ["baseline", 2], ["baseline", 3], ["current", 3]],
+        "identical_complete_scoring_payload_and_logical_ledger": true,
+        "trial_columns": ["repetition", "wall_seconds", "cpu_seconds", "load_seconds_excluded", "peak_rss_mib"],
+        "arms": {
+          "baseline": {
+            "trials": [
+              [1, 3.809220498000286, 3.7990090370000003, 0.845133449000059, 202.96875],
+              [2, 3.3705470280001464, 3.3633145259999995, 0.8175678779998634, 203.0078125],
+              [3, 3.5552743509997526, 3.549073966, 0.6835350620003737, 203.05078125]
+            ],
+            "median": {"wall_seconds": 3.5552743509997526, "cpu_seconds": 3.549073966, "peak_rss_mib": 203.0078125},
+            "range": {
+              "wall_seconds": [3.3705470280001464, 3.809220498000286],
+              "cpu_seconds": [3.3633145259999995, 3.7990090370000003],
+              "load_seconds_excluded": [0.6835350620003737, 0.845133449000059],
+              "peak_rss_mib": [202.96875, 203.05078125]
+            },
+            "operations": {"scalar_fit_calls": 2191, "acoustic_calls": 297, "scored_candidates": 206},
+            "retained": 28,
+            "independent_groups": 16
+          },
+          "current": {
+            "trials": [
+              [1, 2.3997814610002024, 2.231002582, 1.1355473450003046, 222.3671875],
+              [2, 2.1689473030000954, 2.161017405, 0.9662491299995963, 222.77734375],
+              [3, 2.3467664839999998, 2.334316648, 1.0133847389997754, 222.3515625]
+            ],
+            "median": {"wall_seconds": 2.3467664839999998, "cpu_seconds": 2.231002582, "peak_rss_mib": 222.3671875},
+            "range": {
+              "wall_seconds": [2.1689473030000954, 2.3997814610002024],
+              "cpu_seconds": [2.161017405, 2.334316648],
+              "load_seconds_excluded": [0.9662491299995963, 1.1355473450003046],
+              "peak_rss_mib": [222.3515625, 222.77734375]
+            },
+            "operations": {"scalar_fit_calls": 437, "acoustic_calls": 297, "scored_candidates": 206},
+            "retained": 28,
+            "independent_groups": 16
+          }
+        },
+        "speedup": {"wall_seconds": 1.514967243327885, "cpu_seconds": 1.590797785100905}
+      }
+    },
+    "incremental_staged_vs_final": {
+      "dense": {
+        "evidence_file": "results/performance-20261103/complete-batch-cache-dense/comparison.json",
+        "sources": {
+          "baseline": "00727d46aa51691389b453573b6c6644538a9fd5",
+          "current_local": "b3875b33c255e49c0a461879ef107a1ea804e205",
+          "current_public_same_tree": "f4f8bede6529481810a2984479246f9faf2122ae"
+        },
+        "pairs": 3,
+        "execution_order": [["baseline", 1], ["current", 1], ["current", 2], ["baseline", 2], ["baseline", 3], ["current", 3]],
+        "identical_complete_scoring_payload_and_logical_ledger": true,
+        "trial_columns": ["repetition", "wall_seconds", "cpu_seconds", "load_seconds_excluded", "peak_rss_mib"],
+        "arms": {
+          "baseline": {
+            "trials": [
+              [1, 16.788578241999858, 16.756619004, 0.9074301780001406, 248.6015625],
+              [2, 15.307583118000366, 15.271138406999999, 0.9013980749996335, 248.23046875],
+              [3, 17.16260180899917, 17.124028264, 0.8212427470007242, 249.359375]
+            ],
+            "median": {"wall_seconds": 16.788578241999858, "cpu_seconds": 16.756619004, "peak_rss_mib": 248.6015625},
+            "range": {
+              "wall_seconds": [15.307583118000366, 17.16260180899917],
+              "cpu_seconds": [15.271138406999999, 17.124028264],
+              "load_seconds_excluded": [0.8212427470007242, 0.9074301780001406],
+              "peak_rss_mib": [248.23046875, 249.359375]
+            },
+            "operations": {"scalar_fit_calls": 68, "acoustic_calls": 397, "scored_candidates": 1927},
+            "retained": 100,
+            "independent_groups": 16
+          },
+          "current": {
+            "trials": [
+              [1, 8.785770929000137, 8.762248068, 0.9148340230003669, 253.05859375],
+              [2, 8.650877480999952, 8.620453849, 0.6758184669997718, 252.8125],
+              [3, 8.733370822000325, 8.710183207, 0.907107017999806, 252.85546875]
+            ],
+            "median": {"wall_seconds": 8.733370822000325, "cpu_seconds": 8.710183207, "peak_rss_mib": 252.85546875},
+            "range": {
+              "wall_seconds": [8.650877480999952, 8.785770929000137],
+              "cpu_seconds": [8.620453849, 8.762248068],
+              "load_seconds_excluded": [0.6758184669997718, 0.9148340230003669],
+              "peak_rss_mib": [252.8125, 253.05859375]
+            },
+            "operations": {"scalar_fit_calls": 68, "acoustic_calls": 397, "scored_candidates": 1927},
+            "retained": 100,
+            "independent_groups": 16
+          }
+        },
+        "speedup": {"wall_seconds": 1.9223480353894487, "cpu_seconds": 1.9237963893266248}
+      },
+      "sparse": {
+        "evidence_file": "results/performance-20261103/complete-batch-cache-sparse/comparison.json",
+        "sources": {
+          "baseline": "00727d46aa51691389b453573b6c6644538a9fd5",
+          "current_local": "b3875b33c255e49c0a461879ef107a1ea804e205",
+          "current_public_same_tree": "f4f8bede6529481810a2984479246f9faf2122ae"
+        },
+        "pairs": 3,
+        "execution_order": [["baseline", 1], ["current", 1], ["current", 2], ["baseline", 2], ["baseline", 3], ["current", 3]],
+        "identical_complete_scoring_payload_and_logical_ledger": true,
+        "trial_columns": ["repetition", "wall_seconds", "cpu_seconds", "load_seconds_excluded", "peak_rss_mib"],
+        "arms": {
+          "baseline": {
+            "trials": [
+              [1, 2.5944818590005525, 2.5811919519999997, 0.99509009600024, 223.15625],
+              [2, 2.407043905000137, 2.3999298470000006, 1.0514220069999283, 223.36328125],
+              [3, 2.4583411089997753, 2.451012314, 1.0047749029999977, 221.859375]
+            ],
+            "median": {"wall_seconds": 2.4583411089997753, "cpu_seconds": 2.451012314, "peak_rss_mib": 223.15625},
+            "range": {
+              "wall_seconds": [2.407043905000137, 2.5944818590005525],
+              "cpu_seconds": [2.3999298470000006, 2.5811919519999997],
+              "load_seconds_excluded": [0.99509009600024, 1.0514220069999283],
+              "peak_rss_mib": [221.859375, 223.36328125]
+            },
+            "operations": {"scalar_fit_calls": 437, "acoustic_calls": 297, "scored_candidates": 206},
+            "retained": 28,
+            "independent_groups": 16
+          },
+          "current": {
+            "trials": [
+              [1, 2.0493466039997656, 2.043403527, 1.0089789929998005, 222.01171875],
+              [2, 2.1454869200006215, 2.1387526219999997, 0.8844710289995419, 222.5234375],
+              [3, 2.407579206000264, 2.401843328, 1.0856114339994747, 222.46875]
+            ],
+            "median": {"wall_seconds": 2.1454869200006215, "cpu_seconds": 2.1387526219999997, "peak_rss_mib": 222.46875},
+            "range": {
+              "wall_seconds": [2.0493466039997656, 2.407579206000264],
+              "cpu_seconds": [2.043403527, 2.401843328],
+              "load_seconds_excluded": [0.8844710289995419, 1.0856114339994747],
+              "peak_rss_mib": [222.01171875, 222.5234375]
+            },
+            "operations": {"scalar_fit_calls": 437, "acoustic_calls": 297, "scored_candidates": 206},
+            "retained": 28,
+            "independent_groups": 16
+          }
+        },
+        "speedup": {"wall_seconds": 1.1458196673597354, "cpu_seconds": 1.1460008459080222}
+      }
+    },
+    "observed_exact_input_reuse": {
+      "scope": "Instrumented unchanged staged scorer on actual recorded inputs; attribution and duplicate counts only, not a cache speedup measurement.",
+      "cases": {
+        "dense": {
+          "calls": 3981,
+          "unique_keys": 548,
+          "repeated_calls": 3433,
+          "repeated_call_fraction": 0.8623461441848782,
+          "successful_calls": 3981,
+          "repeated_successful_calls": 3433,
+          "fallback_calls": 0,
+          "exact_input_output_conflicts": 0,
+          "unique_successful_snapshot_bytes": 2642887
+        },
+        "sparse": {
+          "calls": 255,
+          "unique_keys": 111,
+          "repeated_calls": 144,
+          "repeated_call_fraction": 0.5647058823529412,
+          "successful_calls": 246,
+          "repeated_successful_calls": 142,
+          "fallback_calls": 9,
+          "exact_input_output_conflicts": 0,
+          "unique_successful_snapshot_bytes": 658026
+        }
+      }
     }
   }
 }
