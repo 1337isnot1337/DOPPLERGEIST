@@ -56,7 +56,30 @@ and returned `needs_input / recording_time_required`. This is an observed
 discovery/abstention outcome, not a labelled aircraft-negative or location test.
 
 A corrected live 12-second capture decoded to exactly 12.0 s. The corrected
-five-minute capture and its complete automatic outcome will be added after the
-run finishes. Preserve every capture, processing failure and inconclusive result;
-do not select only clips that return a coordinate. Current-day historical flight
-archives may not yet exist, which is a separate data-availability limitation.
+five-minute capture started at 01:00:47 UTC and finished at 01:05:34 UTC on
+2026-11-03, with exactly 300.0 s decoded audio. Its SHA256 is
+`6853afb5dd7967209a5c5adc529c48a582e67112a63ef04d3989970a88d781e4`.
+The 286.90 s wall duration includes buffered HLS material, another reason not to
+assign capture-start UTC to audio sample zero.
+
+The globally approved discovery defaults were frozen at contrast 2.5 before this
+batch was analyzed. Product/main integration `e227c5db20427f6753a141f369da69a51ab9d4f2`
+processed the whole corrected clip and the preserved prototype separately. Both
+returned zero proposals and `needs_input / recording_time_required`, with no
+coordinate asserted. The corrected full automatic CLI job took 3.88 s and
+162.0 MiB peak RSS. Its file hash was unchanged after processing. No manual event,
+band, aircraft identity, map coordinate or guessed recorder clock entered either
+request. The script's earlier 12 s smoke also remains preserved.
+
+The Las Vegas sign camera's public metadata advertises no audio. Its attempted
+capture is recorded as `source_has_no_advertised_audio`, not a detector miss. A
+separate five-minute Statue of Liberty audio capture is in progress; its complete
+outcome will be appended without changing detector settings. Herald Square is
+owned by another coordinated capture worker.
+
+Machine-readable captures, exact automatic requests/results, discovery summaries,
+provenance and plots are in [the camera receipt directory](public-camera-20261103/).
+Source audio and decoder logs remain local. Preserve every capture, processing
+failure and inconclusive result; do not select only clips that return a coordinate.
+Current-day historical flight archives may not yet exist, which is a separate
+data-availability limitation.

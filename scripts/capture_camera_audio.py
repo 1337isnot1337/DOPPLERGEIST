@@ -20,6 +20,10 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
+class AudioNotAdvertised(ValueError):
+    pass
+
+
 def utc_now():
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -53,7 +57,7 @@ def earthcam_metadata(html, camera):
     value, _ = json.JSONDecoder().raw_decode(html[match.end():])
     selected = value["cam"][camera]
     if str(selected.get("hasaudio", "")).lower() != "true":
-        raise ValueError("Selected camera does not advertise audio")
+        raise AudioNotAdvertised("Selected camera does not advertise audio")
     stream = selected.get("stream")
     if not stream or urlsplit(stream).scheme not in {"http", "https"}:
         raise ValueError("Selected camera has no public HTTP stream")
@@ -199,6 +203,9 @@ def capture(page_url, camera, output, duration_s):
         if isinstance(exc, HTTPError):
             receipt["http_error_status"] = exc.code
         receipt["error"] = "Capture failed; inspect local source/decoder evidence."
+        if isinstance(exc, AudioNotAdvertised):
+            receipt["reason_code"] = "source_has_no_advertised_audio"
+            receipt["error"] = "Selected camera does not advertise audio."
     (output / "capture.json").write_text(json.dumps(receipt, indent=2, allow_nan=False) + "\n")
     return receipt
 
