@@ -30,6 +30,12 @@ processed stage or tile is repeated. Input, detector and checkpoint integrity
 are checked before reuse; incompatible search checkpoints fail explicitly.
 Stopping before discovery completes cannot resume from that stage.
 
+Saved searches from the November 3 `225bf6b` scorer have a compatible upgrade
+path to the faster staged scorer. Resume retains their completed scores and
+tile files, archives the previous search and identities, and processes only
+unfinished work. Input, event, runtime and model checks still reject unsupported
+transitions; the upgrade does not make an inconclusive result conclusive.
+
 The server binds to loopback. It runs one analysis process at a time, accepts up
 to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
