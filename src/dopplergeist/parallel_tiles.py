@@ -204,6 +204,20 @@ def score_tile(stage, cells, score_floor=None):
         raise
 
 
+def discard_pending_fine_ledgers(inflight):
+    """Remove successful worker ledgers that were not consumed after an abort."""
+    for _, _, future in inflight:
+        try:
+            _, path = future.result()
+        except BaseException:
+            continue
+        if path is not None:
+            try:
+                Path(path).unlink()
+            except OSError:
+                pass
+
+
 def score_fine_tile(stage, cells, spacing, exclusions, score_floor=None):
     """Score one fine-grid piece in a worker with its own retention ledger."""
     if _worker is None:

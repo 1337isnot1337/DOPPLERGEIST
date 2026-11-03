@@ -1,6 +1,6 @@
 """Worker initialization against operator-supplied real terrain, without a search."""
 
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Future, ProcessPoolExecutor
 from multiprocessing import get_context
 import json
 import os
@@ -11,13 +11,30 @@ import pytest
 from dopplergeist.data_access import FlightIndex
 from dopplergeist.finite_search import RetentionLedger
 from dopplergeist.matching import prepare_events
-from dopplergeist.parallel_tiles import initialize_tile_worker, score_fine_tile, score_tile
+from dopplergeist.parallel_tiles import (discard_pending_fine_ledgers, initialize_tile_worker,
+                                         score_fine_tile, score_tile)
 from dopplergeist.terrain import Terrain
 from dopplergeist.tiled_search import SearchBudget, _expanded_bounds, _score, _tracks_for_points, tile_points
 
 # Published ESID 762 site and a candidate from its saved real-audio search.
 _POINTS = ((30.386361, -98.860931), (30.38874803589124, -98.87993276822816))
 _barrier = None
+
+
+def test_aborted_fine_search_cleans_only_unconsumed_ledgers(tmp_path):
+    orphan = tmp_path / "unconsumed.sqlite"
+    orphan.touch()
+    failed_import = tmp_path / "failed-import.sqlite"
+    failed_import.touch()
+    completed = Future()
+    completed.set_result(({}, str(orphan)))
+    failed = Future()
+    failed.set_exception(ValueError("piece failed"))
+    empty = Future()
+    empty.set_result(({}, None))
+    discard_pending_fine_ledgers([((), "failed", failed), ((), "done", completed), ((), "empty", empty)])
+    assert not orphan.exists()
+    assert failed_import.exists()
 
 
 def _initialize(args, barrier):
