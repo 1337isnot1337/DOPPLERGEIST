@@ -1,0 +1,44 @@
+{
+  "source_commit": "a422148ab46ab4ae7453b1fa188601d8fb7c5f43",
+  "source_tree": "6a6b401cf0723811e740a892162fb1fbcf9a9394",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "214",
+    "time": "42.071",
+    "timestamp": "2026-11-02T20:11:34.009600-06:00",
+    "hostname": "Asus"
+  },
+  "pytest_summary": {
+    "passed": 208,
+    "subtests_passed": 6,
+    "elapsed_s": 42.08
+  },
+  "report_sha256": "0f59ed5782efe8d2c0405a577015f40631ac53bf509a32705637119e1832c712",
+  "script_sha256": "2298a1dad057a9dad19c5f5073937c5289f795449c42c534d0c62fec09b693c1",
+  "source_validation": [
+    {
+      "name": "conus-alltypes-faint-window.parquet",
+      "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154",
+      "matched": true
+    },
+    {
+      "name": "conus-alltypes.sqlite",
+      "sha256": "1e3365524bae3b98c668adbf05358d5ba1a0cba895521c7e2135055c0415962c",
+      "matched": true
+    },
+    {
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.aa",
+      "sha256": "c2d4a8ed715d4e39cb137991857a46af6b33c96bf425cdbc66cfcc979d16fdf4",
+      "matched": true
+    },
+    {
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.ab",
+      "sha256": "4e73ee4880daf3cc1976c85061213caeeeaf398714438434cea7b2fa6b555f07",
+      "matched": true
+    }
+  ],
+  "scope": "Targeted trajectory audit only; no acoustic localization or production changes."
+}

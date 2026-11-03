@@ -1,0 +1,331 @@
+{
+  "scope": "Four selected failed-tile aircraft; not defect prevalence or location-error calibration.",
+  "aircraft": [
+    {
+      "identity": "a6cc10",
+      "canonical_max_mps": 1011.274412973501,
+      "fresh_max_mps": 847.8794629504088,
+      "fresh_full_support_max_mps": 847.8794629504088,
+      "unsupported_interval_counts": {
+        "canonical": 3,
+        "fresh": 3,
+        "fresh_full_support": 3
+      },
+      "observations": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 25,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "barometric",
+            "rows": 25
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 25,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 25,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      },
+      "normalization_order": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 25,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "barometric",
+            "rows": 25
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      }
+    },
+    {
+      "identity": "ae8b78",
+      "canonical_max_mps": 416.8682369477243,
+      "fresh_max_mps": 244.9150306233796,
+      "fresh_full_support_max_mps": 244.9150306233796,
+      "unsupported_interval_counts": {
+        "canonical": 71,
+        "fresh": 0,
+        "fresh_full_support": 0
+      },
+      "observations": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 98,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "barometric",
+            "rows": 98
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 98,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 98,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      },
+      "normalization_order": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 98,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "barometric",
+            "rows": 98
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      }
+    },
+    {
+      "identity": "ae05a8",
+      "canonical_max_mps": 451.95353886260386,
+      "fresh_max_mps": 288.84976450766516,
+      "fresh_full_support_max_mps": 288.84976450766516,
+      "unsupported_interval_counts": {
+        "canonical": 96,
+        "fresh": 0,
+        "fresh_full_support": 0
+      },
+      "observations": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 97,
+        "max_ecef_observation_difference_m": 137.16000000116145,
+        "height_delta_fresh_minus_canonical_m": [
+          137.15999999999985,
+          137.15999999999985
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "ellipsoidal_interpolated",
+            "rows": 97
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 97,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 97,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      },
+      "normalization_order": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 97,
+        "max_ecef_observation_difference_m": 137.16000000116145,
+        "height_delta_fresh_minus_canonical_m": [
+          137.15999999999985,
+          137.15999999999985
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "barometric",
+            "fresh": "ellipsoidal_interpolated",
+            "rows": 97
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      }
+    },
+    {
+      "identity": "c01125",
+      "canonical_max_mps": 52043.50655945577,
+      "fresh_max_mps": 35699.290519959635,
+      "fresh_full_support_max_mps": 35699.290519959635,
+      "unsupported_interval_counts": {
+        "canonical": 15,
+        "fresh": 19,
+        "fresh_full_support": 19
+      },
+      "observations": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 109,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "ellipsoidal",
+            "fresh": "ellipsoidal",
+            "rows": 86
+          },
+          {
+            "canonical": "ellipsoidal_interpolated",
+            "fresh": "ellipsoidal_interpolated",
+            "rows": 23
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 51,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 33,
+            "canonical_nonzero_fresh_missing": 18,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      },
+      "normalization_order": {
+        "canonical_only_times": 0,
+        "fresh_only_times": 0,
+        "paired_times": 109,
+        "max_ecef_observation_difference_m": 0.0,
+        "height_delta_fresh_minus_canonical_m": [
+          0.0,
+          0.0
+        ],
+        "altitude_basis_pairs": [
+          {
+            "canonical": "ellipsoidal",
+            "fresh": "ellipsoidal",
+            "rows": 86
+          },
+          {
+            "canonical": "ellipsoidal_interpolated",
+            "fresh": "ellipsoidal_interpolated",
+            "rows": 23
+          }
+        ],
+        "velocity_components": {
+          "east_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "north_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          },
+          "up_mps": {
+            "canonical_zero_fresh_missing": 0,
+            "canonical_nonzero_fresh_missing": 0,
+            "both_finite_differing": 0
+          }
+        }
+      }
+    }
+  ]
+}
