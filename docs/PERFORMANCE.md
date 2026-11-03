@@ -1,5 +1,27 @@
 # Measured pipeline performance
 
+## Prepared flight inputs and exact search reuse
+
+[PR262](https://github.com/1337isnot1337/DOPPLERGEIST/pull/262) adds an optional
+prepared trajectory representation, vectorized conservative trial bounds, and
+exact native acoustic reuse. Against `994d1ee`, which already includes PR258,
+the measured dense query, sieve, scoring, and retention workload falls from
+**33.986 to 26.794 seconds: 1.268×, or 21.16% less elapsed time**.
+Final-runtime CI at `b98a0fa3` repeats the gain at **38.374 to 30.399 seconds,
+or 1.262× / 20.78% less time**, and passes 168 recorded-input and fallback checks.
+All compared scientific outputs and logical retention records remain equal.
+
+The final implementation also reuses local terrain pixels and profile coordinate
+transforms, and arranges spectral median inputs contiguously. A completed
+intermediate HTTP series improves 9.56%. The final source has two complete exact
+HTTP pairs, both faster, followed by an interrupted third pair. The report keeps
+that incomplete series separate and makes no three-pair final HTTP claim.
+
+The [prepared-search guide](PERFORMANCE_PREPARED_SEARCH.md) gives the complete
+samples, preparation cost, storage tradeoff, HTTP measurements, operator steps,
+and reproduction commands. Its pinned baseline separates these gains from the
+earlier changes documented below. Component speedups are not multiplied.
+
 ## Indexed flight queries and repeated evidence checks
 
 [PR258](https://github.com/1337isnot1337/DOPPLERGEIST/pull/258) reduces repeated work in indexed flight loading and ridge-evidence validation.
