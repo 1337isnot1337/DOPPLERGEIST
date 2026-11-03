@@ -1142,10 +1142,11 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             refinement_points_skipped += payload["skipped"]
                             if worker_path is None:
                                 continue
+                            import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
                             try:
-                                import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
-                            finally:
-                                Path(worker_path).unlink(missing_ok=True)
+                                Path(worker_path).unlink()
+                            except OSError:
+                                pass
                             _record_support(output, stage, payload["counts"], support)
                             fine_stages += 1
                             refinement_points_searched += payload["grid_points"]
