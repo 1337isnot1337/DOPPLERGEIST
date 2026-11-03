@@ -6,6 +6,7 @@ aircraft identity. No straight-pass speed/slant fit is required for acceptance.
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
+from statistics import median
 
 import numpy as np
 from scipy import ndimage, optimize, signal
@@ -92,8 +93,14 @@ def _paths(spec, settings):
             speed = delta / dt[:, None]
             slopes = []
             for path in active:
-                tail = np.asarray(path[-8:])
-                slopes.append(float(np.median(np.diff(tail[:, 1]) / np.diff(tail[:, 0]))) if len(tail) >= 3 else 0.0)
+                tail = path[-8:]
+                if len(tail) >= 3:
+                    slopes.append(float(median(
+                        (right[1] - left[1]) / (right[0] - left[0])
+                        for left, right in zip(tail, tail[1:])
+                    )))
+                else:
+                    slopes.append(0.0)
             allowed = (speed >= -np.maximum(8, last[:, 1, None] * 0.08)) & (speed <= np.maximum(1.0, last[:, 1, None] * 0.008))
             predicted_delta = np.asarray(slopes)[:, None] * dt[:, None]
             costs = np.abs(delta - predicted_delta) / np.maximum(1.0, last[:, 1, None] * 0.01)
@@ -247,13 +254,14 @@ def _stitch_fragments(paths, settings, diagnostics=None):
     return result
 
 
-def discover_events(recording, *, output_dir=None, settings=None):
+def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False):
     """Return shared DetectedEvent dictionaries from a disk-backed recording.
 
     Fixed defaults scan 40–1600 Hz in overlapping chunks; no event hints, flight
     data or truth paths are accepted. Each measured ridge gets a record; a
     shared harmonic_group_id makes those records one independent proposal.
     Optional diagnostics retain all measured harmonic ridges and chunk counts.
+    Per-event spectrograms are expensive and are rendered only when requested.
     """
     settings = settings or DiscoverySettings()
     sr = recording.metadata["sample_rate_hz"]
@@ -315,12 +323,14 @@ def discover_events(recording, *, output_dir=None, settings=None):
                        "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
                        "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"}
         (output / "discovery.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
-        _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
+        if plot_summary:
+            _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
         for event, group in zip(events, event_groups):
             points = np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]])
             np.savetxt(output / f"{event['event_id']}.csv", points, delimiter=",",
                        header="time_s,frequency_hz,weight", comments="")
-            _plot_event(recording, group, event, settings, output / f"{event['event_id']}.png")
+            if plot_event_details:
+                _plot_event(recording, group, event, settings, output / f"{event['event_id']}.png")
     return events
 
 

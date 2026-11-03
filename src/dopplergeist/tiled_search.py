@@ -12,7 +12,6 @@ import json
 import math
 import platform
 from pathlib import Path
-import resource
 import time
 
 import numpy as np
@@ -21,6 +20,7 @@ from pyproj import Transformer
 
 from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
+from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
@@ -966,7 +966,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "event_groups_proposed": len(events), "association_event_limit": event_limit,
               "all_event_groups_considered": not event_limit_applied,
               "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
-              "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
+              "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": process_peak_rss_kib() / 1024,
               "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
     write_json(output / "search-report.json", report)

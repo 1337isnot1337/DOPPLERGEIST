@@ -34,3 +34,6 @@ orchestration scripts in this repository were written independently. The local
 reference notes from the MIT-licensed
 [Hermes implementation](https://github.com/mojomast/hermes-aircraft-doppler-geolocation)
 are included as source investigation, not represented as our implementation.
+For a source-pinned comparison with the independent MIT-licensed
+[Dopplerprint](https://github.com/Hexay/dopplerprint) project, including its
+benchmark and search limitations, see [the November 3 review](DOPPLERPRINT_REVIEW_2026-11-03.md).
