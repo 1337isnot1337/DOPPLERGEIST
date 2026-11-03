@@ -115,8 +115,14 @@ def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, m
     if terrain_kind == "cached":
         terrain = CachedTerrain(terrain_root, **terrain_options)
     elif terrain_kind == "explicit":
+        from atexit import register
         from .terrain import Terrain
         terrain = Terrain(**terrain_options)
+        rasters = list(terrain.rasters)
+        if terrain.geoid:
+            rasters.extend(terrain.geoid.rasters)
+        for raster in rasters:
+            register(raster.close)
     else:
         raise ValueError("Unsupported tile worker terrain")
     _worker = {
