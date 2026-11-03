@@ -18,6 +18,11 @@ from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
+try:
+    from ._native_association import enumerate_point as _native_association
+except ImportError:
+    _native_association = None
+
 
 @dataclass
 class RidgeTimes:
@@ -224,6 +229,8 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     reserve(len(table))
     table = table.reset_index(drop=True)
     records = table.to_dict("records")
+    native = _native_association if not silence else None
+    identities = [(row["flight_id"], row["emission_time"]) for row in records] if native else None
     grouped, survivors = [], []
     for event_index, event in enumerate(events):
         frame = filter_association_event(table, event, offset_tolerance_s, time_origin, time_tolerance_s)
@@ -279,6 +286,20 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
         if len(available) < min_events:
             continue
         lower, upper = (-np.inf, np.inf) if time_origin is None else (time_origin-time_tolerance_s, time_origin+time_tolerance_s)
+        if native is not None:
+            intervals = [(i, *grouped[i][point_id],
+                          [records[row]["receive_time"]-events[i]["cpa_receive_s"]
+                           for row in grouped[i][point_id][2]]) for i in available]
+            try:
+                result = native(records, identities, intervals, point_id, candidates,
+                                lower, upper, None if anchor_window is None else tuple(anchor_window),
+                                min_events, max_events, max_candidates, work)
+            except OverflowError:
+                result = None
+            if result is not None:
+                added, work = result
+                examined += added
+                continue
         path, used = [], set()
         option_lo, option_hi = anchor_window if anchor_window is not None else (lower, upper)
         frames = [(0, row_options(indexed_options(available[0], point_id, option_lo, option_hi)), lower, upper, 0)]

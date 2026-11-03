@@ -23,7 +23,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fixture", type=Path)
     parser.add_argument("output", type=Path, help="New JSON output file")
-    parser.add_argument("--baseline-ref", required=True)
+    baseline_input = parser.add_mutually_exclusive_group(required=True)
+    baseline_input.add_argument("--baseline-ref")
+    baseline_input.add_argument("--baseline-source", type=Path,
+                                help="Saved matching.py for replay on a remote host without Git history")
     parser.add_argument("--repetitions", type=int, default=5)
     args = parser.parse_args()
     if args.output.exists():
@@ -31,9 +34,10 @@ def main():
     if args.repetitions < 1:
         parser.error("--repetitions must be positive")
     root = Path(__file__).resolve().parents[1]
-    source = subprocess.check_output(
-        ["git", "show", f"{args.baseline_ref}:src/dopplergeist/matching.py"],
-        cwd=root, text=True)
+    source = (args.baseline_source.read_text() if args.baseline_source else
+              subprocess.check_output(
+                  ["git", "show", f"{args.baseline_ref}:src/dopplergeist/matching.py"],
+                  cwd=root, text=True))
     baseline = ModuleType("dopplergeist._association_reference")
     baseline.__package__ = "dopplergeist"
     sys.modules[baseline.__name__] = baseline
@@ -102,7 +106,8 @@ def main():
             print(json.dumps(run), flush=True)
     medians = {name: statistics.median(r["cpu_s"] for r in runs if r["implementation"] == name)
                for name in functions}
-    report = {"fixture": str(args.fixture), "baseline_ref": args.baseline_ref,
+    report = {"fixture": str(args.fixture),
+              "baseline": str(args.baseline_source) if args.baseline_source else args.baseline_ref,
               "events": len(events), "cpa_rows": len(table), "candidates": len(reference),
               "exact_candidate_order_and_work_accounting": True, "checks": checks, "runs": runs,
               "median_cpu_s": medians, "cpu_speedup": medians["baseline"]/medians["optimized"]}
