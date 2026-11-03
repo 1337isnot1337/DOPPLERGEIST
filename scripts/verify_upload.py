@@ -108,13 +108,15 @@ def verify(url, audio, request_path, output, timeout_s, truth_path=None):
             truth = json.loads(truth_path.read_text())
             receipt["reference_sha256"] = digest(truth_path)
             receipt["reference_provenance"] = truth.get("provenance")
-            if result["status"] == "succeeded":
+            if result.get("candidates"):
                 location = result["candidates"][0]
                 distance = Geod(ellps="WGS84").inv(
                     truth["lon"], truth["lat"], location["lon"], location["lat"])[2]
                 receipt["location_error_m"] = distance
+                receipt["evaluation_target"] = ("accepted_location" if result["status"] == "succeeded"
+                                                 else "leading_unaccepted_hypothesis")
                 coverage = result.get("coverage", {})
-                receipt["case_passed"] = (distance <= 100
+                receipt["case_passed"] = (result["status"] == "succeeded" and distance <= 100
                                            and coverage.get("search_complete") is True
                                            and coverage.get("data_status") == "available"
                                            and bool(result.get("events")))

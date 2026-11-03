@@ -1,0 +1,21 @@
+{
+  "status": "complete",
+  "tiles_total": 4940,
+  "tiles_completed": 4940,
+  "tiles_resumed": 0,
+  "unsearched_tiles": 0,
+  "tile_failures": [],
+  "grid_points_searched": 26624,
+  "data_scope_complete": true,
+  "refinement_failure": null,
+  "elapsed_s": 1064.0499637180183,
+  "process_peak_rss_mib": 365.96875,
+  "scope": [
+    -125.0,
+    24.0,
+    -66.0,
+    50.0
+  ],
+  "scoring_time_is_locked": true,
+  "ground_truth_used_by_search": false
+}

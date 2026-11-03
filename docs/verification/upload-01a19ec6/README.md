@@ -2,8 +2,35 @@
 
 This checkpoint does **not** establish automatic 100 m real-audio localization.
 The cloned research pipeline and actual browser upload/error handling have been
-exercised. Full automatic indexed search and uncertainty evidence remain under
-integration. Every inconclusive/failed result remains visible.
+exercised. A complete automatic synthetic CONUS run now also reaches the real
+decision stage, but remains inconclusive. Every failed/inconclusive result is
+preserved, and independent real-audio acceptance remains open.
+
+## Complete automatic synthetic run
+
+At frozen integration `0633b9b32f3d3c82c401868e4f12bde0261600a5`, the actual
+HTTP upload consumed the complete 1180 s independently rendered recording,
+encoded as MP3. Request inputs were audio, its declared exact generator clock
+and CONUS coverage. No event windows/bands, observer bounds or selected flight
+IDs were supplied. The source index contained all seven simulated trajectories;
+the constant terrain model and complete finite-world data scope are synthetic.
+Flight IDs in this first index retain the renderer's descriptive labels; no
+code conditions on their meaning, but this is not an opaque-ID holdout.
+
+The job detected two events, completed all **4,940/4,940** coarse tiles without
+failure, and ran fine scoring, physical refinement and the real confidence
+producer. The leading coordinate is **5.5531 m** from synthetic truth. The
+terminal result is **inconclusive / ambiguous_locations**, so `case_passed` is
+false. The verifier first read the separate reference file after terminal job
+completion and artifact downloads. This first run did not hide the host truth
+directory with an OS namespace; the pending namespace check is stronger.
+
+Search runtime was 1064.05 s, with 365.97 MiB process peak RSS. The complete
+HTTP roundtrip, including every artifact download/hash, took 1128.60 s.
+Adjacent `full-synthetic-*` receipts preserve the result, decision, search
+summary and all artifact hashes. The frozen integration also passed **98 tests**
+in 107.82 s. Newer geometry and sensitivity producer fixes are intentionally
+separate from this run; it does not establish their behavior.
 
 ## Research replay
 
@@ -94,13 +121,14 @@ file is first opened after the job completes and artifacts are downloaded.
 `case_passed` additionally requires an actual `succeeded` result, detected
 events, complete/available declared coverage and error <=100 m. Without that
 evidence it exits nonzero, including for valid required-input/inconclusive
-responses. Reference independence and coverage still require review; a passing
+responses. Leading unaccepted hypotheses can have a separately labelled error
+for diagnosis, without passing the case. Reference independence and coverage still require review; a passing
 case cannot by itself establish a nationwide real holdout benchmark.
 
 ## Remaining acceptance work
 
-- Run the actual uploaded MP3 through indexed flight search, physical refinement
-  and the confidence producer as their committed dependencies arrive.
+- Verify newer geometry/sensitivity producers with opaque flight IDs and a
+  search environment where the evaluation truth directory is unavailable.
 - Preserve all misses, alternatives, partial coverage and uncertainty failures.
 - Supply independent real recording-start and microphone-coordinate evidence.
 - Complete the declared national real-audio evaluation before claiming the full
