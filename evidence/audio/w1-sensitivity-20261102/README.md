@@ -50,3 +50,12 @@ parent results/ did not exist. The original failure is retained. After mkdir -p
 results, the same focused check with a new output path passes1 test in4.83s
 (isolated-render-check.log). This was a runner setup correction, with no intake
 or detection failure. Discovery settings remain frozen for the new webcam batch.
+
+All-event requirement regression: generated four- and six-episode audio-only
+controls retain every independent group and count each pair of harmonics once.
+Both cases pass in10.20s (all-event-retention-tests.log). Later passes are checked,
+not merely the first2or3. These are deterministic frequency-curve unit controls,
+not independent ADS-B/recording-location fixtures; they do not claim emission-time
+geolocation accuracy or actual four-event upload acceptance. Discovery already
+had no global event-count cap, so no scientific setting or pipeline contract was
+changed. Full physical/upload acceptance remains owned by the integration lane.
