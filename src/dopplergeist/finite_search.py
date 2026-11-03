@@ -5,6 +5,7 @@ import math
 from contextlib import contextmanager
 from pathlib import Path
 import sqlite3
+from threading import local
 
 from .data_access import DataUnavailable, content_hash
 
@@ -120,6 +121,7 @@ class RetentionLedger:
     """
     def __init__(self, path, run_hash, score_kind):
         self.path, self.run_hash, self.score_kind = Path(path), run_hash, score_kind
+        self._batch_state = local()
         self.path.parent.mkdir(parents=True, exist_ok=True)
         try:
             with self.connect() as db:
@@ -145,11 +147,50 @@ class RetentionLedger:
         except sqlite3.DatabaseError as error:
             raise DataUnavailable("Cannot read finite retention ledger") from error
 
+    def _open_connection(self):
+        db = sqlite3.connect(self.path)
+        try:
+            db.execute("PRAGMA cache_size=-8192")
+            db.execute("PRAGMA temp_store=FILE")
+        except BaseException:
+            db.close()
+            raise
+        return db
+
+    @contextmanager
+    def batch(self):
+        """Commit a caller-bounded group of stages in one transaction.
+
+        Nested ``connect()`` calls on this thread share the connection. Other
+        threads and ledger instances see only committed stages. Checkpoints
+        written before a rollback therefore fail the ordinary resume check.
+        Nested batches are rejected; callers must bound their work per batch.
+        """
+        if getattr(self._batch_state, "active", None) is not None:
+            raise RuntimeError("Nested retention batches are not supported")
+        db = self._open_connection()
+        active = {"db": db, "failed": False}
+        self._batch_state.active = active
+        try:
+            with db:
+                yield self
+                if active["failed"]:
+                    raise DataUnavailable("Retention batch failed; its stages were not committed")
+        finally:
+            del self._batch_state.active
+            db.close()
+
     @contextmanager
     def connect(self):
-        db = sqlite3.connect(self.path)
-        db.execute("PRAGMA cache_size=-8192")
-        db.execute("PRAGMA temp_store=FILE")
+        active = getattr(self._batch_state, "active", None)
+        if active is not None:
+            try:
+                yield active["db"]
+            except BaseException:
+                active["failed"] = True
+                raise
+            return
+        db = self._open_connection()
         try:
             with db:
                 yield db

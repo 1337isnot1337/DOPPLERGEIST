@@ -1,8 +1,15 @@
 """Terrain sampling and common projected grids."""
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 from pyproj import Transformer
+
+
+@lru_cache(maxsize=32)
+def _raster_transformer(crs):
+    """Reuse a raster's unchanged coordinate operation across refinement calls."""
+    return Transformer.from_crs("EPSG:4326", crs, always_xy=True)
 
 
 class Terrain:
@@ -20,7 +27,7 @@ class Terrain:
         lat, lon = np.broadcast_arrays(lat, lon)
         elevation = np.full(lat.shape, np.nan)
         for raster in self.rasters:
-            transform = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True)
+            transform = _raster_transformer(raster.crs)
             x, y = transform.transform(lon.ravel(), lat.ravel())
             col,row=(~raster.transform) @ (np.asarray(x),np.asarray(y))
             col,row=np.floor(col).astype(int),np.floor(row).astype(int)

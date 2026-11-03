@@ -7,6 +7,7 @@ partition association anchors without narrowing the physical fit intervals.
 from dataclasses import asdict, dataclass
 from functools import lru_cache
 from importlib.metadata import version
+import hashlib
 import itertools
 import json
 import math
@@ -200,12 +201,29 @@ def _expanded_bounds(cells, spacing, radius, crs):
     return _to_geographic(crs).transform_bounds(*box, densify_pts=101)
 
 
+def _track_geometry_digest(track):
+    """Compare complete geometry without converting every float to JSON text.
+
+    Track geometry uses binary64 arrays. Canonical byte order and explicit shapes
+    preserve exact identities (including signed zero) across array layouts. This
+    digest is private to duplicate detection; persisted evidence hashes retain
+    their existing representation.
+    """
+    arrays = [np.asarray(values, dtype="<f8")
+              for values in (track.time, track.xyz, track.spline.c)]
+    if not all(np.all(np.isfinite(values)) for values in arrays):
+        # The previous allow_nan=False JSON signature also rejected this case.
+        raise ValueError("Nonfinite flight geometry cannot establish an identity")
+    digest = hashlib.sha256(json.dumps([track.id, [a.shape for a in arrays]],
+                                      allow_nan=False).encode())
+    for values in arrays:
+        digest.update(values.tobytes(order="C"))
+    return digest.hexdigest()
+
+
 def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None, c=343.0):
     tracks, identities, samples = [], {}, 0
     queried, queried_samples = 0, 0
-
-    def signature(track):
-        return content_hash([track.id, track.time.tolist(), track.xyz.tolist(), track.spline.c.tolist()])
 
     for index in indexes:
         for track in index.query(bounds, time_range):
@@ -221,8 +239,8 @@ def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None,
             # silently dropping different geometry would change the physics.
             if track.id in identities:
                 previous = identities[track.id]
-                previous_signature = previous if isinstance(previous, str) else signature(previous)
-                if signature(track) != previous_signature:
+                previous_signature = previous if isinstance(previous, str) else _track_geometry_digest(previous)
+                if _track_geometry_digest(track) != previous_signature:
                     raise DataUnavailable(f"Conflicting flight segment identity: {track.id}")
                 continue
             if observers is not None:
@@ -233,7 +251,7 @@ def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None,
                     # their missing support, even when they appear distant.
                     distant = False
                 if distant:
-                    identities[track.id] = signature(track)
+                    identities[track.id] = _track_geometry_digest(track)
                     continue
             identities[track.id] = track
             tracks.append(track)
@@ -602,7 +620,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         event_limit = len(events)
     event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
     import os
-    from contextlib import nullcontext
+    from contextlib import ExitStack, nullcontext
     from .data_access import CachedTerrain, _index_pool
     from .parallel_retention import import_retention_stage
     from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
@@ -770,7 +788,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         if coarse_cells:
             report_search_progress(0.8 * processed_cells / coarse_cells)
 
-    with context as pool:
+    with context as pool, ExitStack() as empty_batches:
+        empty_batch_tiles = 0
+
+        def flush_empty_tiles():
+            nonlocal empty_batch_tiles
+            try:
+                empty_batches.close()
+            finally:
+                empty_batch_tiles = 0
+
         roots = grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)
         wave = itertools.islice(roots, budget.max_tiles) if budget.max_tiles is not None else roots
         while wave is not None:
@@ -782,6 +809,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 tile_id = stage[len("coarse:"):]
                 checkpoint = output / f"tile-{tile_id}.json"
                 terminal = True
+                if prepared is not None:
+                    flush_empty_tiles()
                 try:
                     if isinstance(prepared, BaseException):
                         raise prepared
@@ -803,6 +832,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         if not tracks:
                             points = pd.DataFrame()
                         if len(points):
+                            flush_empty_tiles()
                             anchor = _tile_anchor_window(tile_id, start_window, parameters, filters, events)
                             rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                   ledger=ledger, stage=stage,
@@ -811,6 +841,13 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                                                if floor_policy == "global_and_per_tile" else None))
                         else:
                             rows, counts = [], {}
+                            # Keep all coarse/global stage records, but amortize
+                            # durable commits across at most 32 empty tiles.
+                            # A crash can leave uncommitted checkpoint files;
+                            # tile_request rejects those through stage_valid.
+                            if empty_batch_tiles == 0:
+                                empty_batches.enter_context(ledger.batch())
+                            empty_batch_tiles += 1
                             ledger.record(stage, [], [], 0)
                         used = getattr(terrain, "last_sample_files", set()) if sampled else set()
                         terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
@@ -845,9 +882,12 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         next_wave.extend((child_id, tuple(child_cells)) for child_id, child_cells in children)
                     else:
                         failures.append({"tile": tile_id, "reason": str(error)})
+                if empty_batch_tiles >= 32:
+                    flush_empty_tiles()
                 if terminal and (pool is None or was_cached or isinstance(prepared, BaseException)):
                     advance_progress(stage, cells)
             wave = sorted(next_wave, key=tile_order) if next_wave else None
+        flush_empty_tiles()
         report_search_progress(0.8, force=True)
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.

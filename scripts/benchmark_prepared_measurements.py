@@ -180,6 +180,12 @@ def worker(args):
         elapsed, cpu_seconds = time.perf_counter() - began, time.process_time() - cpu
         matching._fit_ridge_uncached, Track.acoustic = original_fit, original_acoustic
         tiled_search.score_candidate = original_score
+    expected_counts = fixture.get("expected_counts")
+    if expected_counts is not None:
+        actual_counts = {"cpa_rows": counts["cpa_rows"],
+                         "associations": counts["candidates"], "retained": len(ranked)}
+        if actual_counts != expected_counts:
+            raise AssertionError(f"Recorded workload counts changed: {actual_counts}")
     # macOS reports bytes and Linux reports KiB. Keep scoring usable where
     # resource or its unit convention is unavailable, without guessing a value.
     peak_rss_mib = None
