@@ -131,6 +131,36 @@ def cache_lock(path):
         yield
 
 
+def cached_sha256(path):
+    """Reuse a digest receipt for an immutable cache file while its stat identity holds."""
+    path = Path(path)
+    receipt = path.with_name(path.name + ".sha256.json")
+    lock = receipt.with_name(receipt.name + ".lock")
+    with cache_lock(lock):
+        info = path.stat()
+        identity = [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+        try:
+            saved = json.loads(receipt.read_text())
+            digest = saved.get("sha256")
+            if (saved.get("version") == 1 and saved.get("identity") == identity and
+                    isinstance(digest, str) and len(digest) == 64 and
+                    all(char in "0123456789abcdef" for char in digest)):
+                current = path.stat()
+                current_identity = [current.st_dev, current.st_ino, current.st_size,
+                                    current.st_mtime_ns, current.st_ctime_ns]
+                if identity == current_identity:
+                    return digest
+                identity = current_identity
+        except (OSError, UnicodeError, AttributeError, json.JSONDecodeError):
+            pass
+        digest = sha256(path)
+        after = path.stat()
+        if identity != [after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns]:
+            raise OSError(f"File changed while hashing: {path}")
+        write_json(receipt, {"version": 1, "identity": identity, "sha256": digest})
+        return digest
+
+
 def download(url, path, *, size=None, digest=None, offline=False, session=None):
     """Resume only verified byte ranges; atomically publish validated files.
 
