@@ -152,6 +152,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     subset_scores = best["score_kind"] == "matched_group_support_minus_normalized_residual"
     if best["score_kind"] != "negative_robust_ridge_loss_hz" and not subset_scores:
         return result("unsupported_score_kind", "This ranking score has no declared ambiguity threshold in the decision policy.")
+    # Alternatives must fit inside the envelope around the returned point.
+    # Two overlapping target-radius circles do not establish that containment.
+    ambiguity_radius_m = min(policy.target_radius_m,
+                             best.get("uncertainty", {}).get("radius_m", policy.target_radius_m))
     for alternative in candidates[1:]:
         # Raw losses require equal event sets; subset support has declared units.
         if not subset_scores and set(alternative["event_ids"]) != set(best["event_ids"]):
@@ -162,10 +166,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         gap = (best["score"] - alternative["score"]) / max(len(groups), len(alternative_groups))
         threshold = policy.near_tie_support_per_group if subset_scores else policy.near_tie_loss_per_event_hz
         units = "support_units_per_group" if subset_scores else "loss_hz_per_group"
-        if (separation > 2 * policy.target_radius_m or not same_flights) and gap <= threshold:
+        if (separation > ambiguity_radius_m or not same_flights) and gap <= threshold:
             diagnostics["competing_hypothesis"] = {"separation_m": separation, "score_gap": gap, "gap_units": units,
-                                                   "same_flight_association": same_flights}
-            return result("ambiguous_locations" if separation > 2 * policy.target_radius_m else "ambiguous_flight_match",
+                                                   "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
+            return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
                           "Competing hypotheses fit nearly as well; no unique precise location is supported.")
     if evidence.get("alternatives_evaluated") is not True:
         return result("alternatives_not_assessed", "The retained competing hypotheses have not all been assessed.")

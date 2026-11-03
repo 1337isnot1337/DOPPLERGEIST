@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import pytest
+from pyproj import Geod
 
 from aircraft_geoloc.confidence import DecisionPolicy, decide_location
 from aircraft_geoloc.contracts import validate_result
@@ -81,6 +82,23 @@ def test_distant_tie_and_same_location_different_flights():
     assert result["reason_code"] == "ambiguous_locations"
     alternative.update(lat=40., flight_ids=["x", "y"])
     assert decide((events, candidates + [alternative], coverage, diag))["reason_code"] == "ambiguous_flight_match"
+
+
+@pytest.mark.parametrize("separation_m,score,status", [
+    (60., -1.2, "succeeded"),
+    (90., -1.2, "inconclusive"),
+    (150., -1.2, "inconclusive"),
+    (90., -5., "succeeded"),
+])
+def test_near_tied_locations_fit_the_returned_envelope(separation_m, score, status):
+    events, candidates, coverage, diag = evidence()
+    best = candidates[0]  # The returned radius is 70 m around this point.
+    lon, lat, _ = Geod(ellps="WGS84").fwd(best["lon"], best["lat"], 90., separation_m)
+    alternative = dict(best, lon=lon, lat=lat, score=score)
+    result = decide((events, candidates + [alternative], coverage, diag))
+    assert result["status"] == status
+    if status == "inconclusive":
+        assert result["reason_code"] == "ambiguous_locations"
 
 
 def test_malformed_results_fail_instead_of_masquerading_as_insufficient_evidence():
