@@ -145,16 +145,21 @@ def worker(spec_path, output):
         return wrapped
 
     original_fit, original_acoustic = matching._fit_ridge_uncached, Track.acoustic
-    original_validation = getattr(batch_ridge, "_fit_ridge_uncached", None)
+    validation_hook = next((name for name in ("_scalar_reference_fit", "_fit_ridge_uncached")
+                            if hasattr(batch_ridge, name)), None)
+    original_validation = getattr(batch_ridge, validation_hook) if validation_hook else None
     operations["scalar_validation_hook_present"] = original_validation is not None
+    operations["scalar_validation_hook"] = validation_hook
+    scalar_aliases = [name for name, value in vars(batch_ridge).items() if value is original_fit]
     original_batch = batch_ridge.first_event_fits
     def fit(*args, **kwargs):
         operations["scalar_source_fit_calls"] += 1
         return original_fit(*args, **kwargs)
 
     def validation(*args, **kwargs):
-        operations["scalar_source_fit_calls"] += 1
         operations["scalar_batch_validation_calls"] += 1
+        if original_validation is original_fit:
+            return fit(*args, **kwargs)
         return original_validation(*args, **kwargs)
 
     def batch_fit(*args, **kwargs):
@@ -173,8 +178,10 @@ def worker(spec_path, output):
     profiler = cProfile.Profile() if spec["profile"] else None
     with ExitStack() as stack:
         stack.enter_context(patch.object(matching, "_fit_ridge_uncached", fit))
+        for name in scalar_aliases:
+            stack.enter_context(patch.object(batch_ridge, name, fit))
         if original_validation is not None:
-            stack.enter_context(patch.object(batch_ridge, "_fit_ridge_uncached", validation))
+            stack.enter_context(patch.object(batch_ridge, validation_hook, validation))
         stack.enter_context(patch.object(batch_ridge, "first_event_fits", batch_fit))
         stack.enter_context(patch.object(Track, "acoustic", acoustic))
         for owner, name in ((tiled_search, "cpa_table"), (matching, "association_candidates"),

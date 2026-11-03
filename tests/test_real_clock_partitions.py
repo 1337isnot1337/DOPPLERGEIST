@@ -111,6 +111,10 @@ def test_real_clock_partition_restart_and_scores(tmp_path, monkeypatch):
             pytest.fail("sparse search should not use the acoustic batch cache")
         patch.setattr(_RidgeFitCache, "acoustic_batch", unexpected_cache)
         baseline = run("baseline")
+    if Path('/proc/self/status').exists():
+        with open('/proc/self/status') as status:
+            actual_peak = int(next(line for line in status if line.startswith('VmHWM:')).split()[1]) / 1024
+        assert abs(baseline['process_peak_rss_mib'] - actual_peak) <= 2
     original = tiled._score
     def force_split(*args, **kwargs):
         if kwargs.get("anchor_window") is None:

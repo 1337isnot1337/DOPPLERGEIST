@@ -1,7 +1,8 @@
 """Batched versions of the existing robust ridge fits."""
 import numpy as np
 
-from .matching import _fit_ridge_uncached, _frequency_scale, _ridge_fit_inputs
+from .matching import (_frequency_scale, _ridge_fit_inputs,
+                       fit_ridge as _scalar_reference_fit)
 
 
 def first_event_fits(measurement, event, factors, emissions):
@@ -92,10 +93,12 @@ def first_event_fits(measurement, event, factors, emissions):
             for i in range(len(alpha))]
     # Check representative clocks with the existing fitter. This catches a
     # platform or arithmetic discrepancy and sends the whole batch down the
-    # established path instead of using inconsistent fit diagnostics.
+    # established path instead of using inconsistent fit diagnostics. Identical
+    # scalar reference inputs can reuse this scoring context's bounded cache;
+    # every representative comparison still runs.
     for i in {0, len(results)//2, len(results)-1}:
-        scalar = _fit_ridge_uncached(None, None, measurement, 0., event["f0_range_hz"],
-                                     343., sigma, fraction, acoustic_result=(factors[i], emissions[i]))
+        scalar = _scalar_reference_fit(None, None, measurement, 0., event["f0_range_hz"],
+                                       343., sigma, fraction, acoustic_result=(factors[i], emissions[i]))
         if results[i] != scalar:
             return None
     return results

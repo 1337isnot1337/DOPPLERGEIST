@@ -101,3 +101,79 @@ def test_real_batch_numeric_overflow_preserves_scalar_fallback(recorded_case):
     _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
     extreme = dict(event, quality=dict(event.get("quality", {}), frequency_loss_scale_hz=1e155))
     assert first_event_fits(measurement, extreme, factors, emissions) is None
+
+
+def test_real_batch_reference_checks_keep_running_with_cached_scalar_work(recorded_case, monkeypatch):
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    expected = first_event_fits(measurement, event, factors, emissions)
+    assert expected is not None
+    scalar_calls, reference_checks = [], []
+    original_reference = batch_ridge._scalar_reference_fit
+
+    def counted_scalar(*args, **kwargs):
+        scalar_calls.append(1)
+        return _fit_ridge_uncached(*args, **kwargs)
+
+    def counted_reference(*args, **kwargs):
+        reference_checks.append(1)
+        return original_reference(*args, **kwargs)
+
+    monkeypatch.setattr(matching, "_fit_ridge_uncached", counted_scalar)
+    monkeypatch.setattr(batch_ridge, "_scalar_reference_fit", counted_reference)
+
+    @matching._cache_ridge_fits
+    def repeated_batch():
+        before = len(scalar_calls)
+        assert first_event_fits(measurement, event, factors, emissions) == expected
+        assert len(scalar_calls) == before + 3
+        assert first_event_fits(measurement, event, factors.copy(), emissions.copy()) == expected
+        assert len(scalar_calls) == before + 3
+
+    repeated_batch()
+    assert len(reference_checks) == 6
+    assert matching._ridge_fit_cache.get() is None
+    # A later scoring context must compute its own scalar reference values.
+    repeated_batch()
+    assert len(reference_checks) == 12 and len(scalar_calls) == 6
+    assert matching._ridge_fit_cache.get() is None
+
+
+def test_real_cached_scalar_reference_tracks_mutation_and_capacity(recorded_case, monkeypatch):
+    from dopplergeist import batch_ridge, matching
+
+    _, _, _, _, _, event, measurement, (factors, emissions) = recorded_case
+    arguments = (None, None, measurement, 0., event["f0_range_hz"], 343.,
+                 _frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02))
+    expected = [_fit_ridge_uncached(*arguments, acoustic_result=(factors[i], emissions[i]))
+                for i in (0, 1)]
+    scalar_calls = []
+
+    def counted_scalar(*args, **kwargs):
+        scalar_calls.append(1)
+        return _fit_ridge_uncached(*args, **kwargs)
+
+    monkeypatch.setattr(matching, "_fit_ridge_uncached", counted_scalar)
+
+    def changed_recorded_clock():
+        acoustic = (factors[0].copy(), emissions[0].copy())
+        first = batch_ridge._scalar_reference_fit(*arguments, acoustic_result=acoustic)
+        assert first == expected[0] and len(scalar_calls) == 1
+        first["score"] = float("nan")
+        first["candidate_note"] = "local diagnostic annotation"
+        assert batch_ridge._scalar_reference_fit(*arguments, acoustic_result=acoustic) == expected[0]
+        assert len(scalar_calls) == 1
+        # Reuse these array objects for another actual clock from this batch.
+        # Cache identity must follow their contents rather than object identity.
+        acoustic[0][:], acoustic[1][:] = factors[1], emissions[1]
+        assert batch_ridge._scalar_reference_fit(*arguments, acoustic_result=acoustic) == expected[1]
+        assert len(scalar_calls) == 2
+        cache = matching._ridge_fit_cache.get()
+        assert len(cache.entries) == 1
+        acoustic[0][:], acoustic[1][:] = factors[0], emissions[0]
+        assert batch_ridge._scalar_reference_fit(*arguments, acoustic_result=acoustic) == expected[0]
+        assert len(scalar_calls) == 3 and len(cache.entries) == 1
+
+    matching._cache_ridge_fits(changed_recorded_clock, max_entries=1)()
+    assert matching._ridge_fit_cache.get() is None
