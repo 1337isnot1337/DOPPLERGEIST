@@ -544,8 +544,6 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 return dual_flags[index]
             def dual_at(index):
                 nonlocal dual_pruned
-                if index != 0:
-                    return False
                 rejected = bool(dual_flags_at(index)[trial])
                 dual_pruned += int(rejected)
                 return rejected
