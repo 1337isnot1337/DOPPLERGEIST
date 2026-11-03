@@ -166,6 +166,13 @@ class Track:
         radial = np.sum(delta * self.speed_vector(tau), axis=-1) / distance
         factor = c / (c + radial)
         self._check_motion_support(t, observer, c)
+        arrival_derivative = 1+radial/c
+        if np.any(arrival_derivative <= 0):
+            raise AcousticSupportError(self.id, "non_monotone_arrival")
+        remaining_correction = (tau-t+distance/c)/arrival_derivative
+        tolerance = np.maximum(1e-7, 4*np.abs(np.spacing(t)))
+        if np.any(supported & (~np.isfinite(remaining_correction) | (np.abs(remaining_correction) > tolerance))):
+            raise AcousticSupportError(self.id, "emission_solver_not_converged")
         return tuple(np.where(supported, a, np.nan) for a in (factor, tau, distance))
 
     def closest_approaches(self, observer, max_distance=np.inf, c=343.0, step=2.0):

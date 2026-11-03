@@ -129,3 +129,20 @@ def test_continuous_speed_extrema_cover_independent_dense_spline_oracle():
             peak = np.linalg.norm(track.speed_vector(sample), axis=1).max()
             assert track._speed_peak[i] >= peak-1e-7
             assert track._speed_peak[i]-peak <= 1e-5*max(1, peak)
+
+
+def test_finite_newton_iterate_is_not_accepted_as_a_converged_emission_solution():
+    # A genuinely subsonic straight path has a unique analytic emission time.
+    # Close to c, the old ten-iteration result can be ~293 s from that time.
+    observer = ecef(40, -100, 100)
+    speed, slant = 342.9999, 100.
+    knots = np.array([-1000., 0., 1000.])
+    xyz = observer+np.column_stack((speed*knots, np.full(3, slant), np.zeros(3)))
+    lon, lat, height = Transformer.from_crs(4978, 4979, always_xy=True).transform(*xyz.T)
+    track = Track("near-sonic", knots, lat, lon, height, velocity=np.tile([speed, 0, 0], (3, 1)))
+    track.validate_motion_support()
+    emitted = np.linspace(-990, 990, 1001)
+    received = emitted+np.hypot(speed*emitted, slant)/343
+    with pytest.raises(AcousticSupportError) as failure:
+        track.acoustic(received, observer)
+    assert failure.value.reason == "emission_solver_not_converged"
