@@ -52,6 +52,8 @@ Initial data acquisition can take hours and tens of gigabytes; [the workflow gui
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow reported
 progress, checkpoint rate, and the age of the latest tile and job status update.
+Stop a running service-managed job with `.venv/bin/dopplergeist cancel JOB_ID`;
+pass `--server-url` when the service uses a non-default port.
 
 ### Discover events in a recording
 

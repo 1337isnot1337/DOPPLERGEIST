@@ -6,6 +6,8 @@ import sys
 import time
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 import uuid
 
 
@@ -73,6 +75,10 @@ def main():
     job.add_argument("--jobs",default="jobs")
     job.add_argument("--watch",action="store_true",help="Watch local checkpoints until the job stops")
     job.add_argument("--interval",type=positive_runtime,default=10,help="Watch interval in seconds")
+    cancel=sub.add_parser("cancel",help="Cancel a job managed by the local upload service")
+    cancel.add_argument("job_id",type=job_identifier)
+    cancel.add_argument("--server-url",default="http://127.0.0.1:8765",
+                        help="Base URL of the service managing this job")
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
@@ -155,6 +161,25 @@ def main():
         except KeyboardInterrupt:
             print("Stopped watching; the job continues.",file=sys.stderr)
             raise SystemExit(130)
+        print(json.dumps(value,indent=2))
+    elif args.command=="cancel":
+        url=args.server_url.rstrip("/")+f"/api/jobs/{args.job_id}/cancel"
+        request=Request(url,data=b"",method="POST")
+        try:
+            with urlopen(request,timeout=10) as response:
+                body=response.read()
+        except HTTPError as exc:
+            try:
+                detail=json.loads(exc.read()).get("error",str(exc))
+            except (AttributeError,ValueError):
+                detail=str(exc)
+            parser.error(f"Could not cancel job {args.job_id}: HTTP {exc.code}: {detail}")
+        except (URLError,ValueError) as exc:
+            parser.error(f"Could not reach job service at {args.server_url}: {exc}")
+        try:
+            value=json.loads(body)
+        except ValueError as exc:
+            parser.error(f"Job service returned invalid JSON when cancelling {args.job_id}: {exc}")
         print(json.dumps(value,indent=2))
     elif args.command=="resume":
         from .jobs import JobManager
