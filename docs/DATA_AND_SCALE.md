@@ -101,6 +101,24 @@ association to the matching worker and preserves unmatched proposals.
 `alternative_modes_exhaustively_assessed` remains false because coarse-grid and
 top-k retention do not establish exhaustive alternative-mode recall.
 
+The normal `robust_ridge` path defaults to subset association over **all prepared
+independent groups**. There is no default maximum of two or three matched events.
+Harmonics/fragments are grouped by the audio/matching producers before this
+driver. False proposals can remain unmatched while later supported groups enter
+the same joint score and refined grid. Legacy `ridge`/`brightness` paths retain
+full-event association; `filters={"association": "full"}` also selects it
+explicitly. A deliberately smaller `max_events` is a work limitation: the report
+sets `all_event_groups_considered=False`, explains the cap and returns partial
+status. Candidate/branch budget exhaustion likewise cannot count as completion.
+
+For a supplied time window, shared CPA-consistency intervals are intersected with
+the trusted window before scoring. A biased event-center estimate cannot discard
+a common clock inside both intervals merely because it lies beyond a five-second
+anchor sweep. A trusted exact clock stays exact; events never receive separate
+clock adjustments. The current acceptance target is up to 1,000 m error, with
+100-500 m or closer preferred. The driver reports physical/data/work limits rather
+than converting scores into that accuracy claim.
+
 ## Checks
 
 ```bash

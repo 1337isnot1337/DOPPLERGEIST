@@ -1,0 +1,44 @@
+{
+  "index_version": 2,
+  "sources": [
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+      "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154",
+      "bytes": 68141282
+    }
+  ],
+  "coverage": {
+    "bounds": [
+      -125.0,
+      24.0,
+      -66.0,
+      50.0
+    ],
+    "time_range_s": [
+      1788899400.0,
+      1788900300.0
+    ],
+    "all_aircraft": true,
+    "source_note": "Checkpoint all-type CONUS 15min; legacy imputed velocity zeros cannot be recovered; scale fixture only"
+  },
+  "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+  "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "max_gap_s": 30.0,
+  "max_flight_samples": 250000,
+  "input_hash": "c928bed10091462ca7d9a11600e33d8716a7beef1287fca3ef5095fd201b3a34",
+  "rows": 938158,
+  "invalid_rows": 0,
+  "segments": 10868,
+  "altitude_basis_counts": {
+    "ellipsoidal": 927032,
+    "ellipsoidal_interpolated": 4445,
+    "barometric": 6681
+  },
+  "jets_excluded": false,
+  "unknown_types_retained": true,
+  "geometry_clipped": false,
+  "continuous_geometry_bounds": true,
+  "index_path": "results/w2-index-v2-20261102/conus-alltypes.sqlite",
+  "elapsed_s": 516.2999862069846,
+  "process_peak_rss_mib": 486.51171875
+}
