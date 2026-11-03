@@ -58,6 +58,8 @@ class JobManager:
             self._lockfile.close()
             raise ValueError("Another job manager is using this directory") from None
         self._mutex = threading.RLock()
+        self._uploads_changed = threading.Condition(self._mutex)
+        self._uploads = 0
         self._serial = threading.Semaphore(1)
         self._threads = {}
         self._processes = {}
@@ -90,11 +92,14 @@ class JobManager:
         with self._mutex:
             if self._closed:
                 raise ValueError("Service is shutting down")
-            if sum(thread.is_alive() for thread in self._threads.values()) >= self.max_pending:
+            if self._uploads + sum(thread.is_alive() for thread in self._threads.values()) >= self.max_pending:
                 raise OverflowError("Job queue is full; try again after a job finishes")
             job_id = uuid.uuid4().hex
             directory = self.root / job_id
             directory.mkdir(mode=0o700)
+            self._uploads += 1
+        reserved = True
+        try:
             suffix = suffix.lower() if suffix.lower() in {".mp3", ".wav", ".flac", ".m4a", ".ogg"} else ".mp3"
             audio = directory / ("input" + suffix)
             digest = hashlib.sha256()
@@ -111,17 +116,29 @@ class JobManager:
             if _expected_digest is not None and digest.hexdigest() != _expected_digest:
                 result(directory, "failed", reason_code="input_changed", message="Original job audio has changed.")
                 raise ValueError("Original job audio has changed")
-            request["audio_path"] = str(audio)
-            write_json(directory / "request.json", request)
-            write_json(directory / "operator.json", self.config if _config is None else _config)
-            write_json(directory / "input.json", {"sha256": digest.hexdigest(), "bytes": size, "path": audio.name})
             if _search_seed is not None:
                 shutil.copytree(_search_seed, directory / "search")
-            queued = result(directory, "queued", stage="queued", progress=0)
-            thread = threading.Thread(target=self._run, args=(directory,), daemon=True)
-            self._threads[job_id] = thread
-            thread.start()
-            return queued
+            with self._mutex:
+                if self._closed:
+                    result(directory, "failed", reason_code="interrupted", message="Service stopped during upload.")
+                    raise ValueError("Service is shutting down")
+                request["audio_path"] = str(audio)
+                write_json(directory / "request.json", request)
+                write_json(directory / "operator.json", self.config if _config is None else _config)
+                write_json(directory / "input.json", {"sha256": digest.hexdigest(), "bytes": size, "path": audio.name})
+                queued = result(directory, "queued", stage="queued", progress=0)
+                thread = threading.Thread(target=self._run, args=(directory,), daemon=True)
+                self._threads[job_id] = thread
+                thread.start()
+                self._uploads -= 1
+                reserved = False
+                self._uploads_changed.notify_all()
+                return queued
+        finally:
+            if reserved:
+                with self._uploads_changed:
+                    self._uploads -= 1
+                    self._uploads_changed.notify_all()
 
     def resume(self, job_id):
         """Start a new job from a stopped wall-time-limited search's checkpoints."""
@@ -208,9 +225,12 @@ class JobManager:
     def close(self):
         with self._mutex:
             self._closed = True
+            self._uploads_changed.notify_all()
             for job_id, thread in list(self._threads.items()):
                 if thread.is_alive():
                     self.cancel(job_id)
+            while self._uploads:
+                self._uploads_changed.wait()
         for thread in list(self._threads.values()):
             thread.join()
         self._lockfile.close()

@@ -49,7 +49,7 @@ Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`.
 ## How it works
 
 1. **Measure the audio.** Decode the recording, identify frequency tracks, and group harmonics that belong to the same flyover.
-2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage.
+2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage. The default source is [ADSB.lol's 2026 historical flight archive](https://github.com/adsblol/globe_history_2026); see [acquisition and cache details](docs/DATA_AND_SCALE.md#acquisition).
 3. **Model the sound.** Predict Doppler frequency and arrival time from aircraft trajectories, receiver geometry, and sound propagation.
 4. **Compare locations.** Search candidate receiver positions, reconcile independent flyovers, and retain competing explanations rather than forcing an answer.
 
@@ -100,6 +100,12 @@ Large research inputs live in checksummed release assets. With an authenticated 
 ```
 
 The restorer checks hashes and preserves conflicting local files. The original source YouTube MP4 is not redistributed. See [artifact restoration](docs/ARTIFACTS.md) and the [checkpoint release](https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/checkpoint-2026-11-02).
+
+## License
+
+DOPPLERGEIST code is licensed under the [MIT License](LICENSE). External
+recordings, flight and terrain data, and other third-party materials retain
+their own rights and terms.
 
 ## Documentation and references
 

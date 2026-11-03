@@ -153,3 +153,44 @@ def test_resume_preserves_original_and_checks_input(tmp_path, monkeypatch):
             manager.resume(resumed["job_id"])
     finally:
         manager.close()
+
+
+def test_resume_checkpoint_copy_does_not_block_cancellation(tmp_path, monkeypatch):
+    from dopplergeist import jobs
+
+    monkeypatch.setattr(JobManager, "_run", lambda self, directory: None)
+    manager = JobManager(tmp_path)
+    entered, release, cancelled = threading.Event(), threading.Event(), threading.Event()
+    copytree = jobs.shutil.copytree
+    def paused_copy(*args, **kwargs):
+        entered.set()
+        assert release.wait(5)
+        return copytree(*args, **kwargs)
+    monkeypatch.setattr(jobs.shutil, "copytree", paused_copy)
+    resume_thread = None
+    try:
+        old_job = manager.submit({"schema_version": 1}, io.BytesIO(b"old"), 3)
+        old = manager.directory(old_job["job_id"])
+        result(old, "inconclusive", reason_code="work_limit", message="Time limit.")
+        (old / "search").mkdir()
+        for name in ("manifest.json", "retention.sqlite", "tile-1.json"):
+            (old / "search" / name).write_text("checkpoint")
+        other = manager.submit({"schema_version": 1}, io.BytesIO(b"other"), 5)
+        resume_thread = threading.Thread(target=manager.resume, args=(old_job["job_id"],))
+        resume_thread.start()
+        assert entered.wait(5)
+        cancel_thread = threading.Thread(target=lambda: (manager.cancel(other["job_id"]), cancelled.set()))
+        cancel_thread.start()
+        try:
+            assert cancelled.wait(2), "checkpoint copying blocked cancellation"
+        finally:
+            release.set()
+            cancel_thread.join(5)
+        resume_thread.join(5)
+        assert not resume_thread.is_alive()
+        assert manager.get(other["job_id"])["status"] == "cancelled"
+    finally:
+        release.set()
+        if resume_thread:
+            resume_thread.join(5)
+        manager.close()
