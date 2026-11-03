@@ -15,6 +15,7 @@ import numpy as np
 
 from .audio import spectrogram
 from .geometry import ecef
+from .matching import predict_fitted_ridge
 
 
 @dataclass(frozen=True)
@@ -219,7 +220,7 @@ def validate_context(recording, candidates, tracks, events, measurements, *,
                    "trajectory_receipts": {str(k): _track_receipt(v) for k, v in tracks.items()}},
         "implementation_sha256": _file_hash(__file__),
         "implementation_dependencies_sha256": {name: _file_hash(Path(__file__).with_name(name))
-                                                for name in ("audio.py", "geometry.py")},
+                                                for name in ("audio.py", "geometry.py", "matching.py")},
         "numpy_version": np.__version__,
         "limits": [
             "Development protocol, not independent location-accuracy evidence.",
@@ -289,10 +290,11 @@ def validate_context(recording, candidates, tracks, events, measurements, *,
         for index in active:
             mode, frozen = prepared[index], prepared[index]["events"][event_index]
             try:
-                factor, emission, _ = frozen["track"].acoustic(mode["clock"] + spec.time,
-                                                             mode["observer"], settings.sound_speed_mps)
-                frequency = (frozen["f0_hz"] + frozen["source_drift_hz_s"] *
-                             (emission - frozen["reference_emission_time_s"])) * factor
+                frequency = predict_fitted_ridge(frozen["track"], mode["observer"],
+                    mode["clock"] + spec.time, {"f0_hz": frozen["f0_hz"],
+                    "source_drift_hz_s": frozen["source_drift_hz_s"],
+                    "source_reference_emission_time_s": frozen["reference_emission_time_s"]},
+                    settings.sound_speed_mps)
                 observed = spec.sample(spec.time, frequency)
                 sidebands = np.mean([spec.sample(spec.time, frequency + shift)
                                      for shift in settings.sideband_offsets_hz], axis=0)

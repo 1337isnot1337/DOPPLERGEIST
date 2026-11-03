@@ -37,7 +37,8 @@ The default protocol is fixed before scoring:
   clock, fitted source frequency and linear emission-time drift. No context refit
   is performed. The source anchor comes from the candidate diagnostic when supplied,
   otherwise from the exact min/max midpoint of its original supported core
-  emission times, matching the published core fitter.
+  emission times, matching the published core fitter. Curves use W3's public
+  `matching.predict_fitted_ridge` helper rather than a separate source model.
 - Use identical bins where every evaluable mode has trajectory and spectral
   support, including offsets of −10, −5, +5 and +10 Hz. Never extrapolate a track or
   clamp unsupported frequencies into the analysis band. Report lost support.
