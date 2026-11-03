@@ -58,14 +58,13 @@ def test_real_retention_stages_survive_worker_import(tmp_path):
 
 def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
     import json
-    import multiprocessing
     import shutil
-    from concurrent.futures import ProcessPoolExecutor
 
     from dopplergeist.data_access import FlightIndex, content_hash
     from dopplergeist.matching import prepare_events
-    from dopplergeist.parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results, score_tile
-    from dopplergeist.tiled_search import SearchBudget
+    from dopplergeist.parallel_tiles import (TileFailure, initialize_tile_worker, ordered_tile_results,
+                                             score_tile, tile_worker_lanes)
+    from dopplergeist.tiled_search import SearchBudget, _tile_dem_keys
 
     source = os.environ.get("DOPPLERGEIST_REAL_JOB_ROOT")
     cache = os.environ.get("DOPPLERGEIST_REAL_CACHE_ROOT")
@@ -99,10 +98,11 @@ def test_real_tiles_match_sequential_scoring_and_preserve_ledgers(tmp_path):
     jobs = [(stage, cells, None, None) for stage, cells in stages]
     jobs.append((stages[0][0], stages[0][1], serial[0][0], None))
     parallel = []
-    with ProcessPoolExecutor(max_workers=2, mp_context=multiprocessing.get_context("spawn"),
-                             initializer=initialize_tile_worker, initargs=args) as pool:
+    catalog = {line.rstrip("/") for line in (cache / "terrain/tileList.txt").read_text().splitlines()}
+    tile_keys = lambda cells: _tile_dem_keys(cells, budget.spacing_m, config["bounds"], config["crs"], catalog)
+    with tile_worker_lanes(2, initialize_tile_worker, args, tile_keys, chunk_size=1) as pool:
         for stage, cells, result, was_cached in ordered_tile_results(
-                pool, jobs, 2, lambda stage, cells, future: future.result()):
+                pool, jobs, 2, lambda stage, cells, future: future.result()[:2]):
             if was_cached:
                 assert stage == stages[0][0] and result == serial[0][0]
             else:

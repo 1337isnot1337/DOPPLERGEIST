@@ -278,3 +278,33 @@ Each search worker retains its own bounded cache; row-major tile scheduling does
 not guarantee that neighboring work reaches the same worker. Grouping work by
 geography remains a separate scheduling opportunity requiring a full search and
 load-balance comparison.
+
+On a separate ordering-only replay of 12 saved real tile footprints (up to 1,024
+points each, repeated three times), contiguous per-tile sampling reduced DEM
+raster opens from 78 to 26 and sampler CPU from 5.89 s to 2.73 s (2.16x).
+Elevation arrays matched exactly. Wall time was slower in the clustered order
+(13.36 s versus 11.26 s), so the result supports cache locality but not end-to-end
+speedup. This offline replay excludes download latency; reproduce with the same
+[`benchmark_dem_locality.py`](../scripts/benchmark_dem_locality.py) script.
+
+### Bounded worker-affine scheduling prototype
+
+The scheduler prototype keeps the lazy row-major request stream and ordered
+parent merge. It pins four consecutive uncached tile requests to one worker,
+choosing a worker from a conservative geographic DEM footprint and its reported
+in-memory DEM keys. A bounded lookahead of four tiles per worker keeps request
+materialization independent of total search size; results and checkpoints remain
+per tile. The worker cache keys are returned only as scheduling metadata and do
+not enter tile payloads or retention records.
+
+On the saved 745-tile checkpoint sequence, 130 payloads referenced terrain and
+recorded 280 tile-to-DEM accesses across 66 unique rasters. A 32 MiB LRU model
+replayed those observed footprints: round-robin assignment hit 28/280 accesses
+(10.0%), four-tile worker chunks hit 117/280 (41.8%), and static contiguous
+lanes hit 133/280 (47.5%). Bounding-box DEM prediction covered the recorded DEM
+set for all 130 terrain-using tiles; mean per-tile precision was 90.6%, with
+three predicted DEM footprints on otherwise empty tiles. These cache figures
+are simulated from saved payload footprints, not timed worker measurements;
+they do not establish a search runtime gain or load balance. The active saved
+search must be migrated through its checkpoint compatibility path before this
+source-hash change can be used on it.
