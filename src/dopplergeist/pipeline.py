@@ -96,6 +96,13 @@ def _score_chunk(chunk):
                        state["measurements"],state["parameters"],state["origin"])
 
 
+def _validated_scoring_chunk(chunk):
+    """Reject invalid chunk sizes before scoring or producing artifacts."""
+    if type(chunk) is not int or chunk < 1:
+        raise ValueError("scoring_chunk must be a positive integer")
+    return chunk
+
+
 def score_chunks(candidates,chunks,workers,state,progress=None):
     """Score ``candidates`` in ``chunks`` blocks, optionally in worker processes.
 
@@ -104,6 +111,7 @@ def score_chunks(candidates,chunks,workers,state,progress=None):
     to a serial pass. Workers share the loaded tracks and measurements copy-on-write, which is why
     this uses ``fork`` and falls back to a serial loop where ``fork`` is unavailable.
     """
+    chunks=_validated_scoring_chunk(chunks)
     blocks=[candidates[i:i+chunks] for i in range(0,len(candidates),chunks)] or []
     results=[]
     context=None
@@ -284,6 +292,8 @@ def run(config_path,output_dir):
     if type(workers) is not int or workers<1:
         raise ValueError("scoring_workers must be a positive integer")
     chunk=config.get("scoring_chunk")
+    if chunk is not None:
+        chunk=_validated_scoring_chunk(chunk)
     def rank(candidates,points,stage):
         # Candidates are scored independently, so the pool cannot change a score; the ranked list is
         # assembled in candidate order, which keeps the serial ordering (and its tie handling).
