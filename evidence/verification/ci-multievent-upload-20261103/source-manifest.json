@@ -1,0 +1,455 @@
+{
+  "schema_version": 1,
+  "scope": "Pre-execution source composition for the four-flyover actual browser/HTTP development replay",
+  "prepared_utc": "2026-11-03T01:51:30.053705+00:00",
+  "execution_results_in_this_file": false,
+  "base_commit": "63d620f390196e81eb669ca5c4ec483dddc4f163",
+  "base_tree": "8bade8b2a5a5d63f9cd7fbc74f3c68f769a615fa",
+  "source_pins": {
+    "main": "63d620f390196e81eb669ca5c4ec483dddc4f163",
+    "w2-data": "cb338971cc915c7cff447b5af08d9f4b2c44d248",
+    "w2-search": "f0b8ba7c3d1addfaae93f387177b0f3742972764",
+    "w3-altitude": "692a3e6362d296352c8c797d44759a28ca00f884",
+    "w5": "a0dd8403f304f28ff581dfb87fabf5734f8fd152",
+    "w4-confidence": "38d029d2e25a51b2229a696448177850189a3fb2",
+    "profile-authority": "de6c9ae2dd18481d1238121acd52be294057fb14",
+    "multi-fixture": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+    "pr33-verifier": "c4dd9a52a07be372029a94efb48e31142cc46134",
+    "reviewed-harness": "48955d9e665fe61bb5cf2234c73b145917158082",
+    "w2-all-events": "50c01271fc4edc0c4743959b442234a9da46e570",
+    "w3-all-events": "5657f603cf37611686d860f2b9a54d55488e42a0",
+    "pr26-helper": "70e9bf060a016cbc18970709eb7fbe10b1610743",
+    "pr46-refinement-union": "c1ab530e258716f0aa352f5b3f6a24f1b4288445"
+  },
+  "direct_blobs": [
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/cli.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a28c8bbd68c7fc810dca6b55ce89124488066a1f",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/jobs.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29e8aa37ff1b82daecdae45af908272e960755ab",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/service.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67b541805cb6ae14d56b5d4f03fcf7c2f84574fe",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/web/__init__.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d6a00f9e470ee80f9dfe55534556d4f0c504dad",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/web/app.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62c144f1afdb87078f78b11e0e6b727484b5ecbe",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/web/index.html",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a65147d68a6d2ec1cb321ce9db228554309d18ff",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "src/aircraft_geoloc/web/style.css",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "68dbd8c6b8e3bb86e729842c9d422c449d73fb90",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "tests/test_automatic.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba28f0646e291985e099620194a86ef6dfa19827",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "tests/test_service.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a34d92b3c2915d5efcfa30bc009b53b049f0de93",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "w5",
+      "path": "docs/PRODUCT.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8b0723da1fd0ca90ccecd80125cf95491e6b984",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152"
+    },
+    {
+      "source": "profile-authority",
+      "path": "tests/test_automatic_profile.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "92a0bc10b8775247fd70289fff6bd50903799bfa",
+      "source_commit": "de6c9ae2dd18481d1238121acd52be294057fb14"
+    },
+    {
+      "path": "scripts/verify_methodology.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bc349e9005bd9e14d980c857486f6927a641112d",
+      "source": "pr33-verifier",
+      "source_commit": "c4dd9a52a07be372029a94efb48e31142cc46134"
+    },
+    {
+      "path": "scripts/verify_upload_browser.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17f0bbef5fa8abf86fb9ae85cf662600c32cc104",
+      "source": "pr33-verifier",
+      "source_commit": "c4dd9a52a07be372029a94efb48e31142cc46134"
+    },
+    {
+      "path": "tests/test_methodology_verifier.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "86f3b8fbe67d20844d9e73c66cc8a55797a66c66",
+      "source": "pr33-verifier",
+      "source_commit": "c4dd9a52a07be372029a94efb48e31142cc46134"
+    },
+    {
+      "path": ".github/workflows/automatic-replay.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "46db27cc954e34a4d37a405566fa01d81bab50b7",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "docs/CI_AUTOMATIC_REPLAY.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7785401b4f11883298a971c90b7dd471f9eb5233",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "evidence/verification/ci-automatic-20261103/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36441fe3c5901d49c27fedc6e9ced04db0f9a0c1",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "evidence/verification/ci-automatic-20261103/acceptance.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4c21a781da349f3936f0efdeaf357d446fe42cd",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "evidence/verification/ci-automatic-20261103/first-run-observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bda42b24c2b00d851080c0c5f16846a06ddc503d",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "evidence/verification/ci-automatic-20261103/observed.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "75dffb08b2e2fdc05eedc555b3cc10f5ab52df81",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "evidence/verification/ci-automatic-20261103/stage-summaries.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2dba8146104a2ac87ab79d1cc9dc6f74c4597fa8",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "scripts/ci_automatic_replay.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24b6174bf8b5425a2823e6d24cbddafe40506faf",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "path": "tests/test_ci_automatic_replay.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df9cf94133da8d8233ffbcd7b5901586190057a9",
+      "source": "reviewed-harness",
+      "source_commit": "48955d9e665fe61bb5cf2234c73b145917158082"
+    },
+    {
+      "source": "w2-all-events",
+      "source_commit": "50c01271fc4edc0c4743959b442234a9da46e570",
+      "path": "src/aircraft_geoloc/data_access.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6bb7d71fb44f5b1f4d33dd8dca476a9d20e8232"
+    },
+    {
+      "source": "w2-all-events",
+      "source_commit": "50c01271fc4edc0c4743959b442234a9da46e570",
+      "path": "docs/DATA_AND_SCALE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e9b97fb88e5a5ea034eebe21b9d14b0d9485c65e"
+    }
+  ],
+  "composed_files": [
+    {
+      "path": "src/aircraft_geoloc/automatic.py",
+      "mode": "100644",
+      "type": "blob",
+      "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152",
+      "source_blob": "a4c600a7e54469e2d59535e78871d08f94ecf4d3",
+      "patch_source_commit": "de6c9ae2dd18481d1238121acd52be294057fb14",
+      "patch_scope": "Only the published PR52 authoritative-profile replacement and handled-error invalidation block, adapting the call name to W5 _comparable_refinement(candidate, original, prepared_events). No other function changes.",
+      "expected_git_blob": "acc6add579f57c97e62b8a913ac25fa8fe293404",
+      "expected_sha256": "bc847c6afb26e0c2647f4f7157f00e15572654f7c6c226d47c96741a521877c6",
+      "bytes": 18620
+    },
+    {
+      "path": "src/aircraft_geoloc/tiled_search.py",
+      "bytes": 21563,
+      "expected_git_blob": "96d9a919c25e9ba254486f9c92268a0f63715c92",
+      "expected_sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870",
+      "mode": "100644",
+      "type": "blob",
+      "source_commit": "50c01271fc4edc0c4743959b442234a9da46e570",
+      "source_blob": "328fbfe9f0c1e406b8fc0c36a77bcc51e8f0ad2d",
+      "merge_other_commit": "0ec20b906ab47d58187bc68136b20e5e2049e13c",
+      "merge_other_blob": "b4175f76fc22aceda776363472c6b7f127d7d286",
+      "common_ancestor_commit": "3ea3406ae827a26b193202fb7f737714438af506",
+      "common_ancestor_blob": "68e5394bafece788faf1448299b140830358dc8a",
+      "patch_scope": "Exact clean git merge-file of PR57 all-group changes and main PR46 refinement-grid union"
+    },
+    {
+      "path": "tests/test_tiled_search.py",
+      "bytes": 16860,
+      "expected_git_blob": "dd95f0e130bbbcb98f6861df6c21aa4bfa7e0b2f",
+      "expected_sha256": "bce817886afa9a439b341de71905533fe49ab91327d7a9a4f1b533cef4dbe516",
+      "mode": "100644",
+      "type": "blob",
+      "source_commit": "50c01271fc4edc0c4743959b442234a9da46e570",
+      "source_blob": "c764cd49afcb845b6b8516df441700953a20c5ed",
+      "merge_other_commit": "0ec20b906ab47d58187bc68136b20e5e2049e13c",
+      "merge_other_blob": "12a1e76c741842f3f16e2f31b933e394e4c1b75a",
+      "common_ancestor_commit": "3ea3406ae827a26b193202fb7f737714438af506",
+      "common_ancestor_blob": "da70a90d92eb25ba6a7109019f7643550b8c8ec8",
+      "patch_scope": "One append/append conflict resolved by retaining both complete test blocks, with every test function AST unchanged"
+    }
+  ],
+  "preserved_base_files": [
+    {
+      "path": "docs/CONFIDENCE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f0b2696508b4706a58c3f4cf4f79b872967ae1d"
+    },
+    {
+      "path": "docs/MATCHING.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fbadd4febabdc73277e42f8afda7377ee105da51"
+    },
+    {
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5653b852ef3374218b38e8be2a9aadb586c04d88"
+    },
+    {
+      "path": "scripts/ci_checkpoint_replay.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04aa4fbc6ffb782ff771cc487683c631928b4c3a"
+    },
+    {
+      "path": "scripts/make_multi_event_case.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "48c809ac701919da3f209f67ccc5cf66d090463e"
+    },
+    {
+      "path": "src/aircraft_geoloc/confidence.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "92a5938fcefb1a88d60d863f5dfaa093180ef736"
+    },
+    {
+      "path": "src/aircraft_geoloc/contracts.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c2c3295b2ed0ebfc0ebe639943e0ab9f7b56788f"
+    },
+    {
+      "path": "src/aircraft_geoloc/discovery.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ca73e8577f0fc8cd3c668e1faa8f8c10b8835cc"
+    },
+    {
+      "path": "src/aircraft_geoloc/evaluation.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "83b90dcf13ad60216bab16de786cb3f6377b0d18"
+    },
+    {
+      "path": "src/aircraft_geoloc/matching.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f958983651fa85cb8143aed48ce70f21dc8264f"
+    },
+    {
+      "path": "src/aircraft_geoloc/pipeline.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "019f5e15b3a48003c422345abd609f2e704fe36d"
+    },
+    {
+      "path": "src/aircraft_geoloc/provenance.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "187ec2eb5ff91070870dccdcf8630743d993f58f"
+    },
+    {
+      "path": "src/aircraft_geoloc/search.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0fb3e83125d0154b29127d4270b11cafdddcb711"
+    },
+    {
+      "path": "src/aircraft_geoloc/tracks.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b9c81e54deabb8bbd7a4b20c8032aedfcc3676cc"
+    },
+    {
+      "path": "tests/test_all_events.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4cd8da2fa25e95cb062514073ad465d678dfd9f2"
+    },
+    {
+      "path": "tests/test_ci_checkpoint_replay.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50067ec56f5e9124bb9dd22c84df187937dcc832"
+    },
+    {
+      "path": "tests/test_confidence.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae49cb31bc7f4cc50740c876744eef98e798efc2"
+    },
+    {
+      "path": "tests/test_multi_event_renderer.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "990439ecca5cfce636ca6baa6c4456959687c09b"
+    }
+  ],
+  "owned_files": [
+    {
+      "path": "scripts/ci_upload_replay.py",
+      "bytes": 41398,
+      "git_blob": "47c22391784c3da7565a99afd3c4d958c0d7f7fb",
+      "sha256": "65719aa89e3cc0aec131ae3dcf216b76827040a384f849c1ad060c83d6c71b71"
+    },
+    {
+      "path": "tests/test_ci_upload_replay.py",
+      "bytes": 16685,
+      "git_blob": "73906ec46693153cc1084c472e1764c6072ebde3",
+      "sha256": "cdf193fd609813b6b2992380f8b4bcf2aceaca883742e82ed7f41f3dc85d93f5"
+    },
+    {
+      "path": ".github/workflows/multi-event-upload-replay.yml",
+      "bytes": 2408,
+      "git_blob": "2e65c04b23fa2c1a736f57396d3ffb6dc8be6e69",
+      "sha256": "01c48af6091e38c1f79a9bda2a176d3d5e77982f41e1949f8ef0c2777b1da4c4"
+    },
+    {
+      "path": "docs/CI_MULTIEVENT_UPLOAD_REPLAY.md",
+      "bytes": 7569,
+      "git_blob": "1c230995589b04bb8f28da9ae50cbdb4955fc92c",
+      "sha256": "5b8d8664cd8dc53dd28bec31659d30ddb4bc095e70989465f30a6dcb3a6526ea"
+    }
+  ],
+  "fixture": {
+    "generator_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+    "event_count": 4,
+    "expected_duration_s": 960,
+    "expected_track_count": 12,
+    "expected_rows_per_track": 271,
+    "expected_total_rows": 3252,
+    "expected_index_version": 2,
+    "recording_epoch": 1790000000,
+    "receiver_scope": "conus",
+    "typecodes": [
+      "C172",
+      "PC12",
+      "A320",
+      ""
+    ],
+    "synthetic_terrain_path": "inputs/terrain.tif",
+    "synthetic_geoid_path": "inputs/geoid.tif",
+    "original_parquet_path": "inputs/tracks.parquet",
+    "truth_path": "truth/labels.json",
+    "derived_search_inputs": "Wrapper re-encodes the full original Parquet only to randomize opaque IDs and row-block order; original bytes and old-to-new mapping remain evaluation artifacts.",
+    "parquet_preservation": "Every non-ID value and all12 tracks/3252 rows are checked; search receives only opaque derived IDs."
+  },
+  "expected_status": "inconclusive",
+  "thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "primary_threshold_m": 1000,
+  "protocol": "docs/CI_MULTIEVENT_UPLOAD_REPLAY.md",
+  "execution_gates": [
+    "Record actual browser/HTTP transport separately from supported decision and candidate error at100/500/1000m; retain all failures and inconclusive outcomes.",
+    "Normal request includes only MP3, clock window and CONUS scope; operator configuration uses absolute derived-index/raster/geoid paths, with no manual event windows, bands, flight IDs or recorder coordinates.",
+    "Build SQLite from the complete derived Parquet using FlightIndex.from_parquet(index_path, parquet_path, coverage=coverage). Preserve the original Parquet bytes outside declared search inputs; preserve all12 tracks/3252 rows in derived inputs.",
+    "Index report must contain index_version2, invalid_rows0, segments12, rows3252, jets_excludedfalse, unknown_types_retainedtrue and geometry_clippedfalse; full-scope query returns every271-sample trajectory.",
+    "Use W2 default robust all-group subset search with no event cap. Report proposed groups and association limit; require all_event_groups_considered when that field is present. An explicit cap cannot count as complete coverage.",
+    "Verify reported selected event IDs bind to nominal per-event joint-fit diagnostics and profile participation; identifiers alone cannot establish use by the numerical stages.",
+    "Read truth only after graceful HTTP service SIGINT shutdown, manager worker joins and return0. Forced or unproven shutdown leaves truth unopened; UI failure may retain post-stop diagnostics but cannot pass full transport.",
+    "W2 alternative_modes_exhaustively_assessed remains false. W5 respects it and the verifier rejects a contradictory succeeded result. This plan does not solve or bypass that unresolved supported-decision gate.",
+    "This is a new published synthetic multi-event scene and an actual browser/HTTP route, not a repeat of unchanged original two-event source and not an independent real-recording claim."
+  ],
+  "source_policy": "No producer branch is changed. All unlisted files are inherited from the exact base tree. Compositions combine published changes without introducing a new scoring or decision rule.",
+  "limits": [
+    "Expected inconclusive verifies transport only and cannot pass supported localization.",
+    "Finite grid work completion does not establish exhaustive alternative modes.",
+    "Synthetic generated traffic, terrain and known clock; no live acquisition or independent real accuracy claim.",
+    "Reference separation is procedural, without an operating-system isolation claim."
+  ]
+}

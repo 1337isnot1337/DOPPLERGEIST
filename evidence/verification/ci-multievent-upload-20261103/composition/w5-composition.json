@@ -1,0 +1,15 @@
+{
+  "source_commit": "a0dd8403f304f28ff581dfb87fabf5734f8fd152",
+  "source_tree": "b4f7c9841fe27cd51f23fca4dd7866d8773bec7e",
+  "source_blob": "a4c600a7e54469e2d59535e78871d08f94ecf4d3",
+  "source_sha256": "87db0996632693b6e76aaa03564087304397cbe9b6a40aaaacb25ae3b6f54430",
+  "profile_authority_source_commit": "de6c9ae2dd18481d1238121acd52be294057fb14",
+  "scope": "Only the published PR52 authoritative-profile replacement and handled-error invalidation block, adapting the call name to W5 _comparable_refinement(candidate, original, prepared_events). No other function changes.",
+  "syntax_compile_passed": true,
+  "other_function_asts_unchanged": true,
+  "numerical_tests_executed_locally": false,
+  "staged_path": "/workspace/scratch/98b2855f721e/upload_integration/w5_composition/automatic.py",
+  "expected_git_blob": "acc6add579f57c97e62b8a913ac25fa8fe293404",
+  "expected_sha256": "bc847c6afb26e0c2647f4f7157f00e15572654f7c6c226d47c96741a521877c6",
+  "bytes": 18620
+}
