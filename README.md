@@ -19,7 +19,7 @@ DOPPLERGEIST investigates **where an audio recording was made** by comparing the
 | Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on the integration branch | [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19) remains open; `analyze`, `serve` and `job` are not installed commands on `main` |
 | Independent location validation | Historical regional replays, synthetic controls and real-audio discovery benchmarks | [End-to-end acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [independently timed field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
 
-Start with the synthetic replay below to exercise localization, or use the discovery command on your own recording. Connecting discovery, acquisition, search and a final location decision through the upload application remains a separate integration step.
+Start with automatic discovery on a real recording below. Connecting discovery, acquisition, search and a final location decision through the upload application remains a separate integration step. Current validation work prioritizes real recordings, real flight trajectories and independently established recorder locations; new synthetic experiments are stopped, while historical results remain documented.
 
 ## Quickstart
 
@@ -30,20 +30,13 @@ git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
 cd DOPPLERGEIST
 python -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
-
-.venv/bin/python scripts/make_synthetic_cases.py
-.venv/bin/aircraft-geoloc run \
-  data/synthetic/known-time-minute.json \
-  --output results/known-time-demo
 ```
-
-This generates deterministic audio and flight tracks, then runs a **configured synthetic localization experiment** with a known recording clock and a selected 60-second event. It needs no external datasets or data-service credentials. Inspect `results/known-time-demo/report.json` for the leading hypothesis, `ranked.json` for alternatives, and the PNG plots for diagnostic comparisons. The historical checkpoint identified the correct flight with **40.87 m error**; this is a synthetic result, not a real-world accuracy claim.
 
 Use a new output directory for each experiment. Run the tests with `.venv/bin/python -m pytest -q`. For pinned environments and clean-install evidence, see [Setup](docs/SETUP.md); native Windows execution has not been verified.
 
 ### Discover events in a recording
 
-Automatic discovery scans an entire recording for moving acoustic frequency patterns **without hand-selecting event windows or frequency bands**:
+Automatic discovery scans an entire recording for moving acoustic frequency patterns **without hand-selecting event windows or frequency bands**. Replace `path/to/recording.mp3` with your real recording; this step needs no flight-data download or data-service credentials:
 
 ```bash
 .venv/bin/python scripts/discover_audio.py \
