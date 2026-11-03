@@ -18,6 +18,7 @@ def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_siz
     observers = ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     rows = []
     for track in tracks:
+        track.validate_motion_support(c)
         t = np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
         pos = track.position(t)
         # Prune trajectory segments outside this observer tile before forming a
@@ -80,6 +81,7 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
     point_ids=points.point_id.to_numpy(dtype=int)
     rows=[]
     for track in tracks:
+        track.validate_motion_support(c)
         t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
         pos=track.position(t)
         max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
@@ -214,6 +216,124 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
     return float(scores[best]),float(frequencies[best])
 
 
+def _ridge_trial_classification(result, events, association):
+    """Classify recorded core fits, without changing their score or rejection rule.
+
+    Missing support and numerical failures are unknown. A supported finite fit
+    can be rejected only by the existing association residual thresholds.
+    """
+    def finite(value):
+        return (isinstance(value, (int, float, np.integer, np.floating))
+                and not isinstance(value, (bool, np.bool_)) and np.isfinite(value))
+
+    diagnostics = result.get("event_diagnostics")
+    scores, frequencies = result.get("event_scores"), result.get("f0_hz")
+    if (not isinstance(diagnostics, list) or not isinstance(scores, list) or not isinstance(frequencies, list)
+            or not len(diagnostics) == len(scores) == len(frequencies) == len(events)):
+        return "unknown", "missing_event_fit_evidence"
+    fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+              "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
+    for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
+        if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
+                or diagnostic["support_fraction"] != 1.0):
+            return "unknown", "incomplete_acoustic_support"
+        if (not all(finite(diagnostic.get(name)) for name in fields)
+                or not finite(score) or not finite(frequency)):
+            return "unknown", "nonfinite_fit_evidence"
+        count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
+        if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
+                or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
+                or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
+                or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
+            return "unknown", "invalid_fit_evidence"
+        if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
+            return "unknown", "failed_optimizer"
+        if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
+            return "unknown", "inconsistent_event_fit_evidence"
+        bounds = event.get("f0_range_hz")
+        fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+        if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
+                or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
+                or not bounds[0] <= frequency <= bounds[1]
+                or not finite(fraction) or not 0 <= fraction <= 0.1):
+            return "unknown", "fit_outside_declared_frequency_domain"
+        drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
+        if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
+            return "unknown", "fit_outside_declared_drift_domain"
+        if not np.isclose(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"], drift,
+                          rtol=1e-12, atol=1e-12):
+            return "unknown", "inconsistent_source_drift"
+    if "optimizer_success" in result and result["optimizer_success"] is not True:
+        return "unknown", "failed_optimizer"
+    residual = float(sum(scores))
+    if not finite(residual):
+        return "unknown", "nonfinite_residual_score"
+    if not association:
+        if (result.get("score_kind") == "negative_robust_ridge_loss_hz"
+                and finite(result.get("score")) and result["score"] == residual):
+            return "evaluated", None
+        return "unknown", "inconsistent_residual_score"
+    from .matching import _frequency_scale
+    limits = [3 * _frequency_scale(event) for event in events]
+    if (result.get("score_kind") != "matched_group_support_minus_normalized_residual"
+            or not finite(result.get("residual_score")) or result["residual_score"] != residual
+            or not all(finite(v) and v > 0 for v in limits)):
+        return "unknown", "inconsistent_association_evidence"
+    supported = all(-score <= limit for score, limit in zip(scores, limits))
+    if supported:
+        expected = float(sum(1 - (-score) / limit for score, limit in zip(scores, limits)))
+        if finite(result.get("score")) and result["score"] == expected:
+            return "evaluated", None
+    elif result.get("score") == -np.inf:
+        return "rejected", "association_residual_limit"
+    return "unknown", "unexplained_association_score"
+
+
+
+def _association_trial_bound(result, events):
+    """Bound an incompletely supported association at one shared clock.
+
+    The declared score is sum(1 - loss_i / limit_i), or -inf if any event
+    fails its residual limit. Each nonnegative unknown loss contributes at
+    most one. Only a fully validated core fit can tighten that ceiling or
+    establish a residual rejection. Missing support is still unknown.
+    """
+    kind = "matched_group_support_minus_normalized_residual"
+    if not events or not isinstance(result, dict) or result.get("score_kind") != kind:
+        return None
+    from .matching import _frequency_scale
+    try:
+        limits = [3 * _frequency_scale(event) for event in events]
+    except (TypeError, ValueError, KeyError):
+        return None
+    if not all(np.isfinite(value) and value > 0 for value in limits):
+        return None
+    maximum = float(len(events))
+    diagnostics, scores, frequencies = (result.get(name) for name in ("event_diagnostics", "event_scores", "f0_hz"))
+    if (not all(isinstance(values, list) and len(values) == len(events)
+                for values in (diagnostics, scores, frequencies))
+            or result.get("optimizer_success", True) is not True):
+        return maximum
+    contributions = []
+    for diagnostic, score, frequency, event, limit in zip(diagnostics, scores, frequencies, events, limits):
+        single = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
+                  "event_scores": [score], "f0_hz": [frequency], "event_diagnostics": [diagnostic]}
+        classification, _ = _ridge_trial_classification(single, [event], False)
+        if classification != "evaluated":
+            contributions.append(1.0)
+            continue
+        if -score > limit:
+            return -np.inf
+        # Use the scorer's per-event arithmetic, then round every contribution
+        # and positive accumulation upward. Subtracting losses from k instead
+        # changes the operation order and can understate a floating-point score.
+        contributions.append(float(np.nextafter(1 - (-score) / limit, np.inf)))
+    upper = 0.0
+    for contribution in contributions:
+        upper = float(np.nextafter(upper + contribution, np.inf))
+    return min(maximum, upper)
+
+
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
                     time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
     association = "event_indices" in candidate
@@ -251,9 +371,15 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         else:
             shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
     best = {"score":-np.inf}
+    if mode == "robust_ridge":
+        best["score_kind"] = ("matched_group_support_minus_normalized_residual" if association
+                              else "negative_robust_ridge_loss_hz")
     assessment = {"complete": False, "evaluated_trials": 0, "rejected_trials": 0,
-                  "unknown_trials": 0, "reasons": []}
+                  "unknown_trials": 0, "reasons": [], "scheduled_trials": len(shifts),
+                  "trial_count_semantics": "disjoint_evaluated_rejected_unknown",
+                  "empty_clock_domain": len(shifts) == 0}
     reasons = set()
+    unknown_bounds = []
     for shift in shifts:
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -263,16 +389,17 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             except AcousticSupportError as error:
                 assessment["unknown_trials"] += 1
                 reasons.add(str(error))
+                unknown_bounds.append(None)
                 continue
-            supported = all(d.get("support_fraction") == 1 and np.isfinite(d["score"])
-                            for d in result["event_diagnostics"])
             if association:
                 from .matching import association_score
                 result = association_score(result, events)
-            if not supported or np.isnan(result["score"]) or result["score"] == np.inf:
+            classification, reason = _ridge_trial_classification(result, events, association)
+            if classification == "unknown":
                 assessment["unknown_trials"] += 1
-                reasons.add("incomplete_ridge_or_trajectory_support")
-            elif result["score"] == -np.inf:
+                reasons.add("incomplete_ridge_or_trajectory_support" if reason == "incomplete_acoustic_support" else reason)
+                unknown_bounds.append(_association_trial_bound(result, events) if association else None)
+            elif classification == "rejected":
                 assessment["rejected_trials"] += 1
                 reasons.add("acoustic_loss_exceeds_limit")
             else:
@@ -293,10 +420,17 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
     if mode == "robust_ridge":
         if not len(shifts):
-            assessment["unknown_trials"] = 1
             reasons.add("no_clock_trials")
-        assessment["complete"] = assessment["unknown_trials"] == 0
+        assessment["complete"] = bool(len(shifts) and assessment["unknown_trials"] == 0)
         assessment["reasons"] = sorted(reasons)
+        if association and assessment["unknown_trials"]:
+            finite_bounds = [value for value in unknown_bounds if value is not None and np.isfinite(value)]
+            assessment.update(
+                bounded_unknown_trials=sum(value is not None for value in unknown_bounds),
+                bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
+                unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
+                unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
+                unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
         best["scoring_assessment"] = assessment
     return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])

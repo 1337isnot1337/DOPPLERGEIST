@@ -9,9 +9,9 @@ import json
 
 import numpy as np
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.data_access import CONUS, FlightIndex, write_json
-from aircraft_geoloc.tiled_search import SearchBudget, search_national
+from dopplergeist.audio import Spectrum
+from dopplergeist.data_access import CONUS, FlightIndex, write_json
+from dopplergeist.tiled_search import SearchBudget, search_national
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
     parser.add_argument("--spacing-m", type=float, default=20000)
     parser.add_argument("--tile-cells", type=int, default=4)
     args = parser.parse_args()
-    from aircraft_geoloc.terrain import Terrain
+    from dopplergeist.terrain import Terrain
     index = FlightIndex(args.index)
     start, end = index.report["coverage"]["time_range_s"]
     origin = start

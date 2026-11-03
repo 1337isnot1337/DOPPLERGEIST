@@ -68,7 +68,7 @@ def test_audit_keeps_measured_zeros_and_does_not_bridge_a_gap():
 
 
 def test_clipping_before_normalization_can_remove_height_reference_observations():
-    from aircraft_geoloc.tracks import adsblol_frame
+    from dopplergeist.tracks import adsblol_frame
     raw = {"icao": "abcdef", "timestamp": 1000., "trace": [
         [i, 40., -100., 1000., None, None, 0, 0, {}, 0, 1450. if i == 0 else None, 0]
         for i in range(3)]}

@@ -6,7 +6,7 @@ import tempfile
 from types import SimpleNamespace
 import unittest
 
-from aircraft_geoloc.provenance import RunProvenance, implementation_provenance
+from dopplergeist.provenance import RunProvenance, implementation_provenance
 
 
 class ProvenanceTests(unittest.TestCase):
@@ -123,8 +123,8 @@ class ProvenanceTests(unittest.TestCase):
 
     def test_wheel_layout_excludes_unrelated_installed_packages(self):
         roots = [self.root / "checkout/src", self.root / "venv/lib/python/site-packages"]
-        files = {"aircraft_geoloc/__init__.py": b"version = 1\n",
-                 "aircraft_geoloc/web/__init__.py": b"assets = True\n"}
+        files = {"dopplergeist/__init__.py": b"version = 1\n",
+                 "dopplergeist/web/__init__.py": b"assets = True\n"}
         for root in roots:
             for name, data in files.items():
                 path = root / name
@@ -141,24 +141,24 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(wheel["sha256"], checkout["sha256"])
         sibling.write_bytes(b"external = 3\n")
         self.assertEqual(implementation_provenance(installed)["sha256"], wheel["sha256"])
-        (installed / "aircraft_geoloc/web/__init__.py").write_bytes(b"assets = False\n")
+        (installed / "dopplergeist/web/__init__.py").write_bytes(b"assets = False\n")
         self.assertNotEqual(implementation_provenance(installed)["sha256"], wheel["sha256"])
         with self.assertRaises(FileNotFoundError):
             implementation_provenance(sibling.parent)
 
     def test_code_manifest_preserves_legacy_digest_and_detects_code_changes(self):
         root = self.root / "src"
-        package = root / "aircraft_geoloc"
+        package = root / "dopplergeist"
         (package / "pkg").mkdir(parents=True)
         (package / "a.py").write_bytes(b"a = 1\n")
         (package / "pkg/b.py").write_bytes(b"b = 2\n")
         (root / "ignored.txt").write_bytes(b"not Python source")
         result = implementation_provenance(root)
-        expected = hashlib.sha256(b"aircraft_geoloc/a.py" + b"a = 1\n" +
-                                  b"aircraft_geoloc/pkg/b.py" + b"b = 2\n").hexdigest()
+        expected = hashlib.sha256(b"dopplergeist/a.py" + b"a = 1\n" +
+                                  b"dopplergeist/pkg/b.py" + b"b = 2\n").hexdigest()
         self.assertEqual(result["sha256"], expected)
         self.assertEqual([row["relative_path"] for row in result["sources"]],
-                         ["aircraft_geoloc/a.py", "aircraft_geoloc/pkg/b.py"])
+                         ["dopplergeist/a.py", "dopplergeist/pkg/b.py"])
         self.assertEqual(result["sources"][1]["sha256"], hashlib.sha256(b"b = 2\n").hexdigest())
         (package / "pkg/b.py").write_bytes(b"b = 3\n")
         self.assertNotEqual(implementation_provenance(root)["sha256"], expected)

@@ -1,0 +1,379 @@
+{
+  "stage": "coarse:7_15",
+  "unsupported_cpa_tracks": [
+    {
+      "track_id": "3c458d",
+      "reported_track_id": "3c458d",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "3c458d",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899957.47,
+            1788899957.5
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899401.26,
+        1788899972.33
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "a4e7c9:1",
+      "reported_track_id": "a4e7c9:1",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "a4e7c9:1",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899690.1,
+            1788899709.74
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899690.1,
+        1788900298.22
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "a596b1",
+      "reported_track_id": "a596b1",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "a596b1",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899713.49,
+            1788899713.93
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899408.26,
+        1788900290.4
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c01125",
+      "reported_track_id": "c01125",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c01125",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899417.68,
+            1788899432.85
+          ],
+          [
+            1788899445.47,
+            1788899449.62
+          ],
+          [
+            1788899449.62,
+            1788899456.57
+          ],
+          [
+            1788899495.43,
+            1788899515.6
+          ],
+          [
+            1788899515.6,
+            1788899522.62
+          ],
+          [
+            1788899573.41,
+            1788899588.92
+          ],
+          [
+            1788899618.43,
+            1788899618.85
+          ],
+          [
+            1788899648.42,
+            1788899668.45
+          ],
+          [
+            1788899668.45,
+            1788899673.16
+          ],
+          [
+            1788899675.08,
+            1788899691.19
+          ],
+          [
+            1788899691.19,
+            1788899700.59
+          ],
+          [
+            1788899723.31,
+            1788899726.87
+          ],
+          [
+            1788899726.87,
+            1788899731.11
+          ],
+          [
+            1788899827.01,
+            1788899830.5
+          ],
+          [
+            1788899830.5,
+            1788899837.03
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899404.72,
+        1788900298.76
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c0450a:1",
+      "reported_track_id": "c0450a:1",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c0450a:1",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899513.61,
+            1788899517.46
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899490.72,
+        1788899630.48
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c04776:0",
+      "reported_track_id": "c04776:0",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c04776:0",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788900004.18,
+            1788900005.53
+          ],
+          [
+            1788900005.53,
+            1788900008.41
+          ],
+          [
+            1788900039.11,
+            1788900040.49
+          ],
+          [
+            1788900108.94,
+            1788900111.49
+          ],
+          [
+            1788900127.07,
+            1788900127.85
+          ],
+          [
+            1788900201.54,
+            1788900204.41
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899962.03,
+        1788900267.3
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c047e0:3",
+      "reported_track_id": "c047e0:3",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c047e0:3",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899695.53,
+            1788899695.64
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899695.53,
+        1788899714.42
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c054a8:0",
+      "reported_track_id": "c054a8:0",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c054a8:0",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899997.01,
+            1788899997.02
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899997.01,
+        1788899997.81
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c06c2e:1",
+      "reported_track_id": "c06c2e:1",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c06c2e:1",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899591.97,
+            1788899593.07
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899520.84,
+        1788899619.45
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c0879c:1",
+      "reported_track_id": "c0879c:1",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c0879c:1",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899812.08,
+            1788899814.17
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899481.57,
+        1788899814.17
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    },
+    {
+      "track_id": "c0879c:2",
+      "reported_track_id": "c0879c:2",
+      "reason": "non_subsonic_motion",
+      "reported_intervals": {
+        "track_id": "c0879c:2",
+        "reason": "non_subsonic_motion",
+        "emission_intervals_s": [
+          [
+            1788899998.83,
+            1788900001.75
+          ]
+        ]
+      },
+      "emission_time_range_s": [
+        1788899851.38,
+        1788900046.06
+      ],
+      "receiver_bounds_wsen": [
+        -81.96583846400932,
+        43.65016973961132,
+        -79.948838702485,
+        45.088775125213246
+      ],
+      "receiver_point_count": 64,
+      "coverage_envelope": "whole_track_whole_stage_conservative"
+    }
+  ],
+  "unclassified_candidate_assessments": []
+}

@@ -1,0 +1,320 @@
+[
+  {
+    "tile": "-5_29",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "2": 1,
+      "1": 1
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 2
+    },
+    "unknown_with_certified_rejecting_event": 1,
+    "max_unknown_score_upper_bound": 1.0,
+    "production_bounded_rows": 2,
+    "elapsed_s": 0.07777830099985295,
+    "counts": {
+      "per_event_survivors": [
+        0,
+        4,
+        0,
+        7
+      ],
+      "survivors": 13,
+      "hypotheses_examined": 13,
+      "work_units": 65,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 13,
+      "candidates": 13,
+      "unclassified_score_candidates": 2,
+      "bounded_score_candidates": 2,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 9,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 0,
+      "rejected_trials": 18,
+      "unknown_trials": 4,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 2,
+      "bounded_unknown_rejections": 1,
+      "best_unknown_score_upper_bound": 1.0,
+      "best_discarded_score": 1.0
+    }
+  },
+  {
+    "tile": "-20_36",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "1": 76,
+      "2": 20
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 96
+    },
+    "unknown_with_certified_rejecting_event": 7,
+    "max_unknown_score_upper_bound": 2.0,
+    "production_bounded_rows": 96,
+    "elapsed_s": 0.5357038039983308,
+    "counts": {
+      "per_event_survivors": [
+        0,
+        69,
+        7,
+        34
+      ],
+      "survivors": 131,
+      "hypotheses_examined": 131,
+      "work_units": 645,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 142,
+      "candidates": 131,
+      "unclassified_score_candidates": 96,
+      "bounded_score_candidates": 96,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 30,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 0,
+      "rejected_trials": 60,
+      "unknown_trials": 192,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 96,
+      "bounded_unknown_rejections": 7,
+      "best_unknown_score_upper_bound": 2.0,
+      "best_discarded_score": 2.0
+    }
+  },
+  {
+    "tile": "-21_36",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "1": 251,
+      "2": 331,
+      "3": 148,
+      "4": 26
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 756
+    },
+    "unknown_with_certified_rejecting_event": 389,
+    "max_unknown_score_upper_bound": 3.0,
+    "production_bounded_rows": 756,
+    "elapsed_s": 7.120768543998565,
+    "counts": {
+      "per_event_survivors": [
+        122,
+        147,
+        162,
+        122
+      ],
+      "survivors": 1211,
+      "hypotheses_examined": 1211,
+      "work_units": 5777,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 729,
+      "candidates": 1211,
+      "unclassified_score_candidates": 756,
+      "bounded_score_candidates": 756,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 378,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 14,
+      "rejected_trials": 756,
+      "unknown_trials": 1512,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 756,
+      "bounded_unknown_rejections": 389,
+      "best_unknown_score_upper_bound": 3.0,
+      "best_discarded_score": 3.0
+    }
+  },
+  {
+    "tile": "-6_29",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "1": 109,
+      "2": 66,
+      "3": 2
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 177
+    },
+    "unknown_with_certified_rejecting_event": 64,
+    "max_unknown_score_upper_bound": 2.0,
+    "production_bounded_rows": 177,
+    "elapsed_s": 8.250739074001103,
+    "counts": {
+      "per_event_survivors": [
+        123,
+        168,
+        192,
+        192
+      ],
+      "survivors": 1452,
+      "hypotheses_examined": 1452,
+      "work_units": 6927,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 861,
+      "candidates": 1452,
+      "unclassified_score_candidates": 177,
+      "bounded_score_candidates": 177,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 1216,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 46,
+      "rejected_trials": 2432,
+      "unknown_trials": 354,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 177,
+      "bounded_unknown_rejections": 64,
+      "best_unknown_score_upper_bound": 2.0,
+      "best_discarded_score": 2.0
+    }
+  },
+  {
+    "tile": "8_20",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "2": 124,
+      "1": 90,
+      "3": 72,
+      "4": 18
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 304
+    },
+    "unknown_with_certified_rejecting_event": 201,
+    "max_unknown_score_upper_bound": 2.0,
+    "production_bounded_rows": 304,
+    "elapsed_s": 4.174735940001483,
+    "counts": {
+      "per_event_survivors": [
+        74,
+        93,
+        79,
+        57
+      ],
+      "survivors": 643,
+      "hypotheses_examined": 643,
+      "work_units": 3108,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 414,
+      "candidates": 643,
+      "unclassified_score_candidates": 304,
+      "bounded_score_candidates": 304,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 316,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 2,
+      "rejected_trials": 632,
+      "unknown_trials": 608,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 304,
+      "bounded_unknown_rejections": 201,
+      "best_unknown_score_upper_bound": 2.0,
+      "best_discarded_score": 2.0
+    }
+  },
+  {
+    "tile": "8_21",
+    "counts_reproduced": true,
+    "unknown_cardinalities": {
+      "1": 106,
+      "2": 66,
+      "3": 5
+    },
+    "unknown_reasons": {
+      "incomplete_ridge_or_trajectory_support": 177
+    },
+    "unknown_with_certified_rejecting_event": 53,
+    "max_unknown_score_upper_bound": 2.0,
+    "production_bounded_rows": 177,
+    "elapsed_s": 5.583626887999344,
+    "counts": {
+      "per_event_survivors": [
+        55,
+        100,
+        108,
+        120
+      ],
+      "survivors": 825,
+      "hypotheses_examined": 825,
+      "work_units": 3911,
+      "max_matched_events": 4,
+      "event_cap_limited": false,
+      "unmatched_proposals_allowed": true,
+      "cpa_rows": 458,
+      "candidates": 825,
+      "unclassified_score_candidates": 177,
+      "bounded_score_candidates": 177,
+      "unbounded_score_candidates": 0,
+      "evaluated_rejections": 614,
+      "unsupported_cpa_tracks": [],
+      "evaluated_trials": 16,
+      "rejected_trials": 1228,
+      "unknown_trials": 354,
+      "unreported_trial_envelopes": 0
+    },
+    "persisted_bound_check": {
+      "stage_valid_after_reopen": true,
+      "evidence_equal_after_reopen": true
+    },
+    "ledger_evidence": {
+      "complete": true,
+      "pruning_accounted_for": true,
+      "bounded_unknown_envelopes": 177,
+      "bounded_unknown_rejections": 53,
+      "best_unknown_score_upper_bound": 2.0,
+      "best_discarded_score": 2.0
+    }
+  }
+]

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aircraft_geoloc.tracks import unix_time
+from dopplergeist.tracks import unix_time
 
 
 @pytest.mark.parametrize("unit", ["s", "ms", "us", "ns"])

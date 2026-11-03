@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from aircraft_geoloc.evaluation import evaluate, sha256
+from dopplergeist.evaluation import evaluate, sha256
 
 
 def main():

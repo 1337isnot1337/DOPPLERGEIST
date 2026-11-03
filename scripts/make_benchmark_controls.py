@@ -49,7 +49,7 @@ def make_controls(output):
                     arrival = center + emission + distance / 343
                     envelope = np.hanning(len(emission)) * (slant / distance)
                     # Source phase is transported to receiver time, independent
-                    # of aircraft_geoloc.geometry and the inverse search model.
+                    # of dopplergeist.geometry and the inverse search model.
                     source = 0.22 * envelope * (np.sin(2 * np.pi * frequency * emission) +
                               0.6 * np.sin(2 * np.pi * 2 * frequency * emission + 0.3))
                     audio += np.interp(t, arrival, source, left=0, right=0)

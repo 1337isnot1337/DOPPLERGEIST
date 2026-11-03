@@ -1,8 +1,6 @@
-name: Checkpoint methodology replay
+name: Historical real regional replay (manual)
 
 on:
-  push:
-    branches: [worker/ci-checkpoint-20261102]
   workflow_dispatch:
 
 permissions:
@@ -20,7 +18,9 @@ env:
 
 jobs:
   synthetic:
-    name: Clean install, tests, and synthetic replay
+    name: Historical synthetic replay (disabled by owner directive)
+    # Preserve the historical lane without executing prohibited synthetic work.
+    if: ${{ false }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -56,9 +56,9 @@ jobs:
           import json
           from pathlib import Path
           import sys
-          import aircraft_geoloc
-          from aircraft_geoloc.provenance import implementation_provenance
-          package = Path(aircraft_geoloc.__file__).resolve().parent
+          import dopplergeist
+          from dopplergeist.provenance import implementation_provenance
+          package = Path(dopplergeist.__file__).resolve().parent
           assert "site-packages" in package.parts, package
           expected = implementation_provenance(Path("src"))
           observed = implementation_provenance(package.parent)
@@ -92,8 +92,7 @@ jobs:
           retention-days: 30
 
   regional:
-    name: Checksummed regional real-audio replay
-    needs: synthetic
+    name: Source-informed real regional replay; no independent accuracy claim
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:

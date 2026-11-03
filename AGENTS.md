@@ -9,7 +9,8 @@ reports with their original thresholds. Read
 `docs/AGENT_TASKS.md`, `docs/HANDOFF.md`, the assigned GitHub issue and relevant
 source before editing. The configured research CLI takes manual event settings;
 that does not describe the status of the whole project. Whole-recording intake,
-automatic discovery and bounded tiled search are implemented on `main`. Check
+automatic discovery, bounded tiled search and the local upload application
+(`analyze`, `serve`, `job`) are implemented on `main`. Check
 the README, a pinned source revision and current PR state before describing the
 product integration or an acceptance gate as complete or missing. The
 [2026-11-03 verification note](docs/VERIFICATION_2026-11-03.md) separates these scopes.
@@ -94,6 +95,28 @@ documentation that asks for exhaustive receipts, hashes or audit packages.
   names once active work and downstream dependencies are accounted for. Never
   discard unique useful changes or interfere with another worker's active checkout.
 
+## Real-world data only
+
+**The owner requires REAL recordings and real-world geolocation tests. NO MORE
+SYNTHETIC DATA.** Stop synthetic benchmark and data-generation work. Do not launch
+new generated flyover recordings, aircraft-track fixtures, synthetic baselines,
+null recordings or artificial benchmark corpora. Existing synthetic results are
+historical; they do not satisfy the current validation requirement.
+
+- Use actual audio and historical aircraft observations for empirical evaluation.
+  Establish a defensible recording time and independent location reference; report
+  uncertainty or missing ground truth honestly.
+- Prioritize obtaining usable real recordings and making the pipeline work on them.
+  Do not substitute another simulated success or detection-only fixture for this.
+- Existing unit tests remain software checks, not real-world validation. Do not
+  expand them into more fake field data or use their counts as accuracy evidence.
+- Do not launch suites that generate or use synthetic data. This restriction
+  applies to automatic CI and manual checks. Stop active synthetic runs and
+  preserve their interrupted outputs.
+- The planned canonical synthetic three-event baseline and 3/4/6-event sweeps are
+  cancelled. Do not replace them with another synthetic fixture. Preserve existing
+  synthetic code, data and results as historical material.
+
 ## Scientific and product boundaries
 
 - Audio-relative seconds and absolute UTC are distinct. File modification/upload
@@ -125,8 +148,9 @@ documentation that asks for exhaustive receipts, hashes or audit packages.
 - Preserve `evidence/` and historical `results/`. Use a new output directory for
   each actual experiment so failures are not overwritten. A short note of the
   source version, settings and result is enough; exhaustive hashes are not required.
-- Standard check: `.venv/bin/python -m pytest -q` after installing the project and
-  pytest. Run additional checks appropriate to the changed behavior.
+- Standard checks cover installation, source compilation, CLI help and packaged
+  assets without generated data. Use real recordings for pipeline verification.
+  Older blanket pytest instructions do not override the real-world data policy.
 - Final PR/task handoff: concrete change, relevant test command/result and remaining
   limits. Link necessary outputs rather than creating another receipt package.
   Do not claim unrun checks.

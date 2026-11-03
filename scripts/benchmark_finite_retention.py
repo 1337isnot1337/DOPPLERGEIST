@@ -9,9 +9,9 @@ from pathlib import Path
 import platform
 import time
 
-from aircraft_geoloc.data_access import content_hash, sha256, write_json
-from aircraft_geoloc.finite_search import RetentionLedger
-from aircraft_geoloc.tiled_search import merge_candidates
+from dopplergeist.data_access import content_hash, sha256, write_json
+from dopplergeist.finite_search import RetentionLedger
+from dopplergeist.tiled_search import merge_candidates
 
 
 def memory_mib(field):
@@ -35,7 +35,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     inputs = {"modes": args.modes, "stage_size": args.stage_size, "top_k": args.top_k,
               "code": {str(p.relative_to(root)): sha256(p) for p in [Path(__file__).resolve(),
-                       root / "src/aircraft_geoloc/finite_search.py", root / "src/aircraft_geoloc/tiled_search.py"]}}
+                       root / "src/dopplergeist/finite_search.py", root / "src/dopplergeist/tiled_search.py"]}}
     kind = "matched_group_support_minus_normalized_residual"
     ledger = RetentionLedger(output / "retention.sqlite", content_hash(inputs), kind)
     began, baseline, kept, stages = time.monotonic(), memory_mib("VmRSS"), [], 0

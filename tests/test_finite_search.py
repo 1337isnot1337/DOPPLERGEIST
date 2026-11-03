@@ -3,9 +3,9 @@ import sqlite3
 
 import pytest
 
-from aircraft_geoloc.data_access import DataUnavailable
-from aircraft_geoloc.finite_search import RetentionLedger, classified_assessment, identify_mode
-from aircraft_geoloc.tiled_search import merge_candidates
+from dopplergeist.data_access import DataUnavailable
+from dopplergeist.finite_search import RetentionLedger, classified_assessment, identify_mode
+from dopplergeist.tiled_search import merge_candidates
 
 
 KIND = "matched_group_support_minus_normalized_residual"
@@ -96,3 +96,10 @@ def test_a_finite_best_score_does_not_hide_unknown_optimizer_trials():
     assert not classified_assessment({"score": .9})
     for change in [{"complete": False}, {"unknown_trials": 1}, {"evaluated_trials": None}, {"rejected_trials": -1}]:
         assert not classified_assessment({"score": .9, "scoring_assessment": dict(good, **change)})
+    for score in [float("nan"), float("inf"), -float("inf")]:
+        assert not classified_assessment({"score": score, "scoring_assessment": good})
+    empty = dict(good, evaluated_trials=0, rejected_trials=0)
+    assert not classified_assessment({"score": .9, "scoring_assessment": empty})
+    assert not classified_assessment({"score": -float("inf"), "scoring_assessment": empty})
+    rejected = dict(empty, rejected_trials=3)
+    assert classified_assessment({"score": -float("inf"), "scoring_assessment": rejected})

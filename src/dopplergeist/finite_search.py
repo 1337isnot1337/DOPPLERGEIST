@@ -33,10 +33,50 @@ def identify_mode(row):
 
 def classified_assessment(row):
     assessment = row.get("scoring_assessment")
-    return (isinstance(assessment, dict) and assessment.get("complete") is True
+    valid = (isinstance(assessment, dict) and assessment.get("complete") is True
             and all(type(assessment.get(k)) is int and assessment[k] >= 0
                     for k in ("evaluated_trials", "rejected_trials", "unknown_trials"))
             and assessment["unknown_trials"] == 0)
+    if not valid:
+        return False
+    # No trials is unknown work. A finite best needs an evaluated trial; a
+    # wholly rejected envelope cannot have discarded an evaluated finite best.
+    score = row.get("score", math.nan)
+    return (assessment["evaluated_trials"] > 0 if math.isfinite(score) else
+            score == -math.inf and assessment["evaluated_trials"] == 0 and assessment["rejected_trials"] > 0)
+
+
+def bounded_assessment(row):
+    """Validate a score ceiling without calling missing support a core fit."""
+    assessment = row.get("scoring_assessment")
+    kind = "matched_group_support_minus_normalized_residual"
+    indices = row.get("event_indices")
+    if (not isinstance(assessment, dict) or assessment.get("complete") is not False
+            or assessment.get("unknown_score_bound_kind") != kind
+            or row.get("score_kind") != kind
+            or assessment.get("unknown_score_bound_method") != "nonnegative_loss_and_validated_event_fits"
+            or not isinstance(indices, list) or not indices
+            or any(type(i) is not int or i < 0 for i in indices) or indices != sorted(set(indices))
+            or len(row.get("flight_ids", [])) != len(indices)):
+        return False
+    fields = ("evaluated_trials", "rejected_trials", "unknown_trials",
+              "bounded_unknown_trials", "bounded_unknown_rejections")
+    if not all(type(assessment.get(k)) is int and assessment[k] >= 0 for k in fields):
+        return False
+    scheduled = assessment.get("scheduled_trials")
+    if (type(scheduled) is not int or scheduled <= 0
+            or assessment.get("trial_count_semantics") != "disjoint_evaluated_rejected_unknown"
+            or assessment.get("empty_clock_domain") is not False
+            or scheduled != sum(assessment[k] for k in fields[:3])):
+        return False
+    unknown, bounded, rejected = (assessment[k] for k in fields[2:])
+    if not 0 < unknown == bounded or rejected > bounded:
+        return False
+    upper = assessment.get("unknown_score_upper_bound")
+    if rejected == bounded:
+        return upper is None
+    return (isinstance(upper, (int, float)) and not isinstance(upper, bool)
+            and math.isfinite(upper) and 0 <= upper <= len(indices))
 
 
 class RetentionLedger:
@@ -59,6 +99,9 @@ class RetentionLedger:
                     CREATE TABLE IF NOT EXISTS records(stage TEXT, mode_id TEXT, score REAL,
                         groups_count INTEGER, kind TEXT, seed TEXT, PRIMARY KEY(stage,mode_id));
                     CREATE INDEX IF NOT EXISTS mode_index ON records(mode_id);
+                    CREATE TABLE IF NOT EXISTS bounds(stage TEXT, bound_id TEXT, upper_score REAL,
+                        groups_count INTEGER, detail TEXT, PRIMARY KEY(stage,bound_id));
+                    CREATE INDEX IF NOT EXISTS bound_index ON bounds(bound_id);
                 """)
                 if db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
                     raise DataUnavailable("Corrupt finite retention ledger")
@@ -82,16 +125,19 @@ class RetentionLedger:
             db.close()
 
     @staticmethod
-    def _checksum(records, kept, occurrences, duplicates):
+    def _checksum(records, kept, occurrences, duplicates, bounds=()):
         digest = hashlib.sha256()
         for record in records:
             digest.update(json.dumps(record, separators=(",", ":"), allow_nan=False).encode())
             digest.update(b"\n")
         digest.update(json.dumps(sorted(kept), separators=(",", ":")).encode())
         digest.update(json.dumps([occurrences, duplicates]).encode())
+        for bound in bounds:
+            digest.update(json.dumps(bound, separators=(",", ":"), allow_nan=False).encode())
+            digest.update(b"\n")
         return digest.hexdigest()
 
-    def record(self, stage, rows, kept, occurrences):
+    def record(self, stage, rows, kept, occurrences, *, bounds=()):
         records = []
         for row in rows:
             identifier = identify_mode(row)
@@ -101,11 +147,25 @@ class RetentionLedger:
             records.append((identifier, float(row["score"]), len(row["mode_seed"]["event_indices"]), kind,
                             json.dumps(row["mode_seed"], sort_keys=True, separators=(",", ":"))))
         records.sort()
+        bound_records = []
+        for bound in bounds:
+            detail = bound["detail"]
+            if (self.score_kind != "matched_group_support_minus_normalized_residual"
+                    or not bounded_assessment(detail)
+                    or bound["groups_count"] != len(detail["event_indices"])
+                    or bound["upper_score"] != detail["scoring_assessment"]["unknown_score_upper_bound"]
+                    or bound["bound_id"] != "bound-" + content_hash(detail)):
+                raise DataUnavailable("Invalid finite association-score bound")
+            bound_records.append((bound["bound_id"], bound["upper_score"], bound["groups_count"],
+                                  json.dumps(detail, sort_keys=True, separators=(",", ":"))))
+        bound_records.sort()
         kept_ids = [identify_mode(row) for row in kept]
-        checksum = self._checksum(records, kept_ids, occurrences, occurrences-len(records))
+        checksum = self._checksum(records, kept_ids, occurrences, occurrences-len(records), bound_records)
         with self.connect() as db:
             db.execute("DELETE FROM records WHERE stage=?", (stage,))
+            db.execute("DELETE FROM bounds WHERE stage=?", (stage,))
             db.executemany("INSERT INTO records VALUES(?,?,?,?,?,?)", [(stage, *r) for r in records])
+            db.executemany("INSERT INTO bounds VALUES(?,?,?,?,?)", [(stage, *r) for r in bound_records])
             db.execute("INSERT OR REPLACE INTO stages VALUES(?,?,?,?,?)",
                        (stage, checksum, occurrences, occurrences-len(records), json.dumps(sorted(kept_ids))))
         return checksum
@@ -122,7 +182,8 @@ class RetentionLedger:
                 if record is None or record[0] != expected:
                     return False
                 rows = db.execute("SELECT mode_id,score,groups_count,kind,seed FROM records WHERE stage=? ORDER BY mode_id", (stage,))
-                return self._checksum(rows, json.loads(record[1]), record[2], record[3]) == expected
+                bounds = db.execute("SELECT bound_id,upper_score,groups_count,detail FROM bounds WHERE stage=? ORDER BY bound_id", (stage,))
+                return self._checksum(rows, json.loads(record[1]), record[2], record[3], bounds) == expected
         except (sqlite3.DatabaseError, ValueError, TypeError) as error:
             raise DataUnavailable("Corrupt finite retention stage") from error
 
@@ -149,6 +210,11 @@ class RetentionLedger:
             evaluated = db.execute(f"SELECT count(*) FROM ({distinct})").fetchone()[0]
             original = {mode_id: score for mode_id, score in db.execute(
                 f"SELECT mode_id,score FROM ({distinct}) WHERE mode_id IN (SELECT id FROM retained_ids)")}
+            bounded_count, bounded_rejections, bounded_max = db.execute(
+                "SELECT count(*),coalesce(sum(upper_score IS NULL),0),max(upper_score) FROM bounds").fetchone()
+            discarded += bounded_count - bounded_rejections
+            if bounded_max is not None:
+                bound = bounded_max if bound is None else max(bound, bounded_max)
         if set(original) != set(ids):
             accounted = False
         if expected_stages is not None:
@@ -157,6 +223,7 @@ class RetentionLedger:
                 accounted = False
         if not accounted:
             discarded, bound, evaluated, original = None, None, None, {}
+            bounded_count, bounded_rejections, bounded_max = None, None, None
         return {"schema_version": 1, "scope": "evaluated_finite_grid", "complete": bool(complete and accounted),
                 "score_kind": self.score_kind, "spacing_m": float(spacing_m), "refine_spacing_m": float(refine_spacing_m),
                 "max_event_groups": max_event_groups,
@@ -164,7 +231,11 @@ class RetentionLedger:
                                     "event_groups": len(row["mode_seed"]["event_indices"])} for row in retained],
                 "discarded_count": discarded, "best_discarded_score": bound, "pruning_accounted_for": accounted,
                 "evaluated_modes": evaluated,
+                "bounded_unknown_envelopes": bounded_count,
+                "bounded_unknown_rejections": bounded_rejections,
+                "best_unknown_score_upper_bound": bounded_max,
                 "stages": totals,
                 "limitations": ["Evaluated grids and recorded refinements only; continuous-space uniqueness is not established.",
+                                "Unknown association trials remain unknown; their persisted score ceilings join the discarded-alternative bound.",
                                 "Unvisited positions and unperformed refinements have no inferred score bound.",
                                 "Proposal envelopes, CPA tolerances, grouping, clock bounds and physical model are declared assumptions."]}

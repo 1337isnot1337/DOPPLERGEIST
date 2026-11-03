@@ -13,7 +13,7 @@ import subprocess
 import sys
 import time
 
-from aircraft_geoloc.evaluation import sha256
+from dopplergeist.evaluation import sha256
 
 
 def run(manifest_path, output, command):
@@ -29,7 +29,7 @@ def run(manifest_path, output, command):
         request_path = (manifest_path.parent / case["request"]).resolve()
         request = json.loads(request_path.read_text())
         # Reject label/hint fields before invoking any algorithm.
-        from aircraft_geoloc.contracts import validate_request
+        from dopplergeist.contracts import validate_request
         request = validate_request(request)
         audio = (request_path.parent / request["audio_path"]).resolve()
         if sha256(audio) != case["audio_sha256"]:
@@ -57,7 +57,7 @@ def run(manifest_path, output, command):
             result = {"status": "failed", "reason_code": "benchmark_execution_failed"}
         else:
             try:
-                from aircraft_geoloc.contracts import validate_result
+                from dopplergeist.contracts import validate_result
                 result = validate_result(json.loads(result_path.read_text()))
                 if result["status"] not in {"succeeded", "inconclusive", "failed", "needs_input", "cancelled"}:
                     raise ValueError("Benchmark worker did not finish with a terminal result")
