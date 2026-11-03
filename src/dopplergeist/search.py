@@ -206,14 +206,8 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
         f0 = np.clip(np.sum(w*factor[valid]*ridge[valid])/np.sum(w*factor[valid]**2),*f0_bounds)
         rmse = np.sqrt(np.average((f0*factor[valid]-ridge[valid])**2,weights=w))
         return -float(rmse),float(f0)
-    frequencies = np.linspace(*f0_bounds,max(3,int(np.ceil((f0_bounds[1]-f0_bounds[0])/frequency_step))+1))
-    predicted = frequencies[:,None]*factor[None,:]
-    contrast = spectrum.sample(times[None,:],predicted)
-    # Fixed support: candidates do not gain points by leaving the frequency band.
-    scores = np.where(np.mean(np.isfinite(contrast),axis=1)>=0.95,
-                      np.mean(np.nan_to_num(contrast,nan=-4.0),axis=1),-np.inf)
-    best = np.argmax(scores)
-    return float(scores[best]),float(frequencies[best])
+    from .spectral_grid import best_frequency
+    return best_frequency(spectrum, times, factor, f0_bounds, frequency_step)
 
 
 def _ridge_trial_classification(result, events, association):
