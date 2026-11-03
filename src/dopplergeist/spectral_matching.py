@@ -140,6 +140,7 @@ def compare_spectral_modes(recording, candidates, tracks, events, *,
             "Unmatched proposals are not established absent flights.",
             "Spectral sums from different matched event sets do not define a global winner.",
             "Time-bin sums depend on the spectral window, hop and contrast normalization; the source video's exact brightness scaling is unspecified.",
+            "The common clock maximizes the combined score; the source video describes choosing the first event's alignment before locking later events.",
             "One reference-band curve is scored per group; additional harmonic curves are not jointly scored here.",
             "The fixed spectral band and 95 percent time-bin support rule define scorable frequency curves.",
             "Ridge retention bounds do not bound this spectral statistic; location acceptance is not evaluated."]}

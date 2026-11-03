@@ -151,7 +151,9 @@ top-level `ranked` list. Each event-set ranking also contains `sample_sum_ranked
 a separate ranking summing contrast over the sampled time bins and optimizing the
 same shared clock. Unlike the event-mean statistic, it weights longer spectral
 windows more heavily. It depends on the window, hop and contrast normalization;
-the source video does not specify its exact brightness scaling. Neither ranking
+the source video does not specify its exact brightness scaling. The comparator
+chooses a clock that maximizes the combined score; the video describes choosing
+the first event's alignment before locking later events to it. Neither ranking
 establishes a national optimum or location acceptance, and ridge retention
 bounds do not apply to these scores.
 
