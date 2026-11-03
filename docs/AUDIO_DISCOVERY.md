@@ -17,6 +17,9 @@ integer ratios and rational ratios (e.g. measured 2f and 3f with an absent
 fundamental) count as one independent event. The lowest measured harmonic is the
 representative ridge; no fundamental is invented. Harmonic count denotes distinct
 measured ratios, including fragmented traces of the same harmonic only once.
+Harmonic grouping is optional consolidation: a ridge without a compatible
+partner remains a single-ridge event candidate. The detector does not require a
+second harmonic.
 
 The output preserves recording-relative ridge samples and weights, measured
 window/band, harmonic-group identity, contrast/support, spectral resolution and
@@ -25,6 +28,13 @@ quality score is a probability. No compulsory straight-flight speed, slant or
 source-frequency estimate constrains downstream search. These are **acoustic
 moving-tone proposals**, with aircraft identity unconfirmed. Association must
 reject unsupported proposals and count harmonic groups once.
+
+In the current real one-hour upload, automatic discovery produced 15 independent
+groups: 14 have one observed ridge and one has three. This is a useful reminder
+that harmonic grouping can consolidate evidence when multiple bands are
+recorded, but a single-ridge candidate must remain eligible for downstream
+assessment. The audio-only discovery result does not confirm aircraft identity
+or recording location.
 
 With output_dir, discovery saves `discovery.json` (all events, settings, chunk
 counts, original harmonic ridges and input hash), `discovery.png` (overview), and
