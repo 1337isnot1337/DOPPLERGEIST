@@ -199,24 +199,60 @@ def _expanded_bounds(cells, spacing, radius, crs):
     return _to_geographic(crs).transform_bounds(*box, densify_pts=101)
 
 
-def _tracks(indexes, bounds, time_range, budget):
-    tracks, identities, samples = [], set(), 0
+def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None, c=343.0):
+    tracks, identities, samples = [], {}, 0
+    queried, queried_samples = 0, 0
+
+    def signature(track):
+        return content_hash([track.id, track.time.tolist(), track.xyz.tolist(), track.spline.c.tolist()])
+
     for index in indexes:
         for track in index.query(bounds, time_range):
+            if observers is not None:
+                queried += 1
+                queried_samples += len(track.time)
+                # The retry may inspect extra distant tracks, but it must not
+                # turn the original per-tile limits into unbounded work.
+                if (queried > 20 * budget.max_tracks_per_tile
+                        or queried_samples > 20 * budget.max_track_samples_per_tile):
+                    raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
             # Same track from overlapping daily/source coverage must be identical;
             # silently dropping different geometry would change the physics.
             if track.id in identities:
-                signature = content_hash([track.id, track.time.tolist(), track.xyz.tolist(), track.spline.c.tolist()])
-                previous = next(t for t in tracks if t.id == track.id)
-                if signature != content_hash([previous.id, previous.time.tolist(), previous.xyz.tolist(), previous.spline.c.tolist()]):
+                previous = identities[track.id]
+                previous_signature = previous if isinstance(previous, str) else signature(previous)
+                if signature(track) != previous_signature:
                     raise DataUnavailable(f"Conflicting flight segment identity: {track.id}")
                 continue
-            identities.add(track.id)
+            if observers is not None:
+                try:
+                    distant = track.outside_observer_radius(observers, radius, c)
+                except AcousticSupportError:
+                    # Keep unsupported tracks so the ordinary scorer records
+                    # their missing support, even when they appear distant.
+                    distant = False
+                if distant:
+                    identities[track.id] = signature(track)
+                    continue
+            identities[track.id] = track
             tracks.append(track)
             samples += len(track.time)
             if len(tracks) > budget.max_tracks_per_tile or samples > budget.max_track_samples_per_tile:
                 raise DataUnavailable("Tile track/sample memory budget exceeded; reduce tile_cells")
     return tracks
+
+
+def _tracks_for_points(indexes, bounds, time_range, budget, points, terrain, radius, c):
+    """Retry an overloaded query after the scorer's conservative distance test."""
+    try:
+        return _tracks(indexes, bounds, time_range, budget), points
+    except DataUnavailable as error:
+        if str(error) != "Tile track/sample memory budget exceeded; reduce tile_cells":
+            raise
+    if "elev_m" not in points:
+        points = _sample_tile_terrain(points, terrain)
+    observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
+    return _tracks(indexes, bounds, time_range, budget, observers=observers, radius=radius, c=c), points
 
 
 def _association_clock_window(start_window, sweep_s):
@@ -695,9 +731,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         restore_terrain(payload)
                     else:
                         points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
-                        tracks = (_tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
-                                  if len(points) else [])
-                        points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
+                        tracks = []
+                        if len(points):
+                            tracks, points = _tracks_for_points(
+                                indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s,
+                                budget, points, terrain, radius, parameters.get("c", 343.0))
+                        if tracks and "elev_m" not in points:
+                            points = _sample_tile_terrain(points, terrain)
+                        sampled = "elev_m" in points
+                        if not tracks:
+                            points = pd.DataFrame()
                         if len(points):
                             rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                   ledger=ledger, stage=stage,
@@ -706,9 +749,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         else:
                             rows, counts = [], {}
                             ledger.record(stage, [], [], 0)
-                        used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
+                        used = getattr(terrain, "last_sample_files", set()) if sampled else set()
                         terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
-                        oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if len(points) else []
+                        oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if sampled else []
                         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
                                    "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
                                    "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
@@ -776,7 +819,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                 refinement_points_skipped += skipped
                                 continue
                             try:
-                                tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
+                                tracks, points = _tracks_for_points(
+                                    indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
+                                    budget, points, terrain, radius, parameters.get("c", 343.0))
                                 stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
                                 rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                                       ledger=ledger, stage=stage,
