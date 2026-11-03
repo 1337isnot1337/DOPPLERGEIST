@@ -208,13 +208,28 @@ class Track:
         sample = np.unique(np.r_[np.arange(self.time[0], self.time[-1], step), self.time[-1]])
         range2 = np.sum((self.position(sample) - observer) ** 2, axis=-1)
         indices = find_peaks(-range2)[0]
+        brackets = [(sample[i-1], sample[i], sample[i+1]) for i in indices]
+        # find_peaks excludes the first and last sample. An interior minimum
+        # can nevertheless lie between an endpoint and its neighbour, while
+        # the endpoint is the smallest sampled range. Check the range-rate
+        # signs before optimizing those intervals; an endpoint itself is not
+        # evidence of a complete passage.
+        edges = []
+        if range2[0] <= range2[1]:
+            edges.append((sample[0], sample[1]))
+        if range2[-1] <= range2[-2] and (len(sample) > 2 or not edges):
+            edges.append((sample[-2], sample[-1]))
+        for lo, hi in edges:
+            t = np.array([lo, hi])
+            radial = np.sum((self.position(t) - observer) * self.speed_vector(t), axis=-1)
+            if radial[0] < 0 < radial[1]:
+                brackets.append((lo, lo, hi))
         events = []
-        for i in indices:
+        for lo, mid, hi in brackets:
             # Optimize relative time: scipy's absolute-time stopping term
             # is too loose when Unix timestamps are around 1.8 billion seconds.
-            mid = sample[i]
             result = minimize_scalar(lambda dt: np.sum((self.position(mid + dt) - observer) ** 2),
-                                     bounds=(sample[i - 1] - mid, sample[i + 1] - mid),
+                                     bounds=(lo - mid, hi - mid),
                                      method="bounded", options={"xatol": 0.001})
             t = mid + result.x
             distance = np.sqrt(result.fun)
@@ -223,7 +238,7 @@ class Track:
                                "receive_time": float(t + distance / c),
                                "distance_m": float(distance),
                                "speed_mps": float(np.linalg.norm(self.speed_vector(t)))})
-        return events
+        return sorted(events, key=lambda event: event["emission_time"])
 
 
 def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):
