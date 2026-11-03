@@ -103,7 +103,7 @@ dependencies, not product runtime dependencies.
 With that service running, in another terminal:
 
 ```bash
-codex-isolated-desktop run .venv/bin/python scripts/verify_upload_browser.py \
+codex-isolated-desktop run .venv/bin/python scripts/verify_artifact_browser.py \
   --url http://127.0.0.1:18876 \
   --audio results/new-upload-controls/stationary.mp3 \
   --request results/new-upload-controls/missing-time.json \
