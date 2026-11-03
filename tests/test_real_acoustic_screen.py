@@ -82,10 +82,17 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
         fixture["query_bounds"], fixture["query_time_s"])}
     point = SimpleNamespace(**fixture["point"], x=0., y=0.)
 
+    current_first_measurement = None
+
     @matching._cache_ridge_fits
     def run():
-        return [score_candidate(candidates[i], point, tracks, events, measurements, mode="robust_ridge", score_floor=0.0)
-                for i in chosen]
+        nonlocal current_first_measurement
+        rows = []
+        for i in chosen:
+            current_first_measurement = measurements[candidates[i]["event_indices"][0]]
+            rows.append(score_candidate(candidates[i], point, tracks, events, measurements,
+                                        mode="robust_ridge", score_floor=0.0))
+        return rows
 
     original = screen.ridge_trial_rejections
     with monkeypatch.context() as patch:
@@ -93,9 +100,10 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
                       lambda measurement, event, factors, emissions: np.zeros(len(factors), dtype=bool))
         baseline = run()
     witnessed = 0
+    later_witnessed = 0
 
     def checked(measurement, event, factors, emissions):
-        nonlocal witnessed
+        nonlocal witnessed, later_witnessed
         rejected = original(measurement, event, factors, emissions)
         sigma = _frequency_scale(event)
         fraction = event.get("quality", {}).get("source_drift_fraction", .02)
@@ -105,12 +113,14 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
             assert fit["support_fraction"] == 1. and math.isfinite(fit["score"])
             assert -fit["score"] > 3*sigma
             witnessed += 1
+            if measurement is not current_first_measurement:
+                later_witnessed += 1
         return rejected
 
     with monkeypatch.context() as patch:
         patch.setattr(screen, "ridge_trial_rejections", checked)
         screened = run()
-    assert witnessed > 0
+    assert witnessed > 0 and later_witnessed > 0
     for before, after in zip(baseline, screened):
         before, after = dict(before), dict(after)
         before.pop("scoring_assessment", None)
