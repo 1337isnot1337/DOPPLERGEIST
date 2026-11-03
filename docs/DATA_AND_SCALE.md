@@ -113,11 +113,20 @@ shared-machine replay of two real grid points from a full-day search, one worker
 took 64.93 seconds and two took 38.95 seconds including startup, with identical
 payloads and ledgers. This small sample does not predict nationwide runtime.
 
-In one real full-day grid cell, the track retry reduced 1,929 queried tracks to
-614 within the configured memory limit. All 200 tracks with unsupported motion
-remained. Complete scoring with the full and reduced sets produced identical
-results, support records and retention checksums. This does not establish that
-other overloaded cells will fit within the limits or resolve unsupported motion.
+Before the spline-hull improvement below, one real full-day grid cell's track
+retry reduced 1,929 queried tracks to 614 within the configured memory limit,
+retaining all 200 tracks with unsupported motion. Complete scoring with the full
+and reduced sets produced identical results, support records and retention
+checksums. Other overloaded cells may still exceed the limits.
+
+For a trajectory with unsupported motion, the distance sieve can still exclude
+it when the bounding boxes of every cubic-spline control hull are outside the
+observer set's search radius. This proof does not assume subsonic motion. In a
+different full-day cell, it excluded 122 distant unsupported trajectories
+while leaving 20 unsupported trajectories visible; all 23,136 supported
+associations were unchanged. One track-query timing was about six CPU seconds
+with either version, so this is a coverage-accounting improvement, not a
+demonstrated nationwide speedup.
 
 Candidate scores are merged deterministically with approach identities, then
 global finalists are refined on the same global grid in bounded subtiles. The
