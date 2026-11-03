@@ -1,0 +1,207 @@
+name: Automatic synthetic methodology replay
+
+"on":
+  push:
+    branches: [worker/ci-automatic-20261102]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automatic-replay-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  NUMEXPR_NUM_THREADS: "1"
+  BLIS_NUM_THREADS: "1"
+
+jobs:
+  automatic:
+    name: Clean install, full tests, and automatic synthetic replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Record clean checkout and source hashes
+        run: |
+          mkdir -p results/ci-environment
+          git rev-parse HEAD > results/ci-environment/commit.txt
+          git status --porcelain > results/ci-environment/status-before.txt
+          git ls-files -z | xargs -0 sha256sum > results/ci-environment/source-sha256.txt
+          python --version > results/ci-environment/python-version.txt
+      - name: Install runtime and check dependencies
+        run: |
+          sudo apt-get update -qq 2>&1 | tee results/ci-environment/apt-update.log
+          sudo apt-get install -y ffmpeg 2>&1 | tee results/ci-environment/apt-install.log
+          python -m pip install -e . pytest 2>&1 | tee results/ci-environment/pip-install.log
+          python -m pip check 2>&1 | tee results/ci-environment/pip-check.log
+          python -m pip freeze --all > results/ci-environment/requirements-resolved.txt
+          ffmpeg -version > results/ci-environment/ffmpeg-version.txt
+      - name: Run full repository tests
+        run: python -m pytest -q --junitxml=results/ci-environment/pytest.xml 2>&1 | tee results/ci-environment/pytest.log
+      - name: Replay automatic synthetic methodology
+        timeout-minutes: 32
+        run: python scripts/ci_automatic_replay.py --output results/ci-automatic --timeout-s 1800 2>&1 | tee results/ci-environment/automatic-replay.log
+      - name: Print persisted automatic evidence
+        if: always()
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import math
+          import sys
+
+          root = Path("results/ci-automatic")
+          acceptance = root / "acceptance.json"
+          print("===== BEGIN AUTOMATIC ACCEPTANCE JSON =====", flush=True)
+          try:
+              content = acceptance.read_bytes()
+              sys.stdout.buffer.write(content)
+              if not content.endswith(b"\n"):
+                  sys.stdout.buffer.write(b"\n")
+              sys.stdout.flush()
+          except OSError as error:
+              print(f"UNAVAILABLE {acceptance}: {type(error).__name__}: {error}")
+          print("===== END AUTOMATIC ACCEPTANCE JSON =====", flush=True)
+
+          def bounded(value, depth=0):
+              if isinstance(value, str):
+                  return value if len(value) <= 400 else value[:400] + " [truncated]"
+              if isinstance(value, list):
+                  return {"count": len(value), "first": [bounded(item, depth + 1) for item in value[:5]]} if depth < 3 else {"count": len(value)}
+              if isinstance(value, dict):
+                  items = list(value.items())
+                  if depth >= 3:
+                      return {"key_count": len(items), "keys": [str(key)[:100] for key, _ in items[:16]]}
+                  result = {str(key)[:100]: bounded(item, depth + 1) for key, item in items[:16]}
+                  if len(items) > 16:
+                      result["_omitted_keys"] = len(items) - 16
+                  return result
+              return value
+
+          def pick(value, names):
+              return {name: bounded(value[name]) for name in names.split() if name in value}
+
+          def rows(value):
+              return value if isinstance(value, list) else []
+
+          def ridge_span(points):
+              points = rows(points)
+              times, frequencies = [], []
+              for point in points:
+                  if isinstance(point, dict):
+                      time, frequency = point.get("time_s"), point.get("frequency_hz")
+                  elif isinstance(point, list) and len(point) >= 2:
+                      time, frequency = point[:2]
+                  else:
+                      continue
+                  if isinstance(time, (int, float)) and math.isfinite(time):
+                      times.append(time)
+                  if isinstance(frequency, (int, float)) and math.isfinite(frequency):
+                      frequencies.append(frequency)
+              return {"point_count": len(points), "finite_time_count": len(times),
+                  "first_time_s": times[0] if times else None, "last_time_s": times[-1] if times else None,
+                  "frequency_range_hz": [min(frequencies), max(frequencies)] if frequencies else None}
+
+          def event_summary(event):
+              return dict(pick(event, "event_id harmonic_group_id start_s end_s band_hz quality"),
+                  ridge_span=ridge_span(event.get("ridge")))
+
+          def candidate(row):
+              if not isinstance(row, dict):
+                  return {"unexpected_type": type(row).__name__}
+              value = pick(row, "lat lon score score_kind flight_ids event_ids event_indices recording_start_utc recording_start_time_s uncertainty altitude_basis event_diagnostics")
+              sensitivity = row.get("sensitivity")
+              if isinstance(sensitivity, dict):
+                  value["sensitivity"] = pick(sensitivity, "radius_m kind method sources complete boundary_limited failures settings")
+                  value["sensitivity"]["profile_count"] = len(rows(sensitivity.get("profiles")))
+              return value
+
+          def summary(kind, data):
+              if not isinstance(data, dict):
+                  return {"unexpected_type": type(data).__name__}
+              if kind == "discovery":
+                  value = pick(data, "source_sha256 scope settings ridge_count")
+                  events = rows(data.get("events"))
+                  value.update(event_count=len(events), chunk_count=len(rows(data.get("chunks"))),
+                      harmonic_group_count=len(rows(data.get("harmonic_ridges"))))
+                  value["first_events"] = [event_summary(event) for event in events[:16] if isinstance(event, dict)]
+                  value["first_harmonic_groups"] = [{"group_index": index, "member_count": len(rows(group)),
+                      "first_members": [ridge_span(points) for points in rows(group)[:8]]}
+                      for index, group in enumerate(rows(data.get("harmonic_ridges"))[:16])]
+                  return value
+              if kind == "search":
+                  value = pick(data, "run_hash status scope required_flight_bounds tiles_total tiles_completed tiles_resumed unsearched_tiles grid_points_searched data_scope_complete refinement_failure candidate_retention_limit alternative_modes_exhaustively_assessed scoring_time_is_locked elapsed_s process_peak_rss_mib tile_failures data_coverage")
+                  candidates = rows(data.get("ranked"))
+              elif kind == "refinement":
+                  diagnostics = data.get("matching_diagnostics", {})
+                  value = {"matching_diagnostics": pick(diagnostics, "clock_locked refinement_failures refinement_boundary_limited altitude_basis alternatives_evaluated") if isinstance(diagnostics, dict) else {"unexpected_type": type(diagnostics).__name__}}
+                  candidates = rows(data.get("ranked"))
+              else:
+                  value = pick(data, "job_id status stage progress reason_code message coverage diagnostics")
+                  events = rows(data.get("events"))
+                  value["event_count"] = len(events)
+                  value["first_events"] = [event_summary(event) for event in events[:16] if isinstance(event, dict)]
+                  candidates = rows(data.get("candidates"))
+              value.update(candidate_count=len(candidates), first_candidates=[candidate(row) for row in candidates[:5]])
+              return value
+
+          reports = (("result.json", "result"), ("search/search-report.json", "search"),
+                     ("refined-candidates.json", "refinement"), ("discovery/discovery.json", "discovery"),
+                     ("decision.json", "decision"))
+          jobs = sorted(path for path in (root / "jobs").glob("*") if path.is_dir())
+          print(f"Automatic job directories: {len(jobs)}; summaries limited to the first 3")
+          if not jobs:
+              for relative, _ in reports:
+                  print(f"UNAVAILABLE {root}/jobs/<job-id>/{relative}: no persisted job directory")
+          for job in jobs[:3]:
+              for relative, kind in reports:
+                  path = job / relative
+                  print(f"===== BEGIN AUTOMATIC {kind.upper()} SUMMARY: {path} =====")
+                  try:
+                      size = path.stat().st_size
+                      if size > 16 * 1024 * 1024:
+                          print(f"NOT SUMMARIZED: {size} bytes exceeds the 16 MiB inspection limit; see the retained artifact")
+                      else:
+                          data = json.loads(path.read_text(encoding="utf-8"))
+                          rendered = json.dumps(summary(kind, data), indent=2, allow_nan=False)
+                          if len(rendered) > 16000:
+                              rendered = json.dumps({"summary_truncated": True, "original_characters": len(rendered), "preview": rendered[:8000]}, indent=2)
+                          print(rendered)
+                  except (OSError, ValueError, TypeError, UnicodeError) as error:
+                      print(f"UNAVAILABLE {path}: {type(error).__name__}: {error}")
+                  print(f"===== END AUTOMATIC {kind.upper()} SUMMARY: {path} =====")
+          PY
+      - name: Upload receipts, logs, stage evidence, and source hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automatic-synthetic-methodology-${{ github.sha }}
+          path: |
+            results/ci-environment/
+            results/ci-automatic/
+            !results/**/*.[wW][aA][vV]
+            !results/**/*.[mM][pP]3
+            !results/**/__pycache__/**
+            !results/**/*.pyc
+            !results/**/*.pyo
+          if-no-files-found: error
+          retention-days: 30

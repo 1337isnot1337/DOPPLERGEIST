@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "automatic_synthetic_cli_integration",
+  "source_commit": "068c84c1d77cd44199443a4b1d40dce23f8022b9",
+  "run_id": 41556154751,
+  "job_id": 125655420931,
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41556154751",
+  "tests": {
+    "passed": 139,
+    "subtests_passed": 8,
+    "warnings": 1,
+    "elapsed_s": 31.7
+  },
+  "stdout_summary": {
+    "acceptance": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/ci-automatic/acceptance.json",
+    "passed": false,
+    "status": "inconclusive",
+    "supported_decision": false,
+    "top_candidate_within_100m": false,
+    "error": null
+  },
+  "artifact": {
+    "id": 13194942415,
+    "size_in_bytes": 20590541,
+    "digest": "sha256:64721eeffc4c258ee6755bb1114420c08700ba5feda1e55f2f4d474e0c683b1a",
+    "expires_at": "2026-12-03T00:59:43Z",
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41556154751/artifacts/13194942415"
+  },
+  "interpretation": "The actual pipeline returned inconclusive with no harness exception and did not establish a leading candidate within 100 m. The short summary alone does not establish whether candidates existed or their distances. This is not accepted automatic localization.",
+  "evidence_limit": "Only the six-field stdout summary and job logs were read for this run. Per-candidate distances and detailed stage results are retained in the artifact and are not inferred here."
+}
