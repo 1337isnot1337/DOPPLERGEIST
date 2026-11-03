@@ -175,6 +175,10 @@ def pair_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                                   (between.distance_m<=threshold)]
                 # Only the selected actual passes are excluded, not every future
                 # pass by an aircraft with the same flight ID.
+                for selected in combination:
+                    is_selected = (between.flight_id.eq(selected["flight_id"]) &
+                                   between.emission_time.eq(selected["emission_time"]))
+                    between = between.loc[~is_selected]
                 if len(between):
                     rejected += 1
                     continue
