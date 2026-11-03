@@ -72,3 +72,9 @@ no event; harmonic, overlapping and MP3 positives are retained. Detection ran
 through the label-free subprocess runner; a later process read truth for scoring.
 No detector/settings changes followed the control run. These controls have no
 eligible location cases and do not establish real-aircraft identity or accuracy.
+
+Additional unchanged-code public-audio check: all 40 complete passage WAVs process
+without errors; 28 have at least one proposal, 12 have none, 102 proposals total.
+The run never supplied their frequency annotations. These counts do not establish
+true aircraft-event recall/precision: fragments and incidental sources remain
+unverified. Every prediction is saved under evidence/audio/w1-20261102/public40-4a49646.
