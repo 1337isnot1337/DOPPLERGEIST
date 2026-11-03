@@ -53,7 +53,12 @@ dependencies, suggested agent allocation and a copyable assignment prompt.
 
 The public source is [the original audio/video](https://www.youtube.com/watch?v=4CxVxuMVkMc);
 the separate [method video](https://www.youtube.com/watch?v=UytYrhYLOKI) explains
-the analysis. The uploaded MP3 has SHA-256
+the analysis. On November 3, the source upload was titled “Unknown location -
+raw audio” and its video track was 128×128 pixels. Frames inspected at 0 and 3
+seconds were identical and mostly black with a tiny landscape; they did not
+establish a precise recording location. The remainder of the video was not
+visually inspected. This check is evaluation-only and supplies no search inputs.
+The uploaded MP3 has SHA-256
 `674df668c25608ef3e9199bf3b48d760642456d679729c9661ac5cb2a22e179c`.
 The automatic test uses the whole recording, no supplied flight IDs or selected
 location, CONUS coverage, and a broad 2026-09-08 00:00 to 2026-09-09 12:00 UTC
@@ -73,7 +78,9 @@ homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. The local search is configured for 12
 workers and homelab stages with eight. A monitor resumes only the configured
 wall-time timeout after transferring available remote checkpoints; it does not
-resume a user cancellation or another failure. A search checkpoint from different
+resume a user cancellation or another failure. Operator-local cross-host helpers
+and logs are under `/home/cinna/.local/state/dopplergeist-cross-host-parity-20261103/`;
+they are not a portable distributed CLI. A search checkpoint from different
 code must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty root tiles after checking both
 identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
