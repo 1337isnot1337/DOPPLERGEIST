@@ -52,9 +52,16 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
 
     try:
         from .intake import AudioIntakeError, intake_recording
-        from .discovery import discover_events
+        from .discovery import DiscoverySettings, discover_events
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic audio components are not installed: {exc}")
+    discovery_options = config.get("discovery", {})
+    if not isinstance(discovery_options, dict) or discovery_options.keys() - {"chunk_s", "overlap_s"}:
+        return finish("failed", "invalid_configuration", "Operator discovery settings support only chunk_s and overlap_s.")
+    try:
+        discovery_settings = DiscoverySettings(**discovery_options)
+    except (TypeError, ValueError) as exc:
+        return finish("failed", "invalid_configuration", f"Invalid operator discovery settings: {exc}")
     progress("intake", 0.05)
     try:
         recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"))
@@ -62,7 +69,7 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("failed", exc.code, str(exc))
     state["recording"] = recording.metadata
     progress("discovery", 0.15, recording=recording.metadata)
-    events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery")]
+    events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
     state["events"] = events
     provenance["discovered_events"] = len(events)
     if recording.time_status == "needs_input":

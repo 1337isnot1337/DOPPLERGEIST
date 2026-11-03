@@ -78,7 +78,8 @@ def test_terminal_result_survives_restart_and_interrupted_job_is_explicit(tmp_pa
 
 def test_request_validation_upload_limits_and_paths(tmp_path, monkeypatch):
     with running_server(tmp_path, monkeypatch) as (manager, url):
-        for metadata in ({"schema_version": 1, "events": []}, {"schema_version": 1, "audio_path": "/etc/passwd"}):
+        for metadata in ({"schema_version": 1, "events": []}, {"schema_version": 1, "audio_path": "/etc/passwd"},
+                         {"schema_version": 1, "discovery": {"chunk_s": 24., "overlap_s": 16.}}):
             with pytest.raises(urllib.error.HTTPError) as error:
                 request(url + "/api/jobs", b"x", metadata)
             assert error.value.code == 400

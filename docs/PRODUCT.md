@@ -108,6 +108,16 @@ aircraft. Grid finalists undergo jointly constrained position/clock refinement;
 `refine_finalists` (default 5) limits physical sensitivity refinement. Unassessed
 retained approaches prevent an affirmative confidence decision.
 
+For reproducible chunk-boundary checks, an operator may set
+`"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
+These are the only discovery overrides supported by the product adapter. The
+existing detector validates the overlap and chunk constraints; spectral bands,
+acceptance thresholds and other scientific settings keep their defaults. The
+actual settings and analyzed chunks are saved in `discovery/discovery.json`, and
+the operator configuration hash is retained in provenance. This configuration is
+not an upload-request field. A chunk-size comparison must rerun detection and the
+pipeline; it cannot reuse final candidates as if discovery had run again.
+
 The automatic path always uses one shared clock inside the supplied start window
 and robust ridge loss. Its default association path considers every proposed
 independent group; harmonics count once and unsupported acoustic proposals remain

@@ -28,8 +28,8 @@ def encoded_mp3(tmp_path, *, moving=False):
     return target.read_bytes()
 
 
-def submit_and_wait(tmp_path, payload, *, time_window=None):
-    manager = JobManager(tmp_path / "jobs")
+def submit_and_wait(tmp_path, payload, *, time_window=None, config=None):
+    manager = JobManager(tmp_path / "jobs", config)
     server = JobServer(("127.0.0.1", 0), manager)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -79,16 +79,24 @@ def test_stationary_mp3_returns_no_events_without_search(tmp_path):
     assert not (directory / "search").exists()
 
 
-def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path):
+@pytest.mark.parametrize("discovery", [None, {"chunk_s": 24., "overlap_s": 16.}])
+def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, discovery):
     pytest.importorskip("aircraft_geoloc.data_access")
     pytest.importorskip("aircraft_geoloc.matching")
     pytest.importorskip("aircraft_geoloc.tiled_search")
     payload = encoded_mp3(tmp_path, moving=True)
-    final, directory = submit_and_wait(tmp_path, payload, time_window=WINDOW)
+    config = {"discovery": discovery} if discovery is not None else {}
+    final, directory = submit_and_wait(tmp_path, payload, time_window=WINDOW, config=config)
     assert final["status"] == "inconclusive" and final["reason_code"] == "data_unavailable", final
     assert len(final["events"]) >= 1
     assert list((directory / "discovery").glob("event-*.png"))
     assert final["coverage"]["data_status"] == "unavailable"
+    from dataclasses import asdict
+    from aircraft_geoloc.discovery import DiscoverySettings
+    receipt = json.loads((directory/"discovery/discovery.json").read_text())
+    assert receipt["settings"] == asdict(DiscoverySettings(**(discovery or {})))
+    assert len(receipt["chunks"]) > 1 if discovery else len(receipt["chunks"]) == 1
+    assert json.loads((directory/"operator.json").read_text()) == config
 
 
 def test_corrupt_upload_returns_predictable_decode_failure(tmp_path):
@@ -204,3 +212,16 @@ def test_an_explicit_event_cap_is_incomplete_work_not_missing_flight_data():
     assert coverage["search_complete"] is False
     assert coverage["data_status"] == "available"
     assert any("limit 3" in message for message in coverage["limitations"])
+
+
+@pytest.mark.parametrize("options", [None, {"min_frequency_hz": 400.}, {"chunk_s": "bad"},
+                                      {"chunk_s": 24., "overlap_s": 24.}])
+def test_invalid_operator_discovery_configuration_is_explicit(tmp_path, options):
+    from aircraft_geoloc.automatic import analyze
+    source = tmp_path/"unused.mp3"
+    source.write_bytes(b"configuration must fail before decode")
+    final = analyze({"schema_version": 1, "audio_path": str(source)}, tmp_path/"output",
+                    {"discovery": options})
+    assert final["status"] == "failed"
+    assert final["reason_code"] == "invalid_configuration"
+    assert not (tmp_path/"output/intake").exists()
