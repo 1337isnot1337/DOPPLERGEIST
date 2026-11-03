@@ -105,6 +105,10 @@
       "bytes": 28386,
       "sha256": "4e3b83a4ee8feec1a56c6698aafc1770da8a98f0dfda43ab34f34dc04e81602d"
     },
+    "hermes-updated-threshold-assessment.json": {
+      "bytes": 631,
+      "sha256": "c7e38688de5dedb527d865115e922be4b45efcf3de7bc3e8f19bfaeaabb1b061"
+    },
     "index-v1-report.json": {
       "bytes": 1132,
       "sha256": "a086747c6ea6faac0bfd6c7dcce5fc45984d6d03bc26975120348fe445501810"
