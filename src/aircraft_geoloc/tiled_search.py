@@ -101,8 +101,8 @@ def _tracks(indexes, bounds, time_range, budget):
         for track in index.query(bounds, time_range):
             # Same track from overlapping daily/source coverage must be identical;
             # silently dropping different geometry would change the physics.
-            signature = content_hash([track.id, track.time.tolist(), track.xyz.tolist(), track.spline.c.tolist()])
             if track.id in identities:
+                signature = content_hash([track.id, track.time.tolist(), track.xyz.tolist(), track.spline.c.tolist()])
                 previous = next(t for t in tracks if t.id == track.id)
                 if signature != content_hash([previous.id, previous.time.tolist(), previous.xyz.tolist(), previous.spline.c.tolist()]):
                     raise DataUnavailable(f"Conflicting flight segment identity: {track.id}")

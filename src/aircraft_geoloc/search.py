@@ -216,6 +216,18 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
                     time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
+    association = "event_indices" in candidate
+    association_fields = {}
+    if association:
+        if mode != "robust_ridge":
+            raise ValueError("Partial-event association requires robust_ridge scoring")
+        indices = candidate["event_indices"]
+        if not indices or indices != sorted(set(indices)) or any(i < 0 or i >= len(events) for i in indices):
+            raise ValueError("Association event indices must be unique, ordered and in range")
+        association_fields = {"event_indices": indices,
+            "event_ids": [events[i].get("event_id", str(i)) for i in indices],
+            "unmatched_event_ids": [e.get("event_id", str(i)) for i, e in enumerate(events) if i not in indices]}
+        events, measurements = [events[i] for i in indices], [measurements[i] for i in indices]
     if not events or len(events) != len(measurements) or len(events) != len(candidate["passes"]):
         raise ValueError("Need exactly one pass and measurement for each event")
     if mode not in ("brightness", "ridge", "robust_ridge"):
@@ -244,6 +256,9 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             from .matching import score_ridges
             result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
                                   events,measurements,observer,anchor+shift,c)
+            if association:
+                from .matching import association_score
+                result = association_score(result, events)
             if result["score"] > best["score"]:
                 best = dict(result,recording_start_time_s=float(anchor+shift),time_adjustment_s=float(shift))
             continue
@@ -258,7 +273,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         if total>best["score"]:
             best = {"score":total,"event_scores":scores,"f0_hz":f0s,
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
-    return dict(best,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
+    return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])
 
 
