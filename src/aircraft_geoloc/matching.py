@@ -142,7 +142,7 @@ def score_ridges(tracks, events, measurements, observer, recording_start_s, c=34
 
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
-                     crs="EPSG:5070", c=343.0):
+                     crs="EPSG:5070", c=343.0, recording_start_window_s=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
     A vertical offset changes the observer-to-track relative height; it is a
@@ -155,30 +155,47 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     x0, y0 = forward.transform(candidate["lon"], candidate["lat"])
     start = candidate["recording_start_time_s"]
     selected = [tracks[f] for f in candidate["flight_ids"]]
-    if radius_m <= 0 or clock_radius_s <= 0 or 0.0 not in altitude_offsets_m:
-        raise ValueError("Need positive refinement bounds and a nominal zero-altitude scenario")
-    bounds = [(-radius_m, radius_m), (-radius_m, radius_m), (-clock_radius_s, clock_radius_s)]
+    if radius_m <= 0 or clock_radius_s < 0 or 0.0 not in altitude_offsets_m:
+        raise ValueError("Need positive spatial/nonnegative clock bounds and a nominal zero-altitude scenario")
+    lower, upper = -clock_radius_s, clock_radius_s
+    if recording_start_window_s is not None:
+        lo, hi = recording_start_window_s
+        if not np.isfinite([lo, hi]).all() or lo > hi:
+            raise ValueError("Recording-start window must be finite and ordered")
+        lower, upper = max(lower, lo-start), min(upper, hi-start)
+    if lower > upper:
+        raise ValueError("Refinement clock bounds do not intersect the recording-start window")
+    fixed_clock = lower == upper
+    bounds = [(-radius_m, radius_m), (-radius_m, radius_m)]
+    initial = np.zeros(2) if fixed_clock else np.array([0.0, 0.0, np.clip(0.0, lower, upper)])
+    if not fixed_clock:
+        bounds.append((lower, upper))
     profiles = []
     for offset in altitude_offsets_m:
         def evaluate(parameters):
+            dt = lower if fixed_clock else parameters[2]
             latlon = inverse.transform(x0 + parameters[0], y0 + parameters[1])
             lon, lat = latlon
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
-                                  start + parameters[2], c)
+                                  start + dt, c)
             return score, lat, lon, elevation
         def objective(parameters):
             value = evaluate(parameters)[0]["score"]
             return -value if np.isfinite(value) else 1e6
-        result = minimize(objective, np.zeros(3), method="Powell", bounds=bounds,
+        result = minimize(objective, initial, method="Powell", bounds=bounds,
                           options={"xtol": 0.01, "ftol": 1e-7, "maxiter": 60})
-        parameters = result.x if objective(result.x) < objective(np.zeros(3)) else np.zeros(3)
+        parameters = result.x if objective(result.x) < objective(initial) else initial
         score, lat, lon, elevation = evaluate(parameters)
         if not np.isfinite(score["score"]):
             continue
+        dt = lower if fixed_clock else parameters[2]
+        spatial_boundary = bool(np.any(np.abs(parameters[:2]) >= radius_m * 0.98))
+        clock_boundary = bool(not fixed_clock and min(dt-lower, upper-dt) <= (upper-lower)*0.02)
         profiles.append(dict(score, lat=lat, lon=lon, elev_m=elevation,
-            recording_start_time_s=float(start + parameters[2]), altitude_offset_m=float(offset),
-            boundary_limited=bool(np.any(np.abs(parameters) >= np.array([radius_m, radius_m, clock_radius_s]) * 0.98)),
+            recording_start_time_s=float(start + dt), altitude_offset_m=float(offset),
+            boundary_limited=spatial_boundary or clock_boundary,
+            position_boundary_limited=spatial_boundary, clock_boundary_limited=clock_boundary,
             optimizer_success=bool(result.success)))
     nominal = next((p for p in profiles if p["altitude_offset_m"] == 0), None)
     if nominal is None:
@@ -186,6 +203,8 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     center = ecef(nominal["lat"], nominal["lon"], 0)
     radius = max(float(np.linalg.norm(ecef(p["lat"], p["lon"], 0) - center)) for p in profiles)
     return dict(candidate, **{k: v for k, v in nominal.items() if k != "altitude_offset_m"},
+                time_adjustment_s=float(candidate.get("time_adjustment_s", 0) + nominal["recording_start_time_s"]-start),
+                refinement_clock_bounds_s=[float(start+lower), float(start+upper)],
                 x=float(forward.transform(nominal["lon"], nominal["lat"])[0]),
                 y=float(forward.transform(nominal["lon"], nominal["lat"])[1]),
                 sensitivity={"radius_m": radius, "kind": "sensitivity",
