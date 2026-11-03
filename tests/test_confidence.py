@@ -36,6 +36,7 @@ def test_complete_fixture_passes_without_probability_and_preserves_inputs():
     before = deepcopy(bundle)
     result = decide(bundle)
     assert result["status"] == "succeeded"
+    assert result["diagnostics"]["policy_version"] == "engineering-v4-finite-grid"
     assert result["diagnostics"]["probability"] is None
     assert result["diagnostics"]["calibration"] == "uncalibrated"
     assert bundle == before
