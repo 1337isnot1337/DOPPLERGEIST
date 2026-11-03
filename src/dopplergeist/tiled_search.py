@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 from pyproj import Transformer
 
-from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
+from .data_access import CONUS, DataUnavailable, cached_sha256, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
 from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
@@ -720,7 +720,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             rasters += terrain.geoid.rasters
         terrain_signature = {"constant_m": getattr(terrain, "constant", None),
                              "rasters": {str(r.name): sha256(r.name) for r in rasters}}
-    identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": sha256(i.path)} for i in indexes],
+    identity = {"indexes": [{"input_hash": i.report["input_hash"], "file_sha256": cached_sha256(i.path)} for i in indexes],
                 "terrain": terrain_signature, "additional_input_hashes": input_hashes or {},
                 "events": events, "acoustic_hashes": acoustic, "bounds": list(bounds), "time_range_s": list(time_range_s),
                 "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
