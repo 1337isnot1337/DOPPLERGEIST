@@ -43,6 +43,9 @@ incomplete model support. Both are development examples, not automatic or
 independent real-world acceptance. The original Livermore run reported 38.8 seconds; the separate fresh replay used
 for the figure reported 20.7 seconds. Runtime depends on hardware and load.
 
+For the subsequent full-archive MP3 upload and its ranked candidates, see the
+[all-aircraft ranked run](LIVERMORE_RANKED_RUN.md).
+
 ## Separate automatic MP3 upload
 
 The same real recording was also encoded to MP3 and submitted to the local API
@@ -91,6 +94,44 @@ scope were not. This is a ranked, prior-constrained development result, not an
 accepted location or proof that the reference is correct. The complete original
 ranking and job artifacts are available locally under
 `/home/cinna/.local/state/dopplergeist-livermore-replay-20261103/`.
+
+## All-aircraft archive MP3 ranking
+
+A further end-to-end HTTP upload of the same MP3 searched a regional index
+prepared from the [ADSB.lol daily archive](https://github.com/adsblol/globe_history_2026/releases/tag/v2026.05.14-planes-readsb-staging-0).
+The archive contained 69,762 traces; conservative selection retained **466
+nearby aircraft**, including jets and unknown types, with 5,341 indexed track
+segments. The approximately 10-second recording-start window was unchanged. The search
+used the Livermore city-area box (`-121.84, 37.65, -121.70, 37.73`), originally
+chosen before the inferred reference was calculated. Event windows, frequency
+bands, and flight IDs were not supplied to the upload.
+
+The job searched **12 of 12 tile pieces** and 1,754 grid points with 250 m
+coarse spacing, refined its candidates at 100 m, and returned **105 ordered
+results**. Its declared archive coverage
+was complete for the requested region and time. The first five spatially
+distinct locations below are selected in score order with a minimum separation
+of 250 m; original ranks remain visible. Distances are to the inferred reference,
+not to surveyed microphone truth.
+
+| Original rank | Latitude | Longitude | Score | Distance from inferred reference |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 37.664126 | -121.787149 | 0.935434 | 476 m |
+| 10 | 37.662932 | -121.783568 | 0.927466 | 152 m |
+| 20 | 37.662790 | -121.779953 | 0.921463 | 176 m |
+| 29 | 37.661549 | -121.777135 | 0.917187 | 457 m |
+| 48 | 37.661666 | -121.787273 | 0.901372 | 506 m |
+
+The [complete 105-candidate ranking](../benchmarks/livermore-all-aircraft-ranking-20261103.json)
+is retained in original order. Scores are fit measures, not probabilities.
+Despite full declared archive coverage, the result remains **inconclusive**:
+187 CPA track evaluations exceeded the supported trajectory model. The scorer
+also recorded 725,947 unknown clock trials across 40,531 candidate envelopes,
+all with bounds. These are work evaluations, not separate aircraft. A searched
+archive cannot establish that its receivers captured every actual flight. Thus
+the listed distances are useful comparisons, not verified localization errors.
+The upload and search ran on source `7565d81` in 651 seconds, excluding the
+earlier archive download, selection, and indexing.
 
 ## Reproduce
 

@@ -1,0 +1,433 @@
+{
+  "scope": "Exact computation comparison on one real recording and archived observed trajectories; source-informed receiver region and recording clock.",
+  "baseline_revision": "fec518e51f14afe8d36203e6c5e1be1277dea14e",
+  "current_revision": "41d06469935f776988e1a4f04ab386d0355b433b",
+  "workflow_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41685506906",
+  "http": {
+    "pairs": 3,
+    "arm_order": [
+      [
+        "baseline",
+        "current"
+      ],
+      [
+        "current",
+        "baseline"
+      ],
+      [
+        "baseline",
+        "current"
+      ]
+    ],
+    "runtime": {
+      "audio_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+      "audio_bytes": 43202925,
+      "python": "3.12.16",
+      "sqlite": "3.45.1",
+      "numerical_package_versions": {
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.1.0",
+        "pyarrow": "26.0.1",
+        "pyproj": "3.8.0",
+        "rasterio": "1.5.2",
+        "soundfile": "0.14.0"
+      },
+      "numerical_threads": 1,
+      "cpu_affinity": [
+        0
+      ],
+      "detail_plots_enabled": false,
+      "recording_control": "fixed_counts",
+      "reference_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+      "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+    },
+    "request": {
+      "bounds_wsen": [
+        -73.545,
+        40.865,
+        -73.505,
+        40.895
+      ],
+      "start_utc": "2026-09-08T20:17:20Z",
+      "end_utc": "2026-09-08T20:17:40Z"
+    },
+    "operator": {
+      "offline": true,
+      "search_workers": 1,
+      "spacing_m": 2000,
+      "tile_cells": 16,
+      "top_k": 20,
+      "refine_spacing_m": 500,
+      "refine_finalists": 3
+    },
+    "medians": {
+      "baseline": {
+        "http_receipt_seconds": 62.03129542500005,
+        "driver_wall_seconds": 62.03649870099997,
+        "driver_cpu_seconds": 61.60743099999999
+      },
+      "current": {
+        "http_receipt_seconds": 37.187638357000026,
+        "driver_wall_seconds": 37.19352836300004,
+        "driver_cpu_seconds": 36.863444
+      }
+    },
+    "speedup": {
+      "http_receipt_seconds": 1.6680622423371387,
+      "driver_wall_seconds": 1.6679379836066752,
+      "driver_cpu_seconds": 1.6712337295451827
+    },
+    "wall_time_reduction_percent": 40.05019869049431,
+    "samples": {
+      "baseline": [
+        {
+          "http_receipt_seconds": 62.42229257599999,
+          "wall_s": 62.427504107000004,
+          "cpu_s": 61.60743099999999
+        },
+        {
+          "http_receipt_seconds": 61.860873814,
+          "wall_s": 61.866216323,
+          "cpu_s": 61.568397
+        },
+        {
+          "http_receipt_seconds": 62.03129542500005,
+          "wall_s": 62.03649870099997,
+          "cpu_s": 61.71801
+        }
+      ],
+      "current": [
+        {
+          "http_receipt_seconds": 37.105990709999986,
+          "wall_s": 37.11119244599999,
+          "cpu_s": 36.817617999999996
+        },
+        {
+          "http_receipt_seconds": 38.20585379200003,
+          "wall_s": 38.211619369999994,
+          "cpu_s": 37.869552
+        },
+        {
+          "http_receipt_seconds": 37.187638357000026,
+          "wall_s": 37.19352836300004,
+          "cpu_s": 36.863444
+        }
+      ]
+    },
+    "all_pairs_exact": true,
+    "checked_per_pair": {
+      "json": 20,
+      "sqlite": 1,
+      "root_json": 3
+    },
+    "array_checks_per_pair": {
+      "intake_diagnostics": 1,
+      "decoded_pcm": 1,
+      "csv": 17,
+      "npz": 0,
+      "npz_arrays": 0,
+      "png": 1
+    },
+    "equal_ledger_rows_per_arm": {
+      "bounds": 29738,
+      "records": 852,
+      "run": 1,
+      "stages": 12
+    },
+    "outcome_per_arm": {
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "candidate_count": 23,
+      "event_count": 17,
+      "independent_groups": 15
+    }
+  },
+  "point_scoring": [
+    {
+      "clock_half_width_s": 10,
+      "pairs": 2,
+      "exact_outputs": true,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 2.1638290015000052,
+          "cpu_seconds": 2.1616306375,
+          "peak_rss_mib": 323.314453125
+        },
+        "current": {
+          "wall_seconds": 1.2728458855000042,
+          "cpu_seconds": 1.2699631694999998,
+          "peak_rss_mib": 322.49609375
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.6999929262056745,
+        "cpu_seconds": 1.702120730281541
+      },
+      "scored_candidates": 1055,
+      "retained": 100,
+      "independent_groups": 16,
+      "native_successes_per_timed_call": {
+        "ridge": 1573,
+        "acoustic": 53
+      },
+      "samples": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "wall_seconds": 2.1702617150000094,
+          "cpu_seconds": 2.167912101,
+          "peak_rss_mib": 323.64453125
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "wall_seconds": 1.2727041260000078,
+          "cpu_seconds": 1.269209664,
+          "peak_rss_mib": 322.5
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "wall_seconds": 1.2729876450000006,
+          "cpu_seconds": 1.2707166749999996,
+          "peak_rss_mib": 322.4921875
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "wall_seconds": 2.157396288000001,
+          "cpu_seconds": 2.155349174,
+          "peak_rss_mib": 322.984375
+        }
+      ]
+    },
+    {
+      "clock_half_width_s": 120,
+      "pairs": 2,
+      "exact_outputs": true,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 13.857766631000018,
+          "cpu_seconds": 13.852561589500002,
+          "peak_rss_mib": 381.921875
+        },
+        "current": {
+          "wall_seconds": 7.651596271500026,
+          "cpu_seconds": 7.647479859000001,
+          "peak_rss_mib": 383.830078125
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.811094853843266,
+        "cpu_seconds": 1.8113890909039139
+      },
+      "scored_candidates": 3905,
+      "retained": 100,
+      "independent_groups": 16,
+      "native_successes_per_timed_call": {
+        "ridge": 38890,
+        "acoustic": 850
+      },
+      "samples": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "wall_seconds": 13.776222869999998,
+          "cpu_seconds": 13.771302822000003,
+          "peak_rss_mib": 381.5390625
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "wall_seconds": 7.6475400500000035,
+          "cpu_seconds": 7.643168895,
+          "peak_rss_mib": 383.76171875
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "wall_seconds": 7.655652493000048,
+          "cpu_seconds": 7.651790823000001,
+          "peak_rss_mib": 383.8984375
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "wall_seconds": 13.939310392000039,
+          "cpu_seconds": 13.933820357,
+          "peak_rss_mib": 382.3046875
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Only within-run arm ratios are comparable; runner hardware and runtimes can differ between workflow runs.",
+    "Input restoration, index preparation and MP3 encoding are outside the timed HTTP arms.",
+    "Processes and output directories are fresh; operating-system page caches are not purged.",
+    "Point timings exclude input loading; point RSS covers worker lifetime through scoring.",
+    "Native acceleration was measured on Linux x86-64; macOS and Windows timing/parity were not measured.",
+    "Search remains incomplete on the recorded regional control. These results do not establish independent location accuracy or nationwide completion time.",
+    "Component speedups and overlapping profile times must not be multiplied or added into a whole-pipeline estimate."
+  ],
+  "point_runtime": {
+    "python": "3.12.15",
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "validation": {
+    "selected_recorded_input_tests_passed": 78,
+    "main_suite_skipped": 0,
+    "explicit_python_fallback_at_measured_checkpoint": {
+      "passed": 1,
+      "skipped": 3,
+      "cause": "Missing DOPPLERGEIST_REAL_CPA_FIXTURE in the fallback step; fixed in d935180 for the integration gate."
+    }
+  },
+  "integration_confirmation": {
+    "current_revision": "d93518010345a921b09722b8d7fc4ca1961c396e",
+    "baseline_revision": "fec518e51f14afe8d36203e6c5e1be1277dea14e",
+    "integrated_main_revision": "b149d894cad41644ecb637bf49e8e9cdbcc95394",
+    "workflow_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41687118475",
+    "installation_workflow_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41687129205",
+    "recorded_tests_passed": 78,
+    "explicit_python_tests_passed": 4,
+    "tests_skipped": 0,
+    "installation_python_versions_passed": [
+      "3.11",
+      "3.14"
+    ],
+    "http": {
+      "pairs": 3,
+      "all_pairs_exact": true,
+      "runtime": {
+        "audio_sha256": "707083f0344823eeea7f130faec6c22b6628b8b9fea04d026915d93df9a07b15",
+        "audio_bytes": 43202925,
+        "python": "3.12.15",
+        "sqlite": "3.45.1",
+        "numerical_package_versions": {
+          "numpy": "2.5.4",
+          "scipy": "1.18.1",
+          "pandas": "3.1.0",
+          "pyarrow": "26.0.1",
+          "pyproj": "3.8.0",
+          "rasterio": "1.5.2",
+          "soundfile": "0.14.0"
+        },
+        "numerical_threads": 1,
+        "cpu_affinity": [
+          0
+        ],
+        "detail_plots_enabled": false,
+        "recording_control": "fixed_counts",
+        "reference_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+        "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+      },
+      "medians": {
+        "baseline": {
+          "http_receipt_seconds": 90.86300797699994,
+          "driver_wall_seconds": 90.87042387300005,
+          "driver_cpu_seconds": 88.861937
+        },
+        "current": {
+          "http_receipt_seconds": 53.700215961000026,
+          "driver_wall_seconds": 53.70792494599999,
+          "driver_cpu_seconds": 53.148115
+        }
+      },
+      "speedup": {
+        "http_receipt_seconds": 1.6920417609305245,
+        "driver_wall_seconds": 1.6919369713941594,
+        "driver_cpu_seconds": 1.6719678016802666
+      },
+      "samples": {
+        "baseline": [
+          {
+            "http_receipt_seconds": 95.46150833299998,
+            "wall_s": 95.46839924599999,
+            "cpu_s": 91.262433
+          },
+          {
+            "http_receipt_seconds": 89.16425095299996,
+            "wall_s": 89.17120738200003,
+            "cpu_s": 88.299558
+          },
+          {
+            "http_receipt_seconds": 90.86300797699994,
+            "wall_s": 90.87042387300005,
+            "cpu_s": 88.861937
+          }
+        ],
+        "current": [
+          {
+            "http_receipt_seconds": 53.700215961000026,
+            "wall_s": 53.70792494599999,
+            "cpu_s": 53.193524000000004
+          },
+          {
+            "http_receipt_seconds": 54.241986263,
+            "wall_s": 54.24954402000003,
+            "cpu_s": 53.148115
+          },
+          {
+            "http_receipt_seconds": 53.21489614999996,
+            "wall_s": 53.22215729599998,
+            "cpu_s": 52.375015
+          }
+        ]
+      },
+      "unchanged_artifact_counts_ledger_and_outcome": true
+    },
+    "point_scoring": [
+      {
+        "clock_half_width_s": 10,
+        "pairs": 2,
+        "exact_outputs": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 2.222001012999982,
+            "cpu_seconds": 2.2199421265,
+            "peak_rss_mib": 323.892578125
+          },
+          "current": {
+            "wall_seconds": 1.2922302594999735,
+            "cpu_seconds": 1.2903656390000002,
+            "peak_rss_mib": 322.8359375
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.7195085757083122,
+          "cpu_seconds": 1.7203977379778939
+        }
+      },
+      {
+        "clock_half_width_s": 120,
+        "pairs": 2,
+        "exact_outputs": true,
+        "medians": {
+          "baseline": {
+            "wall_seconds": 14.141562013999987,
+            "cpu_seconds": 14.1370346765,
+            "peak_rss_mib": 382.28125
+          },
+          "current": {
+            "wall_seconds": 7.738493016999996,
+            "cpu_seconds": 7.734289864999999,
+            "peak_rss_mib": 383.873046875
+          }
+        },
+        "speedup": {
+          "wall_seconds": 1.8274309976029788,
+          "cpu_seconds": 1.8278387445076707
+        }
+      }
+    ],
+    "further_integration_results": "https://github.com/1337isnot1337/DOPPLERGEIST/pull/237"
+  }
+}

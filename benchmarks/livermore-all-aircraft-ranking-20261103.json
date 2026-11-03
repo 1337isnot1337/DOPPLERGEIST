@@ -1,0 +1,2280 @@
+{
+  "description": "Ranked candidates from the real Livermore MP3 upload using a regional ADSB.lol all-aircraft archive index. This is a diagnostic ranking, not an accepted location.",
+  "source_revision": "7565d81",
+  "job_id": "50281b9d18cf40398e416126d2a69449",
+  "status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "time_window": {
+    "start_utc": "2026-05-14T17:41:27.238313Z",
+    "end_utc": "2026-05-14T17:41:37.239000Z",
+    "source": "user",
+    "source_detail": "Scoped benchmark prior bounded by the Zenodo-published UTC ridge and WAV duration; derived reference, not independent sample-zero truth."
+  },
+  "search_bounds_wsen": [
+    -121.84,
+    37.65,
+    -121.7,
+    37.73
+  ],
+  "source": "ADSB.lol 2026-05-14 staging-0, 466 aircraft conservatively selected from all 69762 archive traces",
+  "tiles_completed": 12,
+  "tiles_total": 12,
+  "data_scope_complete": true,
+  "model_assessment_complete": false,
+  "model_support": {
+    "unsupported_cpa_track_evaluations": 187,
+    "unclassified_score_candidates": 40531,
+    "bounded_score_candidates": 40531,
+    "unbounded_score_candidates": 0,
+    "evaluated_trials": 23651,
+    "rejected_trials": 220077,
+    "unknown_trials": 725947,
+    "unreported_trial_envelopes": 0,
+    "diagnostics_directory": "support"
+  },
+  "reference": "36-track inferred reference, not surveyed microphone ground truth",
+  "spatially_distinct_shortlist": [
+    {
+      "original_rank": 1,
+      "lat": 37.66412551237909,
+      "lon": -121.78714872266293,
+      "score": 0.9354337069502058,
+      "distance_to_inferred_reference_m": 476.02187061595794
+    },
+    {
+      "original_rank": 10,
+      "lat": 37.66293241749334,
+      "lon": -121.78356765189207,
+      "score": 0.9274657571918046,
+      "distance_to_inferred_reference_m": 152.47321441764933
+    },
+    {
+      "original_rank": 20,
+      "lat": 37.66279010584112,
+      "lon": -121.7799532185408,
+      "score": 0.9214629601253048,
+      "distance_to_inferred_reference_m": 176.13614689229863
+    },
+    {
+      "original_rank": 29,
+      "lat": 37.661548989474035,
+      "lon": -121.77713476545239,
+      "score": 0.9171867855742645,
+      "distance_to_inferred_reference_m": 457.4311881397916
+    },
+    {
+      "original_rank": 48,
+      "lat": 37.6616656271279,
+      "lon": -121.78727326130344,
+      "score": 0.9013719616177763,
+      "distance_to_inferred_reference_m": 506.2750678780513
+    }
+  ],
+  "candidates": [
+    {
+      "lat": 37.66412551237909,
+      "lon": -121.78714872266293,
+      "score": 0.9354337069502058,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238314Z"
+    },
+    {
+      "lat": 37.66414223564285,
+      "lon": -121.78714163327207,
+      "score": 0.9354306228869615,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238316Z"
+    },
+    {
+      "lat": 37.66412464586365,
+      "lon": -121.78714195541949,
+      "score": 0.9354262544526665,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.244307Z"
+    },
+    {
+      "lat": 37.664135749989875,
+      "lon": -121.78712127631728,
+      "score": 0.9354094588113726,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.252480Z"
+    },
+    {
+      "lat": 37.66408028934627,
+      "lon": -121.78717115366587,
+      "score": 0.935408038341196,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.239762Z"
+    },
+    {
+      "lat": 37.664173384677945,
+      "lon": -121.78638626535616,
+      "score": 0.9305052649425342,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.714536Z"
+    },
+    {
+      "lat": 37.66393423330209,
+      "lon": -121.78748884975002,
+      "score": 0.9290893262336039,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.66331377061584,
+      "lon": -121.78607952653111,
+      "score": 0.9289017446194001,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.666983Z"
+    },
+    {
+      "lat": 37.66355290928113,
+      "lon": -121.7849769468218,
+      "score": 0.9275533691544233,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.66293241749334,
+      "lon": -121.78356765189207,
+      "score": 0.9274657571918046,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.665032997782276,
+      "lon": -121.78669301129894,
+      "score": 0.9263353291009214,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.664412526066066,
+      "lon": -121.78528367384459,
+      "score": 0.9262447645332589,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.666983Z"
+    },
+    {
+      "lat": 37.662693291538396,
+      "lon": -121.78467022691632,
+      "score": 0.9260154150603984,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.095652Z"
+    },
+    {
+      "lat": 37.66307462196285,
+      "lon": -121.78718209912289,
+      "score": 0.9260131149526208,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.714536Z"
+    },
+    {
+      "lat": 37.66286127506503,
+      "lon": -121.78176043348084,
+      "score": 0.9249400338085221,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.476768Z"
+    },
+    {
+      "lat": 37.663171533460556,
+      "lon": -121.78246506975105,
+      "score": 0.9248968075973552,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.000545Z"
+    },
+    {
+      "lat": 37.66255101257195,
+      "lon": -121.78105580311193,
+      "score": 0.9248210462445833,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.429214Z"
+    },
+    {
+      "lat": 37.66231190931492,
+      "lon": -121.78215838056694,
+      "score": 0.9244986726096837,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.476768Z"
+    },
+    {
+      "lat": 37.6637920379587,
+      "lon": -121.78387435999527,
+      "score": 0.9233275089120945,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.095652Z"
+    },
+    {
+      "lat": 37.66279010584112,
+      "lon": -121.7799532185408,
+      "score": 0.9214629601253048,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.381661Z"
+    },
+    {
+      "lat": 37.66245415559577,
+      "lon": -121.78577279482352,
+      "score": 0.9212202215558074,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.143206Z"
+    },
+    {
+      "lat": 37.66193047529321,
+      "lon": -121.77964656007795,
+      "score": 0.9212142616880215,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.857884Z"
+    },
+    {
+      "lat": 37.66216955585237,
+      "lon": -121.77854398019377,
+      "score": 0.9211747197053941,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.810330Z"
+    },
+    {
+      "lat": 37.662072796070134,
+      "lon": -121.78326095090567,
+      "score": 0.920368934136201,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.524322Z"
+    },
+    {
+      "lat": 37.661691384746184,
+      "lon": -121.78074913284652,
+      "score": 0.918791704130838,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.905438Z"
+    },
+    {
+      "lat": 37.663410639439896,
+      "lon": -121.78136248049344,
+      "score": 0.9185087646282124,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.952991Z"
+    },
+    {
+      "lat": 37.66240862642357,
+      "lon": -121.77744139319418,
+      "score": 0.9181492197133599,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.762777Z"
+    },
+    {
+      "lat": 37.664031156648434,
+      "lon": -121.78277176605168,
+      "score": 0.9174866190440778,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.661548989474035,
+      "lon": -121.77713476545239,
+      "score": 0.9171867855742645,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.664651657466344,
+      "lon": -121.78418107521549,
+      "score": 0.9168611844447739,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.6622634823078,
+      "lon": -121.78451686963245,
+      "score": 0.9160219421640177,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.571875Z"
+    },
+    {
+      "lat": 37.66302918912233,
+      "lon": -121.77885062685378,
+      "score": 0.9148657714209047,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.334107Z"
+    },
+    {
+      "lat": 37.665272141893325,
+      "lon": -121.78559040798486,
+      "score": 0.9145932332133944,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.190759Z"
+    },
+    {
+      "lat": 37.661309921624685,
+      "lon": -121.77823734064914,
+      "score": 0.914521901940468,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.286554Z"
+    },
+    {
+      "lat": 37.66221500966557,
+      "lon": -121.78687535561349,
+      "score": 0.9137364401121592,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.190759Z"
+    },
+    {
+      "lat": 37.66183367283769,
+      "lon": -121.78436351412785,
+      "score": 0.9131512850242773,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.571875Z"
+    },
+    {
+      "lat": 37.66145228421138,
+      "lon": -121.7818516984992,
+      "score": 0.9125498942555303,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.952991Z"
+    },
+    {
+      "lat": 37.66345900539821,
+      "lon": -121.77900395285216,
+      "score": 0.9104622147395891,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.857884Z"
+    },
+    {
+      "lat": 37.66364973543132,
+      "lon": -121.78025988411952,
+      "score": 0.9096596075419283,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.429214Z"
+    },
+    {
+      "lat": 37.66107084378746,
+      "lon": -121.77933990873075,
+      "score": 0.9086579785198698,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.334107Z"
+    },
+    {
+      "lat": 37.664270265350225,
+      "lon": -121.78166916499129,
+      "score": 0.9083209723742229,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.000545Z"
+    },
+    {
+      "lat": 37.66159453961763,
+      "lon": -121.7854660702332,
+      "score": 0.9067213117483424,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.66326826241552,
+      "lon": -121.77774802805115,
+      "score": 0.9063645203784897,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.286554Z"
+    },
+    {
+      "lat": 37.66121317368891,
+      "lon": -121.78295425703583,
+      "score": 0.9052349436178743,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.000545Z"
+    },
+    {
+      "lat": 37.66489077887872,
+      "lon": -121.78307846946912,
+      "score": 0.9046596507303618,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.571875Z"
+    },
+    {
+      "lat": 37.66197585374789,
+      "lon": -121.78797790928597,
+      "score": 0.9044523961583726,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.66083175596247,
+      "lon": -121.78044246969694,
+      "score": 0.9028211189557354,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.381661Z"
+    },
+    {
+      "lat": 37.6616656271279,
+      "lon": -121.78727326130344,
+      "score": 0.9013719616177763,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.190759Z"
+    },
+    {
+      "lat": 37.66045028643908,
+      "lon": -121.77793070821967,
+      "score": 0.9008777847815214,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.6638888214347,
+      "lon": -121.77915728062946,
+      "score": 0.900684236016533,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.381661Z"
+    },
+    {
+      "lat": 37.66264768700673,
+      "lon": -121.77633879907944,
+      "score": 0.9005240477944476,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.665511276016446,
+      "lon": -121.78448779755301,
+      "score": 0.9001951484909565,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.143206Z"
+    },
+    {
+      "lat": 37.66071220830458,
+      "lon": -121.78099374751172,
+      "score": 0.8989216118160985,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.381661Z"
+    },
+    {
+      "lat": 37.6650103358394,
+      "lon": -121.78252716392703,
+      "score": 0.8981155597445849,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.662835463322324,
+      "lon": -121.78828466459697,
+      "score": 0.8977956939217191,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.66135539641011,
+      "lon": -121.78656861922158,
+      "score": 0.8974661582602984,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.666983Z"
+    },
+    {
+      "lat": 37.664509364064,
+      "lon": -121.78056655681432,
+      "score": 0.8965640941802953,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.952991Z"
+    },
+    {
+      "lat": 37.66059265814977,
+      "lon": -121.78154502354754,
+      "score": 0.8963958311857765,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.905438Z"
+    },
+    {
+      "lat": 37.66350732572056,
+      "lon": -121.77664542213309,
+      "score": 0.8963087983726392,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.66097405317881,
+      "lon": -121.78405680845613,
+      "score": 0.8960147016324739,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.663814653868805,
+      "lon": -121.78804013927773,
+      "score": 0.8949511018523769,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.660211211323706,
+      "lon": -121.77903326449892,
+      "score": 0.8949058080794295,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.286554Z"
+    },
+    {
+      "lat": 37.66613175676312,
+      "lon": -121.78589714924287,
+      "score": 0.8947277601008866,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.714536Z"
+    },
+    {
+      "lat": 37.665129890303085,
+      "lon": -121.78197585660573,
+      "score": 0.8915858963023823,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.524322Z"
+    },
+    {
+      "lat": 37.66589260992906,
+      "lon": -121.78699976435973,
+      "score": 0.8902611430863588,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.66412789744998,
+      "lon": -121.77805467002351,
+      "score": 0.8894196751166986,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.334107Z"
+    },
+    {
+      "lat": 37.66073492268123,
+      "lon": -121.7851593527599,
+      "score": 0.8889476777623228,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.571875Z"
+    },
+    {
+      "lat": 37.660353550349456,
+      "lon": -121.7826475702823,
+      "score": 0.8882149238278704,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.952991Z"
+    },
+    {
+      "lat": 37.6599721262206,
+      "lon": -121.780135813663,
+      "score": 0.8877518070192392,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.334107Z"
+    },
+    {
+      "lat": 37.66111624321513,
+      "lon": -121.78767116109272,
+      "score": 0.8866139920186917,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.714536Z"
+    },
+    {
+      "lat": 37.666561563839,
+      "lon": -121.78605052254113,
+      "score": 0.8855151352072346,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.66474845278969,
+      "lon": -121.779463941521,
+      "score": 0.8851610148042167,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.905438Z"
+    },
+    {
+      "lat": 37.665750400151566,
+      "lon": -121.78338518000363,
+      "score": 0.8839863136319394,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.095652Z"
+    },
+    {
+      "lat": 37.66011443256165,
+      "lon": -121.78375010990096,
+      "score": 0.8838833107319073,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.000545Z"
+    },
+    {
+      "lat": 37.66405667330589,
+      "lon": -121.77624742774995,
+      "score": 0.8835429578957195,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.66049578219623,
+      "lon": -121.78626188994689,
+      "score": 0.8826105529690005,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.6597330311299,
+      "lon": -121.78123835571171,
+      "score": 0.8814330863577645,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.381661Z"
+    },
+    {
+      "lat": 37.664793843683434,
+      "lon": -121.7877956074951,
+      "score": 0.8811752548334009,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.6512757243665,
+      "lon": -121.79247421735563,
+      "score": 0.8808259597968524,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.65935157790176,
+      "lon": -121.77872662738223,
+      "score": 0.8786215764363532,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.762777Z"
+    },
+    {
+      "lat": 37.65987530478641,
+      "lon": -121.78485264240335,
+      "score": 0.8779459656879341,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.664366963477036,
+      "lon": -121.77695205230192,
+      "score": 0.8778335694055412,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:36.286554Z"
+    },
+    {
+      "lat": 37.66637089360918,
+      "lon": -121.78479452700802,
+      "score": 0.8774270748607019,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.666983Z"
+    },
+    {
+      "lat": 37.665368991739335,
+      "lon": -121.78087323662551,
+      "score": 0.8764943525869522,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:32.476768Z"
+    },
+    {
+      "lat": 37.66068935156669,
+      "lon": -121.77682814482553,
+      "score": 0.8761632167887029,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.65959065029543,
+      "lon": -121.77762408290513,
+      "score": 0.8759809675845445,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.66025663172392,
+      "lon": -121.78736442001689,
+      "score": 0.8753650822369339,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:28.666983Z"
+    },
+    {
+      "lat": 37.65911249552045,
+      "lon": -121.77982916474443,
+      "score": 0.8720292658487858,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.810330Z"
+    },
+    {
+      "lat": 37.66699137067555,
+      "lon": -121.78620389761888,
+      "score": 0.870378404081944,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.238313Z"
+    },
+    {
+      "lat": 37.659636167023855,
+      "lon": -121.78595516778921,
+      "score": 0.8702672618565688,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:30.095652Z"
+    },
+    {
+      "lat": 37.66498753152716,
+      "lon": -121.77836131911155,
+      "score": 0.8699106247875373,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.857884Z"
+    },
+    {
+      "lat": 37.6659895142986,
+      "lon": -121.78228255533698,
+      "score": 0.8673337167550648,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:31.048099Z"
+    },
+    {
+      "lat": 37.65951659439736,
+      "lon": -121.78650642781336,
+      "score": 0.866834884185283,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.65887340315163,
+      "lon": -121.78093169499148,
+      "score": 0.8654815954571886,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:34.857884Z"
+    },
+    {
+      "lat": 37.650322570993026,
+      "lon": -121.7861955170679,
+      "score": 0.8653431997839814,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.429214Z"
+    },
+    {
+      "lat": 37.663746379037406,
+      "lon": -121.77554280909985,
+      "score": 0.8638125445548422,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.66460601951581,
+      "lon": -121.77584942746493,
+      "score": 0.8634188864037754,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.65939701927404,
+      "lon": -121.78705768605832,
+      "score": 0.862803142058092,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.143206Z"
+    },
+    {
+      "lat": 37.665608083187415,
+      "lon": -121.77977060952867,
+      "score": 0.8612982567634272,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:33.429214Z"
+    },
+    {
+      "lat": 37.66661002046718,
+      "lon": -121.78369189765543,
+      "score": 0.8609685778544081,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.143206Z"
+    },
+    {
+      "lat": 37.65187369873887,
+      "lon": -121.78971825411567,
+      "score": 0.8597534430079362,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:29.619429Z"
+    },
+    {
+      "lat": 37.658491943521454,
+      "lon": -121.77841999738047,
+      "score": 0.8594523275338668,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.6617880473354,
+      "lon": -121.7760321831407,
+      "score": 0.8589531266076682,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:37.239000Z"
+    },
+    {
+      "lat": 37.65856313555543,
+      "lon": -121.78022710601589,
+      "score": 0.8588723255235173,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:35.810330Z"
+    },
+    {
+      "lat": 37.66723051024468,
+      "lon": -121.78510126358081,
+      "score": 0.8562251655354494,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0001-harmonic-2",
+        "event-0001-harmonic-3",
+        "event-0001-harmonic-4",
+        "event-0001-harmonic-5"
+      ],
+      "flight_ids": [
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0",
+        "aaa077:0"
+      ],
+      "recording_start_utc": "2026-05-14T17:41:27.714536Z"
+    }
+  ]
+}

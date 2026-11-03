@@ -4,7 +4,17 @@ Hashes identify supplied inputs. They do not establish that a caller chose event
 windows, physical bounds, or a search area independently of a known location.
 """
 import hashlib
+from importlib.machinery import EXTENSION_SUFFIXES
 from pathlib import Path
+
+
+def implementation_files(package_root, *, recursive=True):
+    """Include optional native sources and binaries in the existing identity."""
+    root = Path(package_root)
+    paths = root.rglob("*") if recursive else root.iterdir()
+    return sorted(path for path in paths
+                  if path.is_file() and (path.suffix in {".py", ".c"}
+                      or any(path.name.endswith(suffix) for suffix in EXTENSION_SUFFIXES)))
 
 
 def implementation_provenance(code_root):
@@ -19,7 +29,7 @@ def implementation_provenance(code_root):
         raise FileNotFoundError(f"Implementation package is absent: {package_root}")
     digest = hashlib.sha256()
     sources = []
-    for path in sorted(package_root.rglob("*.py")):
+    for path in implementation_files(package_root):
         relative = str(path.relative_to(root))
         data = path.read_bytes()
         # Preserve the existing aggregate digest format for downstream readers.
