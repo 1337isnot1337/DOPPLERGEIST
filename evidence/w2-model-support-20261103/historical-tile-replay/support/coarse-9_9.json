@@ -1,0 +1,64 @@
+{
+  "stage": "coarse:9_9",
+  "unsupported_cpa_tracks": [],
+  "unclassified_candidate_assessments": [
+    {
+      "point_id": 34,
+      "receiver": {
+        "x": 1480000.0,
+        "y": 1520000.0,
+        "lat": 35.571411587046306,
+        "lon": -79.44341937322831,
+        "elev_m": 0.0
+      },
+      "event_indices": [
+        0
+      ],
+      "flight_ids": [
+        "ae8b78"
+      ],
+      "pass_emission_times_s": [
+        1788899802.7
+      ],
+      "recording_start_bounds_s": [
+        1788899397.5189838,
+        1788899402.5189838
+      ],
+      "scoring_assessment": null,
+      "support_failure": {
+        "track_id": "ae8b78",
+        "reason": "non_monotone_arrival"
+      },
+      "finite_best": false
+    },
+    {
+      "point_id": 46,
+      "receiver": {
+        "x": 1560000.0,
+        "y": 1540000.0,
+        "lat": 35.619949183094704,
+        "lon": -78.5272848706823,
+        "elev_m": 0.0
+      },
+      "event_indices": [
+        0
+      ],
+      "flight_ids": [
+        "a6cc10:2"
+      ],
+      "pass_emission_times_s": [
+        1788899810.25
+      ],
+      "recording_start_bounds_s": [
+        1788899400.6805844,
+        1788899405.0
+      ],
+      "scoring_assessment": null,
+      "support_failure": {
+        "track_id": "a6cc10:2",
+        "reason": "non_monotone_arrival"
+      },
+      "finite_best": false
+    }
+  ]
+}
