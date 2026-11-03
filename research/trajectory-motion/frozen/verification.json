@@ -40,5 +40,15 @@
       "matched": true
     }
   ],
-  "scope": "Targeted trajectory audit only; no acoustic localization or production changes."
+  "scope": "Targeted trajectory audit only; no acoustic localization or production changes.",
+  "runtime": {
+    "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "3.1.0",
+      "pyproj": "3.8.0",
+      "pyarrow": "26.0.0"
+    }
+  }
 }
