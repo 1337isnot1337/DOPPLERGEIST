@@ -1,0 +1,234 @@
+{
+  "ci": {
+    "repository": "1337isnot1337/DOPPLERGEIST",
+    "workflow": "Real performance comparison",
+    "run_id": 41678922355,
+    "job_id": 126066992758,
+    "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355",
+    "job_conclusion": "success",
+    "artifact_id": 13250983862,
+    "artifact_name": "bounded-http-comparison"
+  },
+  "real_tests": {
+    "selected_real_tests": 38,
+    "skipped": []
+  },
+  "elapsed_reduction_percent": 30.878286063153183,
+  "both_parity_checks_passed": true,
+  "matched_pair_wall_speedup": 1.4467233855249189,
+  "scientific_comparison": {
+    "passed": true,
+    "scientific_payloads_exact": true,
+    "run_kinds": {
+      "baseline": "fresh_http",
+      "current": "fresh_http"
+    },
+    "full_pipeline_verified": {
+      "baseline": true,
+      "current": true
+    },
+    "checked_artifacts": {
+      "json": 17,
+      "sqlite": 1,
+      "root_json": 3
+    },
+    "retention_ledgers": {
+      "search/retention.sqlite": {
+        "baseline_rows": {
+          "bounds": 16894,
+          "records": 706,
+          "run": 1,
+          "stages": 6
+        },
+        "current_rows": {
+          "bounds": 16894,
+          "records": 706,
+          "run": 1,
+          "stages": 6
+        }
+      }
+    },
+    "outcomes": {
+      "baseline": {
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 16
+      },
+      "current": {
+        "status": "inconclusive",
+        "reason_code": "search_incomplete",
+        "candidate_count": 23,
+        "event_count": 16
+      }
+    },
+    "differences": {
+      "count": 0,
+      "changed_artifact_count": 0,
+      "counts_by_artifact": {},
+      "numeric_difference_count": 0,
+      "maximum_absolute_numeric_difference": 0,
+      "examples": [],
+      "examples_truncated": false
+    }
+  },
+  "intake_array_comparison": {
+    "passed": true,
+    "checked": {
+      "intake_diagnostics": 1,
+      "decoded_pcm": 1,
+      "csv": 16,
+      "npz": 0,
+      "npz_arrays": 0,
+      "png": 1
+    },
+    "manifest_verified_artifacts": {
+      "baseline": 19,
+      "current": 19
+    },
+    "difference_count": 0,
+    "differences": []
+  },
+  "http_receipts": {
+    "baseline": {
+      "verification_passed": true,
+      "implementation_unchanged": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "elapsed_s": 78.37902887000001,
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "event_count": 16,
+      "candidate_count": 23,
+      "source_sha256": "811a61eea5d21b5a99f008b499d399de9a20e475aaa0fc23cc233c7560605523",
+      "source_bytes": 43202924,
+      "service": {
+        "shutdown_signal": "SIGINT",
+        "forced_kill": false,
+        "returncode": 0,
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "-m",
+          "dopplergeist.cli",
+          "serve",
+          "--port",
+          "0",
+          "--jobs",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/http-baseline/jobs",
+          "--config",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/http-baseline/operator.json",
+          "--max-runtime",
+          "900.0"
+        ],
+        "pid": 3347,
+        "port": 45545,
+        "shutdown_requested_utc": "2026-11-03T16:57:55.805480Z",
+        "stopped_utc": "2026-11-03T16:57:55.820901Z"
+      }
+    },
+    "current": {
+      "verification_passed": true,
+      "implementation_unchanged": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "elapsed_s": 54.17692812199999,
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "event_count": 16,
+      "candidate_count": 23,
+      "source_sha256": "811a61eea5d21b5a99f008b499d399de9a20e475aaa0fc23cc233c7560605523",
+      "source_bytes": 43202924,
+      "service": {
+        "shutdown_signal": "SIGINT",
+        "forced_kill": false,
+        "returncode": 0,
+        "command": [
+          "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python",
+          "-m",
+          "dopplergeist.cli",
+          "serve",
+          "--port",
+          "0",
+          "--jobs",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/http-current/jobs",
+          "--config",
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/results/http-current/operator.json",
+          "--max-runtime",
+          "900.0"
+        ],
+        "pid": 3470,
+        "port": 46579,
+        "shutdown_requested_utc": "2026-11-03T16:58:50.220522Z",
+        "stopped_utc": "2026-11-03T16:58:50.235906Z"
+      }
+    }
+  },
+  "context": {
+    "scope": "One fresh sequential matched HTTP pair on a new MP3 encoding of the public real WAV. Timings and event counts do not inherit the earlier original-MP3 measurements. Source-informed region/time; not independent location accuracy.",
+    "baseline": "aa3dff686c989524daa20c081a816b792d9c8890",
+    "current": "66146714c6c22a448a7a54830a82d31034c2be44",
+    "python": "3.12.15",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "matplotlib": "3.10.8"
+    },
+    "ffmpeg": "ffmpeg version 8.0.1-3ubuntu2 Copyright (c) 2000-2025 the FFmpeg developers",
+    "encoding": {
+      "codec": "libmp3lame",
+      "bitrate": "96k",
+      "sample_rate_hz": 48000,
+      "channels": 1
+    },
+    "source_sha256": "811a61eea5d21b5a99f008b499d399de9a20e475aaa0fc23cc233c7560605523",
+    "source_bytes": 43202924,
+    "request": {
+      "schema_version": 1,
+      "search": {
+        "coverage": "conus",
+        "bounds_wsen": [
+          -73.545,
+          40.865,
+          -73.505,
+          40.895
+        ]
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Source-informed integration replay around the historical fitted recording start and benchmark receiver region; not independently measured recording time or a location-accuracy evaluation."
+      }
+    },
+    "operator": {
+      "flight_indexes": [
+        "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/benchmark-http-inputs/reference-region.sqlite"
+      ],
+      "offline": true,
+      "terrain": {
+        "rasters": [
+          "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif"
+        ],
+        "geoid_raster": "/home/runner/work/DOPPLERGEIST/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif"
+      },
+      "search_budget": {
+        "spacing_m": 2000,
+        "tile_cells": 16,
+        "top_k": 20,
+        "refine_spacing_m": 500,
+        "refine_finalists": 3
+      },
+      "refine_finalists": 3,
+      "search_workers": 1
+    }
+  },
+  "discovery_event_groups": {
+    "baseline": 14,
+    "current": 14,
+    "source": "http-baseline/pipeline-evidence.json and http-current/pipeline-evidence.json: discovery_counts.event_groups"
+  }
+}

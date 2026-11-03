@@ -1,5 +1,9 @@
 # Measured pipeline performance
 
+The integrated implementation completed the fresh bounded HTTP workflow in **54.176928122 seconds**, compared with **78.379028870 seconds** for baseline `aa3dff6`.
+That is an observed **1.44672×** speedup and **30.88%** less elapsed time in one sequential pair on the same CI runner.
+The [integrated measurement record](../benchmarks/results/integrated-http-20261103.json) preserves exact output comparisons and the measured source pins.
+
 The original PR225 point and HTTP comparisons use baseline `aa3dff686c989524daa20c081a816b792d9c8890` and the implementation published at `5699a657d57dc4f66b74ef000e20d3ba88f84704`.
 The integration section separates validation of the combined implementation from these original comparisons.
 
@@ -12,29 +16,75 @@ These are incremental improvements over an already optimized baseline.
 The earlier **2.69×** scorer result appears in the [historical comparison](#historical-scorer-comparison-2026-11-03).
 The measurements cover different stages and environments, so their speedups do not combine into a complete-pipeline ratio.
 
-## Integration with main: pending
+## Integration with main: verified
 
 Main commit [`0d6a92377af0f00b84dff9fa7966326d0014c20c`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/0d6a92377af0f00b84dff9fa7966326d0014c20c) merged [PR222](https://github.com/1337isnot1337/DOPPLERGEIST/pull/222).
 That work independently adds batch-fit reuse and improvements to audio, terrain, trajectory decoding, and retention transactions.
 Some changes overlap the original PR225 implementation.
 The [PR222 report](PIPELINE_PERFORMANCE_2026-11-03.md) preserves its separate measurements.
-The combined implementation also includes main commit [`21262e031388b3a5a8dd75979b2dc851608499b2`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/21262e031388b3a5a8dd75979b2dc851608499b2) and its checkpoint compatibility changes.
+The combined implementation includes main commit [`b7be4330c37eb9ec2bfca23a55d840bf9bb3acab`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/b7be4330c37eb9ec2bfca23a55d840bf9bb3acab).
+Its fitting source is unchanged from [`21262e031388b3a5a8dd75979b2dc851608499b2`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/21262e031388b3a5a8dd75979b2dc851608499b2), which added checkpoint compatibility changes.
 
-The earlier PR225 timings do not isolate an incremental gain over `0d6a923` or `21262e0`.
-A fresh comparison will validate the frozen combined implementation separately.
-Results against `aa3dff6` describe the combined changes.
-Results against `0d6a923` describe the additional changes after PR222.
-Results against `21262e0` describe the additional changes after that later main revision.
-
-<!-- PERFORMANCE_INTEGRATION_PENDING: fill after source freeze and the fresh HTTP comparison. -->
+The earlier PR225 timings do not isolate an incremental gain over `0d6a923`, `21262e0`, or `b7be433`.
+The fresh comparison below validates the frozen combined implementation against `aa3dff6`.
+It measures the combined changes since that baseline.
+An incremental HTTP timing comparison against the integrated main revision `b7be433` remains unmeasured.
 
 | Integration item | Status |
 | --- | --- |
-| Integrated main source | `21262e031388b3a5a8dd75979b2dc851608499b2` |
-| Frozen combined source | Pending |
+| Integrated main source | `b7be4330c37eb9ec2bfca23a55d840bf9bb3acab` |
+| Frozen combined source | [`66146714c6c22a448a7a54830a82d31034c2be44`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/66146714c6c22a448a7a54830a82d31034c2be44) |
 | Batch-cache selection | Serialized cache from main; 4 MiB digest-key and payload cap |
-| Fresh bounded HTTP result and baseline | Pending |
-| Exact JSON, SQLite, and array comparison | Pending |
+| Fresh CI verification | [Run 41678922355](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355); passed |
+| HTTP baseline source | `aa3dff686c989524daa20c081a816b792d9c8890` |
+| Fresh bounded HTTP elapsed time | 78.379028870 → 54.176928122 seconds; one sequential pair |
+| Exact JSON, SQLite, and array comparison | Passed; zero differences after declared metadata normalization |
+
+### Fresh integrated HTTP comparison
+
+Both arms used the same fresh MP3 encoding of the complete published real recording, restored observed flight data, and terrain.
+The baseline ran first, followed by the integrated source on the same CI runner.
+The request, operator settings, and search budgets were identical between arms.
+Each numerical library used one thread.
+The request used bounds `[-73.545, 40.865, -73.505, 40.895]` and recording-start window `2026-09-08T20:17:20Z` through `20:17:40Z`.
+It used one search worker, 2 km coarse spacing, 500 m refinement spacing, a top-K limit of 20, and three refinement finalists.
+
+| Measurement | Baseline `aa3dff6` | Integrated `66146714` |
+| --- | ---: | ---: |
+| HTTP verification elapsed wall time | 78.379028870 s | 54.176928122 s |
+| Event records | 16 | 16 |
+| Returned candidates | 23 | 23 |
+| HTTP and full-pipeline verification | Passed | Passed |
+| Decision | `inconclusive / search_incomplete` | `inconclusive / search_incomplete` |
+
+The measured wall-time ratio is **1.4467233855×**, with a **30.87828606%** elapsed-time reduction.
+This is one sequential pair, without a repeated-run estimate or a process CPU measurement.
+The source-informed regional request and recording clock make this a controlled integration workload.
+It does not establish nationwide completion time or independent location accuracy.
+
+The scientific comparison checked **17 job JSON files, three root JSON files, and one logical SQLite ledger**.
+The ledger contained 16,894 bounds, 706 records, one run, and six stages in each arm.
+It found zero differences after the declared run-identity, path, timing, and other metadata normalization.
+The comparison retains exact decoded scientific values, numeric types, and signed zeros, with no numerical tolerance.
+
+A separate comparison checked one intake diagnostic, one decoded PCM artifact, 16 CSV files, and the decoded pixels of one PNG.
+All comparisons passed, and the manifest check covered **19 artifacts per arm**.
+This workload contained no NPZ artifact.
+The [integrated record](../benchmarks/results/integrated-http-20261103.json) preserves the verification results and comparison scope.
+
+The fresh MP3 contains **43,202,924 bytes** and has SHA-256 `811a61eea5d21b5a99f008b499d399de9a20e475aaa0fc23cc233c7560605523`.
+It is a new encoding of the published WAV, distinct from the original MP3 used for the earlier PR225 HTTP pair.
+Both arms used this same file.
+The old and new pairs have different encodings and execution environments, so their absolute times must remain separate.
+
+The fresh runtime used Python 3.12.15, **NumPy 2.3.5**, SciPy 1.17.0, pandas 2.2.3, pyarrow 26.0.1, and pyproj 3.8.0.
+It also used rasterio 1.5.2, Matplotlib 3.10.8, and FFmpeg 8.0.1-3ubuntu2.
+All **38 selected real-input tests passed in 19.20 seconds**, with no skips.
+The standard Python **3.11 and 3.14** CI jobs also passed.
+The [successful verification run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355) records the setup, test gate, sequential HTTP runs, and comparisons.
+The [workflow at the measured commit](https://github.com/1337isnot1337/DOPPLERGEIST/blob/66146714c6c22a448a7a54830a82d31034c2be44/.github/workflows/real-performance.yml) preserves the exact replay commands in its fresh-HTTP job.
+Reproduction must use the recorded baseline and current source pins, with one shared recording file for both arms.
+A new encoding requires a new input hash and fresh results.
 
 ### Cache selection for the combined implementation
 
@@ -116,7 +166,7 @@ Its additional compact-checkpoint change does not affect this point-scoring meas
 The [exact-fit measurement record](../benchmarks/results/exact-fit-reuse-20261103.json) contains all twelve final runs, source details, input hashes, and workload counts.
 
 The complete HTTP runtime uses **NumPy 2.3.5**.
-The seven selected real-input tests and all 50 cache checks also passed in that runtime, with `PYTHONPATH=src` only.
+For the recorded 32 MiB revision, the seven selected real-input tests and all 50 cache checks passed in that runtime, with `PYTHONPATH=src` only.
 Those checks cover scalar parity, prepared measurements, cache mutation, eviction, layout, and nested scope restoration.
 They provide a separate correctness check, without another point-timing measurement.
 The two NumPy environments remain separate in the recorded results.
@@ -322,7 +372,7 @@ PYTHONPATH=src .venv-point/bin/python scripts/check_real_batch_cache.py \
 ```
 
 The separate HTTP-runtime correctness check used the same commands with NumPy 2.3.5 and no additional dependency directory on `PYTHONPATH`.
-It passed all seven tests and all 50 cache checks.
+For the recorded 32 MiB revision, it passed all seven tests and all 50 cache checks.
 
 For the other stage comparisons, use a separate NumPy 2.3.5 environment:
 

@@ -73,7 +73,15 @@
   "integration_followup": {
     "main_revision": "b7be4330c37eb9ec2bfca23a55d840bf9bb3acab",
     "note": "The timed pair tested 0d6a923 only. The later legacy-arithmetic API and uncached kernel are preserved unchanged, with strict custom-input bypass and fitter-identity clearing added around the single serialized cache.",
-    "local_validation": "All changed Python files compile. The uncached fitter AST is identical to public blob 4250d9800747805f376c51206f771c1d8bfcb640. Runtime checks await CI because the reset runner lacks required dependencies.",
-    "fitting_source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2"
+    "local_validation": "All changed Python files compiled before CI. The uncached fitter AST was identical to public blob 4250d9800747805f376c51206f771c1d8bfcb640; local runtime checks were unavailable after the runner reset.",
+    "fitting_source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+    "frozen_combined_source": "66146714c6c22a448a7a54830a82d31034c2be44",
+    "runtime_validation": {
+      "ci_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355",
+      "recorded_input_tests_passed": 38,
+      "skipped_tests": 0,
+      "fresh_http_scientific_and_array_parity": true,
+      "result_record": "integrated-http-20261103.json"
+    }
   }
 }
