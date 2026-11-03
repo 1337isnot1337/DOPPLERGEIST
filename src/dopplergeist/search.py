@@ -10,10 +10,10 @@ from scipy.spatial import cKDTree
 
 from .geometry import AcousticSupportError, ecef
 
-
-# Most national track/receiver chunks are empty; construct their schema once.
-_EMPTY_CPA_TABLE = pd.DataFrame(columns=[
-    "point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"])
+_CPA_COLUMNS = ["point_id", "flight_id", "emission_time", "receive_time", "distance_m", "speed_mps"]
+_CPA_DTYPE = np.dtype([(name, "int64" if name == "point_id" else object if name == "flight_id" else "float64")
+                       for name in _CPA_COLUMNS])
+_EMPTY_CPA_TABLE = pd.DataFrame(columns=_CPA_COLUMNS)
 
 
 def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_size=256):
@@ -87,28 +87,63 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
     """
     observers=ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     point_ids=points.point_id.to_numpy(dtype=int)
+    rows = _cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size,
+                     _sample_cache=_sample_cache)
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
+    return pd.DataFrame(rows, columns=_CPA_COLUMNS)
+
+
+def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512,
+              *, _sample_cache=None):
+    """Return the same ordered CPA records without allocating per-track tables.
+
+    Tiled scoring already has ECEF observers and needs to isolate unsupported
+    tracks. It can reuse those observers and materialize one table after the
+    bounded per-track work instead of rebuilding a DataFrame for every query.
+    """
     rows=[]
     for track in tracks:
-        track.validate_motion_support(c)
-        key = (id(track), step_s)
-        sampled = None if _sample_cache is None else _sample_cache.get(key)
-        if sampled is None:
-            t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
-            pos=track.position(t)
-            max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
+        # Prepared rows also retain c. Preserve its scalar type and value in
+        # the key, and retain the track so its object ID cannot be reused.
+        key = (id(track), type(c), c, type(step_s), step_s)
+        prepared = None if _sample_cache is None else _sample_cache.get(key)
+        if prepared is None:
+            prepared = _PreparedCPATrack(track, c, step_s)
             if _sample_cache is not None:
-                # Retain the track too, so its object ID cannot be reused.
-                _sample_cache[key] = (track, t, pos, max_step)
+                _sample_cache[key] = prepared
         else:
-            _, t, pos, max_step = sampled
-        near=np.flatnonzero(np.all((observers>=pos.min(axis=0)-max_distance)&
-                                  (observers<=pos.max(axis=0)+max_distance),axis=1))
-        if not len(near):continue
-        tree=cKDTree(pos)
+            track.validate_motion_support(c)
+        rows.extend(prepared.raw_rows(observers, point_ids, max_distance, chunk_size))
+    return _ordered_cpa_rows(rows, step_s)
+
+
+class _PreparedCPATrack:
+    """One validated track/step, reused only across one call's receiver chunks."""
+
+    def __init__(self, track, c, step_s):
+        track.validate_motion_support(c)
+        self.track, self.c, self.step_s = track, c, step_s
+        self.time = np.unique(np.r_[np.arange(track.time[0], track.time[-1], step_s), track.time[-1]])
+        self.position = track.position(self.time)
+        self.max_step = np.max(np.linalg.norm(np.diff(self.position, axis=0), axis=1))
+        self.lower, self.upper = self.position.min(axis=0), self.position.max(axis=0)
+        self.tree = None
+
+    def raw_rows(self, observers, point_ids, max_distance, chunk_size=512):
+        rows = []
+        track, t, pos, c = self.track, self.time, self.position, self.c
+        near=np.flatnonzero(np.all((observers>=self.lower-max_distance)&
+                                  (observers<=self.upper+max_distance),axis=1))
+        if not len(near):
+            return rows
+        if self.tree is None:
+            self.tree = cKDTree(pos)
+        tree = self.tree
         for base in range(0,len(near),chunk_size):
             chosen=near[base:base+chunk_size]
             obs=observers[chosen]
-            neighbours=tree.query_ball_point(obs,max_distance+2*max_step,return_sorted=True)
+            neighbours=tree.query_ball_point(obs,max_distance+2*self.max_step,return_sorted=True)
             counts=np.fromiter((len(a) for a in neighbours),dtype=int,count=len(neighbours))
             if not counts.sum():continue
             sample=np.concatenate(neighbours).astype(int)
@@ -147,10 +182,9 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
                                                    emission_intervals_s=[[float(lo), float(hi)]])
                     distance = np.sqrt(fit.fun)
                     if distance <= max_distance:
-                        rows.append({"point_id": int(point_ids[chosen[oi_edge[j]]]), "flight_id": track.id,
-                                     "emission_time": float(when), "receive_time": float(when + distance/c),
-                                     "distance_m": float(distance),
-                                     "speed_mps": float(np.linalg.norm(track.speed_vector(when)))})
+                        rows.append((int(point_ids[chosen[oi_edge[j]]]), track.id,
+                                     float(when), float(when + distance/c), float(distance),
+                                     float(np.linalg.norm(track.speed_vector(when)))))
             minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
                     (distance2<np.r_[distance2[1:],np.inf]))
             indices=np.flatnonzero(minima)
@@ -172,19 +206,31 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
             when=t[start]+fraction[n,edge]*(t[start+1]-t[start])
             speed=np.linalg.norm(track.speed_vector(when),axis=1)
             for j in np.flatnonzero(distance<=max_distance):
-                rows.append({"point_id":int(point_ids[chosen[oi[j]]]),"flight_id":track.id,
-                             "emission_time":float(when[j]),"receive_time":float(when[j]+distance[j]/c),
-                             "distance_m":float(distance[j]),"speed_mps":float(speed[j])})
-    if not rows:
-        return _EMPTY_CPA_TABLE.copy()
-    result=pd.DataFrame(rows,columns=["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"])
-    if not result.empty:
+                rows.append((int(point_ids[chosen[oi[j]]]), track.id,
+                             float(when[j]), float(when[j]+distance[j]/c),
+                             float(distance[j]), float(speed[j])))
+        return rows
+
+
+def _ordered_cpa_rows(rows, step_s):
+    if rows:
         # A CPA exactly at a sample can be proposed twice under roundoff.
-        result=result.sort_values(["point_id","flight_id","emission_time"])
-        duplicate=(result.point_id.eq(result.point_id.shift())&result.flight_id.eq(result.flight_id.shift())&
-                   result.emission_time.diff().abs().lt(step_s*1.1))
-        result=result[~duplicate].reset_index(drop=True)
-    return result
+        rows.sort(key=lambda row: (row[0], row[1], row[2]))
+        duplicate_tolerance = step_s*1.1
+        previous, retained = None, []
+        for row in rows:
+            # Match pandas' shifted int64 IDs (which become float64) and the
+            # original float64-difference promotion against the caller's step.
+            duplicate = (previous is not None and float(row[0]) == float(previous[0])
+                         and row[1] == previous[1]
+                         and np.float64(abs(row[2]-previous[2])) < duplicate_tolerance)
+            if not duplicate:
+                retained.append(row)
+            # Match the original simultaneous adjacent-row mask, including a
+            # chain of close proposals: compare with the preceding raw row.
+            previous = row
+        return retained
+    return rows
 
 
 def filter_event(table, event, time_origin=None, time_tolerance=5.0):
@@ -407,6 +453,10 @@ def _association_event_ceiling_uncached(diagnostic, score, frequency, event, lim
     return float(np.nextafter(1 - (-score) / limit, np.inf))
 
 
+_CANONICAL_CEILING_FUNCTIONS = (_association_event_ceiling, _association_event_ceiling_uncached,
+                              _ridge_trial_classification)
+
+
 def _association_trial_bound(result, events):
     """Bound an incompletely supported association at one shared clock.
 
@@ -516,7 +566,7 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     scalar fits, including each clock's first acoustic-support error.
     """
     from .acoustic_screen import ridge_trial_rejections
-    from .batch_ridge import first_event_fits
+    from .batch_ridge import first_event_fits, _first_event_fits_with_ceilings
     from .matching import _frequency_scale, fit_ridge
 
     diagnostics = [[] for _ in starts]
@@ -546,12 +596,16 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
                     eligible.append(trial)
         else:
             eligible = active
-        fitted = None
-        if batch is not None and len(eligible) >= 4:
-            fitted = first_event_fits(measurement, event,
-                                     batch[0][eligible], batch[1][eligible],
-                                     legacy_arithmetic=legacy_first_batch and index == 0)
+        fitted = fitted_ceilings = None
         remaining = len(events) - index - 1
+        if batch is not None and len(eligible) >= 4:
+            arguments = (measurement, event, batch[0][eligible], batch[1][eligible])
+            legacy = legacy_first_batch and index == 0
+            if remaining and bound_enabled:
+                fitted, fitted_ceilings = _first_event_fits_with_ceilings(
+                    *arguments, limits[index], legacy_arithmetic=legacy)
+            else:
+                fitted = first_event_fits(*arguments, legacy_arithmetic=legacy)
         next_active = []
         for fit_index, trial in enumerate(eligible):
             try:
@@ -569,8 +623,8 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
             diagnostics[trial].append(fit)
             if remaining:
                 if bound_enabled:
-                    contribution = _association_event_ceiling(
-                        fit, fit["score"], fit["f0_hz"], event, limits[index])
+                    contribution = (fitted_ceilings[fit_index] if fitted_ceilings is not None else
+                        _association_event_ceiling(fit, fit["score"], fit["f0_hz"], event, limits[index]))
                     if contribution == -np.inf:
                         outcomes[trial] = (None, -np.inf, None)
                         continue

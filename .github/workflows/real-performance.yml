@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     inputs:
       baseline:
-        description: Scalar-consistent baseline commit
-        default: d7cc1dd2e8089768253492b3269dfae97b3ad1a4
+        description: Exact baseline commit for recorded-input scorer comparisons
+        default: fec518e51f14afe8d36203e6c5e1be1277dea14e
         required: true
   push:
     branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103]
@@ -34,7 +34,9 @@ jobs:
       OMP_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
       PYTHONPATH: src
-      BASELINE_REF: ${{ inputs.baseline || 'd7cc1dd2e8089768253492b3269dfae97b3ad1a4' }}
+      NUMEXPR_NUM_THREADS: '1'
+      CC: gcc
+      BASELINE_REF: ${{ inputs.baseline || 'fec518e51f14afe8d36203e6c5e1be1277dea14e' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,8 +44,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install runtime
-        run: python -m pip install '.[test]'
+      - name: Install runtime and require both native extensions
+        run: |
+          python -m pip install --editable '.[test]'
+          python - <<'PY'
+          from dopplergeist import matching, native_acoustic
+          assert callable(matching._native_fit_irls), "Native ridge extension did not build"
+          assert matching.RIDGE_FIT_BACKEND.startswith("native-c-")
+          assert native_acoustic._native is not None, "Native acoustic extension did not build"
+          assert native_acoustic.ACOUSTIC_BACKEND.startswith("native-c-")
+          print({"ridge_fit_backend": matching.RIDGE_FIT_BACKEND,
+                 "acoustic_backend": native_acoustic.ACOUSTIC_BACKEND})
+          PY
       - name: Restore public recorded observations
         env:
           GH_TOKEN: ${{ github.token }}
@@ -53,19 +65,58 @@ jobs:
           python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           baseline_commit=$(git rev-parse --verify --end-of-options "${BASELINE_REF}^{commit}")
           git worktree add --detach "$RUNNER_TEMP/baseline" "$baseline_commit"
+          if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
+            (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
+          fi
       - name: Freeze real workloads
         run: |
           for width in 120 10; do
             python scripts/benchmark_prepared_measurements.py prepare --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json --index benchmark-inputs/reference-region.sqlite --clock-half-width-s "$width" --output "benchmark-inputs/point-$width.json"
           done
+          python scripts/benchmark_prepared_measurements.py prepare \
+            --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+            --index benchmark-inputs/reference-region.sqlite \
+            --reference-report evidence/results/reference-local/report.json \
+            --full-day --max-tracks 5000 --max-samples 2000000 \
+            --max-candidates 20000 \
+            --anchor-window-s 1788864888.7151732 1788865236.7214916 \
+            --output benchmark-inputs/dense.json
       - name: Real-input regression tests
         env:
           DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
-        run: python -m pytest -q tests/test_real_prepared_measurements.py tests/test_real_geometry_kinematics.py tests/test_real_batch_scalar_parity.py
+        run: |
+          python -m pytest -q \
+            tests/test_real_prepared_measurements.py \
+            tests/test_real_geometry_kinematics.py \
+            tests/test_real_batch_scalar_parity.py \
+            tests/test_real_motion_support_batch.py \
+            tests/test_real_single_pass_sieve.py \
+            tests/test_real_refinement_lookup.py \
+            tests/test_real_cpa_preparation.py \
+            tests/test_real_native_ridge.py \
+            tests/test_real_native_ridge_long.py \
+            tests/test_real_ridge_backend.py \
+            tests/test_real_legacy_batch_cache.py \
+            tests/test_real_native_acoustic.py \
+            tests/test_real_native_acoustic_pipeline.py \
+            tests/test_real_batch_ceilings.py \
+            tests/test_real_acoustic_screen_cache.py
+      - name: Verify the explicit Python fallback on recorded inputs
+        env:
+          DOPPLERGEIST_RIDGE_BACKEND: python
+          DOPPLERGEIST_ACOUSTIC_BACKEND: python
+          DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-inputs/point-120.json
+        run: python -m pytest -q tests/test_real_batch_scalar_parity.py tests/test_real_legacy_batch_cache.py
       - name: Compare complete payloads and timings
         run: |
-          for width in 10 120; do
-            python scripts/benchmark_prepared_measurements.py compare --fixture "benchmark-inputs/point-$width.json" --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src --repeats 2 --timeout-s 600 --output "results/performance-$width"
+          benchmark_cpu=$(python -c 'import os; print(min(os.sched_getaffinity(0)))')
+          for workload in point-10 point-120 dense; do
+            taskset -c "$benchmark_cpu" python scripts/benchmark_prepared_measurements.py compare \
+              --fixture "benchmark-inputs/$workload.json" \
+              --baseline-source "$RUNNER_TEMP/baseline/src" --current-source src \
+              --repeats 3 --timeout-s 600 \
+              --require-current-native --require-current-native-acoustic \
+              --output "results/performance-$workload"
           done
       - uses: actions/upload-artifact@v4
         if: always()

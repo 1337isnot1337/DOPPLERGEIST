@@ -68,7 +68,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     if (output / "provenance.json").exists() and not resume:
         raise FileExistsError("Analysis output exists; use a new directory")
     began = time.monotonic()
-    sources = {p.name: _digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
+    from .provenance import implementation_files
+    sources = {p.relative_to(Path(__file__).parent).as_posix(): _digest(p)
+               for p in implementation_files(Path(__file__).parent, recursive=False)}
     provenance = {"request": request, "operator_configuration_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
                   "source_sha256": _digest(request["audio_path"]), "implementation_files": sources,
                   "ground_truth_used_by_search": False, "event_selection": "automatic_whole_recording"}

@@ -1,0 +1,410 @@
+{
+  "date": "2026-11-03",
+  "source": {
+    "baseline_commit": "fec518e51f14afe8d36203e6c5e1be1277dea14e",
+    "optimized_composition": "Baseline main plus the PR 237 implementation at the pinned head",
+    "optimized_pr": 237,
+    "optimized_pr_head": "41d06469935f776988e1a4f04ab386d0355b433b",
+    "reused_acoustic_evidence_cache_pr": 228,
+    "publication_base_commit": "c37128bb08f12b8a68cf1f1cbf86adc2436f60fd",
+    "publication_base_difference": "Preserves later main index-digest and job-cancellation changes outside timed _score. PR 248 CPA sample/schema reuse is subsumed by the selected prepared-CPA path, with the _sample_cache interface retained for compatibility. The measured baseline and optimized numerical implementation are unchanged.",
+    "reused_native_ridge_pr": 228
+  },
+  "attribution": {
+    "reused": "PR 237 native acoustic kernel, CPA preparation, and batch-ceiling reuse; native ridge fitter and acoustic evidence cache from PR 228.",
+    "new": "Dense replay and benchmark controls, native-execution assertions, phase instrumentation, and separate long-ridge regression coverage."
+  },
+  "method": {
+    "pairs": 3,
+    "order": [
+      [
+        "baseline",
+        "current"
+      ],
+      [
+        "current",
+        "baseline"
+      ],
+      [
+        "baseline",
+        "current"
+      ]
+    ],
+    "fresh_interpreter_per_run": true,
+    "single_cpu_affinity_per_workload": true,
+    "numerical_threads": 1,
+    "timer": "Complete _score call, including benchmark counters, candidate-row capture, and retention writes",
+    "excluded": [
+      "imports",
+      "input loading",
+      "acquisition",
+      "audio discovery",
+      "refinement",
+      "result JSON serialization"
+    ],
+    "comparison": "All scored associations, diagnostics, support/accounting, ranked rows, and logical retention-ledger rows; exact equality without scientific-float tolerance",
+    "profiling_in_timing_samples": false,
+    "native_execution": "Each optimized run requires at least one successful native ridge fit and acoustic solve during the timed call.",
+    "peak_rss_scope": "Worker lifetime through scoring, including imports and input loading"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "pandas": "2.2.3",
+    "native_compiler": "GCC 13.3.0",
+    "shared_host": true
+  },
+  "recorded_inputs": {
+    "release": "https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/checkpoint-2026-11-02",
+    "aircraft": "data/adsb/2026-09-08/reference-region.parquet",
+    "discovery": "evidence/audio/w1-sensitivity-20261102/reference/discovery.json",
+    "receiver": "evidence/results/reference-local/report.json",
+    "observed_index_input_hash": "bba872277ac47cbe4eacf1e7203b0d8f4e84d9641d777dd841cb4c1d6d64c88b",
+    "coverage": "Regional observed sample extent; original ingestion excluded known jets; incomplete flight coverage"
+  },
+  "limits": [
+    "Source-informed receiver hypothesis, not independent microphone-location truth.",
+    "Regional control uses a fitted recording clock plus or minus 120 seconds.",
+    "Dense control uses a full-day aircraft inventory with one association-anchor ownership partition; physical fit intervals are unchanged.",
+    "No full-day search completion, nationwide throughput, localization-accuracy, or end-to-end upload speedup claim."
+  ],
+  "workloads": [
+    {
+      "name": "regional_120s",
+      "scope": "Recorded-input computation comparison; source-informed receiver/clock, no accuracy claim",
+      "inputs": {
+        "trajectories": 452,
+        "trajectory_samples": 91889,
+        "ridge_records": 16,
+        "independent_groups": 16,
+        "ridge_samples": 724,
+        "cpa_rows": 100,
+        "unsupported_cpa_tracks": 4
+      },
+      "associations": 3905,
+      "retained": 100,
+      "recording_start_window_s": [
+        1788898529.6620934,
+        1788898769.6620934
+      ],
+      "anchor_window_s": null,
+      "budget": {
+        "spacing_m": 2000.0,
+        "tile_cells": 32,
+        "max_tracks_per_tile": 5000,
+        "max_track_samples_per_tile": 1000000,
+        "max_cpa_rows": 100000,
+        "max_candidates_per_tile": 20000,
+        "top_k": 100,
+        "refine_spacing_m": 100.0,
+        "refine_finalists": 10,
+        "cpa_step_s": 2.0,
+        "max_tiles": null
+      },
+      "exact_scientific_and_ledger_equality": true,
+      "arms": {
+        "baseline": {
+          "cpu_seconds": {
+            "samples": [
+              14.758516822999999,
+              14.883025796000002,
+              13.904118149999999
+            ],
+            "median": 14.758516822999999,
+            "range": [
+              13.904118149999999,
+              14.883025796000002
+            ]
+          },
+          "wall_seconds": {
+            "samples": [
+              14.780170951999935,
+              14.908939877999728,
+              13.925511151999672
+            ],
+            "median": 14.780170951999935,
+            "range": [
+              13.925511151999672,
+              14.908939877999728
+            ]
+          },
+          "peak_rss_mib": {
+            "samples": [
+              338.8046875,
+              336.546875,
+              336.80859375
+            ],
+            "median": 336.80859375,
+            "range": [
+              336.546875,
+              338.8046875
+            ]
+          },
+          "load_seconds_excluded": {
+            "samples": [
+              1.3262709140008155,
+              1.5137340549999863,
+              1.2778987860001507
+            ],
+            "median": 1.3262709140008155,
+            "range": [
+              1.2778987860001507,
+              1.5137340549999863
+            ]
+          },
+          "operations_per_run": {
+            "scalar_fit_calls": 72,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905,
+            "native_fit_calls": 0,
+            "native_fit_successes": 0,
+            "native_acoustic_successes": 0
+          },
+          "backends": {
+            "ridge_fit_backend": "python-irls-v1",
+            "acoustic_backend": "python-acoustic-v1"
+          }
+        },
+        "current": {
+          "cpu_seconds": {
+            "samples": [
+              8.295707265,
+              7.969554623999999,
+              7.926356926
+            ],
+            "median": 7.969554623999999,
+            "range": [
+              7.926356926,
+              8.295707265
+            ]
+          },
+          "wall_seconds": {
+            "samples": [
+              8.308296771999267,
+              7.986333711000043,
+              7.943452700999842
+            ],
+            "median": 7.986333711000043,
+            "range": [
+              7.943452700999842,
+              8.308296771999267
+            ]
+          },
+          "peak_rss_mib": {
+            "samples": [
+              337.65625,
+              339.828125,
+              338.0859375
+            ],
+            "median": 338.0859375,
+            "range": [
+              337.65625,
+              339.828125
+            ]
+          },
+          "load_seconds_excluded": {
+            "samples": [
+              1.3433051040001374,
+              1.3558534760004477,
+              1.3584119380002448
+            ],
+            "median": 1.3558534760004477,
+            "range": [
+              1.3433051040001374,
+              1.3584119380002448
+            ]
+          },
+          "operations_per_run": {
+            "scalar_fit_calls": 72,
+            "acoustic_calls": 850,
+            "scored_candidates": 3905,
+            "native_fit_calls": 38890,
+            "native_fit_successes": 38890,
+            "native_acoustic_successes": 850
+          },
+          "backends": {
+            "ridge_fit_backend": "native-c-irls-v2-pairwise",
+            "acoustic_backend": "native-c-acoustic-v1"
+          }
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.8506828648597973,
+        "cpu_seconds": 1.851862182932445
+      },
+      "cpu_reduction_percent": 46.00030125262947
+    },
+    {
+      "name": "full_day_dense_partition",
+      "scope": "Real full-day historical aircraft and measured audio; one declared dense association-anchor partition, with all 16 independent groups and unchanged physical clock intervals. Regional development receiver hypothesis; no independent accuracy or complete national-search claim.",
+      "inputs": {
+        "trajectories": 4694,
+        "trajectory_samples": 713100,
+        "ridge_records": 16,
+        "independent_groups": 16,
+        "ridge_samples": 724,
+        "cpa_rows": 944,
+        "unsupported_cpa_tracks": 62
+      },
+      "associations": 16101,
+      "retained": 100,
+      "recording_start_window_s": null,
+      "anchor_window_s": [
+        1788864888.7151732,
+        1788865236.7214916
+      ],
+      "budget": {
+        "spacing_m": 2000.0,
+        "tile_cells": 32,
+        "max_tracks_per_tile": 5000,
+        "max_track_samples_per_tile": 2000000,
+        "max_cpa_rows": 100000,
+        "max_candidates_per_tile": 20000,
+        "top_k": 100,
+        "refine_spacing_m": 100.0,
+        "refine_finalists": 10,
+        "cpa_step_s": 2.0,
+        "max_tiles": null
+      },
+      "exact_scientific_and_ledger_equality": true,
+      "arms": {
+        "baseline": {
+          "cpu_seconds": {
+            "samples": [
+              66.566966694,
+              58.964112544,
+              62.634667882
+            ],
+            "median": 62.634667882,
+            "range": [
+              58.964112544,
+              66.566966694
+            ]
+          },
+          "wall_seconds": {
+            "samples": [
+              66.67206379300023,
+              59.048105919999216,
+              62.792695310000454
+            ],
+            "median": 62.792695310000454,
+            "range": [
+              59.048105919999216,
+              66.67206379300023
+            ]
+          },
+          "peak_rss_mib": {
+            "samples": [
+              653.4296875,
+              652.96484375,
+              652.1875
+            ],
+            "median": 652.96484375,
+            "range": [
+              652.1875,
+              653.4296875
+            ]
+          },
+          "load_seconds_excluded": {
+            "samples": [
+              9.249394782000309,
+              10.521443413999805,
+              9.737510841000585
+            ],
+            "median": 9.737510841000585,
+            "range": [
+              9.249394782000309,
+              10.521443413999805
+            ]
+          },
+          "operations_per_run": {
+            "scalar_fit_calls": 983,
+            "acoustic_calls": 5731,
+            "scored_candidates": 16101,
+            "native_fit_calls": 0,
+            "native_fit_successes": 0,
+            "native_acoustic_successes": 0
+          },
+          "backends": {
+            "ridge_fit_backend": "python-irls-v1",
+            "acoustic_backend": "python-acoustic-v1"
+          }
+        },
+        "current": {
+          "cpu_seconds": {
+            "samples": [
+              37.387628938000006,
+              36.068293563,
+              31.175117163000003
+            ],
+            "median": 36.068293563,
+            "range": [
+              31.175117163000003,
+              37.387628938000006
+            ]
+          },
+          "wall_seconds": {
+            "samples": [
+              37.4480861180009,
+              36.12167470900022,
+              31.219428648000758
+            ],
+            "median": 36.12167470900022,
+            "range": [
+              31.219428648000758,
+              37.4480861180009
+            ]
+          },
+          "peak_rss_mib": {
+            "samples": [
+              657.7890625,
+              657.7109375,
+              658.7734375
+            ],
+            "median": 657.7890625,
+            "range": [
+              657.7109375,
+              658.7734375
+            ]
+          },
+          "load_seconds_excluded": {
+            "samples": [
+              10.19058514199969,
+              9.772342446999573,
+              9.700311069000236
+            ],
+            "median": 9.772342446999573,
+            "range": [
+              9.700311069000236,
+              10.19058514199969
+            ]
+          },
+          "operations_per_run": {
+            "scalar_fit_calls": 983,
+            "acoustic_calls": 5731,
+            "scored_candidates": 16101,
+            "native_fit_calls": 228240,
+            "native_fit_successes": 228240,
+            "native_acoustic_successes": 5731
+          },
+          "backends": {
+            "ridge_fit_backend": "native-c-irls-v2-pairwise",
+            "acoustic_backend": "native-c-acoustic-v1"
+          }
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.7383661144137035,
+        "cpu_seconds": 1.736557560523258
+      },
+      "cpu_reduction_percent": 42.41480831198703
+    }
+  ],
+  "validation": {
+    "focused_real_input_tests_passed": 52,
+    "focused_real_input_tests_skipped": 0,
+    "long_ridge_comparisons_passed": 540,
+    "scope": "Software and numerical regression checks, separate from timing samples and independent geolocation accuracy."
+  }
+}
