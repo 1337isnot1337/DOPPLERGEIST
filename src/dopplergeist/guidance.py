@@ -41,8 +41,8 @@ def guidance(result, decision=None):
     elif reason in {"partial_flight_coverage", "missing_flight_data", "data_unavailable"}:
         coverage = result.get("coverage", {})
         if coverage.get("data_status") in {"partial", "unavailable"} and coverage.get("limitations"):
-            add("missing_data", "The required historical data are incomplete or unavailable; see the coverage limitations.",
-                "Ask the operator to restore the missing historical data before repeating the analysis.",
+            add("missing_data", "Required flight or terrain data are incomplete or unavailable; see the coverage limitations.",
+                "Ask the operator to restore the missing data before repeating the analysis.",
                 ["result.json#/reason_code", "result.json#/coverage/data_status", "result.json#/coverage/limitations"])
     elif reason == "work_limit" and result.get("coverage", {}).get("search_complete") is False:
         add("work_limit", "The configured wall-time limit ended the analysis before it completed.",
