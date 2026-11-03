@@ -40,10 +40,12 @@ The YouTube MP4 is intentionally excluded.
 
 Python 3.11+ and `ffmpeg` are required. Python 3.14 was used for this checkpoint;
 the recorded dependency versions are in [evidence/runtime.json](evidence/runtime.json).
+See [clean installation, pinned dependencies and selective restoration](docs/SETUP.md)
+for a fresh checkout.
 
 ```bash
 python -m venv .venv
-.venv/bin/pip install -e . pytest
+.venv/bin/pip install -e '.[test]'
 .venv/bin/python -m pytest -q
 .venv/bin/python scripts/make_synthetic_cases.py
 .venv/bin/aircraft-geoloc run data/synthetic/two-events.json --output results/replay-two-events
