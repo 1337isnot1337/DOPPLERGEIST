@@ -1,0 +1,20 @@
+{
+  "title": "DOPPLERGEIST \u00b7 Aircraft sound locator",
+  "url": "http://127.0.0.1:18876/?job=847e28eac8534de6bfc92901eb0e4cb5",
+  "job_id": "847e28eac8534de6bfc92901eb0e4cb5",
+  "status": "Failed",
+  "message": "Media probe failed; file is unsupported or corrupt",
+  "required_input": "",
+  "artifact_links": [
+    "input.json",
+    "input.mp3",
+    "provenance.json",
+    "request.json",
+    "result.json",
+    "worker.log"
+  ],
+  "page_errors": [],
+  "scope": "Actual browser upload, displayed result and original download; no accuracy claim.",
+  "source_sha256": "357b4893f39d45ab2da35053c062d4267a8d2c6e1e471b333181b42a599caa18",
+  "download_sha256": "357b4893f39d45ab2da35053c062d4267a8d2c6e1e471b333181b42a599caa18"
+}
