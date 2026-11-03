@@ -1,0 +1,49 @@
+{
+  "flight_indexes": [
+    {
+      "index_version": 2,
+      "sources": [
+        {
+          "path": "/home/cinna/dopplergeist-w5-product/results/w5-conus-mp3-20261102/inputs/flights-opaque.csv",
+          "sha256": "afe3a96ffb86f21d7e08042b5e6381b0311ecf23ab0f86738aec5e3bd75c749b",
+          "scope": "complete finite synthetic world from scripts/make_synthetic_cases.py; IDs opaque, all rows retained"
+        }
+      ],
+      "coverage": {
+        "bounds": [
+          -180,
+          -90,
+          180,
+          90
+        ],
+        "time_range_s": [
+          1789999400.0,
+          1790002400.0
+        ],
+        "all_aircraft": true,
+        "provider": "finite closed-world synthetic renderer: exactly the seven supplied simulated tracks; no real archive completeness claim"
+      },
+      "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+      "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "max_gap_s": 30.0,
+      "max_flight_samples": 250000,
+      "input_hash": "297c468b7ea1459c2e8cb74db410783db5fbae8cd3bdc3e29a4509c6f5cb1404",
+      "rows": 1617,
+      "invalid_rows": 0,
+      "segments": 7,
+      "altitude_basis_counts": {
+        "ellipsoidal": 1617
+      },
+      "jets_excluded": false,
+      "unknown_types_retained": true,
+      "geometry_clipped": false,
+      "continuous_geometry_bounds": true
+    }
+  ],
+  "terrain": {
+    "terrain_configuration": {
+      "constant_m": 120
+    },
+    "terrain_rasters": {}
+  }
+}

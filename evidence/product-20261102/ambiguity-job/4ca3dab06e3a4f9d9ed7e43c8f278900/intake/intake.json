@@ -1,0 +1,41 @@
+{
+  "sample_count": 4720000,
+  "peak_amplitude": 0.8658149838447571,
+  "time_status": "ready",
+  "time_hints": [],
+  "decode": {
+    "decoder": "ffmpeg",
+    "sample_format": "f32le",
+    "channel_policy": "arithmetic channel mean",
+    "source_sample_rate_hz": 8000,
+    "source_channels": 1,
+    "source_codec": "mp3",
+    "stream_index": 0,
+    "audio_time_zero": "first decoded sample after codec skip/discard",
+    "command": [
+      "ffmpeg",
+      "-nostdin",
+      "-v",
+      "error",
+      "-xerror",
+      "-i",
+      "/home/cinna/dopplergeist-w5-product/results/w5-conus-mp3-20261102/jobs-api-closed-world-v2/4ca3dab06e3a4f9d9ed7e43c8f278900/input.mp3",
+      "-map",
+      "0:a:0",
+      "-vn",
+      "-sn",
+      "-dn",
+      "-af",
+      "pan=mono|c0=1*c0",
+      "-ac",
+      "1",
+      "-ar",
+      "4000",
+      "-acodec",
+      "pcm_f32le",
+      "-f",
+      "f32le",
+      "pipe:1"
+    ]
+  }
+}
