@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from aircraft_geoloc.evaluation import detection_counts, evaluate
+from dopplergeist.evaluation import detection_counts, evaluate
 
 
 def test_maximum_matching_and_harmonic_deduplication():

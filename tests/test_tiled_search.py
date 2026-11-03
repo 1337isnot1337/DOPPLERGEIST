@@ -6,11 +6,11 @@ import pandas as pd
 from pyproj import Transformer
 import pytest
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.data_access import DataUnavailable, FlightIndex
-from aircraft_geoloc.geometry import Track, ecef
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
+from dopplergeist.audio import Spectrum
+from dopplergeist.data_access import DataUnavailable, FlightIndex
+from dopplergeist.geometry import Track, ecef
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
 
 
 def scenario(tmp_path, count=2, receiver_offset=(0, 0)):
@@ -107,7 +107,7 @@ def test_ridge_only_adapter_and_exact_recording_clock(tmp_path):
 
 
 def test_overlapping_refinement_scores_the_complete_grid_union_once(tmp_path, monkeypatch):
-    from aircraft_geoloc import tiled_search
+    from dopplergeist import tiled_search
 
     index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
     # A translated alternative flight pair produces a competing location whose
@@ -271,3 +271,74 @@ def test_narrow_trusted_window_near_sweep_edge_is_not_shrunk_again(tmp_path):
     assert ranked
     assert window[0] <= ranked[0]["recording_start_time_s"] <= window[1]
     assert ranked[0]["event_indices"] == [0, 1]
+
+
+def test_finite_retention_bound_matches_untiled_and_recovers_missing_ledger(tmp_path):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
+    terrain = Terrain(constant_m=0)
+    settings = {"mode": "ridge", "time_origin": origin, "time_sweep_s": 0}
+    points = pd.concat([tile_points(cells, 1000, bounds, terrain, "EPSG:5070")
+                        for _, cells in grid_tiles(bounds, 1000, 2)], ignore_index=True)
+    points["point_id"] = np.arange(len(points))
+    all_rows, _ = _score(points, list(index.query(bounds, times)), events, measurements,
+                         SearchBudget(top_k=10000), settings, {})
+    assert len(all_rows) > 1
+    budget = SearchBudget(spacing_m=1000, tile_cells=2, top_k=1, refine_spacing_m=1000)
+    kwargs = dict(time_range_s=times, output_dir=tmp_path / "finite", bounds=bounds, budget=budget, scoring=settings)
+    first = search_national([index], terrain, events, measurements, **kwargs)
+    finite = first["finite_search_evidence"]
+    assert finite["complete"] and finite["pruning_accounted_for"]
+    assert finite["evaluated_modes"] == len(all_rows)
+    assert finite["discarded_count"] == len(all_rows)-1
+    assert finite["best_discarded_score"] == pytest.approx(all_rows[1]["score"], abs=1e-8)
+    assert first["core_assessed_mode_ids"] == [first["ranked"][0]["mode_id"]]
+    # Completed tile JSON alone is not enough to reconstruct discarded modes.
+    (tmp_path / "finite/retention.sqlite").unlink()
+    repaired = search_national([index], terrain, events, measurements, **kwargs)
+    assert repaired["tiles_resumed"] == 0
+    assert repaired["finite_search_evidence"]["discarded_count"] == finite["discarded_count"]
+    assert repaired["core_assessed_mode_ids"] == first["core_assessed_mode_ids"]
+
+
+def test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound(tmp_path, monkeypatch):
+    from dopplergeist import tiled_search
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
+    original = tiled_search.score_candidate
+
+    def incomplete(*args, **kwargs):
+        result = original(*args, **kwargs)
+        result["scoring_assessment"] = {"complete": False, "evaluated_trials": 1, "rejected_trials": 0,
+                                        "unknown_trials": 1, "reasons": ["test_missing_support"]}
+        return result
+
+    monkeypatch.setattr(tiled_search, "score_candidate", incomplete)
+    result = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
+                             output_dir=tmp_path / "unknown", bounds=bounds,
+                             budget=SearchBudget(spacing_m=1000, tile_cells=4, top_k=1, refine_spacing_m=1000),
+                             scoring={"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0})
+    assert result["ranked"] and result["status"] == "complete"
+    finite = result["finite_search_evidence"]
+    assert not finite["complete"] and finite["unclassified_score_candidates"] > 0
+    assert finite["best_discarded_score"] is None and finite["discarded_count"] > 0
+    assert result["core_assessed_mode_ids"] == []
+
+
+def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path, monkeypatch):
+    from dopplergeist import tiled_search
+    _, tracks, events, measurements, bounds, _, origin = scenario(tmp_path)
+    original = tiled_search.score_candidate
+
+    def rejected(*args, **kwargs):
+        result = original(*args, **kwargs)
+        result.update(score=-np.inf, scoring_assessment={"complete": True, "evaluated_trials": 1,
+                      "rejected_trials": 1, "unknown_trials": 0, "reasons": ["test_admissible_rejection"]})
+        return result
+
+    monkeypatch.setattr(tiled_search, "score_candidate", rejected)
+    points = tile_points((0, 1900, 1, 1901), 1000, bounds, Terrain(constant_m=0), "EPSG:5070")
+    ranked, counts = _score(points, tracks, events, measurements, SearchBudget(),
+                            {"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0}, {})
+    assert not ranked and counts["evaluated_rejections"] == counts["candidates"] > 0
+    assert counts["unclassified_score_candidates"] == 0
+
+

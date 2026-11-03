@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from aircraft_geoloc.search import pair_candidates
-from aircraft_geoloc.tracks import load_tracks
+from dopplergeist.search import pair_candidates
+from dopplergeist.tracks import load_tracks
 
 
 def event(cpa):

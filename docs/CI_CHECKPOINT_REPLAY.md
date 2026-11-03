@@ -54,7 +54,7 @@ DEM/geoid files. `provenance.truth_separation` is `not_assessed`: hashes cannot
 establish how event windows or search bounds were selected. Used Copernicus tile
 hashes are explicitly incomplete when the provider does not expose those paths.
 
-Implementation hashes cover only the `aircraft_geoloc` package's Python files.
+Implementation hashes cover only the `dopplergeist` package's Python files.
 The workflow also builds and installs a wheel in a separate virtual environment.
 An isolated Python process checks that its package digest matches the checkout
 and that adding an unrelated installed module cannot change the digest.

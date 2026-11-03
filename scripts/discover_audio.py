@@ -12,8 +12,8 @@ import resource
 import subprocess
 import time
 
-from aircraft_geoloc.discovery import DiscoverySettings, discover_events
-from aircraft_geoloc.intake import intake_recording
+from dopplergeist.discovery import DiscoverySettings, discover_events
+from dopplergeist.intake import intake_recording
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
     recording = intake_recording(args.audio, output / "intake")
     events = discover_events(recording, output_dir=output / "discovery")
     root = Path(__file__).resolve().parents[1]
-    sources = sorted((root / "src" / "aircraft_geoloc").glob("*.py"))
+    sources = sorted((root / "src" / "dopplergeist").glob("*.py"))
     code_hash = hashlib.sha256()
     for path in sources:
         code_hash.update(path.name.encode())
