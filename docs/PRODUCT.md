@@ -30,6 +30,12 @@ processed stage or tile is repeated. Input, detector and checkpoint integrity
 are checked before reuse; incompatible search checkpoints fail explicitly.
 Stopping before discovery completes cannot resume from that stage.
 
+Saved searches from the November 3 `225bf6b` scorer have a compatible upgrade
+path to the faster staged scorer. Resume retains their completed scores and
+tile files, archives the previous search and identities, and processes only
+unfinished work. Input, event, runtime and model checks still reject unsupported
+transitions; the upgrade does not make an inconclusive result conclusive.
+
 The server binds to loopback. It runs one analysis process at a time, accepts up
 to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
@@ -53,11 +59,12 @@ dopplergeist resume JOB_ID --jobs jobs
 ```
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
-the upload is queued. `job --watch` reports the number and recent rate of local
-checkpoint pieces on standard error, then writes the final job JSON to standard
-output. Pieces can have different sizes and costs, so their rate is not an ETA;
-remotely staged work appears after it is imported. Pressing Ctrl-C stops the
-watcher without cancelling the analysis.
+the upload is queued. `job --watch` reports overall progress, the number and
+recent rate of local checkpoint pieces, the age of the newest tile checkpoint,
+and the age of the job status file on standard error. It then writes the final
+job JSON to standard output. Pieces can have different sizes and costs, so their
+rate is not an ETA; remotely staged work appears after it is imported. Pressing
+Ctrl-C stops the watcher without cancelling the analysis.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not

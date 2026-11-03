@@ -4,6 +4,10 @@
 
 DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations.
 
+![Spectrogram and scored search grid for a real Livermore aircraft flyover](assets/livermore-real-demo.png)
+
+<sub>From a real aircraft flyover, DOPPLERGEIST’s highest-scoring point landed **481 m from a reference derived from other flight tracks**. This demonstration uses the known aircraft and a bounded time and area; [see the full results and limitations](docs/LIVERMORE_DEMO.md).</sub>
+
 **This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
 
 [Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
@@ -46,8 +50,8 @@ This scans the complete recording and saves an inspectable job. To permit histor
 Initial data acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
 
 The command prints a job ID when queued. In another terminal, run
-`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow local
-checkpoint pieces and their recent rate. 
+`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow reported
+progress, checkpoint rate, and the age of the latest tile and job status update.
 
 ### Discover events in a recording
 
@@ -88,11 +92,13 @@ Recording-time evidence matters: audio-relative seconds do not identify which da
 
 The automatic search uses conservative score ceilings before completing every fit: incompatible residuals and an established Top-K cutoff can stop further group fitting at a shared clock. It batches eligible clock fits, reuses exact acoustic calculations in dense tiles, and divides overloaded areas or single-cell clock ranges into checkpointed pieces. [Search screening and real-data timing](docs/DATA_AND_SCALE.md#search) describe the bounds and their measured limits.
 
-The latest changes reduced median scoring time at one source-informed receiver point from **28.80 to 15.57 CPU seconds**, a **1.85×** incremental speedup. A narrower clock workload improved from **4.39 to 2.21 CPU seconds**, or **1.98×**. Each comparison used three alternating pairs on actual recorded ridges and observed flight trajectories. All 3,905 broad-window associations and 1,055 narrow-window associations matched exactly across 16 independent groups, including diagnostics and retention records.
+The original PR225 comparison used source `5699a657` against baseline `aa3dff6`. Median scoring time at one source-informed receiver point fell from **28.80 to 15.57 CPU seconds**, a **1.85×** speedup. A narrower clock workload improved from **4.39 to 2.21 CPU seconds**, or **1.98×**. Each comparison used three alternating pairs on actual recorded ridges and observed flight trajectories. All 3,905 broad-window associations and 1,055 narrow-window associations matched exactly across 16 independent groups, including diagnostics and retention records.
 
-The implementation reuses exact fits within a bounded 32 MiB cache and avoids decoding unrelated finalist trajectories. Separate measurements cover refinement, optional plots, and compact checkpoint encoding. The [performance report](docs/PERFORMANCE.md) gives the methodology, reproduction commands, memory tradeoff, and earlier historical results. Point timings use NumPy 2.5.4, while complete HTTP checks use NumPy 2.3.5. The full CONUS baseline reached its runtime limit, so these measurements do not establish nationwide completion time or independent location accuracy.
+That recorded implementation used a 32 MiB object cache and avoided decoding unrelated finalist trajectories. Separate measurements cover refinement, optional plots, and compact checkpoint encoding. The [performance report](docs/PERFORMANCE.md) gives the methodology, reproduction commands, memory tradeoff, and earlier historical results. Point timings use NumPy 2.5.4, while complete HTTP checks use NumPy 2.3.5. The full CONUS baseline reached its runtime limit, so these measurements do not establish nationwide completion time or independent location accuracy.
 
-A separate bounded HTTP pair processed the complete original recording in **264.81 → 188.32 wall seconds**, an observed **1.41×** speedup. Both runs passed the full-pipeline checks and returned 23 candidates with `inconclusive / search_incomplete`. Scientific outputs, the retention ledger, decoded audio, and diagnostics matched without numerical tolerance after the declared run-metadata normalization. This is one sequential pair on a shared host, with source-informed regional bounds and a fitted recording clock. The [HTTP measurement record](benchmarks/results/bounded-http-20261103.json) preserves the settings and equality checks.
+A separate bounded HTTP pair compared the same two source revisions. It processed the complete original recording in **264.81 → 188.32 wall seconds**, an observed **1.41×** speedup. Both runs passed the full-pipeline checks and returned 23 candidates with `inconclusive / search_incomplete`. Scientific outputs, the retention ledger, decoded audio, and diagnostics matched without numerical tolerance after the declared run-metadata normalization. This is one sequential pair on a shared host, with source-informed regional bounds and a fitted recording clock. The [HTTP measurement record](benchmarks/results/bounded-http-20261103.json) preserves the settings and equality checks.
+
+Main `21262e0` includes PR222's overlapping cache improvements, merged at `0d6a923`, and later checkpoint compatibility changes. The combined implementation selects its serialized cache, whose **4 MiB cap covers digest keys and serialized payloads**. Python object headers and dictionary bookkeeping require additional memory. One instrumented broad-clock pair used **13.08% less CPU** than the 32 MiB object-cache variant, with all 3,905 associations and retention outputs equal. This cache-selection comparison uses otherwise identical main-based code and NumPy 2.3.5. Fresh integrated HTTP validation remains pending. The earlier speedups do not measure an incremental gain over `21262e0`; see [integration scope and cache selection](docs/PERFORMANCE.md#integration-with-main-pending).
 
 Recent search work makes omitted alternatives and failed model evaluations visible. For more detail see [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md).
 
@@ -181,6 +187,7 @@ Fully vibecoded if it wasn't obvious. Using a series of 6.1 Sol xhigh and Terra 
 
 - [Methodology](docs/METHODOLOGY.md) — geometry, Doppler and acoustic propagation
 - [Installation and reproducibility](docs/SETUP.md) — environments, verification, restoration
+- [Pipeline performance measurements](docs/PIPELINE_PERFORMANCE_2026-11-03.md) — real-input timings, comparison controls, and reproduction commands
 - [Automatic event discovery](docs/AUDIO_DISCOVERY.md) — detector design and known failure modes
 - [Confidence and decision rules](docs/CONFIDENCE.md) — ambiguity, abstention, incomplete coverage
 - [Finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) and [clock-trial accounting](docs/SCORING_ASSESSMENT.md) — retained/discarded candidates and unknown model work

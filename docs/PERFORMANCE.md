@@ -1,6 +1,9 @@
 # Measured pipeline performance
 
-The latest changes reduce median CPU time for complete point scoring by **45.94%** on the broad-clock workload.
+The original PR225 point and HTTP comparisons use baseline `aa3dff686c989524daa20c081a816b792d9c8890` and the implementation published at `5699a657d57dc4f66b74ef000e20d3ba88f84704`.
+The integration section separates validation of the combined implementation from these original comparisons.
+
+The recorded PR225 implementation reduces median CPU time for complete point scoring by **45.94%** on the broad-clock workload.
 The narrow-clock workload uses **49.56%** less CPU time.
 Both comparisons preserve every scored association and its diagnostics exactly.
 The changes reuse calculations and reduce data decoding without reducing the search domain, event coverage, solver iterations, or numerical precision.
@@ -9,7 +12,55 @@ These are incremental improvements over an already optimized baseline.
 The earlier **2.69×** scorer result appears in the [historical comparison](#historical-scorer-comparison-2026-11-03).
 The measurements cover different stages and environments, so their speedups do not combine into a complete-pipeline ratio.
 
-## Exact fit reuse: current point-scoring comparison
+## Integration with main: pending
+
+Main commit [`0d6a92377af0f00b84dff9fa7966326d0014c20c`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/0d6a92377af0f00b84dff9fa7966326d0014c20c) merged [PR222](https://github.com/1337isnot1337/DOPPLERGEIST/pull/222).
+That work independently adds batch-fit reuse and improvements to audio, terrain, trajectory decoding, and retention transactions.
+Some changes overlap the original PR225 implementation.
+The [PR222 report](PIPELINE_PERFORMANCE_2026-11-03.md) preserves its separate measurements.
+The combined implementation also includes main commit [`21262e031388b3a5a8dd75979b2dc851608499b2`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/21262e031388b3a5a8dd75979b2dc851608499b2) and its checkpoint compatibility changes.
+
+The earlier PR225 timings do not isolate an incremental gain over `0d6a923` or `21262e0`.
+A fresh comparison will validate the frozen combined implementation separately.
+Results against `aa3dff6` describe the combined changes.
+Results against `0d6a923` describe the additional changes after PR222.
+Results against `21262e0` describe the additional changes after that later main revision.
+
+<!-- PERFORMANCE_INTEGRATION_PENDING: fill after source freeze and the fresh HTTP comparison. -->
+
+| Integration item | Status |
+| --- | --- |
+| Integrated main source | `21262e031388b3a5a8dd75979b2dc851608499b2` |
+| Frozen combined source | Pending |
+| Batch-cache selection | Serialized cache from main; 4 MiB digest-key and payload cap |
+| Fresh bounded HTTP result and baseline | Pending |
+| Exact JSON, SQLite, and array comparison | Pending |
+
+### Cache selection for the combined implementation
+
+One isolated, instrumented pair compared two cache implementations in otherwise identical code based on main `0d6a923`.
+The pair used NumPy 2.3.5 and the same real broad-clock workload.
+All 3,905 scored associations and retention outputs matched exactly.
+
+| Cache implementation | CPU time | Estimated retained Python objects | Process peak RSS |
+| --- | ---: | ---: | ---: |
+| Serialized cache from main, 4 MiB key/payload cap | 12.822287035 s | 4,333,666 bytes | 285.35 MiB |
+| Previous object-cache variant, 32 MiB accounted-object cap | 14.751674511 s | 33,553,167 bytes | 310.86 MiB |
+
+The serialized cache used **13.08% less CPU time** in this pair and is selected for integration.
+Its 4 MiB cap covers SHA-256 digest bytes and serialized snapshots.
+The observed key and payload bytes peaked at 4,194,233 bytes.
+Python object headers and ordered-dictionary bookkeeping require additional memory, so 4 MiB is not a total-heap cap.
+The estimated retained-object figures describe cache memory; RSS describes the entire process.
+Reported RSS includes setup and diagnostics; `ru_maxrss` can retain an inherited peak.
+
+The [cache-selection record](../benchmarks/results/cache-integration-20261103.json) preserves this single sequential pair and its scope.
+The execution environment was reset after this comparison.
+The record retains returned measurements and the successful equality check; the temporary full outputs were lost.
+This experiment does not measure a whole-pipeline speedup or the final integrated source.
+The historical 32 MiB measurements below remain measurements of their original implementation.
+
+## Exact fit reuse: recorded PR225 point-scoring comparison
 
 Each workload used three alternating baseline/current pairs in separate Python processes.
 The order was baseline/current, current/baseline, then baseline/current.
@@ -60,7 +111,7 @@ The measured scoring implementation is local commit `5ca480f8678ca1ed31a76576832
 That worktree patch changed `_RidgeFitCache.batch_limit` from 16 MiB to 32 MiB and clarified the cache-limit docstring.
 The harness did not record HEAD separately for each worker.
 Concurrent terrain/ENF integration at local commit `5420163f026b6c2621226add88cfa05fda326b46` did not change the exercised FlightIndex or scoring paths.
-Published commit `5699a657d57dc4f66b74ef000e20d3ba88f84704` contains the same exercised scoring paths and the final 32 MiB limit.
+Published commit `5699a657d57dc4f66b74ef000e20d3ba88f84704` contains the same exercised scoring paths and the measured 32 MiB limit.
 Its additional compact-checkpoint change does not affect this point-scoring measurement.
 The [exact-fit measurement record](../benchmarks/results/exact-fit-reuse-20261103.json) contains all twelve final runs, source details, input hashes, and workload counts.
 
@@ -73,7 +124,7 @@ The two NumPy environments remain separate in the recorded results.
 ### Why exact reuse reduces work
 
 Dense candidate traversal repeats complete batches of identical ridge fits.
-The new scoped cache reuses successful batches with the same fitter, parameters, and array contents.
+The measured scoped cache reuses successful batches with the same fitter, parameters, and array contents.
 Its keys preserve input order, shape, dtype, strides, and alignment.
 They also preserve the frequency bounds, frequency scale, and drift fraction without rounding.
 Memory layout matters because existing NumPy reductions can differ by one ULP between contiguous layouts.
@@ -85,9 +136,9 @@ The cache lifetime follows the existing scoring context, including nested-scope 
 The scorer also reuses validated event ceilings with their complete diagnostic dependencies.
 The fitting equations, six IRLS iterations, conservative screens, tie behavior, and candidate accounting remain unchanged.
 
-### Why the batch-cache limit is 32 MiB
+### Why the recorded batch-cache limit was 32 MiB
 
-The batch cache holds at most 4,096 entries and 32 MiB per active scoring context.
+The recorded implementation holds at most 4,096 batch entries and 32 MiB per active scoring context.
 The byte limit accounts for keys, diagnostic values, and dictionary storage.
 This allocation grows with demand and is separate from the acoustic and prepared-measurement caches.
 
@@ -152,7 +203,7 @@ The timer covers JSON encoding only.
 It excludes file writes, reads, scoring, and complete checkpoint or resume operations.
 The [checkpoint measurement record](../benchmarks/results/checkpoint-encoding-20261103.json) preserves all ten runs and the decoded-output checks.
 
-## Current complete-recording HTTP comparison
+## Recorded PR225 complete-recording HTTP comparison
 
 One sequential baseline/current pair completed the entire bounded HTTP workflow on the original 3,600.1845-second MP3.
 It used the separate **NumPy 2.3.5** runtime on a shared host.
@@ -199,7 +250,7 @@ That unfinished search provides no nationwide speed ratio.
 Regional source data do not establish national flight coverage or independent location accuracy.
 The historical HTTP checks below describe their own revisions and workloads.
 
-## Reproduce the current comparisons
+## Reproduce the recorded PR225 comparisons
 
 Use Python 3.12.14 to match the recorded point-timing runtime.
 Use Git and the GitHub CLI `gh` with access to the public checkpoint assets.
@@ -229,7 +280,7 @@ git worktree add --detach ../dopplergeist-timing-current \
   5699a657d57dc4f66b74ef000e20d3ba88f84704
 ```
 
-The public optimized commit contains the final 32 MiB limit.
+The public optimized commit contains the recorded 32 MiB limit.
 The source disclosure above identifies the local commit and worktree patch used during measurement.
 
 Freeze and compare both workloads:

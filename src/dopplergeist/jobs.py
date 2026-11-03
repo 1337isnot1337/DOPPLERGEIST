@@ -204,6 +204,8 @@ class JobManager:
                 raise ValueError("The previous worker is still stopping; try again")
             if sum(thread.is_alive() for thread in self._threads.values()) >= self.max_pending:
                 raise OverflowError("Job queue is full; try again after a job finishes")
+            from .checkpoint_resume import upgrade_legacy_job
+            upgrade_legacy_job(directory)
             from .automatic import _load_audio_checkpoint
             _load_audio_checkpoint(directory, read_json(directory / "request.json"), read_json(directory / "operator.json"))
             write_json(directory / f"result-before-resume-{uuid.uuid4().hex}.json", current)

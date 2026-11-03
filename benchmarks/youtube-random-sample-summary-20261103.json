@@ -1,0 +1,92 @@
+{
+  "category_counts": {
+    "adverse": 34,
+    "aircraft_targeted": 40,
+    "bird_nature": 27,
+    "indoor": 31,
+    "outdoor_walk": 36,
+    "phone_movement": 32
+  },
+  "clips_with_scanner_proposals": 24,
+  "clips_without_scanner_proposals": 174,
+  "eligible_youtube_rows": 287,
+  "limitations": [
+    "The sample is uniform only within a query-derived catalog, not all YouTube.",
+    "Only the first 180 seconds were requested; no proposal means none in that excerpt, not necessarily the entire video.",
+    "All proposal-bearing ridge plots were visually checked for trace appearance only; aircraft/source identity remains unverified.",
+    "Two download failures are preserved as failures, not removed from the denominator."
+  ],
+  "max_proposals_single_clip": {
+    "proposal_count": 28,
+    "video_id": "yt-f0tpROu3hr0"
+  },
+  "outcomes": {
+    "download_failed": 2,
+    "scanned": 198
+  },
+  "per_category": {
+    "adverse": {
+      "clips_with_proposals": 3,
+      "proposal_events": 38,
+      "scanned": 34,
+      "selected": 34
+    },
+    "aircraft_targeted": {
+      "clips_with_proposals": 9,
+      "download_failed": 1,
+      "proposal_events": 46,
+      "scanned": 39,
+      "selected": 40
+    },
+    "bird_nature": {
+      "clips_with_proposals": 0,
+      "download_failed": 1,
+      "proposal_events": 0,
+      "scanned": 26,
+      "selected": 27
+    },
+    "indoor": {
+      "clips_with_proposals": 3,
+      "proposal_events": 16,
+      "scanned": 31,
+      "selected": 31
+    },
+    "outdoor_walk": {
+      "clips_with_proposals": 7,
+      "proposal_events": 15,
+      "scanned": 36,
+      "selected": 36
+    },
+    "phone_movement": {
+      "clips_with_proposals": 2,
+      "proposal_events": 3,
+      "scanned": 32,
+      "selected": 32
+    }
+  },
+  "proposal_count_distribution": {
+    "0": 174,
+    "1": 7,
+    "2": 4,
+    "3": 2,
+    "4": 3,
+    "5": 1,
+    "7": 3,
+    "8": 1,
+    "9": 1,
+    "14": 1,
+    "28": 1
+  },
+  "random_seed": 20261103,
+  "requested_excerpt_seconds": 180,
+  "sample_size": 200,
+  "scan_runtime_seconds": {
+    "median": 13.019,
+    "n": 198,
+    "p90": 22.76
+  },
+  "scanner_proposal_events": 118,
+  "scope": "Scanner-only. No flight matching or geolocation. Proposal counts are not confirmed aircraft or false-alarm labels.",
+  "selection": "uniform random sample without replacement from query-derived YouTube source rows",
+  "source_catalog_rows": 392
+}

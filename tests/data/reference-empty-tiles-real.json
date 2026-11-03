@@ -1,0 +1,195 @@
+{
+  "source": "Actual empty checkpoints from the complete public reference recording and historical ADS-B replay. Used for transaction correctness, not location accuracy.",
+  "source_revision": "7a8dd27979bd9a984c8675c38a00dfbf98a5b01e",
+  "recording_start_window_s": [
+    1788898640.0,
+    1788898660.0
+  ],
+  "score_kind": "matched_group_support_minus_normalized_residual",
+  "tiles": [
+    {
+      "tile_id": "-10_3",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "e21f99a39a4aef3a04c7cd02f26b8ca0eae32c8089bc44213177d8bd97d36017",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -160,
+            54,
+            -144,
+            64
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-10_4",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "e5b611f7f6d32bd15ff3dbedb6ca64d51d13090aa5c1feea048be2226d0a8922",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -160,
+            64,
+            -144,
+            80
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-10_5",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "f309036be0e755701ecb90e5cd5b73c911d371b0d77def7f003eab09864f1344",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -160,
+            80,
+            -144,
+            96
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-10_6",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "14b90a810587f5bab178db7fb8671f169bb56b8a166da11f959285a803bdc7a5",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -160,
+            96,
+            -144,
+            112
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-11_3",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "7bdf3f9bb725f6de7cfff5aa7d4787db28ef1218b4b3ccdfd2ad8ff43ffbc74a",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -176,
+            54,
+            -160,
+            64
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-11_4",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "a5b4df960a0ef7b085118a015c99c2eff09fecadfe15e8f8900dd3253e54b700",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -176,
+            64,
+            -160,
+            80
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-11_5",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "dc2ed459e3805c09247de35dee3da42d5357d017102dd4a7914ddc4c3524d7c8",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -176,
+            80,
+            -160,
+            96
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    },
+    {
+      "tile_id": "-11_6",
+      "checkpoint": {
+        "run_hash": "325db0284c070f24313517f8b8c0dcfde7e7baa79283c23a20f2c0f3250d2e24",
+        "payload_hash": "702f9c1e50070f396c2f60734b918e2fa523d69542200a7e49c48445ff186ec4",
+        "payload": {
+          "ranked": [],
+          "counts": {},
+          "grid_points": 0,
+          "tracks": 0,
+          "cells": [
+            -176,
+            96,
+            -160,
+            112
+          ],
+          "terrain_files": [],
+          "terrain_ocean_tiles": [],
+          "terrain_failures": [],
+          "retention_checksum": "d0edf5f14ccc1f891ccc12df579f8761517f5f41b207dede78db05ec223b257a"
+        }
+      }
+    }
+  ]
+}

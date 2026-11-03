@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus",
+    "bounds_wsen": [-73.545, 40.865, -73.505, 40.895]
+  },
+  "time_window": {
+    "start_utc": "2026-09-08T20:17:20Z",
+    "end_utc": "2026-09-08T20:17:40Z",
+    "source": "user",
+    "source_detail": "Source-informed regional runtime control using the historical fitted clock and the published four-point receiver region; not independent timing evidence or a location-accuracy evaluation."
+  }
+}
