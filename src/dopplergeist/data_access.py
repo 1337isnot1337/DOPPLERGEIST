@@ -7,6 +7,7 @@ from collections import Counter
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 import gzip
 import hashlib
 import io
@@ -36,6 +37,12 @@ def _frame_track(name, frame):
     return track
 
 
+@lru_cache(maxsize=1)
+def _ecef_to_geographic():
+    from pyproj import Transformer
+    return Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True)
+
+
 def _continuous_bounds(track):
     """Bound entire Hermite curves using their cubic Bezier control hulls.
 
@@ -44,7 +51,6 @@ def _continuous_bounds(track):
     5500 km lower bound on geodetic curvature radii outside the 6000 km sphere.
     Invalid/underground extreme curves fall back to a global box, never a miss.
     """
-    from pyproj import Transformer
     p0, p1 = track.xyz[:-1], track.xyz[1:]
     dt = np.diff(track.time)[:, None]
     velocity = track.speed_vector(track.time)
@@ -53,7 +59,7 @@ def _continuous_bounds(track):
     radius = np.linalg.norm(controls - centers[:, None, :], axis=2).max(axis=1)
     if np.any(np.linalg.norm(centers, axis=1) - radius < 6000000):
         return (-180., 180., -90., 90.)
-    lon, lat, _ = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True).transform(*centers.T)
+    lon, lat, _ = _ecef_to_geographic().transform(*centers.T)
     latitude_pad = np.rad2deg(radius / 5500000)
     horizontal = np.linalg.norm(centers[:, :2], axis=1)
     if np.any(radius >= horizontal):
@@ -275,7 +281,7 @@ class FlightIndex:
                         namespace = coverage.get("release_tag", "")
                         name = flight + (f"@{namespace}" if namespace else "") + (f":{index}" if groups.max() else "")
                         track = _frame_track(name, chunk)
-                        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), mtime=0)
+                        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), compresslevel=6, mtime=0)
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
                                          (name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]), payload, hashlib.sha256(payload).hexdigest()))
                         db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track)))
