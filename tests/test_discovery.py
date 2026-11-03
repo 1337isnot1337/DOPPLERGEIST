@@ -5,6 +5,11 @@ import soundfile as sf
 from dopplergeist.contracts import validate_event
 from dopplergeist.discovery import DiscoverySettings, _stitch_fragments, discover_events
 from dopplergeist.intake import intake_recording
+from dopplergeist.matching import prepare_events
+
+
+def _groups(events):
+    return list(dict.fromkeys(event["harmonic_group_id"] for event in events))
 
 
 def _audio(tmp_path, events, duration=180, mute=None):
@@ -29,10 +34,13 @@ def _audio(tmp_path, events, duration=180, mute=None):
 def test_blind_whole_file_seams_harmonics_and_separate_events(tmp_path):
     recording = _audio(tmp_path, [(65, 120, [1, 2, 3]), (135, 250, [1, 2])])
     events = discover_events(recording, output_dir=tmp_path / "discovery")
-    assert len(events) == 2, [(e["start_s"], e["end_s"], e["band_hz"]) for e in events]
-    for center, event in zip((65, 135), events):
+    groups = _groups(events)
+    assert len(groups) == 2, [(e["start_s"], e["end_s"], e["band_hz"]) for e in events]
+    for center, group in zip((65, 135), groups):
+        event = next(e for e in events if e["harmonic_group_id"] == group)
         assert event["start_s"] < center < event["end_s"]
         assert event["quality"]["harmonic_count"] >= 2
+    for event in events:
         assert validate_event(event) == event
         assert np.all(np.diff([point["time_s"] for point in event["ridge"]]) > 0)
     assert (tmp_path / "discovery" / "discovery.png").is_file()
@@ -57,8 +65,10 @@ def signal_chirp(t):
 def test_overlapping_nonharmonic_events_are_retained(tmp_path):
     recording = _audio(tmp_path, [(60, 120, [1, 2]), (76, 210, [1])], duration=140)
     events = discover_events(recording)
-    assert len(events) == 2, [(e["start_s"], e["end_s"], e["band_hz"]) for e in events]
-    assert events[0]["end_s"] > events[1]["start_s"]
+    groups = _groups(events)
+    assert len(groups) == 2, [(e["start_s"], e["end_s"], e["band_hz"]) for e in events]
+    first, second = (next(e for e in events if e["harmonic_group_id"] == group) for group in groups)
+    assert first["end_s"] > second["start_s"]
 
 
 def test_short_input_has_no_forced_event(tmp_path):
@@ -69,8 +79,12 @@ def test_short_input_has_no_forced_event(tmp_path):
 def test_missing_fundamental_harmonics_are_one_event(tmp_path):
     recording = _audio(tmp_path, [(65, 120, [2, 3])], duration=140)
     events = discover_events(recording)
-    assert len(events) == 1
+    assert len(_groups(events)) == 1
     assert events[0]["quality"]["harmonic_count"] == 2
+    assert len(events) == 2
+    prepared, measurements = prepare_events(events)
+    assert len(prepared) == 1
+    assert len(measurements[0][1]) == sum(len(event["ridge"]) for event in events)
 
 
 def test_switching_stationary_tones_do_not_make_a_flyover(tmp_path):
@@ -87,7 +101,7 @@ def test_switching_stationary_tones_do_not_make_a_flyover(tmp_path):
 def test_interrupted_tone_is_one_event_without_invented_gap_observations(tmp_path):
     recording = _audio(tmp_path, [(65, 120, [1, 2])], duration=140, mute=(58, 69))
     events = discover_events(recording)
-    assert len(events) == 1
+    assert len(_groups(events)) == 1
     event = events[0]
     assert event["quality"]["fragment_count"] >= 2
     assert event["quality"]["max_observed_gap_s"] >= 7
@@ -113,7 +127,9 @@ def test_all_independent_flyovers_are_retained(tmp_path, count):
                                  for center, frequency in zip(centers, frequencies)],
                        duration=100 * count + 30)
     events = discover_events(recording)
-    assert len(events) == count
-    for center, event in zip(centers, events):
+    groups = _groups(events)
+    assert len(groups) == count
+    for center, group in zip(centers, groups):
+        event = next(e for e in events if e["harmonic_group_id"] == group)
         assert event["start_s"] < center < event["end_s"]
         assert event["quality"]["harmonic_count"] >= 2
