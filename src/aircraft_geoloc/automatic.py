@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 import time
 
@@ -62,7 +63,6 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     progress("discovery", 0.15, recording=recording.metadata)
     events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery")]
     state["events"] = events
-    _event_plots(recording, events, output / "discovery")
     provenance["discovered_events"] = len(events)
     if recording.time_status == "needs_input":
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
@@ -139,12 +139,19 @@ def _search(request, recording, events, output, config, search_progress):
 
 def _coverage(request, search, config):
     limitations = ["Historical receiver archives may omit aircraft or trajectory samples."]
-    if search.get("status") != "complete":
-        limitations.append("Search did not complete the full requested area, data interval or refinement.")
+    search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
+                       and not search.get("tile_failures") and not search.get("refinement_failure"))
+    if not search_complete:
+        limitations.append("Search did not complete the full requested tile work or refinement.")
     if "constant_m" in config.get("terrain", {}):
         limitations.append("A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.")
+    if search.get("alternative_modes_exhaustively_assessed") is not True:
+        limitations.append("Candidate retention is bounded; exhaustive alternative-location assessment is not established.")
     missing = [str(item) for item in search.get("tile_failures", [])]
-    return {"search_complete": search.get("status") == "complete", "data_status": "available" if search.get("data_scope_complete") else "partial",
+    if not search.get("data_scope_complete"):
+        missing.append("historical_flight_scope_or_audible_border_region")
+        limitations.append("Flight inputs do not establish complete coverage of the required emission-time interval and audible border region.")
+    return {"search_complete": search_complete, "data_status": "available" if search.get("data_scope_complete") else "partial",
             "limitations": limitations, "requested_area": request["search"], "missing_data": missing}
 
 
@@ -152,16 +159,29 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
-    from .matching import refine_candidate
+    from .matching import association_score, profile_candidate, refine_candidate
     raw = list(search.get("ranked", []))
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
     # Refine global competing approaches with their original whole trajectories.
     # The index iterator is bounded by the same local acoustic support envelope.
-    seen = set()
+    def approach(row):
+        return (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]),
+                tuple(round(t) for t in row.get("pass_emission_times_s", [])))
+
+    def comparable(candidate, original):
+        if original.get("score_kind") == "matched_group_support_minus_normalized_residual":
+            chosen = [prepared_events[i] for i in original["event_indices"]]
+            candidate = association_score(candidate, chosen)
+        if not math.isfinite(candidate["score"]):
+            raise ValueError("Refinement no longer supports the matched event association")
+        return candidate
+
+    seen, track_sets = set(), {}
+    best_refined_score = -math.inf
     for row in raw:
-        key = (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]), tuple(round(t) for t in row.get("pass_emission_times_s", [])))
+        key = approach(row)
         if key in seen:
             continue
         seen.add(key)
@@ -179,17 +199,35 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                 for track in index.query(bounds, (lo, hi)):
                     if track.id in needed:
                         tracks[track.id] = track
+                        sample_limit = config.get("search_budget", {}).get("max_track_samples_per_tile", 500000)
+                        if sum(len(item.time) for item in tracks.values()) > sample_limit:
+                            raise ValueError("Refinement trajectory sample budget exceeded")
             if needed - tracks.keys():
                 raise ValueError("Candidate flight segments are unavailable for refinement")
             row = dict(row, altitude_basis={flight: sorted(set(getattr(track, "altitude_basis", ["unspecified"]))) for flight, track in tracks.items()})
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0))
+            candidate = comparable(candidate, row)
             refined.append(candidate)
+            if candidate["score"] > best_refined_score:
+                best_refined_score = candidate["score"]
+                track_sets = {key: tracks}
         except (ValueError, KeyError) as exc:
             refinement_failures.append(str(exc))
     raw.extend(refined)
-    raw.sort(key=lambda row: (row["score"], bool(row.get("sensitivity", {}).get("complete"))), reverse=True)
+    order = lambda row: (row["score"], bool(row.get("sensitivity", {}).get("complete")), len(row.get("sensitivity", {}).get("sources", [])))
+    raw.sort(key=order, reverse=True)
+    if raw and approach(raw[0]) in track_sets:
+        leading = raw[0]
+        try:
+            profiled = profile_candidate(leading, track_sets[approach(leading)], prepared_events, measurements, terrain,
+                         radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
+                         c=config.get("sound_speed_mps", 343.0))
+            raw.append(comparable(profiled, leading))
+            raw.sort(key=order, reverse=True)
+        except (ValueError, KeyError) as exc:
+            refinement_failures.append(f"Sensitivity profiling: {exc}")
     candidates, rows = [], []
     for row in raw:
         event_ids, flight_ids = [], []
@@ -211,7 +249,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                    "refinement_boundary_limited": best.get("sensitivity", {}).get("boundary_limited", True),
                    "sensitivity": best.get("sensitivity", {}),
                    "altitude_basis": best.get("altitude_basis", {}),
-                   "alternatives_evaluated": search.get("status") == "complete" and not refinement_failures and len(seen) <= config.get("refine_finalists", 5)}
+                   "alternatives_evaluated": search.get("alternative_modes_exhaustively_assessed") is True and search.get("status") == "complete" and not refinement_failures and len(seen) <= config.get("refine_finalists", 5)}
     matched_events = [prepared_events[i] for i in best.get("event_indices", range(len(prepared_events)))]
     for event, evidence in zip(matched_events, best.get("event_diagnostics", [])):
         for event_id in event.get("event_ids", [event["event_id"]]):
@@ -223,32 +261,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
 
     write_json(output / "decision.json", decision)
     fields = {key: value for key, value in decision.items() if key not in {"schema_version", "job_id", "status", "stage", "progress", "artifacts", "recording", "events", "diagnostics"}}
-    status = fields.pop("status", decision["status"])
+    status = decision["status"]
     reason = fields.pop("reason_code", None)
     message = fields.pop("message", None)
     return finish(status, reason, message, **fields)
-
-
-def _event_plots(recording, events, directory):
-    """Inspectable spectrogram/ridge overlays; display excerpts do not drive DSP."""
-    if not events:
-        return
-    import matplotlib
-    matplotlib.use("Agg")
-    from matplotlib import pyplot as plt
-    import numpy as np
-    from .audio import spectrogram
-    samples = np.memmap(recording.samples_path, dtype="<f4", mode="r")
-    sr = recording.metadata["sample_rate_hz"]
-    for event in events[:12]:
-        start, end = event["start_s"], min(event["end_s"], event["start_s"] + 120)
-        if end - start < 2:
-            continue
-        spec = spectrogram(np.array(samples[int(start*sr):int(end*sr)]), sr, event["band_hz"], start=start)
-        fig, ax = plt.subplots(figsize=(9, 3.5), layout="constrained")
-        ax.pcolormesh(spec.time, spec.frequency, spec.contrast, shading="auto", cmap="magma", vmin=0, vmax=6)
-        ax.plot([p["time_s"] for p in event["ridge"]], [p["frequency_hz"] for p in event["ridge"]], color="cyan", lw=1, label="Automatically traced ridge")
-        ax.set(xlim=(start, end), xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)", title=f"{event['event_id']} · first {end-start:.0f} s of event")
-        ax.legend(fontsize="small")
-        fig.savefig(directory / f"{event['event_id']}-spectrogram.png", dpi=130)
-        plt.close(fig)
