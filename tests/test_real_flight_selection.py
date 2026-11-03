@@ -6,9 +6,11 @@ from pathlib import Path
 import tarfile
 
 import numpy as np
+import pyarrow as pa
+import pyarrow.parquet as pq
 import pytest
 
-from dopplergeist.data_access import FlightIndex
+from dopplergeist.data_access import DataUnavailable, FlightIndex
 from dopplergeist.flight_selection import intersects_index_query
 from dopplergeist.tracks import adsblol_frame
 
@@ -56,3 +58,26 @@ def test_real_boundary_segments_survive_selection(tmp_path):
             break
     assert checked == 5
     assert old_filter_misses > 0
+
+    # Real rows with embedded source limits exercise index-side scope checks.
+    selection = {"bounds": list(bounds), "time_range_s": [0, 4102444800],
+                 "all_aircraft": False, "max_gap_s": 30.0}
+    table = pa.Table.from_pandas(frames[0], preserve_index=False)
+    table = table.replace_schema_metadata({b"dopplergeist.selection.v1": json.dumps(selection).encode()})
+    source_parquet = tmp_path / "real-selected.parquet"
+    pq.write_table(table, source_parquet)
+    restricted = dict(coverage, all_aircraft=False)
+    FlightIndex.from_parquet(tmp_path / "valid.sqlite", source_parquet, coverage=restricted)
+    with pytest.raises(DataUnavailable, match="excluded aircraft"):
+        FlightIndex.from_parquet(tmp_path / "types.sqlite", source_parquet, coverage=coverage)
+    with pytest.raises(DataUnavailable, match="gap limit"):
+        FlightIndex.from_parquet(tmp_path / "gap.sqlite", source_parquet, coverage=restricted, max_gap_s=60)
+    with pytest.raises(DataUnavailable, match="selection bounds"):
+        FlightIndex.from_parquet(tmp_path / "bounds.sqlite", source_parquet,
+                                 coverage=dict(restricted, bounds=[-180, -90, 181, 90]))
+    with pytest.raises(DataUnavailable, match="selection time"):
+        FlightIndex.from_parquet(tmp_path / "time.sqlite", source_parquet,
+                                 coverage=dict(restricted, time_range_s=[-1, 4102444800]))
+    untagged = tmp_path / "real-untagged.parquet"
+    pq.write_table(table.replace_schema_metadata(None), untagged)
+    FlightIndex.from_parquet(tmp_path / "untagged.sqlite", untagged, coverage=coverage)
