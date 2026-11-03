@@ -95,10 +95,12 @@ def main():
     job.add_argument("--jobs",default="jobs")
     job.add_argument("--watch",action="store_true",help="Watch local checkpoints until the job stops")
     job.add_argument("--interval",type=positive_runtime,default=10,help="Watch interval in seconds")
-    cancel=sub.add_parser("cancel",help="Cancel a job managed by the local upload service")
+    cancel=sub.add_parser("cancel",help="Request cancellation of a managed job")
     cancel.add_argument("job_id",type=job_identifier)
-    cancel.add_argument("--server-url",default="http://127.0.0.1:8765",
-                        help="Base URL of the service managing this job")
+    cancel_target=cancel.add_mutually_exclusive_group()
+    cancel_target.add_argument("--server-url",default="http://127.0.0.1:8765",
+                               help="Base URL of the service managing this job")
+    cancel_target.add_argument("--jobs",help="Persistent job directory for cooperative cancellation")
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
@@ -184,7 +186,14 @@ def main():
             raise SystemExit(130)
         print(json.dumps(value,indent=2))
     elif args.command=="cancel":
-        value=post_job_action(args.server_url,args.job_id,"cancel",parser)
+        if args.jobs is not None:
+            from .jobs import request_local_cancel
+            try:
+                value=request_local_cancel(args.jobs,args.job_id)
+            except (KeyError,OSError,ValueError) as exc:
+                parser.error(f"Could not request cancellation for job {args.job_id}: {exc}")
+        else:
+            value=post_job_action(args.server_url,args.job_id,"cancel",parser)
         print(json.dumps(value,indent=2))
     elif args.command=="resume":
         if args.server_url:

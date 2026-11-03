@@ -838,3 +838,90 @@ terrain-stage evidence, not a full-search speed estimate.
 
 Applying this scheduler to a saved search changes the package identity and
 requires its validated checkpoint compatibility path before resuming that job.
+
+## Reproduce the optional native backends
+
+Installation builds the acoustic and ridge extensions when a compatible C compiler is available.
+The package remains usable when either optional extension cannot build.
+A source checkout used for timing must contain its own built extensions; an installed copy elsewhere does not establish native use.
+
+```bash
+. .venv/bin/activate
+CC=gcc python -m pip install --editable '.[test]'
+python - <<'PY'
+from dopplergeist.geometry import ACOUSTIC_BACKEND
+from dopplergeist.matching import RIDGE_FIT_BACKEND
+print("Acoustic:", ACOUSTIC_BACKEND)
+print("Ridge:", RIDGE_FIT_BACKEND)
+assert ACOUSTIC_BACKEND.startswith("native-c-")
+assert RIDGE_FIT_BACKEND.startswith("native-c-")
+PY
+```
+
+The native acoustic solver retains polynomial evaluation order, global Newton stopping, and Python motion-support diagnostics.
+The ridge extension retains the six IRLS iterations and reduction order.
+Both extensions disable floating-point reassociation and contraction.
+Incompatible numeric representations use the existing Python implementations.
+Acoustic and scalar ridge calls also fall back for unsupported NumPy error policies.
+Batched ridge arithmetic retains its existing ignored-error block and restores the caller's policy for diagnostics.
+The optional ridge implementation is integrated from [PR228](https://github.com/1337isnot1337/DOPPLERGEIST/pull/228).
+
+Set `DOPPLERGEIST_ACOUSTIC_BACKEND=python` and `DOPPLERGEIST_RIDGE_BACKEND=python` before starting a process to force both Python implementations.
+The default for each selector is `auto`; invalid selector values fail explicitly.
+The legacy checkpoint upgrade requires both Python backends and its original runtime and input controls.
+Ordinary checkpoints include the selected native binary identities and reject an implementation mismatch.
+
+### Recorded-input scoring comparison
+
+Install the GitHub CLI (`gh`) before restoring the published input bundles; the restoration script uses `gh release download`.
+Use a fresh output directory and preserve the baseline checkout for the entire comparison.
+The following commands freeze the same real observations and source-informed receiver/clock workload for both implementations:
+
+```bash
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONPATH=src
+git worktree add --detach ../DOPPLERGEIST-perf-baseline fec518e51f14afe8d36203e6c5e1be1277dea14e
+python scripts/restore_artifacts.py --bundle data-adsb-derived --bundle data-terrain
+python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
+for width in 10 120; do
+  python scripts/benchmark_prepared_measurements.py prepare \
+    --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+    --index benchmark-inputs/reference-region.sqlite \
+    --clock-half-width-s "$width" --output "benchmark-inputs/point-$width.json"
+  python scripts/benchmark_prepared_measurements.py compare \
+    --fixture "benchmark-inputs/point-$width.json" \
+    --baseline-source ../DOPPLERGEIST-perf-baseline/src --current-source src \
+    --repeats 3 --require-current-native --require-current-native-acoustic \
+    --output "results/native-scoring-$width"
+done
+```
+
+The comparison alternates arm order in fresh worker processes.
+It compares every candidate, diagnostic, support record, ranking, and logical retention row exactly before reporting a speedup.
+Native success counters must increase inside the timed scoring call.
+Input loading is reported separately, and the RSS measurement covers the worker lifetime through scoring.
+
+The complete-fit cache shares its existing 4 MiB serialized-payload budget with validated batch ceilings.
+The separate screening cache permits at most 8 MiB of conservatively charged private loss evidence per scoring context.
+It never retains a candidate's ranking cutoff: every call applies its current cutoff and group count.
+These caches help repeated workloads; first-use hashing and serialization have a cost, so complete-job measurements decide whether they help a workload.
+
+### Complete HTTP methodology
+
+The `Real performance comparison` workflow also replays the complete recording through the HTTP application.
+Select an exact baseline commit and enable the regional comparison.
+Its three pairs run in baseline/current, current/baseline, and baseline/current order, with fresh directories and one shared MP3, request, operator configuration, index, and terrain set.
+Both arms use the same pinned CPU and one numerical thread.
+Input restoration, index preparation, and MP3 encoding happen before the timed arms.
+
+Every pair must pass whole-recording intake, discovery, acquisition, search, refinement, and decision checks.
+The comparison requires exact scientific JSON, logical SQLite contents, decoded audio, CSV/array values, and PNG pixels.
+Only declared path, run identity, timing, and native implementation metadata are normalized; scientific floats have no tolerance.
+Medians are emitted only after all pairs pass, and the individual samples remain available.
+Profiling runs separately and never contributes to timing medians.
+
+The original MP3 retains its 17-ridge/15-group control.
+A different encoding requires an explicit declaration and the canonical WAV identity; it cannot inherit historical event counts or timing claims.
+Both new-encoding arms must still process the complete recording, consider every group, and produce exactly equal outputs.
+These regional computation controls use source-informed bounds and clock evidence.
+They do not establish independent location accuracy, nationwide completion time, or a cold-cache acquisition speedup.

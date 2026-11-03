@@ -38,6 +38,41 @@ def _evidence(value):
     return {key: value[key] for key in ("recording", "events", "candidates", "coverage", "artifacts") if key in value}
 
 
+def request_local_cancel(root, job_id):
+    """Request cancellation through an active manager's cooperative marker."""
+    root = Path(root).resolve()
+    try:
+        if uuid.UUID(job_id).hex != job_id:
+            raise ValueError
+    except (AttributeError, ValueError):
+        raise KeyError("Unknown job") from None
+    directory = root / job_id
+    result_path = directory / "result.json"
+    if not result_path.is_file():
+        raise KeyError("Unknown job")
+    current = read_json(result_path)
+    if current["status"] in TERMINAL:
+        return current
+    lock_path = root / ".manager.lock"
+    try:
+        with lock_path.open("rb") as lockfile:
+            try:
+                fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                manager_active = True
+            else:
+                fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
+                manager_active = False
+    except FileNotFoundError:
+        manager_active = False
+    if not manager_active:
+        raise ValueError("No active job manager owns this job directory")
+    (directory / "cancel").touch(mode=0o600, exist_ok=True)
+    return {"job_id": job_id, "status": current["status"], "stage": current.get("stage"),
+            "cancellation_requested": True,
+            "message": "The job will stop at its next cancellation check."}
+
+
 class JobManager:
     def __init__(self, root, config=None, *, max_pending=4, max_runtime_s=3600, max_upload_bytes=100*1024*1024):
         self.root = Path(root).resolve()

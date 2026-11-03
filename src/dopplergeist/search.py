@@ -438,6 +438,10 @@ def _association_event_ceiling_uncached(diagnostic, score, frequency, event, lim
     return float(np.nextafter(1 - (-score) / limit, np.inf))
 
 
+_CANONICAL_CEILING_FUNCTIONS = (_association_event_ceiling, _association_event_ceiling_uncached,
+                              _ridge_trial_classification)
+
+
 def _association_trial_bound(result, events):
     """Bound an incompletely supported association at one shared clock.
 
@@ -547,7 +551,7 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
     scalar fits, including each clock's first acoustic-support error.
     """
     from .acoustic_screen import ridge_trial_rejections
-    from .batch_ridge import first_event_fits
+    from .batch_ridge import first_event_fits, _first_event_fits_with_ceilings
     from .matching import _frequency_scale, fit_ridge
 
     diagnostics = [[] for _ in starts]
@@ -577,12 +581,16 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
                     eligible.append(trial)
         else:
             eligible = active
-        fitted = None
-        if batch is not None and len(eligible) >= 4:
-            fitted = first_event_fits(measurement, event,
-                                     batch[0][eligible], batch[1][eligible],
-                                     legacy_arithmetic=legacy_first_batch and index == 0)
+        fitted = fitted_ceilings = None
         remaining = len(events) - index - 1
+        if batch is not None and len(eligible) >= 4:
+            arguments = (measurement, event, batch[0][eligible], batch[1][eligible])
+            legacy = legacy_first_batch and index == 0
+            if remaining and bound_enabled:
+                fitted, fitted_ceilings = _first_event_fits_with_ceilings(
+                    *arguments, limits[index], legacy_arithmetic=legacy)
+            else:
+                fitted = first_event_fits(*arguments, legacy_arithmetic=legacy)
         next_active = []
         for fit_index, trial in enumerate(eligible):
             try:
@@ -600,8 +608,8 @@ def _batched_ridge_trials(tracks, events, measurements, observer, starts, c,
             diagnostics[trial].append(fit)
             if remaining:
                 if bound_enabled:
-                    contribution = _association_event_ceiling(
-                        fit, fit["score"], fit["f0_hz"], event, limits[index])
+                    contribution = (fitted_ceilings[fit_index] if fitted_ceilings is not None else
+                        _association_event_ceiling(fit, fit["score"], fit["f0_hz"], event, limits[index]))
                     if contribution == -np.inf:
                         outcomes[trial] = (None, -np.inf, None)
                         continue

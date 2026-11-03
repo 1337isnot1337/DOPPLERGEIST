@@ -155,8 +155,13 @@ class RealNativeAcousticTests(unittest.TestCase):
         self.assertEqual(native_acoustic._native.successful_calls(), before)
         for name, value in (("axis", 1), ("extrapolate", True)):
             before = native_acoustic._native.successful_calls()
-            with patch.object(track.spline, name, value):
+            original = getattr(track.spline, name)
+            try:
+                setattr(track.spline, name, value)
                 self.assert_parity(track, receive, observer)
+            finally:
+                # Newer SciPy exposes axis as a property without a deleter.
+                setattr(track.spline, name, original)
             self.assertEqual(native_acoustic._native.successful_calls(), before)
         # Read-only inputs are supported, while strided arrays take the reference path.
         before = native_acoustic._native.successful_calls()

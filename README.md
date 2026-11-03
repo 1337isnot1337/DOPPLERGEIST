@@ -37,6 +37,8 @@ python -m venv .venv
 
 To install the CLI without keeping a checkout, create a virtual environment and run `.venv/bin/python -m pip install "git+https://github.com/1337isnot1337/DOPPLERGEIST.git"`.
 
+Installation builds optional acoustic and ridge acceleration when a compatible C compiler is available. Python fallbacks remain available. See [native backend checks and reproducible timing](docs/PERFORMANCE.md#reproduce-the-optional-native-backends) to verify which implementations are active and compare complete recorded-input jobs.
+
 Native Windows execution is unverified.
 
 ### Analyze from the command line
@@ -54,6 +56,9 @@ The command prints a job ID when queued. In another terminal, run
 progress, checkpoint rate, and the age of the latest tile and job status update.
 Stop a running service-managed job with `.venv/bin/dopplergeist cancel JOB_ID`;
 pass `--server-url` when the service uses a non-default port.
+For a directly managed `analyze` or `resume --jobs` job, request cooperative
+cancellation with `.venv/bin/dopplergeist cancel JOB_ID --jobs jobs`; the active
+worker stops at its next cancellation check.
 Resume a stopped job while its service remains active with
 `.venv/bin/dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765`, then
 monitor it using `job JOB_ID --jobs jobs --watch`. If the service is stopped,
