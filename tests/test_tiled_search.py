@@ -183,3 +183,17 @@ def test_sixth_event_changes_the_joint_score(tmp_path):
     assert clean[0]["event_indices"] == perturbed[0]["event_indices"] == list(range(6))
     assert perturbed[0]["score"] < clean[0]["score"] - 1e-4
     assert perturbed[0]["event_diagnostics"][-1]["rmse_hz"] > clean[0]["event_diagnostics"][-1]["rmse_hz"] + .05
+
+
+def test_uncertain_window_keeps_valid_shared_clock_beyond_cpa_anchor(tmp_path):
+    _, tracks, events, measurements, bounds, _, origin = scenario(tmp_path, receiver_offset=(250, 250))
+    for event in events:
+        event["quality"] = {"cpa_tolerance_s": 20.}
+    events[0]["cpa_receive_s"] += 12
+    points = tile_points((1, 7601, 2, 7602), 250, bounds, Terrain(constant_m=0), "EPSG:5070")
+    ranked, _ = _score(points, tracks, events, measurements, SearchBudget(),
+                       {"mode": "robust_ridge", "time_sweep_s": 5., "time_step_s": .5}, {},
+                       start_window=(origin-30, origin+30))
+    assert ranked
+    assert abs(ranked[0]["recording_start_time_s"]-origin) < .02
+    assert ranked[0]["event_indices"] == [0, 1]

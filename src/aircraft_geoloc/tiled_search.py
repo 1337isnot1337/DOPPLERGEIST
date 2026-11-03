@@ -171,7 +171,10 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 anchor_event = candidate.get("event_indices", [0])[0]
                 anchor = candidate["passes"][0]["receive_time"] - events[anchor_event]["cpa_receive_s"]
             sweep = settings.get("time_sweep_s", 5.0)
-            lo, hi = max(anchor - sweep, start_window[0]), min(anchor + sweep, start_window[1])
+            lower, upper = candidate.get("recording_start_bounds_s", (anchor, anchor))
+            lo, hi = max(lower - sweep, start_window[0]), min(upper + sweep, start_window[1])
+            if settings.get("time_origin") is not None:
+                lo, hi = max(lo, anchor-sweep), min(hi, anchor+sweep)
             if lo > hi:
                 continue
             settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
@@ -210,6 +213,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         event_limit = len(events)
     if type(event_limit) is not int or event_limit < 1:
         raise ValueError("max_events must be a positive integer or None for all groups")
+    if filters["association"] == "full":
+        event_limit = len(events)
     event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -320,7 +325,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "data_coverage": coverage, "data_scope_complete": data_complete, "refinement_failure": refinement_failure,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,
-              "independent_event_groups": len(events), "association_event_limit": event_limit,
+              "event_groups_proposed": len(events), "association_event_limit": event_limit,
               "all_event_groups_considered": not event_limit_applied,
               "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
