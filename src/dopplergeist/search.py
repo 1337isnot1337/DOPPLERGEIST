@@ -344,7 +344,9 @@ def _association_trial_bound(result, events):
 
 
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
-                    time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
+                    time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0,
+                    score_floor=None):
+    """Score one hypothesis; a bounded score-floor result has no numeric score."""
     association = "event_indices" in candidate
     association_fields = {}
     if association:
@@ -363,6 +365,17 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         raise ValueError(f"Unknown scoring mode: {mode}")
     if time_step_s <= 0 or time_sweep_s < 0:
         raise ValueError("Need positive clock step and nonnegative sweep")
+    if score_floor is not None:
+        if not association or mode != "robust_ridge":
+            raise ValueError("score_floor is only supported for robust_ridge associations")
+        if isinstance(score_floor, (bool, np.bool_)):
+            raise ValueError("score_floor must be finite")
+        try:
+            score_floor = float(score_floor)
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("score_floor must be finite") from error
+        if not np.isfinite(score_floor):
+            raise ValueError("score_floor must be finite")
     observer = ecef(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
@@ -394,12 +407,19 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                   "empty_clock_domain": len(shifts) == 0}
     reasons = set()
     unknown_bounds = []
-    selected_tracks = [tracks[p["flight_id"]] for p in candidate["passes"]] if mode == "robust_ridge" else None
+    # Every accepted group contributes at most one; a strict comparison keeps ties eligible.
+    floor_pruned = bool(score_floor is not None and len(shifts) > 0 and len(events) < score_floor)
+    if floor_pruned:
+        best["score"] = None
+        assessment["unknown_trials"] = len(shifts)
+        reasons.add("matched_group_count_below_score_floor")
+    selected_tracks = ([tracks[p["flight_id"]] for p in candidate["passes"]]
+                       if mode == "robust_ridge" and not floor_pruned else None)
     batches = None
-    if mode == "robust_ridge" and len(shifts) > 1:
+    if mode == "robust_ridge" and not floor_pruned and len(shifts) > 1:
         from .matching import batch_acoustic_trials
         batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
-    for trial, shift in enumerate(shifts):
+    for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
             precomputed = ([None if batch is None else (batch[0][trial], batch[1][trial]) for batch in batches]
@@ -445,13 +465,21 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         assessment["complete"] = bool(len(shifts) and assessment["unknown_trials"] == 0)
         assessment["reasons"] = sorted(reasons)
         if association and assessment["unknown_trials"]:
-            finite_bounds = [value for value in unknown_bounds if value is not None and np.isfinite(value)]
-            assessment.update(
-                bounded_unknown_trials=sum(value is not None for value in unknown_bounds),
-                bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
-                unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
-                unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
-                unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
+            if floor_pruned:
+                assessment.update(
+                    bounded_unknown_trials=len(shifts),
+                    bounded_unknown_rejections=0,
+                    unknown_score_upper_bound=len(events),
+                    unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
+                    unknown_score_bound_method="group_count_ceiling")
+            else:
+                finite_bounds = [value for value in unknown_bounds if value is not None and np.isfinite(value)]
+                assessment.update(
+                    bounded_unknown_trials=sum(value is not None for value in unknown_bounds),
+                    bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
+                    unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
+                    unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
+                    unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
         best["scoring_assessment"] = assessment
     return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])
