@@ -120,7 +120,7 @@ def test_uncertainty_requires_one_common_recording_start_interval():
     assert lower <= upper
 
 
-def test_joint_refinement_uses_nonparallel_passes_and_profiles_altitude():
+def physical_case():
     observer = ecef(40, -100, 100)
     epoch = 1_790_000_000.0
     inverse = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True)
@@ -141,6 +141,11 @@ def test_joint_refinement_uses_nonparallel_passes_and_profiles_altitude():
     seed = dict(lat=40.0015, lon=-99.998, elev_m=100, recording_start_time_s=epoch + 0.5,
                 flight_ids=["a", "b"], point_id=0)
     terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    return observer, epoch, seed, tracks, events, measurements, terrain
+
+
+def test_joint_refinement_uses_nonparallel_passes_and_profiles_altitude():
+    observer, epoch, seed, tracks, events, measurements, terrain = physical_case()
     result = refine_candidate(seed, tracks, events, measurements, terrain, radius_m=500, clock_radius_s=3)
     error = np.linalg.norm(ecef(result["lat"], result["lon"], 100) - observer)
     assert error < 10
@@ -167,3 +172,65 @@ def test_refinement_cannot_move_a_trusted_clock_outside_its_window(window):
     with pytest.raises(ValueError, match="do not intersect"):
         refine_candidate(seed, {"a": Flyover()}, [event], [measurement()], terrain,
                          recording_start_window_s=(100, 101))
+
+
+def test_source_fit_matches_independent_bounded_solver_on_interior_and_edges():
+    from scipy.optimize import lsq_linear
+    from aircraft_geoloc.matching import _source_fit
+    rng = np.random.default_rng(440)
+    factor, u = rng.uniform(0.7, 1.4, 80), np.linspace(-0.5, 0.5, 80)
+    for _ in range(30):
+        y = factor*(rng.uniform(110, 130)+rng.uniform(-15, 15)*u)
+        weight = rng.uniform(0.1, 2, len(y))
+        cap, scale = 2.4, 1.0
+        matrix = np.vstack((np.column_stack((factor, factor*u))*np.sqrt(weight[:, None]), [0, 2*scale/cap]))
+        target = np.r_[y*np.sqrt(weight), 0]
+        expected = lsq_linear(matrix, target, bounds=([119, -cap], [121, cap]), tol=1e-12).x
+        actual = _source_fit(factor, u, y, weight, [119, 121], cap, scale)
+        np.testing.assert_allclose(actual, expected, atol=1e-7, rtol=0)
+
+
+def test_full_sensitivity_reoptimizes_all_sources_without_moving_exact_utc():
+    from aircraft_geoloc.matching import profile_candidate
+    observer, epoch, seed, tracks, events, measurements, terrain = physical_case()
+    for event in events:
+        event["quality"]["frequency_loss_scale_hz"] = 0.05
+    result = profile_candidate(seed, tracks, events, measurements, terrain,
+        recording_start_window_s=(epoch, epoch), altitude_uncertainty_m=25,
+        sound_speed_uncertainty_mps=1, radius_m=500, clock_radius_s=3)
+    sensitivity = result["sensitivity"]
+    assert set(sensitivity["sources"]) >= {"frequency", "clock", "altitude", "sound_speed", "source_frequency"}
+    assert sensitivity["complete"] and not sensitivity["boundary_limited"]
+    assert sensitivity["radius_m"] > 0
+    assert all(p["recording_start_time_s"] == epoch for p in sensitivity["profiles"])
+    assert len(sensitivity["profiles"]) >= 15
+    assert np.linalg.norm(ecef(result["lat"], result["lon"], 100)-observer) < 10
+
+
+def test_missing_sensitivity_scenario_is_retained_as_incomplete_evidence():
+    from aircraft_geoloc.matching import profile_candidate
+    class LimitedTrack(Flyover):
+        def acoustic(self, t, observer, c):
+            factor, emitted, distance = super().acoustic(t, observer, c)
+            return (factor if c >= 343 else np.full_like(factor, np.nan)), emitted, distance
+    seed = dict(lat=40, lon=-100, recording_start_time_s=0, flight_ids=["a"])
+    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    event = dict(f0_range_hz=[119, 121])
+    result = profile_candidate(seed, {"a": LimitedTrack()}, [event], [measurement()], terrain,
+                               recording_start_window_s=(0, 0), altitude_uncertainty_m=0)
+    assert not result["sensitivity"]["complete"]
+    assert any(p["source"] == "sound_speed" for p in result["sensitivity"]["failures"])
+
+
+def test_exhausted_real_optimizer_cannot_report_complete_sensitivity(monkeypatch):
+    import aircraft_geoloc.matching as matching
+    real_minimize = matching.minimize
+    def exhausted(*args, **kwargs):
+        kwargs["options"] = dict(kwargs.get("options", {}), maxiter=0)
+        return real_minimize(*args, **kwargs)
+    monkeypatch.setattr(matching, "minimize", exhausted)
+    seed = dict(lat=40, lon=-100, recording_start_time_s=0, flight_ids=["a"])
+    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    result = refine_candidate(seed, {"a": Flyover()}, [dict(f0_range_hz=[119, 121])], [measurement()], terrain)
+    assert not result["sensitivity"]["complete"]
+    assert not any(p["optimizer_success"] for p in result["sensitivity"]["profiles"])
