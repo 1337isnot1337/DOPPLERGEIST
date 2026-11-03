@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "worker_id": "7a37d350",
+  "created_utc": "2026-11-03T03:02:58.333940Z",
+  "scope": "three_replay_types_with_original_outcomes_and_qualification",
+  "automatic_real_audio_goal_verified": false,
+  "publication": {
+    "status": "pending_parent_review",
+    "integration_commit": null,
+    "pull_request_url": null,
+    "release_url": null
+  },
+  "distance_policy": {
+    "project_primary_threshold_m": 1000,
+    "reported_tiers_m": [
+      100,
+      500,
+      1000
+    ],
+    "configured_checkpoint_original_threshold_m": 100,
+    "configured_checkpoint_comparison": "strictly less than 100 m",
+    "raw_receipt_thresholds_unchanged": true
+  },
+  "configured_synthetic": {
+    "receipt": "configured-synthetic/acceptance.json",
+    "scope": "configured_methodology_checkpoint_replay",
+    "passed": true,
+    "started_utc": "2026-11-03T02:52:06.432525Z",
+    "finished_utc": "2026-11-03T02:53:11.535938Z",
+    "elapsed_s": 65.10348595100004,
+    "cases": [
+      {
+        "case_id": "synthetic-two-events",
+        "passed": true,
+        "evaluation": {
+          "error_m": 15.395598179748822,
+          "distance_metric": "horizontal WGS84 geodesic",
+          "threshold_m": 100.0,
+          "meets_threshold": true,
+          "expected_flight_ids": [
+            "true-A",
+            "true-B"
+          ],
+          "flight_ids_correct": true,
+          "clock_error_s": 0.06380653381347656,
+          "passed": true
+        },
+        "pipeline_elapsed_s": 54.710632066999096,
+        "pipeline_implementation_sha256": "e09e64c7eebd9a07d48b7daada04b772b84ede87a3facf5de4b0f69df1958de6",
+        "cli_elapsed_s": 57.089823707001415,
+        "returncode": 0
+      },
+      {
+        "case_id": "synthetic-known-minute",
+        "passed": true,
+        "evaluation": {
+          "error_m": 40.87444831462204,
+          "distance_metric": "horizontal WGS84 geodesic",
+          "threshold_m": 100.0,
+          "meets_threshold": true,
+          "expected_flight_ids": [
+            "true-A"
+          ],
+          "flight_ids_correct": true,
+          "clock_error_s": 0.5,
+          "passed": true
+        },
+        "pipeline_elapsed_s": 4.314339821999965,
+        "pipeline_implementation_sha256": "e09e64c7eebd9a07d48b7daada04b772b84ede87a3facf5de4b0f69df1958de6",
+        "cli_elapsed_s": 5.808332649001386,
+        "returncode": 0
+      }
+    ],
+    "evaluation_truth_loaded_after_all_searches": true,
+    "automatic_upload_verified": false,
+    "independent_real_accuracy_verified": false,
+    "nationwide_search_verified": false,
+    "process_tree_peak_rss_bytes": null,
+    "memory_measurement_status": "unavailable",
+    "memory_measurement_reason": "proc_pid_namespace_mismatch",
+    "memory_correction": "configured-synthetic/rss-correction.json",
+    "limitations": [
+      "Configured event windows and frequency bands; automatic discovery is not exercised.",
+      "The MP3 upload interface and automatic product pipeline are not exercised.",
+      "No independent nationwide real-recording accuracy claim is established."
+    ]
+  },
+  "configured_regional": {
+    "receipt": "configured-regional/acceptance.json",
+    "scope": "configured_methodology_checkpoint_replay",
+    "passed": true,
+    "started_utc": "2026-11-03T02:59:48.057979Z",
+    "finished_utc": "2026-11-03T03:00:29.749610Z",
+    "elapsed_s": 41.69168271300077,
+    "evaluation": {
+      "error_m": 43.85847078233993,
+      "distance_metric": "horizontal WGS84 geodesic",
+      "threshold_m": 100.0,
+      "meets_threshold": true,
+      "passed": true
+    },
+    "pipeline_elapsed_s": 38.82141950799996,
+    "cli_elapsed_s": 41.041487852999126,
+    "returncode": 0,
+    "configuration_unchanged": true,
+    "configuration_sha256": "d397fa1102d33af564f1414141a879d8394be7a1d04b941e3b9e88915646b541",
+    "evaluation_truth_loaded_after_all_searches": true,
+    "reference_qualifications": {
+      "reference_source": "https://app.osprey-watch.org/nest/3916",
+      "reference_coordinate": [
+        40.8766,
+        -73.5247
+      ],
+      "reference_precision_degrees": 0.0001,
+      "error_m": 43.85847078233993,
+      "scope": "regional search; published public nest-platform coordinate; not a blind national result"
+    },
+    "automatic_upload_verified": false,
+    "independent_real_accuracy_verified": false,
+    "nationwide_search_verified": false,
+    "process_tree_peak_rss_bytes": null,
+    "memory_measurement_status": "unavailable",
+    "memory_measurement_reason": "proc_pid_namespace_mismatch",
+    "limitations": [
+      "Configured event windows and frequency bands; automatic discovery is not exercised.",
+      "The MP3 upload interface and automatic product pipeline are not exercised.",
+      "No independent nationwide real-recording accuracy claim is established.",
+      "Real replay uses source-informed event settings and regional geographic bounds.",
+      "The published public-platform coordinate is not surveyed ground truth.",
+      "The real recording clock is not independently established.",
+      "Only the supplied regional configuration is evaluated, not the full real benchmark corpus."
+    ]
+  },
+  "http_four_event": {
+    "receipt": "http-four-event/acceptance.json",
+    "scope": "four_event_synthetic_actual_http_development_replay",
+    "passed": false,
+    "started_utc": "2026-11-03T02:54:00.334149Z",
+    "finished_utc": "2026-11-03T02:57:54.875474Z",
+    "elapsed_s": 234.54135051400044,
+    "http_transport_passed": true,
+    "pipeline_stage_audit_passed": true,
+    "pipeline_stages_verified": [
+      "automatic_provenance",
+      "intake",
+      "discovery",
+      "acquisition",
+      "search",
+      "refinement",
+      "decision"
+    ],
+    "pipeline_audit_control_count": 20,
+    "all_audit_controls_correctly_rejected": true,
+    "status": "inconclusive",
+    "reason_code": "ambiguous_locations",
+    "supported_decision": false,
+    "supported_localization_passed": false,
+    "supported_localization_at_m": {
+      "100": false,
+      "500": false,
+      "1000": false
+    },
+    "leading_prediction_error_m": 0.07932759464807976,
+    "leading_prediction_is_diagnostic_only": true,
+    "leading_prediction_clock": {
+      "reported_recording_start_utc": "2026-09-21T14:13:20Z",
+      "within_request_window": true,
+      "clock_error_s": 0.0,
+      "comparison": "inclusive trusted request UTC bounds; no additional tolerance"
+    },
+    "event_count": 4,
+    "candidate_count": 105,
+    "matched_groups": {
+      "valid": true,
+      "independent_groups": 4,
+      "group_flights": {
+        "harmonics-0001": "28d6f1b8baea6e3388569868ccd63ace",
+        "harmonics-0002": "dedb78532054fb124f3d7c9f4651fe45",
+        "harmonics-0003": "9184872330ad668ce15b1a180815132a",
+        "harmonics-0004": "ba18524b7796f181f9e20c53f2d117e2"
+      }
+    },
+    "required_group_count_met": true,
+    "required_flyovers_explained": true,
+    "search": {
+      "status": "complete",
+      "tiles_total": 4940,
+      "tiles_completed": 4940,
+      "tiles_resumed": 0,
+      "unsearched_tiles": 0,
+      "grid_points": null,
+      "coarse_points": null,
+      "refined_points": null,
+      "elapsed_s": 194.6471166780011,
+      "peak_rss_mb": null,
+      "candidate_retention_limit": 100,
+      "all_event_groups_considered": true,
+      "alternative_modes_exhaustively_assessed": false,
+      "data_scope_complete": true,
+      "tile_failures": [],
+      "refinement_failure": null,
+      "run_hash": "72f61a9db1f3b457b5d392e56afc3ebc3e2a66616a7d8c6dbdac6abc75cf033e"
+    },
+    "candidate_threshold_counts_are_not_accepted_fixes": true,
+    "threshold_counts": {
+      "100": {
+        "all_candidates": 20,
+        "correct_full_flight_set": 8
+      },
+      "500": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      },
+      "1000": {
+        "all_candidates": 105,
+        "correct_full_flight_set": 53
+      }
+    },
+    "browser_verified": false,
+    "independent_real_accuracy_verified": false,
+    "live_acquisition_verified": false,
+    "service_and_workers_stopped": true,
+    "analysis_stopped_utc": "2026-11-03T02:57:54.744326Z",
+    "evaluation_truth_loaded_utc": "2026-11-03T02:57:54.764902Z",
+    "process_tree_peak_rss_bytes": null,
+    "memory_measurement_status": "unavailable",
+    "memory_measurement_reason": "proc_pid_namespace_mismatch",
+    "memory_audit": "http-four-event/audit.json",
+    "native_search_counter": {
+      "value_mib": 333.27734375,
+      "implementation": "resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024",
+      "source": "results/http-four-event-7a37d350/implementation/src/aircraft_geoloc/tiled_search.py",
+      "source_sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870",
+      "valid_native_reading": true,
+      "affected_by_proc_pid_lookup": false,
+      "scope": "Linux search-worker process high-water counter through the end of tiled search. It is not the entire pipeline process tree or the later joint-refinement stage.",
+      "limitations": [
+        "No worker-start baseline was recorded, so inheritance of a prior high-water counter was not separately excluded.",
+        "This self counter is not an independent whole-pipeline memory measurement."
+      ]
+    },
+    "limitations": [
+      "One synthetic development scene with an exact supplied sample-zero clock.",
+      "All generated traffic is retained, but generated completeness is not real-world coverage.",
+      "Truth is read only after shutdown; no operating-system isolation of truth is claimed.",
+      "An inconclusive producer outcome is not accepted localization.",
+      "Process-tree RSS is sampled and may miss peaks or count shared pages twice.",
+      "The retained original process-tree RSS samples are invalid; see the separate audit."
+    ]
+  },
+  "remaining_acceptance_gap": "A supported automatic real-recording localization with independent recorder-position and recording-time evidence is not established by these replays.",
+  "rss_guard_review_resolution": {
+    "status": "reviewed_and_audited_blob_updated",
+    "reported_by": "integration lead",
+    "recorded_utc": "2026-11-03T03:04:31.912007Z",
+    "reviewed_helper_git_blob_sha1": "1612021776965713e88c586563ab51d4b8682a8b",
+    "reviewed_helper_sha256": "e8298c908e7cbd4c63d2400c8ddb061354a8c3b5fd3dfaa3ab45532f2b36e22b",
+    "wrapper_path": "scripts/ci_upload_replay.py",
+    "wrapper_sha256_at_resolution": "3f497d035d8fed80424aafab7f196021efecbea3dcb75e08bb085bfa68429989",
+    "pin_presence_verified": true,
+    "historical_correction_note_unchanged": true,
+    "resolution_scope": "Supersedes only the pending-review limitation in configured-synthetic/rss-correction.json."
+  }
+}

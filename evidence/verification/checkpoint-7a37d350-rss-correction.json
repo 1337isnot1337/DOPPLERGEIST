@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-03T02:57:38.380505Z",
+  "correction_type": "invalid_process_tree_rss_measurement",
+  "reason": "proc_pid_namespace_mismatch",
+  "explanation": "Popen.pid and os.getpid use an inner PID namespace, while numeric /proc paths expose an outer namespace. The old sampler could read unrelated processes or return zero. Neither zero nor a nonzero value obtained this way measures the replay process tree.",
+  "original_receipt": {
+    "path": "results/checkpoint-7a37d350/acceptance.json",
+    "sha256": "4955b1dad0d6aec87c7798bf412d9cadf96ae57549064f31089766ba29edf7f0",
+    "preserved_byte_for_byte": true
+  },
+  "original_runner_snapshot": {
+    "path": "results/checkpoint-7a37d350/implementation/ci_checkpoint_replay.py",
+    "sha256": "b746c0ee9322e417d226c33f64bbed4fcd42133fbf2e7f45b1f5aa748556fb44"
+  },
+  "affected_fields": [
+    {
+      "json_pointer": "/cases/0/execution/peak_sampled_process_tree_rss_bytes",
+      "recorded_value": 0,
+      "corrected_interpretation": "unavailable",
+      "display_value": null
+    },
+    {
+      "json_pointer": "/cases/1/execution/peak_sampled_process_tree_rss_bytes",
+      "recorded_value": 0,
+      "corrected_interpretation": "unavailable",
+      "display_value": null
+    },
+    {
+      "json_pointer": "/generation/peak_sampled_process_tree_rss_bytes",
+      "recorded_value": 0,
+      "corrected_interpretation": "unavailable",
+      "display_value": null
+    }
+  ],
+  "unaffected_claims": [
+    "subprocess exit codes",
+    "wall-clock runtimes",
+    "location and flight-association results",
+    "recorded input and implementation hashes",
+    "configured-synthetic scope limitations"
+  ],
+  "fresh_availability_probe": {
+    "path": "results/rss-guard-7a37d350/availability-probe.json",
+    "sha256": "804f216b2576bfd94be9d5a539d2181b9dc62c985f7a6fb7619a840d423b01c8",
+    "scope": "Separate diagnostic workload; does not recover original replay memory use."
+  },
+  "corrected_runner_representation": {
+    "peak_sampled_process_tree_rss_bytes": null,
+    "memory_measurement_status": "unavailable",
+    "memory_measurement_reason": "proc_pid_namespace_mismatch"
+  },
+  "reviewed_files": {
+    "scripts/ci_checkpoint_replay.py": {
+      "sha256": "e8298c908e7cbd4c63d2400c8ddb061354a8c3b5fd3dfaa3ab45532f2b36e22b",
+      "git_blob_sha1": "1612021776965713e88c586563ab51d4b8682a8b"
+    },
+    "tests/test_ci_checkpoint_replay.py": {
+      "sha256": "5dd91a60f8158e4b86f9e1c4e76a9ae77430f23306e33c8feccd7cf421c752b3",
+      "git_blob_sha1": "3fd57814e5e0587cd638d9d673c591783a12f863"
+    }
+  },
+  "validation": {
+    "command": ".venv/bin/python -m pytest -q -rs tests/test_ci_checkpoint_replay.py tests/test_ci_automatic_replay.py tests/test_ci_upload_replay.py --junitxml=results/rss-guard-7a37d350/junit.xml",
+    "result": "48 passed, 1 skipped, 25 subtests passed",
+    "skip_reason": "Live process-tree RSS is unavailable: proc_pid_namespace_mismatch",
+    "junit_path": "results/rss-guard-7a37d350/junit.xml",
+    "junit_sha256": "cb22438c81aff31afc7838b69e9491263e4681f41e435ef84ff62fb74de94bbf"
+  },
+  "limitations": [
+    "No memory peak for the original replay has been recovered.",
+    "The browser wrapper audited-blob pin remains unchanged pending independent review."
+  ]
+}

@@ -1,0 +1,69 @@
+name: Automatic HTTP upload acceptance
+
+on:
+  push:
+    branches: [worker/end-to-end-7a37d350]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'pyproject.toml'
+      - '.github/workflows/http-upload-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: http-upload-replay-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  OMP_NUM_THREADS: '1'
+
+jobs:
+  replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install and record the runtime
+        run: |
+          if ! command -v ffmpeg >/dev/null || ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y ffmpeg
+          fi
+          python -m pip install -e '.[test]'
+          python -m pip check
+          mkdir -p results/ci-http-runtime
+          python -m pip freeze --all > results/ci-http-runtime/requirements-resolved.txt
+          ffmpeg -version > results/ci-http-runtime/ffmpeg-version.txt
+          git rev-parse HEAD > results/ci-http-runtime/commit.txt
+      - name: Run regression tests
+        run: python -m pytest -q --junitxml=results/ci-http-runtime/pytest.xml
+      - name: Run four-flyover HTTP upload and strict localization acceptance
+        run: |
+          python scripts/ci_http_replay.py \
+            --output results/ci-http-four-events \
+            --events 4 --seed 20261103 \
+            --expect-status succeeded --timeout-s 1200
+      - name: Preserve evidence, including unsuccessful localization
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: http-four-event-acceptance-${{ github.sha }}
+          path: |
+            results/ci-http-runtime/
+            results/ci-http-four-events/
+            !results/**/__pycache__/**
+          if-no-files-found: error
+          retention-days: 30

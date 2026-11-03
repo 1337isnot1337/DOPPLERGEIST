@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "started_utc": "2026-11-03T02:59:48.057979Z",
+  "scope": "configured_methodology_checkpoint_replay",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "executable": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/.venv/bin/python",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "3.1.0",
+      "soundfile": "0.14.0",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "matplotlib": "3.11.2",
+      "requests": "2.34.2",
+      "pyarrow": "26.0.0",
+      "pytest": "9.2.0",
+      "setuptools": null,
+      "pip": null
+    },
+    "external_tools": {
+      "ffmpeg": {
+        "returncode": 0,
+        "version": [
+          "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+        ]
+      },
+      "ffprobe": {
+        "returncode": 0,
+        "version": [
+          "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+        ]
+      }
+    },
+    "subprocess_thread_settings": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "limitations": [
+    "Configured event windows and frequency bands; automatic discovery is not exercised.",
+    "The MP3 upload interface and automatic product pipeline are not exercised.",
+    "No independent nationwide real-recording accuracy claim is established.",
+    "Real replay uses source-informed event settings and regional geographic bounds.",
+    "The published public-platform coordinate is not surveyed ground truth.",
+    "The real recording clock is not independently established.",
+    "Only the supplied regional configuration is evaluated, not the full real benchmark corpus."
+  ],
+  "automatic_upload_verified": false,
+  "independent_real_accuracy_verified": false,
+  "nationwide_search_verified": false,
+  "evaluation_truth_loaded_after_all_searches": true,
+  "cases": [
+    {
+      "case_id": "reference-regional",
+      "config": "/workspace/scratch/7a37d350207f/regional_inputs/data/source/reproduce-local.json",
+      "passed": true,
+      "inputs": [
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/source/reproduce-local.json",
+          "bytes": 1450,
+          "sha256": "d397fa1102d33af564f1414141a879d8394be7a1d04b941e3b9e88915646b541"
+        },
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/source/reference-recording.wav",
+          "bytes": 691235466,
+          "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+        },
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/adsb/2026-09-08/reference-region.parquet",
+          "bytes": 32823780,
+          "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0"
+        },
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/adsb/2026-09-08/type-database.csv",
+          "bytes": 47916,
+          "sha256": "e862edbce353514bea97e2d819988f408009edd3cfcb47199ebc648d9a5b600f"
+        },
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+          "bytes": 15806993,
+          "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+        },
+        {
+          "path": "/workspace/scratch/7a37d350207f/regional_inputs/data/terrain/us_nga_egm96_15.tif",
+          "bytes": 2710815,
+          "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+        }
+      ],
+      "report_path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/cases/reference-regional/report.json",
+      "execution": {
+        "command": [
+          "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/.venv/bin/python",
+          "-m",
+          "aircraft_geoloc.cli",
+          "run",
+          "/workspace/scratch/7a37d350207f/regional_inputs/data/source/reproduce-local.json",
+          "--output",
+          "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/cases/reference-regional"
+        ],
+        "cwd": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation",
+        "log": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/logs/reference-regional.log",
+        "started_utc": "2026-11-03T02:59:48.663324Z",
+        "timeout_s": 1800,
+        "returncode": 0,
+        "elapsed_s": 41.041487852999126,
+        "finished_utc": "2026-11-03T03:00:29.704837Z",
+        "peak_sampled_process_tree_rss_bytes": null,
+        "memory_measurement_status": "unavailable",
+        "memory_measurement_reason": "proc_pid_namespace_mismatch",
+        "memory_measurement": "Unavailable: process IDs do not match the PID namespace exposed by /proc."
+      },
+      "report_sha256": "980636f97e612f214abf0c18b3e49e4d52bc0d7fe715929636766cdd657218d6",
+      "best": {
+        "score": 5.608620381268418,
+        "event_scores": [
+          2.6263010358804704,
+          2.982319345387947
+        ],
+        "f0_hz": [
+          112.4,
+          126.0
+        ],
+        "recording_start_time_s": 1788898649.6620934,
+        "time_adjustment_s": -0.5,
+        "point_id": 41,
+        "lat": 40.87693175890468,
+        "lon": -73.52498229500986,
+        "elev_m": -31.25569725036621,
+        "x": 1861200.0,
+        "y": 2206325.0,
+        "flight_ids": [
+          "a1dfeb:1",
+          "ace391:3"
+        ]
+      },
+      "pipeline_elapsed_s": 38.82141950799996,
+      "pipeline_implementation_sha256": "26c65c9d1601d30b7a6bcedfb3d91555217d2a52fd423e9b3999bfb569930a32",
+      "expected_pipeline_implementation_sha256": "26c65c9d1601d30b7a6bcedfb3d91555217d2a52fd423e9b3999bfb569930a32",
+      "evaluation": {
+        "error_m": 43.85847078233993,
+        "distance_metric": "horizontal WGS84 geodesic",
+        "threshold_m": 100.0,
+        "meets_threshold": true,
+        "passed": true
+      }
+    }
+  ],
+  "passed": true,
+  "implementation": {
+    "checkout": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current",
+    "git": {
+      "commit": "ea06146122853e8c61885e78b3cd3a7634b1e508",
+      "status": "M scripts/ci_checkpoint_replay.py"
+    },
+    "snapshot_sha256": "3581e2ef3a7eef88d4c9527c99303ba409ea822613ba555f04934fc36e625d7c",
+    "files": {
+      "ci_checkpoint_replay.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/ci_checkpoint_replay.py",
+        "bytes": 19223,
+        "sha256": "e8298c908e7cbd4c63d2400c8ddb061354a8c3b5fd3dfaa3ab45532f2b36e22b"
+      },
+      "pyproject.toml": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/pyproject.toml",
+        "bytes": 668,
+        "sha256": "c6941c17ac72bbf87fca8fe8b18ed223faa738a2ebb2859eceda28e90e9da7e0"
+      },
+      "src/aircraft_geoloc/__init__.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/__init__.py",
+        "bytes": 50,
+        "sha256": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88"
+      },
+      "src/aircraft_geoloc/audio.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/audio.py",
+        "bytes": 8315,
+        "sha256": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0"
+      },
+      "src/aircraft_geoloc/automatic.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/automatic.py",
+        "bytes": 19241,
+        "sha256": "39529e34debe2ab3f00e6b1a3318a3319461acd1dc4a2f7b4d12a12cc58ac7dd"
+      },
+      "src/aircraft_geoloc/cli.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/cli.py",
+        "bytes": 4131,
+        "sha256": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447"
+      },
+      "src/aircraft_geoloc/confidence.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/confidence.py",
+        "bytes": 14364,
+        "sha256": "25997b9b2bb692374631be32a770fde0a991041413b929f6e1a833bd7fda6403"
+      },
+      "src/aircraft_geoloc/contracts.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/contracts.py",
+        "bytes": 15115,
+        "sha256": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+      },
+      "src/aircraft_geoloc/data_access.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/data_access.py",
+        "bytes": 29737,
+        "sha256": "de2e000afd87c7718fb67b965c7cdceea7a90378b8cdcdf0f7226ea8ca94f080"
+      },
+      "src/aircraft_geoloc/discovery.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/discovery.py",
+        "bytes": 18254,
+        "sha256": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7"
+      },
+      "src/aircraft_geoloc/evaluation.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/evaluation.py",
+        "bytes": 9499,
+        "sha256": "e0d43b2904ad3a6dba5ba743912313442bd4ec45c36eed1335194a55f255f478"
+      },
+      "src/aircraft_geoloc/geometry.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/geometry.py",
+        "bytes": 5992,
+        "sha256": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94"
+      },
+      "src/aircraft_geoloc/intake.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/intake.py",
+        "bytes": 9024,
+        "sha256": "15fe2a2823a57fb5856973a4b2cc711444ec5a667c1f6fc0d5e31bb482912d6a"
+      },
+      "src/aircraft_geoloc/jobs.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/jobs.py",
+        "bytes": 10569,
+        "sha256": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9"
+      },
+      "src/aircraft_geoloc/matching.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/matching.py",
+        "bytes": 28154,
+        "sha256": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce"
+      },
+      "src/aircraft_geoloc/pipeline.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/pipeline.py",
+        "bytes": 9503,
+        "sha256": "7e4e1f2c3bb37421e4ad8e9a35f52fadbc8dde3025e6c93938a91a21b7ae247d"
+      },
+      "src/aircraft_geoloc/provenance.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/provenance.py",
+        "bytes": 6124,
+        "sha256": "b5183cb9ceaf4bb0c654cbd5d7e67c8cd42cdd2f156bcb8425abc8e2fc5792ea"
+      },
+      "src/aircraft_geoloc/search.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/search.py",
+        "bytes": 16909,
+        "sha256": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b"
+      },
+      "src/aircraft_geoloc/service.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/service.py",
+        "bytes": 6516,
+        "sha256": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d"
+      },
+      "src/aircraft_geoloc/terrain.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/terrain.py",
+        "bytes": 8519,
+        "sha256": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a"
+      },
+      "src/aircraft_geoloc/tiled_search.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/tiled_search.py",
+        "bytes": 21563,
+        "sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870"
+      },
+      "src/aircraft_geoloc/tracks.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/tracks.py",
+        "bytes": 7434,
+        "sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+      },
+      "src/aircraft_geoloc/web/__init__.py": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/web/__init__.py",
+        "bytes": 38,
+        "sha256": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+      },
+      "src/aircraft_geoloc/web/app.js": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/web/app.js",
+        "bytes": 9314,
+        "sha256": "c9075975143d6faaf5ed1fa23b076bb57a0fa38b3858610a7c9755c00f6c54d4"
+      },
+      "src/aircraft_geoloc/web/index.html": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/web/index.html",
+        "bytes": 3575,
+        "sha256": "35cc114ec2eb4818757faa7f462ae273ab3b49621f374f5ef7b4e22ee2700be3"
+      },
+      "src/aircraft_geoloc/web/style.css": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc/web/style.css",
+        "bytes": 4599,
+        "sha256": "57936a98a266bbdf5090ecc6a6a52b707f59e89efcae10c6627a881236399c1e"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/PKG-INFO": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/PKG-INFO",
+        "bytes": 433,
+        "sha256": "1869cf34e577b10afb28955bbc7a14928574db830d97acb381f4c559282c8792"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/SOURCES.txt",
+        "bytes": 2056,
+        "sha256": "6f7d033af5955597769e50838d0c8e2c129b9faf3fd286c9745c545c379f2877"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/dependency_links.txt",
+        "bytes": 1,
+        "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/entry_points.txt": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/entry_points.txt",
+        "bytes": 61,
+        "sha256": "4e76b710462f001e64e2610e5825e8c664f25a4d0180b79bde36646699042dcb"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/requires.txt": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/requires.txt",
+        "bytes": 91,
+        "sha256": "b86a70c60df483877a15c9af90a79fd3eecbf866d0f3d66ad298f7a7dfc41287"
+      },
+      "src/aircraft_geoloc_reproduction.egg-info/top_level.txt": {
+        "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/results/regional-configured-7a37d350/implementation/src/aircraft_geoloc_reproduction.egg-info/top_level.txt",
+        "bytes": 16,
+        "sha256": "f78e0bfd2f6ced36348301c041d51ecf06e9d3f55cf5c0d5a5801dc397ed1243"
+      }
+    },
+    "expected_pipeline_implementation_sha256": "26c65c9d1601d30b7a6bcedfb3d91555217d2a52fd423e9b3999bfb569930a32"
+  },
+  "requested_cases": [
+    "reference-regional"
+  ],
+  "all_searches_finished_utc": "2026-11-03T03:00:29.705765Z",
+  "evaluation_truth_loaded_utc": "2026-11-03T03:00:29.705841Z",
+  "evaluation_reference": {
+    "path": "/workspace/scratch/7a37d350207f/DOPPLERGEIST-current/evidence/results/reference-local/evaluation.json",
+    "bytes": 301,
+    "sha256": "d7453547232aec58acdac3c2789b5af27c6af933cd969fc501db80c2c4227098"
+  },
+  "reference_qualifications": {
+    "reference_source": "https://app.osprey-watch.org/nest/3916",
+    "reference_coordinate": [
+      40.8766,
+      -73.5247
+    ],
+    "reference_precision_degrees": 0.0001,
+    "error_m": 43.85847078233993,
+    "scope": "regional search; published public nest-platform coordinate; not a blind national result"
+  },
+  "finished_utc": "2026-11-03T03:00:29.749610Z",
+  "elapsed_s": 41.69168271300077
+}

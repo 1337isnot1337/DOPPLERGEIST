@@ -1,0 +1,58 @@
+{
+  "scope": "post-run artifact and resource-observability audit",
+  "manifest_sha256": "409c9a1e6c2de8e23204a1f2a142f24a75cd419c6db7731ac76503fb651b00e4",
+  "manifest_files_verified": 5040,
+  "manifest_bytes_verified": 66073363,
+  "manifest_errors": [],
+  "passed": true,
+  "scientific_checks_passed": true,
+  "scientific_check_count": 14,
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "location_error_m": 0.07932759464807976,
+  "independent_event_groups": 4,
+  "clock_error_s": 0.0,
+  "search_process_ru_maxrss_mib": 333.27734375,
+  "external_rss": {
+    "reported_stage_samples": [
+      0,
+      0,
+      0
+    ],
+    "valid_measurement": false,
+    "reason": "All three recorded stage samples were zero. In a fresh live control, a child with a touched 64 MiB allocation and native ru_maxrss of 73,088 KiB produced only 466,944 bytes from the /proc process-tree sampler. Both zero and nonzero /proc samples are untrusted in this execution environment; they can refer to unrelated processes. The exact PID/proc visibility mechanism was not established by this audit.",
+    "live_control": {
+      "child_pid_from_popen": 6,
+      "child": {
+        "pid": 6,
+        "allocation_bytes": 67108864,
+        "ru_maxrss_kib": 73088
+      },
+      "proc_statm_exists": true,
+      "helper_sampled_tree_rss_bytes": 466944,
+      "returncode": 0,
+      "stderr": ""
+    }
+  },
+  "original_evidence_modified": false,
+  "resource_measurement_status": {
+    "proc_tree_stage_samples_trusted": false,
+    "proc_live_control_sample_trusted": false,
+    "proc_scope": "All /proc-derived zero and nonzero process-tree RSS samples are unusable here because process IDs may refer to unrelated processes.",
+    "native_search_counter": {
+      "value_mib": 333.27734375,
+      "implementation": "resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024",
+      "source": "results/http-four-event-7a37d350/implementation/src/aircraft_geoloc/tiled_search.py",
+      "source_sha256": "0a9f2d62b6c83a111fac206a822da35d68b387c1cdffae2dc32b639446605870",
+      "valid_native_reading": true,
+      "affected_by_proc_pid_lookup": false,
+      "scope": "Linux search-worker process high-water counter through the end of tiled search. It is not the entire pipeline process tree or the later joint-refinement stage.",
+      "limitations": [
+        "No worker-start baseline was recorded, so inheritance of a prior high-water counter was not separately excluded.",
+        "This self counter is not an independent whole-pipeline memory measurement."
+      ]
+    },
+    "complete_pipeline_peak_memory_verified": false,
+    "policy": "Invalidate /proc-derived samples only. The direct native self-process counter remains reportable with its stated scope and limitations."
+  }
+}

@@ -114,9 +114,22 @@ def code_snapshot(repo, output):
                          "expected_pipeline_implementation_sha256": pipeline_source_digest(destination / "src")}
 
 
+def rss_measurement_unavailable_reason():
+    """Reject /proc mounts whose numeric PIDs belong to another namespace."""
+    if sys.platform != "linux":
+        return "unsupported_platform"
+    try:
+        proc_pid = int(os.readlink("/proc/self"))
+    except (OSError, ValueError):
+        return "proc_pid_namespace_unverified"
+    if proc_pid != os.getpid():
+        return "proc_pid_namespace_mismatch"
+    return None
+
+
 def sampled_tree_rss(pid):
     """Linux process-tree RSS sample, not a kernel high-water-mark measurement."""
-    if sys.platform != "linux":
+    if rss_measurement_unavailable_reason() is not None:
         return None
     total, pending, seen = 0, [pid], set()
     while pending:
@@ -139,7 +152,7 @@ def sampled_tree_rss(pid):
                 pending.extend(int(child) for child in (task / "children").read_text().split())
             except (OSError, ValueError):
                 continue
-    return total
+    return total if total > 0 else None
 
 
 def execute(command, cwd, log_path, env, timeout_s):
@@ -147,12 +160,13 @@ def execute(command, cwd, log_path, env, timeout_s):
               "log": str(log_path), "started_utc": utc_now(), "timeout_s": timeout_s}
     began = time.monotonic()
     peak = None
+    memory_reason = rss_measurement_unavailable_reason()
     try:
         with Path(log_path).open("w", encoding="utf-8") as log:
             process = subprocess.Popen(command, cwd=cwd, env=env, stdout=log,
                                        stderr=subprocess.STDOUT, start_new_session=(os.name == "posix"))
             while process.poll() is None:
-                sample = sampled_tree_rss(process.pid)
+                sample = sampled_tree_rss(process.pid) if memory_reason is None else None
                 if sample is not None:
                     peak = max(peak or 0, sample)
                 if time.monotonic() - began > timeout_s:
@@ -174,9 +188,22 @@ def execute(command, cwd, log_path, env, timeout_s):
             result["returncode"] = process.returncode
     except OSError as exc:
         result.update(returncode=None, error=f"{type(exc).__name__}: {exc}")
+    if peak is None:
+        memory_reason = memory_reason or "no_valid_rss_samples"
+        memory_description = {
+            "unsupported_platform": "Unavailable: process-tree RSS sampling requires Linux /proc.",
+            "proc_pid_namespace_unverified": "Unavailable: the PID namespace exposed by /proc could not be verified.",
+            "proc_pid_namespace_mismatch": "Unavailable: process IDs do not match the PID namespace exposed by /proc.",
+            "no_valid_rss_samples": "Unavailable: no positive process-tree RSS sample was recorded.",
+        }[memory_reason]
+    else:
+        memory_description = ("Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice; "
+                              "exited or inaccessible processes may be omitted")
     result.update(elapsed_s=time.monotonic() - began, finished_utc=utc_now(),
                   peak_sampled_process_tree_rss_bytes=peak,
-                  memory_measurement="Linux process-tree RSS sampled every 0.2 s; may miss peaks; shared pages may be counted twice")
+                  memory_measurement_status="unavailable" if peak is None else "available",
+                  memory_measurement_reason=memory_reason,
+                  memory_measurement=memory_description)
     return result
 
 

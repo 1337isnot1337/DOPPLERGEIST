@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "scope": "four_event_synthetic_actual_http_development_replay",
+  "started_utc": "2026-11-03T02:54:00.334149Z",
+  "events_requested": 4,
+  "seed": 20261103,
+  "expected_status": "inconclusive",
+  "primary_threshold_m": 1000,
+  "thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "evaluation_truth_loaded": false,
+  "passed": false,
+  "stages": [],
+  "browser_verified": false,
+  "independent_real_accuracy_verified": false,
+  "live_acquisition_verified": false,
+  "limitations": [
+    "One synthetic development scene with an exact supplied sample-zero clock.",
+    "All generated traffic is retained, but generated completeness is not real-world coverage.",
+    "Truth is read only after shutdown; no operating-system isolation of truth is claimed.",
+    "An inconclusive producer outcome is not accepted localization.",
+    "Process-tree RSS is sampled and may miss peaks or count shared pages twice."
+  ]
+}

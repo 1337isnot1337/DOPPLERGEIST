@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "scope": "post_execution_read_only_pipeline_evidence_audit",
+  "created_utc": "2026-11-03T03:00:52.297991Z",
+  "job_directory": "/workspace/scratch/7a37d350207f/DOPPLERGEIST/results/http-four-event-7a37d350/http/jobs/4a925d0d050c4ddcb305d3394c4316cd",
+  "verifier_sha256": "d589846b3df7a8948fc748dd494591b83084b5f9d777e159fdd6c1dc64f8d18f",
+  "source_http_receipt_sha256": "051e5407a199378798cba99315f46e70479fbb54c0bf142472a92824e608910c",
+  "producer_status": "inconclusive",
+  "producer_reason_code": "ambiguous_locations",
+  "original_stage_evidence_unchanged": true,
+  "baseline": {
+    "schema_version": 1,
+    "passed": true,
+    "full_pipeline_observed": true,
+    "scientific_decision_expected": true,
+    "stages_verified": [
+      "automatic_provenance",
+      "intake",
+      "discovery",
+      "acquisition",
+      "search",
+      "refinement",
+      "decision"
+    ],
+    "artifacts": {
+      "provenance.json": {
+        "bytes": 3080,
+        "sha256": "ddd2c3cde6c2217389d7b43f6adf6ba5a8b42e1025d29cff9b3a134debf3d6fe"
+      },
+      "input.json": {
+        "bytes": 126,
+        "sha256": "7d62b70820fd509483d83fb51d8d7262ec61d80a904a02dab179533c643b1828"
+      },
+      "request.json": {
+        "bytes": 441,
+        "sha256": "ec4a5fd67a8d23a8ff1c65151e1779496dc1ef59be633d7ae50cf1b5999126e5"
+      },
+      "intake/recording.json": {
+        "bytes": 404,
+        "sha256": "1944760c756121870a34f3c7f5e034b4e7a415ba1bb11a514a3688a32d9fff7f"
+      },
+      "intake/intake.json": {
+        "bytes": 912,
+        "sha256": "b0afeb0a0295b17d6c9271dea10ec6cb2cd52272aa7e3585c5ad933a79989b19"
+      },
+      "intake/recording.f32": {
+        "bytes": 15360000,
+        "sha256": "74604618cb5a375d912233e496b4d95c0ef59715fd525702de40352364cd8e67"
+      },
+      "discovery/discovery.json": {
+        "bytes": 413599,
+        "sha256": "47075a62f2edb50f859d6b0f66bf02dd616b5f311cb3cd3a7ef51fd3eb094286"
+      },
+      "data-provenance.json": {
+        "bytes": 1982,
+        "sha256": "e7e4ddb7fa20e3cac7562ecd241a1be63d3df0fedeccf8e3d98ebd77f16d3bde"
+      },
+      "search/manifest.json": {
+        "bytes": 214633,
+        "sha256": "73bbfaf2156281afbdd42c100384129c4033dbdaafbac17c41a0f0fd15f6413b"
+      },
+      "search/search-report.json": {
+        "bytes": 406166,
+        "sha256": "a20d7340a4147b862f0b0c47f9c007000b07151d203d92bef657c7c9fd3a3c62"
+      },
+      "refined-candidates.json": {
+        "bytes": 434564,
+        "sha256": "dabdf67afddf88e2f9f2d06569f07b6b050580376ad1296cad36c8739ebd55a6"
+      },
+      "decision.json": {
+        "bytes": 57394,
+        "sha256": "cfd577186d1d7a176a4eef437cc5383e39ffdcb8c121aa6fae01970ea4a43455"
+      }
+    },
+    "errors": [],
+    "location_accuracy_evaluated": false,
+    "limitations": [
+      "Stage consistency does not independently reproduce decoding or scientific fitting.",
+      "No withheld-location comparison or accuracy evaluation is performed."
+    ]
+  },
+  "copied_evidence_baseline_passed": true,
+  "copy_setup": "Copied original stage artifacts; rebased only request/provenance audio_path to the disposable copy. Original evidence was not changed.",
+  "controls": [
+    {
+      "control": "missing artifact",
+      "artifact": "intake/recording.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: intake/recording.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "intake/recording.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "intake/intake.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: intake/intake.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "intake/intake.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "intake/recording.f32",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: intake/recording.f32"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "discovery/discovery.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: discovery/discovery.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "discovery/discovery.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "data-provenance.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: data-provenance.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "data-provenance.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "search/manifest.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: search/manifest.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "search/manifest.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "search/search-report.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: search/search-report.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "search/search-report.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "refined-candidates.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: refined-candidates.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "refined-candidates.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "missing artifact",
+      "artifact": "decision.json",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Missing or unsafe stage artifact: decision.json"
+      ]
+    },
+    {
+      "control": "corrupt JSON",
+      "artifact": "decision.json",
+      "correctly_rejected": true,
+      "errors": [
+        "JSONDecodeError: Expecting value: line 1 column 15 (char 14)"
+      ]
+    },
+    {
+      "control": "inconsistent field",
+      "artifact": "search/search-report.json",
+      "field": "run_hash",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Search manifest, report, and automatic provenance have different run identities"
+      ]
+    },
+    {
+      "control": "inconsistent field",
+      "artifact": "discovery/discovery.json",
+      "field": "events",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Discovery source or events differ from the terminal result"
+      ]
+    },
+    {
+      "control": "inconsistent field",
+      "artifact": "decision.json",
+      "field": "status",
+      "correctly_rejected": true,
+      "errors": [
+        "ValueError: Persisted scientific decision differs from the terminal result"
+      ]
+    }
+  ],
+  "control_count": 20,
+  "all_controls_correctly_rejected": true,
+  "location_accuracy_evaluated": false,
+  "audit_passed": true
+}

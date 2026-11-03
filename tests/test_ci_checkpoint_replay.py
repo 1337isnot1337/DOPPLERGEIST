@@ -23,6 +23,58 @@ SPEC.loader.exec_module(REPLAY)
 
 
 class CheckpointReplayTests(unittest.TestCase):
+    def test_rss_rejects_namespace_mismatch_before_reading_numeric_proc_paths(self):
+        with patch.object(REPLAY.sys, "platform", "linux"), \
+             patch.object(REPLAY.os, "getpid", return_value=1000), \
+             patch.object(REPLAY.os, "readlink", return_value="9000"), \
+             patch.object(REPLAY, "Path", side_effect=AssertionError("Unrelated process must not be sampled")) as paths:
+            self.assertEqual(REPLAY.rss_measurement_unavailable_reason(), "proc_pid_namespace_mismatch")
+            self.assertIsNone(REPLAY.sampled_tree_rss(2000))
+            paths.assert_not_called()
+
+    def test_rss_rejects_unverified_proc_namespace(self):
+        with patch.object(REPLAY.sys, "platform", "linux"), \
+             patch.object(REPLAY.os, "readlink", side_effect=PermissionError("unavailable")), \
+             patch.object(REPLAY, "Path") as paths:
+            self.assertEqual(REPLAY.rss_measurement_unavailable_reason(), "proc_pid_namespace_unverified")
+            self.assertIsNone(REPLAY.sampled_tree_rss(2000))
+            paths.assert_not_called()
+
+    def test_execute_records_unavailable_memory_without_sampling_unrelated_processes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            log = Path(temporary) / "execution.log"
+            with patch.object(REPLAY, "rss_measurement_unavailable_reason", return_value="proc_pid_namespace_mismatch"), \
+                 patch.object(REPLAY, "sampled_tree_rss") as sampler:
+                result = REPLAY.execute([sys.executable, "-c", "print('completed')"],
+                                        temporary, log, os.environ.copy(), 5)
+            self.assertEqual(result["returncode"], 0)
+            self.assertEqual(log.read_text().strip(), "completed")
+            self.assertIsNone(result["peak_sampled_process_tree_rss_bytes"])
+            self.assertEqual(result["memory_measurement_status"], "unavailable")
+            self.assertEqual(result["memory_measurement_reason"], "proc_pid_namespace_mismatch")
+            sampler.assert_not_called()
+
+    def test_missing_or_zero_rss_is_not_reported_as_measured_zero_memory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            zero = root / "1000"
+            zero.mkdir()
+            (zero / "statm").write_text("0 0 0 0 0 0 0\n")
+            (zero / "task").mkdir()
+            def proc_path(value):
+                return root / Path(value).relative_to("/proc")
+            with patch.object(REPLAY, "Path", side_effect=proc_path), \
+                 patch.object(REPLAY, "rss_measurement_unavailable_reason", return_value=None):
+                self.assertIsNone(REPLAY.sampled_tree_rss(1000))
+                self.assertIsNone(REPLAY.sampled_tree_rss(2000))
+            with patch.object(REPLAY, "rss_measurement_unavailable_reason", return_value=None), \
+                 patch.object(REPLAY, "sampled_tree_rss", return_value=None):
+                result = REPLAY.execute([sys.executable, "-c", "pass"], temporary,
+                                        root / "execution.log", os.environ.copy(), 5)
+            self.assertIsNone(result["peak_sampled_process_tree_rss_bytes"])
+            self.assertEqual(result["memory_measurement_status"], "unavailable")
+            self.assertEqual(result["memory_measurement_reason"], "no_valid_rss_samples")
+
     def test_rss_visits_all_thread_children_and_counts_each_process_once(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -44,13 +96,19 @@ class CheckpointReplayTests(unittest.TestCase):
             def proc_path(value):
                 return root / Path(value).relative_to("/proc")
             with patch.object(REPLAY, "Path", side_effect=proc_path), \
-                 patch.object(REPLAY.sys, "platform", "linux"):
+                 patch.object(REPLAY.sys, "platform", "linux"), \
+                 patch.object(REPLAY.os, "getpid", return_value=1000), \
+                 patch.object(REPLAY.os, "readlink", return_value="1000"):
                 actual = REPLAY.sampled_tree_rss(1000)
             self.assertEqual(actual, (3 + 5 + 7 + 11) * os.sysconf("SC_PAGE_SIZE"))
 
-    @unittest.skipUnless(sys.platform == "linux" and Path("/proc/thread-self/children").is_file(),
-                         "Requires Linux per-thread /proc children interfaces")
+    @unittest.skipUnless(sys.platform == "linux", "Requires Linux /proc")
     def test_rss_includes_child_spawned_by_background_thread(self):
+        reason = REPLAY.rss_measurement_unavailable_reason()
+        if reason is not None:
+            self.skipTest(f"Live process-tree RSS is unavailable: {reason}")
+        if not Path("/proc/thread-self/children").is_file():
+            self.skipTest("Requires Linux per-thread /proc children interfaces")
         child_program = """import time
 memory = bytearray(64 * 1024 * 1024)
 for offset in range(0, len(memory), 4096):
