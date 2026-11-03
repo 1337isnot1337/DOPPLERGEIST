@@ -123,7 +123,10 @@ not to surveyed microphone truth.
 | 48 | 37.661666 | -121.787273 | 0.901372 | 506 m |
 
 The [complete 105-candidate ranking](../benchmarks/livermore-all-aircraft-ranking-20261103.json)
-is retained in original order. Scores are fit measures, not probabilities.
+is retained in original order. The README figure plots the highest retained
+score per receiver point from the saved search tiles and highlights ranks 1 and
+10; it is a cropped map, not a plot of every searched point. Scores are fit
+measures, not probabilities.
 Despite full declared archive coverage, the result remains **inconclusive**:
 187 CPA track evaluations exceeded the supported trajectory model. The scorer
 also recorded 725,947 unknown clock trials across 40,531 candidate envelopes,
@@ -170,6 +173,15 @@ curl -G 'https://imagery.nationalmap.gov/arcgis/rest/services/USGSNAIPImagery/Im
   --data-urlencode 'f=image' -o results/livermore-naip.jpg
 PYTHONPATH=src python scripts/render_livermore_demo.py \
   results/livermore-run results/livermore-naip.jpg results/livermore-demo.png
+```
+
+To reproduce the automatic MP3 figure from its saved job directory, the same
+NAIP image, and the flight index used by that job:
+
+```bash
+PYTHONPATH=src python scripts/render_livermore_automatic.py \
+  path/to/automatic-upload-job path/to/all-aircraft-index.sqlite \
+  results/livermore-naip.jpg results/livermore-automatic.png
 ```
 
 The live imagery service may serve a newer aerial image in the future. See
