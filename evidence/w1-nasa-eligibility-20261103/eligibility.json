@@ -1,0 +1,37 @@
+{
+  "eligible_for_issue_53": false,
+  "reason": "Required bindings and corpus/holdout evidence remain incomplete",
+  "archive_members": 67,
+  "archive_bytes": 1693926297,
+  "inspected_fixed_wing_members": [
+    "data/cub_flyover_107.mat",
+    "data/edge_flyover_038.mat"
+  ],
+  "selection": "First lexical member for each fixed-wing vehicle; selected before waveform/trajectory inspection",
+  "missing_or_unproven": [
+    "Absolute recording date for each inspected MAT; UTC arrays are seconds past midnight",
+    "Measured absolute sample-zero UTC uncertainty/drift calibration",
+    "Quantified microphone geodetic uncertainty and vertical datum",
+    "Complete nationwide historical traffic and incidental background aircraft",
+    "Sealed multi-device/multi-environment holdout"
+  ],
+  "source_limitations": [
+    "Publisher preselected acoustic events",
+    "Documented Piksi duplicate-location bug",
+    "Cub107 RTK status is zero for all 973 points; centimeter precision cannot be assumed",
+    "Edge038 has no delivered RTK-status field",
+    "Data arrays are processed incident pressure and relative NED positions; MAT creation timestamps are processing times"
+  ],
+  "archive_files_missing_from_workbook": [
+    "data/cub_flyover_110.mat",
+    "data/edge_flyover_041.mat"
+  ],
+  "workbook_ids_without_archive_member": [
+    [
+      "cub",
+      109
+    ]
+  ],
+  "raw_source_files_committed": false,
+  "localization_performed": false
+}

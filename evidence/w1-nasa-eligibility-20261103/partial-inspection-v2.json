@@ -1,0 +1,1532 @@
+{
+  "source": "https://data.nasa.gov/docs/datasets/rfk401li/small_uav_acoustics.zip",
+  "archive_bytes": 1693926297,
+  "inventory": [
+    {
+      "name": "data/cub_flyover_107.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 4138246478,
+      "compressed_bytes": 41286042,
+      "bytes": 41935404,
+      "local_header_offset": 0
+    },
+    {
+      "name": "data/cub_flyover_108.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 66459042,
+      "compressed_bytes": 40196650,
+      "bytes": 40829018,
+      "local_header_offset": 41286096
+    },
+    {
+      "name": "data/cub_flyover_110.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3906449869,
+      "compressed_bytes": 40645966,
+      "bytes": 41264914,
+      "local_header_offset": 81482800
+    },
+    {
+      "name": "data/edge_flyover_038.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 675747916,
+      "compressed_bytes": 35240783,
+      "bytes": 35247930,
+      "local_header_offset": 122128820
+    },
+    {
+      "name": "data/edge_flyover_040.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 48570446,
+      "compressed_bytes": 36652213,
+      "bytes": 36660057,
+      "local_header_offset": 157369658
+    },
+    {
+      "name": "data/edge_flyover_041.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3217041906,
+      "compressed_bytes": 35777305,
+      "bytes": 35784928,
+      "local_header_offset": 194021926
+    },
+    {
+      "name": "data/edge_flyover_043.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 904496179,
+      "compressed_bytes": 34644273,
+      "bytes": 34652424,
+      "local_header_offset": 229799286
+    },
+    {
+      "name": "data/edge_flyover_045.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1596019822,
+      "compressed_bytes": 33557874,
+      "bytes": 33565607,
+      "local_header_offset": 264443614
+    },
+    {
+      "name": "data/edge_flyover_050.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2334487173,
+      "compressed_bytes": 35237276,
+      "bytes": 35245264,
+      "local_header_offset": 298001543
+    },
+    {
+      "name": "data/edge_flyover_051.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2997841044,
+      "compressed_bytes": 35597006,
+      "bytes": 35605412,
+      "local_header_offset": 333238874
+    },
+    {
+      "name": "data/edge_flyover_053.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 4027964901,
+      "compressed_bytes": 32639339,
+      "bytes": 32645825,
+      "local_header_offset": 368835935
+    },
+    {
+      "name": "data/edge_flyover_054.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3268037494,
+      "compressed_bytes": 35412268,
+      "bytes": 35420110,
+      "local_header_offset": 401475329
+    },
+    {
+      "name": "data/edge_flyover_058.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3275698560,
+      "compressed_bytes": 34234377,
+      "bytes": 34243415,
+      "local_header_offset": 436887652
+    },
+    {
+      "name": "data/edge_flyover_059.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3441539489,
+      "compressed_bytes": 35413161,
+      "bytes": 35420801,
+      "local_header_offset": 471122084
+    },
+    {
+      "name": "data/edge_flyover_065.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2862938474,
+      "compressed_bytes": 25243753,
+      "bytes": 25249619,
+      "local_header_offset": 506535300
+    },
+    {
+      "name": "data/edge_flyover_066.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3753031049,
+      "compressed_bytes": 33598144,
+      "bytes": 33606044,
+      "local_header_offset": 531779108
+    },
+    {
+      "name": "data/hex_flyover_200.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 903790541,
+      "compressed_bytes": 14109208,
+      "bytes": 14189763,
+      "local_header_offset": 565377307
+    },
+    {
+      "name": "data/hex_flyover_201.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3002845688,
+      "compressed_bytes": 14347857,
+      "bytes": 14427493,
+      "local_header_offset": 579486569
+    },
+    {
+      "name": "data/hex_flyover_202.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 546118180,
+      "compressed_bytes": 15569058,
+      "bytes": 15668445,
+      "local_header_offset": 593834480
+    },
+    {
+      "name": "data/hex_flyover_203.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1525122971,
+      "compressed_bytes": 12660446,
+      "bytes": 12733779,
+      "local_header_offset": 609403592
+    },
+    {
+      "name": "data/hex_flyover_204.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2650919424,
+      "compressed_bytes": 12404328,
+      "bytes": 12468390,
+      "local_header_offset": 622064092
+    },
+    {
+      "name": "data/hex_flyover_205.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2155325638,
+      "compressed_bytes": 10621872,
+      "bytes": 10679335,
+      "local_header_offset": 634468474
+    },
+    {
+      "name": "data/hex_flyover_206.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 369704061,
+      "compressed_bytes": 9067957,
+      "bytes": 9138835,
+      "local_header_offset": 645090400
+    },
+    {
+      "name": "data/hex_flyover_207.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2686359754,
+      "compressed_bytes": 12084669,
+      "bytes": 12156717,
+      "local_header_offset": 654158411
+    },
+    {
+      "name": "data/hex_flyover_209.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3616979040,
+      "compressed_bytes": 22060805,
+      "bytes": 22252570,
+      "local_header_offset": 666243134
+    },
+    {
+      "name": "data/hex_flyover_210.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3215576336,
+      "compressed_bytes": 14225156,
+      "bytes": 14341693,
+      "local_header_offset": 688303993
+    },
+    {
+      "name": "data/hex_flyover_211.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1373706332,
+      "compressed_bytes": 15267285,
+      "bytes": 15378224,
+      "local_header_offset": 702529203
+    },
+    {
+      "name": "data/hex_flyover_214.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3223607156,
+      "compressed_bytes": 11298803,
+      "bytes": 11390169,
+      "local_header_offset": 717796542
+    },
+    {
+      "name": "data/hex_flyover_215.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 282752486,
+      "compressed_bytes": 16609594,
+      "bytes": 16764458,
+      "local_header_offset": 729095399
+    },
+    {
+      "name": "data/hex_flyover_216.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2783692340,
+      "compressed_bytes": 10286696,
+      "bytes": 10381160,
+      "local_header_offset": 745705047
+    },
+    {
+      "name": "data/hex_hover_030.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3844845029,
+      "compressed_bytes": 12385571,
+      "bytes": 12566151,
+      "local_header_offset": 755991797
+    },
+    {
+      "name": "data/hex_hover_031.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2299273231,
+      "compressed_bytes": 13813362,
+      "bytes": 14015376,
+      "local_header_offset": 768377420
+    },
+    {
+      "name": "data/hex_hover_032.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 945280437,
+      "compressed_bytes": 13149253,
+      "bytes": 13342424,
+      "local_header_offset": 782190834
+    },
+    {
+      "name": "data/hex_hover_033.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1006780609,
+      "compressed_bytes": 12905598,
+      "bytes": 13108757,
+      "local_header_offset": 795340139
+    },
+    {
+      "name": "data/hex_hover_036.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2045262183,
+      "compressed_bytes": 14571642,
+      "bytes": 14789346,
+      "local_header_offset": 808245789
+    },
+    {
+      "name": "data/hex_hover_194.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2440505888,
+      "compressed_bytes": 19521763,
+      "bytes": 19599118,
+      "local_header_offset": 822817483
+    },
+    {
+      "name": "data/hex_hover_195.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1350773970,
+      "compressed_bytes": 13058017,
+      "bytes": 13106525,
+      "local_header_offset": 842339298
+    },
+    {
+      "name": "data/hex_hover_196.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 530089652,
+      "compressed_bytes": 14200642,
+      "bytes": 14245826,
+      "local_header_offset": 855397367
+    },
+    {
+      "name": "data/hex_hover_197.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1060464260,
+      "compressed_bytes": 13116572,
+      "bytes": 13163008,
+      "local_header_offset": 869598061
+    },
+    {
+      "name": "data/hex_hover_198.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 381000961,
+      "compressed_bytes": 12669951,
+      "bytes": 12717947,
+      "local_header_offset": 882714685
+    },
+    {
+      "name": "data/phantom_flyover_120.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 671240600,
+      "compressed_bytes": 36306372,
+      "bytes": 36311040,
+      "local_header_offset": 895384688
+    },
+    {
+      "name": "data/phantom_flyover_121.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2737926334,
+      "compressed_bytes": 35915041,
+      "bytes": 35919681,
+      "local_header_offset": 931691118
+    },
+    {
+      "name": "data/phantom_flyover_122.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1071268541,
+      "compressed_bytes": 35917262,
+      "bytes": 35922394,
+      "local_header_offset": 967606217
+    },
+    {
+      "name": "data/phantom_flyover_123.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 547872464,
+      "compressed_bytes": 36094372,
+      "bytes": 36098737,
+      "local_header_offset": 1003523537
+    },
+    {
+      "name": "data/phantom_flyover_124.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1572176002,
+      "compressed_bytes": 36535989,
+      "bytes": 36540368,
+      "local_header_offset": 1039617967
+    },
+    {
+      "name": "data/phantom_flyover_125.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3847568808,
+      "compressed_bytes": 36112834,
+      "bytes": 36117349,
+      "local_header_offset": 1076154014
+    },
+    {
+      "name": "data/phantom_hover_115.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2837628288,
+      "compressed_bytes": 37201365,
+      "bytes": 37205330,
+      "local_header_offset": 1112266906
+    },
+    {
+      "name": "data/phantom_hover_116.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 945255954,
+      "compressed_bytes": 37616645,
+      "bytes": 37621195,
+      "local_header_offset": 1149468327
+    },
+    {
+      "name": "data/phantom_hover_117.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1955451081,
+      "compressed_bytes": 37424834,
+      "bytes": 37428898,
+      "local_header_offset": 1187085028
+    },
+    {
+      "name": "data/phantom_hover_118.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 827479561,
+      "compressed_bytes": 37083918,
+      "bytes": 37088609,
+      "local_header_offset": 1224509918
+    },
+    {
+      "name": "data/phantom_hover_119.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3428765979,
+      "compressed_bytes": 36572036,
+      "bytes": 36576497,
+      "local_header_offset": 1261593892
+    },
+    {
+      "name": "data/y6_hover_200.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 232448159,
+      "compressed_bytes": 29628621,
+      "bytes": 29631738,
+      "local_header_offset": 1298165984
+    },
+    {
+      "name": "data/y6_hover_201.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3022653976,
+      "compressed_bytes": 36330421,
+      "bytes": 36334021,
+      "local_header_offset": 1327794656
+    },
+    {
+      "name": "data/y6_hover_202.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 827985376,
+      "compressed_bytes": 36418481,
+      "bytes": 36422131,
+      "local_header_offset": 1364125128
+    },
+    {
+      "name": "data/y6_hover_203.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 814812052,
+      "compressed_bytes": 36985405,
+      "bytes": 36989002,
+      "local_header_offset": 1400543660
+    },
+    {
+      "name": "data/y6_hover_204.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2516464869,
+      "compressed_bytes": 38315873,
+      "bytes": 38319451,
+      "local_header_offset": 1437529116
+    },
+    {
+      "name": "data/y6_hover_205.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2309146727,
+      "compressed_bytes": 35738125,
+      "bytes": 35742734,
+      "local_header_offset": 1475845040
+    },
+    {
+      "name": "data/y6_hover_206.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2574093200,
+      "compressed_bytes": 36574346,
+      "bytes": 36579442,
+      "local_header_offset": 1511583216
+    },
+    {
+      "name": "data/y6_hover_207.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 851034349,
+      "compressed_bytes": 36273108,
+      "bytes": 36278003,
+      "local_header_offset": 1548157613
+    },
+    {
+      "name": "data/y6_hover_208.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 1633986134,
+      "compressed_bytes": 36313212,
+      "bytes": 36318195,
+      "local_header_offset": 1584430772
+    },
+    {
+      "name": "data/y6_hover_209.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 290757199,
+      "compressed_bytes": 36438429,
+      "bytes": 36443032,
+      "local_header_offset": 1620744035
+    },
+    {
+      "name": "data/y6_hover_210.mat",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2163517910,
+      "compressed_bytes": 36347290,
+      "bytes": 36351655,
+      "local_header_offset": 1657182515
+    },
+    {
+      "name": "Data Description 20160203.pdf",
+      "flags": 0,
+      "method": 8,
+      "crc32": 270991253,
+      "compressed_bytes": 375600,
+      "bytes": 401599,
+      "local_header_offset": 1693529856
+    },
+    {
+      "name": "example mfiles/gps_audio_playback.m",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3853513519,
+      "compressed_bytes": 2438,
+      "bytes": 6416,
+      "local_header_offset": 1693905515
+    },
+    {
+      "name": "example mfiles/groundtrack_playback.m",
+      "flags": 0,
+      "method": 8,
+      "crc32": 2441135095,
+      "compressed_bytes": 2653,
+      "bytes": 6979,
+      "local_header_offset": 1693908018
+    },
+    {
+      "name": "example mfiles/piksi_cleanup.m",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3047069077,
+      "compressed_bytes": 256,
+      "bytes": 448,
+      "local_header_offset": 1693910738
+    },
+    {
+      "name": "Flight Number Description.xlsx",
+      "flags": 0,
+      "method": 8,
+      "crc32": 3779033274,
+      "compressed_bytes": 10436,
+      "bytes": 13121,
+      "local_header_offset": 1693911054
+    }
+  ],
+  "selection": "All companions; optional first lexical member for each fixed-wing vehicle",
+  "files": [
+    {
+      "name": "Data Description 20160203.pdf",
+      "bytes": 401599,
+      "sha256": "3ef008c89261b34d0486d7f4eef972eb544e75980732b02b8c1dadc60331dae9",
+      "crc32_verified": true,
+      "acquisition": "verified_existing_member"
+    },
+    {
+      "name": "example mfiles/gps_audio_playback.m",
+      "bytes": 6416,
+      "sha256": "f52a31b801008ce69baab473202f839b1c6a992210590dc74336730173a1ccee",
+      "crc32_verified": true,
+      "acquisition": "verified_existing_member"
+    },
+    {
+      "name": "example mfiles/groundtrack_playback.m",
+      "bytes": 6979,
+      "sha256": "e95ff5c66fc7634b4d462895af265a31bcdd07f05ccf5f58869a75131edd508b",
+      "crc32_verified": true,
+      "acquisition": "public_range_download"
+    },
+    {
+      "name": "example mfiles/piksi_cleanup.m",
+      "bytes": 448,
+      "sha256": "e91b008a6423e4eb7280e67574f7d9d33f323e33c4df0e93815cfbbe6ab66990",
+      "crc32_verified": true,
+      "acquisition": "public_range_download"
+    },
+    {
+      "name": "Flight Number Description.xlsx",
+      "bytes": 13121,
+      "sha256": "47a026d0468d7ecaa64ff8532e3b5ad75428f1bd3a7b505fdee0fbd957050167",
+      "crc32_verified": true,
+      "acquisition": "public_range_download",
+      "sheets": {
+        "SimpleSheet": [
+          [
+            "Flight #",
+            "Vehicle",
+            "Nominal AGL (m)",
+            "Condition",
+            "Nominal speed (m/s)",
+            "Notes"
+          ],
+          [
+            107,
+            "Cub",
+            10,
+            "cruise",
+            25,
+            "pilot descending towards mics under low power - not ideal flight trajectory"
+          ],
+          [
+            108,
+            "Cub",
+            10,
+            "cruise",
+            25,
+            "\""
+          ],
+          [
+            109,
+            "Cub",
+            10,
+            "cruise",
+            22,
+            "\""
+          ],
+          [
+            38,
+            "Edge",
+            20,
+            "cruise",
+            25,
+            null
+          ],
+          [
+            40,
+            "Edge",
+            25,
+            "cruise",
+            25,
+            "jets, birds in bg"
+          ],
+          [
+            43,
+            "Edge",
+            20,
+            "cruise",
+            30,
+            null
+          ],
+          [
+            45,
+            "Edge",
+            20,
+            "cruise",
+            25,
+            "some jet in bg"
+          ],
+          [
+            50,
+            "Edge",
+            45,
+            "cruise",
+            30,
+            "jet, birds after flyover"
+          ],
+          [
+            51,
+            "Edge",
+            20,
+            "cruise",
+            25,
+            null
+          ],
+          [
+            53,
+            "Edge",
+            20,
+            "cruise",
+            25,
+            null
+          ],
+          [
+            54,
+            "Edge",
+            20,
+            "cruise",
+            22,
+            null
+          ],
+          [
+            58,
+            "Edge",
+            20,
+            "cruise",
+            22,
+            null
+          ],
+          [
+            59,
+            "Edge",
+            25,
+            "cruise",
+            25,
+            null
+          ],
+          [
+            65,
+            "Edge",
+            100,
+            "high speed",
+            40,
+            "high speed pass, propeller plane in bg at start"
+          ],
+          [
+            66,
+            "Edge",
+            75,
+            "high speed",
+            40,
+            "high speed pass"
+          ],
+          [
+            200,
+            "Hex",
+            10,
+            "flyover",
+            8,
+            null
+          ],
+          [
+            201,
+            "Hex",
+            10,
+            "flyover",
+            9,
+            null
+          ],
+          [
+            202,
+            "Hex",
+            4,
+            "flyover",
+            10,
+            null
+          ],
+          [
+            203,
+            "Hex",
+            5,
+            "flyover",
+            10,
+            null
+          ],
+          [
+            204,
+            "Hex",
+            3,
+            "flyover",
+            12,
+            null
+          ],
+          [
+            205,
+            "Hex",
+            3,
+            "flyover",
+            14,
+            "boom near beginning"
+          ],
+          [
+            206,
+            "Hex",
+            3,
+            "flyover",
+            16,
+            null
+          ],
+          [
+            207,
+            "Hex",
+            8,
+            "flyover",
+            8,
+            "flare to landing"
+          ],
+          [
+            209,
+            "Hex",
+            12,
+            "flyover",
+            5,
+            null
+          ],
+          [
+            210,
+            "Hex",
+            12,
+            "flyover",
+            8,
+            null
+          ],
+          [
+            211,
+            "Hex",
+            8,
+            "flyover",
+            9,
+            null
+          ],
+          [
+            214,
+            "Hex",
+            25,
+            "flyover",
+            15,
+            null
+          ],
+          [
+            215,
+            "Hex",
+            20,
+            "flyover",
+            10,
+            null
+          ],
+          [
+            216,
+            "Hex",
+            18,
+            "flyover",
+            16,
+            null
+          ],
+          [
+            30,
+            "Hex",
+            2,
+            "hover",
+            0,
+            null
+          ],
+          [
+            31,
+            "Hex",
+            5,
+            "hover",
+            0,
+            null
+          ],
+          [
+            32,
+            "Hex",
+            12,
+            "hover",
+            0,
+            null
+          ],
+          [
+            33,
+            "Hex",
+            30,
+            "hover",
+            0,
+            null
+          ],
+          [
+            36,
+            "Hex",
+            5,
+            "hover",
+            0,
+            null
+          ],
+          [
+            194,
+            "Hex",
+            1.5,
+            "hover",
+            0,
+            null
+          ],
+          [
+            195,
+            "Hex",
+            4,
+            "hover",
+            0,
+            null
+          ],
+          [
+            196,
+            "Hex",
+            6,
+            "hover",
+            0,
+            null
+          ],
+          [
+            197,
+            "Hex",
+            15,
+            "hover",
+            0,
+            "position and noise character changes over last 10 seconds"
+          ],
+          [
+            198,
+            "Hex",
+            32,
+            "hover",
+            0,
+            null
+          ],
+          [
+            120,
+            "Phantom",
+            4,
+            "flyover",
+            4,
+            null
+          ],
+          [
+            121,
+            "Phantom",
+            10,
+            "flyover",
+            5,
+            "two flyovers, some jet rumble"
+          ],
+          [
+            122,
+            "Phantom",
+            10,
+            "flyover",
+            5,
+            "two flyovers, some jet rumble or low freq helicopter audible "
+          ],
+          [
+            123,
+            "Phantom",
+            10,
+            "flyover",
+            6,
+            "rumble "
+          ],
+          [
+            124,
+            "Phantom",
+            10,
+            "flyover",
+            6,
+            "helicopter audible during most of flyover"
+          ],
+          [
+            125,
+            "Phantom",
+            12,
+            "flyover",
+            5,
+            "helicopter audible during most of flyover"
+          ],
+          [
+            115,
+            "Phantom",
+            6,
+            "hover",
+            0,
+            "changes character at t=10 and t=55"
+          ],
+          [
+            116,
+            "Phantom",
+            6,
+            "hover",
+            0,
+            "settles into spot at t=20, holds until t=45"
+          ],
+          [
+            117,
+            "Phantom",
+            10,
+            "hover",
+            0,
+            "settles in at t=20ish, moves again at t=40 to AGL of 12"
+          ],
+          [
+            118,
+            "Phantom",
+            12,
+            "hover",
+            0,
+            "overlaps with 117; settles in at t=15, wanders at t=45. odd buffeting sounds t=30-40"
+          ],
+          [
+            119,
+            "Phantom",
+            18,
+            "hover",
+            0,
+            "settles in at t=15s, holds until t=50"
+          ],
+          [
+            200,
+            "Y6",
+            0,
+            "hover",
+            0,
+            "no gps, takeoff, flyover, unsteady hover at first, steadies out for last 10 seconds"
+          ],
+          [
+            201,
+            "Y6",
+            0,
+            "hover",
+            0,
+            "no gps; unsteady hover until t=20, then steady for 10 seconds; tractor audible?"
+          ],
+          [
+            202,
+            "Y6",
+            0,
+            "hover",
+            0,
+            "no gps; overlap with 201; steady hover after tractor for 20 seconds"
+          ],
+          [
+            203,
+            "Y6",
+            0,
+            "hover",
+            0,
+            "no gps; steady after t=20; chopping sound; move to new height for last 10 s"
+          ],
+          [
+            204,
+            "Y6",
+            10,
+            "hover",
+            3,
+            "interesting flight - lots of movement, lots of varying sound; pilot having trouble?"
+          ],
+          [
+            205,
+            "Y6",
+            10,
+            "hover",
+            0,
+            "takeoff at t=15; jet in bg throughout; settle in at t=35; hold until t=55"
+          ],
+          [
+            206,
+            "Y6",
+            12,
+            "hover",
+            0,
+            "steady until t=30; new altitude at t=45"
+          ],
+          [
+            207,
+            "Y6",
+            12,
+            "hover",
+            0,
+            "steady at t=20 until t=35, move to mic, steady for last 5 seconds"
+          ],
+          [
+            208,
+            "Y6",
+            12,
+            "hover",
+            0,
+            "overlap with 207; steady at t=45"
+          ],
+          [
+            209,
+            "Y6",
+            12,
+            "hover",
+            0,
+            "steady at t=15 until t=40"
+          ],
+          [
+            210,
+            "Y6",
+            16,
+            "hover",
+            0,
+            "steady at t=15 until t=35; lots of variation after t=45"
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "name": "data/cub_flyover_107.mat",
+      "bytes": 41935404,
+      "sha256": "908ba29a68891fb6cb13087cbea9caf74f8385082d78842e1b91165e174365df",
+      "crc32_verified": true,
+      "acquisition": "public_range_download",
+      "mat_variables": [
+        [
+          "acoustics",
+          [
+            1,
+            1
+          ],
+          "struct"
+        ],
+        [
+          "vehicle_data",
+          [
+            1,
+            1
+          ],
+          "struct"
+        ],
+        [
+          "met_data",
+          [
+            1,
+            1
+          ],
+          "struct"
+        ]
+      ],
+      "metadata": {
+        "acoustics": {
+          "incident_pascals": {
+            "shape": [
+              1964032,
+              4
+            ],
+            "dtype": "float64",
+            "finite_count": 7856128,
+            "min": -2.090225126415477,
+            "max": 2.964564621636911
+          },
+          "mic_ned_meters": {
+            "shape": [
+              4,
+              3
+            ],
+            "dtype": "float64",
+            "finite_count": 12,
+            "min": -30.511,
+            "max": 15.279
+          },
+          "utc_time": {
+            "shape": [
+              1964032
+            ],
+            "dtype": "float64",
+            "finite_count": 1964032,
+            "min": 62795.07585,
+            "max": 62893.27648617569,
+            "first": 62795.07585,
+            "last": 62893.27648617569,
+            "step_min": 4.999747034162283e-05,
+            "step_max": 5.0000016926787794e-05,
+            "step_median": 5.0000002374872565e-05
+          },
+          "origin": "mic1"
+        },
+        "vehicle_data": {
+          "rtk_utc_time": {
+            "shape": [
+              973
+            ],
+            "dtype": "float64",
+            "finite_count": 973,
+            "min": 62792.0,
+            "max": 62896.3,
+            "first": 62792.0,
+            "last": 62896.3,
+            "step_min": 0.0996309999973164,
+            "step_max": 1.90005000000383,
+            "step_median": 0.09999999999854481
+          },
+          "rtk_ned_meters": {
+            "shape": [
+              973,
+              3
+            ],
+            "dtype": "float64",
+            "finite_count": 2919,
+            "min": -654.2963539622741,
+            "max": 405.85764603772594
+          },
+          "rtk_status": {
+            "shape": [
+              973
+            ],
+            "dtype": "uint8",
+            "finite_count": 973,
+            "min": 0.0,
+            "max": 0.0,
+            "first": 0.0,
+            "last": 0.0,
+            "step_min": 0.0,
+            "step_max": 0.0,
+            "step_median": 0.0
+          },
+          "gps_utc_time": {
+            "shape": [
+              523
+            ],
+            "dtype": "float64",
+            "finite_count": 523,
+            "min": 62792.0,
+            "max": 62896.4,
+            "first": 62792.0,
+            "last": 62896.4,
+            "step_min": 0.19999999999708962,
+            "step_max": 0.20000000000436557,
+            "step_median": 0.19999999999708962
+          },
+          "gps_ned_meters": {
+            "shape": [
+              523,
+              3
+            ],
+            "dtype": "float64",
+            "finite_count": 1569,
+            "min": -658.0542174774173,
+            "max": 402.7353900285488
+          },
+          "origin": "mic1",
+          "attitude": {
+            "utc_time": {
+              "shape": [
+                5212
+              ],
+              "dtype": "float64",
+              "finite_count": 5212,
+              "min": 62792.057575757586,
+              "max": 62896.27900000001,
+              "first": 62792.057575757586,
+              "last": 62896.27900000001,
+              "step_min": 0.008955223878729157,
+              "step_max": 0.030150753766065463,
+              "step_median": 0.020000000004074536
+            },
+            "roll": {
+              "shape": [
+                5212
+              ],
+              "dtype": "float64",
+              "finite_count": 5212,
+              "min": -179.98,
+              "max": 179.98,
+              "first": -152.24,
+              "last": -153.21,
+              "step_min": -359.94,
+              "step_max": 359.91999999999996,
+              "step_median": 0.0
+            },
+            "pitch": {
+              "shape": [
+                5212
+              ],
+              "dtype": "float64",
+              "finite_count": 5212,
+              "min": -17.99,
+              "max": 30.67,
+              "first": 7.1,
+              "last": -17.82,
+              "step_min": -0.28999999999999915,
+              "step_max": 0.57,
+              "step_median": -0.009999999999999787
+            },
+            "yaw": {
+              "shape": [
+                5212
+              ],
+              "dtype": "float64",
+              "finite_count": 5212,
+              "min": 0.0,
+              "max": 359.98,
+              "first": 211.43,
+              "last": 337.21,
+              "step_min": -359.96000000000004,
+              "step_max": 359.97,
+              "step_median": 0.060000000000002274
+            }
+          }
+        },
+        "met_data": {
+          "utc_time": {
+            "shape": [
+              6
+            ],
+            "dtype": "uint16",
+            "finite_count": 6,
+            "min": 62700.0,
+            "max": 63000.0,
+            "first": 62700.0,
+            "last": 63000.0,
+            "step_min": 60.0,
+            "step_max": 60.0,
+            "step_median": 60.0
+          },
+          "temperature_celsius": {
+            "shape": [
+              6
+            ],
+            "dtype": "float64",
+            "finite_count": 6,
+            "min": 27.38888888888889,
+            "max": 27.83333333333333,
+            "first": 27.38888888888889,
+            "last": 27.83333333333333,
+            "step_min": 0.05555555555555358,
+            "step_max": 0.11111111111111427,
+            "step_median": 0.11111111111110361
+          },
+          "windspeed_knots": {
+            "shape": [
+              6
+            ],
+            "dtype": "float64",
+            "finite_count": 6,
+            "min": 1.73796,
+            "max": 4.3449,
+            "first": 4.3449,
+            "last": 1.73796,
+            "step_min": -1.7379600000000002,
+            "step_max": 0.8689800000000001,
+            "step_median": -0.8689799999999999
+          },
+          "wind_direction": {
+            "shape": [
+              6
+            ],
+            "dtype": "uint8",
+            "finite_count": 6,
+            "min": 6.0,
+            "max": 8.0,
+            "first": 7.0,
+            "last": 8.0,
+            "step_min": 0.0,
+            "step_max": 254.0,
+            "step_median": 1.0
+          }
+        }
+      }
+    }
+  ],
+  "script_sha256": "f78a7eec62ea9825e0dc198f4c369acabea42c9ccad00d385ef636ed599d285a",
+  "localization_performed": false,
+  "eligibility": "unproven; metadata inspection only",
+  "requests": [
+    {
+      "range": "bytes=-131072",
+      "content_range": "bytes 1693795225-1693926296/1693926297",
+      "bytes": 131072,
+      "sha256": "e16723e99f251d006f72d9700dce2772d8b43ab791e09fc47341628e2c93c6b1"
+    },
+    {
+      "range": "bytes=1693908018-1693908047",
+      "source": "verified_suffix",
+      "bytes": 30,
+      "sha256": "fb348bf572f7daf57f53046e98cbab78aaaa9915d8ffb06c3b865920c808224e"
+    },
+    {
+      "range": "bytes=1693908085-1693910737",
+      "source": "verified_suffix",
+      "bytes": 2653,
+      "sha256": "9105fd1e92e49f9aa8e359f9785323d1b39b5b8844f2f3b1a339519d870976eb"
+    },
+    {
+      "range": "bytes=1693910738-1693910767",
+      "source": "verified_suffix",
+      "bytes": 30,
+      "sha256": "3fb0474b004428bd9b6c7765bfdbddcbccbf555018925d04be392daf6d5ce2b5"
+    },
+    {
+      "range": "bytes=1693910798-1693911053",
+      "source": "verified_suffix",
+      "bytes": 256,
+      "sha256": "14cc10edcfdf21e06488a264b0ba8a8fa3d5759dabddb6f39077d0f623afbd9e"
+    },
+    {
+      "range": "bytes=1693911054-1693911083",
+      "source": "verified_suffix",
+      "bytes": 30,
+      "sha256": "2c6830ddee3ea504daddf7716fcaeb4e505ec9e0ed6e4f875104c7d0c0b5e60c"
+    },
+    {
+      "range": "bytes=1693911114-1693921549",
+      "source": "verified_suffix",
+      "bytes": 10436,
+      "sha256": "e884dcc92a1acf04547a552b6fff37c4b495c4e6b51890a3837fe6eaec22516c"
+    },
+    {
+      "range": "bytes=0-29",
+      "content_range": "bytes 0-29/1693926297",
+      "bytes": 30,
+      "sha256": "f3d57cb224caade8b34c1292f2f1452b5af7253fb71b948e6a5156ac2d622271"
+    },
+    {
+      "range": "bytes=54-41286095",
+      "content_range": "bytes 54-41286095/1693926297",
+      "bytes": 41286042,
+      "sha256": "0401653457390c010e4a7044206361d5879f8123d2ff0f5895d2a202e8ce13d1"
+    }
+  ],
+  "status": "partial"
+}

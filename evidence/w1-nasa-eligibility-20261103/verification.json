@@ -1,0 +1,14 @@
+{
+  "base_commit": "8cdb7ae",
+  "inspector_sha256": "178b5f773efda96e812c288d41af427ce203b68f8ca8af0fd32ea4a66f322f6c",
+  "inspection_complete": true,
+  "all_seven_selected_member_crc_checks_passed": true,
+  "all_downloaded_source_member_hashes_recorded": true,
+  "full_tests_passed": 219,
+  "subtests_passed": 6,
+  "test_seconds": 81.57,
+  "test_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/nasa-inspector-20261103/tests.xml",
+  "completed_command": ".venv/bin/python scripts/inspect_nasa_flyover_release.py --output results/nasa-2016-first-fixed-wing-20261103-v3 --first-fixed-wing --source-cache results/nasa-2016-first-fixed-wing-20261103-v2/source",
+  "source_inputs_committed": false,
+  "label_or_location_search_performed": false
+}

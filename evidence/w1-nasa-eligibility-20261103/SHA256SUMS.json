@@ -1,0 +1,13 @@
+{
+  "README.md": "9ce2aeea211c52bbe0c31eb27af210c42c03e1d91dcece0209e2f1a07d533197",
+  "complete-inspection.log": "ca4cf2f96b5df4fbb16e4a7a522261111eb819490e0d138c352f90138e38f3c0",
+  "eligibility.json": "6284acc89881049944240b2f1bbc4b7483b661ac3966b6fef89f96a80af37e30",
+  "first-network-failure.log": "e9f60429589d61dc2c8021cdcddff8a3fc4db23727876bc22003d903040515d7",
+  "inspector-v2.py": "f78a7eec62ea9825e0dc198f4c369acabea42c9ccad00d385ef636ed599d285a",
+  "partial-inspection-v2.json": "4c12d4c0d78e119fcde24f652d8a1a599cdb3702280bb48f9ff529ac6182e124",
+  "release-inspection.json": "12cad9895de7e412f8a5cb5d3a54b26ca3f55a015f0bb87c9fe3ccdf8d11c071",
+  "second-network-failure.log": "03545a5a117b596349ab9f7e518407bedfa68447d7fb5201f21b1b9652cec749",
+  "tests.log": "7f13a7a9f25eb0634f1f0f8b37f4be60a90bc02e9eead8fda944c32c3885f0b1",
+  "tests.xml": "a3a12619bc2c581de04115bf12156cf4ec5b65f75643e7fbd5d80e6825e14fc4",
+  "verification.json": "d8dbe496e045b58900d811b38d7a5438937a7547027676d7ef048f5d93f439c3"
+}
