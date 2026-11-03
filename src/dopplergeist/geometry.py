@@ -158,8 +158,12 @@ class Track:
             if np.any(derivative <= 0):
                 raise AcousticSupportError(self.id, "non_monotone_arrival")
             correction = (tau - t + distance / c) / derivative
-            tau = np.clip(tau - correction, start, end)
-            if np.max(np.abs(correction)) < 1e-7:
+            updated = np.clip(tau - correction, start, end)
+            unchanged = np.array_equal(tau, updated)
+            tau = updated
+            # A fixed point at Unix-epoch precision would repeat identically
+            # even when its unrounded correction exceeds the tolerance.
+            if np.max(np.abs(correction)) < 1e-7 or unchanged:
                 break
         delta = self.position(tau) - observer
         distance = np.linalg.norm(delta, axis=-1)
