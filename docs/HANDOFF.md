@@ -1,5 +1,29 @@
 # Implementation handoff
 
+## Current owner priority: optimization (November 3)
+
+Strengthen the cheap-to-expensive search hierarchy before further large national
+searches. Do not copy manually selected speed/distance bands into automatic
+discovery, or silently remove jets, single-event hypotheses or missing data.
+
+Two exploratory optimizations were tested and **not landed**, because the existing
+batch fit cache changed their performance benefit. On real automatic associations,
+early residual rejection reduced an uncached replay from about8.0–8.3s to5.75s,
+but a production-cache comparison was slower. Bounded acoustic-sample reuse cut
+101,955 retarded-time sample evaluations to4,259 and preserved all70 result rows
+exactly, but still made602 rather than609 acoustic calls and did not improve
+runtime consistently. Candidate elimination alone is not a measured speedup.
+The next concrete experiment is batching the shared-clock sample union before
+fitting, reducing function calls as well as sample count. Another available task
+is processing larger matched subsets first and pruning below Top-K using the
+certified score ceiling of one unit per matched group, while preserving finite
+mode bounds. No experimental screening/cache change was applied to production.
+
+The parallel [real-audio collection](REAL_AUDIO_CORPUS.md) has392 source records
+and18 completed scans; the requested20-known/5-unknown usable benchmark is still
+unmet. Its source table retains failures and negatives. No new corpus recordings
+were matched to flights or localized.
+
 The [swarm task plan](AGENT_TASKS.md) provides 12 actionable GitHub issues,
 dependencies, suggested agent allocation and a copyable assignment prompt.
 

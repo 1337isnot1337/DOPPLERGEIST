@@ -11,6 +11,8 @@ from scipy.interpolate import CubicHermiteSpline
 from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 
+_EMISSION_ITERATION_TOLERANCE_S = 1e-7
+
 
 class AcousticSupportError(ValueError):
     """A trajectory cannot support the assumed emission-time acoustic model."""
@@ -55,6 +57,9 @@ class Track:
         if not np.all(np.isfinite(np.column_stack((self.time, self.lat, self.lon, self.altitude)))):
             raise ValueError(f"{self.id}: nonfinite track data")
         self.xyz = ecef(self.lat, self.lon, self.altitude)
+        self._xyz_min = self.xyz.min(axis=0)
+        self._xyz_max = self.xyz.max(axis=0)
+        self._max_sample_gap = float(np.max(np.diff(self.time)))
         self.origin = self.time[0]
         self.relative_time = self.time - self.origin
         v = self.velocity
@@ -111,6 +116,26 @@ class Track:
             raise AcousticSupportError(self.id, "non_subsonic_motion",
                 emission_intervals_s=[[float(self.time[i]), float(self.time[i+1])] for i in indices])
 
+    def outside_observer_radius(self, observers, radius, c=343.0):
+        """Prove all observers are beyond a validated track's range.
+
+        Every instant lies at most half a native sample interval from one
+        endpoint. Subsonic speed therefore bounds each ECEF component's
+        displacement from an observed position by c * max_gap / 2. An axis
+        separation larger than the radius proves the entire cubic trajectory
+        and its sampled polyline cannot enter any observer's search sphere.
+        """
+        self.validate_motion_support(c)
+        if not np.isfinite(radius):
+            return False
+        scale = max(1.0, float(np.max(np.abs(self._xyz_min))),
+                    float(np.max(np.abs(self._xyz_max))), abs(radius), abs(c * self._max_sample_gap))
+        rounding = 64 * np.finfo(float).eps * scale
+        margin = c * self._max_sample_gap / 2 + rounding
+        lower = self._xyz_min - margin - radius - rounding
+        upper = self._xyz_max + margin + radius + rounding
+        return bool(np.all(np.any((observers < lower) | (observers > upper), axis=-1)))
+
     def _check_motion_support(self, receive_time, observer, c):
         """Reject possible arrivals from unsupported native emission intervals.
 
@@ -163,7 +188,7 @@ class Track:
             tau = updated
             # A fixed point at Unix-epoch precision would repeat identically
             # even when its unrounded correction exceeds the tolerance.
-            if np.max(np.abs(correction)) < 1e-7 or unchanged:
+            if np.max(np.abs(correction)) < _EMISSION_ITERATION_TOLERANCE_S or unchanged:
                 break
         delta = self.position(tau) - observer
         distance = np.linalg.norm(delta, axis=-1)
@@ -185,13 +210,28 @@ class Track:
         sample = np.unique(np.r_[np.arange(self.time[0], self.time[-1], step), self.time[-1]])
         range2 = np.sum((self.position(sample) - observer) ** 2, axis=-1)
         indices = find_peaks(-range2)[0]
+        brackets = [(sample[i-1], sample[i], sample[i+1]) for i in indices]
+        # find_peaks excludes the first and last sample. An interior minimum
+        # can nevertheless lie between an endpoint and its neighbour, while
+        # the endpoint is the smallest sampled range. Check the range-rate
+        # signs before optimizing those intervals; an endpoint itself is not
+        # evidence of a complete passage.
+        edges = []
+        if range2[0] <= range2[1]:
+            edges.append((sample[0], sample[1]))
+        if range2[-1] <= range2[-2] and (len(sample) > 2 or not edges):
+            edges.append((sample[-2], sample[-1]))
+        for lo, hi in edges:
+            t = np.array([lo, hi])
+            radial = np.sum((self.position(t) - observer) * self.speed_vector(t), axis=-1)
+            if radial[0] < 0 < radial[1]:
+                brackets.append((lo, lo, hi))
         events = []
-        for i in indices:
+        for lo, mid, hi in brackets:
             # Optimize relative time: scipy's absolute-time stopping term
             # is too loose when Unix timestamps are around 1.8 billion seconds.
-            mid = sample[i]
             result = minimize_scalar(lambda dt: np.sum((self.position(mid + dt) - observer) ** 2),
-                                     bounds=(sample[i - 1] - mid, sample[i + 1] - mid),
+                                     bounds=(lo - mid, hi - mid),
                                      method="bounded", options={"xatol": 0.001})
             t = mid + result.x
             distance = np.sqrt(result.fun)
@@ -200,7 +240,7 @@ class Track:
                                "receive_time": float(t + distance / c),
                                "distance_m": float(distance),
                                "speed_mps": float(np.linalg.norm(self.speed_vector(t)))})
-        return events
+        return sorted(events, key=lambda event: event["emission_time"])
 
 
 def straight_doppler(t_receive, f0, speed, slant, cpa_receive, c=343.0):
