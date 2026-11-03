@@ -103,8 +103,9 @@ used the Livermore city-area box (`-121.84, 37.65, -121.70, 37.73`), originally
 chosen before the inferred reference was calculated. Event windows, frequency
 bands, and flight IDs were not supplied to the upload.
 
-The job searched **12 of 12 tile pieces** and 1,754 grid points, refined its
-candidates, and returned **105 ordered results**. Its declared archive coverage
+The job searched **12 of 12 tile pieces** and 1,754 grid points with 250 m
+coarse spacing, refined its candidates at 100 m, and returned **105 ordered
+results**. Its declared archive coverage
 was complete for the requested region and time. The first five spatially
 distinct locations below are selected in score order with a minimum separation
 of 250 m; original ranks remain visible. Distances are to the inferred reference,
