@@ -725,7 +725,15 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     if type(workers) is not int or workers < 1:
         raise ValueError("workers must be a positive integer")
     workers = min(workers, total, budget.max_tiles or total)
-    parallel = workers > 1 and type(terrain) in (CachedTerrain, Terrain)
+    # GDAL virtual/in-memory datasets can be valid in the parent but cannot
+    # necessarily be reopened in a spawned process. Preserve the serial path
+    # for those inputs instead of turning a working search into a failed one.
+    explicit_rasters = list(terrain.rasters) if type(terrain) is Terrain else []
+    if type(terrain) is Terrain and terrain.geoid:
+        explicit_rasters.extend(terrain.geoid.rasters)
+    explicit_reopenable = (type(terrain) is Terrain and
+                           all(Path(raster.name).is_file() for raster in explicit_rasters))
+    parallel = workers > 1 and (type(terrain) is CachedTerrain or explicit_reopenable)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     manifest = output / "manifest.json"
