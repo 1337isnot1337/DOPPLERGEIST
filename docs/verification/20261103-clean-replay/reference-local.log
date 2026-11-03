@@ -1,0 +1,8 @@
+Event 1 {"f0_hz": 112.81240362365472, "speed_mps": 139.82647205037625, "slant_m": 6327.113877322653, "cpa_receive_s": 2155.715465159476, "rmse_hz": 0.24523476792758797, "frequency_drop_hz": 81.51551605448624, "optimizer_success": true, "ridge_contrast": 3.2461449989677975, "detected": true}
+Event 2 {"f0_hz": 129.50574483755855, "speed_mps": 112.18216306140553, "slant_m": 3601.2914750265, "cpa_receive_s": 3076.4377545704665, "rmse_hz": 0.6676534131936973, "frequency_drop_hz": 67.40183483868074, "optimizer_success": true, "ridge_contrast": 3.6201205573921102, "detected": true}
+Grid: 2525 points; 3587 trajectory segments
+Coarse filters: {'per_event_survivors': [10265, 17497], 'pairs_before_silence': 52, 'silence_rejected': 0, 'survivors': 52}
+Scoring filters: {'per_event_survivors': [1657, 2141], 'pairs_before_silence': 209, 'silence_rejected': 0, 'survivors': 209}
+Scored 100/209 candidates
+Scored 200/209 candidates
+Best: {"score": 5.608620381268417, "event_scores": [2.62630103588047, 2.982319345387947], "f0_hz": [112.4, 126.0], "recording_start_time_s": 1788898649.6620934, "time_adjustment_s": -0.5, "point_id": 41, "lat": 40.87693175890468, "lon": -73.52498229500986, "elev_m": -31.25569725036621, "x": 1861200.0, "y": 2206325.0, "flight_ids": ["a1dfeb:1", "ace391:3"]}
