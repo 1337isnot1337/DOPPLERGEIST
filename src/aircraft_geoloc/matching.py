@@ -4,10 +4,11 @@ Scores are penalized residuals, never probabilities. Geometry from a straight-pa
 audio fit is a proposal diagnostic, not a reliable exclusion bound for real tracks.
 """
 from dataclasses import dataclass
+from itertools import combinations, product
 
 import numpy as np
 from pyproj import Transformer
-from scipy.optimize import lsq_linear, minimize
+from scipy.optimize import minimize
 
 from .geometry import ecef
 
@@ -15,6 +16,102 @@ from .geometry import ecef
 @dataclass
 class RidgeTimes:
     time: np.ndarray
+
+
+def _frequency_scale(event):
+    quality = event.get("quality", {})
+    return quality.get("frequency_loss_scale_hz", quality.get("frequency_sigma_hz",
+                       max(1.0, quality.get("frequency_uncertainty_hz", 1.0))))
+
+
+def _source_fit(factor, u, y, weight, bounds, cap, scale):
+    """Exact two-variable box least squares; avoid iterative bounded solves."""
+    a = np.sum(weight*factor**2)
+    r = np.sum(weight*factor*y)
+    if not cap:
+        return np.array([np.clip(r/a, *bounds), 0.0])
+    b = np.sum(weight*factor**2*u)
+    prior = (2*scale/cap)**2
+    d = np.sum(weight*factor**2*u**2)+prior
+    s = np.sum(weight*factor*u*y)
+    determinant = a*d-b*b
+    unconstrained = np.array([(r*d-s*b)/determinant, (s*a-r*b)/determinant])
+    if bounds[0] <= unconstrained[0] <= bounds[1] and abs(unconstrained[1]) <= cap:
+        return unconstrained
+    # A convex quadratic's constrained minimum lies on one of these four edges.
+    candidates = np.array([[f, np.clip((s-b*f)/d, -cap, cap)] for f in bounds] +
+                          [[np.clip((r-b*drift)/a, *bounds), drift] for drift in (-cap, cap)])
+    residuals = factor*(candidates[:, :1]+candidates[:, 1:]*u)-y
+    costs = np.sum(weight*residuals**2, axis=1)+prior*candidates[:, 1]**2
+    return candidates[np.argmin(costs)]
+
+
+def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
+                           time_tolerance_s=5.0, silence=None, min_events=1,
+                           max_events=3, max_candidates=20000):
+    """Bounded subset hypotheses, retaining explicitly unmatched proposals.
+
+    Every subset within the declared maximum is considered; exceeding the work
+    budget fails explicitly so the outer search records incomplete coverage.
+    Geometry only proposes hypotheses. Acoustic scoring must reject poor fits.
+    """
+    from .search import filter_event
+    if not 1 <= min_events <= max_events or max_candidates < 1:
+        raise ValueError("Invalid association event/candidate budget")
+    filtered = [filter_event(table, e, time_origin, time_tolerance_s) for e in events]
+    grouped = [{p: frame.to_dict("records") for p, frame in f.groupby("point_id")} for f in filtered]
+    by_point = {p: frame for p, frame in table.groupby("point_id")}
+    candidates, examined = [], 0
+    for count in range(min(max_events, len(events)), min_events-1, -1):
+        for indices in combinations(range(len(events)), count):
+            common = set.intersection(*(set(grouped[i]) for i in indices))
+            for point_id in sorted(common):
+                for passes in product(*(grouped[i][point_id] for i in indices)):
+                    examined += 1
+                    if examined > max_candidates * 20:
+                        raise ValueError("Association work budget exceeded; search is incomplete")
+                    if len({(p["flight_id"], p["emission_time"]) for p in passes}) < count:
+                        continue
+                    starts = [p["receive_time"]-events[i]["cpa_receive_s"] for p, i in zip(passes, indices)]
+                    tolerance = [events[i].get("quality", {}).get("cpa_tolerance_s", 0)+offset_tolerance_s/2 for i in indices]
+                    lower = max(t-d for t, d in zip(starts, tolerance))
+                    upper = min(t+d for t, d in zip(starts, tolerance))
+                    if time_origin is not None:
+                        lower, upper = max(lower, time_origin-time_tolerance_s), min(upper, time_origin+time_tolerance_s)
+                    if lower > upper:
+                        continue
+                    if silence and count > 1:
+                        frame = by_point[point_id]
+                        margin = silence.get("edge_margin_s", 60)
+                        distance = max(p["distance_m"] for p in passes)*silence.get("distance_multiplier", 1)
+                        between = frame[(frame.receive_time > passes[0]["receive_time"]+margin) &
+                                        (frame.receive_time < passes[-1]["receive_time"]-margin) &
+                                        (frame.distance_m <= distance)]
+                        selected = {(p["flight_id"], p["emission_time"]) for p in passes}
+                        if any((r.flight_id, r.emission_time) not in selected for r in between.itertuples()):
+                            continue
+                    if len(candidates) >= max_candidates:
+                        raise ValueError("Association candidate budget exceeded; search is incomplete")
+                    candidates.append({"point_id": point_id, "passes": passes, "event_indices": list(indices),
+                                       "recording_start_bounds_s": [float(lower), float(upper)]})
+    return candidates, {"per_event_survivors": [len(f) for f in filtered], "survivors": len(candidates),
+                        "hypotheses_examined": examined, "max_matched_events": max_events,
+                        "unmatched_proposals_allowed": True}
+
+
+def association_score(result, events):
+    """Compare different matched subsets using bounded normalized support.
+
+    One well-fitted independent event contributes up to one unit. A poor event
+    invalidates that hypothesis; another subset can leave it unmatched. This is
+    a ranking heuristic, not a likelihood or a calibrated confidence statistic.
+    """
+    limits = [3 * _frequency_scale(e) for e in events]
+    losses = [-s for s in result["event_scores"]]
+    supported = all(np.isfinite(v) and v <= limit for v, limit in zip(losses, limits))
+    return dict(result, residual_score=result["score"],
+                score=float(sum(1-v/limit for v, limit in zip(losses, limits))) if supported else -np.inf,
+                score_kind="matched_group_support_minus_normalized_residual")
 
 
 def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
@@ -59,6 +156,7 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         start, end = min(e["start_s"] for e in members), max(e["end_s"] for e in members)
         center = float(reference.get("cpa_receive_s", (start + end) / 2))
         quality = dict(reference.get("quality", {}))
+        quality.setdefault("frequency_loss_scale_hz", _frequency_scale(reference))
         quality["cpa_tolerance_s"] = max(center - start, end - center)
         # A subsonic source gives f_source = f_received * (1 + v_radial/c).
         # These broad bounds are independent of an unreliable straight-pass fit.
@@ -101,21 +199,15 @@ def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
     span = max(float(np.ptp(emission)), 1e-9)
     u = (emission - (emission.min() + emission.max()) / 2) / span
     cap = float(np.clip(np.median(y / factor), *f0_bounds)) * drift_fraction
-    design = np.column_stack((factor, factor * u)) if cap else factor[:, None]
-    bounds = ([f0_bounds[0], -cap], [f0_bounds[1], cap]) if cap else ([f0_bounds[0]], [f0_bounds[1]])
     effective = w.copy()
     for _ in range(6):
-        matrix, target = design * np.sqrt(effective[:, None]), y * np.sqrt(effective)
-        if cap:
-            matrix = np.vstack((matrix, [0, 2 * sigma_hz / cap]))
-            target = np.r_[target, 0.0]
-        fit = lsq_linear(matrix, target, bounds=bounds, tol=1e-8)
-        residual = design @ fit.x - y
+        fit = _source_fit(factor, u, y, effective, f0_bounds, cap, sigma_hz)
+        residual = factor*(fit[0]+fit[1]*u)-y
         effective = w / np.sqrt(1 + (residual / sigma_hz) ** 2)
     loss = np.average(2 * sigma_hz**2 * (np.sqrt(1 + (residual / sigma_hz)**2) - 1), weights=w)
-    drift = float(fit.x[1]) if cap else 0.0
+    drift = float(fit[1])
     penalty = (2 * sigma_hz * drift / cap)**2 / independent_samples if cap else 0.0
-    return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit.x[0]),
+    return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit[0]),
             "source_drift_hz": drift, "source_drift_hz_s": drift / span,
             "drift_bound_hz": float(cap), "drift_at_bound": bool(cap and abs(drift) > 0.99 * cap),
             "rmse_hz": float(np.sqrt(np.average(residual**2, weights=w))),
@@ -132,7 +224,7 @@ def score_ridges(tracks, events, measurements, observer, recording_start_s, c=34
     for track, event, measurement in zip(tracks, events, measurements):
         quality = event.get("quality", {})
         diagnostics.append(fit_ridge(track, observer, measurement, recording_start_s,
-            event["f0_range_hz"], c, quality.get("frequency_sigma_hz", 1.0),
+            event["f0_range_hz"], c, _frequency_scale(event),
             quality.get("source_drift_fraction", 0.02)))
     return {"score": float(sum(d["score"] for d in diagnostics)),
             "event_scores": [d["score"] for d in diagnostics],
@@ -155,6 +247,9 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     x0, y0 = forward.transform(candidate["lon"], candidate["lat"])
     start = candidate["recording_start_time_s"]
     selected = [tracks[f] for f in candidate["flight_ids"]]
+    if "event_indices" in candidate:
+        events = [events[i] for i in candidate["event_indices"]]
+        measurements = [measurements[i] for i in candidate["event_indices"]]
     if radius_m <= 0 or clock_radius_s < 0 or 0.0 not in altitude_offsets_m:
         raise ValueError("Need positive spatial/nonnegative clock bounds and a nominal zero-altitude scenario")
     lower, upper = -clock_radius_s, clock_radius_s
@@ -179,6 +274,8 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
                                   start + dt, c)
+            if "event_indices" in candidate:
+                score = association_score(score, events)
             return score, lat, lon, elevation
         def objective(parameters):
             value = evaluate(parameters)[0]["score"]
@@ -210,4 +307,80 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
                 sensitivity={"radius_m": radius, "kind": "sensitivity",
                     "method": "profiled_relative_altitude_offsets",
                     "profiles": profiles, "boundary_limited": any(p["boundary_limited"] for p in profiles),
-                    "complete": len(profiles) == len(altitude_offsets_m)})
+                    "complete": len(profiles) == len(altitude_offsets_m) and all(p["optimizer_success"] for p in profiles)})
+
+
+def profile_candidate(candidate, tracks, events, measurements, terrain, *,
+                      recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
+                      altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
+                      c=343.0, crs="EPSG:5070"):
+    """Run declared perturbations, retaining failures and boundary limitations.
+
+    These finite engineering scenarios are not a calibrated confidence region.
+    Frequency offsets and tilts vary each matched ridge separately. Shared-clock
+    endpoints, relative height, sound speed and constant-source alternatives are
+    reoptimized; no scenario may leave the trusted recording-start window.
+    """
+    if altitude_uncertainty_m < 0 or not 0 <= sound_speed_uncertainty_mps < c:
+        raise ValueError("Sensitivity ranges must be nonnegative and sound speed must remain positive")
+    kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
+                  altitude_offsets_m=(0.0,), crs=crs, c=c,
+                  recording_start_window_s=recording_start_window_s)
+    nominal = refine_candidate(candidate, tracks, events, measurements, terrain, **kwargs)
+    scenarios = [("nominal", "nominal", events, measurements, {})]
+    for sign in (-1, 1):
+        scenarios.append(("altitude", f"height_{sign:+d}", events, measurements,
+                          {"altitude_offsets_m": (0.0, sign*altitude_uncertainty_m)}))
+        scenarios.append(("sound_speed", f"sound_speed_{sign:+d}", events, measurements,
+                          {"c": c+sign*sound_speed_uncertainty_mps}))
+    indices = candidate.get("event_indices", list(range(len(events))))
+    for index in indices:
+        spec, ridge, weight, fit = measurements[index]
+        times = np.asarray(spec.time)
+        tilt = 2*(times-(times.min()+times.max())/2)/max(float(np.ptp(times)), 1e-9)
+        scale = _frequency_scale(events[index])
+        for pattern, shape in (("offset", np.ones_like(times)), ("tilt", tilt)):
+            for sign in (-1, 1):
+                changed = list(measurements)
+                changed[index] = (spec, np.asarray(ridge)+sign*scale*shape, weight, fit)
+                scenarios.append(("frequency", f"event_{index}_{pattern}_{sign:+d}", events, changed, {}))
+    constant = [dict(e, quality=dict(e.get("quality", {}), source_drift_fraction=0.0)) for e in events]
+    scenarios.append(("source_frequency", "constant_source", constant, measurements, {}))
+    lo, hi = nominal["refinement_clock_bounds_s"]
+    # A trusted point window is tested exactly; it is never perturbed outward.
+    for when in sorted(set((lo, hi))):
+        scenarios.append(("clock", f"fixed_clock_{when:.6f}", events, measurements,
+                          {"recording_start_window_s": (when, when)}))
+    profiles, failures = [], []
+    center = ecef(nominal["lat"], nominal["lon"], 0)
+    radius = 0.0
+    boundary = False
+    for source, label, scenario_events, scenario_measurements, overrides in scenarios:
+        try:
+            row = nominal if source == "nominal" else refine_candidate(candidate, tracks,
+                scenario_events, scenario_measurements, terrain, **dict(kwargs, **overrides))
+            # Height scenarios return a nominal plus the perturbed-height fit;
+            # retain the latter rather than silently measuring the nominal twice.
+            variants = row["sensitivity"]["profiles"] if source == "altitude" else [row]
+            for variant in variants:
+                displacement = float(np.linalg.norm(ecef(variant["lat"], variant["lon"], 0)-center))
+                radius = max(radius, displacement)
+                boundary |= variant["boundary_limited"]
+                profiles.append({"source": source, "scenario": label,
+                    "lat": variant["lat"], "lon": variant["lon"], "score": variant["score"],
+                    "recording_start_time_s": variant["recording_start_time_s"],
+                    "displacement_m": displacement, "boundary_limited": variant["boundary_limited"],
+                    "optimizer_success": variant["optimizer_success"]})
+            if not row["sensitivity"]["complete"]:
+                failures.append({"source": source, "scenario": label, "reason": "Missing altitude scenario support"})
+        except ValueError as exc:
+            failures.append({"source": source, "scenario": label, "reason": str(exc)})
+    sensitivity = {"radius_m": radius, "kind": "sensitivity", "method": "declared_perturbation_profiles",
+        "sources": sorted({s[0] for s in scenarios if s[0] != "nominal"}),
+        "complete": not failures and all(p["optimizer_success"] for p in profiles),
+        "boundary_limited": bool(boundary), "profiles": profiles, "failures": failures,
+        "settings": {"altitude_uncertainty_m": altitude_uncertainty_m,
+                     "sound_speed_uncertainty_mps": sound_speed_uncertainty_mps,
+                     "frequency_scale_hz": [_frequency_scale(events[i]) for i in indices],
+                     "clock_bounds_s": [lo, hi]}}
+    return dict(nominal, sensitivity=sensitivity)
