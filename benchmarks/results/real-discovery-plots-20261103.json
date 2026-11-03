@@ -1,0 +1,63 @@
+{
+  "baseline": {
+    "trials": [
+      {
+        "wall_s": 4.463220791999447,
+        "cpu_s": 4.383185833000001
+      },
+      {
+        "wall_s": 4.403667614000369,
+        "cpu_s": 4.401537119999999
+      },
+      {
+        "wall_s": 4.081281009000122,
+        "cpu_s": 4.070385219000002
+      }
+    ],
+    "median_wall_s": 4.403667614000369,
+    "median_cpu_s": 4.383185833000001
+  },
+  "current": {
+    "trials": [
+      {
+        "wall_s": 3.3099670270003116,
+        "cpu_s": 3.3087660770000005
+      },
+      {
+        "wall_s": 3.27719621200049,
+        "cpu_s": 3.2770203450000004
+      },
+      {
+        "wall_s": 3.101882871000271,
+        "cpu_s": 3.100890203999999
+      }
+    ],
+    "median_wall_s": 3.27719621200049,
+    "median_cpu_s": 3.2770203450000004
+  },
+  "source": {
+    "source_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "duration_s": 3600.1845,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "wav",
+    "time_window": null
+  },
+  "ridge_count": 18,
+  "group_count": 16,
+  "exact_png_pixels": true,
+  "wall_speedup": 1.3437302282588233,
+  "cpu_speedup": 1.3375522186451363,
+  "baseline_commit": "aa3dff686c989524daa20c081a816b792d9c8890",
+  "scope": "All event PNGs from real measured ridges; excludes intake, discovery, and equality checks",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8"
+  },
+  "execution_note": "Three alternating baseline/current pairs on a shared host during full-upload work. Wall times are observations, not isolated-system estimates.",
+  "default_pipeline_affected": false,
+  "optimized_component": "Clip optional event diagnostic mesh to visible frequency cells with boundary bins; full spectral normalization and measured ridges unchanged.",
+  "optimized_revision_note": "Timed the working-tree plotting change before final integration; the same plotting change is included in the final performance implementation."
+}

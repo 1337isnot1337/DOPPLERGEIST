@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Actual recorded-ridge and observed-trajectory point scoring at a source-informed receiver and clock. No independent accuracy, national-runtime or complete-pipeline speed claim.",
+  "sources": {
+    "baseline_commit": "aa3dff686c989524daa20c081a816b792d9c8890",
+    "optimized_scoring_base_commit": "5ca480f8678ca1ed31a765768324f623a44f0da8",
+    "optimized_reproducible_commit": "5699a657d57dc4f66b74ef000e20d3ba88f84704",
+    "published_source_equivalence": "The measured base is a local offline commit plus the stated worktree patch. The public reproducible commit contains identical exercised scoring paths and the final 32 MiB limit. Its additional compact-checkpoint changes are outside the point-scoring timing scope.",
+    "optimized_worktree_change": "src/dopplergeist/matching.py: _RidgeFitCache.batch_limit changed from 16*1024*1024 to 32*1024*1024, plus the cache-limit docstring.",
+    "source_recording_limit": "The harness did not record HEAD per worker. The exercised scoring implementation is the stated base commit plus the stated worktree change. Concurrent terrain/ENF integration 5420163 did not change the exercised FlightIndex or scoring paths.",
+    "discovery": "evidence/audio/w1-sensitivity-20261102/reference/discovery.json",
+    "receiver_reference": "evidence/results/reference-local/report.json",
+    "harness": "scripts/benchmark_prepared_measurements.py",
+    "concurrent_integration_commit": "5420163f026b6c2621226add88cfa05fda326b46"
+  },
+  "method": {
+    "repeats_per_source_per_workload": 3,
+    "order_each_workload": [
+      "baseline",
+      "current",
+      "current",
+      "baseline",
+      "baseline",
+      "current"
+    ],
+    "workload_order": [
+      "narrow",
+      "broad"
+    ],
+    "batch_cache_limit_bytes": 33554432,
+    "batch_cache_max_entries": 4096,
+    "comparison": "Exact canonical JSON equality of every scored association, diagnostics, support counts, ranked rows, and retention records/bounds/stages; no numerical tolerance.",
+    "timing_scope": "The complete point-scoring call, including retention writes. Excludes imports, input loading, fixture preparation, acquisition, discovery, nationwide search, refinement and result JSON serialization.",
+    "primary_metric": "process CPU seconds",
+    "concurrency_limit": "A full upload ran on the shared host during these measurements. Wall times are recorded but are not exclusive-host measurements.",
+    "memory_scope": "Reported getrusage(RUSAGE_SELF).ru_maxrss through scoring, including imports, input loading and captured candidate diagnostics. VmHWM was not recorded; ru_maxrss can retain an inherited pre-exec peak. This is not isolated cache-heap measurement."
+  },
+  "timing_environment": {
+    "os": "Linux 6.18.57 x86_64",
+    "processor": "AMD EPYC 9V74 80-Core Processor",
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "pandas": "2.2.3",
+    "pyarrow": "26.0.1",
+    "pyproj": "3.8.0",
+    "additional_import_directory": "/workspace/scratch/ef866e3c48e0/python-deps",
+    "thread_limits": {
+      "OPENBLAS_NUM_THREADS": 1,
+      "OMP_NUM_THREADS": 1,
+      "MKL_NUM_THREADS": 1,
+      "NUMEXPR_NUM_THREADS": 1
+    },
+    "runtime_distinction": "These point timings use NumPy 2.5.4. Full HTTP experiments and the separate correctness check below use NumPy 2.3.5. Do not combine their timings as one runtime."
+  },
+  "workloads": {
+    "broad": {
+      "fixture_name": "point-120s.json",
+      "clock_half_width_seconds": 120,
+      "fixture_counts": {
+        "trajectories": 452,
+        "trajectory_samples": 91889,
+        "ridge_records": 16,
+        "independent_groups": 16,
+        "ridge_samples": 724,
+        "cpa_rows": 100,
+        "unsupported_cpa_tracks": 4
+      },
+      "index_input_hash": "ed0ab12af801d1451edea17f1212740758569338dd601f9eb4a82c763b291955",
+      "receiver_point": {
+        "point_id": 41,
+        "lat": 40.87693175890468,
+        "lon": -73.52498229500986,
+        "elev_m": -31.25569725036621,
+        "x": 1861200.0,
+        "y": 2206325.0
+      },
+      "query_bounds": [
+        -74.299988,
+        40.100005,
+        -72.700011,
+        41.599964
+      ],
+      "query_time_s": [
+        1788898409.6620934,
+        1788902359.1620934
+      ],
+      "recording_start_window_s": [
+        1788898529.6620934,
+        1788898769.6620934
+      ],
+      "budget": {
+        "spacing_m": 2000.0,
+        "tile_cells": 32,
+        "max_tracks_per_tile": 5000,
+        "max_track_samples_per_tile": 1000000,
+        "max_cpa_rows": 100000,
+        "max_candidates_per_tile": 20000,
+        "top_k": 100,
+        "refine_spacing_m": 100.0,
+        "refine_finalists": 10,
+        "cpa_step_s": 2.0,
+        "max_tiles": null
+      },
+      "scoring": {
+        "mode": "robust_ridge"
+      },
+      "identical_results": true,
+      "operations_each_run": {
+        "scalar_fit_calls": 72,
+        "acoustic_calls": 850,
+        "scored_candidates": 3905
+      },
+      "retained_each_run": 100,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 28.81658592599979,
+          "cpu_seconds": 28.803255077,
+          "peak_rss_mib": 260.4609375
+        },
+        "current": {
+          "wall_seconds": 15.57937161100017,
+          "cpu_seconds": 15.571095273,
+          "peak_rss_mib": 293.25390625
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.8496629161636522,
+        "cpu_seconds": 1.8497899198487553
+      },
+      "cpu_reduction_percent": 45.93980704134428,
+      "runs": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "cpu_seconds": 26.394216981,
+          "wall_seconds": 26.41746890900049,
+          "load_seconds_excluded": 1.1986803300005704,
+          "peak_rss_mib": 259.3203125
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "cpu_seconds": 14.077091585999998,
+          "wall_seconds": 14.12715121400015,
+          "load_seconds_excluded": 1.4733468790000188,
+          "peak_rss_mib": 293.578125
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "cpu_seconds": 15.571095273,
+          "wall_seconds": 15.57937161100017,
+          "load_seconds_excluded": 1.1838955880002686,
+          "peak_rss_mib": 292.18359375
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "cpu_seconds": 28.803255077,
+          "wall_seconds": 28.81658592599979,
+          "load_seconds_excluded": 1.3216495369997574,
+          "peak_rss_mib": 260.4609375
+        },
+        {
+          "source": "baseline",
+          "repetition": 3,
+          "cpu_seconds": 29.232790216999998,
+          "wall_seconds": 29.298039747000075,
+          "load_seconds_excluded": 1.2159543139996458,
+          "peak_rss_mib": 261.0625
+        },
+        {
+          "source": "current",
+          "repetition": 3,
+          "cpu_seconds": 15.910992931,
+          "wall_seconds": 15.964019279999775,
+          "load_seconds_excluded": 1.3493243950006217,
+          "peak_rss_mib": 293.25390625
+        }
+      ]
+    },
+    "narrow": {
+      "fixture_name": "point-10s.json",
+      "clock_half_width_seconds": 10,
+      "fixture_counts": {
+        "trajectories": 426,
+        "trajectory_samples": 87206,
+        "ridge_records": 16,
+        "independent_groups": 16,
+        "ridge_samples": 724,
+        "cpa_rows": 97,
+        "unsupported_cpa_tracks": 4
+      },
+      "index_input_hash": "ed0ab12af801d1451edea17f1212740758569338dd601f9eb4a82c763b291955",
+      "receiver_point": {
+        "point_id": 41,
+        "lat": 40.87693175890468,
+        "lon": -73.52498229500986,
+        "elev_m": -31.25569725036621,
+        "x": 1861200.0,
+        "y": 2206325.0
+      },
+      "query_bounds": [
+        -74.299988,
+        40.100005,
+        -72.700011,
+        41.599964
+      ],
+      "query_time_s": [
+        1788898519.6620934,
+        1788902249.1620934
+      ],
+      "recording_start_window_s": [
+        1788898639.6620934,
+        1788898659.6620934
+      ],
+      "budget": {
+        "spacing_m": 2000.0,
+        "tile_cells": 32,
+        "max_tracks_per_tile": 5000,
+        "max_track_samples_per_tile": 1000000,
+        "max_cpa_rows": 100000,
+        "max_candidates_per_tile": 20000,
+        "top_k": 100,
+        "refine_spacing_m": 100.0,
+        "refine_finalists": 10,
+        "cpa_step_s": 2.0,
+        "max_tiles": null
+      },
+      "scoring": {
+        "mode": "robust_ridge"
+      },
+      "identical_results": true,
+      "operations_each_run": {
+        "scalar_fit_calls": 31,
+        "acoustic_calls": 53,
+        "scored_candidates": 1055
+      },
+      "retained_each_run": 100,
+      "medians": {
+        "baseline": {
+          "wall_seconds": 4.393366551999861,
+          "cpu_seconds": 4.386338558,
+          "peak_rss_mib": 210.37109375
+        },
+        "current": {
+          "wall_seconds": 2.215672813999845,
+          "cpu_seconds": 2.21248752,
+          "peak_rss_mib": 211.93359375
+        }
+      },
+      "speedup": {
+        "wall_seconds": 1.9828588969635517,
+        "cpu_seconds": 1.9825370847741552
+      },
+      "cpu_reduction_percent": 49.55958162498044,
+      "runs": [
+        {
+          "source": "baseline",
+          "repetition": 1,
+          "cpu_seconds": 4.095521208999999,
+          "wall_seconds": 4.10293381000065,
+          "load_seconds_excluded": 1.188167754999995,
+          "peak_rss_mib": 209.8984375
+        },
+        {
+          "source": "current",
+          "repetition": 1,
+          "cpu_seconds": 2.21248752,
+          "wall_seconds": 2.215672813999845,
+          "load_seconds_excluded": 1.1429735729998356,
+          "peak_rss_mib": 211.1875
+        },
+        {
+          "source": "current",
+          "repetition": 2,
+          "cpu_seconds": 2.465027842,
+          "wall_seconds": 2.475018588999774,
+          "load_seconds_excluded": 1.2079138489998513,
+          "peak_rss_mib": 211.953125
+        },
+        {
+          "source": "baseline",
+          "repetition": 2,
+          "cpu_seconds": 4.386338558,
+          "wall_seconds": 4.393366551999861,
+          "load_seconds_excluded": 1.1909067930000674,
+          "peak_rss_mib": 210.53515625
+        },
+        {
+          "source": "baseline",
+          "repetition": 3,
+          "cpu_seconds": 4.829120257,
+          "wall_seconds": 4.8339807339998515,
+          "load_seconds_excluded": 1.2563498580002488,
+          "peak_rss_mib": 210.37109375
+        },
+        {
+          "source": "current",
+          "repetition": 3,
+          "cpu_seconds": 2.202057387,
+          "wall_seconds": 2.2054391869996834,
+          "load_seconds_excluded": 1.1738416859998324,
+          "peak_rss_mib": 211.93359375
+        }
+      ]
+    }
+  },
+  "capacity_tradeoff": {
+    "scope": "Same broad real-input fixture, with an instrumented OrderedDict counting exact cache lookups and evictions. Outputs equal the unmodified baseline.",
+    "order_mib": [
+      16,
+      32,
+      32,
+      16
+    ],
+    "selected_limit_mib": 32,
+    "median_cpu_reduction_percent": 8.467267747039608,
+    "decision": "The larger limit repeatedly reduced CPU by about 8.5% and remaining batch executions by about 45%, for about 16 MiB more reported worker RSS. Allocation remains demand-driven and bounded.",
+    "capacities": {
+      "16": {
+        "limit_mib": 16,
+        "identical_results": true,
+        "counters_each_run": {
+          "lookups": 7351,
+          "hits": 5403,
+          "misses": 1948,
+          "evictions": 1443,
+          "max_retained_bytes": 16777214,
+          "max_retained_batches": 554,
+          "limit_bytes": 16777216,
+          "exact_outputs": true
+        },
+        "median_cpu_seconds": 18.937758264,
+        "median_reported_peak_rss_mib": 276.974609375,
+        "runs": [
+          {
+            "cpu_seconds": 19.183687540999998,
+            "wall_seconds": 19.271691674000067,
+            "peak_rss_mib": 277.24609375
+          },
+          {
+            "cpu_seconds": 18.691828987,
+            "wall_seconds": 18.70969998199962,
+            "peak_rss_mib": 276.703125
+          }
+        ]
+      },
+      "32": {
+        "limit_mib": 32,
+        "identical_results": true,
+        "counters_each_run": {
+          "lookups": 7351,
+          "hits": 6281,
+          "misses": 1070,
+          "evictions": 17,
+          "max_retained_bytes": 33553175,
+          "max_retained_batches": 1057,
+          "limit_bytes": 33554432,
+          "exact_outputs": true
+        },
+        "median_cpu_seconds": 17.3342475665,
+        "median_reported_peak_rss_mib": 293.1953125,
+        "runs": [
+          {
+            "cpu_seconds": 17.593079808,
+            "wall_seconds": 17.629105033999622,
+            "peak_rss_mib": 293.48828125
+          },
+          {
+            "cpu_seconds": 17.075415325,
+            "wall_seconds": 17.10798401699958,
+            "peak_rss_mib": 292.90234375
+          }
+        ]
+      }
+    }
+  },
+  "second_runtime_correctness": {
+    "purpose": "Check parity in the complete runtime used for full HTTP verification; these are correctness checks, not a new timing comparison.",
+    "python_executable": "/workspace/scratch/1e88d5469ed3/perf-venv/bin/python",
+    "pythonpath": "src",
+    "environment": {
+      "python": "3.12.14",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyarrow": "26.0.1",
+      "pyproj": "3.8.0",
+      "pytest": "9.2.0"
+    },
+    "source_at_check": {
+      "base_commit": "5420163f026b6c2621226add88cfa05fda326b46",
+      "worktree_change": "src/dopplergeist/matching.py: _RidgeFitCache.batch_limit changed from 16*1024*1024 to 32*1024*1024, plus the cache-limit docstring."
+    },
+    "real_fixture": "point-120s.json",
+    "pytest_files": [
+      "tests/test_real_batch_scalar_parity.py",
+      "tests/test_real_batch_ridge.py",
+      "tests/test_real_prepared_measurements.py"
+    ],
+    "pytest_passed": 7,
+    "pytest_failed": 0,
+    "cache_check_script": "scripts/check_real_batch_cache.py",
+    "cache_checks_passed": 50,
+    "cache_checks_failed": 0,
+    "cache_check_event": "event-0011",
+    "cache_check_clock_rows": 21
+  }
+}

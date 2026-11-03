@@ -4,7 +4,9 @@ import pickle
 
 import numpy as np
 
-from .matching import _fit_argument_key, _fit_ridge_uncached, _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs
+from .audio import Spectrum
+from .matching import (RidgeTimes, _fit_argument_key, _fit_ridge_uncached,
+                       _frequency_scale, _ridge_fit_cache, _ridge_fit_inputs)
 
 
 def _batch_fit_key(measurement, event, factors, emissions):
@@ -15,6 +17,10 @@ def _batch_fit_key(measurement, event, factors, emissions):
     """
     if type(measurement) not in (tuple, list) or len(measurement) != 4:
         raise TypeError("Uncached custom measurement container")
+    if type(measurement[0]) not in (RidgeTimes, Spectrum):
+        raise TypeError("Uncached custom measurement time container")
+    if type(event) is not dict or type(event.get("quality", {})) is not dict:
+        raise TypeError("Uncached custom event container")
     digest = hashlib.sha256()
     settings = tuple(_fit_argument_key(value) for value in
         (_frequency_scale(event), event.get("quality", {}).get("source_drift_fraction", .02),
@@ -33,21 +39,27 @@ def first_event_fits(measurement, event, factors, emissions, *, legacy_arithmeti
     """Reuse an identical complete fit batch within the current scoring call."""
     options = {"legacy_arithmetic": True} if legacy_arithmetic else {}
     cache = _ridge_fit_cache.get()
+    kernel = _first_event_fits_uncached
     if cache is None or cache.max_entries < 1 or cache.batch_fit_limit <= 0:
-        return _first_event_fits_uncached(measurement, event, factors, emissions, **options)
+        return kernel(measurement, event, factors, emissions, **options)
+    # A changed fitter must not reuse its predecessor's snapshots.
+    if cache.batch_fit_function is not kernel:
+        cache.batch_fit_entries.clear()
+        cache.batch_fit_bytes = 0
+        cache.batch_fit_function = kernel
     try:
         key = _batch_fit_key(measurement, event, factors, emissions)
         if legacy_arithmetic:
             key = hashlib.sha256(b"legacy-array-v1" + key).digest()
     except (TypeError, ValueError, KeyError, AttributeError):
-        return _first_event_fits_uncached(measurement, event, factors, emissions, **options)
+        return kernel(measurement, event, factors, emissions, **options)
     entries = cache.batch_fit_entries
     if key in entries:
         entries.move_to_end(key)
         # Only snapshots produced below from our own scalar-valued diagnostics
         # enter this private memory cache. No files or external pickles are read.
         return pickle.loads(entries[key])
-    result = _first_event_fits_uncached(measurement, event, factors, emissions, **options)
+    result = kernel(measurement, event, factors, emissions, **options)
     if result is not None:
         snapshot = pickle.dumps(result, protocol=5)
         size = len(key) + len(snapshot)
