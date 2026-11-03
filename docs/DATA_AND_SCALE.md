@@ -153,6 +153,16 @@ the remaining supported clocks are fitted together. Representative batched
 fits are checked against the scalar fitter, with fallback for mismatches or
 unsupported and numerically degenerate batches.
 
+When an event's conservative loss bound alone makes the association unable to
+reach the current Top-K floor, the scorer may also skip that clock and retain a
+finite score ceiling. This applies only when the other matched groups cannot
+make up the deficit even with perfect scores. Strict comparisons preserve ties;
+the result verifier distinguishes these finite ceilings from outright acoustic
+rejections. On one full-day point with 468 real associations, retained candidates
+matched exactly and CPU time changed from 37.77 to 28.23 seconds. The persisted
+bound ledger differs because it accounts for additional skipped trials. This
+single measurement does not establish nationwide runtime or accuracy.
+
 For association sets of at least 1,000 candidates, repeated acoustic batches
 reuse exact track, receiver, time-array and sound-speed inputs in a per-worker
 32 MiB cache. Sparse searches keep the ordinary path. A complete real-data clock

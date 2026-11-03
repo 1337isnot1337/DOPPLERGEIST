@@ -4,7 +4,7 @@ import numpy as np
 from .matching import _frequency_scale
 
 
-def ridge_trial_rejections(measurement, event, factors, emissions):
+def ridge_trial_rejections(measurement, event, factors, emissions, *, score_floor=None, group_count=None):
     """Propose joint-trial rejections from a supported event's loss bound.
 
     The pseudo-Huber loss has a bounded convex dual. Any dual vector inside
@@ -17,14 +17,20 @@ def ridge_trial_rejections(measurement, event, factors, emissions):
     ``factors`` and ``emissions`` are the existing batched acoustic results,
     with one row per clock and one column per measured ridge sample. Incomplete
     support, invalid settings, ill-conditioned fits and uncertain numerical
-    results return False so the ordinary physical fit handles them.
+    results return False so the ordinary physical fit handles them. When a
+    retention floor and group count are supplied, also return finite upper
+    scores for supported trials that cannot reach that floor. Other entries
+    in the second array are NaN.
     """
     factors = np.asarray(factors, dtype=float)
     emissions = np.asarray(emissions, dtype=float)
     trials = factors.shape[0] if factors.ndim else 0
     rejected = np.zeros(trials, dtype=bool)
+    upper = np.full(trials, np.nan)
+    def result():
+        return (rejected, upper) if score_floor is not None else rejected
     if factors.ndim != 2 or emissions.shape != factors.shape:
-        return rejected
+        return result()
     try:
         sigma = float(_frequency_scale(event))
         fraction = float(event.get("quality", {}).get("source_drift_fraction", .02))
@@ -32,26 +38,26 @@ def ridge_trial_rejections(measurement, event, factors, emissions):
         spec, ridge, weight, _ = measurement
         times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
     except (ValueError, TypeError, KeyError, AttributeError):
-        return rejected
+        return result()
     if (not np.isfinite(sigma) or sigma <= 0 or not np.isfinite(fraction) or not 0 <= fraction <= .1
             or not np.isfinite(low) or not np.isfinite(high) or not 0 < low <= high
             or times.ndim != 1 or times.shape != ridge.shape or times.shape != weight.shape
             or not np.all(np.isfinite(weight)) or np.any(weight < 0)):
-        return rejected
+        return result()
     measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
     if measured.sum() < 10 or factors.shape[1] != measured.sum():
-        return rejected
+        return result()
     times, ridge, weight = times[measured], ridge[measured], weight[measured]
     _, first = np.unique(times, return_index=True)
     first = np.sort(first)
     count = min(48, len(first))
     if count < 3:
-        return rejected
+        return result()
     selected = first[np.linspace(0, len(first)-1, count, dtype=int)]
     active = np.flatnonzero(np.all(np.isfinite(factors), axis=1) & np.all(factors > 0, axis=1)
                             & np.all(np.isfinite(emissions), axis=1))
     if not len(active):
-        return rejected
+        return result()
     with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
         x, full_emission = factors[active][:, selected], emissions[active]
         samples, y, w = full_emission[:, selected], ridge[selected], weight[selected]
@@ -86,4 +92,13 @@ def ridge_trial_rejections(measurement, event, factors, emissions):
         lower = np.maximum(0., value-error)/np.sum(weight)
         rejected[active] = (valid & np.isfinite(lower)
                             & (lower > (3*sigma)**2*(1+1e-8)+1e-9))
-    return rejected
+        if (score_floor is not None and type(group_count) is int and group_count > 0
+                and np.isfinite(score_floor) and 0 <= group_count-score_floor < 1):
+            threshold = (3*sigma*(group_count-score_floor))**2*(1+1e-8)+1e-9
+            ceiling = group_count-np.sqrt(lower)/(3*sigma)
+            ceiling = np.maximum(0., np.nextafter(
+                ceiling + 64*np.finfo(float).eps*(1+group_count+np.abs(ceiling)), np.inf))
+            bounded = (valid & np.isfinite(lower) & (lower > threshold) & ~rejected[active]
+                       & np.isfinite(ceiling) & (ceiling < score_floor))
+            upper[active] = np.where(bounded, ceiling, np.nan)
+    return result()

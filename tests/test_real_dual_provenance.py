@@ -51,3 +51,25 @@ def test_real_bound_methods_and_independent_verifier():
         invalid["scoring_assessment"][field] = value
         assert not bounded_assessment(invalid)
         assert not verifier.bounded_finite_clock_assessment(dict(invalid, finite_best=False), len(events))
+
+    singleton_candidates = [c for c in candidates if len(c["event_indices"]) == 1][:40]
+    track_ids = sorted({entry["flight_id"] for c in singleton_candidates for entry in c["passes"]})
+    singleton_tracks = {track.id: track for track in FlightIndex(fixture["real_index"]).lookup(track_ids)}
+    for candidate in singleton_candidates:
+        if any(entry["flight_id"] not in singleton_tracks for entry in candidate["passes"]):
+            continue
+        row = score_candidate(candidate, point, singleton_tracks, events, measurements,
+                              mode="robust_ridge", score_floor=.99)
+        assessment = row["scoring_assessment"]
+        if assessment.get("acoustic_floor_pruned_trials", 0):
+            break
+    else:
+        pytest.fail("No retention-floor acoustic bound in the real candidate sample")
+    assert assessment["unknown_score_bound_method"] == "nonnegative_loss_validated_fits_and_acoustic_floor_dual"
+    assert bounded_assessment(row)
+    assert verifier.bounded_finite_clock_assessment(dict(row, finite_best=False), len(events))
+    for value in (True, 0, assessment["bounded_unknown_trials"]-assessment["bounded_unknown_rejections"]+1):
+        invalid = copy.deepcopy(row)
+        invalid["scoring_assessment"]["acoustic_floor_pruned_trials"] = value
+        assert not bounded_assessment(invalid)
+        assert not verifier.bounded_finite_clock_assessment(dict(invalid, finite_best=False), len(events))

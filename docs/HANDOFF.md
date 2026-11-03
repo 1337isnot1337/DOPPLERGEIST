@@ -94,7 +94,10 @@ contains a newer harmonic-ambiguity confidence check from PR #192, which is not
 in the active search process. Its aligned-sample heuristic flagged no pair when
 run over all 17 discovered ridges from this upload; this does not establish that
 the groups are independent. Apply current confidence checks to the final
-matched evidence before accepting a result.
+matched evidence before accepting a result. PR #203 also corrects cache keys
+for caller-supplied acoustic arrays; one complete 468-association point produced
+the same full payload and retention ledger before and after that fix. That
+point-level comparison does not prove equivalence across the national search.
 
 ## Read first
 

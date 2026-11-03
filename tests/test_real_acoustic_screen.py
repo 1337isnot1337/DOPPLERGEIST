@@ -26,7 +26,7 @@ def test_real_ridge_rejections_have_supported_failing_witnesses():
         sorted(set(table.flight_id)), max_tracks=2000, max_samples=2000000)}
     point = fixture["point"]
     observer = ecef(point["lat"], point["lon"], point["elev_m"])
-    witnessed = tested = unsupported = 0
+    witnessed = floor_witnessed = tested = unsupported = 0
     for event, measurement in zip(events, measurements):
         sigma = _frequency_scale(event)
         fraction = event.get("quality", {}).get("source_drift_fraction", .02)
@@ -45,9 +45,17 @@ def test_real_ridge_rejections_have_supported_failing_witnesses():
                 continue
             factors, emissions = batch
             rejected = ridge_trial_rejections(measurement, event, factors, emissions)
+            rejected_with_floor, ceiling = ridge_trial_rejections(
+                measurement, event, factors, emissions, score_floor=.7, group_count=1)
+            rejected_three, ceiling_three = ridge_trial_rejections(
+                measurement, event, factors, emissions, score_floor=2.7, group_count=3)
+            assert np.array_equal(rejected, rejected_with_floor)
+            assert np.array_equal(rejected, rejected_three)
+            assert np.array_equal(np.isfinite(ceiling), np.isfinite(ceiling_three))
             assert rejected.shape == starts.shape
             incomplete = ~np.all(np.isfinite(factors) & np.isfinite(emissions), axis=1)
             assert not np.any(rejected & incomplete)
+            assert not np.any(np.isfinite(ceiling) & incomplete)
             tested += int((~incomplete).sum())
             unsupported += int(incomplete.sum())
             for i in np.flatnonzero(rejected):
@@ -58,7 +66,15 @@ def test_real_ridge_rejections_have_supported_failing_witnesses():
                 assert np.isfinite(fit["score"])
                 assert -fit["score"] > 3*sigma
                 witnessed += 1
-    assert tested > 100 and witnessed > 0 and unsupported > 0
+            for i in np.flatnonzero(np.isfinite(ceiling)):
+                fit = _fit_ridge_uncached(track, observer, measurement, starts[i],
+                                          event["f0_range_hz"], 343., sigma, fraction,
+                                          acoustic_result=(factors[i], emissions[i]))
+                assert fit["support_fraction"] == 1. and np.isfinite(fit["score"])
+                assert 1+fit["score"]/(3*sigma) <= ceiling[i] < .7
+                assert 3+fit["score"]/(3*sigma) <= ceiling_three[i] < 2.7
+                floor_witnessed += 1
+    assert tested > 100 and witnessed > 0 and floor_witnessed > 0 and unsupported > 0
 
 
 def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
@@ -97,14 +113,15 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
     original = screen.ridge_trial_rejections
     with monkeypatch.context() as patch:
         patch.setattr(screen, "ridge_trial_rejections",
-                      lambda measurement, event, factors, emissions: np.zeros(len(factors), dtype=bool))
+                      lambda measurement, event, factors, emissions, **kwargs:
+                      (np.zeros(len(factors), dtype=bool), np.full(len(factors), np.nan)))
         baseline = run()
     witnessed = 0
     later_witnessed = 0
 
-    def checked(measurement, event, factors, emissions):
+    def checked(measurement, event, factors, emissions, **kwargs):
         nonlocal witnessed, later_witnessed
-        rejected = original(measurement, event, factors, emissions)
+        rejected, ceilings = original(measurement, event, factors, emissions, **kwargs)
         sigma = _frequency_scale(event)
         fraction = event.get("quality", {}).get("source_drift_fraction", .02)
         for i in np.flatnonzero(rejected):
@@ -115,7 +132,7 @@ def test_real_candidate_scores_match_full_fits_with_screening(monkeypatch):
             witnessed += 1
             if measurement is not current_first_measurement:
                 later_witnessed += 1
-        return rejected
+        return rejected, ceilings
 
     with monkeypatch.context() as patch:
         patch.setattr(screen, "ridge_trial_rejections", checked)
