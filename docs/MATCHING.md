@@ -45,6 +45,11 @@ interval nor a complete spatial ambiguity assessment. The nominal result's
 score remains evaluated at the actual terrain height. Missing profiles and
 boundary optima must be considered by confidence handling. Competing flight
 associations and distant spatial modes still need the outer search.
+Pass `recording_start_window_s=(lo, hi)` from the trusted request to constrain
+all nominal and sensitivity clocks. A point window fixes the clock exactly and
+optimizes position only. The local clock radius is intersected with the window;
+disjoint bounds fail explicitly. `refinement_clock_bounds_s` records the bounds
+actually used. Spatial and nonzero-width clock boundary flags are separate.
 
 Verification:
 
