@@ -1,6 +1,8 @@
 """Encoded audio through the real job process, intake and automatic discovery."""
 import hashlib
-import io
+import json
+import threading
+import urllib.request
 import subprocess
 
 import numpy as np
@@ -8,6 +10,7 @@ import pytest
 import soundfile as sf
 
 from aircraft_geoloc.jobs import JobManager
+from aircraft_geoloc.service import JobServer
 
 
 def encoded_mp3(tmp_path, *, moving=False):
@@ -27,16 +30,31 @@ def encoded_mp3(tmp_path, *, moving=False):
 
 def submit_and_wait(tmp_path, payload, *, time_window=None):
     manager = JobManager(tmp_path / "jobs")
+    server = JobServer(("127.0.0.1", 0), manager)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{server.server_port}"
     try:
         request = {"schema_version": 1}
         if time_window:
             request["time_window"] = time_window
-        queued = manager.submit(request, io.BytesIO(payload), len(payload))
+        upload = urllib.request.Request(base + "/api/jobs", payload,
+                    headers={"Content-Type": "application/octet-stream", "X-Dopplergeist-Request": json.dumps(request)})
+        with urllib.request.urlopen(upload, timeout=10) as response:
+            assert response.status == 202
+            queued = json.load(response)
         final = manager.wait(queued["job_id"])
         directory = manager.directory(queued["job_id"])
+        with urllib.request.urlopen(base + f"/api/jobs/{queued['job_id']}") as response:
+            assert json.load(response) == final
+        with urllib.request.urlopen(base + f"/api/jobs/{queued['job_id']}/artifacts/input.mp3") as response:
+            assert response.read() == payload
         return final, directory
     finally:
+        server.shutdown()
+        server.server_close()
         manager.close()
+        thread.join()
 
 
 WINDOW = {"start_utc": "2026-09-08T20:00:00Z", "end_utc": "2026-09-08T20:01:00Z", "source": "user"}

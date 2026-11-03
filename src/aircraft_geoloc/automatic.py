@@ -18,6 +18,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     request = validate_request(request)
     config = config or {}
     output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    if (output / "provenance.json").exists():
+        raise FileExistsError("Analysis output exists; use a new directory")
     began = time.monotonic()
     sources = {p.name: _digest(p) for p in sorted(Path(__file__).parent.glob("*.py"))}
     provenance = {"request": request, "operator_configuration_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
@@ -35,7 +38,7 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         artifacts = {"provenance": "provenance.json", "request": "request.json"}
         for name, path in (("intake", "intake/intake.json"), ("recording", "intake/recording.json"),
                            ("discovery", "discovery/discovery.json"), ("discovery_plot", "discovery/discovery.png"),
-                           ("search_report", "search/search-report.json"), ("refinement", "refined-candidates.json"), ("decision", "decision.json")):
+                           ("search_report", "search/search-report.json"), ("refinement", "refined-candidates.json"), ("data_provenance", "data-provenance.json"), ("decision", "decision.json")):
             if (output / path).is_file():
                 artifacts[name] = path
         for path in sorted((output / "discovery").glob("event-*.png")):
@@ -79,8 +82,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("failed", "data_unavailable", str(exc))
     state["coverage"] = _coverage(request, search, config)
     provenance["search_run_hash"] = search.get("run_hash")
-    progress("decision", 0.9, **state)
-    return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish)
+    progress("refinement", 0.85, **state)
+    return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, lambda: progress("decision", 0.95, **state))
 
 
 class MissingData(ValueError):
@@ -129,6 +132,8 @@ def _search(request, recording, events, output, config, search_progress):
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
                              bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
                              scoring=scoring, filters=config.get("filters", {}), input_hashes=hashes)
+    write_json(output / "data-provenance.json", {"flight_indexes": [index.report for index in indexes],
+               "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes})
     return report, prepared, measurements, indexes, terrain
 
 
@@ -143,7 +148,7 @@ def _coverage(request, search, config):
             "limitations": limitations, "requested_area": request["search"], "missing_data": missing}
 
 
-def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish):
+def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, decision_progress):
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
@@ -156,7 +161,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     # The index iterator is bounded by the same local acoustic support envelope.
     seen = set()
     for row in raw:
-        key = (tuple(row["flight_ids"]), tuple(round(t) for t in row.get("pass_emission_times_s", [])))
+        key = (tuple(row.get("event_indices", range(len(prepared_events)))), tuple(row["flight_ids"]), tuple(round(t) for t in row.get("pass_emission_times_s", [])))
         if key in seen:
             continue
         seen.add(key)
@@ -176,6 +181,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                         tracks[track.id] = track
             if needed - tracks.keys():
                 raise ValueError("Candidate flight segments are unavailable for refinement")
+            row = dict(row, altitude_basis={flight: sorted(set(getattr(track, "altitude_basis", ["unspecified"]))) for flight, track in tracks.items()})
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0))
@@ -187,7 +193,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     candidates, rows = [], []
     for row in raw:
         event_ids, flight_ids = [], []
-        for event, flight in zip(prepared_events, row["flight_ids"]):
+        selected_events = [prepared_events[i] for i in row.get("event_indices", range(len(prepared_events)))]
+        for event, flight in zip(selected_events, row["flight_ids"]):
             ids = event.get("event_ids", [event["event_id"]])
             event_ids.extend(ids)
             flight_ids.extend([flight]*len(ids))
@@ -203,11 +210,14 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     diagnostics = {"clock_locked": search.get("scoring_time_is_locked", False), "refinement_failures": refinement_failures,
                    "refinement_boundary_limited": best.get("sensitivity", {}).get("boundary_limited", True),
                    "sensitivity": best.get("sensitivity", {}),
+                   "altitude_basis": best.get("altitude_basis", {}),
                    "alternatives_evaluated": search.get("status") == "complete" and not refinement_failures and len(seen) <= config.get("refine_finalists", 5)}
-    for event, evidence in zip(prepared_events, best.get("event_diagnostics", [])):
+    matched_events = [prepared_events[i] for i in best.get("event_indices", range(len(prepared_events)))]
+    for event, evidence in zip(matched_events, best.get("event_diagnostics", [])):
         for event_id in event.get("event_ids", [event["event_id"]]):
             diagnostics[event_id] = evidence
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})
+    decision_progress()
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)
     decision["candidates"] = candidates
 
