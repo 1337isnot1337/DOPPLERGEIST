@@ -57,6 +57,9 @@ dopplergeist job JOB_ID --jobs jobs
 dopplergeist job JOB_ID --jobs jobs --watch --interval 10
 dopplergeist cancel JOB_ID
 dopplergeist resume JOB_ID --jobs jobs
+# If the upload service still owns the job store:
+dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765
+dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
@@ -70,6 +73,11 @@ Ctrl-C stops the watcher without cancelling the analysis.
 `cancel` sends the cancellation request to the local service at
 `http://127.0.0.1:8765`. If `serve` uses a different port, pass its base URL with
 `--server-url`. The service must be running and managing the job directory.
+When `serve` owns the job-store lock, use the same `--server-url` option with
+`resume`; it prints the queued result after the service accepts the request.
+Monitor it with `job --watch` and the service's `--jobs` directory. Without
+`--server-url`, `resume --jobs` runs directly against a job store and requires
+that no service currently owns its lock.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not

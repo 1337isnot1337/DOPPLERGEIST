@@ -54,6 +54,10 @@ The command prints a job ID when queued. In another terminal, run
 progress, checkpoint rate, and the age of the latest tile and job status update.
 Stop a running service-managed job with `.venv/bin/dopplergeist cancel JOB_ID`;
 pass `--server-url` when the service uses a non-default port.
+Resume a stopped job while its service remains active with
+`.venv/bin/dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765`, then
+monitor it using `job JOB_ID --jobs jobs --watch`. If the service is stopped,
+`resume JOB_ID --jobs jobs` resumes directly from the persistent job directory.
 
 ### Discover events in a recording
 

@@ -37,6 +37,26 @@ def job_identifier(value):
     return value
 
 
+def post_job_action(server_url, job_id, action, parser):
+    url=server_url.rstrip("/")+f"/api/jobs/{job_id}/{action}"
+    request=Request(url,data=b"",method="POST")
+    try:
+        with urlopen(request,timeout=10) as response:
+            body=response.read()
+    except HTTPError as exc:
+        try:
+            detail=json.loads(exc.read()).get("error",str(exc))
+        except (AttributeError,ValueError):
+            detail=str(exc)
+        parser.error(f"Could not {action} job {job_id}: HTTP {exc.code}: {detail}")
+    except (URLError,ValueError) as exc:
+        parser.error(f"Could not reach job service at {server_url}: {exc}")
+    try:
+        return json.loads(body)
+    except ValueError as exc:
+        parser.error(f"Job service returned invalid JSON when requesting {action} for {job_id}: {exc}")
+
+
 def main():
     parser=argparse.ArgumentParser(description="Aircraft acoustic geolocation research pipeline")
     try:
@@ -82,6 +102,7 @@ def main():
     resume=sub.add_parser("resume",help="Resume a stopped job after completed audio discovery")
     resume.add_argument("job_id",type=job_identifier)
     resume.add_argument("--jobs",default="jobs")
+    resume.add_argument("--server-url",help="Base URL of the service managing this job")
     resume.add_argument("--max-runtime",type=positive_runtime,default=3600)
     args=parser.parse_args()
     if args.command in {"analyze", "serve"}:
@@ -163,25 +184,13 @@ def main():
             raise SystemExit(130)
         print(json.dumps(value,indent=2))
     elif args.command=="cancel":
-        url=args.server_url.rstrip("/")+f"/api/jobs/{args.job_id}/cancel"
-        request=Request(url,data=b"",method="POST")
-        try:
-            with urlopen(request,timeout=10) as response:
-                body=response.read()
-        except HTTPError as exc:
-            try:
-                detail=json.loads(exc.read()).get("error",str(exc))
-            except (AttributeError,ValueError):
-                detail=str(exc)
-            parser.error(f"Could not cancel job {args.job_id}: HTTP {exc.code}: {detail}")
-        except (URLError,ValueError) as exc:
-            parser.error(f"Could not reach job service at {args.server_url}: {exc}")
-        try:
-            value=json.loads(body)
-        except ValueError as exc:
-            parser.error(f"Job service returned invalid JSON when cancelling {args.job_id}: {exc}")
+        value=post_job_action(args.server_url,args.job_id,"cancel",parser)
         print(json.dumps(value,indent=2))
     elif args.command=="resume":
+        if args.server_url:
+            value=post_job_action(args.server_url,args.job_id,"resume",parser)
+            print(json.dumps(value,indent=2))
+            return
         from .jobs import JobManager
         try:
             manager=JobManager(args.jobs,max_runtime_s=args.max_runtime)
