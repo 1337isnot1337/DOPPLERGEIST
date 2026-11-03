@@ -24,6 +24,45 @@ class TileFailure(DataUnavailable):
 _worker = None
 
 
+def _hilbert_index(x, y, bits):
+    """Return a 2-D Hilbert distance for nonnegative integer coordinates."""
+    size = 1 << bits
+    distance = 0
+    scale = size >> 1
+    while scale:
+        rx = 1 if x & scale else 0
+        ry = 1 if y & scale else 0
+        distance += scale * scale * ((3 * rx) ^ ry)
+        if ry == 0:
+            if rx:
+                x = size - 1 - x
+                y = size - 1 - y
+            x, y = y, x
+        scale >>= 1
+    return distance
+
+
+def _spatial_order(jobs):
+    """Order tile work by a deterministic Hilbert walk over tile centers."""
+    jobs = list(jobs)
+    if len(jobs) < 2:
+        return list(enumerate(jobs))
+    centers = [(cells[0] + cells[2], cells[1] + cells[3]) for _, cells, _, _ in jobs]
+    min_x = min(x for x, _ in centers)
+    min_y = min(y for _, y in centers)
+    span = max(max(x for x, _ in centers) - min_x,
+               max(y for _, y in centers) - min_y)
+    bits = max(1, span.bit_length())
+    limit = (1 << bits) - 1
+    scale = limit / span if span else 0
+    keys = []
+    for index, (x, y) in enumerate(centers):
+        ix = round((x - min_x) * scale) if span else 0
+        iy = round((y - min_y) * scale) if span else 0
+        keys.append((_hilbert_index(ix, iy, bits), index))
+    return [(index, jobs[index]) for _, index in sorted(keys)]
+
+
 def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, measurements,
                            bounds, time_range, budget, parameters, filters, start_window,
                            crs, ledger_directory, run_hash, score_kind):
@@ -105,24 +144,23 @@ def score_tile(stage, cells, score_floor=None):
 
 
 def ordered_tile_results(pool, jobs, workers, finish):
-    """Persist completed work promptly but yield lightweight handles in order."""
+    """Schedule nearby tiles together while yielding results in input order."""
     from concurrent.futures import FIRST_COMPLETED, wait
 
     if type(workers) is not int or workers < 1:
         raise ValueError("workers must be a positive integer")
-    source = iter(jobs)
+    scheduled = _spatial_order(jobs)
+    source = iter(scheduled)
     pending, ready = {}, {}
-    assigned = next_result = 0
+    next_result = 0
     exhausted = False
     while not exhausted or pending or ready:
         while not exhausted and len(pending) < 2 * workers and next_result not in ready:
             try:
-                stage, cells, cached, floor = next(source)
+                index, (stage, cells, cached, floor) = next(source)
             except StopIteration:
                 exhausted = True
                 break
-            index = assigned
-            assigned += 1
             if cached is None:
                 future = pool.submit(score_tile, stage, cells, floor)
                 pending[future] = (index, stage, cells)

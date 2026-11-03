@@ -24,6 +24,7 @@ class RidgeTimes:
 
 
 _ridge_fit_cache = ContextVar("ridge_fit_cache", default=None)
+DEFAULT_CLOCK_RADIUS_S = 5.0
 
 
 def _fit_argument_key(value):
@@ -628,7 +629,7 @@ def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
 
 
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
-                     clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
+                     clock_radius_s=DEFAULT_CLOCK_RADIUS_S, altitude_offsets_m=(-150.0, 0.0, 150.0),
                      crs="EPSG:5070", c=343.0, recording_start_window_s=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
@@ -706,7 +707,7 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
 
 
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
-                      recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
+                      recording_start_window_s=None, radius_m=500.0, clock_radius_s=DEFAULT_CLOCK_RADIUS_S,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
                       c=343.0, crs="EPSG:5070"):
     """Run declared perturbations, retaining failures and boundary limitations.

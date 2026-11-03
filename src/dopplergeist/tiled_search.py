@@ -23,7 +23,7 @@ from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_jso
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
 from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
-from .matching import _cache_ridge_fits
+from .matching import DEFAULT_CLOCK_RADIUS_S, _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
 
 
@@ -445,9 +445,17 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             # after all rows are available but before association enumeration.
             lookup = {row.point_id: row for row in points.itertuples()}
             track_lookup = {track.id: track for track in tracks}
+        max_events = filters.get("max_events") or len(events)
+        default_min_events = 1
+        if len(events) > 1:
+            clock_window_width = (math.inf if start_window is None else start_window[1] - start_window[0])
+            if clock_window_width > 2 * DEFAULT_CLOCK_RADIUS_S:
+                default_min_events = min(2, max_events)
+        min_events = filters.get("min_events", default_min_events)
         candidates, counts = association_candidates(table, events, **kwargs,
-            min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
+            min_events=min_events, max_events=max_events,
             max_candidates=budget.max_candidates_per_tile, pair_screen=pair_screen, anchor_window=anchor_window)
+        counts["minimum_matched_events"] = min_events
         if pair_screen is not None:
             counts["fixed_clock_event_pair_screen"] = {"recording_start_time_s": float(kwargs["time_origin"]),
                 **screen_counts, "rejections": list(screen_counts["rejections"])}
