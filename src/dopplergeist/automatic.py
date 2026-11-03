@@ -106,6 +106,13 @@ def _earliest_emission(lo, events, max_distance, c, filters):
         offset = float(filters.get("offset_tolerance_s", 5.0))
         if not math.isfinite(offset) or offset < 0 or not math.isfinite(c) or c <= 0:
             return original
+        silence = filters.get("silence")
+        if silence:
+            if not isinstance(silence, dict):
+                return original
+            margin = float(silence.get("edge_margin_s", 60))
+            if not math.isfinite(margin) or margin < 0:
+                return original
         # Candidate association allows half the offset tolerance beyond each
         # event's CPA interval, then the wide-clock scorer allows a 5 s sweep.
         earliest_cpa = min(e["cpa_receive_s"] - e["quality"]["cpa_tolerance_s"] for e in events)
