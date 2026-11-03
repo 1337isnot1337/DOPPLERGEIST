@@ -87,7 +87,7 @@ def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path):
     final, directory = submit_and_wait(tmp_path, payload, time_window=WINDOW)
     assert final["status"] == "inconclusive" and final["reason_code"] == "data_unavailable", final
     assert len(final["events"]) >= 1
-    assert list((directory / "discovery").glob("event-*-spectrogram.png"))
+    assert list((directory / "discovery").glob("event-*.png"))
     assert final["coverage"]["data_status"] == "unavailable"
 
 
@@ -97,3 +97,26 @@ def test_corrupt_upload_returns_predictable_decode_failure(tmp_path):
     final, directory = submit_and_wait(tmp_path, b"not encoded audio", time_window=WINDOW)
     assert final["status"] == "failed" and final["reason_code"] == "invalid_media", final
     assert (directory / "input.mp3").read_bytes() == b"not encoded audio"
+
+
+def test_subset_association_preserves_original_event_identity(tmp_path):
+    """A middle subset must never be relabelled as the first input events."""
+    pytest.importorskip("aircraft_geoloc.confidence")
+    from aircraft_geoloc.automatic import _decide
+    from aircraft_geoloc.jobs import read_json
+    events = [{"event_id": f"event-{i}", "start_s": i*10., "end_s": i*10.+5, "band_hz": [100., 120.],
+               "ridge": [{"time_s": i*10.+t, "frequency_hz": 115.-t} for t in (1., 2., 3.)]} for i in range(3)]
+    search = {"status": "complete", "scoring_time_is_locked": True, "ranked": [
+        {"event_indices": [1, 2], "flight_ids": ["second-flight", "third-flight"], "lat": 40., "lon": -100.,
+         "score": -1., "recording_start_time_s": 1788897600., "event_diagnostics": [{"rmse_hz": .1}, {"rmse_hz": .2}]}]}
+    state = {"recording": {"time_window": WINDOW}, "coverage": {"search_complete": True, "data_status": "available", "limitations": []}}
+    def finish(status, reason_code=None, message=None, **fields):
+        return dict(status=status, reason_code=reason_code, message=message, **fields)
+    final = _decide(search, events, events, [None]*3, [], None, state, tmp_path,
+                    {"refine_finalists": 0}, finish, lambda: None)
+    assert final["status"] == "inconclusive" and final["reason_code"] == "unexplained_events"
+    assert final["candidates"][0]["event_ids"] == ["event-1", "event-2"]
+    diagnostics = read_json(tmp_path / "refined-candidates.json")["matching_diagnostics"]
+    assert "event-0" not in diagnostics
+    assert diagnostics["event-1"]["rmse_hz"] == .1
+    assert diagnostics["event-2"]["rmse_hz"] == .2
