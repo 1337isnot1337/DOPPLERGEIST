@@ -24,7 +24,8 @@ from .finite_search import RetentionLedger, bounded_assessment, classified_asses
 from .resource_usage import process_peak_rss_kib
 from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
-from .search import _CPA_DTYPE, _cpa_rows, filter_association_event, pair_candidates, score_candidate
+from .search import (_CPA_DTYPE, _PreparedCPATrack, _ordered_cpa_rows,
+                     filter_association_event, pair_candidates, score_candidate)
 
 
 def _support_error(error):
@@ -366,13 +367,14 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         # of minima before we inspect the returned table.
         chunk_points = max(1, budget.max_cpa_rows // samples)
         track_batches, track_rows = [], 0
+        prepared = None
         try:
             if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
                 continue
+            prepared = _PreparedCPATrack(track, parameters.get("c", 343.0), budget.cpa_step_s)
             for first in range(0, len(points), chunk_points):
-                rows = _cpa_rows([track], observers[first:first + chunk_points],
-                                 point_ids[first:first + chunk_points], radius,
-                                 parameters.get("c", 343.0), budget.cpa_step_s)
+                rows = _ordered_cpa_rows(prepared.raw_rows(observers[first:first + chunk_points],
+                    point_ids[first:first + chunk_points], radius), budget.cpa_step_s)
                 track_rows += len(rows)
                 if count + track_rows > budget.max_cpa_rows:
                     raise DataUnavailable("Tile CPA-row memory budget exceeded")
@@ -390,13 +392,16 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                                          float(points.lon.max()), float(points.lat.max())],
                 "receiver_point_count": len(points), "coverage_envelope": "whole_track_whole_stage_conservative"})
             continue
+        finally:
+            prepared = None
         count += track_rows
         cpa_batches.extend(track_batches)
     if not cpa_batches:
         if ledger is not None:
             ledger.record(stage, [], [], 0)
         return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported}
-    table = pd.DataFrame.from_records(np.concatenate(cpa_batches))
+    table = pd.DataFrame({name: np.concatenate([batch[name] for batch in cpa_batches])
+                          for name in _CPA_DTYPE.names}, copy=False)
     del cpa_batches, track_batches
     kwargs = dict(offset_tolerance_s=filters.get("offset_tolerance_s", 5.0),
                   time_origin=parameters.get("time_origin"), time_tolerance_s=filters.get("time_tolerance_s", 5.0),
@@ -607,7 +612,8 @@ def _record_support(output, stage, counts, summary):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + ".json"),
                    {"stage": stage, "unsupported_cpa_tracks": counts.get("unsupported_cpa_tracks", []),
-                    "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])})
+                    "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])},
+                   compact=True)
 
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
@@ -791,7 +797,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         try:
             payload, worker_path = future.result()
             import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
-            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+            write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
+                       compact=True)
             try:
                 Path(worker_path).unlink()
             except OSError:
@@ -879,7 +886,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
                                    "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
                                    "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
-                        write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+                        write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
+                                   compact=True)
                     done += 1
                     if "~t" not in tile_id:
                         points_searched += payload["grid_points"]

@@ -80,6 +80,10 @@ def test_real_partial_residual_ceiling_skips_fits_without_claiming_support(monke
         calls.append(1)
         return original(*args, **kwargs)
 
+    # Exercise the scalar fallback this test instruments. The normal batched
+    # path has its own parity checks and need not call _fit_ridge_uncached.
+    from dopplergeist import batch_ridge
+    monkeypatch.setattr(batch_ridge, "first_event_fits", lambda *args, **kwargs: None)
     monkeypatch.setattr(matching, "_fit_ridge_uncached", counted)
     baseline = score_candidate(pair, point, tracks, events, measurements, mode="robust_ridge", time_sweep_s=0)
     full_fits = len(calls)

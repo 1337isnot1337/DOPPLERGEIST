@@ -98,18 +98,37 @@ def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, c
     """
     rows=[]
     for track in tracks:
+        prepared = _PreparedCPATrack(track, c, step_s)
+        rows.extend(prepared.raw_rows(observers, point_ids, max_distance, chunk_size))
+    return _ordered_cpa_rows(rows, step_s)
+
+
+class _PreparedCPATrack:
+    """One validated track/step, reused only across one call's receiver chunks."""
+
+    def __init__(self, track, c, step_s):
         track.validate_motion_support(c)
-        t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
-        pos=track.position(t)
-        max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))
-        near=np.flatnonzero(np.all((observers>=pos.min(axis=0)-max_distance)&
-                                  (observers<=pos.max(axis=0)+max_distance),axis=1))
-        if not len(near):continue
-        tree=cKDTree(pos)
+        self.track, self.c, self.step_s = track, c, step_s
+        self.time = np.unique(np.r_[np.arange(track.time[0], track.time[-1], step_s), track.time[-1]])
+        self.position = track.position(self.time)
+        self.max_step = np.max(np.linalg.norm(np.diff(self.position, axis=0), axis=1))
+        self.lower, self.upper = self.position.min(axis=0), self.position.max(axis=0)
+        self.tree = None
+
+    def raw_rows(self, observers, point_ids, max_distance, chunk_size=512):
+        rows = []
+        track, t, pos, c = self.track, self.time, self.position, self.c
+        near=np.flatnonzero(np.all((observers>=self.lower-max_distance)&
+                                  (observers<=self.upper+max_distance),axis=1))
+        if not len(near):
+            return rows
+        if self.tree is None:
+            self.tree = cKDTree(pos)
+        tree = self.tree
         for base in range(0,len(near),chunk_size):
             chosen=near[base:base+chunk_size]
             obs=observers[chosen]
-            neighbours=tree.query_ball_point(obs,max_distance+2*max_step,return_sorted=True)
+            neighbours=tree.query_ball_point(obs,max_distance+2*self.max_step,return_sorted=True)
             counts=np.fromiter((len(a) for a in neighbours),dtype=int,count=len(neighbours))
             if not counts.sum():continue
             sample=np.concatenate(neighbours).astype(int)
@@ -175,6 +194,10 @@ def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, c
                 rows.append((int(point_ids[chosen[oi[j]]]), track.id,
                              float(when[j]), float(when[j]+distance[j]/c),
                              float(distance[j]), float(speed[j])))
+        return rows
+
+
+def _ordered_cpa_rows(rows, step_s):
     if rows:
         # A CPA exactly at a sample can be proposed twice under roundoff.
         rows.sort(key=lambda row: (row[0], row[1], row[2]))
@@ -359,7 +382,49 @@ def _ridge_trial_classification(result, events, association):
 
 
 
+_CEILING_FLOAT_FIELDS = (
+    "support_fraction", "score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+    "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction",
+)
+
+
 def _association_event_ceiling(diagnostic, score, frequency, event, limit):
+    """Reuse a validated ceiling only for the same complete scalar evidence.
+
+    Fit dictionaries are copied for each association. Content keys preserve
+    mutation checks while avoiding repeated validation of the same clock fit.
+    Noncanonical numeric types retain the original validation and arithmetic.
+    """
+    from .matching import _ridge_fit_cache
+    cache = _ridge_fit_cache.get()
+    if (cache is None or cache.max_entries <= 0 or type(diagnostic) is not dict
+            or type(event) is not dict or type(event.get("quality", {})) is not dict):
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    bounds = event.get("f0_range_hz")
+    if type(bounds) not in (list, tuple) or len(bounds) != 2:
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    values = tuple(diagnostic.get(name) for name in _CEILING_FLOAT_FIELDS)
+    fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+    counts = (diagnostic.get("sample_count"), diagnostic.get("independent_sample_count"))
+    optimizer = diagnostic.get("optimizer_success", True)
+    if (not all(type(value) is float for value in (*values, score, frequency, limit, *bounds, fraction))
+            or not all(type(value) is int for value in counts) or type(optimizer) is not bool):
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    key = (_ridge_trial_classification, values, counts, optimizer, score, frequency,
+           tuple(bounds), fraction, limit)
+    entries = cache.ceiling_entries
+    previous = entries.get(key)
+    if previous is not None:
+        entries.move_to_end(key)
+        return previous
+    result = _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    entries[key] = result
+    if len(entries) > cache.max_entries:
+        entries.popitem(last=False)
+    return result
+
+
+def _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit):
     """Validate one fitted group's contribution before tightening a ceiling."""
     single = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
               "event_scores": [score], "f0_hz": [frequency], "event_diagnostics": [diagnostic]}

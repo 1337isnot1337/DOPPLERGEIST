@@ -71,9 +71,18 @@ def test_real_association_results_match_scalar_fits(recorded, monkeypatch):
     import dopplergeist.batch_ridge as batch_ridge
 
     fixture, events, measurements, table, tracks = recorded
-    candidates, _ = association_candidates(table, events, max_candidates=20000)
+    options = {}
+    if "recording_start_window_s" in fixture:
+        from dopplergeist.tiled_search import _association_clock_window
+        # Preserve the frozen workload's declared clock domain. Enumerating
+        # every possible clock from a broad CPA table changes that workload
+        # and can exhaust its association budget before this fit check runs.
+        center, tolerance = _association_clock_window(
+            fixture["recording_start_window_s"], fixture.get("scoring", {}).get("time_sweep_s", 5.0))
+        options = {"time_origin": center, "time_tolerance_s": tolerance}
+    candidates, _ = association_candidates(table, events, max_candidates=20000, **options)
     selected = sorted(random.Random(20261103).sample(range(len(candidates)), min(100, len(candidates))))
-    point = SimpleNamespace(**fixture["point"], x=0., y=0.)
+    point = SimpleNamespace(**{"x": 0., "y": 0., **fixture["point"]})
 
     @_cache_ridge_fits
     def run():

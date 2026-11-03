@@ -19,9 +19,9 @@ def counted_kernel(monkeypatch):
     calls = []
     original = batch_ridge._first_event_fits_uncached
 
-    def run(*args):
+    def run(*args, **options):
         calls.append(1)
-        return original(*args)
+        return original(*args, **options)
 
     monkeypatch.setattr(batch_ridge, '_first_event_fits_uncached', run)
     return calls, original
@@ -142,5 +142,83 @@ def test_recorded_warm_cache_does_not_hide_invalid_measurement_arity():
             with pytest.raises(ValueError, match='unpack'):
                 batch_ridge.first_event_fits(invalid, event, factors, emissions)
         assert len(matching._ridge_fit_cache.get().batch_fit_entries) == 1
+
+    run()
+
+
+def test_recorded_fitter_replacement_clears_previous_snapshots(monkeypatch):
+    measurement, event, factors, emissions = recorded()
+    original = batch_ridge._first_event_fits_uncached
+    expected = original(measurement, event, factors, emissions)
+    calls = []
+
+    def first(*args, **options):
+        calls.append('first')
+        return original(*args, **options)
+
+    def second(*args, **options):
+        calls.append('second')
+        return original(*args, **options)
+
+    @matching._cache_ridge_fits
+    def run():
+        for kernel, expected_calls in ((first, ['first']),
+                                       (second, ['first', 'second']),
+                                       (first, ['first', 'second', 'first'])):
+            monkeypatch.setattr(batch_ridge, '_first_event_fits_uncached', kernel)
+            for _ in range(2):
+                assert batch_ridge.first_event_fits(measurement, event, factors, emissions) == expected
+            assert calls == expected_calls
+            assert len(matching._ridge_fit_cache.get().batch_fit_entries) == 1
+
+    run()
+
+
+def test_recorded_custom_inputs_bypass_a_warm_cache(monkeypatch):
+    from types import SimpleNamespace
+
+    measurement, event, factors, emissions = recorded()
+    calls, original = counted_kernel(monkeypatch)
+    expected = original(measurement, event, factors, emissions)
+
+    class CustomEvent(dict):
+        pass
+
+    custom_time = (SimpleNamespace(time=measurement[0].time), *measurement[1:])
+    cases = ((custom_time, event), (measurement, CustomEvent(event)),
+             (measurement, dict(event, quality=CustomEvent(event.get('quality', {})))))
+
+    @matching._cache_ridge_fits
+    def run():
+        assert batch_ridge.first_event_fits(measurement, event, factors, emissions) == expected
+        for custom_measurement, custom_event in cases:
+            before = len(calls)
+            for _ in range(2):
+                assert batch_ridge.first_event_fits(custom_measurement, custom_event, factors, emissions) == expected
+            assert len(calls) == before + 2
+        assert len(matching._ridge_fit_cache.get().batch_fit_entries) == 1
+
+    run()
+
+
+def test_recorded_cache_separates_legacy_arithmetic(monkeypatch):
+    measurement, event, factors, emissions = recorded()
+    calls, original = counted_kernel(monkeypatch)
+    ordinary = original(measurement, event, factors, emissions)
+    legacy = original(measurement, event, factors, emissions, legacy_arithmetic=True)
+    assert ordinary is not None
+
+    @matching._cache_ridge_fits
+    def run():
+        assert batch_ridge.first_event_fits(measurement, event, factors, emissions) == ordinary
+        assert len(calls) == 1
+        assert batch_ridge.first_event_fits(measurement, event, factors, emissions,
+                                           legacy_arithmetic=True) == legacy
+        assert len(calls) == 2
+        assert batch_ridge.first_event_fits(measurement, event, factors, emissions) == ordinary
+        assert len(calls) == 2
+        assert batch_ridge.first_event_fits(measurement, event, factors, emissions,
+                                           legacy_arithmetic=True) == legacy
+        assert len(calls) == (3 if legacy is None else 2)
 
     run()

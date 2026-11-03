@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "Isolated complete-batch cache comparison on the actual broad point workload; no end-to-end or location-accuracy claim.",
+  "common_source": "0d6a92377af0f00b84dff9fa7966326d0014c20c",
+  "object_variant": "Same main source, replacing only matching.py and batch_ridge.py with frozen files equivalent to public 5699a657d57dc4f66b74ef000e20d3ba88f84704.",
+  "main_blobs": {
+    "matching.py": "aed8035a3c69c19455a2fa5f0299bdc6a823305f",
+    "batch_ridge.py": "71be78bcab6621675fac80b98a50dc17dac1f421"
+  },
+  "uncached_kernel_ast_equal": true,
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "interpreter": "/workspace/scratch/1e88d5469ed3/perf-venv/bin/python",
+    "numerical_library_threads": 1
+  },
+  "method": {
+    "pairs": 1,
+    "order": [
+      "serialized_4MiB",
+      "objects_32MiB"
+    ],
+    "processes": "Fresh separate interpreters on the shared host.",
+    "instrumentation": "Both arms counted batch and uncached-kernel calls and recorded cache size after each batch. Cache implementation unchanged.",
+    "timing": "Point scoring and retention writes; excludes imports, input loading and result JSON serialization.",
+    "fixture": "point-120s.json: actual recorded ridges and observed trajectories, source-informed point and clock.",
+    "index_input_hash": "ed0ab12af801d1451edea17f1212740758569338dd601f9eb4a82c763b291955"
+  },
+  "workload": {
+    "scored_associations": 3905,
+    "retained_associations": 100,
+    "independent_groups": 16,
+    "scalar_fit_calls": 72,
+    "acoustic_calls": 850
+  },
+  "runs": {
+    "serialized_4MiB": {
+      "cpu_seconds": 12.822287035,
+      "wall_seconds": 12.825721274999523,
+      "load_seconds_excluded": 1.2063405540011445,
+      "reported_peak_rss_mib": 285.34765625,
+      "batch_calls": 7351,
+      "kernel_calls": 1071,
+      "cache_hits": 6280,
+      "peak_entries": 884,
+      "peak_accounted_bytes": 4194233,
+      "peak_retained_object_bytes": 4333666,
+      "limit_bytes": 4194304
+    },
+    "objects_32MiB": {
+      "cpu_seconds": 14.751674511,
+      "wall_seconds": 14.768337736999456,
+      "load_seconds_excluded": 1.2944369119995827,
+      "reported_peak_rss_mib": 310.859375,
+      "batch_calls": 7351,
+      "kernel_calls": 1070,
+      "cache_hits": 6281,
+      "peak_entries": 1057,
+      "peak_accounted_bytes": 33553167,
+      "peak_retained_object_bytes": 33553167,
+      "limit_bytes": 33554432
+    }
+  },
+  "exact_outputs": true,
+  "comparison": "Complete canonical result JSON including every scored association, diagnostics, support counts, ranked rows and retention records; no tolerance.",
+  "serialized_cpu_speedup": 1.1504713995821103,
+  "serialized_cpu_reduction_percent": 13.079108236568649,
+  "selection": "One serialized 4 MiB cache; lower CPU and memory in this pair.",
+  "memory_note": "Serialized limit counts digest-key and pickle-payload bytes only. Estimated retained objects add bytes headers and OrderedDict storage. The object variant uses its conservative retained-object charge. Reported ru_maxrss includes setup and diagnostics and can retain an inherited pre-exec peak; neither cache charge is a total-process or allocator bound.",
+  "raw_artifacts": "Full outputs were written and compared before the cloud runner reset. Raw temporary artifacts are now lost. This record reconstructs only the returned summaries, counters and successful equality assertion from tool history.",
+  "integration_followup": {
+    "main_revision": "b7be4330c37eb9ec2bfca23a55d840bf9bb3acab",
+    "note": "The timed pair tested 0d6a923 only. The later legacy-arithmetic API and uncached kernel are preserved unchanged, with strict custom-input bypass and fitter-identity clearing added around the single serialized cache.",
+    "local_validation": "All changed Python files compiled before CI. The uncached fitter AST was identical to public blob 4250d9800747805f376c51206f771c1d8bfcb640; local runtime checks were unavailable after the runner reset.",
+    "fitting_source_revision": "21262e031388b3a5a8dd75979b2dc851608499b2",
+    "frozen_combined_source": "66146714c6c22a448a7a54830a82d31034c2be44",
+    "runtime_validation": {
+      "ci_run": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355",
+      "recorded_input_tests_passed": 38,
+      "skipped_tests": 0,
+      "fresh_http_scientific_and_array_parity": true,
+      "result_record": "integrated-http-20261103.json"
+    }
+  }
+}
