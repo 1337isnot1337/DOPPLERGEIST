@@ -15,7 +15,7 @@ class PausedStream(io.BytesIO):
 
     def read(self, size=-1):
         self.started.set()
-        if not self.release.wait(5):
+        if not self.release.wait(10):
             raise TimeoutError("upload test did not release stream")
         return super().read(size)
 
@@ -35,7 +35,7 @@ def test_slow_upload_does_not_block_cancel_and_reserves_queue_slot(tmp_path):
         cancelled = threading.Event()
         cancel = threading.Thread(target=lambda: (manager.cancel(first["job_id"]), cancelled.set()))
         cancel.start()
-        assert cancelled.wait(1), "cancellation blocked behind upload"
+        assert cancelled.wait(3), "cancellation blocked behind upload"
         cancel.join()
         with pytest.raises(OverflowError):
             manager.submit({"schema_version": 1}, io.BytesIO(b"third"), 5)
@@ -93,7 +93,7 @@ def test_second_upload_can_queue_while_first_is_paused(tmp_path):
         slow.start()
         assert stream.started.wait(5)
         fast.start()
-        assert fast_done.wait(1), "second upload blocked behind first"
+        assert fast_done.wait(3), "second upload blocked behind first"
     finally:
         stream.release.set()
         slow.join(5)

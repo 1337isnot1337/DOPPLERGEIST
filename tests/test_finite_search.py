@@ -91,15 +91,29 @@ def test_ledger_rejects_wrong_run_or_score_units_and_missing_stages(tmp_path):
 
 
 def test_a_finite_best_score_does_not_hide_unknown_optimizer_trials():
-    good = {"complete": True, "evaluated_trials": 5, "rejected_trials": 2, "unknown_trials": 0}
+    good = {"complete": True, "scheduled_trials": 7, "evaluated_trials": 5,
+            "rejected_trials": 2, "unknown_trials": 0, "empty_clock_domain": False,
+            "trial_count_semantics": "disjoint_evaluated_rejected_unknown"}
     assert classified_assessment({"score": .9, "scoring_assessment": good})
     assert not classified_assessment({"score": .9})
-    for change in [{"complete": False}, {"unknown_trials": 1}, {"evaluated_trials": None}, {"rejected_trials": -1}]:
+    for change in [{"complete": False}, {"unknown_trials": 1}, {"evaluated_trials": None},
+                   {"rejected_trials": -1}, {"scheduled_trials": 8}, {"scheduled_trials": 0},
+                   {"empty_clock_domain": True}, {"empty_clock_domain": 0},
+                   {"trial_count_semantics": "evaluated_includes_rejected"}]:
         assert not classified_assessment({"score": .9, "scoring_assessment": dict(good, **change)})
-    for score in [float("nan"), float("inf"), -float("inf")]:
+    for key in ("scheduled_trials", "evaluated_trials", "rejected_trials", "unknown_trials"):
+        assert not classified_assessment({"score": .9, "scoring_assessment": dict(good, **{key: True})})
+    for key in ("scheduled_trials", "empty_clock_domain", "trial_count_semantics"):
+        missing = dict(good)
+        del missing[key]
+        assert not classified_assessment({"score": .9, "scoring_assessment": missing})
+    for score in [float("nan"), float("inf"), -float("inf"), True, None, "0.9", []]:
         assert not classified_assessment({"score": score, "scoring_assessment": good})
-    empty = dict(good, evaluated_trials=0, rejected_trials=0)
+    empty = dict(good, scheduled_trials=0, evaluated_trials=0, rejected_trials=0)
     assert not classified_assessment({"score": .9, "scoring_assessment": empty})
     assert not classified_assessment({"score": -float("inf"), "scoring_assessment": empty})
-    rejected = dict(empty, rejected_trials=3)
+    rejected = dict(empty, scheduled_trials=3, rejected_trials=3)
     assert classified_assessment({"score": -float("inf"), "scoring_assessment": rejected})
+    assert not classified_assessment({"score": .9, "scoring_assessment": rejected})
+    assert not classified_assessment({"score": -float("inf"),
+                                      "scoring_assessment": dict(rejected, scheduled_trials=4)})

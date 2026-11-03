@@ -40,8 +40,10 @@ def test_actual_retention_evidence_survives_the_product_boundary(tmp_path, case,
                "event_indices": [0, 1], "pass_emission_times_s": [1790000010., 1790000110.],
                "score": score, "score_kind": "negative_robust_ridge_loss_hz",
                "event_diagnostics": [dict(fit), dict(fit)], "sensitivity": deepcopy(profile),
-               "scoring_assessment": {"complete": True, "evaluated_trials": 2,
-                                      "rejected_trials": 1, "unknown_trials": 0, "reasons": []}}
+               "scoring_assessment": {"complete": True, "scheduled_trials": 3, "evaluated_trials": 2,
+                                      "rejected_trials": 1, "unknown_trials": 0, "reasons": [],
+                                      "empty_clock_domain": False,
+                                      "trial_count_semantics": "disjoint_evaluated_rejected_unknown"}}
         rows.append(row)
     ledger = RetentionLedger(tmp_path / "retention.sqlite", "independent-bridge", rows[0]["score_kind"])
     kept = merge_candidates(rows, 2, ledger=ledger, stage="coarse:0")
@@ -52,7 +54,7 @@ def test_actual_retention_evidence_survives_the_product_boundary(tmp_path, case,
     finite = ledger.evidence(kept, complete=True, spacing_m=1000., refine_spacing_m=100.,
                              max_event_groups=2, expected_stages={"coarse": 1, "global": 1})
     if case == "unassessed":
-        kept[1]["scoring_assessment"].update(complete=False, unknown_trials=1)
+        kept[1]["scoring_assessment"].update(complete=False, scheduled_trials=4, unknown_trials=1)
     assessed = [r["mode_id"] for r in kept if classified_assessment(r)]
     search = {"ranked": kept, "status": "complete", "scoring_time_is_locked": True,
               "alternative_modes_exhaustively_assessed": False,

@@ -1,0 +1,93 @@
+{
+  "source_commit": "91f2684f70eac7fecfe7810f09eecdb38cc839a7",
+  "scope": "actual synthetic negative paths; no location accuracy claim",
+  "http": [
+    {
+      "case": "undated-chirp",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "job_id": "ef92b1797be04b979da106179e7e0702",
+      "events": 1,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "http_download_preserves_input": true,
+      "observed_states": [
+        "queued",
+        "running",
+        "needs_input"
+      ]
+    },
+    {
+      "case": "corrupt",
+      "status": "failed",
+      "reason_code": "invalid_media",
+      "job_id": "6ee469dee7194fb196c4d9154f08b394",
+      "events": 0,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "http_download_preserves_input": true,
+      "observed_states": [
+        "queued",
+        "running",
+        "failed"
+      ]
+    },
+    {
+      "case": "silence",
+      "status": "inconclusive",
+      "reason_code": "no_supported_events",
+      "job_id": "f8509b3744ee406fa40e0a8a1024b067",
+      "events": 0,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "http_download_preserves_input": true,
+      "observed_states": [
+        "queued",
+        "running",
+        "inconclusive"
+      ]
+    }
+  ],
+  "cli": [
+    {
+      "case": "undated-chirp",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "job_id": "41469ecc10bb4c85923a62513c02e541",
+      "events": 1,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "exit_code": 0
+    },
+    {
+      "case": "corrupt",
+      "status": "failed",
+      "reason_code": "invalid_media",
+      "job_id": "2c68781a09664b179a221567b705ceb4",
+      "events": 0,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "exit_code": 0
+    },
+    {
+      "case": "silence",
+      "status": "inconclusive",
+      "reason_code": "no_supported_events",
+      "job_id": "86f42111eb374a769828fda5ce30a506",
+      "events": 0,
+      "uploaded_bytes_preserved": true,
+      "no_candidate_output": true,
+      "persisted_result_matches": true,
+      "exit_code": 0
+    }
+  ],
+  "http_graceful_shutdown": true,
+  "terminal_results_unchanged_after_restart": true,
+  "restart_graceful_shutdown": true,
+  "passed": true
+}

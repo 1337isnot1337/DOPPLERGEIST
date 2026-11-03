@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "full_pipeline_observed": false,
+  "scientific_decision_expected": false,
+  "stages_verified": [
+    "automatic_provenance",
+    "intake",
+    "discovery"
+  ],
+  "artifacts": {
+    "provenance.json": {
+      "bytes": 2644,
+      "sha256": "8c09ef37a4ccb9877deb89b65cd3f667da6a769ea1ff4def9a888b403eb62d28"
+    },
+    "input.json": {
+      "bytes": 127,
+      "sha256": "db0949139f5fd8793b829984fc677356c7c1e25e3e55764ebb703d2bd112c625"
+    },
+    "request.json": {
+      "bytes": 222,
+      "sha256": "47ebd63809d5f4d732cf80a41f614177c7928b865af63f48f99b219d26d3bc4b"
+    },
+    "intake/recording.json": {
+      "bytes": 209,
+      "sha256": "5d8d0859914e461985ac0f5a14effcdaaf757e3ec78f13e3a04f22c0a4fc8b86"
+    },
+    "intake/intake.json": {
+      "bytes": 933,
+      "sha256": "8070bd68f80e502f51a4eecfbeb3d35e3ab2d29d7a734a16c5cdad331385919d"
+    },
+    "intake/recording.f32": {
+      "bytes": 57602952,
+      "sha256": "b6de3046a361c67c1096208b16123187b0c9ad1d0b2b6116358f884ffcb51e5f"
+    },
+    "discovery/discovery.json": {
+      "bytes": 201228,
+      "sha256": "6718303e2aacfa76121b9096a45d9810f215e7bab50851a8b1c071e7a782cea6"
+    }
+  },
+  "errors": [],
+  "location_accuracy_evaluated": false,
+  "limitations": [
+    "Stage consistency does not independently reproduce decoding or scientific fitting.",
+    "No withheld-location comparison or accuracy evaluation is performed."
+  ]
+}
