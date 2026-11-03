@@ -148,15 +148,24 @@ def _to_geographic(crs):
     return _cached_to_geographic(crs)
 
 
-def tile_points(cells, spacing, bounds, terrain, crs):
+def _tile_coordinates(cells, spacing, bounds, crs):
     x0, y0, x1, y1 = cells
     x, y = np.meshgrid(np.arange(x0, x1, dtype=np.int64), np.arange(y0, y1, dtype=np.int64))
     x, y = x.ravel() * spacing, y.ravel() * spacing
     lon, lat = _to_geographic(crs).transform(x, y)
     keep = (lon >= bounds[0]) & (lon <= bounds[2]) & (lat >= bounds[1]) & (lat <= bounds[3])
     x, y, lat, lon = (a[keep] for a in (x, y, lat, lon))
-    return pd.DataFrame({"point_id": np.arange(len(x)), "x": x, "y": y, "lat": lat, "lon": lon,
-                         "elev_m": terrain.sample(lat, lon) if len(lat) else np.array([])})
+    return pd.DataFrame({"point_id": np.arange(len(x)), "x": x, "y": y, "lat": lat, "lon": lon})
+
+
+def _sample_tile_terrain(points, terrain):
+    points["elev_m"] = (terrain.sample(points.lat.to_numpy(), points.lon.to_numpy())
+                        if len(points) else np.array([]))
+    return points
+
+
+def tile_points(cells, spacing, bounds, terrain, crs):
+    return _sample_tile_terrain(_tile_coordinates(cells, spacing, bounds, crs), terrain)
 
 
 def _expanded_bounds(cells, spacing, radius, crs):
@@ -620,8 +629,10 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         resumed += 1
                     restore_terrain(payload)
                 else:
-                    tracks = _tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
-                    points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
+                    points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
+                    tracks = (_tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
+                              if len(points) else [])
+                    points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
                     if len(points):
                         rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
                                               ledger=ledger, stage=stage,
