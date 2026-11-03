@@ -308,11 +308,13 @@ class FlightCache:
         self.session = session or requests.Session()
 
     def acquire_day(self, day, *, provider="staging-0"):
+        from . import tracks as normalizer
         day = date.fromisoformat(day)
         tag = f"v{day:%Y.%m.%d}-planes-readsb-{provider}"
         directory = self.root / day.isoformat() / provider
         directory.mkdir(parents=True, exist_ok=True)
-        index = directory / "all-types-v1.sqlite"
+        normalizer_hash = sha256(normalizer.__file__)
+        index = directory / f"all-types-v1-{normalizer_hash[:12]}.sqlite"
         if index.exists():
             return FlightIndex(index)
         release_path = directory / "release.json"
@@ -340,6 +342,7 @@ class FlightCache:
         coverage = {"bounds": [-180, -90, 180, 90], "time_range_s": [start, start + 86400],
                     "all_aircraft": True, "provider": "ADSB.lol", "release_tag": tag,
                     "release_sha256": sha256(release_path), "license": "ODbL", "missing_receiver_data_possible": True}
+        coverage["normalizer_sha256"] = normalizer_hash
         types_path = self.root / "icao_aircraft_types.js"
         type_source = download("https://raw.githubusercontent.com/wiedehopf/tar1090-db/master/db/icao_aircraft_types.js",
                                types_path, offline=self.offline, session=self.session)
@@ -400,11 +403,12 @@ class CachedTerrain:
         return path
 
     def sample(self, lat, lon):
-        from .terrain import Terrain
         lat, lon = np.broadcast_arrays(lat, lon)
         shape = lat.shape
         lat, lon = lat.ravel(), lon.ravel()
-        degrees = np.column_stack((np.floor(lat).astype(int), np.floor(lon).astype(int)))
+        # Published COG tiles omit the original bottom/right overlap pixels.
+        # Their outer edges are shifted north/west by half a GLO90 pixel.
+        degrees = np.column_stack((np.floor(lat - 1 / 2400).astype(int), np.floor(lon + 1 / 2400).astype(int)))
         self.last_sample_files = {"tileList.txt", self.geoid_path.name}
         tiles, inverse = np.unique(degrees, axis=0, return_inverse=True)
         height = np.zeros(len(lat))
@@ -417,22 +421,36 @@ class CachedTerrain:
                 path = self._file(f"{self.base}/{tag}/{tag}.tif", self.root / f"{tag}.tif", raster=True)
                 self.last_sample_files.add(path.name)
                 selected = inverse == i
-                sampler = Terrain([path])
-                try:
-                    height[selected] = sampler.sample(lat[selected], lon[selected])
-                finally:
-                    for raster in sampler.rasters:
-                        raster.close()
-            sampler = Terrain([self.geoid_path])
-            try:
-                height += sampler.sample(lat, lon)
-            finally:
-                for raster in sampler.rasters:
-                    raster.close()
+                height[selected] = self._raster_sample(path, lat[selected], lon[selected])
+            height += self._raster_sample(self.geoid_path, lat, lon)
         except (DataUnavailable, ValueError) as error:
             self.failures.append(str(error))
             raise DataUnavailable(f"Terrain coverage unavailable: {error}") from error
         return height.reshape(shape)
+
+    @staticmethod
+    def _raster_sample(path, lat, lon):
+        """Read only the local pixel window, including for the global geoid."""
+        import rasterio
+        from rasterio.windows import Window
+        from pyproj import Transformer
+        if not len(lat):
+            return np.array([])
+        try:
+            with rasterio.open(path) as raster:
+                x, y = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True).transform(lon, lat)
+                col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
+                col, row = np.floor(col).astype(int), np.floor(row).astype(int)
+                if np.any((col < 0) | (col >= raster.width) | (row < 0) | (row >= raster.height)):
+                    raise DataUnavailable(f"Raster extent missing candidate points: {path}")
+                left, top, right, bottom = int(col.min()), int(row.min()), int(col.max()), int(row.max())
+                data = raster.read(1, window=Window(left, top, right-left+1, bottom-top+1), masked=True)
+                values = data[row-top, col-left]
+                if np.ma.getmaskarray(values).any() or not np.isfinite(values).all():
+                    raise DataUnavailable(f"Raster nodata at candidate points: {path}")
+                return np.asarray(values, dtype=float)
+        except rasterio.errors.RasterioError as error:
+            raise DataUnavailable(f"Cannot sample terrain raster: {path}") from error
 
     def provenance(self):
         return {"provider": "Copernicus GLO-90", "vertical_datum": "EGM2008 converted to ellipsoidal",
