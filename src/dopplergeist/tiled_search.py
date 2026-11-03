@@ -135,6 +135,28 @@ def grid_tiles(bounds, spacing_m, tile_cells, crs="EPSG:5070"):
                                   min(xmax + 1, (ix + 1) * tile_cells), min(ymax + 1, (iy + 1) * tile_cells))
 
 
+def _split_tile_cells(cells):
+    """Partition a half-open grid rectangle without dropping or repeating cells."""
+    x0, y0, x1, y1 = cells
+    xs = [x0, (x0+x1)//2, x1] if x1-x0 > 1 else [x0, x1]
+    ys = [y0, (y0+y1)//2, y1] if y1-y0 > 1 else [y0, y1]
+    if len(xs) == len(ys) == 2:
+        return []
+    return [(xs[i], ys[j], xs[i+1], ys[j+1])
+            for j in range(len(ys)-1) for i in range(len(xs)-1)]
+
+
+def _tile_capacity_error(error):
+    """Only known per-tile work limits are candidates for subdivision."""
+    return str(error) in {
+        "Tile track/sample memory budget exceeded; reduce tile_cells",
+        "Tile CPA-row memory budget exceeded",
+        "Association work/storage budget exceeded; search is incomplete",
+        "Association candidate budget exceeded; search is incomplete",
+        "Tile candidate memory budget exceeded; reduce tile_cells",
+    }
+
+
 @lru_cache(maxsize=8)
 def _cached_to_geographic(crs):
     return Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
@@ -563,27 +585,48 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             terrain.ocean_tiles.update(provenance.get("terrain_ocean_tiles", []))
             terrain.failures.extend(provenance.get("terrain_failures", []))
 
-    def tile_requests():
-        for number, (tile_id, cells) in enumerate(grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)):
-            if budget.max_tiles is not None and number >= budget.max_tiles:
-                break
-            stage = f"coarse:{tile_id}"
-            checkpoint = output / f"tile-{tile_id}.json"
-            cached = None
+    def tile_request(tile_id, cells):
+        stage = f"coarse:{tile_id}"
+        checkpoint = output / f"tile-{tile_id}.json"
+        cached = None
+        try:
+            if checkpoint.exists():
+                record = json.loads(checkpoint.read_text())
+                if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
+                    raise DataUnavailable("Corrupt tile checkpoint")
+                prior = record["payload"]
+                for source in prior.get("terrain_files", []):
+                    if sha256(source["path"]) != source["sha256"]:
+                        raise DataUnavailable("Terrain changed since tile checkpoint")
+                if ledger.stage_valid(stage, prior.get("retention_checksum")):
+                    cached = checkpoint
+        except (DataUnavailable, ValueError, OSError) as error:
+            cached = error
+        return stage, cells, cached, None
+
+    def requests_for_wave(wave, next_wave):
+        nonlocal total
+        for tile_id, cells in wave:
+            marker = output / f"split-{tile_id}.json"
+            if not marker.exists():
+                yield tile_request(tile_id, cells)
+                continue
+            parts = _split_tile_cells(cells)
+            children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
             try:
-                if checkpoint.exists():
-                    record = json.loads(checkpoint.read_text())
-                    if record["run_hash"] != run_hash or record["payload_hash"] != content_hash(record["payload"]):
-                        raise DataUnavailable("Corrupt tile checkpoint")
-                    prior = record["payload"]
-                    for source in prior.get("terrain_files", []):
-                        if sha256(source["path"]) != source["sha256"]:
-                            raise DataUnavailable("Terrain changed since tile checkpoint")
-                    if ledger.stage_valid(stage, prior.get("retention_checksum")):
-                        cached = checkpoint
+                record = json.loads(marker.read_text())
+                if not parts or record != {"run_hash": run_hash, "cells": list(cells), "children": children}:
+                    raise DataUnavailable("Corrupt tile subdivision checkpoint")
             except (DataUnavailable, ValueError, OSError) as error:
-                cached = error
-            yield stage, cells, cached, None
+                yield f"coarse:{tile_id}", cells, error, None
+                continue
+            total += len(children)-1
+            next_wave.extend((child_id, tuple(child_cells)) for child_id, child_cells in children)
+
+    def tile_order(item):
+        root, *path = item[0].split("~")
+        ix, iy = map(int, root.split("_"))
+        return iy, ix, tuple(map(int, path))
 
     if parallel:
         terrain_options = {"offline": terrain.offline, "geoid_path": terrain.geoid_path,
@@ -614,49 +657,62 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             return error
 
     with context as pool:
-        requests = tile_requests()
-        results = (ordered_tile_results(pool, requests, workers, finish_tile) if pool is not None else
-                   ((stage, cells, cached, cached is not None) for stage, cells, cached, _ in requests))
-        for stage, cells, prepared, was_cached in results:
-            tile_id = stage[len("coarse:"):]
-            checkpoint = output / f"tile-{tile_id}.json"
-            try:
-                if isinstance(prepared, BaseException):
-                    raise prepared
-                if prepared is not None:
-                    payload = json.loads(prepared.read_text())["payload"]
-                    if was_cached:
-                        resumed += 1
-                    restore_terrain(payload)
-                else:
-                    points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
-                    tracks = (_tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
-                              if len(points) else [])
-                    points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
-                    if len(points):
-                        rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                              ledger=ledger, stage=stage,
-                                              score_floor=(_retained_score_floor(ranked, budget.top_k)
-                                                           if floor_policy == "global_and_per_tile" else None))
+        roots = grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)
+        wave = itertools.islice(roots, budget.max_tiles) if budget.max_tiles is not None else roots
+        while wave is not None:
+            next_wave = []
+            requests = requests_for_wave(wave, next_wave)
+            results = (ordered_tile_results(pool, requests, workers, finish_tile) if pool is not None else
+                       ((stage, cells, cached, cached is not None) for stage, cells, cached, _ in requests))
+            for stage, cells, prepared, was_cached in results:
+                tile_id = stage[len("coarse:"):]
+                checkpoint = output / f"tile-{tile_id}.json"
+                try:
+                    if isinstance(prepared, BaseException):
+                        raise prepared
+                    if prepared is not None:
+                        payload = json.loads(prepared.read_text())["payload"]
+                        if was_cached:
+                            resumed += 1
+                        restore_terrain(payload)
                     else:
-                        rows, counts = [], {}
-                        ledger.record(stage, [], [], 0)
-                    used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
-                    terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
-                    oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if len(points) else []
-                    payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
-                               "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
-                               "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
-                    write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
-                done += 1
-                points_searched += payload["grid_points"]
-                _record_support(output, stage, payload["counts"], support)
-                ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
-                                          ledger=ledger, stage=f"global:{tile_id}")
-            except (DataUnavailable, ValueError, OSError) as error:
-                if isinstance(error, TileFailure):
-                    restore_terrain(error.provenance)
-                failures.append({"tile": tile_id, "reason": str(error)})
+                        points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
+                        tracks = (_tracks(indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), time_range_s, budget)
+                                  if len(points) else [])
+                        points = _sample_tile_terrain(points, terrain) if tracks else pd.DataFrame()
+                        if len(points):
+                            rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
+                                                  ledger=ledger, stage=stage,
+                                                  score_floor=(_retained_score_floor(ranked, budget.top_k)
+                                                               if floor_policy == "global_and_per_tile" else None))
+                        else:
+                            rows, counts = [], {}
+                            ledger.record(stage, [], [], 0)
+                        used = getattr(terrain, "last_sample_files", set()) if len(points) else set()
+                        terrain_files = [terrain.files[name] for name in sorted(used)] if used else []
+                        oceans = sorted(getattr(terrain, "last_sample_ocean_tiles", set())) if len(points) else []
+                        payload = {"ranked": rows, "counts": counts, "grid_points": len(points), "tracks": len(tracks),
+                                   "cells": list(cells), "terrain_files": terrain_files, "terrain_ocean_tiles": oceans,
+                                   "terrain_failures": [], "retention_checksum": ledger.checksum(stage)}
+                        write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload})
+                    done += 1
+                    points_searched += payload["grid_points"]
+                    _record_support(output, stage, payload["counts"], support)
+                    ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
+                                              ledger=ledger, stage=f"global:{tile_id}")
+                except (DataUnavailable, ValueError, OSError) as error:
+                    if isinstance(error, TileFailure):
+                        restore_terrain(error.provenance)
+                    parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
+                    if parts:
+                        children = [[f"{tile_id}~{i}", list(part)] for i, part in enumerate(parts)]
+                        write_json(output / f"split-{tile_id}.json",
+                                   {"run_hash": run_hash, "cells": list(cells), "children": children})
+                        total += len(children)-1
+                        next_wave.extend((child_id, tuple(child_cells)) for child_id, child_cells in children)
+                    else:
+                        failures.append({"tile": tile_id, "reason": str(error)})
+            wave = sorted(next_wave, key=tile_order) if next_wave else None
     coarse = list(ranked)
     # Refine only global finalists; tile selection never controls refinement rank.
     refinement_failure = None
@@ -680,26 +736,39 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 cx, cy = round(row["x"] / fine), round(row["y"] / fine)
                 for y0 in range(cy - width, cy + width + 1, budget.tile_cells):
                     for x0 in range(cx - width, cx + width + 1, budget.tile_cells):
-                        cells = (x0, y0, min(cx + width + 1, x0 + budget.tile_cells), min(cy + width + 1, y0 + budget.tile_cells))
-                        points = tile_points(cells, fine, bounds, terrain, crs)
-                        keep = np.ones(len(points), dtype=bool)
-                        for left, bottom, right, top in completed_rectangles:
-                            keep &= ~((points.x >= left * fine) & (points.x < right * fine)
-                                      & (points.y >= bottom * fine) & (points.y < top * fine))
-                        refinement_points_skipped += int((~keep).sum())
-                        points = points[keep]
-                        if not len(points):
-                            continue
-                        tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
-                        stage = f"fine:{seed_index}:{x0}:{y0}"
-                        rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                              ledger=ledger, stage=stage,
-                                              score_floor=_retained_score_floor(ranked, budget.top_k))
-                        _record_support(output, stage, counts, support)
-                        fine_stages += 1
-                        refinement_points_searched += len(points)
-                        ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
-                                                  ledger=ledger, stage=f"fine-global:{seed_index}:{x0}:{y0}")
+                        root = (x0, y0, min(cx + width + 1, x0 + budget.tile_cells),
+                                min(cy + width + 1, y0 + budget.tile_cells))
+                        pending = [root]
+                        while pending:
+                            cells = pending.pop()
+                            points = tile_points(cells, fine, bounds, terrain, crs)
+                            keep = np.ones(len(points), dtype=bool)
+                            for left, bottom, right, top in completed_rectangles:
+                                keep &= ~((points.x >= left * fine) & (points.x < right * fine)
+                                          & (points.y >= bottom * fine) & (points.y < top * fine))
+                            skipped = int((~keep).sum())
+                            points = points[keep]
+                            if not len(points):
+                                refinement_points_skipped += skipped
+                                continue
+                            try:
+                                tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
+                                stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
+                                rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
+                                                      ledger=ledger, stage=stage,
+                                                      score_floor=_retained_score_floor(ranked, budget.top_k))
+                            except (DataUnavailable, ValueError, OSError) as error:
+                                parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
+                                if not parts:
+                                    raise
+                                pending.extend(reversed(parts))
+                                continue
+                            refinement_points_skipped += skipped
+                            _record_support(output, stage, counts, support)
+                            fine_stages += 1
+                            refinement_points_searched += len(points)
+                            ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
+                                                      ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
                 completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
         except (DataUnavailable, ValueError, OSError) as error:
             refinement_failure = str(error)
