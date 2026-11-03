@@ -1,5 +1,10 @@
 # Physical matching
 
+The current target is up to 1,000 m point error acceptable, with 100–500 m or
+better preferred. Benchmark point error and model sensitivity are different
+quantities. A boundary-truncated 500 m profile is not relabelled a valid 1 km
+envelope; it needs a larger declared search budget or remains limited.
+
 `matching.prepare_events(detected_events)` adapts the shared detected-event
 records into the existing `(events, measurements)` search arguments. It uses
 subsonic speed and a declared maximum audible distance rather than excluding
@@ -73,10 +78,15 @@ acceptance are integration gates, not established by these replays.
 
 ## Unmatched proposals
 
-`matching.association_candidates(table, events, ..., min_events=1, max_events=3,
+`matching.association_candidates(table, events, ..., min_events=1, max_events=None,
 max_candidates=20000)` proposes subsets instead of requiring every acoustic
 proposal to be an aircraft. It examines subsets up to the declared event count
-and fails explicitly when candidate/work budgets are exceeded. The outer driver
+and defaults to all independent groups. Shared-clock intervals prune impossible
+extensions before complete assignments are built. Index entries, branch visits
+and stored assignments share a work/storage budget; candidate limits remain
+explicit. An optional smaller event cap is reported as `event_cap_limited`, and
+the outer driver must treat that cap as incomplete coverage. The hook fails
+explicitly when candidate/work budgets are exceeded. The outer driver
 must mark that search incomplete. All original proposals remain in the event
 artifact. Each hypothesis carries ordered `event_indices`, and
 `score_candidate`/`refine_candidate` consume the complete event/measurement lists
@@ -128,3 +138,11 @@ and flight heights must already share a defensible ellipsoidal datum. Geometric
 interpolation remains labelled and subject to the declared perturbation range.
 Terrain must expose an applied geoid conversion or an explicit ellipsoidal-datum
 declaration; an unlabelled constant/raster surface keeps the envelope incomplete.
+
+`predict_fitted_ridge(track, observer_ecef, absolute_receive_times_s,
+event_diagnostics)` evaluates the frozen fitted model, including source drift at
+emission time. Diagnostics retain `source_reference_emission_time_s` and
+`source_span_s`; a drifting fit without its reference fails explicitly.
+Unsupported times remain NaN. The legacy replay plotter uses this helper for
+the scored curve. Older historical PNGs that drew only `f0 * factor` remain
+unchanged and are approximations when their associated fit includes drift.
