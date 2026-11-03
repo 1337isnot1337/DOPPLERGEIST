@@ -5,11 +5,11 @@ import pandas as pd
 import pytest
 from pyproj import Transformer
 
-from aircraft_geoloc import tiled_search
-from aircraft_geoloc.data_access import FlightIndex
-from aircraft_geoloc.geometry import AcousticSupportError, Track
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, _score, search_national, tile_points
+from dopplergeist import tiled_search
+from dopplergeist.data_access import FlightIndex
+from dopplergeist.geometry import AcousticSupportError, Track
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, _score, search_national, tile_points
 from test_tiled_search import compact, scenario
 
 
