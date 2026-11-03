@@ -52,7 +52,8 @@ checkpoints. Intake and discovery run again; the search checks the recorded
 inputs, settings, implementation and individual tile records before reuse. A
 changed implementation or input fails the checkpoint check rather than mixing
 results. A fixed `max_tiles` limit is not extended by resuming. Resume is
-currently available from the CLI, not the upload interface.
+currently available from the CLI, not the upload interface; stop any service
+using the same jobs directory before running it, because the manager is exclusive.
 
 The UTC window bounds the recording start, not the event occurrence or upload.
 Missing time is a required-input result. Scores are ranking statistics, not
