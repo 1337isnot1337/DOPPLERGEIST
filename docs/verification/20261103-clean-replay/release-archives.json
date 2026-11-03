@@ -1,0 +1,26 @@
+{
+  "release_tag": "checkpoint-2026-11-02",
+  "manifest_sha256": "67556140dc40922b6e569fb44f5fbffb31871f3256483d6c337f906e8bcf5a4d",
+  "archives": [
+    {
+      "name": "data-source.tar.gz",
+      "bytes": 257168360,
+      "sha256": "0f5e7bf1dc9279b01ff10e2005a777b00b2835a0304aa5366cc333580e5135df"
+    },
+    {
+      "name": "data-terrain.tar.gz",
+      "bytes": 25353456,
+      "sha256": "852ac2e0e6e9040efb277692d57751d1f7b57ed0538edf9b249fc0ded81fd965"
+    },
+    {
+      "name": "data-synthetic.tar.gz",
+      "bytes": 17606073,
+      "sha256": "c4169ea77a263e0567afd36800a21d131c6976877f4e0bfebfcf15239cdc00e2"
+    },
+    {
+      "name": "data-adsb-derived.tar.gz",
+      "bytes": 1234649883,
+      "sha256": "1f8a03daf8cd851b33f19a47ae65eb4d20d59ce48956e99d51aac7517302d6a6"
+    }
+  ]
+}

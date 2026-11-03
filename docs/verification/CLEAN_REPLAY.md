@@ -48,6 +48,54 @@ event windows and frequency bands. Their comparison coordinate is a public
 platform listing with unquantified physical uncertainty, and the faint case's
 recording clock comes from the two-event match.
 
-Machine-readable run receipts and measured results will be added here after the
-clean replays complete. Large audio/flight arrays and spectral outputs stay in
-ignored `data/`, `results/` and checksummed release assets.
+## Measured clean replay, 2026-11-03 UTC
+
+All four real CLI subprocesses completed successfully at source revision
+`472a668`. The original real two-event and faint-event winners reproduce exactly,
+including position, flight IDs, ranking score and shared clock. The known-time
+synthetic case reproduces its winner, with a score difference of 3.43e-11.
+
+| Case | Position error | Baseline comparison | Runtime | Peak RSS |
+| --- | ---: | --- | ---: | ---: |
+| Synthetic two events | 15.40 m | Changed; correct flight pair | 148.63 s | 611.58 MiB |
+| Synthetic known-time minute | 40.87 m | Reproduced | 15.76 s | 287.00 MiB |
+| Real regional two events | 43.86 m from public reference | Reproduced exactly | 99.11 s | 810.77 MiB |
+| Real regional faint event | 357.47 m from public reference | Reproduced exactly; misses 100 m target | 208.73 s | 503.97 MiB |
+
+The clean environment used CPython 3.12.3, pandas 3.1.0, numpy 2.5.4, scipy
+1.18.1 and ffmpeg 6.1.1 on Linux. All 39 tests passed in 6.14 s, including the four
+new runner failure/provenance checks. These machine-specific runtimes include
+overlap between the synthetic and real replay processes; they are observations,
+not controlled speed comparisons with the original host.
+
+The synthetic wrapper intentionally exited 1: its two-event winner moved
+24.77555 m from the archived point, its score changed by +0.00958725, and its
+recording start changed by +0.40638876 s. It still found the correct pair with
+0.06380653 s absolute clock error. The archived and current first-event ridge
+CSVs differ at 67 of 733 frames; the second event differs at 34 frames. The old
+synthetic report does not pin an implementation hash. The exact cause of that
+ridge/baseline change is unresolved; no algorithm improvement is inferred.
+
+The independently regenerated WAV has exactly the same 4,720,000 decoded float32
+samples as the release WAV. Only its PEAK-chunk timestamp bytes 60 and 61 differ.
+Both container hashes and the common decoded-sample SHA256 are retained. Configs,
+tracks, type data and synthetic truth regenerate byte-for-byte.
+
+The real-regional wrapper exited 0. All three required data archives and the
+additional synthetic comparison archive match their published release hashes;
+all 21 selected restored input files also match the manifest. The national
+prop/unknown Parquet and raw daily archive were not restored for these regional
+replays. No source video was downloaded or uploaded.
+
+Exact commands are in the machine-readable
+[synthetic receipt](20261103-clean-replay/synthetic-verification.json) and
+[real regional receipt](20261103-clean-replay/real-regional-verification.json).
+[Restored-file hashes](20261103-clean-replay/restored-files.json),
+[release-archive hashes](20261103-clean-replay/release-archives.json),
+[synthetic sample comparison](20261103-clean-replay/synthetic-regeneration.json)
+and subprocess logs are in the same directory. Large audio/flight arrays and
+spectral outputs stay in ignored `data/`, `results/` and release assets.
+
+Automatic upload/discovery and independent national real-audio acceptance remain
+outside these manually configured replays. This verification does not close
+issue #13.
