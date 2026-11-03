@@ -63,6 +63,11 @@ raw audio” and its video track was 128×128 pixels. Frames inspected at 0 and 
 seconds were identical and mostly black with a tiny landscape; they did not
 establish a precise recording location. The remainder of the video was not
 visually inspected. This check is evaluation-only and supplies no search inputs.
+The existing source packet also contains the creator's companion-video
+Street View comparison (`data/source/true_camera.png`), which identifies an
+apparent camera location. The public reference remains approximate rather than
+a surveyed microphone coordinate. See the [Dopplerprint comparison](DOPPLERPRINT_REVIEW_2026-11-03.md)
+for another implementation's use of the same reference.
 The uploaded MP3 has SHA-256
 `674df668c25608ef3e9199bf3b48d760642456d679729c9661ac5cb2a22e179c`.
 The automatic test uses the whole recording, no supplied flight IDs or selected
