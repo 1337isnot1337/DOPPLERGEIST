@@ -1,0 +1,35 @@
+{
+  "status": "fresh_raw_replay_reproduced",
+  "published_source_commit": "e1134427a5255def32444363d90669c473df68f7",
+  "source_tree": "043eec047e89cbf546d95a463faebab982e785a9",
+  "same_best_as_released_input_replay": true,
+  "same_coarse_filter_counts": true,
+  "same_scoring_filter_counts": true,
+  "elapsed_s": 42.251943819999724,
+  "clock_input": null,
+  "evaluation_reference": {
+    "reference_source": "https://app.osprey-watch.org/nest/3916",
+    "reference_coordinate": [
+      40.8766,
+      -73.5247
+    ],
+    "reference_precision_degrees": 0.0001,
+    "error_m": 43.85847078233993,
+    "scope": "regional search; published public nest-platform coordinate; not a blind national result"
+  },
+  "fresh_input_sha256": "38d1ee70f6f7b92957d5301e57e7fbf4c74e702438a8438673acbd4c3a08af29",
+  "normalization_scope": "source_informed_legacy_regional_regression_inputs",
+  "missing_velocity_inferred_components": {
+    "east_mps": 2478,
+    "north_mps": 2478,
+    "up_mps": 1632
+  },
+  "legacy_known_jets_excluded_count": 2786,
+  "limitations": [
+    "Same supplied regional bounds and manual event/band settings as published reproduction.",
+    "Original downstream jet filter retained only for this historical comparison; normalization preserves all types.",
+    "Published reference platform is not an independently surveyed microphone location.",
+    "No narrow trusted recorder clock was supplied; it is inferred by the two-event fit.",
+    "This does not establish automatic nationwide100m accuracy."
+  ]
+}

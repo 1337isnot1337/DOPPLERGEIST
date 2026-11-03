@@ -1,0 +1,34 @@
+{
+  "code.json": {
+    "bytes": 1306,
+    "sha256": "bb29c6605fbbf445cd4a901ab217c8d12a38b590cf5005925f24818480e1d1dc"
+  },
+  "normalization-report.json": {
+    "bytes": 8786,
+    "sha256": "32c3e9ad536b4d2d23407be8008f0fa108df17c00bb4ef80915cecdb565bdf35"
+  },
+  "normalize_fulltraces.py": {
+    "bytes": 17804,
+    "sha256": "d726c43be399ee3b70a4e064b5f9c43bb10a7d3e7b0f27ebbbb6277fe09dc998"
+  },
+  "old-region-inspection.json": {
+    "bytes": 1332,
+    "sha256": "e4816d02ea193186f5d911bf413eb076e03c18f7f9181109d88d426c6fe7a5df"
+  },
+  "reference-region-alltypes-fulltraces.parquet": {
+    "bytes": 573526453,
+    "sha256": "38d1ee70f6f7b92957d5301e57e7fbf4c74e702438a8438673acbd4c3a08af29"
+  },
+  "selection.json": {
+    "bytes": 1604,
+    "sha256": "dc81a28ef69016bed8eb32bab21794626a3b42d7a811f7d98d7eb84af1a2f198"
+  },
+  "sources.json": {
+    "bytes": 1493,
+    "sha256": "daed561e6de042e922c50111b008123e47b293c941ffa3d74a509f2000aaeced"
+  },
+  "trace-selection.jsonl": {
+    "bytes": 21208100,
+    "sha256": "d7f6770cb9ebb00d50834ec75b38156c1e0659dcc7cf8aa9c2e84e84e22a8a63"
+  }
+}

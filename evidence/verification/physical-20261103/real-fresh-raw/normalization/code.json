@@ -1,0 +1,20 @@
+{
+  "configuration_sha256": "dc81a28ef69016bed8eb32bab21794626a3b42d7a811f7d98d7eb84af1a2f198",
+  "files": {
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated/src/aircraft_geoloc/data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated/src/aircraft_geoloc/geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST-integrated/src/aircraft_geoloc/tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+  },
+  "git_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+  "normalizer": "aircraft_geoloc.tracks.adsblol_frame",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "runner_sha256": "d726c43be399ee3b70a4e064b5f9c43bb10a7d3e7b0f27ebbbb6277fe09dc998",
+  "schema": "flight_id: string\ntime_s: double\nlat: double\nlon: double\nalt_m: double\nspeed_mps: double\nheading_deg: double\neast_mps: double\nnorth_mps: double\nup_mps: double\ntypecode: string\naltitude_basis: string",
+  "stream_reader": "aircraft_geoloc.data_access.SplitReader",
+  "versions": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "pyarrow": "26.0.0"
+  }
+}
