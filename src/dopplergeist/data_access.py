@@ -36,7 +36,7 @@ def _frame_track(name, frame):
     return track
 
 
-def _continuous_bounds(track):
+def _continuous_bounds(track, transformer):
     """Bound entire Hermite curves using their cubic Bezier control hulls.
 
     Each curve lies inside a ball enclosing its four ECEF control points.
@@ -44,7 +44,6 @@ def _continuous_bounds(track):
     5500 km lower bound on geodetic curvature radii outside the 6000 km sphere.
     Invalid/underground extreme curves fall back to a global box, never a miss.
     """
-    from pyproj import Transformer
     p0, p1 = track.xyz[:-1], track.xyz[1:]
     dt = np.diff(track.time)[:, None]
     velocity = track.speed_vector(track.time)
@@ -53,7 +52,7 @@ def _continuous_bounds(track):
     radius = np.linalg.norm(controls - centers[:, None, :], axis=2).max(axis=1)
     if np.any(np.linalg.norm(centers, axis=1) - radius < 6000000):
         return (-180., 180., -90., 90.)
-    lon, lat, _ = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True).transform(*centers.T)
+    lon, lat, _ = transformer.transform(*centers.T)
     latitude_pad = np.rad2deg(radius / 5500000)
     horizontal = np.linalg.norm(centers[:, :2], axis=1)
     if np.any(radius >= horizontal):
@@ -216,6 +215,8 @@ class FlightIndex:
         Explicit source coverage is required: cropped or prop-only historical
         data must never become an apparently complete national all-type index.
         """
+        from pyproj import Transformer
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         class_map = class_map or {}
@@ -262,6 +263,7 @@ class FlightIndex:
                 db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
+                transformer = Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True)
                 for (flight,) in db.execute("SELECT DISTINCT flight FROM samples ORDER BY flight"):
                     count = db.execute("SELECT count(*) FROM samples WHERE flight=?", (flight,)).fetchone()[0]
                     if count > max_flight_samples:
@@ -278,7 +280,7 @@ class FlightIndex:
                         payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), mtime=0)
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
                                          (name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]), payload, hashlib.sha256(payload).hexdigest()))
-                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track)))
+                        db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track, transformer)))
                         segments += 1
                 db.execute("DROP TABLE samples")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
