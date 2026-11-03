@@ -15,6 +15,12 @@ Workers are deployed by the user and claim work when launched. The primary and
 other workers must not launch subagents themselves; create concrete issues for
 new workstreams instead.
 
+Historical flight data already used by the project: [ADSB.lol globe_history_2026](https://github.com/adsblol/globe_history_2026),
+with daily archives and a reusable all-aircraft cache described in
+[DATA_AND_SCALE.md](DATA_AND_SCALE.md#acquisition). Its observed tracks do not
+guarantee receiver completeness; it is not an independent source for an audit
+of the same ADSB.lol inputs. See [data provenance](DATA_SOURCES.md) for terms.
+
 ## Launch order
 
 1. Start the integration lead on **DG-01** and the evaluation agent on **DG-02**.
