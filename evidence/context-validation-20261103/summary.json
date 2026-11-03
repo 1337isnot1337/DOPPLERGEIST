@@ -1,0 +1,45 @@
+{
+  "consumer_commit": "0dbfceb",
+  "all_modes": 106,
+  "all_supported_groups": 2,
+  "context_top_error_m": 6.505245821579339,
+  "first_three_errors_m": [
+    6.505245821579339,
+    6.510865461166067,
+    21.885529691476
+  ],
+  "best_distant_mode": {
+    "rank": 4,
+    "mode_id": "mode-0001",
+    "input_index": 0,
+    "context_contrast_excess": 1.247464128265405,
+    "winner_minus_mode": 0.3461010390011332,
+    "descriptive_paired_block_interval_95": [
+      0.1792334251169328,
+      0.5112810655252387
+    ],
+    "error_m": 1046024.73912748,
+    "flight_ids": [
+      "57ef4ed94fc2ccf8",
+      "ef567498fdaec85d"
+    ],
+    "lat": 35.000057148871385,
+    "lon": -89.99998357704526
+  },
+  "thresholds_m": {
+    "100": {
+      "context_top_within": true,
+      "retained_candidates_within": 5
+    },
+    "500": {
+      "context_top_within": true,
+      "retained_candidates_within": 27
+    },
+    "1000": {
+      "context_top_within": true,
+      "retained_candidates_within": 27
+    }
+  },
+  "original_job_unchanged": true,
+  "scope": "development frozen-context replay; original automatic job unchanged/inconclusive"
+}

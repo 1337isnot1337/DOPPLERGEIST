@@ -87,12 +87,13 @@ source checkouts, labels and identifier map were absent. Candidate parameters we
 never refitted; ground truth was joined only after the context process exited.
 
 The context leader was the 6.505 m candidate, formerly rank 4 under core scoring.
-All 106 modes were compared. The strongest distant context competitor scored
-1.450892 against 1.593565; the original 1,046 km leader scored 1.247464 and ranked
-fourth. The nearest distant competitor was retained and lost by 0.142673 contrast
-units; its paired-block margin interval was [0.053508, 0.235893], descriptive only.
-It slightly exceeded the leader in one event's pre-core portion, so this is not
-uniform dominance across every partition.
+All 106 modes were compared. The first three context rows were 6.505, 6.511 and
+21.886 m from truth, with scores 1.593565, 1.593410 and 1.450892. The strongest
+distant competitor was the original 1,046 km leader: it scored 1.247464 and ranked
+fourth. Its descriptive paired-block margin was [0.179233, 0.511281], with a mean
+gap of 0.346101 contrast units. The nearby 21.886 m mode slightly exceeded the
+leader in one event's pre-core portion; there is no uniform dominance across
+every partition or calibrated location-confidence claim.
 
 Common context retained 759/936 bins for event 1 and 475/728 for event 2, with both
 pre/post portions present. Those symmetric restrictions remain conditional on the
