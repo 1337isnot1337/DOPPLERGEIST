@@ -367,7 +367,12 @@ class FlightCache:
                 write_json(release_path, response.json())
             except requests.RequestException as error:
                 raise DataUnavailable(f"Historical release unavailable: {day}") from error
-        release = json.loads(release_path.read_text())
+        try:
+            release = json.loads(release_path.read_text())
+        except (OSError, json.JSONDecodeError) as error:
+            raise DataUnavailable(f"Invalid historical release metadata: {release_path}") from error
+        if not isinstance(release, dict) or release.get("tag_name") != tag:
+            raise DataUnavailable(f"Historical release metadata does not match requested tag: {tag}")
         assets = sorted((a for a in release["assets"] if ".tar." in a["name"]), key=lambda a: a["name"])
         if not assets:
             raise DataUnavailable("Release has no split trace archive")
