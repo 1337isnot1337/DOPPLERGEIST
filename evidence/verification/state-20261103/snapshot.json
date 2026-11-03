@@ -53,6 +53,15 @@
     "interruption.json": {
       "bytes": 693,
       "sha256": "2122afb6d7a62a9cbf20445bd86913e0be2441088bdd57af51cc44ca964a9fec"
+    },
+    "main-based-pytest.xml": {
+      "bytes": 28656,
+      "sha256": "25e95992cd44c5227e8983c042b3b7ba7c8ef54d7075cd2f172e11c0f7fa0674"
+    },
+    "main-based-tests.json": {
+      "bytes": 907,
+      "sha256": "9bb08f451a3c4e2f3390b8a7257d8ca86dd7c10d5a2a24070860070843a3a122"
     }
-  }
+  },
+  "main_based_suite_rerun_source": "ee2bbe2037881a2f7aa222afc0c88469932c87ae"
 }

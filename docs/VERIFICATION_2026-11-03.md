@@ -23,6 +23,15 @@ an application is insufficient grounds for calling that application merged on `m
 
 ## Existing integration test receipt
 
+The main-based documentation checkpoint was independently rerun at
+`ee2bbe2` using the clean Python 3.14 environment: **219 passing tests plus six
+passing subtests**, zero failures, errors or skips, in **50.12 seconds**. Its
+`src/`, `scripts/` and `tests/` match the pinned `main` exactly. The
+[main-based receipt](../evidence/verification/state-20261103/main-based-tests.json)
+records the full source/tree hash and command; the
+[raw JUnit XML](../evidence/verification/state-20261103/main-based-pytest.xml)
+is preserved. This suite is separate from the historical product integration below.
+
 The preserved local JUnit artifact records **264 passing tests plus 14 passing
 subtests**, zero failures, errors or skips, at source
 [`b6de6db5d5c94e08cdcabbe4469fec47cfa81751`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/b6de6db5d5c94e08cdcabbe4469fec47cfa81751),

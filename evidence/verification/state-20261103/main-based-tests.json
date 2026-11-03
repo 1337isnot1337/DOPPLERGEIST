@@ -1,0 +1,18 @@
+{
+  "source_commit": "ee2bbe2037881a2f7aa222afc0c88469932c87ae",
+  "source_tree": "2aa329ccfaab5cf55aa760dd7313319636238c4e",
+  "main_baseline": "8cdb7ae357137e7d7255b87b7ff88a4d281f6d7c",
+  "code_scripts_tests_unchanged_from_main": true,
+  "python": "3.14.8",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 /home/cinna/.cache/dopplergeist/clean-py314-20261102/bin/python -m pytest -q --junitxml=/home/cinna/.cache/dopplergeist/assessment-ee2bbe2-pytest-20261103.xml",
+  "pytest_summary": {
+    "passed": 219,
+    "subtests_passed": 6,
+    "elapsed_s": 50.12,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0
+  },
+  "xml_sha256": "25e95992cd44c5227e8983c042b3b7ba7c8ef54d7075cd2f172e11c0f7fa0674",
+  "scope": "Full suite rerun at the frozen documentation checkpoint, with src/scripts/tests identical to the pinned main. Not a new localization experiment."
+}
