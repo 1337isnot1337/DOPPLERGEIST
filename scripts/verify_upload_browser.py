@@ -89,10 +89,16 @@ def main():
             page.wait_for_function("() => document.querySelector('#artifacts').children.length > 0", timeout=15000)
             if errors:
                 raise RuntimeError(f"Browser JavaScript errors: {errors}")
+            page.set_viewport_size({"width": 390, "height": 844})
+            mobile = page.evaluate("({viewport_width: innerWidth, document_width: document.documentElement.scrollWidth})")
+            page.screenshot(path=str(output / "page-mobile.png"), full_page=True)
+            page.set_viewport_size({"width": 1440, "height": 1100})
+            if mobile["document_width"] > mobile["viewport_width"]:
+                raise RuntimeError("Mobile result page overflows horizontally")
             write_json(output / "browser.json", {"browser": browser.version, "url": page.url,
                        "python": sys.version, "playwright": importlib.metadata.version("playwright"),
                        "status": value["status"], "javascript_errors": errors,
-                       "reloaded_job_verified": True})
+                       "reloaded_job_verified": True, "mobile_layout": mobile})
         finally:
             (output / "page.txt").write_text(page.locator("body").inner_text())
             page.screenshot(path=str(output / "page.png"), full_page=True)
