@@ -80,6 +80,29 @@ def test_shutdown_waits_for_upload_and_does_not_launch_it(tmp_path):
     assert not manager._threads
 
 
+def test_second_upload_can_queue_while_first_is_paused(tmp_path):
+    manager = JobManager(tmp_path, max_pending=2)
+    manager._serial.acquire()
+    stream = PausedStream()
+    slow = threading.Thread(target=lambda: manager.submit(
+        {"schema_version": 1}, stream, len(stream.getvalue())))
+    fast_done = threading.Event()
+    fast = threading.Thread(target=lambda: (manager.submit(
+        {"schema_version": 1}, io.BytesIO(b"next"), 4), fast_done.set()))
+    try:
+        slow.start()
+        assert stream.started.wait(5)
+        fast.start()
+        assert fast_done.wait(1), "second upload blocked behind first"
+    finally:
+        stream.release.set()
+        slow.join(5)
+        if fast.ident is not None:
+            fast.join(5)
+        manager._serial.release()
+        manager.close()
+
+
 def test_incomplete_upload_releases_queue_slot(tmp_path):
     manager = JobManager(tmp_path, max_pending=1)
     manager._serial.acquire()
