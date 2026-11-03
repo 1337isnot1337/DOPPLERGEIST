@@ -1,0 +1,17 @@
+{
+  "source_commit": "21ad2f0405d091ed701e08dcaa9750edbedd2a8c",
+  "command": [
+    "/home/cinna/aircraft-audio-geolocation/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_motion_support.py",
+    "-k",
+    "side_view_cannot or unsupported_motion_is_unknown or subsonic_control or invalid_remote_interval"
+  ],
+  "source_isolation": "git archive source with PYTHONPATH override",
+  "exit_code": 1,
+  "expectation": "Two physical-boundary failures and two clean controls passing",
+  "test_file_sha256": "7360cf3d2541ec159f5a0e4f79f4d0677e4b4b5a52d7830ce14397e86002ec29",
+  "test_commit": "186fbede433622ef49dd1c9d985236f2e8351959"
+}

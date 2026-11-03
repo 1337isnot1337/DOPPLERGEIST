@@ -18,6 +18,7 @@ def cpa_table_dense(tracks, points, max_distance, c=343.0, step_s=2.0, chunk_siz
     observers = ecef(points.lat.to_numpy(),points.lon.to_numpy(),points.elev_m.to_numpy())
     rows = []
     for track in tracks:
+        track.validate_motion_support(c)
         t = np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
         pos = track.position(t)
         # Prune trajectory segments outside this observer tile before forming a
@@ -80,6 +81,7 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
     point_ids=points.point_id.to_numpy(dtype=int)
     rows=[]
     for track in tracks:
+        track.validate_motion_support(c)
         t=np.unique(np.r_[np.arange(track.time[0],track.time[-1],step_s),track.time[-1]])
         pos=track.position(t)
         max_step=np.max(np.linalg.norm(np.diff(pos,axis=0),axis=1))

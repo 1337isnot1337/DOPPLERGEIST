@@ -1,0 +1,35 @@
+FF..                                                                     [100%]
+=================================== FAILURES ===================================
+___________ test_side_view_cannot_certify_unphysical_interior_motion ___________
+
+    def test_side_view_cannot_certify_unphysical_interior_motion():
+        track, observer, emitted, received, factor = side_view()
+        assert np.linalg.norm(track.speed_vector(1)) == pytest.approx(750)
+        # Arrival remains strictly monotone, so the old radial guard accepts it.
+        assert np.all(np.diff(received) > 0)
+        assert np.all(np.isfinite(factor))
+>       with pytest.raises(AcousticSupportError) as failure:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AcousticSupportError
+
+tests/test_motion_support.py:43: Failed
+____ test_unsupported_motion_is_unknown_even_when_ridge_matches_its_formula ____
+
+    def test_unsupported_motion_is_unknown_even_when_ridge_matches_its_formula():
+        track, _, _, received, factor = side_view()
+        point = SimpleNamespace(point_id=0, lat=40, lon=-100, elev_m=100, x=0, y=0)
+        candidate = {"passes": [{"flight_id": track.id, "receive_time": 7.5}], "event_indices": [0]}
+        event = {"event_id": "automatic-proposal", "cpa_receive_s": 7.5,
+                 "f0_range_hz": [119, 121], "quality": {"source_drift_fraction": 0}}
+        measurement = (RidgeTimes(received), 120*factor, np.ones_like(factor), {})
+        result = score_candidate(candidate, point, {track.id: track}, [event], [measurement],
+                                 mode="robust_ridge", time_origin=0, time_sweep_s=0)
+>       assert result["score"] == -np.inf
+E       assert 1.0 == -inf
+E        +  where inf = np.inf
+
+tests/test_motion_support.py:58: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_motion_support.py::test_side_view_cannot_certify_unphysical_interior_motion
+FAILED tests/test_motion_support.py::test_unsupported_motion_is_unknown_even_when_ridge_matches_its_formula
+2 failed, 2 passed, 5 deselected in 1.60s
