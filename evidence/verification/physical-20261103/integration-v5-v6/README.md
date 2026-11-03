@@ -141,3 +141,52 @@ This is a bounded scorer and ledger check. It does not establish outer CPA
 support isolation, continuous subsonic motion or retarded-time convergence,
 national real-recording accuracy, an accepted API/browser location, or closure
 of #13, #53 or #64. No historical search or decision was rerun or promoted.
+
+## Added outer-support counter: product transport diagnostic
+
+The published W2 outer adapter adds `unreported_trial_envelopes` when an
+interrupted scorer cannot report exact trial counts. Product source
+`f64c89984a51408e914b7728c3de402f180ecbe6` validates the previous five support
+counters but ignores this additional field. The exact standalone `_coverage`
+function returns `search_complete: true` for values `1`, `-1`, `true`, `"1"`,
+or an absent value when the explicit support flag is true and other counters
+are valid. It also accepts the valid zero case.
+
+The consistent native producer loss case already returns incomplete coverage:
+its explicit flag is false and its unclassified-candidate count is nonzero.
+This diagnostic therefore does not demonstrate a native accepted-location
+bypass. It identifies an added counter whose validation and visible transport
+need an explicit product contract. The owner was notified in PR #19.
+`outer-support-counter-diagnostic/` preserves the source-derived reproducer,
+native result, request and invocation receipt. No product source was edited.
+
+## Exact subset-state feasibility on retained six-event outputs
+
+The read-only `subset-state-feasibility/` diagnostic examines the frozen
+six-event coarse, fine and refined arrays. It compares receiver coordinates,
+elevation, clock, common flight/pass assignments, event losses, source frequencies
+and every common event diagnostic exactly. Float parameters use their hexadecimal
+representations; no distance or parameter tolerance merges states. The pinned
+separable score must agree with the recorded score, and every added contribution
+must be nonnegative with full reported event support.
+
+| Retained array | Records | Records with an exact pointwise extension | Records without such an extension |
+| --- | ---: | ---: | ---: |
+| Coarse | 91 | 74 | 17 |
+| Fine | 100 | 76 | 24 |
+| Refined | 106 | 76 | 30 |
+
+Ten predicate controls pass. Changed position, height, clock, flight, pass,
+source fit, common loss, recorded score or support prevent compatibility.
+The refined array still has one five-event state without an exact extension;
+independently optimized states do not become equivalent merely because their
+locations are close.
+
+These are observed pointwise relationships, **not mode or optimizer-envelope
+dominance certificates**. No candidate is removed, no decision is executed, and
+no discarded-score bound is cleared. The old runtime has no complete finite
+ledger or classified optimizer envelopes. Unobserved and discarded candidates
+remain unknown. A future production protocol still needs explicit model/domain
+provenance, completed assessments and auditable retained/discarded identities.
+W4 and the primary own that decision; this audit does not change the current
+different-subset veto.

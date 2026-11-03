@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "bytes": 8904,
-    "sha256": "f089fb7956670c874271c6cc710e49aa1d0c300a9a52a59d49ec6a5b4f95d66b"
+    "bytes": 11705,
+    "sha256": "52be37dd11a49ed07f5ca8770d5effc991c0809ccd114564228e738f8f4dcb30"
   },
   "classified-producer/physical-grid-native-output-manifest.json": {
     "bytes": 16548,
@@ -51,6 +51,22 @@
     "bytes": 3324,
     "sha256": "540a8b8636ecbcce9937b3b5064156dac9cf74d875290d49963ad73821e621e8"
   },
+  "outer-support-counter-diagnostic/diagnose.py": {
+    "bytes": 3796,
+    "sha256": "ad325a764485de38db607feb7f29ee9c8fe6c6900e0687f9795adfe6b9d250b9"
+  },
+  "outer-support-counter-diagnostic/f64c899.json": {
+    "bytes": 3648,
+    "sha256": "f9d79ee51b23d2f8c4ca5fb98e07214eb8903cbcbfe8d7a4210fcf44864f368d"
+  },
+  "outer-support-counter-diagnostic/receipt.json": {
+    "bytes": 910,
+    "sha256": "ba310100549bc123cde24f97ba7857e76f18d2b60f0124bb3b34385d83d4e2cf"
+  },
+  "outer-support-counter-diagnostic/request.json": {
+    "bytes": 227,
+    "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d"
+  },
   "producer-first-handoff/known-score-ledger-audit.json": {
     "bytes": 2319,
     "sha256": "d9e80b7147f8ea47d61c8a03f5199d0c472e607c5be9daa968735b245d2e2934"
@@ -98,6 +114,26 @@
   "subset-policy-diagnostic/stdout.json": {
     "bytes": 3856,
     "sha256": "483f9cb8fac99af93673f1b81a28a8be3e5d676ae9a60b65528d0d4dc7285687"
+  },
+  "subset-state-feasibility/diagnose_subset_states.py": {
+    "bytes": 9314,
+    "sha256": "12e41bdbe1c8f38bd6e36744a8ae023f7050aa0b95fb8acd9d5dc77b8a60ae7f"
+  },
+  "subset-state-feasibility/subset-state-feasibility.json": {
+    "bytes": 159547,
+    "sha256": "ed7df50c3033b5b96979f7e129f33420dcf8909e002e11e391b07f174e984b74"
+  },
+  "subset-state-feasibility/subset-state-receipt.json": {
+    "bytes": 580,
+    "sha256": "bbfaede0c04ead85b2876b47afe7117d7e799e661aabfcbf0f360687b0b4cf59"
+  },
+  "subset-state-feasibility/subset-state.stderr.txt": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "subset-state-feasibility/subset-state.stdout.txt": {
+    "bytes": 720,
+    "sha256": "2739f8063bc3a578f33cf3609508854d4207b80a218ef907945ba9092bf9f997"
   },
   "v5/corrected-collection/pytest.log": {
     "bytes": 357,

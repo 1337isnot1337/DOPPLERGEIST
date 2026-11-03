@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/diagnose_subset_states.py",
+    "--root",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516",
+    "--output",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/subset-state-feasibility.json"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 1.156869522001216
+}

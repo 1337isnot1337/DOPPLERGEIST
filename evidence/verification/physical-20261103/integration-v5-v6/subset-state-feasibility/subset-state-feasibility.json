@@ -1,0 +1,5279 @@
+{
+  "scope": "Read-only pointwise feasibility diagnostic over retained historical states; not a mode/envelope dominance certificate or new acceptance policy.",
+  "runtime_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "matching_source_sha256": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce",
+  "script_sha256": "12e41bdbe1c8f38bd6e36744a8ae023f7050aa0b95fb8acd9d5dc77b8a60ae7f",
+  "input_sha256": {
+    "terminal-search-search-report.json": "2c18f5b492ad24c11bfa16a84f7c9cbb13c7a35a168b849dcfad47713964036b",
+    "terminal-refined-candidates.json": "cc065ba71c0df6207eefab3d73007f15c39373a8f4affcf95b501926c2614fb6",
+    "terminal-discovery-discovery.json": "244eefb4ab573f7cf8f3f83c8833c4072143a883a79594f94259655901108171"
+  },
+  "stages": {
+    "coarse": {
+      "records": 91,
+      "records_with_exact_pointwise_extension": 74,
+      "records_without_extension_in_retained_set": 17,
+      "candidate_pair_classifications": {
+        "exact_pointwise_extension": 614,
+        "receiver_or_clock_differs": 834
+      },
+      "extensions": [
+        {
+          "subset_index": 1,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.780015425185263,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.3066653305212137,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7fac95be545b10c6ccc7bc543c9f997772615378330c157da7f3e44bdf7afa9f"
+        },
+        {
+          "subset_index": 2,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.608734749483892,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.4779460062225851,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "c5cb5d31210613b085ced25695e777fb547950f14594d910de42d92d256cb8b1"
+        },
+        {
+          "subset_index": 3,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.6080060949869237,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.4786746607195532,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "189b91f46ed585baceac82f9e97bdadf208e40f81e9b9cd3057ee5246621c914"
+        },
+        {
+          "subset_index": 4,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.534941115762314,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.551739639944163,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "6afe27a84895ceeaf6fdae1946c2a961aa728181adb0d082135851828cead699"
+        },
+        {
+          "subset_index": 5,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.517034340399808,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.5696464153066687,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "ed353dd5357024cbe9d295dbc43191b042a86bac72d7bc831986f7a699b99390"
+        },
+        {
+          "subset_index": 6,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.384672052714184,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.7020087029922932,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "be6db898a1b7e8ffed5c18ad02066473888520a9dfc2c9b115c8a67da7b606d5"
+        },
+        {
+          "subset_index": 7,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.3020694189626782,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.7846113367437988,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "b259959f8cef48d7de29fc5dc1e59929afe5bed3847a0f5cdd8ce8f0bd5f069c"
+        },
+        {
+          "subset_index": 8,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.30134076446571,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.7853399912407669,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "a4d45443bb9d212494cdaba3df6868ac7ebbddf5615bb1dde17f02144b9eb8c1"
+        },
+        {
+          "subset_index": 9,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.2282757852411,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.8584049704653767,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "791e4b9d4749f0d081db4b0a4c0c8142902b45827125370169ef241d56788826"
+        },
+        {
+          "subset_index": 10,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.2103690098785944,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.8763117458278824,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "0e14eed469cc1200d25e0eca7b7ac1222b6e2e43ac398118caa7b18bee3b7fa1"
+        },
+        {
+          "subset_index": 11,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.1300600887643384,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 0.9566206669421383,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "263f5bd52e5c287c5ad9245d12998909d3e7d81604959b344333b3978adf2924"
+        },
+        {
+          "subset_index": 12,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.07800672219297,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.008674033513507,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "6b9d0d732be431347a9b6a7f737e722bf6ce0a7b095371ce5d44edfc039748cb"
+        },
+        {
+          "subset_index": 13,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.056995109539729,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.029685646166748,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "f5fb68cc1661db90a8cb0745d32d1af474a83d65b0a7c78350dcd9b656efe6b8"
+        },
+        {
+          "subset_index": 14,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.0562664550427607,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.030414300663716,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "5f890dc4e700ef761e5fb40ab31479b4664d4fe69f457f8e6a5eb55b12d73ade"
+        },
+        {
+          "subset_index": 15,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.0390883341772232,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.0475924215292538,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "367a02fa30bd620b8580682ef34bd2b8b233cc1d760a7a34439f533e554300b6"
+        },
+        {
+          "subset_index": 16,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 2.038359679680255,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.0483210760262218,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "43e5867ba379031360bcdffc9f8d6bd7819479acedf6026e73fd0e813229279f"
+        },
+        {
+          "subset_index": 17,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.9652947004556451,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.1213860552508317,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "2da9e8dcd1f7b7328287337552496e77294cebcf51fc2bad15aa0a9b858f45b5"
+        },
+        {
+          "subset_index": 18,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.9067260464915985,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.1799547092148783,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "157c9ad4aeb4f5e666f708d4a216fed7d9dbbf08c75f2d13024c100019a8fe88"
+        },
+        {
+          "subset_index": 19,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.9059973919946305,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.1806833637118466,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "326712a6e0532ab5053e8dc934a72aeabeaadc6145ac4394090c0b58dfebe214"
+        },
+        {
+          "subset_index": 20,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.8329324127700208,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.2537483429364562,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "ea815a533195fc22cf684d28fda22ff33ddeafd161a64a9a8576a2d25f320da7"
+        },
+        {
+          "subset_index": 21,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.823394758243125,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.2632859974633521,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "b47185db336200a1029f705f91c9ead074a5c8e5af3091450e1a00923fd4a855"
+        },
+        {
+          "subset_index": 22,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.815025637407515,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.271655118298962,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "5263edd26a02c79dfc055a19f350c61b9c10fce84c8c79e21ac6492725f73f32"
+        },
+        {
+          "subset_index": 23,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.7503297790185153,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.3363509766879618,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "96001783676b531e9e4d2bf34d54c5e3582a791d4e4b21a726a5c96e8758bd45"
+        },
+        {
+          "subset_index": 24,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.749601124521547,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.3370796311849298,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7e5fed1c3de20268897f1a19802ecca45ac3e2552d142d095273b9a426cfc414"
+        },
+        {
+          "subset_index": 25,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.7324230036560095,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.3542577520504675,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "cbb0a60d319335950b446caf3c53a07c1993a02ffe94caaa5f8f76f5fa017b61"
+        },
+        {
+          "subset_index": 26,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.7316943491590413,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.3549864065474355,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "84c70c93cdfd893e81e42b6493408ba4d31faa865768ba3261ae03f3d456f97e"
+        },
+        {
+          "subset_index": 27,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.6586293699344314,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.4280513857720454,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "46cc1caa0be19e12824a74845529889cdc8148cfa31884a0b7313ace02c28c9a"
+        },
+        {
+          "subset_index": 28,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.6000607159703848,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.486620039736092,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "2e166bb1b2235060a4aad4e402746d98d66fe4399e372cbd35e8dd0f70c5a0e7"
+        },
+        {
+          "subset_index": 29,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.5993320614734168,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.4873486942330603,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "e7b77a74242a02fb96a8463c9edc703737b4f0c4952e022d4c41ea0849798481"
+        },
+        {
+          "subset_index": 30,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.5783204488201756,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.5083603068863014,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "8d937c0cf8d78b96053b2c7a5223921842bbaf3d7d475e9d6593de1c6fa21159"
+        },
+        {
+          "subset_index": 31,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.56041367345767,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.5262670822488071,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "c01c20706255d1d5182e5e4c0115c1dfec868d6647b7c74915b258ee40d21f37"
+        },
+        {
+          "subset_index": 32,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.5262670822488071,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.56041367345767,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "ffba24fab0f1da008c2135ac4b21fcbc5ee81ecc840bd7ed95bbe5281be7b4ea"
+        },
+        {
+          "subset_index": 33,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.5083603068863014,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.5783204488201756,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "c8491a2a18487d73efc30a0ebd6bc96c34e3e7461c373eecc9b5bd7e75c305c7"
+        },
+        {
+          "subset_index": 34,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.4873486942330603,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.5993320614734168,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "acb0413f8c1ca21b3ee639d3a975ff28ee2173bd15ba45e146f7dd407d83b689"
+        },
+        {
+          "subset_index": 35,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.486620039736092,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.6000607159703848,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "4abd022dbc780330301bacfcdd10db397dd54914aa28920000fbfe7493514bee"
+        },
+        {
+          "subset_index": 36,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.4280513857720454,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.6586293699344314,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "efbc8935e8fec1317025a4ad9cf2a718ae5990e3a8ce0a32cb3102cfddff791d"
+        },
+        {
+          "subset_index": 37,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.3549864065474355,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.7316943491590413,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "239be209cf9371a15927f5f4ca2eb5e291d7bf214da65d311a7dda1442f138f2"
+        },
+        {
+          "subset_index": 38,
+          "extension_index": 0,
+          "subset_event_indices": [
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.3542577520504675,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.7324230036560095,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "f89c8271eef84a0c8fcee4a7c846496585608fe6b1d5d684a4d67be9304dc3ac"
+        },
+        {
+          "subset_index": 39,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.3370796311849298,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.749601124521547,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "acb63d9b7609740dade55297454d9743e708c3c05521772db24f20b7ec40f976"
+        },
+        {
+          "subset_index": 40,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.3363509766879618,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.7503297790185153,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "93d542d285b030d5cde98ac10f887b63ed1649041626c3214772c86192971f38"
+        },
+        {
+          "subset_index": 41,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.271655118298962,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.815025637407515,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "c6ca864f60afe8a582944ee18192ee6053497d69b4fbfb2f0c8e32ac625bc1e4"
+        },
+        {
+          "subset_index": 42,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.2632859974633521,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.823394758243125,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "27ccf301892904f4c8c8d3b2d37df27557b17a81aaf8617cb617de86b9d8fde6"
+        },
+        {
+          "subset_index": 43,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.2537483429364562,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.8329324127700208,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7de9d73f0415b2d251f78688ee3d1a26f9495868643406bd67db81d3b8671395"
+        },
+        {
+          "subset_index": 44,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.1806833637118466,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.9059973919946305,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7e6da5666e03959c4a046a88ef43401d2b3449ebcf50168de7f76fa92fef55f8"
+        },
+        {
+          "subset_index": 45,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.1799547092148783,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.9067260464915985,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "0bb38a704924f4d112a16adfa41b4b2e95eff453071cc434362e039182d1ca6a"
+        },
+        {
+          "subset_index": 46,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.1213860552508317,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 1.9652947004556451,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "1e466e0fb69377dc1bd48e95c355eb404ade8adb5e351e1f5bccb5696f074df9"
+        },
+        {
+          "subset_index": 47,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.0483210760262218,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.038359679680255,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "dadf8b7be39cd53344521aa5673b02dcfdfdf401f95ff145b1b53bfb6034e2f6"
+        },
+        {
+          "subset_index": 48,
+          "extension_index": 0,
+          "subset_event_indices": [
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.0475924215292538,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.0390883341772232,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "318c2537ed2ad6871ef43d6f0fd755119ae2068b2900616ae3413b0750fb0104"
+        },
+        {
+          "subset_index": 49,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.030414300663716,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.0562664550427607,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "dcbb776004b9bf8c637bab3f68e872d2af59a594be6801292727ed69115862b2"
+        },
+        {
+          "subset_index": 50,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.029685646166748,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.056995109539729,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7eb0f7cc028249fa8004bc5220345c1b84dca4610996cb4d3259f8e3b33aa58d"
+        },
+        {
+          "subset_index": 51,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 1.008674033513507,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.07800672219297,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "7ee09753fb381c3adaa4607182f7df748135f5de8961c44cbf0cfacef949bec7"
+        },
+        {
+          "subset_index": 52,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.9566206669421383,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.1300600887643384,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "ee0ed77bc994e1b1b909c6a8ed5891ecb7fab19ee29a0b0f3ebe7a4ec4a468d0"
+        },
+        {
+          "subset_index": 53,
+          "extension_index": 0,
+          "subset_event_indices": [
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.8763117458278824,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.2103690098785944,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "dc6188c6619ba9a664dd96f8f2abeb96c4c646113346beb3e40d562ef6e701a5"
+        },
+        {
+          "subset_index": 54,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.8584049704653767,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.2282757852411,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "343b5156c444105a02c5483252914b7c0f6f68c083fd931e17e6e3376965d81e"
+        },
+        {
+          "subset_index": 56,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.7853399912407669,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.30134076446571,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "355194e90cb324fcd343c136496fd716382cba2c3b1446eece338b4e83cc3e48"
+        },
+        {
+          "subset_index": 57,
+          "extension_index": 0,
+          "subset_event_indices": [
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.7846113367437988,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.3020694189626782,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "b605e0a4cfc58994ad88ea136e873ae612cb90c979a47836c12f33a4b2aad98b"
+        },
+        {
+          "subset_index": 58,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.7020087029922932,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.384672052714184,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "e94cbfd5864bb6810c96aaff7a2be701c51428e4dec675c0704dc2d41505e75c"
+        },
+        {
+          "subset_index": 62,
+          "extension_index": 0,
+          "subset_event_indices": [
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.5696464153066687,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.517034340399808,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "711a3cb07bcd2a153341d453f26f00e83b40ada2c672cd58b7dbe6c247dbe6a1"
+        },
+        {
+          "subset_index": 63,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.551739639944163,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.534941115762314,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "0d999e7b87bb05e53c92a5d194ee71375a03e733e4bed1c8fe90cfe994626272"
+        },
+        {
+          "subset_index": 64,
+          "extension_index": 61,
+          "subset_event_indices": [
+            2
+          ],
+          "extension_event_indices": [
+            0,
+            2
+          ],
+          "subset_score": 0.47901414421318633,
+          "extension_score": 0.5854125446980191,
+          "added_contribution_sum": 0.10639840048483273,
+          "receiver_state_sha256": "b137f94e0d8e0c552a5b1616e485670e68bb09787541bb19b4a6d4da9fe2a2c5",
+          "common_event_state_sha256": "b2c338c518bbc6255394e8dbfb91ee5da52435b66ef5dff371e8a3b5e7257db8"
+        },
+        {
+          "subset_index": 65,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.4786746607195532,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.6080060949869237,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "094243a4d8ce793e1a77b4db19b8a3cb6b60d4b06d7f56ca898c944529d3bc09"
+        },
+        {
+          "subset_index": 66,
+          "extension_index": 0,
+          "subset_event_indices": [
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.4779460062225851,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.608734749483892,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "297f04fbdc176e38c2ecfd8e66d2a37a7c7aefac73d48df5bb9630101d6c3ceb"
+        },
+        {
+          "subset_index": 68,
+          "extension_index": 59,
+          "subset_event_indices": [
+            1
+          ],
+          "extension_event_indices": [
+            0,
+            1
+          ],
+          "subset_score": 0.47306429514273396,
+          "extension_score": 0.6853022697206159,
+          "added_contribution_sum": 0.21223797457788196,
+          "receiver_state_sha256": "3643921eada52d9d1ab98f5111e6099b82d39677f4a909bf57cc68492255267d",
+          "common_event_state_sha256": "f0ff3cc5ff3081980f9793f84c766156eb928da546fc4842fd0ac2619357d125"
+        },
+        {
+          "subset_index": 71,
+          "extension_index": 55,
+          "subset_event_indices": [
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            3
+          ],
+          "subset_score": 0.41343551149628166,
+          "extension_score": 0.8019035316457808,
+          "added_contribution_sum": 0.3884680201494991,
+          "receiver_state_sha256": "7e6e28f4e634b3407d0fcaf43ed8845087e8030ad010617647b700afec48b16a",
+          "common_event_state_sha256": "050a831631a331629063b413f1b1ebe087e62d221f69c31f767aa0bb0ea2e006"
+        },
+        {
+          "subset_index": 72,
+          "extension_index": 55,
+          "subset_event_indices": [
+            0
+          ],
+          "extension_event_indices": [
+            0,
+            3
+          ],
+          "subset_score": 0.3884680201494991,
+          "extension_score": 0.8019035316457808,
+          "added_contribution_sum": 0.41343551149628166,
+          "receiver_state_sha256": "7e6e28f4e634b3407d0fcaf43ed8845087e8030ad010617647b700afec48b16a",
+          "common_event_state_sha256": "e12376c3b3f6776ab4d43bda566d5507f22ad2c78dd2a347756da126da9c51ad"
+        },
+        {
+          "subset_index": 73,
+          "extension_index": 60,
+          "subset_event_indices": [
+            1
+          ],
+          "extension_event_indices": [
+            0,
+            1
+          ],
+          "subset_score": 0.381411140304322,
+          "extension_score": 0.621660201608113,
+          "added_contribution_sum": 0.24024906130379098,
+          "receiver_state_sha256": "c1bcfda3bc9ff586d4e6b8c3b5b7537b02bafcbeb383fcb4e422fdc03ca4d104",
+          "common_event_state_sha256": "4ec53db344b05216d1647058feefc5793d65fa15dd6954819ec04938ca37949c"
+        },
+        {
+          "subset_index": 74,
+          "extension_index": 67,
+          "subset_event_indices": [
+            2
+          ],
+          "extension_event_indices": [
+            2,
+            5
+          ],
+          "subset_score": 0.35372766435873837,
+          "extension_score": 0.4776600611101117,
+          "added_contribution_sum": 0.12393239675137335,
+          "receiver_state_sha256": "824295552836c505fefee0e59bdef669ed65fc8e691203a66b6abd7823c201a3",
+          "common_event_state_sha256": "480196369e9810fd1c87f20cb942293798f8d40699fde5b1701b46a8fd11acb5"
+        },
+        {
+          "subset_index": 75,
+          "extension_index": 70,
+          "subset_event_indices": [
+            3
+          ],
+          "extension_event_indices": [
+            1,
+            3
+          ],
+          "subset_score": 0.34005620434699446,
+          "extension_score": 0.4203330392932185,
+          "added_contribution_sum": 0.08027683494622406,
+          "receiver_state_sha256": "1e77487ecf2f1ea044d61f6f51825c3f3389c0f2616c78395b79ffc1a7fd77c5",
+          "common_event_state_sha256": "a956cbb20f84328e4238c7fff42909f1463c317c685b041e5f2de98883cfb577"
+        },
+        {
+          "subset_index": 76,
+          "extension_index": 0,
+          "subset_event_indices": [
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 0.3066653305212137,
+          "extension_score": 3.086680755706477,
+          "added_contribution_sum": 2.780015425185263,
+          "receiver_state_sha256": "de027fb8fce9ecf2733b2afb724c8473313b468713b81ad18481dc25e69e47d5",
+          "common_event_state_sha256": "58c1773f8804467104107add51bba9c2215983937a8fec4457ba11ee020a478a"
+        },
+        {
+          "subset_index": 79,
+          "extension_index": 60,
+          "subset_event_indices": [
+            0
+          ],
+          "extension_event_indices": [
+            0,
+            1
+          ],
+          "subset_score": 0.24024906130379098,
+          "extension_score": 0.621660201608113,
+          "added_contribution_sum": 0.381411140304322,
+          "receiver_state_sha256": "c1bcfda3bc9ff586d4e6b8c3b5b7537b02bafcbeb383fcb4e422fdc03ca4d104",
+          "common_event_state_sha256": "e0259e2f5d707505080bf9eb3368dc8d40f1ef4affe34e88d635e85fb2e7292b"
+        },
+        {
+          "subset_index": 82,
+          "extension_index": 59,
+          "subset_event_indices": [
+            0
+          ],
+          "extension_event_indices": [
+            0,
+            1
+          ],
+          "subset_score": 0.21223797457788196,
+          "extension_score": 0.6853022697206159,
+          "added_contribution_sum": 0.47306429514273396,
+          "receiver_state_sha256": "3643921eada52d9d1ab98f5111e6099b82d39677f4a909bf57cc68492255267d",
+          "common_event_state_sha256": "86754c13b59ab43b2df23ccb0688764868dcf7eb317a1d8f70c599b6d77a957f"
+        },
+        {
+          "subset_index": 83,
+          "extension_index": 67,
+          "subset_event_indices": [
+            5
+          ],
+          "extension_event_indices": [
+            2,
+            5
+          ],
+          "subset_score": 0.12393239675137335,
+          "extension_score": 0.4776600611101117,
+          "added_contribution_sum": 0.35372766435873837,
+          "receiver_state_sha256": "824295552836c505fefee0e59bdef669ed65fc8e691203a66b6abd7823c201a3",
+          "common_event_state_sha256": "3d88e0bb0604d04fa7c3b9df23024ff1a6c9e828c40d7b046a3a53467eb50d80"
+        },
+        {
+          "subset_index": 85,
+          "extension_index": 61,
+          "subset_event_indices": [
+            0
+          ],
+          "extension_event_indices": [
+            0,
+            2
+          ],
+          "subset_score": 0.10639840048483273,
+          "extension_score": 0.5854125446980191,
+          "added_contribution_sum": 0.47901414421318633,
+          "receiver_state_sha256": "b137f94e0d8e0c552a5b1616e485670e68bb09787541bb19b4a6d4da9fe2a2c5",
+          "common_event_state_sha256": "629c27ef698513d09194e523afe51fbb17ce34a5ca02d9f1d28d10a9248c2aef"
+        },
+        {
+          "subset_index": 87,
+          "extension_index": 70,
+          "subset_event_indices": [
+            1
+          ],
+          "extension_event_indices": [
+            1,
+            3
+          ],
+          "subset_score": 0.08027683494622406,
+          "extension_score": 0.4203330392932185,
+          "added_contribution_sum": 0.34005620434699446,
+          "receiver_state_sha256": "1e77487ecf2f1ea044d61f6f51825c3f3389c0f2616c78395b79ffc1a7fd77c5",
+          "common_event_state_sha256": "c8388789d51c227fc298d6711a0f5cc420616a03133248cd41f9882a673fb072"
+        }
+      ]
+    },
+    "fine": {
+      "records": 100,
+      "records_with_exact_pointwise_extension": 76,
+      "records_without_extension_in_retained_set": 24,
+      "candidate_pair_classifications": {
+        "exact_pointwise_extension": 106,
+        "receiver_or_clock_differs": 2023
+      },
+      "extensions": [
+        {
+          "subset_index": 3,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.77038193656127,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.919698080503092,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "bf87eb1d43177b29656e43c91ab937c9d5aefbe20a32d73c1432adb726b2065d"
+        },
+        {
+          "subset_index": 5,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.752345792628146,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9377342244362155,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "63aa14fff0dea8c6d7478694e1978cee7abc1d4c9f235b025434907f6409d9e8"
+        },
+        {
+          "subset_index": 6,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.7355730494527295,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9545069676116323,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "8c21d905394d24ecd87d0a1a2e7754472d4181ca79b6785cfba0a0caaff6f7fa"
+        },
+        {
+          "subset_index": 7,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.7332057080779695,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.956874308986392,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "d23bfbc9ca4215f97f9eba288207ce9fcdc035c591bf3d6d6693669f7e92cd6e"
+        },
+        {
+          "subset_index": 8,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.731662511664687,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9584175053996753,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "1d13528ad01fad4511c6e0396b31aac70e2044cbaf5724a5dc01f1e0a64f2397"
+        },
+        {
+          "subset_index": 9,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.727231086937007,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9628489301273547,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "c3647912d18c128205bfd357297865d474a5e95b707702786c1b59ccc24da0ab"
+        },
+        {
+          "subset_index": 15,
+          "extension_index": 1,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.258616510327404,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.7445940122182766,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "9bf7950d9df9419eeccc1ec753d93d73b6a0a005274892500cbfe57ff539e3a1"
+        },
+        {
+          "subset_index": 16,
+          "extension_index": 1,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.224183852689064,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.7790266698566166,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "fcc84c331c50ce405e04a88e34cd248ab5275c307175bcf777c6149a4085f765"
+        },
+        {
+          "subset_index": 17,
+          "extension_index": 2,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.217877286601907,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7751830914370719,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "ee191438b79c57f8ed5cb024ed496fba119d9c3b60ad31d93c2629f581137963"
+        },
+        {
+          "subset_index": 18,
+          "extension_index": 2,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.21437015556989,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7786902224690893,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "a2a574a76c81fd1f85bd33e57054eeb32f07507b6c955ac505ecc03dff23edd2"
+        },
+        {
+          "subset_index": 20,
+          "extension_index": 2,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.20403362720154,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7890267508374386,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "141ddeb8a766bf64daa588da56237718fa5800bf17fcf49d41e1ad07c418a2c6"
+        },
+        {
+          "subset_index": 21,
+          "extension_index": 2,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.186199331712426,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.8068610463265536,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "cac8a40f4f182550ba33c20c6df1f40800838cccfd6f5309d47ff4255cc105bf"
+        },
+        {
+          "subset_index": 22,
+          "extension_index": 1,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.173638555466321,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8295719670793597,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "d45dc133771359110ffb861d01bc69a2d34cc18747be6fa664c0841d8902b9a1"
+        },
+        {
+          "subset_index": 24,
+          "extension_index": 1,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.141112027723118,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8620984948225636,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "f0d049506e7674b9157c65be8c25a6a669fd02be40987437ed1ca78ee9f24c90"
+        },
+        {
+          "subset_index": 25,
+          "extension_index": 1,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.114035171166681,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8891753513790002,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "6640601a6d72bc1df9acb4a02a24f3e89e7ff61b3c370daac1dabccb8298b551"
+        },
+        {
+          "subset_index": 26,
+          "extension_index": 1,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.104466495355816,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8987440271898646,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "3c9868ee3590b4c8b643473620763257bf29282abec8c3b776f2e85b63609f97"
+        },
+        {
+          "subset_index": 27,
+          "extension_index": 2,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.081794024785176,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.9112663532538032,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "8c212000a4008a4869d02b42d009175347b6fdb25e331ea7884b735c5eef3867"
+        },
+        {
+          "subset_index": 28,
+          "extension_index": 2,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.061027464323956,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.9320329137150226,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "dff769d64170524d9c4fe039dbc1310beb21a49542efb89e2beac6ad587d0777"
+        },
+        {
+          "subset_index": 29,
+          "extension_index": 4,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.027301902254939,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7265908407648745,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "5c17ff2fc0ffa5ce8c04f2ced5698a41056dd2eba98c2c8c2ad3d3724117c0b6"
+        },
+        {
+          "subset_index": 31,
+          "extension_index": 4,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.01230211171469,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7415906313051228,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "f373eed34e43f435d8acac8ce8e985c23063e2808c0d68f4cb286381f29c2169"
+        },
+        {
+          "subset_index": 33,
+          "extension_index": 4,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9937412656162503,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7601514774035628,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "e109aebd6c03517c5b9b7911503085eee74bf6b9b389263754ff320db6c3b566"
+        },
+        {
+          "subset_index": 34,
+          "extension_index": 4,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.986247719636493,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7676450233833201,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "2d7fd69c0e716bf154fab81cc3ba9507ee55d4656184a62dca73b8a7fbaeaf1f"
+        },
+        {
+          "subset_index": 36,
+          "extension_index": 11,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9664258486379835,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.681117284733245,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "92e4a357dec2f8dee5a1c858716976a5d0feba4316a8c575cb4075718cc7e0a0"
+        },
+        {
+          "subset_index": 37,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9662791010727805,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.6927346159177721,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "c88ba7a21f69fd55aa5378f8691b007cc4449a47bf43180a80ec31894805afd0"
+        },
+        {
+          "subset_index": 38,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.95905234567096,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.6999613713195928,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "03bb9b24148d2c393344903a3f0920298eaa34069d6e732794c57fb5daef2f3b"
+        },
+        {
+          "subset_index": 41,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.907142138281192,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.7518715787093603,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "12d4462e0573df6b8dae0308930be6e7da346dc69392d17e1411a3c329a1149a"
+        },
+        {
+          "subset_index": 43,
+          "extension_index": 11,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.900809398928177,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7467337344430516,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "b1f502ffc8a3e7e5b18046f8c92915bcc8a65ebface61f094c43bd797d12412e"
+        },
+        {
+          "subset_index": 44,
+          "extension_index": 4,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8982321087228757,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.8556606342969372,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "1a23801f1c70286513c9979bde57c6ce47d42348280a67c6ef788662064969c9"
+        },
+        {
+          "subset_index": 45,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.896859629419082,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.762154087571471,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "9d445f8178234dd322a49b901d1611e5a7929c70fffdc1bc43a32e07b3487348"
+        },
+        {
+          "subset_index": 47,
+          "extension_index": 12,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8945406030735876,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.6138359387131183,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "29e992ac93a43becc9cf3cb0802808eff91d68724a1b51bef4f6511e932d58c9"
+        },
+        {
+          "subset_index": 48,
+          "extension_index": 11,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.875062077636848,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7724810557343803,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "35d21a61bb02758368943dd97d1c57e4c4ec442f76aefffc912c365e68ffa054"
+        },
+        {
+          "subset_index": 49,
+          "extension_index": 11,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.871187187789154,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7763559455820744,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "f3d3f199be0e066708bad9c92a95c05dd743bfde5b65a98dbd54af663cb840ca"
+        },
+        {
+          "subset_index": 50,
+          "extension_index": 4,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8516386071538173,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.9022541358659957,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "1a7856437f80d9931bf42410422b949f3be1b93de57070f6d611daf4229a5467"
+        },
+        {
+          "subset_index": 51,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8326477121250546,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8574323049393073,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "2d6c7977c6d95c0fe2b054d10b6cf239a29b2ff930572cc0148ccd031b7d1897"
+        },
+        {
+          "subset_index": 52,
+          "extension_index": 11,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8179641224778247,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.8295790108934036,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "fd8190688c7a2ca6eee1559bed0a02c2a56c00a23a3862c41799dccb4f3fce62"
+        },
+        {
+          "subset_index": 53,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8158749689496374,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8742050481147243,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "270566f27af378a57bac975971b13f712fb662cb6d101b3de7d217abcb663f96"
+        },
+        {
+          "subset_index": 54,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.813507627574878,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8765723894894841,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "e6b4312f1df441677eab98490f4fbbd2178ef51a8510beb0a1fae855deca3f90"
+        },
+        {
+          "subset_index": 55,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8119644311615946,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8781155859027674,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "92a52b39a2f3822885af38d0202498550162447a9f3eddab6c3adca0e4bb82ef"
+        },
+        {
+          "subset_index": 56,
+          "extension_index": 13,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.811913448490948,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.6096745135267467,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "d0da942532dbcf37fa96ecd6d12255ee9ac169698dde7e331039e68997d4f367"
+        },
+        {
+          "subset_index": 57,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.807533006433915,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8825470106304467,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "b6fca6d4c82adf81b2b137c030ebb3014a542c8dc883899ef830bbbd61259f4b"
+        },
+        {
+          "subset_index": 58,
+          "extension_index": 11,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.806267031386155,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.8412761019850735,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "dc37e93fbca081db6da472adae1542ebd94d8c13e9c2bd910e6bd71f6701f19d"
+        },
+        {
+          "subset_index": 59,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7978388250165143,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8922411920478477,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "61ce63c756eeb17b1e50fbb912037ed3dafd7ad41670bf2c2db3a6c7bc5f20d5"
+        },
+        {
+          "subset_index": 60,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7954714836417542,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8946085334226075,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "6fa672918e227f6f1e9d463f1c0013a4da0e389484ad5c3259826d1a2fd1f2ac"
+        },
+        {
+          "subset_index": 61,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.793928287228471,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8961517298358908,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "ba6fd12aefcc62e561606a0fd65442beb7fe98475100817a2d31591067ba35ab"
+        },
+        {
+          "subset_index": 62,
+          "extension_index": 10,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7898780225410276,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.869135694449525,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "35c8e627733869646edca8f6d8aa8b5ce097e90b2e15b6a7b588b7ef7696c7b2"
+        },
+        {
+          "subset_index": 63,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7894968625007914,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.90058315456357,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "f47ce6797918abfd6d66a4b51f4183a42c630a6676ce6f486538549cf8fd33fa"
+        },
+        {
+          "subset_index": 65,
+          "extension_index": 12,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.784205032659872,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.7241715091268337,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "8880b98aad46b047e8ae6740917d32da704ef6ea0678e888afb4d59a74f52684"
+        },
+        {
+          "subset_index": 66,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7786987404663375,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9113812765980245,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "817658c7527c30de9110c6de5c9873358b58be9188dc534b9aee0a47558e6128"
+        },
+        {
+          "subset_index": 67,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.777155544053054,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9129244730113077,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "29c0ec15c838331c37ad3eba1999588ad0fdd9890d026766a80422e22ec46e47"
+        },
+        {
+          "subset_index": 68,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.775857347967721,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.8831563690228316,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "8fd2ecd47d5318cc4e7bb27d9040a59c00380c61bf50f9cd90c437872a6a55fb"
+        },
+        {
+          "subset_index": 69,
+          "extension_index": 0,
+          "subset_event_indices": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7747882026782946,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9152918143860673,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "30d177b1d4d1ecf5ee4f18d6ac54afd85e3fe7f3822ffe3eea15e4b746a61da6"
+        },
+        {
+          "subset_index": 70,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7727241193253747,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.917355897738987,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "e7e1f914d9c5a2fbc2057f9c7916afcd6c3688dc50750705c33528d6739ae5e0"
+        },
+        {
+          "subset_index": 71,
+          "extension_index": 0,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.770356777950615,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9197232391137469,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "f501a932691b3c1ee8c27dc77e66a8e3d21c0c57416673f3a46b0e424f7fc241"
+        },
+        {
+          "subset_index": 72,
+          "extension_index": 0,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.768813581537332,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9212664355270301,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "898f8a4168b6d678b01adf25d43948f28266f9407664eb4cc3923f83cea1d7fa"
+        },
+        {
+          "subset_index": 73,
+          "extension_index": 12,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7484024588923837,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.7599740828943223,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "c05eb7ebf7bf24968b28503319a27aeb8eec39776a2c0d13f6091d4a8a7fc5ef"
+        },
+        {
+          "subset_index": 75,
+          "extension_index": 12,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.735956551564629,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.772419990222077,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "dbe24119ec59300cda0135a18612e2f58a0f22daf875e266d987b9ab345e99be"
+        },
+        {
+          "subset_index": 76,
+          "extension_index": 13,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.716076222536609,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7055117394810857,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "1eb9b0030c79fa12bba3d6e37fdd9c8cc5e71bcbbea0e29d7cdf3fd9efe0b6bf"
+        },
+        {
+          "subset_index": 77,
+          "extension_index": 12,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.705378931880582,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.802997609906124,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "ff897d8f430f8272ed49d94d4b70e84af199b83d87a07ab5e7d8d5781d88901a"
+        },
+        {
+          "subset_index": 78,
+          "extension_index": 13,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7009018057943606,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.720686156223334,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "20ecebfc06c5c0bb8dbfbab80b9cb26f602401c05529c82f820d43ca58bf01c0"
+        },
+        {
+          "subset_index": 79,
+          "extension_index": 14,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.678994740624842,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.5958832542275367,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "07229e7a1e6864f937ba9b6088c0a1121eed21741b3c9a93301a6f70d64da1f8"
+        },
+        {
+          "subset_index": 80,
+          "extension_index": 12,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6733991308624754,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.8349774109242307,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "f8fffefaf6d2e438ff4d4b2ebeedc89dc2be8d7bde9ecdb38c93db3bf74f6e3b"
+        },
+        {
+          "subset_index": 82,
+          "extension_index": 13,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6580984636486065,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7634894983690883,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "a9043bf44e5c6cd134f3f0a8d63c8e5a0aa4a9a01725e7b7990414c1e3c437c4"
+        },
+        {
+          "subset_index": 83,
+          "extension_index": 13,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6503955064338687,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7711924555838258,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "4c7d3c14895ae69ff198c52ba1a69b98f34b5b60fbfe91fb4605a38d418628df"
+        },
+        {
+          "subset_index": 84,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.627008718696003,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.5775491478929031,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "d9e82ccd6968c7abbcf7984e9727f533973899c64977daec83c8fca992d171dd"
+        },
+        {
+          "subset_index": 86,
+          "extension_index": 14,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5978263190499566,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.6770516758024223,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "cef2421d941f46e00432e67c18e6b76add1d0418b5af87b26ba6372e7ec72c1e"
+        },
+        {
+          "subset_index": 87,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5951498251827756,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.6094080414061307,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "787acd27b6731a2179a6ac71478cfeff1ad0036612974dc6b32caef2b7ef6cd2"
+        },
+        {
+          "subset_index": 89,
+          "extension_index": 13,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5705543631840806,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.8510335988336141,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "470b4a5a611754df36e056dd1ad9fe8b1f5f2c36ae311f549268e6835debc513"
+        },
+        {
+          "subset_index": 90,
+          "extension_index": 14,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.561917362283383,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7129606325689961,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "3ae0b08f3b1d39b5acd314ce4f1475d8790f9e902956db7c7e0811687b65fbf4"
+        },
+        {
+          "subset_index": 91,
+          "extension_index": 14,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.551961950660501,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7229160441918779,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "1fe6867ed1d04cea89d8a4df3defa4b48e2e7b92047e158aecbc78dba1e1b7ea"
+        },
+        {
+          "subset_index": 92,
+          "extension_index": 23,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.548541299633928,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.5950219336932336,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "49a5e61f5ac186ca0526b34d4eddd262aeace859fa756e226d2108e37601f811"
+        },
+        {
+          "subset_index": 93,
+          "extension_index": 23,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5402037151527335,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.603359518174428,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "b29b11d9af3b77b9699869d53deb2d5fccd5e32f16097b10aed83dca364f15ce"
+        },
+        {
+          "subset_index": 95,
+          "extension_index": 19,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5238698549413723,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.6806880116475338,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "209ace66d66985f98048dc446ec7029af6eee379cfebfc286596d9e774467f0b"
+        },
+        {
+          "subset_index": 96,
+          "extension_index": 23,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5218956978300775,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.6216675354970842,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "3a9a6f7f191a3eefb09de1aca1c9ccb9061d11bd16b9b25466091d6005d3bdac"
+        },
+        {
+          "subset_index": 97,
+          "extension_index": 14,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.505364227774271,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7695137670781079,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "18b36f77ebba15072ae822c4254f588c688ff99c8b98bbc51f365a187b79c5bb"
+        },
+        {
+          "subset_index": 98,
+          "extension_index": 23,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.4936591780046538,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.649904055322508,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "2b1a67fee8aae812132e0e382c58140b3ec172fa4bb8c689492f4ebe6712a1ae"
+        },
+        {
+          "subset_index": 99,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.4891514794194176,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.7154063871694887,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "d49744eae5719653e00d2fe26bd1ddcd05668ec48ac3983afa6bb1d92d640db1"
+        }
+      ]
+    },
+    "refined": {
+      "records": 106,
+      "records_with_exact_pointwise_extension": 76,
+      "records_without_extension_in_retained_set": 30,
+      "candidate_pair_classifications": {
+        "receiver_or_clock_differs": 2437,
+        "exact_pointwise_extension": 106
+      },
+      "extensions": [
+        {
+          "subset_index": 9,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.77038193656127,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.919698080503092,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "bf87eb1d43177b29656e43c91ab937c9d5aefbe20a32d73c1432adb726b2065d"
+        },
+        {
+          "subset_index": 11,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.752345792628146,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9377342244362155,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "63aa14fff0dea8c6d7478694e1978cee7abc1d4c9f235b025434907f6409d9e8"
+        },
+        {
+          "subset_index": 12,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.7355730494527295,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9545069676116323,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "8c21d905394d24ecd87d0a1a2e7754472d4181ca79b6785cfba0a0caaff6f7fa"
+        },
+        {
+          "subset_index": 13,
+          "extension_index": 5,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.7332057080779695,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.956874308986392,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "d23bfbc9ca4215f97f9eba288207ce9fcdc035c591bf3d6d6693669f7e92cd6e"
+        },
+        {
+          "subset_index": 14,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.731662511664687,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9584175053996753,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "1d13528ad01fad4511c6e0396b31aac70e2044cbaf5724a5dc01f1e0a64f2397"
+        },
+        {
+          "subset_index": 15,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.727231086937007,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 0.9628489301273547,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "c3647912d18c128205bfd357297865d474a5e95b707702786c1b59ccc24da0ab"
+        },
+        {
+          "subset_index": 21,
+          "extension_index": 6,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.258616510327404,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.7445940122182766,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "9bf7950d9df9419eeccc1ec753d93d73b6a0a005274892500cbfe57ff539e3a1"
+        },
+        {
+          "subset_index": 22,
+          "extension_index": 6,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.224183852689064,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.7790266698566166,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "fcc84c331c50ce405e04a88e34cd248ab5275c307175bcf777c6149a4085f765"
+        },
+        {
+          "subset_index": 23,
+          "extension_index": 7,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.217877286601907,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7751830914370719,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "ee191438b79c57f8ed5cb024ed496fba119d9c3b60ad31d93c2629f581137963"
+        },
+        {
+          "subset_index": 24,
+          "extension_index": 7,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.21437015556989,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7786902224690893,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "a2a574a76c81fd1f85bd33e57054eeb32f07507b6c955ac505ecc03dff23edd2"
+        },
+        {
+          "subset_index": 26,
+          "extension_index": 7,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.20403362720154,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.7890267508374386,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "141ddeb8a766bf64daa588da56237718fa5800bf17fcf49d41e1ad07c418a2c6"
+        },
+        {
+          "subset_index": 27,
+          "extension_index": 7,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.186199331712426,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.8068610463265536,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "cac8a40f4f182550ba33c20c6df1f40800838cccfd6f5309d47ff4255cc105bf"
+        },
+        {
+          "subset_index": 28,
+          "extension_index": 6,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.173638555466321,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8295719670793597,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "d45dc133771359110ffb861d01bc69a2d34cc18747be6fa664c0841d8902b9a1"
+        },
+        {
+          "subset_index": 30,
+          "extension_index": 6,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.141112027723118,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8620984948225636,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "f0d049506e7674b9157c65be8c25a6a669fd02be40987437ed1ca78ee9f24c90"
+        },
+        {
+          "subset_index": 31,
+          "extension_index": 6,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.114035171166681,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8891753513790002,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "6640601a6d72bc1df9acb4a02a24f3e89e7ff61b3c370daac1dabccb8298b551"
+        },
+        {
+          "subset_index": 32,
+          "extension_index": 6,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.104466495355816,
+          "extension_score": 5.0032105225456815,
+          "added_contribution_sum": 0.8987440271898646,
+          "receiver_state_sha256": "9e530b851ec8c1e4498167b2a49d2e56d5d147b9d705017c9ace78bf27a311f0",
+          "common_event_state_sha256": "3c9868ee3590b4c8b643473620763257bf29282abec8c3b776f2e85b63609f97"
+        },
+        {
+          "subset_index": 33,
+          "extension_index": 7,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.081794024785176,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.9112663532538032,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "8c212000a4008a4869d02b42d009175347b6fdb25e331ea7884b735c5eef3867"
+        },
+        {
+          "subset_index": 34,
+          "extension_index": 7,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.061027464323956,
+          "extension_score": 4.9930603780389795,
+          "added_contribution_sum": 0.9320329137150226,
+          "receiver_state_sha256": "ff36aca8db0671070f656baaa5dda26bfb1d1e6e5a0c8caa0ad70d63512d16ad",
+          "common_event_state_sha256": "dff769d64170524d9c4fe039dbc1310beb21a49542efb89e2beac6ad587d0777"
+        },
+        {
+          "subset_index": 35,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.027301902254939,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7265908407648745,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "5c17ff2fc0ffa5ce8c04f2ced5698a41056dd2eba98c2c8c2ad3d3724117c0b6"
+        },
+        {
+          "subset_index": 37,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 4.01230211171469,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7415906313051228,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "f373eed34e43f435d8acac8ce8e985c23063e2808c0d68f4cb286381f29c2169"
+        },
+        {
+          "subset_index": 39,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9937412656162503,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7601514774035628,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "e109aebd6c03517c5b9b7911503085eee74bf6b9b389263754ff320db6c3b566"
+        },
+        {
+          "subset_index": 40,
+          "extension_index": 10,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.986247719636493,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.7676450233833201,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "2d7fd69c0e716bf154fab81cc3ba9507ee55d4656184a62dca73b8a7fbaeaf1f"
+        },
+        {
+          "subset_index": 42,
+          "extension_index": 17,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9664258486379835,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.681117284733245,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "92e4a357dec2f8dee5a1c858716976a5d0feba4316a8c575cb4075718cc7e0a0"
+        },
+        {
+          "subset_index": 43,
+          "extension_index": 16,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.9662791010727805,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.6927346159177721,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "c88ba7a21f69fd55aa5378f8691b007cc4449a47bf43180a80ec31894805afd0"
+        },
+        {
+          "subset_index": 44,
+          "extension_index": 16,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.95905234567096,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.6999613713195928,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "03bb9b24148d2c393344903a3f0920298eaa34069d6e732794c57fb5daef2f3b"
+        },
+        {
+          "subset_index": 47,
+          "extension_index": 16,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.907142138281192,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.7518715787093603,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "12d4462e0573df6b8dae0308930be6e7da346dc69392d17e1411a3c329a1149a"
+        },
+        {
+          "subset_index": 49,
+          "extension_index": 17,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.900809398928177,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7467337344430516,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "b1f502ffc8a3e7e5b18046f8c92915bcc8a65ebface61f094c43bd797d12412e"
+        },
+        {
+          "subset_index": 50,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8982321087228757,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.8556606342969372,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "1a23801f1c70286513c9979bde57c6ce47d42348280a67c6ef788662064969c9"
+        },
+        {
+          "subset_index": 51,
+          "extension_index": 16,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.896859629419082,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.762154087571471,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "9d445f8178234dd322a49b901d1611e5a7929c70fffdc1bc43a32e07b3487348"
+        },
+        {
+          "subset_index": 53,
+          "extension_index": 18,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8945406030735876,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.6138359387131183,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "29e992ac93a43becc9cf3cb0802808eff91d68724a1b51bef4f6511e932d58c9"
+        },
+        {
+          "subset_index": 54,
+          "extension_index": 17,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.875062077636848,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7724810557343803,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "35d21a61bb02758368943dd97d1c57e4c4ec442f76aefffc912c365e68ffa054"
+        },
+        {
+          "subset_index": 55,
+          "extension_index": 17,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.871187187789154,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.7763559455820744,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "f3d3f199be0e066708bad9c92a95c05dd743bfde5b65a98dbd54af663cb840ca"
+        },
+        {
+          "subset_index": 56,
+          "extension_index": 10,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8516386071538173,
+          "extension_score": 4.753892743019813,
+          "added_contribution_sum": 0.9022541358659957,
+          "receiver_state_sha256": "963edaa04b62325f04e01ba2a53d400e489c166d11158272921de16b50e951f9",
+          "common_event_state_sha256": "1a7856437f80d9931bf42410422b949f3be1b93de57070f6d611daf4229a5467"
+        },
+        {
+          "subset_index": 57,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8326477121250546,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8574323049393073,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "2d6c7977c6d95c0fe2b054d10b6cf239a29b2ff930572cc0148ccd031b7d1897"
+        },
+        {
+          "subset_index": 58,
+          "extension_index": 17,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8179641224778247,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.8295790108934036,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "fd8190688c7a2ca6eee1559bed0a02c2a56c00a23a3862c41799dccb4f3fce62"
+        },
+        {
+          "subset_index": 59,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8158749689496374,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8742050481147243,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "270566f27af378a57bac975971b13f712fb662cb6d101b3de7d217abcb663f96"
+        },
+        {
+          "subset_index": 60,
+          "extension_index": 5,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.813507627574878,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8765723894894841,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "e6b4312f1df441677eab98490f4fbbd2178ef51a8510beb0a1fae855deca3f90"
+        },
+        {
+          "subset_index": 61,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.8119644311615946,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8781155859027674,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "92a52b39a2f3822885af38d0202498550162447a9f3eddab6c3adca0e4bb82ef"
+        },
+        {
+          "subset_index": 62,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.811913448490948,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.6096745135267467,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "d0da942532dbcf37fa96ecd6d12255ee9ac169698dde7e331039e68997d4f367"
+        },
+        {
+          "subset_index": 63,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.807533006433915,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8825470106304467,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "b6fca6d4c82adf81b2b137c030ebb3014a542c8dc883899ef830bbbd61259f4b"
+        },
+        {
+          "subset_index": 64,
+          "extension_index": 17,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.806267031386155,
+          "extension_score": 4.6475431333712285,
+          "added_contribution_sum": 0.8412761019850735,
+          "receiver_state_sha256": "40d5562618a3e22b9e089524fddbc44abaa7eadf49f4f05109a5f8702dd23409",
+          "common_event_state_sha256": "dc37e93fbca081db6da472adae1542ebd94d8c13e9c2bd910e6bd71f6701f19d"
+        },
+        {
+          "subset_index": 65,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7978388250165143,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8922411920478477,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "61ce63c756eeb17b1e50fbb912037ed3dafd7ad41670bf2c2db3a6c7bc5f20d5"
+        },
+        {
+          "subset_index": 66,
+          "extension_index": 5,
+          "subset_event_indices": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7954714836417542,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8946085334226075,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "6fa672918e227f6f1e9d463f1c0013a4da0e389484ad5c3259826d1a2fd1f2ac"
+        },
+        {
+          "subset_index": 67,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.793928287228471,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.8961517298358908,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "ba6fd12aefcc62e561606a0fd65442beb7fe98475100817a2d31591067ba35ab"
+        },
+        {
+          "subset_index": 68,
+          "extension_index": 16,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7898780225410276,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.869135694449525,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "35c8e627733869646edca8f6d8aa8b5ce097e90b2e15b6a7b588b7ef7696c7b2"
+        },
+        {
+          "subset_index": 69,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7894968625007914,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.90058315456357,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "f47ce6797918abfd6d66a4b51f4183a42c630a6676ce6f486538549cf8fd33fa"
+        },
+        {
+          "subset_index": 71,
+          "extension_index": 18,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.784205032659872,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.7241715091268337,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "8880b98aad46b047e8ae6740917d32da704ef6ea0678e888afb4d59a74f52684"
+        },
+        {
+          "subset_index": 72,
+          "extension_index": 5,
+          "subset_event_indices": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7786987404663375,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9113812765980245,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "817658c7527c30de9110c6de5c9873358b58be9188dc534b9aee0a47558e6128"
+        },
+        {
+          "subset_index": 73,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.777155544053054,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9129244730113077,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "29c0ec15c838331c37ad3eba1999588ad0fdd9890d026766a80422e22ec46e47"
+        },
+        {
+          "subset_index": 74,
+          "extension_index": 16,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.775857347967721,
+          "extension_score": 4.659013716990553,
+          "added_contribution_sum": 0.8831563690228316,
+          "receiver_state_sha256": "395b285489cdd6d3001a699924fd1d12fa17032e5ae803591e51534772a8c7ef",
+          "common_event_state_sha256": "8fd2ecd47d5318cc4e7bb27d9040a59c00380c61bf50f9cd90c437872a6a55fb"
+        },
+        {
+          "subset_index": 75,
+          "extension_index": 5,
+          "subset_event_indices": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7747882026782946,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9152918143860673,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "30d177b1d4d1ecf5ee4f18d6ac54afd85e3fe7f3822ffe3eea15e4b746a61da6"
+        },
+        {
+          "subset_index": 76,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7727241193253747,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.917355897738987,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "e7e1f914d9c5a2fbc2057f9c7916afcd6c3688dc50750705c33528d6739ae5e0"
+        },
+        {
+          "subset_index": 77,
+          "extension_index": 5,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.770356777950615,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9197232391137469,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "f501a932691b3c1ee8c27dc77e66a8e3d21c0c57416673f3a46b0e424f7fc241"
+        },
+        {
+          "subset_index": 78,
+          "extension_index": 5,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.768813581537332,
+          "extension_score": 5.6900800170643615,
+          "added_contribution_sum": 1.9212664355270301,
+          "receiver_state_sha256": "5c65f0dfb643b0aa991a871c65725e1a6e7bcc19a9c56ff7c5203b892cdfd97d",
+          "common_event_state_sha256": "898f8a4168b6d678b01adf25d43948f28266f9407664eb4cc3923f83cea1d7fa"
+        },
+        {
+          "subset_index": 79,
+          "extension_index": 18,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7484024588923837,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.7599740828943223,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "c05eb7ebf7bf24968b28503319a27aeb8eec39776a2c0d13f6091d4a8a7fc5ef"
+        },
+        {
+          "subset_index": 81,
+          "extension_index": 18,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.735956551564629,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.772419990222077,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "dbe24119ec59300cda0135a18612e2f58a0f22daf875e266d987b9ab345e99be"
+        },
+        {
+          "subset_index": 82,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.716076222536609,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7055117394810857,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "1eb9b0030c79fa12bba3d6e37fdd9c8cc5e71bcbbea0e29d7cdf3fd9efe0b6bf"
+        },
+        {
+          "subset_index": 83,
+          "extension_index": 18,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.705378931880582,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.802997609906124,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "ff897d8f430f8272ed49d94d4b70e84af199b83d87a07ab5e7d8d5781d88901a"
+        },
+        {
+          "subset_index": 84,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.7009018057943606,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.720686156223334,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "20ecebfc06c5c0bb8dbfbab80b9cb26f602401c05529c82f820d43ca58bf01c0"
+        },
+        {
+          "subset_index": 85,
+          "extension_index": 20,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.678994740624842,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.5958832542275367,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "07229e7a1e6864f937ba9b6088c0a1121eed21741b3c9a93301a6f70d64da1f8"
+        },
+        {
+          "subset_index": 86,
+          "extension_index": 18,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6733991308624754,
+          "extension_score": 4.508376541786706,
+          "added_contribution_sum": 0.8349774109242307,
+          "receiver_state_sha256": "1b87a1dff349a4cf4ef40b456b48c149f433a7c53ee71449391a7b053db007c3",
+          "common_event_state_sha256": "f8fffefaf6d2e438ff4d4b2ebeedc89dc2be8d7bde9ecdb38c93db3bf74f6e3b"
+        },
+        {
+          "subset_index": 88,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6580984636486065,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7634894983690883,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "a9043bf44e5c6cd134f3f0a8d63c8e5a0aa4a9a01725e7b7990414c1e3c437c4"
+        },
+        {
+          "subset_index": 89,
+          "extension_index": 19,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.6503955064338687,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.7711924555838258,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "4c7d3c14895ae69ff198c52ba1a69b98f34b5b60fbfe91fb4605a38d418628df"
+        },
+        {
+          "subset_index": 90,
+          "extension_index": 25,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.627008718696003,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.5775491478929031,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "d9e82ccd6968c7abbcf7984e9727f533973899c64977daec83c8fca992d171dd"
+        },
+        {
+          "subset_index": 92,
+          "extension_index": 20,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5978263190499566,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.6770516758024223,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "cef2421d941f46e00432e67c18e6b76add1d0418b5af87b26ba6372e7ec72c1e"
+        },
+        {
+          "subset_index": 93,
+          "extension_index": 25,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5951498251827756,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.6094080414061307,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "787acd27b6731a2179a6ac71478cfeff1ad0036612974dc6b32caef2b7ef6cd2"
+        },
+        {
+          "subset_index": 95,
+          "extension_index": 19,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5705543631840806,
+          "extension_score": 4.4215879620176946,
+          "added_contribution_sum": 0.8510335988336141,
+          "receiver_state_sha256": "fda6ff5eab1c20158d33e36bc7926cb17f1db04929f7744136c5763272e55670",
+          "common_event_state_sha256": "470b4a5a611754df36e056dd1ad9fe8b1f5f2c36ae311f549268e6835debc513"
+        },
+        {
+          "subset_index": 96,
+          "extension_index": 20,
+          "subset_event_indices": [
+            0,
+            1,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.561917362283383,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7129606325689961,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "3ae0b08f3b1d39b5acd314ce4f1475d8790f9e902956db7c7e0811687b65fbf4"
+        },
+        {
+          "subset_index": 97,
+          "extension_index": 20,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.551961950660501,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7229160441918779,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "1fe6867ed1d04cea89d8a4df3defa4b48e2e7b92047e158aecbc78dba1e1b7ea"
+        },
+        {
+          "subset_index": 98,
+          "extension_index": 29,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.548541299633928,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.5950219336932336,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "49a5e61f5ac186ca0526b34d4eddd262aeace859fa756e226d2108e37601f811"
+        },
+        {
+          "subset_index": 99,
+          "extension_index": 29,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5402037151527335,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.603359518174428,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "b29b11d9af3b77b9699869d53deb2d5fccd5e32f16097b10aed83dca364f15ce"
+        },
+        {
+          "subset_index": 101,
+          "extension_index": 25,
+          "subset_event_indices": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5238698549413723,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.6806880116475338,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "209ace66d66985f98048dc446ec7029af6eee379cfebfc286596d9e774467f0b"
+        },
+        {
+          "subset_index": 102,
+          "extension_index": 29,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.5218956978300775,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.6216675354970842,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "3a9a6f7f191a3eefb09de1aca1c9ccb9061d11bd16b9b25466091d6005d3bdac"
+        },
+        {
+          "subset_index": 103,
+          "extension_index": 20,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.505364227774271,
+          "extension_score": 4.274877994852379,
+          "added_contribution_sum": 0.7695137670781079,
+          "receiver_state_sha256": "1cd90b8ebcdb920861bb712527584d06405b051268e63f1c54ecdc56f0db3b47",
+          "common_event_state_sha256": "18b36f77ebba15072ae822c4254f588c688ff99c8b98bbc51f365a187b79c5bb"
+        },
+        {
+          "subset_index": 104,
+          "extension_index": 29,
+          "subset_event_indices": [
+            0,
+            2,
+            3,
+            4,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.4936591780046538,
+          "extension_score": 4.1435632333271615,
+          "added_contribution_sum": 0.649904055322508,
+          "receiver_state_sha256": "99d3319a19737b3a5ee5cfc59bdfc62d36c4629305262ecb6e11b4784bfd6b1a",
+          "common_event_state_sha256": "2b1a67fee8aae812132e0e382c58140b3ec172fa4bb8c689492f4ebe6712a1ae"
+        },
+        {
+          "subset_index": 105,
+          "extension_index": 25,
+          "subset_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            5
+          ],
+          "extension_event_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "subset_score": 3.4891514794194176,
+          "extension_score": 4.204557866588906,
+          "added_contribution_sum": 0.7154063871694887,
+          "receiver_state_sha256": "a41079b385b8743130bc6ba5823f3181add7a582b8b5be7ef7697fb99aebc8df",
+          "common_event_state_sha256": "d49744eae5719653e00d2fe26bd1ddcd05668ec48ac3983afa6bb1d92d640db1"
+        }
+      ]
+    }
+  },
+  "predicate_controls": [
+    {
+      "case": "native_exact_extension",
+      "compatible": true,
+      "reason": "exact_pointwise_extension"
+    },
+    {
+      "case": "different_longitude",
+      "compatible": false,
+      "reason": "receiver_or_clock_differs"
+    },
+    {
+      "case": "different_elevation",
+      "compatible": false,
+      "reason": "receiver_or_clock_differs"
+    },
+    {
+      "case": "different_clock",
+      "compatible": false,
+      "reason": "receiver_or_clock_differs"
+    },
+    {
+      "case": "conflicting_flight",
+      "compatible": false,
+      "reason": "common_assignment_or_fitted_state_differs"
+    },
+    {
+      "case": "different_pass",
+      "compatible": false,
+      "reason": "common_assignment_or_fitted_state_differs"
+    },
+    {
+      "case": "different_source_fit",
+      "compatible": false,
+      "reason": "common_assignment_or_fitted_state_differs"
+    },
+    {
+      "case": "different_common_loss",
+      "compatible": false,
+      "reason": "common_assignment_or_fitted_state_differs"
+    },
+    {
+      "case": "inconsistent_recorded_score",
+      "compatible": false,
+      "reason": "extension_score_not_additive"
+    },
+    {
+      "case": "partial_event_support",
+      "compatible": false,
+      "reason": "event_fit_not_fully_supported"
+    }
+  ],
+  "limitations": [
+    "No truth labels used; no historical decision executed or changed.",
+    "Only observed retained rows were inspected. Discarded or unvisited modes have no inferred classification or bound.",
+    "Receiver/clock and common fitted states are compared exactly using float64 hex values; no distance or parameter tolerance merges states.",
+    "The additive score consistency check uses a 1e-12 numeric tolerance, without changing recorded scores or comparing parameter states approximately.",
+    "A future producer protocol still needs model/domain provenance, completed assessments, retained/discarded ID accounting and counterexample review."
+  ]
+}

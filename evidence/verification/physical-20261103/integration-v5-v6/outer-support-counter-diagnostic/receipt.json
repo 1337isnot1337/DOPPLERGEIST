@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/support-adapter-counter/diagnose.py",
+    "--repo",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST",
+    "--ref",
+    "f64c899",
+    "--request",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/six-event-passive-audit-0ea6516/canonical/inputs/request.json",
+    "--output",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/support-adapter-counter/f64c899.json"
+  ],
+  "exit_code": 0,
+  "scope": "Exact pure-function diagnostic, executed through exec_command; no pytest suite or pipeline job.",
+  "script_sha256": "ad325a764485de38db607feb7f29ee9c8fe6c6900e0687f9795adfe6b9d250b9",
+  "output_sha256": "f9d79ee51b23d2f8c4ca5fb98e07214eb8903cbcbfe8d7a4210fcf44864f368d"
+}

@@ -1,0 +1,85 @@
+{
+  "scope": "Exact standalone _coverage function contract diagnostic; no pipeline job or scientific acceptance test.",
+  "commit": "f64c89984a51408e914b7728c3de402f180ecbe6",
+  "source_sha256": "902f7959491f2118a29574909181eddeda22843608f88d1c17a736a423b53887",
+  "script_sha256": "ad325a764485de38db607feb7f29ee9c8fe6c6900e0687f9795adfe6b9d250b9",
+  "request_sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+  "cases": [
+    {
+      "case": "zero",
+      "unreported_trial_envelopes": 0,
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    },
+    {
+      "case": "nonzero",
+      "unreported_trial_envelopes": 1,
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    },
+    {
+      "case": "negative",
+      "unreported_trial_envelopes": -1,
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    },
+    {
+      "case": "boolean",
+      "unreported_trial_envelopes": true,
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    },
+    {
+      "case": "string",
+      "unreported_trial_envelopes": "1",
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    },
+    {
+      "case": "absent",
+      "unreported_trial_envelopes": null,
+      "search_complete": true,
+      "data_status": "available",
+      "limitations": [
+        "Historical receiver archives may omit aircraft or trajectory samples.",
+        "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+      ]
+    }
+  ],
+  "consistent_producer_unknown_envelope": {
+    "search_complete": false,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "Trajectory model assessment is incomplete; unsupported competitors remain unassessed. See the search support diagnostics.",
+      "Unsupported CPA track evaluations: 0; unclassified score candidates: 1; unknown clock trials: 0. Counts describe work evaluations, not distinct aircraft.",
+      "The search did not assess the complete requested scope within its work or physical model limits.",
+      "Candidate retention is bounded; exhaustive alternative-location assessment is not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "interpretation": "W2 reports unreported envelopes with model_support_complete=false and an unclassified candidate, which already abstains. The added counter itself still needs an explicit product transport/validation contract."
+}
