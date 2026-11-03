@@ -10,6 +10,7 @@ import signal
 import subprocess
 import sys
 import threading
+import time
 import uuid
 
 from .contracts import validate_request, validate_result
@@ -185,13 +186,25 @@ class JobManager:
                         process = subprocess.Popen(command,
                                                    stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
                     self._processes[directory.name] = process
-                try:
-                    process.wait(timeout=self.max_runtime_s)
-                except subprocess.TimeoutExpired:
-                    self._stop(process)
-                    with self._mutex:
-                        if self.get(directory.name)["status"] not in TERMINAL:
-                            result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.", **_evidence(self.get(directory.name)))
+                deadline = time.monotonic() + self.max_runtime_s
+                while True:
+                    try:
+                        process.wait(timeout=max(0, min(0.5, deadline - time.monotonic())))
+                        break
+                    except subprocess.TimeoutExpired:
+                        if (directory / "cancel").exists():
+                            with self._mutex:
+                                self._stop(process)
+                                current = self.get(directory.name)
+                                if current["status"] not in TERMINAL:
+                                    result(directory, "cancelled", message="Cancelled by the user; partial artifacts are preserved.", **_evidence(current))
+                            break
+                        if time.monotonic() >= deadline:
+                            self._stop(process)
+                            with self._mutex:
+                                if self.get(directory.name)["status"] not in TERMINAL:
+                                    result(directory, "inconclusive", reason_code="work_limit", message="Analysis exceeded the configured wall-time budget; inspect partial artifacts.", **_evidence(self.get(directory.name)))
+                            break
                 with self._mutex:
                     if self.get(directory.name)["status"] not in TERMINAL:
                         result(directory, "failed", reason_code="worker_exit", message=f"Analysis process exited ({process.returncode}); inspect worker.log.", **_evidence(self.get(directory.name)))
