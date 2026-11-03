@@ -117,6 +117,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
 
     if best["score_kind"] != "negative_robust_ridge_loss_hz":
         return result("unsupported_score_kind", "This ranking score has no declared ambiguity threshold in the decision policy.")
+    # Alternatives must fit inside the envelope around the returned point.
+    # Two overlapping target-radius circles do not establish that containment.
+    ambiguity_radius_m = min(policy.target_radius_m,
+                             best.get("uncertainty", {}).get("radius_m", policy.target_radius_m))
     for alternative in candidates[1:]:
         # Unmatched/subset candidates cannot be compared as equal-size losses.
         if set(alternative["event_ids"]) != set(best["event_ids"]):
@@ -124,10 +128,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         separation = abs(Geod(ellps="WGS84").inv(best["lon"], best["lat"], alternative["lon"], alternative["lat"])[2])
         same_flights = dict(zip(best["event_ids"], best["flight_ids"])) == dict(zip(alternative["event_ids"], alternative["flight_ids"]))
         loss_gap = (best["score"] - alternative["score"]) / len(groups)
-        if (separation > 2 * policy.target_radius_m or not same_flights) and loss_gap <= policy.near_tie_loss_per_event_hz:
+        if (separation > ambiguity_radius_m or not same_flights) and loss_gap <= policy.near_tie_loss_per_event_hz:
             diagnostics["competing_hypothesis"] = {"separation_m": separation, "loss_gap_per_event_hz": loss_gap,
-                                                   "same_flight_association": same_flights}
-            return result("ambiguous_locations" if separation > 2 * policy.target_radius_m else "ambiguous_flight_match",
+                                                   "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
+            return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
                           "Competing hypotheses fit nearly as well; no unique precise location is supported.")
     if evidence.get("alternatives_evaluated") is not True:
         return result("alternatives_not_assessed", "The retained competing hypotheses have not all been assessed.")
