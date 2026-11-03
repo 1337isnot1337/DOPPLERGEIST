@@ -60,6 +60,17 @@ def _possible_harmonic_overlap(events):
             if span <= 0 or times[-1] - times[0] < 0.6 * span:
                 continue
             x, y = (np.array([ridge[t] for t in times], dtype=float) for ridge in (a, b))
+            # Chunk paths can follow the same measured peak before branching.
+            # A reused sequence is not independent evidence, even when the
+            # later divergence fails the whole-ridge harmonic check below.
+            shared = x == y
+            starts = np.flatnonzero(np.convolve(shared, np.ones(5, dtype=int), mode="valid") == 5)
+            if len(starts):
+                start = int(starts[0])
+                return {"event_ids": [low["event_id"], high["event_id"]],
+                        "ambiguity": "reused_ridge_observations", "harmonic_ratio": 1.0,
+                        "aligned_samples": len(times), "shared_ridge_samples": int(shared.sum()),
+                        "shared_run_start_s": times[start], "shared_run_end_s": times[start + 4]}
             if np.median(x) > np.median(y):
                 low, high, x, y = high, low, y, x
             with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
@@ -247,7 +258,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         diagnostics["independent_event_groups"] = None
         diagnostics["possible_harmonic_overlap"] = possible_overlap
         return result("insufficient_independent_events",
-                      "Overlapping matched ridges may be harmonics of one flyover; independent events are not established.")
+                      "Overlapping matched ridges may describe one flyover; independent events are not established.")
     if len(groups) < policy.min_independent_events and not (len(groups) == 1 and
             policy.min_independent_events == 2 and known_clock):
         return result("insufficient_independent_events", "Too few independent flyovers constrain location; harmonics count once.")
