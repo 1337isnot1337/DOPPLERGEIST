@@ -64,6 +64,18 @@ owner. Coordinate these workstreams on discussion board #39. Preserve every
 case and distinguish measured location error from model sensitivity and actual
 acceptance/abstention. Report outcomes at 100, 500 and 1,000 m.
 
+## Current integration priorities — 2026-11-03 UTC
+
+Complete the correctness gates [#52](https://github.com/1337isnot1337/DOPPLERGEIST/pull/52)
+and [#64](https://github.com/1337isnot1337/DOPPLERGEIST/issues/64), integrate the
+all-event driver/local application, and obtain the independent field corpus #53
+before expanding major features. National null/look-elsewhere calibration and
+leave-one-flyover-out prediction are focused additions to existing #9/#3
+confidence/evaluation ownership; their frozen protocols are in #9. They do not
+create another worker role. Keep unsupported tracks, omitted coverage and failed
+profiles explicit. Prioritize repeatable local loopback operation; hosted-service
+development is outside this phase. Existing CI remains verification.
+
 ## Ready-to-copy assignment prompt
 
 Replace the task/role placeholders with one row above:

@@ -1,0 +1,23 @@
+{
+  "source_commit": "86d25d0ba8bb434b43f91357b699c625b5ce2fc9",
+  "source_tree": "e98d11bf72ad8cceebca416774c205ee1af3b85d",
+  "pytest_summary": {
+    "passed": 250,
+    "subtests_passed": 14,
+    "skipped": 0,
+    "elapsed_s": 76.34
+  },
+  "junit_suite": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "264",
+    "time": "76.339",
+    "timestamp": "2026-11-02T19:54:40.340867-06:00",
+    "hostname": "Asus"
+  },
+  "junit_sha256": "3969a3a44c52cae5ee821bfbf640a6556168ce6caf67cc45125248649c467fbc",
+  "change": "W5 a0dd840 score/clock/unmatched adapter combined with PR52 authoritative profile; conflict resolved with raw[0] = _comparable_refinement(profiled, leading, prepared_events).",
+  "scope": "Frozen review source; finite-search and accepted multi-event/real gates remain unmet."
+}

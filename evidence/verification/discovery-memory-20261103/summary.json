@@ -1,0 +1,26 @@
+{
+  "original_source_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "input_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "original_peak_rss_kib": 1648608,
+  "original_peak_rss_mib": 1609.96875,
+  "fresh_generation_executed": false,
+  "runs": [
+    {
+      "run": "fresh-1",
+      "events": 4,
+      "original_events_exactly_reproduced": true,
+      "peak_rss_kib": 385008,
+      "peak_rss_mib": 375.984375,
+      "elapsed_s": 7.738433482008986
+    },
+    {
+      "run": "fresh-2",
+      "events": 4,
+      "original_events_exactly_reproduced": true,
+      "peak_rss_kib": 386860,
+      "peak_rss_mib": 377.79296875,
+      "elapsed_s": 8.577984030009247
+    }
+  ],
+  "finding": "Original high peak was not reproduced in two fresh discovery-only processes; all measured event objects reproduced exactly. Cause of original peak remains unestablished. This bounds these two repeats only, not arbitrary recording duration or national search."
+}

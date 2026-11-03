@@ -1,0 +1,14 @@
+{
+  "source_commit": "f0db844ae2496fa1faf7bf438daf152c55514b00",
+  "passed": true,
+  "installed_package": "/home/cinna/.cache/dopplergeist/wheel-integration-f0db844/venv/lib/python3.14/site-packages/aircraft_geoloc",
+  "source_and_asset_files_verified": 24,
+  "web_assets_verified": [
+    "aircraft_geoloc/web/app.js",
+    "aircraft_geoloc/web/index.html",
+    "aircraft_geoloc/web/style.css"
+  ],
+  "package_only_digest": "68cc9b22d4899ff2addddc21bdf1341d10e5dcf355f5d7f6780b7f12688dd436",
+  "unrelated_installed_file_excluded": true,
+  "checkout_source_and_assets_match": true
+}
