@@ -7,15 +7,22 @@ import numpy as np
 import pandas as pd
 
 from .audio import measure
-from .geometry import ecef
+from .finite_search import classified_assessment
+from .geometry import AcousticSupportError,ecef
 from .provenance import RunProvenance,implementation_provenance
-from .search import cpa_table,pair_candidates,rank_candidates
+from .search import cpa_table,pair_candidates,score_candidate
 from .terrain import Terrain,CopernicusTerrain,corridor_grid,refine_grid
 from .tracks import load_tracks,unix_time
 
 
 def dump(path,value):
     Path(path).write_text(json.dumps(value,indent=2,allow_nan=False)+"\n")
+
+
+def support_failure(error):
+    return {"track_id":error.track_id,"reason":error.reason,
+            "emission_intervals_s":error.emission_intervals_s,
+            "receive_intervals_s":error.receive_intervals_s}
 
 
 def run(config_path,output_dir):
@@ -86,24 +93,66 @@ def run(config_path,output_dir):
     radius=max(event["slant_range_m"][1] for event in events)
     c=config.get("sound_speed_mps",343.0)
     filters=config.get("filters",{})
-    def select(points):
-        table=cpa_table(tracks,points,radius,c,config.get("cpa_step_s",2))
+    support_stages=[]
+    support_dir=output/"support"
+    support_dir.mkdir(exist_ok=True)
+    def support_summary():
+        return {"scope":"configured_research_ranking",
+            "model_support_complete":all(stage["complete"] for stage in support_stages),
+            "model_assessment_complete":all(stage["complete"] for stage in support_stages),
+            "unsupported_cpa_track_evaluations":sum(s.get("excluded_track_count",0) for s in support_stages),
+            "unknown_candidate_envelopes":sum(s.get("unknown_candidate_count",0) for s in support_stages),
+            "unreported_trial_envelopes":sum(s.get("unreported_trial_envelopes",0) for s in support_stages),
+            "reported_unknown_trials":sum(s.get("reported_trials",{}).get("unknown_trials",0) for s in support_stages),
+            "count_semantics":"work evaluations, including repeated tracks and receivers across stages",
+            "stages":support_stages}
+    def record_support(stage,detail):
+        dump(support_dir/f"{stage}.json",detail)
+        support_stages.append({key:value for key,value in detail.items()
+                               if key not in ("excluded_tracks","unknown_candidates")}
+                              | {"artifact":f"support/{stage}.json"})
+        dump(output/"model-support.json",support_summary())
+    def select(points,stage):
+        tables,excluded=[],[]
+        bounds=([float(points.lon.min()),float(points.lat.min()),
+                 float(points.lon.max()),float(points.lat.max())] if len(points) else None)
+        for track in tracks:
+            try:
+                table=cpa_table([track],points,radius,c,config.get("cpa_step_s",2))
+            except AcousticSupportError as error:
+                # Exclude this track's whole stage, not just the reported bad
+                # intervals. Missing competing passes remain unassessed.
+                excluded.append({"track_id":track.id,"failure":support_failure(error),
+                    "emission_time_range_s":[float(track.time[0]),float(track.time[-1])],
+                    "receiver_bounds_wsen":bounds,"receiver_point_count":len(points),
+                    "coverage_envelope":"whole_track_whole_stage_conservative"})
+                continue
+            if len(table):
+                tables.append(table)
+        table=(pd.concat(tables,ignore_index=True) if tables else pd.DataFrame(columns=
+               ["point_id","flight_id","emission_time","receive_time","distance_m","speed_mps"]))
+        if len(table):
+            table=table.sort_values(["point_id","flight_id","emission_time"]).reset_index(drop=True)
+        record_support(stage,{"stage":stage,"kind":"cpa","complete":not excluded,
+            "receiver_bounds_wsen":bounds,"receiver_point_count":len(points),
+            "track_evaluations":len(tracks),"cpa_rows":len(table),
+            "excluded_track_count":len(excluded),"excluded_tracks":excluded})
         candidates,counts=pair_candidates(table,events,
             offset_tolerance_s=filters.get("offset_tolerance_s",5),time_origin=origin,
             time_tolerance_s=filters.get("known_time_tolerance_s",5),silence=filters.get("silence"))
+        if excluded:
+            print(f"{stage}: {len(excluded)} unsupported track evaluations; model coverage is partial",flush=True)
         return candidates,counts
-    candidates,counts=select(points)
+    candidates,counts=select(points,"coarse-cpa")
     dump(output/"filter-counts.json",counts)
     print("Coarse filters:",counts,flush=True)
-    if not candidates:
-        raise ValueError("No candidates survived; see filter-counts.json")
     points.to_csv(output/"coarse-grid.csv",index=False)
     dump(output/"measured-events.json",events)
     fine=grid.get("scoring_spacing_m",100)
-    if fine<coarse:
+    if candidates and fine<coarse:
         ids={candidate["point_id"] for candidate in candidates}
         points=refine_grid(points[points.point_id.isin(ids)],coarse,fine,terrain,crs)
-        candidates,fine_counts=select(points)
+        candidates,fine_counts=select(points,"scoring-cpa")
     else:
         fine_counts=counts
     print("Scoring filters:",fine_counts,flush=True)
@@ -111,9 +160,64 @@ def run(config_path,output_dir):
     scoring=config.get("scoring",{})
     parameters=dict(mode=scoring.get("mode","brightness"),time_origin=origin,
         time_sweep_s=scoring.get("time_sweep_s",5),time_step_s=scoring.get("time_step_s",0.5),c=c)
-    ranked=rank_candidates(candidates,points,tracks,events,measurements,**parameters)
-    if not ranked:
-        raise ValueError("No candidate had complete model support in all event windows")
+    def rank(candidates,points,stage):
+        lookup={row.point_id:row for row in points.itertuples()}
+        track_lookup={track.id:track for track in tracks}
+        ranked,unknown=[],[]
+        reported=dict(evaluated_trials=0,rejected_trials=0,unknown_trials=0)
+        unreported=0
+        for i,candidate in enumerate(candidates):
+            point=lookup[candidate["point_id"]]
+            failure=None
+            try:
+                row=score_candidate(candidate,point,track_lookup,events,measurements,**parameters)
+            except AcousticSupportError as error:
+                # A legacy scorer can stop before reporting its clock trials.
+                # Do not label that interrupted candidate a known rejection.
+                failure=support_failure(error)
+                row={"score":-np.inf}
+            assessment=row.get("scoring_assessment")
+            counted=(isinstance(assessment,dict) and all(type(assessment.get(key)) is int
+                     and assessment[key]>=0 for key in reported))
+            if counted:
+                for key in reported:
+                    reported[key]+=assessment[key]
+            else:
+                unreported+=1
+            known=parameters["mode"]=="robust_ridge" and classified_assessment(row)
+            finite=bool(np.isfinite(row["score"]))
+            pass_times=[float(p["emission_time"]) for p in candidate["passes"]]
+            if not known:
+                anchor=(origin if origin is not None else
+                        candidate["passes"][0]["receive_time"]-events[0]["cpa_receive_s"])
+                lo,hi=anchor-parameters["time_sweep_s"],anchor+parameters["time_sweep_s"]
+                if parameters["mode"]=="robust_ridge" and "recording_start_bounds_s" in candidate:
+                    lower,upper=candidate["recording_start_bounds_s"]
+                    lo,hi=lower-parameters["time_sweep_s"],upper+parameters["time_sweep_s"]
+                    if origin is not None:
+                        lo,hi=max(lo,origin-parameters["time_sweep_s"]),min(hi,origin+parameters["time_sweep_s"])
+                unknown.append({"point_id":int(point.point_id),
+                    "receiver":{key:float(getattr(point,key)) for key in ("x","y","lat","lon","elev_m")},
+                    "flight_ids":[p["flight_id"] for p in candidate["passes"]],
+                    "event_indices":list(candidate.get("event_indices",range(len(events)))),
+                    "pass_emission_times_s":pass_times,"recording_start_domain_s":[float(lo),float(hi)],
+                    "clock_domain_kind":"scorer_proposal_not_independent_recording_time",
+                    "clock_settings":parameters,"scoring_assessment":assessment,"failure":failure,
+                    "finite_best":finite,"finite_score":float(row["score"]) if finite else None,
+                    "reason":(failure["reason"] if failure else "unclassified_clock_envelope"),
+                    "coverage_envelope":"whole_candidate_clock_domain_conservative"})
+            if finite:
+                row["pass_emission_times_s"]=pass_times
+                row["core_assessment_complete"]=bool(known)
+                ranked.append(row)
+            if i and i%100==0:
+                print(f"Scored {i}/{len(candidates)} candidates",flush=True)
+        record_support(stage,{"stage":stage,"kind":"scoring","complete":not unknown,
+            "candidate_envelopes":len(candidates),"finite_candidates":len(ranked),
+            "unknown_candidate_count":len(unknown),"unreported_trial_envelopes":unreported,
+            "reported_trials":reported,"unknown_candidates":unknown})
+        return sorted(ranked,key=lambda row:row["score"],reverse=True)
+    ranked=rank(candidates,points,"grid-scoring")
     dump(output/"ranked-grid.json",ranked)
     # Refine the best location from each flight combination rather than spending
     # every refinement slot on neighbouring points of the winning combination.
@@ -122,11 +226,11 @@ def run(config_path,output_dir):
         best_pairs.setdefault(tuple(row["flight_ids"]),row)
     chosen=list(best_pairs.values())[:grid.get("refine_pairs",10)]
     final_spacing=grid.get("refine_spacing_m",25)
-    if final_spacing<fine:
+    if chosen and final_spacing<fine:
         seeds=pd.DataFrame(chosen)
         points2=refine_grid(seeds,fine,final_spacing,terrain,crs)
-        candidates2,refined_counts=select(points2)
-        ranked2=rank_candidates(candidates2,points2,tracks,events,measurements,**parameters)
+        candidates2,refined_counts=select(points2,"refinement-cpa")
+        ranked2=rank(candidates2,points2,"refinement-scoring")
         ranked=sorted(ranked+ranked2,key=lambda r:r["score"],reverse=True)
         dump(output/"refinement-filter-counts.json",refined_counts)
     best_pairs={}
@@ -139,12 +243,23 @@ def run(config_path,output_dir):
             "implementation_sha256":implementation["sha256"],
             "implementation_sources":implementation["sources"],"provenance":provenance.declaration(),
             "coarse_filter_counts":counts,"scoring_filter_counts":fine_counts,
-            "ranked_points":len(ranked),"flight_combinations":len(best_pairs),"best":ranked[0],
+            "ranked_points":len(ranked),"flight_combinations":len(best_pairs),"best":ranked[0] if ranked else None,
+            "result_scope":"configured_research_ranking","accepted_location":False,
+            "model_support_complete":support_summary()["model_support_complete"],
+            "model_assessment_complete":support_summary()["model_assessment_complete"],
+            "model_support":support_summary(),
+            "limitations":["Configured event windows and receiver bounds do not establish independent automatic localization.",
+                "Source flight coverage and competing locations are not certified by this research ranking.",
+                "Excluded trajectories and unknown clock envelopes remain unassessed, not ruled out.",
+                "Legacy brightness/ridge scores do not report exhaustive clock-trial assessment."],
             "elapsed_s":time.monotonic()-began,
             "scoring_time_is_locked":True}
     dump(output/"report.json",report)
-    plot_results(output,ranked,tracks,measurements,c)
-    print("Best:",json.dumps(ranked[0]),flush=True)
+    if ranked:
+        plot_results(output,ranked,tracks,measurements,c)
+        print("Best:",json.dumps(ranked[0]),flush=True)
+    else:
+        print("No supported hypothesis; inspect model-support.json and filter counts",flush=True)
     return report
 
 

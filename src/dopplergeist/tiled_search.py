@@ -19,7 +19,7 @@ import pandas as pd
 from pyproj import Transformer
 
 from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
-from .finite_search import RetentionLedger, classified_assessment, identify_mode, mode_seed
+from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
 from .geometry import AcousticSupportError
 from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_event, pair_candidates, score_candidate
@@ -67,7 +67,7 @@ def _key(row):
             tuple(seed["position"]), seed["recording_start_time_s"])
 
 
-def merge_candidates(rows, top_k, *, ledger=None, stage=None):
+def merge_candidates(rows, top_k, *, ledger=None, stage=None, bounds=()):
     unique, occurrences = {}, 0
     for row in rows:
         if not math.isfinite(row["score"]):
@@ -80,7 +80,7 @@ def merge_candidates(rows, top_k, *, ledger=None, stage=None):
     if ledger is not None:
         if stage is None:
             raise ValueError("Retention accounting requires a stage identity")
-        ledger.record(stage, list(unique.values()), kept, occurrences)
+        ledger.record(stage, list(unique.values()), kept, occurrences, bounds=bounds)
     return kept
 
 
@@ -212,6 +212,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         candidates, counts = pair_candidates(table, events, **kwargs)
     # Attach approach identities before scoring, since legacy rank drops passes.
     ranked, unclassified, rejected = [], 0, 0
+    bounds = []
     trial_counts = dict(evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
     unclassified_assessments = []
     lookup = {row.point_id: row for row in points.itertuples()}
@@ -264,26 +265,35 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             trial_counts["unreported_trial_envelopes"] += 1
         if not known:
             unclassified += 1
-            unclassified_assessments.append({"point_id": int(candidate["point_id"]),
+            detail = {"point_id": int(candidate["point_id"]), "envelope_index": unclassified,
+                "score_kind": row.get("score_kind"),
                 "receiver": {k: float(row[k]) for k in ("x", "y", "lat", "lon", "elev_m")},
                 "event_indices": row.get("event_indices", list(range(len(events)))), "flight_ids": row["flight_ids"],
                 "pass_emission_times_s": row["pass_emission_times_s"],
                 "recording_start_bounds_s": scoring_candidate.get("recording_start_bounds_s"),
+                "clock_settings": {k: settings.get(k) for k in ("time_origin", "time_sweep_s", "time_step_s")},
                 "scoring_assessment": row.get("scoring_assessment"), "support_failure": row.get("support_failure"),
-                "finite_best": math.isfinite(row["score"])})
+                "finite_best": math.isfinite(row["score"])}
+            unclassified_assessments.append(detail)
+            if bounded_assessment(row):
+                bounds.append({"bound_id": "bound-" + content_hash(detail), "detail": detail,
+                               "groups_count": len(detail["event_indices"]),
+                               "upper_score": detail["scoring_assessment"]["unknown_score_upper_bound"]})
         if math.isfinite(row["score"]):
             ranked.append(row)
         elif known:
             rejected += 1
-    kept = merge_candidates(ranked, budget.top_k, ledger=ledger, stage=stage)
+    kept = merge_candidates(ranked, budget.top_k, ledger=ledger, stage=stage, bounds=bounds)
     return kept, dict(counts, cpa_rows=count, candidates=len(candidates), unclassified_score_candidates=unclassified,
+                      bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
                       unclassified_candidate_assessments=unclassified_assessments, **trial_counts)
 
 
 def _record_support(output, stage, counts, summary):
     summary["unsupported_cpa_track_evaluations"] += len(counts.get("unsupported_cpa_tracks", []))
-    for key in ("unclassified_score_candidates", "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"):
+    for key in ("unclassified_score_candidates", "bounded_score_candidates", "unbounded_score_candidates",
+                "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"):
         summary[key] += counts.get(key, 0)
     if counts.get("unsupported_cpa_tracks") or counts.get("unclassified_candidate_assessments"):
         (output / "support").mkdir(exist_ok=True)
@@ -360,6 +370,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     ledger = RetentionLedger(output / "retention.sqlite", run_hash, score_kind)
     began, ranked, failures, done, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
+                   bounded_score_candidates=0, unbounded_score_candidates=0,
                    evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
     total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
@@ -466,16 +477,25 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             covered_until = max(covered_until, hi)
     data_complete = bool(covered_until >= time_range_s[1])
     model_complete = not (support["unsupported_cpa_track_evaluations"] or support["unclassified_score_candidates"])
-    complete = done == total and not failures and not refinement_failure and data_complete and not event_limit_applied and model_complete
+    model_assessed = not (support["unsupported_cpa_track_evaluations"] or support["unbounded_score_candidates"]
+                         or support["unreported_trial_envelopes"])
+    model_assessed &= support["bounded_score_candidates"] == support["unclassified_score_candidates"]
+    complete = done == total and not failures and not refinement_failure and data_complete and not event_limit_applied and model_assessed
     finite = ledger.evidence(ranked, complete=complete, spacing_m=budget.spacing_m,
                              refine_spacing_m=min(budget.spacing_m, budget.refine_spacing_m), max_event_groups=len(events),
                              expected_stages={"coarse": done, "global": done, "fine": fine_stages, "fine-global": fine_stages})
+    if finite["bounded_unknown_envelopes"] != support["bounded_score_candidates"]:
+        model_assessed = complete = False
+        finite["complete"] = finite["pruning_accounted_for"] = False
     finite["unclassified_score_candidates"] = support["unclassified_score_candidates"]
     finite["unsupported_cpa_track_evaluations"] = support["unsupported_cpa_track_evaluations"]
-    if not model_complete:
+    if not model_assessed:
         finite["best_discarded_score"] = None
         finite["discarded_bound_status"] = "unknown_model_or_trial_support"
-        finite["limitations"].append("Unclassified or unsupported optimizer trials have no known upper score bound.")
+        finite["limitations"].append("Some unclassified trials or unsupported CPA tracks remain without a score bound.")
+    else:
+        finite["discarded_bound_status"] = ("includes_bounded_unknown_trials" if support["bounded_score_candidates"]
+                                             else "evaluated_scores")
     finite["optimizer_domain"] = {"clock_window_s": start_window, "time_origin_s": parameters.get("time_origin"),
         "time_step_s": parameters.get("time_step_s", .5), "declared_sweep_s": parameters.get("time_sweep_s", 5.),
         "clock_rule": "shared CPA-consistency interval plus declared sweep, intersected with trusted window",
@@ -490,6 +510,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "tile_failures": failures, "unsearched_tiles": total - done, "grid_points_searched": points_searched,
               "data_coverage": coverage, "data_scope_complete": data_complete, "refinement_failure": refinement_failure,
               "model_support_complete": model_complete, "model_support": dict(support, diagnostics_directory="support"),
+              "model_assessment_complete": model_assessed,
               "refinement_points_searched": refinement_points_searched, "refinement_points_skipped": refinement_points_skipped,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,

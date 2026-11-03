@@ -103,19 +103,51 @@ def _earliest_emission(lo, events, max_distance, c, filters):
     """Retain the complete CPA and refinement envelope of all proposals."""
     original = lo - max_distance / 300 - 30
     try:
+        # Even when the optional CPA/silence settings cannot narrow the search,
+        # refinement loads tracks 120 s before the first observed event.
+        earliest_refinement = lo + min(e["start_s"] for e in events) - max_distance / 300 - 121
+        fallback = min(original, earliest_refinement) if math.isfinite(earliest_refinement) else original
+    except (KeyError, TypeError, ValueError):
+        return original
+    try:
         offset = float(filters.get("offset_tolerance_s", 5.0))
         if not math.isfinite(offset) or offset < 0 or not math.isfinite(c) or c <= 0:
-            return original
+            return fallback
+        silence = filters.get("silence")
+        if silence:
+            if not isinstance(silence, dict):
+                return fallback
+            margin = float(silence.get("edge_margin_s", 60))
+            if not math.isfinite(margin) or margin < 0:
+                return fallback
         # Candidate association allows half the offset tolerance beyond each
         # event's CPA interval, then the wide-clock scorer allows a 5 s sweep.
         earliest_cpa = min(e["cpa_receive_s"] - e["quality"]["cpa_tolerance_s"] for e in events)
-        earliest_refinement = min(e["start_s"] for e in events) - max_distance / 300 - 120
+        # Round outward relative to the differently grouped Unix-time
+        # calculation in _decide, including floating-point error.
         candidate = earliest_cpa - offset / 2 - 5 - max_distance / c - 30
         if not all(math.isfinite(x) for x in (earliest_cpa, earliest_refinement, candidate)):
-            return original
-        return max(original, lo + min(candidate, earliest_refinement))
+            return fallback
+        return min(lo + candidate, earliest_refinement)
     except (KeyError, TypeError, ValueError):
-        return original
+        return fallback
+
+
+def _latest_emission(hi, duration, events, filters):
+    """Retain whole-recording, CPA and refinement upper time envelopes."""
+    original = hi + duration + 30
+    refinement = hi + max(e["end_s"] for e in events) + 121
+    try:
+        offset = float(filters.get("offset_tolerance_s", 5.0))
+    except (TypeError, ValueError):
+        raise MissingData("Cannot establish coverage with an invalid CPA offset tolerance.") from None
+    if not math.isfinite(offset) or offset < 0:
+        raise MissingData("Cannot establish coverage with an invalid CPA offset tolerance.")
+    latest_cpa = max(e["cpa_receive_s"] + e["quality"]["cpa_tolerance_s"] for e in events)
+    candidate = hi + latest_cpa + offset / 2 + 5 + 31
+    if not all(math.isfinite(x) for x in (original, refinement, candidate)):
+        raise MissingData("Cannot establish finite event and refinement time coverage.")
+    return max(original, refinement, candidate)
 
 
 def _search(request, recording, events, output, config, search_progress):
@@ -130,11 +162,22 @@ def _search(request, recording, events, output, config, search_progress):
     lo, hi = (utc_timestamp(window[name]).timestamp() for name in ("start_utc", "end_utc"))
     filters = {"association": "subsets", **config.get("filters", {})}
     filters.setdefault("max_events", len(prepared))
+    silence = filters.get("silence")
+    if silence:
+        if not isinstance(silence, dict):
+            raise MissingData("Cannot establish coverage with an invalid silence configuration.")
+        try:
+            margin = float(silence.get("edge_margin_s", 60))
+        except (TypeError, ValueError):
+            raise MissingData("Cannot establish coverage with an invalid silence margin.") from None
+        if not math.isfinite(margin) or margin < 0:
+            raise MissingData("Cannot establish coverage with a negative or nonfinite silence margin.")
     earliest = _earliest_emission(lo, prepared, max_distance, c, filters)
+    latest = _latest_emission(hi, recording.metadata["duration_s"], prepared, filters)
     if not config.get("flight_indexes") and not config.get("cache_root"):
         raise MissingData("Historical flight/terrain data are not configured. The operator must provide cache_root or prebuilt flight indexes with a terrain model.")
     first_day = datetime.fromtimestamp(earliest, timezone.utc).date()
-    last_day = datetime.fromtimestamp(hi+recording.metadata["duration_s"]+30, timezone.utc).date()
+    last_day = datetime.fromtimestamp(latest, timezone.utc).date()
     acquisition_days = (last_day-first_day).days+1
     if not config.get("flight_indexes") and acquisition_days > config.get("max_acquisition_days", 3):
         raise MissingData("Recording time window exceeds the configured historical-data acquisition budget. Supply a narrower defensible window.")
@@ -147,14 +190,14 @@ def _search(request, recording, events, output, config, search_progress):
             raise MissingData("A declared local terrain model requires prebuilt flight indexes.")
         indexes = [FlightIndex(path) for path in config["flight_indexes"]]
         terrain = Terrain(ground.get("rasters", []), ground.get("constant_m"), ground.get("geoid_raster"))
-        time_range = (earliest, hi+recording.metadata["duration_s"]+30)
+        time_range = (earliest, latest)
         bounds = request["search"].get("bounds_wsen", CONUS)
         hashes["terrain_rasters"] = {str(path): _digest(path) for path in ground.get("rasters", [])}
     else:
         bundle = acquire_inputs(request, recording.metadata, cache_root=config.get("cache_root", output / "cache"),
                                 index_paths=config.get("flight_indexes"), offline=config.get("offline", True),
                                 terrain_options=ground, max_sound_range_m=max_distance,
-                                earliest_emission_s=earliest)
+                                earliest_emission_s=earliest, latest_emission_s=latest)
         indexes, terrain, time_range, bounds = bundle.indexes, bundle.terrain, bundle.time_range_s, bundle.bounds
     if ground.get("geoid_raster"):
         hashes["geoid_sha256"] = _digest(ground["geoid_raster"])
@@ -172,12 +215,59 @@ def _search(request, recording, events, output, config, search_progress):
     return report, prepared, measurements, indexes, terrain
 
 
+def _bounded_model_assessment(search, support):
+    """Validate accounting of missing fits without claiming full model support.
+
+    The confidence decision still compares the certified upper score bound with
+    the winner. This only distinguishes bounded finite trials from omitted work.
+    """
+    if (search.get("model_support_complete") is not False
+            or search.get("model_assessment_complete") is not True
+            or search.get("status") != "complete" or not isinstance(support, dict)):
+        return False
+    names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates", "unknown_trials",
+             "unreported_trial_envelopes", "bounded_score_candidates", "unbounded_score_candidates")
+    if not all(type(support.get(name)) is int and support[name] >= 0 for name in names):
+        return False
+    bounded = support["bounded_score_candidates"]
+    if (bounded == 0 or bounded != support["unclassified_score_candidates"]
+            or support["unknown_trials"] < bounded or support["unsupported_cpa_track_evaluations"]
+            or support["unreported_trial_envelopes"] or support["unbounded_score_candidates"]):
+        return False
+    finite = search.get("finite_search_evidence")
+    if (not isinstance(finite, dict) or type(finite.get("schema_version")) is not int
+            or finite["schema_version"] != 1 or finite.get("scope") != "evaluated_finite_grid"
+            or finite.get("score_kind") != "matched_group_support_minus_normalized_residual"
+            or finite.get("complete") is not True or finite.get("pruning_accounted_for") is not True):
+        return False
+    counts = ("bounded_unknown_envelopes", "bounded_unknown_rejections", "discarded_count",
+              "max_event_groups", "unclassified_score_candidates", "unsupported_cpa_track_evaluations")
+    if not all(type(finite.get(name)) is int and finite[name] >= 0 for name in counts):
+        return False
+    if (finite["bounded_unknown_envelopes"] != bounded
+            or finite["unclassified_score_candidates"] != bounded
+            or finite["bounded_unknown_rejections"] > bounded
+            or finite["unsupported_cpa_track_evaluations"] != 0 or finite["max_event_groups"] < 1):
+        return False
+    possible = bounded - finite["bounded_unknown_rejections"]
+    upper = finite.get("best_unknown_score_upper_bound")
+    discarded = finite["discarded_count"]
+    overall = finite.get("best_discarded_score")
+    number = lambda value: type(value) in (int, float) and math.isfinite(value)
+    if discarded < possible or (discarded and not number(overall)) or (not discarded and overall is not None):
+        return False
+    if possible:
+        return (number(upper) and 0 <= upper <= finite["max_event_groups"]
+                and overall >= upper)
+    return upper is None
+
+
 def _coverage(request, search, config):
     limitations = ["Historical receiver archives may omit aircraft or trajectory samples."]
     search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
                        and not search.get("tile_failures") and not search.get("refinement_failure")
                        and search.get("all_event_groups_considered") is not False)
-    if "model_support_complete" in search or "model_support" in search:
+    if any(name in search for name in ("model_support_complete", "model_support", "model_assessment_complete")):
         support = search.get("model_support")
         count_names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",
                        "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes")
@@ -185,9 +275,15 @@ def _coverage(request, search, config):
                         all(type(support.get(name)) is int and support[name] >= 0 for name in count_names))
         model_complete = (search.get("model_support_complete") is True and valid_counts and
                           all(support[name] == 0 for name in (count_names[0], count_names[1], "unknown_trials", "unreported_trial_envelopes")))
-        if not model_complete:
+        if "model_assessment_complete" in search and search["model_assessment_complete"] is not True:
+            model_complete = False
+        bounded_assessment = valid_counts and _bounded_model_assessment(search, support)
+        if not model_complete and not bounded_assessment:
             search_complete = False
             limitations.append("Trajectory model assessment is incomplete; unsupported competitors remain unassessed. See the search support diagnostics.")
+        elif bounded_assessment:
+            limitations.append("Some finite acoustic trials lack full trajectory support. Their certified score bounds or rejections are accounted for; the decision still checks whether any bound could compete with the leading location.")
+        if not model_complete:
             if valid_counts:
                 limitations.append(f"Unsupported CPA track evaluations: {support[count_names[0]]}; unclassified score candidates: {support[count_names[1]]}; unknown clock trials: {support['unknown_trials']}; unreported trial envelopes: {support['unreported_trial_envelopes']}. Counts describe work evaluations, not distinct aircraft.")
             else:

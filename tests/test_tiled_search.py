@@ -307,8 +307,11 @@ def test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound(
 
     def incomplete(*args, **kwargs):
         result = original(*args, **kwargs)
-        result["scoring_assessment"] = {"complete": False, "evaluated_trials": 1, "rejected_trials": 0,
-                                        "unknown_trials": 1, "reasons": ["test_missing_support"]}
+        result["scoring_assessment"] = {"complete": False, "scheduled_trials": 2,
+                                        "evaluated_trials": 1, "rejected_trials": 0, "unknown_trials": 1,
+                                        "empty_clock_domain": False,
+                                        "trial_count_semantics": "disjoint_evaluated_rejected_unknown",
+                                        "reasons": ["test_missing_support"]}
         return result
 
     monkeypatch.setattr(tiled_search, "score_candidate", incomplete)
@@ -331,8 +334,11 @@ def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path,
 
     def rejected(*args, **kwargs):
         result = original(*args, **kwargs)
-        result.update(score=-np.inf, scoring_assessment={"complete": True, "evaluated_trials": 0,
-                      "rejected_trials": 1, "unknown_trials": 0, "reasons": ["test_admissible_rejection"]})
+        result.update(score=-np.inf, scoring_assessment={"complete": True, "scheduled_trials": 1,
+                      "evaluated_trials": 0, "rejected_trials": 1, "unknown_trials": 0,
+                      "empty_clock_domain": False,
+                      "trial_count_semantics": "disjoint_evaluated_rejected_unknown",
+                      "reasons": ["test_admissible_rejection"]})
         return result
 
     monkeypatch.setattr(tiled_search, "score_candidate", rejected)

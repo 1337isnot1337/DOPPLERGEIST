@@ -2,6 +2,11 @@
 
 The current location goal accepts up to **1,000 m error**, with **100–500 m or better preferred**. True benchmark error and uncalibrated model sensitivity remain separate. Historical reports below retain their original 100 m thresholds.
 
+The [real-world data policy](../AGENTS.md#real-world-data-only) stops new synthetic
+data generation, tests, benchmarks, and replays. New validation uses real
+recordings and measured trajectories. Historical results retain their original
+scope and limitations.
+
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
 **sample zero**, and declared CONUS search coverage. Event windows, frequency
@@ -10,7 +15,7 @@ bands, flight IDs and ground-truth coordinates are not upload inputs.
 Launch the local interface after installing the project:
 
 ```bash
-dopplergeist serve --jobs jobs --config operator.json --port 8765
+dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
 ```
 
 Open `http://127.0.0.1:8765`. The same persistent directory must be supplied after
@@ -24,16 +29,18 @@ to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
 operator limits. Cancellation terminates the analysis process group, including
 decoders. No API credentials or paid service are required by the local service.
-Flight/terrain provider configuration and scientific integration are described
-below; an unconfigured backend must report
-missing data rather than invent a location.
+`--online` enables public flight and terrain downloads into `~/.cache/dopplergeist`
+when a job has a defensible recording time. Archives and indexes can take tens of gigabytes or more and hours; no automatic
+disk-space limit is currently enforced. The example gives each job four hours; adjust `--max-runtime`
+for your system. Omit `--online` and supply `--config operator.json` to use
+preconfigured offline data. An unconfigured backend reports missing data.
 
 CLI equivalents:
 
 ```bash
-dopplergeist analyze recording.mp3 --jobs jobs --config operator.json \
-  --start-utc 2026-09-08T20:00:00Z --end-utc 2026-09-08T20:05:00Z \
-  --time-source 'Recorder clock and recording log'
+dopplergeist analyze recording.mp3 --jobs jobs --online --max-runtime 14400 \
+  --start-utc "$RECORDING_START_UTC_MIN" --end-utc "$RECORDING_START_UTC_MAX" \
+  --time-source 'Your evidence for this recording time'
 dopplergeist job JOB_ID --jobs jobs
 ```
 
@@ -44,7 +51,7 @@ An inconclusive result may retain candidate hypotheses for inspection.
 
 ## HTTP surface
 
-- `GET /api/capabilities`: declared coverage and upload/work limits.
+- `GET /api/capabilities`: declared coverage, upload/work limits, and whether a flight provider and online acquisition are configured.
 - `POST /api/jobs`: raw audio bytes with `Content-Type: application/octet-stream`,
   `Content-Length`, optional `X-Filename`, and `X-Dopplergeist-Request` containing
   the shared request JSON **without** `audio_path`. The server saves the upload
@@ -63,14 +70,20 @@ curl -H 'Content-Type: application/octet-stream' \
   --data-binary @recording.mp3 http://127.0.0.1:8765/api/jobs
 ```
 
-`tests/test_service.py` checks HTTP transport, original preservation, state
-readback, cancellation, interrupted jobs, path restrictions and input validation.
-These transport tests do not establish scientific localization accuracy.
+The historical checks in `tests/test_service.py` cover HTTP transport, original
+preservation, state readback, cancellation, interrupted jobs, path restrictions,
+and input validation. They do not establish scientific localization accuracy.
+Automatic CI checks installation, source compilation, CLI help, and packaged
+assets without generated data.
 
 ## Provider and search configuration
 
-An operator configures data once; users upload audio without choosing trajectory
-files. The normal acquisition path delegates to `data_access.acquire_inputs`:
+`--online` requires no JSON configuration: it uses the per-user cache and public
+providers automatically. For a different cache location, existing indexes, or
+custom budgets, provide an operator config with `--config`; `--online` enables
+network acquisition while retaining the configured cache path. Users upload
+audio without choosing trajectory files. The acquisition path delegates to
+`data_access.acquire_inputs`:
 
 ```json
 {
@@ -97,8 +110,9 @@ credentials in this configuration.
 For existing offline data, supply `flight_indexes` (paths to Worker 2 FlightIndex
 SQLite files). Terrain may use the cached provider options (`geoid_path`,
 `adopt_existing`) or a declared local override: `{"rasters":["/dem.tif"],
-"geoid_raster":"/geoid.tif"}`. A `{"constant_m":0}` terrain override exists for
-synthetic/flat-ground experiments and is labelled as a limitation in the result.
+"geoid_raster":"/geoid.tif"}`. The historical `{"constant_m":0}` terrain override
+does not establish real terrain or altitude-datum accuracy. Its result retains
+that limitation for real recordings.
 Local overrides require prebuilt indexes and retain their actual coverage.
 
 `search_budget.max_tiles` bounds tile work. Reaching a tile, memory, data or wall
@@ -108,7 +122,7 @@ aircraft. Grid finalists undergo jointly constrained position/clock refinement;
 `refine_finalists` (default 5) limits physical sensitivity refinement. Unassessed
 retained approaches prevent an affirmative confidence decision.
 
-For reproducible chunk-boundary checks, an operator may set
+For chunk-boundary checks on real recordings, an operator can set
 `"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
 These are the only discovery overrides supported by the product adapter. The
 existing detector validates the overlap and chunk constraints; spectral bands,
@@ -118,16 +132,33 @@ the operator configuration hash is retained in provenance. This configuration is
 not an upload-request field. A chunk-size comparison must rerun detection and the
 pipeline; it cannot reuse final candidates as if discovery had run again.
 
-Search reports with `model_support_complete` also supply explicit `model_support`
-work counters. Unsupported CPA trajectories, unclassified score candidates or
-unknown clock trials keep product search coverage incomplete. Unreported trial
-envelopes are counted explicitly; zero reported unknown trials cannot establish
-completion when some trial accounting is absent. Missing/malformed
-counters cannot become zero work. Source spatial/time availability remains a
-separate `data_status`; an available archive can still have unassessed trajectory
-models. Coverage limitations expose the work counts, and per-stage support
-artifacts retain affected IDs/reasons and conservative lost-coverage envelopes.
-These counts describe work evaluations, not distinct aircraft.
+Search reports distinguish raw model support from finite assessment. If any
+trajectory or scoring envelope lacks support, `model_support_complete` stays false.
+`model_support` retains the raw work counts, unknown trials, and reasons. Missing
+or malformed counters cannot become zero work. These counts describe work
+evaluations, not distinct aircraft.
+Unreported trial envelopes are explicit: zero reported unknown trials cannot
+establish completion when any trial accounting is absent, including the legacy
+fully supported path.
+
+If every unknown finite scoring envelope has a validated ceiling or rejection,
+`model_assessment_complete` can be true. An unavailable event fit contributes at
+most one unit to the normalized support score. A fully validated event that
+exceeds its residual limit rejects that association at that clock. The producer
+retains the greatest ceiling across all scheduled clock trials in the retention
+ledger. This accounting does not create a measured fit or restore missing support.
+
+The product requires agreement between raw counters, persisted bounds, completion
+flags, and finite discard accounting. The confidence decision compares the combined
+discard bound with the leading score under the existing margin. Unsupported CPA
+trajectories, unreported trials, and unbounded alternatives keep assessment
+incomplete. Missing tiles, data gaps, event caps, and incomplete sensitivity
+evidence still prevent a supported location.
+
+Source availability remains a separate `data_status`. An available archive can
+still have unassessed trajectory models. Per-stage artifacts retain affected IDs,
+reasons, and conservative coverage envelopes. See
+[model-support coverage](MODEL_SUPPORT_COVERAGE.md) for the complete contract.
 
 The automatic path always uses one shared clock inside the supplied start window
 and robust ridge loss. Its default association path considers every proposed
@@ -177,5 +208,6 @@ finite claim. Their limitations are displayed in coverage and saved in the
 artifacts. The old `alternatives_evaluated` flag keeps its older meaning and is
 not flipped to force success. An absent finite object preserves old outcomes;
 missing mappings, incomplete work or an unaccounted near-tied discard remain
-inconclusive. Producer computation, consumer agreement and an actual integrated
-run are required before this optional path is considered deployed.
+inconclusive. Validated bounds account for unknown discarded trials without adding
+them to `assessed_mode_ids`. The adapter and decision code consume this finite
+contract. An accepted real-recording location through this path remains unverified.

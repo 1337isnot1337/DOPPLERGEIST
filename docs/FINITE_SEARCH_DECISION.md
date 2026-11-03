@@ -82,6 +82,31 @@ exhaustion/refinement boolean using this narrower meaning.
 
 ## Decision interpretation
 
+### Bounds for incomplete acoustic trials
+
+For the normalized subset score, a shared-clock trial with `k` independent groups
+has score `sum(1 - loss_i / limit_i)`, where every robust loss is nonnegative.
+Each unavailable fit therefore contributes at most one unit. Fully validated
+event fits retain their computed contribution. If any validated event exceeds
+its existing residual limit, that association is rejected at the trial's clock.
+The candidate-envelope bound is the maximum across all scheduled shared-clock
+trials. Positive floating-point accumulations are rounded upward.
+
+These bounds are stored in a separate `bounds` table in the retention ledger.
+They do not count as measured fits or restore `model_support_complete`.
+`bounded_unknown_envelopes` counts persisted work envelopes across stages,
+including `bounded_unknown_rejections`; possible alternatives are the difference.
+Their maximum ceiling is included in `best_discarded_score`, and possible
+envelopes are included in `discarded_count`. Resume checks cover the bounds as
+well as the measured modes. Unbounded trials and unreported clock envelopes
+still make finite accounting incomplete.
+
+The bounds apply only to the declared finite receivers, associations, and clocks.
+They say nothing about unperformed refinements, unseen aircraft, or continuous
+location uniqueness. No score margin or location threshold changes.
+
+### Existing decision gates
+
 A supplied finite object takes precedence over an optimistic legacy boolean.
 Incomplete scope, lost pruning accounting, omitted modes, inconsistent mappings or
 an unbounded near-tied discard yield explicit inconclusive outcomes. Malformed

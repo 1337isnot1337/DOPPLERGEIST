@@ -1,8 +1,6 @@
-name: Checkpoint methodology replay
+name: Historical real regional replay (manual)
 
 on:
-  push:
-    branches: [worker/ci-checkpoint-20261102]
   workflow_dispatch:
 
 permissions:
@@ -20,7 +18,9 @@ env:
 
 jobs:
   synthetic:
-    name: Clean install, tests, and synthetic replay
+    name: Historical synthetic replay (disabled by owner directive)
+    # Preserve the historical lane without executing prohibited synthetic work.
+    if: ${{ false }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -92,8 +92,7 @@ jobs:
           retention-days: 30
 
   regional:
-    name: Checksummed regional real-audio replay
-    needs: synthetic
+    name: Source-informed real regional replay; no independent accuracy claim
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
