@@ -13,14 +13,15 @@ from aircraft_geoloc.terrain import Terrain
 from aircraft_geoloc.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
 
 
-def scenario(tmp_path):
+def scenario(tmp_path, count=2, receiver_offset=(0, 0)):
     inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
     # Winning receiver x=0 is exactly on tile boundaries for all tile sizes.
-    lon, lat = inverse.transform(0, 1900000)
+    lon, lat = inverse.transform(receiver_offset[0], 1900000 + receiver_offset[1])
     origin = 1800000000.
     frames, tracks, events, measurements = [], [], [], []
     observer = ecef(lat, lon, 0)
-    for number, center in enumerate([150., 650.]):
+    centers = 150. + np.arange(count) * 500
+    for number, center in enumerate(centers):
         t = np.arange(center - 150, center + 151, 5)
         x = (t - center) * 80
         y = np.full(len(t), 1900000 + number * 200)
@@ -38,7 +39,7 @@ def scenario(tmp_path):
         events.append({"start_s": float(received[0]), "end_s": float(received[-1]), "cpa_receive_s": cpa,
                        "speed_range_mps": [50, 110], "slant_range_m": [500, 4000], "f0_range_hz": [115, 125]})
     bounds = inverse.transform_bounds(-2200, 1897800, 2200, 1902200, densify_pts=21)
-    times = [origin, origin + 801]
+    times = [origin, origin + centers[-1] + 151]
     index = FlightIndex.build(tmp_path / "flights.sqlite", frames, sources=[],
                               coverage={"bounds": [-125, 24, -66, 50], "time_range_s": times, "all_aircraft": True})
     return index, tracks, events, measurements, bounds, times, origin
@@ -132,3 +133,53 @@ def test_subset_matching_keeps_good_events_after_unmatched_proposal(tmp_path):
     assert best["event_indices"] == [1, 2] and best["unmatched_event_ids"] == ["noise-proposal"]
     assert best["recording_start_time_s"] == origin
     assert best["x"] == 0 and best["y"] == 1900000
+
+
+@pytest.mark.parametrize("count", [3, 4, 6])
+def test_default_robust_driver_uses_all_groups_and_refines_them(tmp_path, count):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path, count=count, receiver_offset=(250, 250))
+    for i, event in enumerate(events):
+        event["event_id"] = f"supported-{i}"
+    spurious = dict(events[0], event_id="noise-proposal", start_s=20., end_s=40., cpa_receive_s=30.)
+    t = np.linspace(20, 40, 41)
+    measurements = [(SimpleNamespace(time=t), np.full(len(t), 120.), np.ones(len(t)), {})] + measurements
+    result = search_national([index], Terrain(constant_m=0), [spurious] + events, measurements,
+                             time_range_s=times, output_dir=tmp_path / "all-events", bounds=bounds,
+                             budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=250, refine_finalists=1),
+                             scoring={"mode": "robust_ridge", "recording_start_window_s": [origin, origin], "time_sweep_s": 0})
+    assert result["status"] == "complete" and result["all_event_groups_considered"]
+    best = result["ranked"][0]
+    assert best["event_indices"] == list(range(1, count+1))
+    assert best["unmatched_event_ids"] == ["noise-proposal"]
+    assert len(best["event_diagnostics"]) == count
+    assert best["recording_start_time_s"] == origin
+    assert best["score"] > result["coarse_ranked"][0]["score"]
+    # This is an all-group/refinement regression, not a precision guarantee:
+    # coarse finalist selection can miss a better mode between grid points.
+    assert best["x"] % 1000 != 0 or best["y"] % 1000 != 0
+
+
+def test_explicit_smaller_event_cap_is_partial(tmp_path):
+    index, _, events, measurements, bounds, times, origin = scenario(tmp_path, count=4)
+    result = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
+                             output_dir=tmp_path / "capped", bounds=bounds,
+                             budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=1000),
+                             scoring={"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0},
+                             filters={"max_events": 3})
+    assert result["status"] == "partial" and not result["all_event_groups_considered"]
+    assert result["association_event_limit"] == 3 and result["event_limit_reason"]
+
+
+def test_sixth_event_changes_the_joint_score(tmp_path):
+    _, tracks, events, measurements, bounds, _, origin = scenario(tmp_path, count=6, receiver_offset=(250, 250))
+    points = tile_points((1, 7601, 2, 7602), 250, bounds, Terrain(constant_m=0), "EPSG:5070")
+    budget = SearchBudget()
+    settings = {"mode": "robust_ridge", "time_origin": origin, "time_sweep_s": 0}
+    clean, _ = _score(points, tracks, events, measurements, budget, settings, {})
+    spec, ridge, weight, fit = measurements[-1]
+    changed = measurements[:-1] + [(spec, ridge + .4 * (-1.) ** np.arange(len(ridge)), weight, fit)]
+    perturbed, _ = _score(points, tracks, events, changed, budget, settings, {})
+    assert clean and perturbed
+    assert clean[0]["event_indices"] == perturbed[0]["event_indices"] == list(range(6))
+    assert perturbed[0]["score"] < clean[0]["score"] - 1e-4
+    assert perturbed[0]["event_diagnostics"][-1]["rmse_hz"] > clean[0]["event_diagnostics"][-1]["rmse_hz"] + .05

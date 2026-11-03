@@ -145,11 +145,11 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     kwargs = dict(offset_tolerance_s=filters.get("offset_tolerance_s", 5.0),
                   time_origin=parameters.get("time_origin"), time_tolerance_s=filters.get("time_tolerance_s", 5.0),
                   silence=filters.get("silence"))
-    subset = filters.get("association") == "subsets"
+    subset = filters.get("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full") == "subsets"
     if subset:
         from .matching import association_candidates
         candidates, counts = association_candidates(table, events, **kwargs,
-            min_events=filters.get("min_events", 1), max_events=filters.get("max_events", 3),
+            min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)
     else:
         per_event = [filter_event(table, e, kwargs["time_origin"], kwargs["time_tolerance_s"]).groupby("point_id").size().to_dict() for e in events]
@@ -199,7 +199,18 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             raise ValueError("Event slant range must be finite and <1000 km")
     parameters = dict(scoring or {})
     start_window = parameters.pop("recording_start_window_s", None)
-    filters = filters or {}
+    if start_window and start_window[0] == start_window[1] and parameters.get("time_origin") is None:
+        parameters["time_origin"] = start_window[0]
+    filters = dict(filters or {})
+    filters.setdefault("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full")
+    if filters["association"] not in ("subsets", "full"):
+        raise ValueError("association must be 'subsets' or 'full'")
+    event_limit = filters.get("max_events")
+    if event_limit is None:
+        event_limit = len(events)
+    if type(event_limit) is not int or event_limit < 1:
+        raise ValueError("max_events must be a positive integer or None for all groups")
+    event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     # Include actual acoustic measurements and implementation files in resume
@@ -301,14 +312,17 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     for lo, hi in intervals:
         if lo <= covered_until:
             covered_until = max(covered_until, hi)
-    data_complete = covered_until >= time_range_s[1]
-    complete = done == total and not failures and not refinement_failure and data_complete
+    data_complete = bool(covered_until >= time_range_s[1])
+    complete = done == total and not failures and not refinement_failure and data_complete and not event_limit_applied
     report = {"run_hash": run_hash, "status": "complete" if complete else "partial", "ranked": ranked,
               "coarse_ranked": coarse, "tiles_total": total, "tiles_completed": done, "tiles_resumed": resumed,
               "tile_failures": failures, "unsearched_tiles": total - done, "grid_points_searched": points_searched,
               "data_coverage": coverage, "data_scope_complete": data_complete, "refinement_failure": refinement_failure,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,
+              "independent_event_groups": len(events), "association_event_limit": event_limit,
+              "all_event_groups_considered": not event_limit_applied,
+              "event_limit_reason": "Configured event cap prevents assessing every independent group" if event_limit_applied else None,
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024,
               "bounded_concurrency": 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
