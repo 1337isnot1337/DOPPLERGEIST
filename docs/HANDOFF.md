@@ -78,7 +78,9 @@ homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. The local search is configured for 12
 workers and homelab stages with eight. A monitor resumes only the configured
 wall-time timeout after transferring available remote checkpoints; it does not
-resume a user cancellation or another failure. A search checkpoint from different
+resume a user cancellation or another failure. Operator-local cross-host helpers
+and logs are under `/home/cinna/.local/state/dopplergeist-cross-host-parity-20261103/`;
+they are not a portable distributed CLI. A search checkpoint from different
 code must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty root tiles after checking both
 identities and ledger checksums. On the switch to `c259f38`, 413 such tiles with
