@@ -3,8 +3,8 @@ import argparse
 import json
 from pathlib import Path
 
-from aircraft_geoloc.confidence import decide_location
-from aircraft_geoloc.evaluation import evaluate
+from dopplergeist.confidence import decide_location
+from dopplergeist.evaluation import evaluate
 
 
 if __name__ == "__main__":

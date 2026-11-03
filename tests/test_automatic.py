@@ -9,13 +9,13 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from aircraft_geoloc.jobs import JobManager
-from aircraft_geoloc.service import JobServer
+from dopplergeist.jobs import JobManager
+from dopplergeist.service import JobServer
 
 
 def encoded_mp3(tmp_path, *, moving=False):
-    pytest.importorskip("aircraft_geoloc.intake")
-    pytest.importorskip("aircraft_geoloc.discovery")
+    pytest.importorskip("dopplergeist.intake")
+    pytest.importorskip("dopplergeist.discovery")
     sr = 8000
     t = np.arange(sr * 40) / sr
     frequency = 220 - t if moving else np.full_like(t, 200)
@@ -81,9 +81,9 @@ def test_stationary_mp3_returns_no_events_without_search(tmp_path):
 
 @pytest.mark.parametrize("discovery", [None, {"chunk_s": 24., "overlap_s": 16.}])
 def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, discovery):
-    pytest.importorskip("aircraft_geoloc.data_access")
-    pytest.importorskip("aircraft_geoloc.matching")
-    pytest.importorskip("aircraft_geoloc.tiled_search")
+    pytest.importorskip("dopplergeist.data_access")
+    pytest.importorskip("dopplergeist.matching")
+    pytest.importorskip("dopplergeist.tiled_search")
     payload = encoded_mp3(tmp_path, moving=True)
     config = {"discovery": discovery} if discovery is not None else {}
     final, directory = submit_and_wait(tmp_path, payload, time_window=WINDOW, config=config)
@@ -92,7 +92,7 @@ def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, di
     assert list((directory / "discovery").glob("event-*.png"))
     assert final["coverage"]["data_status"] == "unavailable"
     from dataclasses import asdict
-    from aircraft_geoloc.discovery import DiscoverySettings
+    from dopplergeist.discovery import DiscoverySettings
     receipt = json.loads((directory/"discovery/discovery.json").read_text())
     assert receipt["settings"] == asdict(DiscoverySettings(**(discovery or {})))
     assert len(receipt["chunks"]) > 1 if discovery else len(receipt["chunks"]) == 1
@@ -100,8 +100,8 @@ def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, di
 
 
 def test_corrupt_upload_returns_predictable_decode_failure(tmp_path):
-    pytest.importorskip("aircraft_geoloc.intake")
-    pytest.importorskip("aircraft_geoloc.discovery")
+    pytest.importorskip("dopplergeist.intake")
+    pytest.importorskip("dopplergeist.discovery")
     final, directory = submit_and_wait(tmp_path, b"not encoded audio", time_window=WINDOW)
     assert final["status"] == "failed" and final["reason_code"] == "invalid_media", final
     assert (directory / "input.mp3").read_bytes() == b"not encoded audio"
@@ -109,9 +109,9 @@ def test_corrupt_upload_returns_predictable_decode_failure(tmp_path):
 
 def test_subset_association_preserves_original_event_identity(tmp_path):
     """A middle subset must never be relabelled as the first input events."""
-    pytest.importorskip("aircraft_geoloc.confidence")
-    from aircraft_geoloc.automatic import _decide
-    from aircraft_geoloc.jobs import read_json
+    pytest.importorskip("dopplergeist.confidence")
+    from dopplergeist.automatic import _decide
+    from dopplergeist.jobs import read_json
     events = [{"event_id": f"event-{i}", "start_s": i*10., "end_s": i*10.+5, "band_hz": [100., 120.],
                "ridge": [{"time_s": i*10.+t, "frequency_hz": 115.-t} for t in (1., 2., 3.)]} for i in range(3)]
     search = {"status": "complete", "scoring_time_is_locked": True, "ranked": [
@@ -133,7 +133,7 @@ def test_subset_association_preserves_original_event_identity(tmp_path):
 
 
 def test_complete_tile_work_is_separate_from_partial_flight_coverage():
-    from aircraft_geoloc.automatic import _coverage
+    from dopplergeist.automatic import _coverage
     coverage = _coverage({"search": {"coverage": "conus"}},
         {"status": "partial", "tiles_total": 819, "tiles_completed": 819,
          "tile_failures": [], "refinement_failure": None, "data_scope_complete": False}, {})
@@ -144,7 +144,7 @@ def test_complete_tile_work_is_separate_from_partial_flight_coverage():
 
 def test_acquisition_budget_counts_utc_archive_days_across_midnight(tmp_path):
     from types import SimpleNamespace
-    from aircraft_geoloc.automatic import MissingData, _search
+    from dopplergeist.automatic import MissingData, _search
     window = {"start_utc": "2026-09-08T23:59:00Z", "end_utc": "2026-09-08T23:59:00Z", "source": "user"}
     event = {"event_id": "event-1", "start_s": 0., "end_s": 10., "band_hz": [100., 120.],
              "ridge": [{"time_s": float(t), "frequency_hz": 115.-t} for t in range(10)]}
@@ -156,8 +156,8 @@ def test_acquisition_budget_counts_utc_archive_days_across_midnight(tmp_path):
 
 
 def test_refinement_adapter_preserves_raw_residual_and_avoids_double_normalization():
-    from aircraft_geoloc.automatic import _comparable_refinement
-    from aircraft_geoloc.matching import association_score
+    from dopplergeist.automatic import _comparable_refinement
+    from dopplergeist.matching import association_score
     events = [{"quality": {"frequency_sigma_hz": 1.}}]
     raw = {"score": -.6, "event_scores": [-.6], "score_kind": "negative_robust_ridge_loss_hz"}
     normalized = association_score(raw, events)
@@ -171,7 +171,7 @@ def test_refinement_adapter_preserves_raw_residual_and_avoids_double_normalizati
                                      {"elev_m": 180.}, {"mode_id": "separate-seed"}])
 def test_refinement_preserves_same_association_model_modes(tmp_path, monkeypatch, second):
     from types import SimpleNamespace
-    from aircraft_geoloc import automatic, matching
+    from dopplergeist import automatic, matching
     events = [{"event_id": f"event-{i}", "start_s": i*100., "end_s": i*100.+20., "band_hz": [90., 200.],
                "ridge": [{"time_s": i*100.+t, "frequency_hz": 140.-t} for t in (0., 10., 20.)]} for i in range(2)]
     fit = {"rmse_hz": .1, "support_fraction": 1., "outlier_fraction": 0., "drift_at_bound": False}
@@ -204,7 +204,7 @@ def test_refinement_preserves_same_association_model_modes(tmp_path, monkeypatch
 
 
 def test_an_explicit_event_cap_is_incomplete_work_not_missing_flight_data():
-    from aircraft_geoloc.automatic import _coverage
+    from dopplergeist.automatic import _coverage
     coverage = _coverage({"search": {"coverage": "conus"}},
         {"status": "partial", "tiles_total": 2, "tiles_completed": 2, "tile_failures": [],
          "refinement_failure": None, "data_scope_complete": True, "all_event_groups_considered": False,
@@ -217,7 +217,7 @@ def test_an_explicit_event_cap_is_incomplete_work_not_missing_flight_data():
 @pytest.mark.parametrize("options", [None, {"min_frequency_hz": 400.}, {"chunk_s": "bad"},
                                       {"chunk_s": 24., "overlap_s": 24.}])
 def test_invalid_operator_discovery_configuration_is_explicit(tmp_path, options):
-    from aircraft_geoloc.automatic import analyze
+    from dopplergeist.automatic import analyze
     source = tmp_path/"unused.mp3"
     source.write_bytes(b"configuration must fail before decode")
     final = analyze({"schema_version": 1, "audio_path": str(source)}, tmp_path/"output",
@@ -239,7 +239,7 @@ def test_invalid_operator_discovery_configuration_is_explicit(tmp_path, options)
     (True, {"unreported_trial_envelopes": None}, False, False),
 ])
 def test_model_support_work_is_explicit_in_product_coverage(flag, changes, complete, counts_known):
-    from aircraft_geoloc.automatic import _coverage
+    from dopplergeist.automatic import _coverage
     support = {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,
                "evaluated_trials": 4, "rejected_trials": 1, "unknown_trials": 0,
                "unreported_trial_envelopes": 0, "diagnostics_directory": "support", **changes}
@@ -258,7 +258,7 @@ def test_model_support_work_is_explicit_in_product_coverage(flag, changes, compl
 
 @pytest.mark.parametrize("missing", ["counters", "flag"])
 def test_missing_model_support_evidence_cannot_become_completed_work(missing):
-    from aircraft_geoloc.automatic import _coverage
+    from dopplergeist.automatic import _coverage
     report = {"tiles_total": 1, "tiles_completed": 1, "data_scope_complete": True,
               "model_support_complete": True,
               "model_support": {"unsupported_cpa_track_evaluations": 0, "unclassified_score_candidates": 0,

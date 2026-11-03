@@ -41,7 +41,7 @@ for entry in mapping:
  if entry['encode_returncode']:
   row={'case_id':key,'status':'failed','reason_code':'encoding_failed','proposal_groups':0}
  else:
-  command=common+[python,'-m','aircraft_geoloc.cli','analyze',str(inputs/f'{key}.mp3'),'--jobs',str(jobs),'--max-runtime','180']
+  command=common+[python,'-m','dopplergeist.cli','analyze',str(inputs/f'{key}.mp3'),'--jobs',str(jobs),'--max-runtime','180']
   began=time.monotonic()
   with (output/f'{key}-process.log').open('wb') as log:
    process=subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=210)

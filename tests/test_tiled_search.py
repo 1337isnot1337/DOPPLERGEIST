@@ -6,11 +6,11 @@ import pandas as pd
 from pyproj import Transformer
 import pytest
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.data_access import DataUnavailable, FlightIndex
-from aircraft_geoloc.geometry import Track, ecef
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
+from dopplergeist.audio import Spectrum
+from dopplergeist.data_access import DataUnavailable, FlightIndex
+from dopplergeist.geometry import Track, ecef
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, _score, grid_tiles, merge_candidates, search_national, tile_points
 
 
 def scenario(tmp_path, count=2, receiver_offset=(0, 0)):
@@ -107,7 +107,7 @@ def test_ridge_only_adapter_and_exact_recording_clock(tmp_path):
 
 
 def test_overlapping_refinement_scores_the_complete_grid_union_once(tmp_path, monkeypatch):
-    from aircraft_geoloc import tiled_search
+    from dopplergeist import tiled_search
 
     index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
     # A translated alternative flight pair produces a competing location whose
@@ -301,7 +301,7 @@ def test_finite_retention_bound_matches_untiled_and_recovers_missing_ledger(tmp_
 
 
 def test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound(tmp_path, monkeypatch):
-    from aircraft_geoloc import tiled_search
+    from dopplergeist import tiled_search
     index, _, events, measurements, bounds, times, origin = scenario(tmp_path)
     original = tiled_search.score_candidate
 
@@ -325,7 +325,7 @@ def test_successful_best_row_with_unknown_trials_has_no_optimistic_finite_bound(
 
 
 def test_evaluated_acoustic_rejection_is_distinct_from_unknown_support(tmp_path, monkeypatch):
-    from aircraft_geoloc import tiled_search
+    from dopplergeist import tiled_search
     _, tracks, events, measurements, bounds, _, origin = scenario(tmp_path)
     original = tiled_search.score_candidate
 

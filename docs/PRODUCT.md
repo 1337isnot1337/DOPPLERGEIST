@@ -10,7 +10,7 @@ bands, flight IDs and ground-truth coordinates are not upload inputs.
 Launch the local interface after installing the project:
 
 ```bash
-aircraft-geoloc serve --jobs jobs --config operator.json --port 8765
+dopplergeist serve --jobs jobs --config operator.json --port 8765
 ```
 
 Open `http://127.0.0.1:8765`. The same persistent directory must be supplied after
@@ -25,16 +25,16 @@ to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change thes
 operator limits. Cancellation terminates the analysis process group, including
 decoders. No API credentials or paid service are required by the local service.
 Flight/terrain provider configuration and scientific integration are described
-below as their producing modules land; an unconfigured backend must report
+below; an unconfigured backend must report
 missing data rather than invent a location.
 
 CLI equivalents:
 
 ```bash
-aircraft-geoloc analyze recording.mp3 --jobs jobs --config operator.json \
+dopplergeist analyze recording.mp3 --jobs jobs --config operator.json \
   --start-utc 2026-09-08T20:00:00Z --end-utc 2026-09-08T20:05:00Z \
   --time-source 'Recorder clock and recording log'
-aircraft-geoloc job JOB_ID --jobs jobs
+dopplergeist job JOB_ID --jobs jobs
 ```
 
 The UTC window bounds the recording start, not the event occurrence or upload.
@@ -139,50 +139,17 @@ events, alternative hypotheses, complete coverage, residuals and measurement/mod
 sensitivity. A small altitude-only profile is insufficient. The final decision
 and full candidate/refinement diagnostics are saved as downloadable JSON.
 
-## Verified integration and current limits
+## Current limits
 
-Worker 5 ran the full 1180-second independent-renderer synthetic recording as an
-MP3, using all seven flight segments with opaque IDs, the generator's stated
-recording start, and declared CONUS coverage. Neither truth JSON, selected flight
-IDs, manual event bands/windows nor receiver bounds entered analysis. Truth was
-opened only in a separate evaluation after the job terminated. This is a known
-development fixture, not an independently held-out real recording.
+The application is available on `main` and remains experimental. Automatic
+synthetic runs have produced accurate hypotheses and inconclusive decisions;
+those are different outcomes. See the [README](../README.md#experimental-results)
+for the reported results.
 
-| Run | Actual outcome |
-| --- | --- |
-| 10 km coarse integration | Two automatic events; all 819 tiles processed; five hypotheses; leading position error 1790.86 m; inconclusive because source coverage lacks the audible border halo. Search 17.53 s; full job 72.12 s; peak RSS 284.80 MiB. |
-| Normal 2 km / 100 m refinement | Two events; all 4940 tiles processed; 106 hypotheses. **The leading hypothesis is wrong by 1,046,023 m.** The true pair appears fourth, 6.16 m away, at a nearly tied score. The result remains inconclusive. Search 317.54 s; full job 341.24 s; peak RSS 304.41 MiB. |
-| Actual HTTP upload, closed synthetic world | The same full MP3 and all seven opaque tracks, with the simulation's complete world coverage explicitly declared, return `inconclusive / ambiguous_flight_match`. Upload/poll/readback and byte-identical original download pass. This tests real stage orchestration and abstention, not a real-world location success. |
-
-The close fourth-place candidate is **not** a successful location result. All
-returned candidate errors are retained in
-[`evidence/product-20261102/automatic-conus/`](../evidence/product-20261102/automatic-conus/).
-The frozen real API ambiguity result and diagnostic images are in
-[`ambiguity-job/`](../evidence/product-20261102/ambiguity-job/README.md).
-No source MP3, decoded cache, flight index or environment is committed there.
-The normal-grid run pins every recorded Python module hash to `1863d89`; the earlier dirty
-coarse snapshot has a verified base commit plus exact patch.
-
-Real encoded MP3 HTTP tests cover missing time, corrupt media, stationary/no-event
-input, and missing configured data. A real discovery process was cancelled through
-the API in 0.08 s with metadata/original bytes preserved and its process reaped.
-Completed-job restart and six artifact downloads matched their stored SHA256.
-The built wheel includes the browser assets and scientific modules; its actual
-full-MP3 CLI run returns the required-time result with the original hash preserved.
-Independent browser checks cover nine CLI/API/browser control combinations, saved
-job reload, no JavaScript errors, and desktop/mobile layouts; see
-[verification PR #33](https://github.com/1337isnot1337/DOPPLERGEIST/pull/33).
-Its later installed-wheel readback of the unchanged 106-hypothesis job verifies
-five initial cards, expansion to all 106, a 390 px document before/after expansion,
-14 byte-identical artifact downloads, six radius/method cards and zero JavaScript
-errors. This checks the actual candidate layout and preserves the inconclusive
-outcome; it does not exercise the newer finite-envelope decision.
-
-A supported unique location through the actual automatic API, independently
-established real recording truth/time, and nationwide real accuracy at the current 1,000 m acceptance target (100–500 m preferred)
-remain unverified. The measured ambiguity and partial-coverage outcomes must not
-be promoted to that acceptance claim. The historical manually configured regional
-result remains separate.
+Independent real recordings with established recording time and location,
+reliable global hypothesis discrimination, and calibrated false-localization
+rates remain open. The acceptance goal is within 1,000 m, preferably 100–500 m;
+landing the application does not establish that goal.
 
 ## Accounted finite-search evidence
 

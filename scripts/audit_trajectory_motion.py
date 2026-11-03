@@ -19,8 +19,8 @@ import time
 import numpy as np
 import pandas as pd
 
-from aircraft_geoloc import geometry, tracks
-from aircraft_geoloc.data_access import SplitReader, _frame_track
+from dopplergeist import geometry, tracks
+from dopplergeist.data_access import SplitReader, _frame_track
 
 
 def digest(path):

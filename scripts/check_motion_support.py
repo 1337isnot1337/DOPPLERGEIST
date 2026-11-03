@@ -12,8 +12,8 @@ import subprocess
 
 import pandas as pd
 
-from aircraft_geoloc.data_access import _frame_track
-from aircraft_geoloc.geometry import AcousticSupportError
+from dopplergeist.data_access import _frame_track
+from dopplergeist.geometry import AcousticSupportError
 
 
 def main():
@@ -50,7 +50,7 @@ def main():
                 rows.append({"source": tag, "track_id": track.id, "native_intervals": len(intervals),
                              "excluded_intervals_s": excluded, "audit_agrees": True})
     root = Path(__file__).resolve().parents[1]
-    code = [Path(__file__), root/"src/aircraft_geoloc/geometry.py", root/"src/aircraft_geoloc/data_access.py"]
+    code = [Path(__file__), root/"src/dopplergeist/geometry.py", root/"src/dopplergeist/data_access.py"]
     receipt = {"scope": "source_only_production_guard_comparison", "segments": rows,
                "code_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=root).strip(),
                "code_sha256": {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in code},

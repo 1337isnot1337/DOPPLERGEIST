@@ -2,13 +2,18 @@
 from copy import deepcopy
 import json
 import sqlite3
+import threading
+from urllib.request import urlopen
 
 import pytest
 from pyproj import Geod
 
-from aircraft_geoloc.automatic import _decide
-from aircraft_geoloc.finite_search import RetentionLedger, classified_assessment
-from aircraft_geoloc.tiled_search import merge_candidates
+from dopplergeist.automatic import _decide
+from dopplergeist.contracts import validate_result
+from dopplergeist.finite_search import RetentionLedger, classified_assessment
+from dopplergeist.jobs import JobManager
+from dopplergeist.service import JobServer
+from dopplergeist.tiled_search import merge_candidates
 
 
 @pytest.mark.parametrize("case,reason", [
@@ -62,9 +67,12 @@ def test_actual_retention_evidence_survives_the_product_boundary(tmp_path, case,
 
     # Profiles are controlled inputs. This tests the boundary, not their physical
     # generation; disabling refinement avoids substituting mocks for that work.
-    result = _decide(search, events, events, [], [], None, state, tmp_path,
+    job_id = "abb7afeffda8451ba9cb1bd6f8d95707"
+    output = tmp_path / "jobs" / job_id
+    output.mkdir(parents=True)
+    result = _decide(search, events, events, [], [], None, state, output,
                      {"refine_finalists": 0}, finish, lambda: None)
-    artifact = json.loads((tmp_path / "decision.json").read_text())
+    artifact = json.loads((output / "decision.json").read_text())
     assert result["reason_code"] == reason
     assert result["status"] == ("succeeded" if case == "complete" else "inconclusive")
     assert artifact["candidates"] == result["candidates"]
@@ -76,3 +84,22 @@ def test_actual_retention_evidence_survives_the_product_boundary(tmp_path, case,
         assert finite["best_discarded_score"] == -5.
         assert result["candidates"][0]["lat"] == kept[0]["lat"]
         assert artifact["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
+        wire = validate_result(dict(schema_version=1, job_id=job_id, status=result["status"],
+                                    events=events, coverage=state["coverage"], candidates=result["candidates"],
+                                    artifacts={"decision": "decision.json"}))
+        (output / "result.json").write_text(json.dumps(wire))
+        manager = JobManager(tmp_path / "jobs")
+        server = JobServer(("127.0.0.1", 0), manager)
+        thread = threading.Thread(target=server.serve_forever)
+        thread.start()
+        try:
+            url = f"http://127.0.0.1:{server.server_port}/api/jobs/{job_id}"
+            with urlopen(url) as response:
+                assert json.load(response) == wire
+            with urlopen(url+"/artifacts/decision.json") as response:
+                assert json.load(response) == artifact
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join()
+            manager.close()

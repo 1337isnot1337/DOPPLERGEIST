@@ -6,10 +6,10 @@ import pandas as pd
 import pytest
 from pyproj import Transformer
 
-from aircraft_geoloc.geometry import AcousticSupportError, Track, ecef
-from aircraft_geoloc.matching import RidgeTimes
-from aircraft_geoloc.search import score_candidate
-from aircraft_geoloc.search import cpa_table, cpa_table_dense
+from dopplergeist.geometry import AcousticSupportError, Track, ecef
+from dopplergeist.matching import RidgeTimes
+from dopplergeist.search import score_candidate
+from dopplergeist.search import cpa_table, cpa_table_dense
 
 
 def side_view(displacement=1000):

@@ -1,6 +1,6 @@
 """Render an independent multi-flyover MP3 fixture with separately stored truth.
 
-No aircraft_geoloc code is imported. A source oscillator is transported from
+No dopplergeist code is imported. A source oscillator is transported from
 emission time to arrival time using geometric distance. The first two passes
 have similar remote distractors; later passes have different timing/geometry.
 This is a finite synthetic population, not a real-world accuracy benchmark.

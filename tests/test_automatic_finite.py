@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from aircraft_geoloc import automatic, matching
-from aircraft_geoloc.jobs import read_json
+from dopplergeist import automatic, matching
+from dopplergeist.jobs import read_json
 
 
 @pytest.mark.parametrize("bad_core", [None, "partial_support", "missing_core", "missing_id", "near_cluster",

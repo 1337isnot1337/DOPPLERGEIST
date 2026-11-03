@@ -1,7 +1,7 @@
 """Independent decision-contract controls; these do not simulate a national run."""
 from copy import deepcopy
 
-from aircraft_geoloc.confidence import decide_location
+from dopplergeist.confidence import decide_location
 
 
 def bundle():

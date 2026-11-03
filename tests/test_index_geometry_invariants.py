@@ -7,7 +7,7 @@ from pyproj import Transformer
 import pytest
 
 
-data_access = pytest.importorskip("aircraft_geoloc.data_access")
+data_access = pytest.importorskip("dopplergeist.data_access")
 FlightIndex = data_access.FlightIndex
 
 EPOCH = 1_790_000_000.0

@@ -1,10 +1,10 @@
 """Real producer-to-product coverage checks; no localization benchmark."""
 import pytest
 
-from aircraft_geoloc import tiled_search
-from aircraft_geoloc.automatic import _coverage
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, search_national
+from dopplergeist import tiled_search
+from dopplergeist.automatic import _coverage
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, search_national
 from test_tiled_search import scenario
 
 

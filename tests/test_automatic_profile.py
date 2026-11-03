@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from aircraft_geoloc import automatic, matching
-from aircraft_geoloc.jobs import read_json
+from dopplergeist import automatic, matching
+from dopplergeist.jobs import read_json
 
 
 @pytest.fixture
@@ -121,7 +121,7 @@ def test_reranking_does_not_transfer_full_profile_to_another_candidate(run_profi
 
 
 def test_decision_candidate_copy_is_preserved_for_evidence_derived_envelopes(run_profile, monkeypatch):
-    from aircraft_geoloc import confidence
+    from dopplergeist import confidence
     original = confidence.decide_location
     def decision(events, candidates, coverage, **kwargs):
         result = original(events, candidates, coverage, **kwargs)

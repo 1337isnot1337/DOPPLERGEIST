@@ -6,10 +6,10 @@ import numpy as np
 import pytest
 from pyproj import Geod, Transformer
 
-automatic = pytest.importorskip("aircraft_geoloc.automatic")
-matching = pytest.importorskip("aircraft_geoloc.matching")
-decide_location = pytest.importorskip("aircraft_geoloc.confidence").decide_location
-from aircraft_geoloc.geometry import Track, ecef, straight_doppler
+automatic = pytest.importorskip("dopplergeist.automatic")
+matching = pytest.importorskip("dopplergeist.matching")
+decide_location = pytest.importorskip("dopplergeist.confidence").decide_location
+from dopplergeist.geometry import Track, ecef, straight_doppler
 
 
 def _decision_evidence():

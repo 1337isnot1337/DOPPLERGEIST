@@ -9,7 +9,8 @@ reports with their original thresholds. Read
 `docs/AGENT_TASKS.md`, `docs/HANDOFF.md`, the assigned GitHub issue and relevant
 source before editing. The configured research CLI takes manual event settings;
 that does not describe the status of the whole project. Whole-recording intake,
-automatic discovery and bounded tiled search are implemented on `main`. Check
+automatic discovery, bounded tiled search and the local upload application
+(`analyze`, `serve`, `job`) are implemented on `main`. Check
 the README, a pinned source revision and current PR state before describing the
 product integration or an acceptance gate as complete or missing. The
 [2026-11-03 verification note](docs/VERIFICATION_2026-11-03.md) separates these scopes.
@@ -23,7 +24,8 @@ product integration or an acceptance gate as complete or missing. The
   code review. Link board decisions from the relevant issue/PR and update durable
   documentation when a decision changes an interface or scientific rule.
 - Communicate before overlapping work or changing a shared contract. Identify
-  your worker role, issue/PR, branch and exact commit; name the role whose input
+  your worker role and issue/PR; include the branch or source version when needed.
+  Name the role whose input
   you need. All agents may share one GitHub account, so account mentions alone do
   not identify a worker. Ask a concrete question and acknowledge requests to your
   role at the next board check. Resolve disagreements with evidence and record
@@ -34,15 +36,18 @@ product integration or an acceptance gate as complete or missing. The
   new evidence or a changed plan. Include measured results and limits, not just
   activity; keep making independent progress while awaiting a response.
 - Claim one bounded issue with your agent identity, branch/worktree and owned files.
-  Issue #1 remains the task index and historical log. Use separate worktrees/branches
-  and focused PRs, and announce your ownership on the discussion board.
+  Issue #1 remains the task index and historical log. Keep one active branch/PR per
+  workstream where practical; append related fixes and results to it. Do not create
+  a new branch or PR for every verification run. Announce ownership on the board.
 - Refresh remote state with `git fetch origin` before starting, before integrating
   dependencies, before pushing/opening a PR, and at least every 10 minutes during
   long work. Read new board topics/replies and comments on your issue/PR at those
   boundaries, and check the board before changing shared interfaces or merging.
   Do not rely on a stale local `main`, board or issue snapshot.
-- Start from current `origin/main` in your own worktree. Keep commits small and
-  focused, record useful checkpoints, and include the issue number in PRs. Rebase
+- Start from current `origin/main` in your own worktree. Prioritize landing small,
+  tested, useful increments on **main**, including independently ready parts of a
+  larger task. Do not leave finished work on branches while accumulating reports.
+  The primary coordinates landings. Include the issue number in PRs. Rebase
   or merge only your own branch, preserving changes; coordinate integration when
   another agent has changed the same interface.
 - Respect the contract and ownership plan in `docs/AGENT_TASKS.md`. Coordinate
@@ -60,6 +65,51 @@ product integration or an acceptance gate as complete or missing. The
   Do not commit virtual environments, caches, credentials or unrelated files.
 - Dependencies are integration gates. Prepare tests/fixtures/adapters while waiting,
   but do not close an issue on a mock or a plan.
+
+## Cut audit and provenance overhead
+
+**Working code and meaningful experiments are the deliverables. Heavily reduce
+provenance paperwork and passive auditing.** This instruction supersedes older
+documentation that asks for exhaustive receipts, hashes or audit packages.
+
+- Do not open standalone provenance, checksum, receipt or passive-audit PRs.
+  Do not audit another audit, repackage existing evidence, or repeatedly verify
+  unchanged files. Put a genuinely useful finding in the existing issue/PR.
+- Do not generate routine SHA manifests for source files, documentation, plots,
+  test output, stdout/stderr, intermediate attempts or other routine artifacts.
+  Git history and a short test/experiment summary are normally sufficient.
+- Use checksums only for a concrete integrity requirement, such as verifying an
+  external download or identifying a cache input. Do not expand that requirement
+  into hashes of every related file or layers of JSON receipts.
+- Verification must answer a concrete question about behavior, fix a reproduced
+  defect, or measure an actual result. End-to-end runs, physical-model controls,
+  ranking/accuracy benchmarks and regression tests remain useful. Merely proving
+  that archived bytes match other archived bytes is not a development workstream.
+- Keep results compact: the command/settings, outcome, relevant failure and limits.
+  Do not duplicate them across multiple JSON/XML/log/Markdown packages. Keep bulky
+  diagnostic output local unless someone needs it to reproduce or fix a problem.
+- Stop existing passive-audit-only work. Carry any actionable bug into the owning
+  implementation task, then close redundant PRs. Preserve useful code and actual
+  experimental findings; do not merge paperwork just to mark a task complete.
+- Reduce branch/PR backlog after landing work. Remove merged or redundant branch
+  names once active work and downstream dependencies are accounted for. Never
+  discard unique useful changes or interfere with another worker's active checkout.
+
+## Real-world data only
+
+**The owner requires REAL recordings and real-world geolocation tests. NO MORE
+SYNTHETIC DATA.** Stop synthetic benchmark and data-generation work. Do not launch
+new generated flyover recordings, aircraft-track fixtures, synthetic baselines,
+null recordings or artificial benchmark corpora. Existing synthetic results are
+historical; they do not satisfy the current validation requirement.
+
+- Use actual audio and historical aircraft observations for empirical evaluation.
+  Establish a defensible recording time and independent location reference; report
+  uncertainty or missing ground truth honestly.
+- Prioritize obtaining usable real recordings and making the pipeline work on them.
+  Do not substitute another simulated success or detection-only fixture for this.
+- Existing unit tests remain software checks, not real-world validation. Do not
+  expand them into more fake field data or use their counts as accuracy evidence.
 
 ## Scientific and product boundaries
 
@@ -86,12 +136,15 @@ product integration or an acceptance gate as complete or missing. The
 
 ## Artifacts and verification
 
-- Do not upload the source YouTube MP4. Large data belong in checksummed release
-  assets, with provenance; see `docs/ARTIFACTS.md`.
+- Do not upload the source YouTube MP4. Use release assets for necessary large
+  inputs; verify external downloads when needed. See `docs/ARTIFACTS.md`, subject
+  to the lean-verification rules above.
 - Preserve `evidence/` and historical `results/`. Use a new output directory for
-  every experiment and record source/configuration/code hashes.
+  each actual experiment so failures are not overwritten. A short note of the
+  source version, settings and result is enough; exhaustive hashes are not required.
 - Standard check: `.venv/bin/python -m pytest -q` after installing the project and
   pytest. Run additional checks appropriate to the changed behavior.
-- Final PR/task handoff: concrete change, exact commit, meaningful test commands
-  and results, artifact paths, and unresolved limits. Do not claim unrun checks.
+- Final PR/task handoff: concrete change, relevant test command/result and remaining
+  limits. Link necessary outputs rather than creating another receipt package.
+  Do not claim unrun checks.
 

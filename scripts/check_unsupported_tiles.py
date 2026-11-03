@@ -11,12 +11,12 @@ import time
 
 import numpy as np
 
-from aircraft_geoloc.audio import Spectrum
-from aircraft_geoloc.data_access import FlightIndex, sha256, write_json
-from aircraft_geoloc.geometry import AcousticSupportError
-from aircraft_geoloc.search import cpa_table, pair_candidates, score_candidate
-from aircraft_geoloc.terrain import Terrain
-from aircraft_geoloc.tiled_search import SearchBudget, _expanded_bounds, _record_support, _score, _tracks, grid_tiles, merge_candidates, tile_points
+from dopplergeist.audio import Spectrum
+from dopplergeist.data_access import FlightIndex, sha256, write_json
+from dopplergeist.geometry import AcousticSupportError
+from dopplergeist.search import cpa_table, pair_candidates, score_candidate
+from dopplergeist.terrain import Terrain
+from dopplergeist.tiled_search import SearchBudget, _expanded_bounds, _record_support, _score, _tracks, grid_tiles, merge_candidates, tile_points
 
 
 def signature(rows):
@@ -96,7 +96,7 @@ def main():
     write_json(output / "report.json", {"scope": "Historical three failed analytic-ridge scale tiles; no localization truth",
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
         "index_sha256": sha256(index.path), "index_input_hash": index.report["input_hash"],
-        "old_manifest_sha256": sha256(args.manifest), "code_sha256": {p.name: sha256(p) for p in (root / "src/aircraft_geoloc").glob("*.py")},
+        "old_manifest_sha256": sha256(args.manifest), "code_sha256": {p.name: sha256(p) for p in (root / "src/dopplergeist").glob("*.py")},
         "runner_sha256": sha256(__file__), "elapsed_s": time.monotonic()-began, "tiles": reports,
         "limitations": ["Diagnostic tiles were selected from preserved historical model failures, not recorder truth.",
                         "Same legacy derivatives/altitudes and constant ground; no raw normalization repair.",

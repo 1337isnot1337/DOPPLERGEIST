@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 import soundfile as sf
 
-from aircraft_geoloc.contracts import validate_event
-from aircraft_geoloc.discovery import DiscoverySettings, _stitch_fragments, discover_events
-from aircraft_geoloc.intake import intake_recording
+from dopplergeist.contracts import validate_event
+from dopplergeist.discovery import DiscoverySettings, _stitch_fragments, discover_events
+from dopplergeist.intake import intake_recording
 
 
 def _audio(tmp_path, events, duration=180, mute=None):

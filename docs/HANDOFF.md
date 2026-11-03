@@ -8,9 +8,9 @@ dependencies, suggested agent allocation and a copyable assignment prompt.
 The user wants a full MP3-upload-to-location pipeline with automatic Doppler-event
 detection. Up to **1,000 m** error is acceptable; **100–500 m or better** is
 preferred. Report all three thresholds. Whole-recording intake, automatic discovery
-and bounded tiled search are implemented on `main`; the configured research CLI
-also remains available with manually selected events. Product integration and
-independent real-recording acceptance are separate gates. Check the
+and bounded tiled search are connected to the local upload application on `main`;
+the configured research CLI also remains available with manually selected events.
+Independent real-recording acceptance remains open. Check the
 [README](../README.md), [pinned verification note](VERIFICATION_2026-11-03.md) and
 current PR state before making a present-tense feature assessment. Do not treat a
 regional reference case or a synthetic result as nationwide real-audio validation.
@@ -42,8 +42,8 @@ The real regional replay requires source, ADS-B-derived and terrain bundles:
 
 ```bash
 .venv/bin/python -m pytest -q
-.venv/bin/aircraft-geoloc run data/source/reproduce-local.json --output results/replay-reference
-.venv/bin/aircraft-geoloc run data/source/reproduce-faint-alltypes-local.json --output results/replay-faint
+.venv/bin/dopplergeist run data/source/reproduce-local.json --output results/replay-reference
+.venv/bin/dopplergeist run data/source/reproduce-faint-alltypes-local.json --output results/replay-faint
 .venv/bin/python scripts/benchmark_real_features.py
 ```
 

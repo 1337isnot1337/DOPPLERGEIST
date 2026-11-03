@@ -9,8 +9,8 @@ import urllib.request
 
 import pytest
 
-from aircraft_geoloc.jobs import JobManager, read_json, result
-from aircraft_geoloc.service import JobServer
+from dopplergeist.jobs import JobManager, read_json, result
+from dopplergeist.service import JobServer
 
 
 @contextmanager

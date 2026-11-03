@@ -128,7 +128,7 @@ time.sleep(30)
                 (root / "truth.json").write_text(json.dumps({
                     "lat": 40, "lon": -100, "flight_ids": ["a", "b"]}))
                 return {"returncode": 0}
-            self.assertEqual(command[1:4], ["-m", "aircraft_geoloc.cli", "run"])
+            self.assertEqual(command[1:4], ["-m", "dopplergeist.cli", "run"])
             name = Path(command[4]).name
             attempts.append(name)
             destination = Path(command[-1])
