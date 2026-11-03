@@ -1,0 +1,26 @@
+{
+  "source_page": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+  "fetch": {
+    "started_utc": "2026-11-03T01:28:49.220242Z",
+    "finished_utc": "2026-11-03T01:28:49.781452Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:28:49 GMT",
+    "sha256": "f08d5beaf6f3c438132f52a04b97a3d239e231a8e4790151af0ed0849cfe3179",
+    "bytes": 173242
+  },
+  "source_sha256": "03157786ee3b7dababb6d1334087f5a24b125e66566a90ea096491acc4889a6b",
+  "sample_rate_hz": 44100,
+  "frames": 529200,
+  "channels": 1,
+  "channel_rms": [
+    5.688438060202118e-05
+  ],
+  "channel_peak": [
+    0.0002771411382127553
+  ],
+  "mono_rms": 5.688438060202118e-05,
+  "mono_to_max_channel_rms_ratio": 1.0,
+  "cross_channel_correlation": null,
+  "analysis_only_not_localization": true,
+  "recording_clock_established": false
+}
