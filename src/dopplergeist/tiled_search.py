@@ -22,7 +22,7 @@ from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_jso
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
 from .geometry import AcousticSupportError
 from .matching import _cache_ridge_fits
-from .search import cpa_table, filter_event, pair_candidates, score_candidate
+from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
 
 
 def _support_error(error):
@@ -205,7 +205,10 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)
     else:
-        per_event = [filter_event(table, e, kwargs["time_origin"], kwargs["time_tolerance_s"]).groupby("point_id").size().to_dict() for e in events]
+        # Count the same inclusive clock-boundary passages as pair_candidates.
+        per_event = [filter_association_event(table, e, kwargs["offset_tolerance_s"],
+                    kwargs["time_origin"], kwargs["time_tolerance_s"]).groupby("point_id").size().to_dict()
+                     for e in events]
         upper = sum(math.prod(g.get(p, 0) for g in per_event) for p in points.point_id)
         if upper > budget.max_candidates_per_tile:
             raise DataUnavailable("Tile candidate memory budget exceeded; reduce tile_cells")
