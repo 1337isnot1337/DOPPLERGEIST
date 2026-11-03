@@ -3,6 +3,17 @@
 #include <math.h>
 #include <string.h>
 
+typedef struct {
+    PyObject *validation_keys[16];
+} RidgeModuleState;
+
+static const char *validation_names[] = {
+    "support_fraction", "score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+    "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz",
+    "outlier_fraction", "sample_count", "independent_sample_count", "optimizer_success",
+    "f0_range_hz", "quality", "source_drift_fraction"
+};
+
 static int
 get_vector(PyObject *object, Py_buffer *view)
 {
@@ -267,17 +278,165 @@ done:
     return result;
 }
 
+/* Only ordinary string-keyed dictionaries enter the fast validator. A custom
+ * key or container can execute Python during lookup and keeps the Python path. */
+static int
+plain_dictionary(PyObject *object)
+{
+    if (!PyDict_CheckExact(object)) return 0;
+    Py_ssize_t position = 0;
+    PyObject *key, *value;
+    while (PyDict_Next(object, &position, &key, &value)) {
+        if (!PyUnicode_CheckExact(key)) return 0;
+    }
+    return 1;
+}
+
+static PyObject *
+sequence_item(PyObject *sequence, Py_ssize_t index)
+{
+    return PyList_CheckExact(sequence) ? PyList_GET_ITEM(sequence, index) :
+                                       PyTuple_GET_ITEM(sequence, index);
+}
+
+/* Return the first per-event evidence failure, or None for the Python path.
+ * The numeric codes match search._EVENT_FIT_FAILURES. No evidence is cached or
+ * trusted because it came from a fitter: every call checks the current values.
+ * Score summation and association arithmetic stay in Python, including Python's
+ * version-specific float sum behavior. */
+static PyObject *
+event_fit_reason(PyObject *self, PyObject *args)
+{
+    PyObject *diagnostics, *scores, *frequencies, *events;
+    RidgeModuleState *state = PyModule_GetState(self);
+    if (state == NULL) return NULL;
+    if (!PyArg_ParseTuple(args, "OOOO", &diagnostics, &scores, &frequencies, &events)) {
+        return NULL;
+    }
+    if (!PyList_CheckExact(diagnostics) || !PyList_CheckExact(scores) ||
+        !PyList_CheckExact(frequencies) ||
+        !(PyList_CheckExact(events) || PyTuple_CheckExact(events))) Py_RETURN_NONE;
+    Py_ssize_t count = PyList_GET_SIZE(diagnostics);
+    Py_ssize_t event_count = PyList_CheckExact(events) ? PyList_GET_SIZE(events) :
+                                                     PyTuple_GET_SIZE(events);
+    if (PyList_GET_SIZE(scores) != count || PyList_GET_SIZE(frequencies) != count ||
+        event_count != count) Py_RETURN_NONE;
+
+    for (Py_ssize_t i = 0; i < count; ++i) {
+        PyObject *diagnostic = PyList_GET_ITEM(diagnostics, i);
+        PyObject *event = sequence_item(events, i);
+        PyObject *score_object = PyList_GET_ITEM(scores, i);
+        PyObject *frequency_object = PyList_GET_ITEM(frequencies, i);
+        if (!plain_dictionary(diagnostic) || !plain_dictionary(event) ||
+            !PyFloat_CheckExact(score_object) || !PyFloat_CheckExact(frequency_object)) {
+            Py_RETURN_NONE;
+        }
+        double values[10];
+        for (int j = 0; j < 10; ++j) {
+            PyObject *value = PyDict_GetItem(diagnostic, state->validation_keys[j]);
+            if (value == NULL || !PyFloat_CheckExact(value)) Py_RETURN_NONE;
+            values[j] = PyFloat_AS_DOUBLE(value);
+        }
+        PyObject *samples = PyDict_GetItem(diagnostic, state->validation_keys[10]);
+        PyObject *independent = PyDict_GetItem(diagnostic, state->validation_keys[11]);
+        if (samples == NULL || independent == NULL ||
+            !PyLong_CheckExact(samples) || !PyLong_CheckExact(independent)) Py_RETURN_NONE;
+        long long sample_count = PyLong_AsLongLong(samples);
+        if (PyErr_Occurred()) { PyErr_Clear(); Py_RETURN_NONE; }
+        long long independent_count = PyLong_AsLongLong(independent);
+        if (PyErr_Occurred()) { PyErr_Clear(); Py_RETURN_NONE; }
+        PyObject *optimizer = PyDict_GetItem(diagnostic, state->validation_keys[12]);
+        if (optimizer != NULL && !PyBool_Check(optimizer)) Py_RETURN_NONE;
+        PyObject *bounds = PyDict_GetItem(event, state->validation_keys[13]);
+        if (bounds == NULL || !(PyList_CheckExact(bounds) || PyTuple_CheckExact(bounds))) {
+            Py_RETURN_NONE;
+        }
+        Py_ssize_t size = PyList_CheckExact(bounds) ? PyList_GET_SIZE(bounds) : PyTuple_GET_SIZE(bounds);
+        if (size != 2) Py_RETURN_NONE;
+        PyObject *low_object = sequence_item(bounds, 0), *high_object = sequence_item(bounds, 1);
+        if (!PyFloat_CheckExact(low_object) || !PyFloat_CheckExact(high_object)) Py_RETURN_NONE;
+        double low = PyFloat_AS_DOUBLE(low_object), high = PyFloat_AS_DOUBLE(high_object);
+        double fraction = 0.02;
+        PyObject *quality = PyDict_GetItem(event, state->validation_keys[14]);
+        if (quality != NULL) {
+            if (!plain_dictionary(quality)) Py_RETURN_NONE;
+            PyObject *configured = PyDict_GetItem(quality, state->validation_keys[15]);
+            if (configured != NULL) {
+                if (!PyFloat_CheckExact(configured)) Py_RETURN_NONE;
+                fraction = PyFloat_AS_DOUBLE(configured);
+            }
+        }
+        double score = PyFloat_AS_DOUBLE(score_object), frequency = PyFloat_AS_DOUBLE(frequency_object);
+        if (!isfinite(values[0]) || values[0] != 1.0) return PyLong_FromLong(1);
+        int finite = isfinite(score) && isfinite(frequency);
+        for (int j = 1; j < 10; ++j) finite = finite && isfinite(values[j]);
+        if (!finite) return PyLong_FromLong(2);
+        if (independent_count < 1 || independent_count > sample_count || sample_count < 10 ||
+            values[6] <= 0.0 || values[7] < 0.0 || values[8] < 0.0 ||
+            !(0.0 <= values[9] && values[9] <= 1.0) || values[2] <= 0.0 || values[1] > 0.0) {
+            return PyLong_FromLong(3);
+        }
+        if (optimizer == Py_False) return PyLong_FromLong(4);
+        if (score != values[1] || frequency != values[2]) return PyLong_FromLong(5);
+        if (!isfinite(low) || !isfinite(high) || !(0.0 < low && low <= high) ||
+            !(low <= frequency && frequency <= high) || !isfinite(fraction) ||
+            !(0.0 <= fraction && fraction <= 0.1)) return PyLong_FromLong(6);
+        double drift = values[3], cap = values[7];
+        if (!(low * fraction <= cap && cap <= high * fraction) || fabs(drift) > cap) {
+            return PyLong_FromLong(7);
+        }
+        if (fabs(values[4] * values[6] - drift) > 1e-12 + 1e-12 * fabs(drift)) {
+            return PyLong_FromLong(8);
+        }
+    }
+    return PyLong_FromLong(0);
+}
+
 static PyMethodDef methods[] = {
     {"fit_irls", fit_irls, METH_VARARGS, "Run six robust ridge-fit iterations in C."},
+    {"event_fit_reason", event_fit_reason, METH_VARARGS, "Validate canonical per-event fit evidence, or request Python fallback."},
     {NULL, NULL, 0, NULL}
 };
 
+static int
+ridge_traverse(PyObject *module, visitproc visit, void *arg)
+{
+    RidgeModuleState *state = PyModule_GetState(module);
+    for (int i = 0; i < 16; ++i) Py_VISIT(state->validation_keys[i]);
+    return 0;
+}
+
+static int
+ridge_clear(PyObject *module)
+{
+    RidgeModuleState *state = PyModule_GetState(module);
+    for (int i = 0; i < 16; ++i) Py_CLEAR(state->validation_keys[i]);
+    return 0;
+}
+
+static void
+ridge_free(void *module)
+{
+    ridge_clear((PyObject *)module);
+}
+
 static struct PyModuleDef module = {
-    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, -1, methods
+    PyModuleDef_HEAD_INIT, "_native_ridge", NULL, sizeof(RidgeModuleState), methods,
+    NULL, ridge_traverse, ridge_clear, ridge_free
 };
 
 PyMODINIT_FUNC
 PyInit__native_ridge(void)
 {
-    return PyModule_Create(&module);
+    PyObject *created = PyModule_Create(&module);
+    if (created == NULL) return NULL;
+    RidgeModuleState *state = PyModule_GetState(created);
+    for (int i = 0; i < 16; ++i) {
+        state->validation_keys[i] = PyUnicode_InternFromString(validation_names[i]);
+        if (state->validation_keys[i] == NULL) {
+            Py_DECREF(created);
+            return NULL;
+        }
+    }
+    return created;
 }

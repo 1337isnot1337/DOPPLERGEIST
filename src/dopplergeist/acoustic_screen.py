@@ -44,22 +44,13 @@ def ridge_trial_rejections(measurement, event, factors, emissions, *, score_floo
         times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
     except (ValueError, TypeError, KeyError, AttributeError):
         return result()
-    if (not np.isfinite(sigma) or sigma <= 0 or not np.isfinite(fraction) or not 0 <= fraction <= .1
-            or not np.isfinite(low) or not np.isfinite(high) or not 0 < low <= high
-            or times.ndim != 1 or times.shape != ridge.shape or times.shape != weight.shape
-            or not np.all(np.isfinite(weight)) or np.any(weight < 0)):
-        return result()
-    measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
-    if measured.sum() < 10 or factors.shape[1] != measured.sum():
-        return result()
-    times, ridge, weight = times[measured], ridge[measured], weight[measured]
-    evidence = _cached_loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, fraction, high)
+    evidence = _cached_loss_lower_bounds(times, ridge, weight, factors, emissions,
+                                         sigma, fraction, low, high)
     if evidence is None:
         return result()
-    active, valid, lower = evidence
+    active, valid, lower, residual_rejections = evidence
+    rejected[active] = residual_rejections
     with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
-        rejected[active] = (valid & np.isfinite(lower)
-                            & (lower > (3*sigma)**2*(1+1e-8)+1e-9))
         if (score_floor is not None and type(group_count) is int and group_count > 0
                 and np.isfinite(score_floor) and 0 <= group_count-score_floor < 1):
             threshold = (3*sigma*(group_count-score_floor))**2*(1+1e-8)+1e-9
@@ -72,27 +63,55 @@ def ridge_trial_rejections(measurement, event, factors, emissions, *, score_floo
     return result()
 
 
-def _cached_loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, fraction, high):
-    """Reuse exact numerical inputs under the scoring context's memory limit."""
+def _validated_loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, fraction, low, high):
+    """Validate and select measured samples before computing a screen's bound."""
+    if (not np.isfinite(sigma) or sigma <= 0 or not np.isfinite(fraction) or not 0 <= fraction <= .1
+            or not np.isfinite(low) or not np.isfinite(high) or not 0 < low <= high
+            or times.ndim != 1 or times.shape != ridge.shape or times.shape != weight.shape
+            or not np.all(np.isfinite(weight)) or np.any(weight < 0)):
+        return None
+    measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
+    count = int(measured.sum())
+    if count < 10 or factors.shape[1] != count:
+        return None
+    evidence = _loss_lower_bounds(times[measured], ridge[measured], weight[measured],
+                                  factors, emissions, sigma, fraction, high)
+    if evidence is None:
+        return None
+    active, valid, lower = evidence
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        rejected = valid & np.isfinite(lower) & (lower > (3*sigma)**2*(1+1e-8)+1e-9)
+    return active, valid, lower, rejected
+
+
+def _cached_loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, fraction, low, high):
+    """Reuse validated raw inputs under the scoring context's memory limit.
+
+    Fingerprint complete input arrays before selecting samples. A hit therefore
+    reuses validation, masking and residual rejections as well as loss evidence.
+    Any changed or invalid raw sample, including one previously masked out,
+    gets checked again. Retention ceilings still use the caller's current floor.
+    """
     cache = _ridge_fit_cache.get()
     arrays = times, ridge, weight, factors, emissions
     if cache is None:
-        return _loss_lower_bounds(*arrays, sigma, fraction, high)
+        return _validated_loss_lower_bounds(*arrays, sigma, fraction, low, high)
     entries = cache.screen_entries
     if cache.screen_limit <= 0 or cache.max_entries <= 0:
         entries.clear()
         cache.screen_bytes = 0
-        return _loss_lower_bounds(*arrays, sigma, fraction, high)
+        return _validated_loss_lower_bounds(*arrays, sigma, fraction, low, high)
     if np.geterr()["under"] != "ignore":
         # The numerical kernel inherits underflow handling. Preserve any
         # requested warning/exception instead of hiding it behind a cache hit.
-        return _loss_lower_bounds(*arrays, sigma, fraction, high)
+        return _validated_loss_lower_bounds(*arrays, sigma, fraction, low, high)
     # Layout affects reduction order. Keys retain input bytes and layout, but
     # never the much larger propagation arrays themselves. Parameters have
-    # already been converted to finite Python floats by the public validator.
-    key = (_loss_lower_bounds, tuple(value.hex() for value in (sigma, fraction, high)),
+    # already been converted to Python floats; misses validate their domain.
+    key = (_validated_loss_lower_bounds, _loss_lower_bounds,
+           tuple(value.hex() for value in (sigma, fraction, low, high)),
            tuple((value.dtype.str, value.shape, value.strides, value.flags.aligned,
-                  hashlib.sha256(value.tobytes()).digest()) for value in arrays))
+                  hashlib.sha256(value if value.flags.c_contiguous else value.tobytes()).digest()) for value in arrays))
     # A caller may lower a budget between requests; enforce that budget on hits
     # as well as inserts rather than retaining an oversized previous context.
     while entries and (len(entries) > cache.max_entries or
@@ -103,7 +122,7 @@ def _cached_loss_lower_bounds(times, ridge, weight, factors, emissions, sigma, f
     if previous is not None:
         entries.move_to_end(key)
         return previous[0]
-    evidence = _loss_lower_bounds(*arrays, sigma, fraction, high)
+    evidence = _validated_loss_lower_bounds(*arrays, sigma, fraction, low, high)
     if evidence is None:
         return None
 

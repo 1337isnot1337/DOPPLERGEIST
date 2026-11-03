@@ -39,19 +39,27 @@ jobs:
         run: python -m compileall -q src scripts
       - name: CLI smoke check
         run: dopplergeist --help
-      - name: Check installed modules and packaged browser assets
+      - name: Check installed native validator and packaged browser assets
         run: |
           python -I - <<'PY'
           from importlib import resources
+          import json
           from pathlib import Path
           import dopplergeist
-          from dopplergeist import automatic, jobs, service
+          from dopplergeist import _native_ridge, automatic, jobs, service
 
           package = Path(dopplergeist.__file__).resolve().parent
           assert "site-packages" in package.parts, package
+          assert Path(_native_ridge.__file__).resolve().parent == package
+          assert callable(getattr(_native_ridge, "event_fit_reason", None)), "Native evidence validator did not build"
+          fixture = json.loads(Path("tests/data/real-ridge-batch-arithmetic.json").read_text())
+          fits = fixture["legacy_diagnostics"]
+          assert _native_ridge.event_fit_reason(
+              fits, [fit["score"] for fit in fits], [fit["f0_hz"] for fit in fits],
+              [fixture["event"]] * len(fits)) == 0
           web = resources.files("dopplergeist.web")
           for name in ("index.html", "app.js", "style.css"):
               assert web.joinpath(name).is_file(), name
               assert web.joinpath(name).read_bytes(), name
-          print("Installed package imports and browser assets passed; no audio or tracks generated.")
+          print("Installed native validation of recorded fits and browser assets passed; no audio or tracks generated.")
           PY

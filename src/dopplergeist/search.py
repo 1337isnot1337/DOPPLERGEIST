@@ -89,7 +89,9 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512, *, _
     point_ids=points.point_id.to_numpy(dtype=int)
     rows = _cpa_rows(tracks, observers, point_ids, max_distance, c, step_s, chunk_size,
                      _sample_cache=_sample_cache)
-    return pd.DataFrame(rows, columns=_CPA_COLUMNS) if rows else _EMPTY_CPA_TABLE.copy()
+    if not rows:
+        return _EMPTY_CPA_TABLE.copy()
+    return pd.DataFrame(rows, columns=_CPA_COLUMNS)
 
 
 def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, chunk_size=512, *,
@@ -320,6 +322,13 @@ def event_score(track, observer, spectrum, ridge, weight, start_time, f0_bounds,
     return best_frequency(spectrum, times, factor, f0_bounds, frequency_step)
 
 
+_EVENT_FIT_FAILURES = (
+    None, "incomplete_acoustic_support", "nonfinite_fit_evidence", "invalid_fit_evidence",
+    "failed_optimizer", "inconsistent_event_fit_evidence", "fit_outside_declared_frequency_domain",
+    "fit_outside_declared_drift_domain", "inconsistent_source_drift",
+)
+
+
 def _ridge_trial_classification(result, events, association):
     """Classify recorded core fits, without changing their score or rejection rule.
 
@@ -337,37 +346,43 @@ def _ridge_trial_classification(result, events, association):
     if (not isinstance(diagnostics, list) or not isinstance(scores, list) or not isinstance(frequencies, list)
             or not len(diagnostics) == len(scores) == len(frequencies) == len(events)):
         return "unknown", "missing_event_fit_evidence"
-    fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
-              "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
-    for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
-        if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
-                or diagnostic["support_fraction"] != 1.0):
-            return "unknown", "incomplete_acoustic_support"
-        if (not all(finite(diagnostic.get(name)) for name in fields)
-                or not finite(score) or not finite(frequency)):
-            return "unknown", "nonfinite_fit_evidence"
-        count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
-        if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
-                or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
-                or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
-                or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
-            return "unknown", "invalid_fit_evidence"
-        if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
-            return "unknown", "failed_optimizer"
-        if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
-            return "unknown", "inconsistent_event_fit_evidence"
-        bounds = event.get("f0_range_hz")
-        fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
-        if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
-                or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
-                or not bounds[0] <= frequency <= bounds[1]
-                or not finite(fraction) or not 0 <= fraction <= 0.1):
-            return "unknown", "fit_outside_declared_frequency_domain"
-        drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
-        if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
-            return "unknown", "fit_outside_declared_drift_domain"
-        if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
-            return "unknown", "inconsistent_source_drift"
+    from .matching import _native_ridge_module
+    validator = getattr(_native_ridge_module, "event_fit_reason", None)
+    reason = None if validator is None else validator(diagnostics, scores, frequencies, events)
+    if reason is not None and reason:
+        return "unknown", _EVENT_FIT_FAILURES[reason]
+    if reason is None:
+        fields = ("score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+                  "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction")
+        for diagnostic, score, frequency, event in zip(diagnostics, scores, frequencies, events):
+            if (not isinstance(diagnostic, dict) or not finite(diagnostic.get("support_fraction"))
+                    or diagnostic["support_fraction"] != 1.0):
+                return "unknown", "incomplete_acoustic_support"
+            if (not all(finite(diagnostic.get(name)) for name in fields)
+                    or not finite(score) or not finite(frequency)):
+                return "unknown", "nonfinite_fit_evidence"
+            count, independent = diagnostic.get("sample_count"), diagnostic.get("independent_sample_count")
+            if (type(count) is not int or type(independent) is not int or not 1 <= independent <= count
+                    or count < 10 or diagnostic["source_span_s"] <= 0 or diagnostic["drift_bound_hz"] < 0
+                    or diagnostic["rmse_hz"] < 0 or not 0 <= diagnostic["outlier_fraction"] <= 1
+                    or diagnostic["f0_hz"] <= 0 or diagnostic["score"] > 0):
+                return "unknown", "invalid_fit_evidence"
+            if "optimizer_success" in diagnostic and diagnostic["optimizer_success"] is not True:
+                return "unknown", "failed_optimizer"
+            if score != diagnostic["score"] or frequency != diagnostic["f0_hz"]:
+                return "unknown", "inconsistent_event_fit_evidence"
+            bounds = event.get("f0_range_hz")
+            fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+            if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
+                    or not all(finite(value) for value in bounds) or not 0 < bounds[0] <= bounds[1]
+                    or not bounds[0] <= frequency <= bounds[1]
+                    or not finite(fraction) or not 0 <= fraction <= 0.1):
+                return "unknown", "fit_outside_declared_frequency_domain"
+            drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
+            if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
+                return "unknown", "fit_outside_declared_drift_domain"
+            if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
+                return "unknown", "inconsistent_source_drift"
     if "optimizer_success" in result and result["optimizer_success"] is not True:
         return "unknown", "failed_optimizer"
     residual = float(sum(scores))
