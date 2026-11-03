@@ -87,7 +87,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         artifacts = {"provenance": "provenance.json", "request": "request.json"}
         for name, path in (("intake", "intake/intake.json"), ("recording", "intake/recording.json"),
                            ("discovery", "discovery/discovery.json"), ("discovery_plot", "discovery/discovery.png"),
-                           ("search_report", "search/search-report.json"), ("refinement", "refined-candidates.json"), ("data_provenance", "data-provenance.json"), ("decision", "decision.json")):
+                           ("search_report", "search/search-report.json"), ("refinement", "refined-candidates.json"),
+                           ("spectral_comparison", "spectral-comparison.json"),
+                           ("data_provenance", "data-provenance.json"), ("decision", "decision.json")):
             if (output / path).is_file():
                 artifacts[name] = path
         for path in sorted((output / "discovery").glob("event-*.png")):
@@ -109,6 +111,13 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         discovery_settings = DiscoverySettings(**discovery_options)
     except (TypeError, ValueError) as exc:
         return finish("failed", "invalid_configuration", f"Invalid operator discovery settings: {exc}")
+    spectral_options = config.get("spectral_comparison")
+    spectral_keys = {"time_sweep_s", "time_step_s", "frequency_step_hz", "expansion_s",
+                     "window_s", "hop_s", "max_window_s", "max_modes", "max_event_clock_trials",
+                     "max_curve_samples", "max_spectrogram_bins"}
+    if spectral_options is not None and (not isinstance(spectral_options, dict)
+                                         or spectral_options.keys() - spectral_keys):
+        return finish("failed", "invalid_configuration", "Spectral comparison accepts only work limits and spectral grid settings.")
     if not resume:
         progress("intake", 0.05)
         try:
@@ -142,7 +151,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     state["coverage"] = _coverage(request, search, config)
     provenance["search_run_hash"] = search.get("run_hash")
     progress("refinement", 0.85, **state)
-    return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, lambda: progress("decision", 0.95, **state))
+    return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish,
+                   lambda: progress("decision", 0.95, **state), recording=recording)
 
 
 class MissingData(ValueError):
@@ -375,7 +385,54 @@ def _comparable_refinement(candidate, original, prepared_events):
     return candidate
 
 
-def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, decision_progress):
+def _compare_retained_spectra(recording, rows, prepared_events, indexes, config, start_window):
+    """Run the optional physical comparison without transferring ridge evidence."""
+    from .data_access import DataUnavailable
+    from .spectral_matching import SCORE_KIND, compare_spectral_modes
+    options = dict(config["spectral_comparison"])
+    lookup = {"requested_tracks": 0, "loaded_tracks": 0, "loaded_samples": 0,
+              "missing_ids": [], "ambiguous_ids": [], "failures": []}
+    try:
+        if recording is None:
+            raise ValueError("The decoded recording is unavailable for spectral comparison")
+        tracks, ambiguous = {}, set()
+        if len(rows) <= options.get("max_modes", 1000):
+            needed = {identifier for row in rows for identifier in row["flight_ids"]}
+            lookup["requested_tracks"] = len(needed)
+            budget = config.get("search_budget", {})
+            max_tracks = budget.get("max_tracks_per_tile", 2000)
+            max_samples = budget.get("max_track_samples_per_tile", 500000)
+            lookup.update(max_tracks=max_tracks, max_samples=max_samples)
+            for index in indexes:
+                remaining = max_samples-lookup["loaded_samples"]
+                if remaining <= 0:
+                    lookup["failures"].append("Flight lookup sample budget exhausted")
+                    break
+                try:
+                    for track in index.lookup(needed, max_tracks=max_tracks, max_samples=remaining):
+                        lookup["loaded_samples"] += len(track.time)
+                        if track.id in tracks or track.id in ambiguous:
+                            ambiguous.add(track.id)
+                            tracks.pop(track.id, None)
+                        else:
+                            tracks[track.id] = track
+                except DataUnavailable as exc:
+                    lookup["failures"].append(str(exc))
+            lookup.update(loaded_tracks=len(tracks), missing_ids=sorted(needed-tracks.keys()),
+                          ambiguous_ids=sorted(ambiguous))
+        report = compare_spectral_modes(recording, rows, tracks, prepared_events,
+                    recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0), **options)
+        if lookup["failures"]:
+            report.update(status="inconclusive", all_modes_compared=False)
+    except (ValueError, TypeError, KeyError, OSError, DataUnavailable) as exc:
+        report = {"status": "inconclusive", "location_decision": "not_evaluated",
+                  "score_kind": SCORE_KIND, "all_modes_compared": False,
+                  "ranked": [], "rankings_by_event_set": [], "reason": str(exc)}
+    report["track_lookup"] = lookup
+    return report
+
+
+def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, decision_progress, *, recording=None):
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
@@ -509,6 +566,9 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     decision_progress()
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)
     decision.setdefault("candidates", candidates)
+    if config.get("spectral_comparison") is not None:
+        spectral = _compare_retained_spectra(recording, rows, prepared_events, indexes, config, start_window)
+        write_json(output / "spectral-comparison.json", spectral)
 
     write_json(output / "decision.json", decision)
     fields = {key: value for key, value in decision.items() if key not in {"schema_version", "job_id", "status", "stage", "progress", "artifacts", "recording", "events", "diagnostics"}}

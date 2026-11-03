@@ -393,6 +393,39 @@ class FlightIndex:
                 frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
                 yield _frame_track(name, frame)
 
+    def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000):
+        """Yield named whole segments without scanning unrelated trajectories.
+
+        Missing names are omitted; callers must compare requested and returned
+        IDs. Limits reject excess work explicitly, never truncate a trajectory.
+        This lookup establishes no spatial, temporal or receiver completeness.
+        """
+        if any(type(value) is not int or value <= 0 for value in (max_tracks, max_samples)):
+            raise ValueError("Flight lookup limits must be positive integers")
+        names = set()
+        for name in identifiers:
+            if not isinstance(name, str) or not name:
+                raise ValueError("Flight lookup requires nonempty string identifiers")
+            names.add(name)
+            if len(names) > max_tracks:
+                raise DataUnavailable("Flight lookup identifier budget exceeded")
+        names, samples = sorted(names), 0
+        with self.connect() as db:
+            # Stay below SQLite's conservative bound on bound SQL parameters.
+            for first in range(0, len(names), 500):
+                batch = names[first:first+500]
+                placeholders = ",".join("?" for _ in batch)
+                sql = ("SELECT name,payload,payload_hash FROM segments WHERE name IN ("
+                       + placeholders + ") ORDER BY name")
+                for name, payload, expected in db.execute(sql, batch):
+                    if hashlib.sha256(payload).hexdigest() != expected:
+                        raise DataUnavailable(f"Corrupt flight payload: {name}")
+                    frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
+                    samples += len(frame)
+                    if samples > max_samples:
+                        raise DataUnavailable("Flight lookup sample budget exceeded")
+                    yield _frame_track(name, frame)
+
     def coverage_for(self, bounds, time_range):
         source = self.report["coverage"]
         box, times = source["bounds"], source["time_range_s"]

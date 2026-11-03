@@ -140,6 +140,24 @@ the operator configuration hash is retained in provenance. This configuration is
 not an upload-request field. A chunk-size comparison must rerun detection and the
 pipeline; it cannot reuse final candidates as if discovery had run again.
 
+An operator can add `"spectral_comparison": {}` to save a separate
+`spectral-comparison.json` artifact after refinement. This optional stage reads
+the actual decoded recording and named native flight segments. It compares
+constant source frequencies with one shared clock, using the reference band of
+each prepared flyover group. The existing ridge decision and its uncertainty
+remain unchanged. Spectral scores only compare supplied modes with identical
+event sets; mixed sets have separate `rankings_by_event_set` lists and an empty
+top-level `ranked` list. They do not establish a national optimum or location
+acceptance, and ridge retention bounds do not apply to these scores.
+
+The spectral configuration accepts work limits and grid settings, including
+`max_modes`, `max_spectrogram_bins`, `max_event_clock_trials`,
+`max_curve_samples`, `time_sweep_s`, `time_step_s`, and `frequency_step_hz`.
+Track loading uses `search_budget.max_tracks_per_tile` and
+`search_budget.max_track_samples_per_tile` as total limits for this comparison.
+Missing trajectories, ambiguous segment IDs and exhausted budgets remain
+explicit in the artifact. These controls are private operator settings.
+
 Search reports distinguish raw model support from finite assessment. If any
 trajectory or scoring envelope lacks support, `model_support_complete` stays false.
 `model_support` retains the raw work counts, unknown trials, and reasons. Missing
