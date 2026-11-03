@@ -96,6 +96,7 @@ def scan(root, item):
     started = time.monotonic()
     try:
         location = get(item['location_url'])
+        (root / 'truth').mkdir(parents=True, exist_ok=True)
         (root / 'truth' / (site + '.csv')).write_bytes(location)
         location_rows = list(csv.DictReader(io.StringIO(location.decode('utf-8-sig'))))
         result['publisher_clock_setting'] = (location_rows[0].get('WAV Files Time & Date Settings')
@@ -168,6 +169,13 @@ def scan(root, item):
         recording.samples_path.unlink()
     except Exception as error:
         result['error'] = f'{type(error).__name__}: {error}'
+        response = getattr(error, 'response', None)
+        status = getattr(response, 'status_code', None)
+        if status is None:
+            match = re.search(r'\b(429|5\d\d) (?:Client|Server) Error\b', str(error))
+            status = int(match.group(1)) if match else None
+        if status == 429 or (isinstance(status, int) and 500 <= status < 600):
+            result['source_unavailable_http_status'] = status
     result['elapsed_s'] = round(time.monotonic() - started, 3)
     save(result_path, result)
     return result
@@ -195,7 +203,14 @@ def main():
             counts['proposal_positive' if result['proposal_count'] else 'no_proposals'] += 1
         print(f"{index}/{len(sites)} site={item['site']} status={result['status']} "
               f"groups={result.get('proposal_group_count', '-')} counts={counts}", flush=True)
-        save(args.root / 'progress.json', {'completed': index, 'selected': len(sites), **counts})
+        progress = {'completed': index, 'selected': len(sites), **counts}
+        if result.get('source_unavailable_http_status'):
+            progress['stopped_reason'] = f"source HTTP {result['source_unavailable_http_status']}"
+            progress['not_attempted'] = len(sites) - index
+            save(args.root / 'progress.json', progress)
+            print(f"Stopped after {progress['stopped_reason']}; {progress['not_attempted']} sites not attempted", flush=True)
+            break
+        save(args.root / 'progress.json', progress)
     return 0
 
 
