@@ -1,0 +1,333 @@
+{
+  "discovery_commit": "4a49646",
+  "cases": 40,
+  "processing_failures": 0,
+  "cases_with_proposals": 28,
+  "cases_without_proposals": 12,
+  "total_proposals": 102,
+  "runtime_s": 321.5622166810499,
+  "peak_memory_bytes": 279867392,
+  "scope": "Fixed-setting whole-file moving-tone proposal counts only; no frequency annotations/flight IDs/coordinates/truth read by discovery. Event identity, recall/precision and localization accuracy are unverified.",
+  "cases_detail": [
+    {
+      "case_id": "public-001",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 3.2977228310192004,
+      "peak_memory_bytes": 150990848,
+      "audio_sha256": "27629dee59acf4877ac3094f9b6db46189b1f6572bf2ceecff06360caaee49bd"
+    },
+    {
+      "case_id": "public-002",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 4.302987394010415,
+      "peak_memory_bytes": 165228544,
+      "audio_sha256": "cfd03401b5f891020d76c12000a7552be0c549f65b8e67dc571f06258f0178ac"
+    },
+    {
+      "case_id": "public-003",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 4.426498276006896,
+      "peak_memory_bytes": 172408832,
+      "audio_sha256": "f0a78abf7fb124e0688ce82d0eb6410475b840188209b5e07dc21519c8bfa3df"
+    },
+    {
+      "case_id": "public-004",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 6.106172165978933,
+      "peak_memory_bytes": 175697920,
+      "audio_sha256": "c28412b7c3de34b006b40bf6fe005ba042145ee4d480547a0647091e531a5b3b"
+    },
+    {
+      "case_id": "public-005",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 4.33893211800023,
+      "peak_memory_bytes": 150536192,
+      "audio_sha256": "e47eb35b076a9fbeb4983498221f6853d1d0cc9d8af7259a430557a100bed293"
+    },
+    {
+      "case_id": "public-006",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 7.013902778009651,
+      "peak_memory_bytes": 214515712,
+      "audio_sha256": "c0366b111fbf82877bcaba53aa53a99602f9f5512513bc996e629aa04633d37e"
+    },
+    {
+      "case_id": "public-007",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 6.900492996006506,
+      "peak_memory_bytes": 213716992,
+      "audio_sha256": "8d23e3aa36ad439801fcbec6ef3f7f80647ed70d3b9ed11157539e72e771b38b"
+    },
+    {
+      "case_id": "public-008",
+      "status": "inconclusive",
+      "proposals": 2,
+      "runtime_s": 5.9471632030035835,
+      "peak_memory_bytes": 201363456,
+      "audio_sha256": "81da035ff6af575fcaded1a4dfc3162bb6377a033c0d840af490eba47a879998"
+    },
+    {
+      "case_id": "public-009",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 6.052939293993404,
+      "peak_memory_bytes": 200196096,
+      "audio_sha256": "ec5ff2e4d78d68521c7f65fcf030c7b49131c18cb3c018900e61cf06382bcdf7"
+    },
+    {
+      "case_id": "public-010",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 6.864069059985923,
+      "peak_memory_bytes": 212541440,
+      "audio_sha256": "e71592a17f8b1d82746f3915af9810066afefb54810443efe99fd0e081606319"
+    },
+    {
+      "case_id": "public-011",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 5.551446213998133,
+      "peak_memory_bytes": 180396032,
+      "audio_sha256": "b04a46541d3adf35419faf1e15ca5f02cfd93b4f99f2c3d5cd25dce5531066c8"
+    },
+    {
+      "case_id": "public-012",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 7.076679821999278,
+      "peak_memory_bytes": 206249984,
+      "audio_sha256": "a5e4bad00fc1382824218e92f0da9ffb97223e5dfcccd35cf22bf0e354b72c8f"
+    },
+    {
+      "case_id": "public-013",
+      "status": "inconclusive",
+      "proposals": 3,
+      "runtime_s": 9.229020749015035,
+      "peak_memory_bytes": 242102272,
+      "audio_sha256": "7202a8a4332765074c85af28ade258f41170f62e5356c4bf866f5775d25d1429"
+    },
+    {
+      "case_id": "public-014",
+      "status": "inconclusive",
+      "proposals": 3,
+      "runtime_s": 7.704120002017589,
+      "peak_memory_bytes": 207253504,
+      "audio_sha256": "fe241d8839128daf85de79606f0663333c6c32a40d50ab5043f32d36586440ac"
+    },
+    {
+      "case_id": "public-015",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 3.8146439130068757,
+      "peak_memory_bytes": 209846272,
+      "audio_sha256": "02d2acc40e897b4b3a83c05f2ec89af4c10f0ccb17a1ea0a8fa7f1530e72eb39"
+    },
+    {
+      "case_id": "public-016",
+      "status": "inconclusive",
+      "proposals": 18,
+      "runtime_s": 25.925035869993735,
+      "peak_memory_bytes": 279867392,
+      "audio_sha256": "427a7575ec97a84feb8fe81f7fb8b1cff5a122e79223fba11d5327c0ba9e1179"
+    },
+    {
+      "case_id": "public-017",
+      "status": "inconclusive",
+      "proposals": 5,
+      "runtime_s": 18.085904520994518,
+      "peak_memory_bytes": 227745792,
+      "audio_sha256": "8edaf3c4a5a6f4370b979842bc38b3755a3930f8befa017795991d3d8224a657"
+    },
+    {
+      "case_id": "public-018",
+      "status": "inconclusive",
+      "proposals": 3,
+      "runtime_s": 9.816647667001234,
+      "peak_memory_bytes": 190603264,
+      "audio_sha256": "2002081930df3f5b6e6ea9a6e6ce97fe65a712c9e02fe720f12f2f45e0602e81"
+    },
+    {
+      "case_id": "public-019",
+      "status": "inconclusive",
+      "proposals": 3,
+      "runtime_s": 6.944653854996432,
+      "peak_memory_bytes": 193384448,
+      "audio_sha256": "46b7905f230dc5cc8dc0e9485a88ab2b3b544737d62c20b96b34ea2d460b84c9"
+    },
+    {
+      "case_id": "public-020",
+      "status": "inconclusive",
+      "proposals": 2,
+      "runtime_s": 5.358376268995926,
+      "peak_memory_bytes": 179847168,
+      "audio_sha256": "520153c1e15d1ebf75cb713ca3fb158ecd73594a5dd8a6490b1baee4e2a98036"
+    },
+    {
+      "case_id": "public-021",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 8.414067094010534,
+      "peak_memory_bytes": 218599424,
+      "audio_sha256": "9a800515b85817e09b418ff125a3d71723fd9922b978a317017bf5098ed77c0b"
+    },
+    {
+      "case_id": "public-022",
+      "status": "inconclusive",
+      "proposals": 6,
+      "runtime_s": 11.300292158994125,
+      "peak_memory_bytes": 250224640,
+      "audio_sha256": "9164e2702d0e24b9620f4511a1ee21758a7d501cb00867dd04089ca0b846e30f"
+    },
+    {
+      "case_id": "public-023",
+      "status": "inconclusive",
+      "proposals": 5,
+      "runtime_s": 8.010217648989055,
+      "peak_memory_bytes": 234565632,
+      "audio_sha256": "7b34ab4933a7c4193f9e668d42fa4d7cb94a0b754b25eb84ebddbca227419b7a"
+    },
+    {
+      "case_id": "public-024",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 5.893909274978796,
+      "peak_memory_bytes": 152113152,
+      "audio_sha256": "a06237f42d5789ff0b868e636b45f86974f61c4318f6ddb01865129245111ee5"
+    },
+    {
+      "case_id": "public-025",
+      "status": "inconclusive",
+      "proposals": 2,
+      "runtime_s": 10.633120215003146,
+      "peak_memory_bytes": 188833792,
+      "audio_sha256": "a19c78d9d147a6e8b4b2c495bd344787363875ea411e3af21b59490517832495"
+    },
+    {
+      "case_id": "public-026",
+      "status": "inconclusive",
+      "proposals": 2,
+      "runtime_s": 9.122363180998946,
+      "peak_memory_bytes": 187142144,
+      "audio_sha256": "676e3cb4e34941760a1f3df031d551e0aa7e1d69d4e9085a05a91e2029a87c19"
+    },
+    {
+      "case_id": "public-027",
+      "status": "inconclusive",
+      "proposals": 4,
+      "runtime_s": 7.601482445024885,
+      "peak_memory_bytes": 219291648,
+      "audio_sha256": "7834bad6d620df2143b396325fd861d6581d5ad25dd9bcfa997eb953d13a65f5"
+    },
+    {
+      "case_id": "public-028",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 5.141267250990495,
+      "peak_memory_bytes": 150740992,
+      "audio_sha256": "3cfa0ca3a58db714074487004ca3b7505ab9ee4e4882b7efbfdf62f8d7f1a426"
+    },
+    {
+      "case_id": "public-029",
+      "status": "inconclusive",
+      "proposals": 3,
+      "runtime_s": 6.345071104995441,
+      "peak_memory_bytes": 198139904,
+      "audio_sha256": "032ff198c6c85997758a2893641d7a87cb21d9f4bb847dd261cca8fd67df2ae8"
+    },
+    {
+      "case_id": "public-030",
+      "status": "inconclusive",
+      "proposals": 12,
+      "runtime_s": 17.944989647017792,
+      "peak_memory_bytes": 255533056,
+      "audio_sha256": "d2e839c8a95f53824cabb294748aaf63f5714a2add6a414c4f8cdd4c4db9e293"
+    },
+    {
+      "case_id": "public-031",
+      "status": "inconclusive",
+      "proposals": 2,
+      "runtime_s": 9.595600790024037,
+      "peak_memory_bytes": 195371008,
+      "audio_sha256": "0fdf8b328b9e02ff83144b634f5a6ced115cac4672b89557e1aae3151ab7612d"
+    },
+    {
+      "case_id": "public-032",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 13.811475419002818,
+      "peak_memory_bytes": 151478272,
+      "audio_sha256": "c732dff1b19142894931fcd87febdb70a18daa472c316e5c6f36ac6dfe3debc1"
+    },
+    {
+      "case_id": "public-033",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 7.320547490991885,
+      "peak_memory_bytes": 150331392,
+      "audio_sha256": "e9e57696eb1d1a80eaf4688f4bce068398afcf6f9bb8732d72dba8833837255e"
+    },
+    {
+      "case_id": "public-034",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 5.785476844990626,
+      "peak_memory_bytes": 152862720,
+      "audio_sha256": "56aef7ec190822a03f78764d5d91d22c1f8181e4b672a453c04c899d2cb0a0c9"
+    },
+    {
+      "case_id": "public-035",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 5.981089934997726,
+      "peak_memory_bytes": 150413312,
+      "audio_sha256": "bea85232822bb0702e9af8c825934aa27cf04bbb0665db8e15ceae87f552e690"
+    },
+    {
+      "case_id": "public-036",
+      "status": "inconclusive",
+      "proposals": 1,
+      "runtime_s": 5.89162105100695,
+      "peak_memory_bytes": 180359168,
+      "audio_sha256": "70dc6c4edc47d56c85c8d24ae6ac34a640bfaa5bbf23a908f2dd2244d7534e06"
+    },
+    {
+      "case_id": "public-037",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 5.436871046986198,
+      "peak_memory_bytes": 150282240,
+      "audio_sha256": "e9ba69a70a8a2c2eb79c06094e9c250c7490af738871ed03b52ba1bd809e94a2"
+    },
+    {
+      "case_id": "public-038",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 7.945896256016567,
+      "peak_memory_bytes": 150523904,
+      "audio_sha256": "10b83e163e84784d5d9952857160fb17d30dc6a1687c6fa159c0d54c3078323d"
+    },
+    {
+      "case_id": "public-039",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 6.561081396997906,
+      "peak_memory_bytes": 154898432,
+      "audio_sha256": "2f374f6244cfe5dad8a200b427e392a4c64540d4cb0bc4a621e34aac229c3ea4"
+    },
+    {
+      "case_id": "public-040",
+      "status": "inconclusive",
+      "proposals": 0,
+      "runtime_s": 8.068367430998478,
+      "peak_memory_bytes": 154910720,
+      "audio_sha256": "87ccca3294b374e3a8c4ae7362c5d67c3cfa12bdf4ddaa576a06d07ff60be8c2"
+    }
+  ]
+}

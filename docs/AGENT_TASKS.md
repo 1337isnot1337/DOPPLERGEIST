@@ -5,7 +5,10 @@ discovery. Approximately **100 m location error** counts as success on supported
 independently evaluated real recordings. Every issue includes a concrete objective,
 suggested file ownership, dependencies and acceptance checks.
 
-**Coordination and completion tracking:** [issue #1](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
+**Default agent communication:** [discussion board #39](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
+Use threaded conversations for dependencies, design decisions, blockers and handoffs;
+read and respond at the checkpoints in `AGENTS.md`.
+**Task index and completion tracking:** [issue #1](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
 These are unassigned work packages; agents should claim them when deployed. No
 additional agents have been launched by this planning step.
 
@@ -51,7 +54,10 @@ Implement <TASK ISSUE URL>, followed by its next task only when dependencies all
 Read AGENTS.md, docs/AGENT_TASKS.md, docs/HANDOFF.md and the issue before editing.
 Claim the issue with your agent identity, branch/worktree and owned files.
 Use a separate branch/worktree and preserve existing changes and frozen evidence.
-Coordinate shared interfaces and conflicting file ownership in issue #1.
+Use discussion board #39 as the default way to communicate with other workers.
+Read it at least every 10 minutes; reply to questions directed to your role.
+Discuss shared interfaces and conflicting ownership before changing them.
+Post findings, failures, dependencies and blockers promptly; link relevant issues/PRs.
 Implement the task, run meaningful verification, and open a focused linked PR.
 Report exact commands, commit, artifacts, measured results and unresolved limits.
 The product must discover Doppler events automatically from uploaded audio.
