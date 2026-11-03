@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "scope": "One paired refinement/decision replay from frozen real-recording finalists at a source-informed location and clock. No search, nationwide runtime, or independent accuracy claim.",
+  "sources": {
+    "baseline_commit": "aa3dff686c989524daa20c081a816b792d9c8890",
+    "optimized_implementation_subsequently_committed_locally_in": "5ca480f8678ca1ed31a765768324f623a44f0da8",
+    "public_implementation_commit": "90d95d7ea793a7dff5388ec9c7b5caf569b0541d",
+    "final_public_production_commit": "5699a657d57dc4f66b74ef000e20d3ba88f84704",
+    "source_capture_limit": "The current arm ran the uncommitted automatic.py and scoped FlightIndex lookup edits. The original harness did not capture a source snapshot or revision with its output. Later main integration and the 32 MiB batch cache/checkpoint edits are not measured by this pair.",
+    "recorded_job": "/workspace/scratch/1e88d5469ed3/DOPPLERGEIST/results/real-performance-e2e-bounded-20261103/jobs/b2bd1a92723545b89d393c7d163148a8",
+    "recording_sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0",
+    "raw_measurements": [
+      "pipeline-work/decision-baseline-plain/summary.json",
+      "pipeline-work/decision-current-plain/summary.json"
+    ],
+    "original_harness": "pipeline-work/replay_real_decision.py",
+    "reproduction_harness": "scripts/benchmark_real_decision.py"
+  },
+  "method": {
+    "repeats_per_source": 1,
+    "order": [
+      "baseline",
+      "current"
+    ],
+    "profiled": false,
+    "runtime": "/workspace/scratch/1e88d5469ed3/perf-venv/bin/python",
+    "numerical_library_threads": 1,
+    "timing_scope": "The complete _decide call, including native trajectory loading, refinement, sensitivity profiles and decision/refined-candidate file writes. Excludes imports, loading saved search/discovery metadata, preparing measurements/index handles/terrain, all prior pipeline phases, comparison, and harness result.json serialization.",
+    "instrumentation": "The original harness counted _frame_track decodes. Both arms used the same counter. The raw ridge_cache=none flag means no experimental wrapper override; the current production _decide already used scoped refinement/profile caches.",
+    "memory_scope": "Linux process VmHWM via process_peak_rss_kib, including setup and imports; not isolated cache memory.",
+    "comparison": "Exact complete canonical JSON for every refined candidate, sensitivity result, decision and return result. Preserves scalar representation and array order; no numerical tolerance.",
+    "limitation": "One pair cannot establish run-to-run variation. The clean reproduction helper removes the decode-counter instrumentation."
+  },
+  "workload": {
+    "duration_seconds": 3600.1845,
+    "ridge_records": 18,
+    "independent_groups": 16,
+    "search_finalists": 20,
+    "refinement_limit": 3,
+    "returned_candidates": 23,
+    "status": "inconclusive",
+    "reason_code": "search_incomplete"
+  },
+  "comparison": {
+    "equal": true,
+    "artifacts": [
+      "refined-candidates.json",
+      "decision.json",
+      "result.json"
+    ]
+  },
+  "runs": {
+    "baseline": {
+      "cpu_seconds": 83.70841713499999,
+      "operations": {
+        "decoded_samples": 233165,
+        "decoded_trajectories": 881
+      },
+      "process_peak_rss_mib": 219.16796875,
+      "reason_code": "search_incomplete",
+      "returned_candidates": 23,
+      "ridge_cache": "none",
+      "scope": "Refinement/decision replay of recorded-audio finalist hypotheses; source-informed workload, no accuracy claim",
+      "status": "inconclusive",
+      "wall_seconds": 83.8421902730006
+    },
+    "current": {
+      "cpu_seconds": 77.487010169,
+      "operations": {
+        "decoded_samples": 5303,
+        "decoded_trajectories": 18
+      },
+      "process_peak_rss_mib": 215.890625,
+      "reason_code": "search_incomplete",
+      "returned_candidates": 23,
+      "ridge_cache": "none",
+      "scope": "Refinement/decision replay of recorded-audio finalist hypotheses; source-informed workload, no accuracy claim",
+      "status": "inconclusive",
+      "wall_seconds": 77.56249172400021
+    }
+  },
+  "cpu_speedup": 1.0802896763267937,
+  "wall_speedup": 1.080963084210164,
+  "cpu_reduction_percent": 7.432235823987055
+}

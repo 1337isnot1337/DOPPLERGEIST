@@ -7,19 +7,26 @@ on:
         default: d7cc1dd2e8089768253492b3269dfae97b3ad1a4
         required: true
   push:
-    branches: [perf/measured-hotpath-20261103]
+    branches: [perf/measured-hotpath-20261103, perf/real-pipeline-throughput-20261103]
     paths:
       - .github/workflows/real-performance.yml
-      - src/dopplergeist/geometry.py
-      - src/dopplergeist/matching.py
-      - src/dopplergeist/batch_ridge.py
-      - src/dopplergeist/search.py
+      - src/dopplergeist/**
       - scripts/benchmark_prepared_measurements.py
+      - scripts/benchmark_real_bounded_upload.py
+      - scripts/prepare_reference_upload.py
+      - scripts/restore_artifacts.py
+      - scripts/compare_real_upload_performance.py
+      - scripts/check_real_upload_arrays.py
+      - pyproject.toml
       - tests/test_real_*.py
+      - tests/data/real-ridge-batch-arithmetic.json
+      - tests/data/reference-empty-tiles-real.json
+      - tests/data/reference-retention-real.json
 permissions:
   contents: read
 jobs:
   compare:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/perf/real-pipeline-throughput-20261103'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -36,7 +43,19 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install runtime
-        run: python -m pip install '.[test]'
+        # Benchmarks import src explicitly, so build its native extension in place.
+        run: CC=gcc python -m pip install -e '.[test]'
+      - name: Check native backend used by source benchmarks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from dopplergeist import matching
+          source = Path(matching.__file__).resolve()
+          assert source.parents[1] == Path("src").resolve(), source
+          assert matching._native_fit_irls is not None, matching.RIDGE_FIT_BACKEND
+          assert matching.RIDGE_FIT_BACKEND.startswith("native-c-"), matching.RIDGE_FIT_BACKEND
+          print(f"Benchmark source: {source}; backend: {matching.RIDGE_FIT_BACKEND}")
+          PY
       - name: Restore public recorded observations
         env:
           GH_TOKEN: ${{ github.token }}
@@ -76,3 +95,183 @@ jobs:
           path: results/performance-*
           if-no-files-found: ignore
           retention-days: 3
+
+  bounded-http:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/perf/real-pipeline-throughput-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NUMEXPR_NUM_THREADS: '1'
+      PYTHONPATH: src
+      BASELINE_REF: aa3dff686c989524daa20c081a816b792d9c8890
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install matched runtime
+        run: |
+          CC=gcc python -m pip install -e '.[test]' 'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' 'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Check native backend used by source benchmarks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from dopplergeist import matching
+          source = Path(matching.__file__).resolve()
+          assert source.parents[1] == Path("src").resolve(), source
+          assert matching._native_fit_irls is not None, matching.RIDGE_FIT_BACKEND
+          assert matching.RIDGE_FIT_BACKEND.startswith("native-c-"), matching.RIDGE_FIT_BACKEND
+          print(f"Benchmark source: {source}; backend: {matching.RIDGE_FIT_BACKEND}")
+          PY
+      - name: Restore public recording and observed inputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/restore_artifacts.py --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+      - name: Prepare one shared workload
+        run: |
+          python scripts/prepare_reference_upload.py --data-root data --output benchmark-http-inputs
+          git worktree add --detach "$RUNNER_TEMP/http-baseline-source" "$BASELINE_REF"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("benchmark-http-inputs")
+          request = json.loads((root / "request.json").read_text())
+          request["search"]["bounds_wsen"] = [-73.545, 40.865, -73.505, 40.895]
+          request["time_window"]["source_detail"] = (
+              "Source-informed integration replay around the historical fitted recording "
+              "start and benchmark receiver region; not independently measured recording "
+              "time or a location-accuracy evaluation."
+          )
+          operator = json.loads((root / "operator.json").read_text())
+          operator["search_workers"] = 1
+          for name, value in (("request.json", request), ("operator.json", operator)):
+              (root / name).write_text(json.dumps(value, indent=2) + "\n")
+          PY
+          ffmpeg -n -nostdin -v error -i data/source/reference-recording.wav -map 0:a:0 -vn -map_metadata -1 -ac 1 -ar 48000 -c:a libmp3lame -b:a 96k benchmark-http-inputs/recording.mp3
+          python scripts/benchmark_prepared_measurements.py prepare --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json --index benchmark-http-inputs/reference-region.sqlite --clock-half-width-s 120 --output benchmark-http-inputs/point-120.json
+      - name: Recorded-input regression checks
+        id: real_checks
+        env:
+          DOPPLERGEIST_REAL_CPA_FIXTURE: benchmark-http-inputs/point-120.json
+        run: |
+          mkdir -p results
+          python -m pytest -q \
+            tests/test_real_prepared_measurements.py \
+            tests/test_real_geometry_kinematics.py \
+            tests/test_real_batch_scalar_parity.py \
+            tests/test_real_complete_batch_cache.py \
+            tests/test_real_legacy_batch_cache.py \
+            tests/test_real_refinement_lookup.py \
+            tests/test_real_track_cache.py \
+            tests/test_real_retention_batch.py \
+            tests/test_real_retention_floor.py \
+            tests/test_real_performance_helpers.py::test_cached_raster_transform_preserves_actual_candidate_heights \
+            --junitxml=results/ci-real-tests.xml
+          python - <<'CHECKS'
+          import json
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          cases = ET.parse(Path("results/ci-real-tests.xml")).getroot().findall(".//testcase")
+          skipped = [case.attrib.get("name") for case in cases if case.find("skipped") is not None]
+          print(json.dumps({"selected_real_tests": len(cases), "skipped": skipped}))
+          if not cases or skipped:
+              raise SystemExit("Selected real-input checks must execute without skips")
+          CHECKS
+      - name: Record this new workload and runtime
+        id: context
+        run: |
+          python - <<'PY'
+          import hashlib
+          import importlib.metadata
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+          output = Path("results")
+          output.mkdir(exist_ok=True)
+          audio = Path("benchmark-http-inputs/recording.mp3")
+          with audio.open("rb") as stream:
+              digest = hashlib.file_digest(stream, "sha256").hexdigest()
+          record = {
+              "scope": "One fresh sequential matched HTTP pair on a new MP3 encoding of the public real WAV. Timings and event counts do not inherit the earlier original-MP3 measurements. Source-informed region/time; not independent location accuracy.",
+              "baseline": os.environ["BASELINE_REF"],
+              "current": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "python": platform.python_version(),
+              "packages": {name: importlib.metadata.version(name) for name in ("numpy", "scipy", "pandas", "pyarrow", "pyproj", "rasterio", "matplotlib")},
+              "ffmpeg": subprocess.check_output(["ffmpeg", "-version"], text=True).splitlines()[0],
+              "encoding": {"codec": "libmp3lame", "bitrate": "96k", "sample_rate_hz": 48000, "channels": 1},
+              "source_sha256": digest,
+              "source_bytes": audio.stat().st_size,
+              "request": json.loads(Path("benchmark-http-inputs/request.json").read_text()),
+              "operator": json.loads(Path("benchmark-http-inputs/operator.json").read_text()),
+          }
+          (output / "http-comparison-context.json").write_text(json.dumps(record, indent=2, allow_nan=False) + "\n")
+          PY
+      - name: Fresh baseline HTTP arm
+        id: baseline
+        run: python scripts/benchmark_real_bounded_upload.py --source "$RUNNER_TEMP/http-baseline-source/src" --inputs benchmark-http-inputs --output results/http-baseline --timeout-s 900
+      - name: Fresh integrated HTTP arm
+        id: current
+        if: ${{ !cancelled() && steps.context.outcome == 'success' }}
+        run: python scripts/benchmark_real_bounded_upload.py --source "$GITHUB_WORKSPACE/src" --inputs benchmark-http-inputs --output results/http-current --timeout-s 900
+      - name: Compare complete scientific JSON and SQLite
+        if: always() && steps.baseline.outcome == 'success' && steps.current.outcome == 'success'
+        run: python scripts/compare_real_upload_performance.py --baseline results/http-baseline --current results/http-current --output results/http-science-comparison.json
+      - name: Compare intake, decoded PCM, arrays, and PNG pixels
+        if: always() && steps.baseline.outcome == 'success' && steps.current.outcome == 'success'
+        run: python scripts/check_real_upload_arrays.py --baseline results/http-baseline --current results/http-current --output results/http-array-comparison.json
+      - name: Print compact comparison results
+        if: always()
+        run: |
+          python - <<'REPORT'
+          import json
+          from pathlib import Path
+          def read(name):
+              path = Path("results") / name
+              if not path.is_file():
+                  return {"missing": str(path)}
+              try:
+                  return json.loads(path.read_text())
+              except (OSError, ValueError) as error:
+                  return {"read_error": str(error), "path": str(path)}
+          def select(value, fields):
+              if "missing" in value or "read_error" in value:
+                  return value
+              return {key: value[key] for key in fields if key in value}
+          science = read("http-science-comparison.json")
+          arrays = read("http-array-comparison.json")
+          passed = science.get("passed") is True and arrays.get("passed") is True
+          result = {
+              "both_parity_checks_passed": passed,
+              "matched_pair_wall_speedup": science.get("verified_full_workflow_speedup") if passed else None,
+              "scientific_comparison": select(science, ("passed", "scientific_payloads_exact", "run_kinds", "full_pipeline_verified", "checked_artifacts", "retention_ledgers", "outcomes", "differences")),
+              "intake_array_comparison": select(arrays, ("passed", "checked", "manifest_verified_artifacts", "difference_count", "differences")),
+              "http_receipts": {name: select(read(f"http-{name}/http-verification.json"), ("verification_passed", "implementation_unchanged", "full_pipeline_observed", "full_pipeline_requirements_met", "elapsed_s", "status", "reason_code", "event_count", "candidate_count", "source_sha256", "source_bytes", "service")) for name in ("baseline", "current")},
+              "context": read("http-comparison-context.json"),
+          }
+          print("BOUNDED_HTTP_COMPARISON_BEGIN")
+          print(json.dumps(result, indent=2, allow_nan=False))
+          print("BOUNDED_HTTP_COMPARISON_END")
+          REPORT
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bounded-http-comparison
+          path: |
+            results/ci-real-tests.xml
+            results/http-comparison-context.json
+            results/http-science-comparison.json
+            results/http-array-comparison.json
+            results/http-*/http-verification.json
+            results/http-*/pipeline-evidence.json
+            results/http-*/service.log
+          if-no-files-found: ignore
+          retention-days: 14

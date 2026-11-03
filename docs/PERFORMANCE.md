@@ -1,6 +1,524 @@
-# Measured scoring performance
+# Measured pipeline performance
 
-The 2026-11-03 implementation reduces median CPU time by **62.87%** on the broad-clock workload described here.
+The integrated implementation completed the fresh bounded HTTP workflow in **54.176928122 seconds**, compared with **78.379028870 seconds** for baseline `aa3dff6`.
+That is an observed **1.44672×** speedup and **30.88%** less elapsed time in one sequential pair on the same CI runner.
+The [integrated measurement record](../benchmarks/results/integrated-http-20261103.json) preserves exact output comparisons and the measured source pins.
+
+The original PR225 point and HTTP comparisons use baseline `aa3dff686c989524daa20c081a816b792d9c8890` and the implementation published at `5699a657d57dc4f66b74ef000e20d3ba88f84704`.
+The integration section separates validation of the combined implementation from these original comparisons.
+
+The recorded PR225 implementation reduces median CPU time for complete point scoring by **45.94%** on the broad-clock workload.
+The narrow-clock workload uses **49.56%** less CPU time.
+Both comparisons preserve every scored association and its diagnostics exactly.
+The changes reuse calculations and reduce data decoding without reducing the search domain, event coverage, solver iterations, or numerical precision.
+
+These are incremental improvements over an already optimized baseline.
+The earlier **2.69×** scorer result appears in the [historical comparison](#historical-scorer-comparison-2026-11-03).
+The measurements cover different stages and environments, so their speedups do not combine into a complete-pipeline ratio.
+
+## Integration with main: verified
+
+Main commit [`0d6a92377af0f00b84dff9fa7966326d0014c20c`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/0d6a92377af0f00b84dff9fa7966326d0014c20c) merged [PR222](https://github.com/1337isnot1337/DOPPLERGEIST/pull/222).
+That work independently adds batch-fit reuse and improvements to audio, terrain, trajectory decoding, and retention transactions.
+Some changes overlap the original PR225 implementation.
+The [PR222 report](PIPELINE_PERFORMANCE_2026-11-03.md) preserves its separate measurements.
+The combined implementation includes main commit [`b7be4330c37eb9ec2bfca23a55d840bf9bb3acab`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/b7be4330c37eb9ec2bfca23a55d840bf9bb3acab).
+Its fitting source is unchanged from [`21262e031388b3a5a8dd75979b2dc851608499b2`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/21262e031388b3a5a8dd75979b2dc851608499b2), which added checkpoint compatibility changes.
+
+The earlier PR225 timings do not isolate an incremental gain over `0d6a923`, `21262e0`, or `b7be433`.
+The fresh comparison below validates the frozen combined implementation against `aa3dff6`.
+It measures the combined changes since that baseline.
+An incremental HTTP timing comparison against the integrated main revision `b7be433` remains unmeasured.
+
+| Integration item | Status |
+| --- | --- |
+| Integrated main source | `b7be4330c37eb9ec2bfca23a55d840bf9bb3acab` |
+| Frozen combined source | [`66146714c6c22a448a7a54830a82d31034c2be44`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/66146714c6c22a448a7a54830a82d31034c2be44) |
+| Batch-cache selection | Serialized cache from main; 4 MiB digest-key and payload cap |
+| Fresh CI verification | [Run 41678922355](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355); passed |
+| HTTP baseline source | `aa3dff686c989524daa20c081a816b792d9c8890` |
+| Fresh bounded HTTP elapsed time | 78.379028870 → 54.176928122 seconds; one sequential pair |
+| Exact JSON, SQLite, and array comparison | Passed; zero differences after declared metadata normalization |
+
+### Fresh integrated HTTP comparison
+
+Both arms used the same fresh MP3 encoding of the complete published real recording, restored observed flight data, and terrain.
+The baseline ran first, followed by the integrated source on the same CI runner.
+The request, operator settings, and search budgets were identical between arms.
+Each numerical library used one thread.
+The request used bounds `[-73.545, 40.865, -73.505, 40.895]` and recording-start window `2026-09-08T20:17:20Z` through `20:17:40Z`.
+It used one search worker, 2 km coarse spacing, 500 m refinement spacing, a top-K limit of 20, and three refinement finalists.
+
+| Measurement | Baseline `aa3dff6` | Integrated `66146714` |
+| --- | ---: | ---: |
+| HTTP verification elapsed wall time | 78.379028870 s | 54.176928122 s |
+| Event records | 16 | 16 |
+| Returned candidates | 23 | 23 |
+| HTTP and full-pipeline verification | Passed | Passed |
+| Decision | `inconclusive / search_incomplete` | `inconclusive / search_incomplete` |
+
+The measured wall-time ratio is **1.4467233855×**, with a **30.87828606%** elapsed-time reduction.
+This is one sequential pair, without a repeated-run estimate or a process CPU measurement.
+The source-informed regional request and recording clock make this a controlled integration workload.
+It does not establish nationwide completion time or independent location accuracy.
+
+The scientific comparison checked **17 job JSON files, three root JSON files, and one logical SQLite ledger**.
+The ledger contained 16,894 bounds, 706 records, one run, and six stages in each arm.
+It found zero differences after the declared run-identity, path, timing, and other metadata normalization.
+The comparison retains exact decoded scientific values, numeric types, and signed zeros, with no numerical tolerance.
+
+A separate comparison checked one intake diagnostic, one decoded PCM artifact, 16 CSV files, and the decoded pixels of one PNG.
+All comparisons passed, and the manifest check covered **19 artifacts per arm**.
+This workload contained no NPZ artifact.
+The [integrated record](../benchmarks/results/integrated-http-20261103.json) preserves the verification results and comparison scope.
+
+The fresh MP3 contains **43,202,924 bytes** and has SHA-256 `811a61eea5d21b5a99f008b499d399de9a20e475aaa0fc23cc233c7560605523`.
+It is a new encoding of the published WAV, distinct from the original MP3 used for the earlier PR225 HTTP pair.
+Both arms used this same file.
+The old and new pairs have different encodings and execution environments, so their absolute times must remain separate.
+
+The fresh runtime used Python 3.12.15, **NumPy 2.3.5**, SciPy 1.17.0, pandas 2.2.3, pyarrow 26.0.1, and pyproj 3.8.0.
+It also used rasterio 1.5.2, Matplotlib 3.10.8, and FFmpeg 8.0.1-3ubuntu2.
+All **38 selected real-input tests passed in 19.20 seconds**, with no skips.
+The standard Python **3.11 and 3.14** CI jobs also passed.
+The [successful verification run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41678922355) records the setup, test gate, sequential HTTP runs, and comparisons.
+The [workflow at the measured commit](https://github.com/1337isnot1337/DOPPLERGEIST/blob/66146714c6c22a448a7a54830a82d31034c2be44/.github/workflows/real-performance.yml) preserves the exact replay commands in its fresh-HTTP job.
+Reproduction must use the recorded baseline and current source pins, with one shared recording file for both arms.
+A new encoding requires a new input hash and fresh results.
+
+### Cache selection for the combined implementation
+
+One isolated, instrumented pair compared two cache implementations in otherwise identical code based on main `0d6a923`.
+The pair used NumPy 2.3.5 and the same real broad-clock workload.
+All 3,905 scored associations and retention outputs matched exactly.
+
+| Cache implementation | CPU time | Estimated retained Python objects | Process peak RSS |
+| --- | ---: | ---: | ---: |
+| Serialized cache from main, 4 MiB key/payload cap | 12.822287035 s | 4,333,666 bytes | 285.35 MiB |
+| Previous object-cache variant, 32 MiB accounted-object cap | 14.751674511 s | 33,553,167 bytes | 310.86 MiB |
+
+The serialized cache used **13.08% less CPU time** in this pair and is selected for integration.
+Its 4 MiB cap covers SHA-256 digest bytes and serialized snapshots.
+The observed key and payload bytes peaked at 4,194,233 bytes.
+Python object headers and ordered-dictionary bookkeeping require additional memory, so 4 MiB is not a total-heap cap.
+The estimated retained-object figures describe cache memory; RSS describes the entire process.
+Reported RSS includes setup and diagnostics; `ru_maxrss` can retain an inherited peak.
+
+The [cache-selection record](../benchmarks/results/cache-integration-20261103.json) preserves this single sequential pair and its scope.
+The execution environment was reset after this comparison.
+The record retains returned measurements and the successful equality check; the temporary full outputs were lost.
+This experiment does not measure a whole-pipeline speedup or the final integrated source.
+The historical 32 MiB measurements below remain measurements of their original implementation.
+
+## Exact fit reuse: recorded PR225 point-scoring comparison
+
+Each workload used three alternating baseline/current pairs in separate Python processes.
+The order was baseline/current, current/baseline, then baseline/current.
+Each source used the same frozen recorded ridges, observed trajectories, candidate budgets, and receiver point.
+
+| Recording-start window | Baseline median CPU | Current median CPU | CPU speedup | Scored associations |
+| --- | ---: | ---: | ---: | ---: |
+| ±120 seconds | 28.803255077 s | 15.571095273 s | **1.84979×** | 3,905 |
+| ±10 seconds | 4.386338558 s | 2.212487520 s | **1.98254×** | 1,055 |
+
+The timed operation includes complete point scoring and retention writes.
+It excludes imports, input loading, fixture preparation, acquisition, discovery, nationwide search, refinement, and result JSON serialization.
+The receiver point and recording clock come from a historical fit.
+This experiment measures computation on actual observations, without an independent location-accuracy claim.
+
+All six outputs within each workload match exactly, with no numerical tolerance.
+The comparison includes every scored association, fitted diagnostic, support count, ranked row, and retention record, bound, and stage.
+Both workloads supply all 16 independent groups, and both sources retain the same 100 associations.
+The narrow workload checks that the improvement also applies to fewer clock trials.
+Changing the clock window itself is not a code speedup and requires independent time evidence.
+
+### Workload and runtime
+
+Both fixtures contain 16 recorded ridge records and 724 ridge samples.
+The broad fixture contains 452 observed trajectories, 91,889 trajectory samples, and 100 CPA rows.
+The narrow fixture contains 426 observed trajectories, 87,206 trajectory samples, and 97 CPA rows.
+Both retain four unsupported CPA tracks in their accounting.
+The preparation command rejects a budget excess instead of silently truncating inputs.
+
+The point timings used Python 3.12.14, **NumPy 2.5.4**, SciPy 1.17.0, pandas 2.2.3, pyarrow 26.0.1, and pyproj 3.8.0.
+The host used Linux 6.18.57 and an AMD EPYC 9V74 processor.
+OpenBLAS, OpenMP, MKL, and NumExpr each used one thread.
+A full upload ran on the shared host during these measurements, so process CPU time is the primary metric.
+
+| Window | Baseline median wall time | Current median wall time | Reported peak RSS, baseline → current |
+| --- | ---: | ---: | ---: |
+| ±120 seconds | 28.816586 s | 15.579372 s | 260.46 → 293.25 MiB |
+| ±10 seconds | 4.393367 s | 2.215673 s | 210.37 → 211.93 MiB |
+
+These wall times describe a shared host, without exclusive CPU access.
+Reported RSS includes imports, input loading, and captured diagnostics through scoring.
+The measurement uses `getrusage(RUSAGE_SELF).ru_maxrss`, which can retain an inherited peak across execution.
+Separate `VmHWM` readings were not recorded.
+These figures describe process memory, without an isolated measurement of the cache heap.
+
+The baseline commit is `aa3dff686c989524daa20c081a816b792d9c8890`.
+The measured scoring implementation is local commit `5ca480f8678ca1ed31a765768324f623a44f0da8` plus the 32 MiB batch-cache patch.
+That worktree patch changed `_RidgeFitCache.batch_limit` from 16 MiB to 32 MiB and clarified the cache-limit docstring.
+The harness did not record HEAD separately for each worker.
+Concurrent terrain/ENF integration at local commit `5420163f026b6c2621226add88cfa05fda326b46` did not change the exercised FlightIndex or scoring paths.
+Published commit `5699a657d57dc4f66b74ef000e20d3ba88f84704` contains the same exercised scoring paths and the measured 32 MiB limit.
+Its additional compact-checkpoint change does not affect this point-scoring measurement.
+The [exact-fit measurement record](../benchmarks/results/exact-fit-reuse-20261103.json) contains all twelve final runs, source details, input hashes, and workload counts.
+
+The complete HTTP runtime uses **NumPy 2.3.5**.
+For the recorded 32 MiB revision, the seven selected real-input tests and all 50 cache checks passed in that runtime, with `PYTHONPATH=src` only.
+Those checks cover scalar parity, prepared measurements, cache mutation, eviction, layout, and nested scope restoration.
+They provide a separate correctness check, without another point-timing measurement.
+The two NumPy environments remain separate in the recorded results.
+
+### Why exact reuse reduces work
+
+Dense candidate traversal repeats complete batches of identical ridge fits.
+The measured scoped cache reuses successful batches with the same fitter, parameters, and array contents.
+Its keys preserve input order, shape, dtype, strides, and alignment.
+They also preserve the frequency bounds, frequency scale, and drift fraction without rounding.
+Memory layout matters because existing NumPy reductions can differ by one ULP between contiguous layouts.
+
+Each cache hit returns separate diagnostic dictionaries.
+Mutations cannot alter a later cached result.
+Unsupported representations use the original path, and the cache does not retain failed or unsupported results.
+The cache lifetime follows the existing scoring context, including nested-scope restoration.
+The scorer also reuses validated event ceilings with their complete diagnostic dependencies.
+The fitting equations, six IRLS iterations, conservative screens, tie behavior, and candidate accounting remain unchanged.
+
+### Why the recorded batch-cache limit was 32 MiB
+
+The recorded implementation holds at most 4,096 batch entries and 32 MiB per active scoring context.
+The byte limit accounts for keys, diagnostic values, and dictionary storage.
+This allocation grows with demand and is separate from the acoustic and prepared-measurement caches.
+
+An instrumented capacity comparison used the same broad fixture in four sequential runs: 16 MiB, 32 MiB, 32 MiB, then 16 MiB.
+All outputs matched exactly.
+Each run made 7,351 batch lookups.
+
+| Batch-cache limit | Median CPU, two runs | Hits per run | Fits executed per run | Evictions per run | Maximum retained bytes |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 16 MiB | 18.937758264 s | 5,403 | 1,948 | 1,443 | 16,777,214 |
+| 32 MiB | 17.334247567 s | 6,281 | 1,070 | 17 | 33,553,175 |
+
+The 32 MiB limit reduced CPU time by **8.47%** relative to 16 MiB in this capacity comparison.
+Median reported process RSS increased from 276.97 MiB to 293.20 MiB.
+The larger limit retains more repeated fits and avoids repeated eviction on this workload.
+The final point-scoring table uses fresh runs with this selected limit.
+The capacity runs include instrumentation and remain separate from the final speedup calculation.
+The exact-fit measurement record preserves both capacities and every counter.
+
+## Other measured stages
+
+These comparisons use actual recorded-audio jobs and observed flight data.
+Each row has its own scope and repetition count.
+
+| Stage | Baseline CPU | Current CPU | Repetitions | Equality check |
+| --- | ---: | ---: | --- | --- |
+| Refinement and decision | 83.7084 s | 77.4870 s | One unprofiled pair | Complete refined candidates and final JSON |
+| Optional event plots | 4.383 s | 3.277 s | Three alternating pairs | Every PNG pixel |
+| Checkpoint JSON encoding | 1.32042 s | 0.28718 s | Five alternating pairs | Complete decoded payload and identifiers |
+
+### Refinement and decision
+
+The replay starts from fixed archived finalists, without repeating discovery or search.
+The trajectory lookup now selects the named finalist IDs within the same space/time envelope before decompressing tracks.
+Decoded tracks decreased from **881 to 18**, and decoded samples decreased from 233,165 to 5,303.
+The fitter still receives the same required complete tracks, with the original validation and sample-budget checks.
+The single unprofiled pair used **7.43%** less CPU time.
+Both timed arms included the same decode counter.
+It returned the same 23 candidates and the same `inconclusive / search_incomplete` result.
+This is a phase observation, without a repeated-run estimate of total pipeline speed.
+The [refinement measurement record](../benchmarks/results/decision-refinement-20261103.json) preserves the observations and their scope.
+
+### Optional event plots
+
+The plot comparison rendered all 18 event images from a complete 3,600.1845-second real recording with 16 independent groups.
+The renderer computes the same full spectral normalization and passes only visible frequency bins to the plotting library.
+The median CPU speedup was **1.34×**, with identical pixels in every image.
+Diagnostic plots are off by default, so this gain applies only when plots are requested.
+It excludes audio intake and acoustic discovery.
+The [plot measurement record](../benchmarks/results/real-discovery-plots-20261103.json) preserves all three pairs, the recorded input, and the NumPy 2.3.5 environment.
+
+### Compact internal checkpoints
+
+The encoding comparison used one completed real tile with 19,977 candidate associations.
+Compact JSON reduced its encoded size from **39,363,929 to 23,490,375 bytes**, a **40.33%** reduction.
+Median encoding CPU time improved by **4.60×** across five alternating pairs.
+Every decoded value, payload hash, and retention checksum remained identical.
+The production change preserves checkpoint filenames, atomic writes, and resume identifiers.
+Human-facing reports retain their readable formatting.
+
+The timer covers JSON encoding only.
+It excludes file writes, reads, scoring, and complete checkpoint or resume operations.
+The [checkpoint measurement record](../benchmarks/results/checkpoint-encoding-20261103.json) preserves all ten runs and the decoded-output checks.
+
+## Recorded PR225 complete-recording HTTP comparison
+
+One sequential baseline/current pair completed the entire bounded HTTP workflow on the original 3,600.1845-second MP3.
+It used the separate **NumPy 2.3.5** runtime on a shared host.
+
+| Measurement | Baseline | Current |
+| --- | ---: | ---: |
+| HTTP verification elapsed wall time | 264.809609269 s | 188.323150374 s |
+| Event records | 18 | 18 |
+| Returned candidates | 23 | 23 |
+| Full pipeline requirements met | Yes | Yes |
+
+The observed elapsed-time speedup is **1.40614×**, or **28.88%** less wall time.
+This is one pair, without a repeated-run estimate or a process CPU comparison.
+Both runs passed the HTTP and full-pipeline verification checks.
+Both returned `inconclusive / search_incomplete`.
+The 18 event records form 16 independent groups.
+Optional event plots remained disabled during both HTTP runs.
+
+The request used the source-informed bounds `[-73.545, 40.865, -73.505, 40.895]` and recording-start window `2026-09-08T20:17:20Z` through `20:17:40Z`.
+Both sources used the same observed flight index, terrain, one search worker, 2 km coarse spacing, and 500 m refinement spacing.
+The top-K limit remained 20, with three refinement finalists.
+Both searches processed four coarse points across two tiles, plus the same 40 existing refinement points.
+Both skipped 80 refinement points under the existing rules.
+These explicit regional bounds define the comparison workload and do not establish national completion or independent location accuracy.
+
+The scientific comparison found zero differences across 23 job JSON artifacts, three root JSON artifacts, and the logical SQLite ledger.
+It normalizes declared implementation hashes, run and job identities, performance fields, and local paths.
+It excludes declared resume and worker metadata.
+The performance fields are elapsed time and reported process peak RSS.
+It compares the full operator configuration separately from its digest.
+SQLite comparison covers all logical tables, columns, and rows, except `run.identity` and physical storage layout.
+Decoded scientific values, numeric types, and signed zeros compare exactly, with no numerical tolerance.
+The [pinned comparison script](https://github.com/1337isnot1337/DOPPLERGEIST/blob/a3ba35342e491556973be34022f3e0a10ac1f6f4/scripts/compare_real_upload_performance.py) defines the complete normalization rules.
+The ledger preserves 48,226 bounds, 958 records, and 18 stages.
+Supplementary checks also matched one intake diagnostic, one decoded PCM file, 18 CSV files, and the decoded pixels of one PNG exactly.
+This workload contains no NPZ files.
+The intake comparison replaces only the exact input path in the recorded decoder command.
+
+The [bounded HTTP measurement record](../benchmarks/results/bounded-http-20261103.json) preserves the timings, settings, source identities, and equality results.
+Published commit `5699a657d57dc4f66b74ef000e20d3ba88f84704` matches all 34 production source files in the frozen HTTP checkout.
+
+A full CONUS baseline reached its declared 1,800-second limit before completion (1,800.23 seconds of wall time).
+That unfinished search provides no nationwide speed ratio.
+Regional source data do not establish national flight coverage or independent location accuracy.
+The historical HTTP checks below describe their own revisions and workloads.
+
+## Reproduce the recorded PR225 comparisons
+
+Use Python 3.12.14 to match the recorded point-timing runtime.
+Use Git and the GitHub CLI `gh` with access to the public checkpoint assets.
+Run these commands from the repository root.
+Use a fresh output directory for each comparison.
+
+Install the point-timing environment and restore the observed inputs:
+
+```bash
+python3.12 -m venv .venv-point
+.venv-point/bin/python -m pip install '.[test]' \
+  'numpy==2.5.4' 'scipy==1.17.0' 'pandas==2.2.3' \
+  'pyarrow==26.0.1' 'pyproj==3.8.0'
+.venv-point/bin/python scripts/restore_artifacts.py \
+  --bundle data-adsb-derived --bundle data-terrain
+PYTHONPATH=src .venv-point/bin/python scripts/prepare_reference_upload.py \
+  --data-root data --output results/incremental-inputs
+```
+
+Create separate source trees from the public baseline and optimized commits:
+
+```bash
+git fetch origin
+git worktree add --detach ../dopplergeist-incremental-baseline \
+  aa3dff686c989524daa20c081a816b792d9c8890
+git worktree add --detach ../dopplergeist-timing-current \
+  5699a657d57dc4f66b74ef000e20d3ba88f84704
+```
+
+The public optimized commit contains the recorded 32 MiB limit.
+The source disclosure above identifies the local commit and worktree patch used during measurement.
+
+Freeze and compare both workloads:
+
+```bash
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+for width in 120 10; do
+  PYTHONPATH=src .venv-point/bin/python scripts/benchmark_prepared_measurements.py prepare \
+    --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+    --index results/incremental-inputs/reference-region.sqlite \
+    --clock-half-width-s "$width" \
+    --output "results/incremental-inputs/point-${width}s.json"
+
+  PYTHONPATH=src .venv-point/bin/python scripts/benchmark_prepared_measurements.py compare \
+    --fixture "results/incremental-inputs/point-${width}s.json" \
+    --baseline-source ../dopplergeist-incremental-baseline/src \
+    --current-source ../dopplergeist-timing-current/src \
+    --repeats 3 --timeout-s 600 \
+    --output "results/incremental-${width}s"
+done
+```
+
+The comparison rejects changed inputs, missing trajectories, invalid retention ledgers, or any complete-output mismatch.
+Both arms use the same interpreter and library versions.
+
+Run the seven selected real-input tests and the cache checks:
+
+```bash
+DOPPLERGEIST_REAL_CPA_FIXTURE=results/incremental-inputs/point-120s.json \
+PYTHONPATH=src .venv-point/bin/python -m pytest -q \
+  tests/test_real_batch_scalar_parity.py \
+  tests/test_real_batch_ridge.py \
+  tests/test_real_prepared_measurements.py
+
+PYTHONPATH=src .venv-point/bin/python scripts/check_real_batch_cache.py \
+  --tracks data/adsb/2026-09-08/reference-region.parquet \
+  --discovery evidence/audio/w1-sensitivity-20261102/reference/discovery.json \
+  --candidate evidence/results/reference-local/report.json
+```
+
+The separate HTTP-runtime correctness check used the same commands with NumPy 2.3.5 and no additional dependency directory on `PYTHONPATH`.
+For the recorded 32 MiB revision, it passed all seven tests and all 50 cache checks.
+
+For the other stage comparisons, use a separate NumPy 2.3.5 environment:
+
+```bash
+python3.12 -m venv .venv-stages
+.venv-stages/bin/python -m pip install '.[test]' \
+  'numpy==2.3.5' 'scipy==1.17.0' 'pandas==2.2.3' \
+  'pyarrow==26.0.1' 'pyproj==3.8.0' 'matplotlib==3.10.8'
+```
+
+The original refinement and plot comparisons used NumPy 2.3.5.
+The checkpoint encoding helper uses the Python standard library.
+To repeat the separate runtime checks, use `.venv-stages/bin/python` in the previous test and cache commands.
+
+For refinement, use a completed real job with saved finalists, flight indexes, and terrain:
+
+```bash
+PYTHONPATH=src .venv-stages/bin/python scripts/benchmark_real_decision.py \
+  --source ../dopplergeist-incremental-baseline/src \
+  --job /path/to/real-job --output results/decision-baseline
+PYTHONPATH=src .venv-stages/bin/python scripts/benchmark_real_decision.py \
+  --source ../dopplergeist-timing-current/src \
+  --job /path/to/real-job --output results/decision-current \
+  --compare-to results/decision-baseline
+```
+
+The script compares every refined candidate, sensitivity result, and decision after the timed operation.
+It omits the exploratory decode counter from the original pair.
+For repeated measurements, alternate the source order and use new output directories.
+
+For optional plots, use saved intake and discovery outputs from a real recording:
+
+```bash
+PYTHONPATH=../dopplergeist-timing-current/src \
+.venv-stages/bin/python scripts/benchmark_real_discovery_plots.py \
+  /path/to/real-job --baseline ../dopplergeist-incremental-baseline \
+  --repeats 3 --output results/plot-comparison
+```
+
+For checkpoint encoding and compatibility, use the original filename of a completed real tile:
+
+```bash
+.venv-stages/bin/python scripts/benchmark_real_checkpoint_encoding.py \
+  --checkpoint /path/to/real-job/search/tile-ID.json --repeats 5 \
+  --output results/checkpoint-encoding.json
+
+DOPPLERGEIST_REAL_TILE_CHECKPOINT=/path/to/real-job/search/tile-ID.json \
+PYTHONPATH=src .venv-stages/bin/python -m pytest -q \
+  tests/test_real_compact_checkpoints.py
+```
+
+The encoding helper compares readable and compact JSON, including one trailing newline in both timed operations.
+Input decoding, output decoding, file writes, and equality checks remain outside the timer.
+The compatibility tests also exercise atomic replacement and saved support-accounting parity.
+
+### Complete bounded HTTP replay
+
+Use the NumPy 2.3.5 environment and public source worktrees from the preceding commands.
+Install FFmpeg so that `ffmpeg` and `ffprobe` are on `PATH`.
+The [bounded upload helper](../scripts/benchmark_real_bounded_upload.py) starts each source in a fresh HTTP service.
+It uses the same input file, request, operator configuration, and interpreter for both arms.
+
+Restore the recorded inputs and prepare the shared index:
+
+```bash
+.venv-stages/bin/python scripts/restore_artifacts.py \
+  --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+PYTHONPATH=../dopplergeist-timing-current/src \
+.venv-stages/bin/python scripts/prepare_reference_upload.py \
+  --data-root data --output results/bounded-inputs
+
+.venv-stages/bin/python - <<'PY'
+import json
+from pathlib import Path
+root = Path('results/bounded-inputs')
+request = json.loads((root / 'request.json').read_text())
+request['search']['bounds_wsen'] = [-73.545, 40.865, -73.505, 40.895]
+request['time_window']['source_detail'] = (
+    'Source-informed integration replay around the historical fitted recording '
+    'start and benchmark receiver region; not independently measured recording '
+    'time or a location-accuracy evaluation.'
+)
+operator = json.loads((root / 'operator.json').read_text())
+operator['search_workers'] = 1
+for name, value in (('request.json', request), ('operator.json', operator)):
+    (root / name).write_text(json.dumps(value, indent=2) + '\n')
+PY
+```
+
+The helper preserves the recorded 20:17:20–20:17:40 UTC window, search budgets, and refinement settings.
+The public `data-source` bundle contains `reference-recording.wav`, not the original timed MP3.
+For the original workload, supply the archived complete MP3:
+
+```bash
+cp /path/to/archived/reference-complete.mp3 results/bounded-inputs/recording.mp3
+sha256sum results/bounded-inputs/recording.mp3
+```
+
+The measured MP3 contains 42,085,293 bytes and has SHA-256 `e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0`.
+If only the published WAV is available, use this command instead of the copy command:
+
+```bash
+ffmpeg -n -nostdin -i data/source/reference-recording.wav \
+  -map 0:a:0 -vn -map_metadata -1 -ac 1 -ar 48000 \
+  -c:a libmp3lame -b:a 96k results/bounded-inputs/recording.mp3
+```
+
+This conversion creates a new encoding of the real recording.
+It defines a new comparison workload and requires fresh results.
+The original hash, event counts, candidate counts, and timings do not apply automatically.
+Both arms must use the same resulting MP3 file.
+
+Run the two fresh HTTP arms sequentially:
+
+```bash
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+.venv-stages/bin/python scripts/benchmark_real_bounded_upload.py \
+  --source ../dopplergeist-incremental-baseline/src \
+  --inputs results/bounded-inputs --output results/http-baseline --timeout-s 900
+.venv-stages/bin/python scripts/benchmark_real_bounded_upload.py \
+  --source ../dopplergeist-timing-current/src \
+  --inputs results/bounded-inputs --output results/http-current --timeout-s 900
+```
+
+Fetch the pinned comparison tools and run both equality checks:
+
+```bash
+git fetch origin a3ba35342e491556973be34022f3e0a10ac1f6f4
+git worktree add --detach ../dopplergeist-comparison-tools \
+  a3ba35342e491556973be34022f3e0a10ac1f6f4
+.venv-stages/bin/python \
+  ../dopplergeist-comparison-tools/scripts/compare_real_upload_performance.py \
+  --baseline results/http-baseline --current results/http-current \
+  --output results/http-science-comparison.json
+.venv-stages/bin/python scripts/check_real_upload_arrays.py \
+  --baseline results/http-baseline --current results/http-current \
+  --output results/http-array-comparison.json
+```
+
+The comparator pin contains the exact comparison implementation used for the recorded pair.
+The separate tools worktree preserves its source identity without changing either measured production source.
+The array check covers the saved artifacts that actually exist in each workload.
+
+## Historical scorer comparison (2026-11-03)
+
+The earlier scorer implementation reduced median CPU time by **62.87%** on its broad-clock workload.
 The same workload takes **68.92 → 25.59 CPU seconds**, a **2.69× speedup**.
 Every scored candidate, diagnostic, support count, and retention record matches the scalar-consistent baseline exactly.
 
@@ -9,7 +527,7 @@ They exclude discovery, downloads, input loading, nationwide search, and refinem
 The receiver point and recording clock come from a historical fit.
 This experiment does not establish independent location accuracy or a nationwide completion time.
 
-## Measurements
+### Measurements
 
 Each result is the median of three runs per source in separate Python processes.
 The harness alternates baseline/current, current/baseline, then baseline/current.
@@ -33,7 +551,7 @@ The machine used an AMD EPYC 9V74 processor, Linux 6.18.57, and Python 3.12.14.
 Package versions were NumPy 2.3.5, SciPy 1.17.0, and pandas 2.2.3.
 [The measurement record](../benchmarks/results/performance-20261103.json) contains every run, the input hash, source commits, and workload counts.
 
-### Fixed workloads
+#### Fixed workloads
 
 Both workloads use all 16 recorded ridge records, 16 independent groups, and 724 ridge samples from the archived discovery result.
 The trajectory query retains complete recorded tracks within the declared query.
@@ -55,7 +573,7 @@ The two clock windows define different workloads.
 The difference between those workloads is not a code speedup.
 A narrower clock window requires independent recording-time evidence.
 
-## Changes that reduce work
+### Changes that reduce work
 
 **Batch surviving clocks after each group.**
 The scorer preserves the event order within each clock trial.
@@ -91,7 +609,7 @@ The staged table has a limit of 4,096 event-clock slots.
 Larger products use the existing scalar traversal.
 This limit changes the execution path without reducing the search domain.
 
-## Numerical baseline
+### Numerical baseline
 
 The untouched starting revision is `7a8dd27979bd9a984c8675c38a00dfbf98a5b01e`.
 Its batch fitter uses NumPy array squaring where the scalar fitter uses Python scalar powers.
@@ -114,7 +632,7 @@ One discarded candidate retains the legacy rounding difference in its old diagno
 Exact equality with untouched main is therefore not the correctness claim.
 An earlier single observation took 77.43 CPU seconds on untouched main, but the table uses the repeated scalar-consistent baseline.
 
-## Reproduce the comparison
+### Reproduce the historical comparison
 
 Use Python 3.11 or later, Git, and the GitHub CLI `gh` configured for release downloads.
 Run these POSIX-shell commands from the repository root.
@@ -178,7 +696,7 @@ It uses two pairs per workload and saves the raw timing summaries.
 The workflow also runs the focused real-input tests.
 It does not run the historical synthetic suite.
 
-## Method for further optimization
+### Method for further optimization
 
 1. Freeze the source, recording, trajectory index, clock window, and search budgets.
 2. Profile a complete bounded workload with all independent groups.
@@ -200,7 +718,7 @@ An existing process continues to use its loaded source.
 New measurements require a new run with the new source identity.
 Checkpoint reuse must pass the existing source and input identity rules.
 
-## Independent runner and integration validation
+### Independent runner and integration validation
 
 The [independent CI run](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41656583534) passed all eight focused real-input tests.
 Both complete-output comparisons also passed, with two alternating pairs per workload.
@@ -215,7 +733,7 @@ The GitHub runner used Python 3.12, NumPy 2.5.4, SciPy 1.18.1, and pandas 3.1.0 
 [The CI measurement record](../benchmarks/results/performance-ci-20261103.json) preserves all eight runs and their source revisions.
 These ratios support the local result on a second environment without pooling timings from different machines.
 
-### Integration with current main
+#### Integration with main at d6a0c860
 
 The tested integration commit is `d6a0c860bd5a64797b3bde29bb1f74c689d0ed52`.
 It includes main `6d3e3f7`, with PR #210's configured workers and PR #213's association traversal optimization.
@@ -228,7 +746,7 @@ Narrow-window median CPU time was **5.6747 → 4.0153 seconds (1.4133×)**.
 The CI measurement record includes all eight integration runs separately from the earlier measurements.
 Python 3.11 and 3.14 installation, compilation, CLI, and packaged-asset checks also passed.
 
-### Complete-recording HTTP checks
+#### Complete-recording HTTP checks
 
 The full-domain HTTP replay used the entire 3,600.1845-second reference recording and an explicit source-informed clock.
 It completed intake, discovery, and acquisition, then reached its 900-second limit during adaptive geographic search.

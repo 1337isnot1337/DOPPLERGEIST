@@ -81,6 +81,7 @@ class _RidgeFitCache:
         self.batch_fit_entries = OrderedDict()
         self.batch_fit_bytes = 0
         self.batch_fit_limit = 4 * 1024 * 1024
+        self.batch_fit_function = None
         self.ceiling_entries = OrderedDict()
         self.screen_entries = OrderedDict()
         self.screen_bytes = 0
@@ -177,9 +178,10 @@ class _RidgeFitCache:
 def _cache_ridge_fits(function, *, max_entries=4096):
     """Reuse fits only while this batch's tracks stay unchanged.
 
-    Each fit cache has at most 4,096 entries by default. Complete-batch snapshots
-    and keys are additionally bounded to 4 MiB; prepared measurements use their
-    own 4 MiB bound and acoustic arrays use 32 MiB. Context-local state prevents
+    Each fit cache has at most 4,096 entries by default. Serialized batch
+    snapshots and digest bytes are bounded to 4 MiB; Python object/container
+    overhead is additional. Prepared measurements use their own 4 MiB bound
+    and acoustic arrays use 32 MiB. Context-local state prevents
     reuse between concurrent jobs, nested batches or later calls. Cached results
     are copied so candidate diagnostics remain independently mutable.
     """

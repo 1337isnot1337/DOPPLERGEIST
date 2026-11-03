@@ -73,11 +73,14 @@ The separate ceiling cache uses complete diagnostic content and classification p
 Unsupported representations retain the ordinary calculation.
 
 Complete fit batches use at most 4 MiB of keys and snapshots, with 4,096 entries.
+Python container headers and dictionary bookkeeping require additional memory.
 Screen evidence has an 8 MiB limit.
 Acoustic arrays and prepared measurements have separate limits of 32 MiB and 4 MiB.
 Cache hits return independent diagnostics or arrays.
 Total process memory also includes live tracks and temporary allocations.
 The [batch implementation](../src/dopplergeist/batch_ridge.py) excludes fallback results and exceptions from its complete-fit cache.
+Custom measurement and event containers bypass that cache.
+Changing the batch fitter clears its previous snapshots.
 
 ## Trajectory reuse and finalist lookup
 
@@ -119,7 +122,8 @@ Actual migration of the historical stopped job was not rerun because that job wa
 
 ### Installation and regression checks
 
-The final local gate passed 45 recorded-input checks for native fitting, backend selection, legacy arithmetic, caches, screening, and complete batches.
+After PR225 integration, the local gate passed 48 recorded-input checks for native fitting, backend selection, legacy arithmetic, caches, screening, and complete batches.
+The full CPA fixture passed its unchanged 20,000-candidate limit without truncation.
 The corrected backend-selector check also passed separately after its installed-package path fix.
 [Hosted CI](https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41679250198) passed all 36 packaged regression checks on both Python 3.11 and 3.14.
 Both jobs explicitly verified that the installed native extension loaded.
