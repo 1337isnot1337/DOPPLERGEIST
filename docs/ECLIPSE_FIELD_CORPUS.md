@@ -15,7 +15,10 @@ Across both disjoint 50-site batches, 90 clips scanned and ten did not produce
 a successful scan. The scanner produced proposals in 39 of the 90; a visual review
 selected 24 site-labeled clips with clear descending tones as
 [candidate leads](../benchmarks/real-candidates-known-site-20261103.csv).
-Their aircraft identities remain unconfirmed. A separate
+Their aircraft identities remain unconfirmed. For the 24, publisher metadata
+reports automated time-chime setup for 23 and says site 485's file time needs
+manual setting; that site's start-time note is empty. These statements do not
+measure the actual clock error. A separate
 [unknown-exact-location shortlist](../benchmarks/real-candidates-unknown-point-20261103.csv)
 contains five scanner-only leads, of which one is ambiguous and one is an
 edited compilation. These are not 29 validated geolocation benchmarks.
