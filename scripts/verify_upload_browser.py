@@ -21,7 +21,7 @@ def verify(url, audio, metadata, output):
             or metadata.get("schema_version") != 1
             or metadata.get("search", {"coverage": "conus"}) != {"coverage": "conus"}):
         raise ValueError("The browser UI accepts version-one CONUS requests without event or location hints")
-    if metadata.get("time_window", {}).get("source", "user") != "user":
+    if (metadata.get("time_window") or {}).get("source", "user") != "user":
         raise ValueError("The browser form records user-supplied time evidence")
     runtime = Path(os.environ["XDG_RUNTIME_DIR"])
     state = dict(line.split("=", 1) for line in
