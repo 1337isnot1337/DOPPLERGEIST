@@ -1,0 +1,11 @@
+{
+  "home_visible": false,
+  "auth_environment_visible": false,
+  "runtime_from_wheel": true,
+  "raster_readable": true,
+  "index_rows": 3252,
+  "index_segments": 12,
+  "input_mp3_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "scope": "namespace import/input preflight only; no duplicate four-event search launched",
+  "wheel_sha256": "084490e7035b40982cf5a73c8ce7ddc7599b51d1c3b3c80b5186569919efef55"
+}

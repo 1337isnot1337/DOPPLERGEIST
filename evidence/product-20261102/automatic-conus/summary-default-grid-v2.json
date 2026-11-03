@@ -1,0 +1,105 @@
+{
+  "job_id": "6d22099286f74ab9a068441c2b24a350",
+  "status": "inconclusive",
+  "reason_code": "partial_flight_coverage",
+  "events": 2,
+  "candidate_count": 106,
+  "leading_candidates": [
+    {
+      "rank": 1,
+      "position_error_m": 1046023.1493328345,
+      "score": -0.18245572972826157,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 2,
+      "position_error_m": 1046023.1493328355,
+      "score": -0.18245572972836022,
+      "flight_ids_after_evaluation": [
+        "known-jet",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 3,
+      "position_error_m": 1046023.1493328355,
+      "score": -0.18245572972836022,
+      "flight_ids_after_evaluation": [
+        "false1-A",
+        "false1-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    },
+    {
+      "rank": 4,
+      "position_error_m": 6.156481394341498,
+      "score": -0.18311495344509449,
+      "flight_ids_after_evaluation": [
+        "true-A",
+        "true-B"
+      ],
+      "correct_flight_pair": true,
+      "within_100m": true
+    },
+    {
+      "rank": 5,
+      "position_error_m": 1052005.6704098934,
+      "score": -0.19503320558713327,
+      "flight_ids_after_evaluation": [
+        "false2-A",
+        "false2-B"
+      ],
+      "correct_flight_pair": false,
+      "within_100m": false
+    }
+  ],
+  "within_100m_candidates": 4,
+  "coverage": {
+    "search_complete": true,
+    "data_status": "partial",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established.",
+      "Candidate retention is bounded; exhaustive alternative-location assessment is not established.",
+      "Flight inputs do not establish complete coverage of the required emission-time interval and audible border region."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": [
+      "historical_flight_scope_or_audible_border_region"
+    ]
+  },
+  "search": {
+    "tiles_total": 4940,
+    "tiles_completed": 4940,
+    "grid_points_searched": 26624,
+    "elapsed_s": 317.5425107240153,
+    "process_peak_rss_mib": 304.40625,
+    "data_scope_complete": false,
+    "tile_failures": [],
+    "refinement_failure": null
+  },
+  "full_elapsed_s": 341.2420629480039,
+  "refinement_failures": [],
+  "sensitivity": {
+    "radius_m": 109.48503096371469,
+    "sources": [
+      "altitude",
+      "clock",
+      "frequency",
+      "sound_speed",
+      "source_frequency"
+    ],
+    "complete": true,
+    "boundary_limited": false
+  }
+}

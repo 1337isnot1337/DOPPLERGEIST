@@ -176,5 +176,23 @@
     "No synthetic diagnostic candidate under inconclusive status counts as an accepted location.",
     "HTTP job-process peak memory was not measured; no invented RSS values.",
     "Source media, ephemeral stream URLs, logs and caches remain local."
-  ]
+  ],
+  "reported_product_normal_grid_ambiguity": {
+    "source_issue_comment": "https://github.com/1337isnot1337/DOPPLERGEIST/issues/9#issuecomment-6592687571",
+    "verification": "Reported by Worker5 after search; not independently rerun in this lane. Synthetic development population, partial border coverage.",
+    "product_source": "1863d89",
+    "matching_source": "41992be",
+    "status": "inconclusive",
+    "reason_code": "partial_flight_coverage",
+    "tiles_completed": 4940,
+    "tiles_total": 4940,
+    "candidate_rows": 106,
+    "winner_error_m": 1046023.15,
+    "winner_score": -0.1824557297,
+    "true_pair_rank": 4,
+    "true_pair_error_m": 6.1565,
+    "true_pair_score": -0.1831149534,
+    "accepted_locations": 0,
+    "limitation": "The close true candidate is not the winning or accepted result. The distant near tie must remain visible."
+  }
 }

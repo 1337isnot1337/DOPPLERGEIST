@@ -1,0 +1,31 @@
+{
+  "source_commit": "211b478d5142af3df3b1ab3da8d606d48e620d4a",
+  "run_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41571518501",
+  "command": "python -m pytest -q",
+  "jobs": [
+    {
+      "python": "3.11",
+      "job_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41571518501/job/125705250536",
+      "conclusion": "success",
+      "passed": 300,
+      "subtests_passed": 6,
+      "skipped": 0,
+      "warnings": 6,
+      "elapsed_s": 46.19,
+      "native_log_sha256": "c211491cb009aa1ef9097d30be347bb7645223e41e0ec2d38e77d3a50c5118fa"
+    },
+    {
+      "python": "3.14",
+      "job_url": "https://github.com/1337isnot1337/DOPPLERGEIST/actions/runs/41571518501/job/125705250743",
+      "conclusion": "success",
+      "passed": 300,
+      "subtests_passed": 6,
+      "skipped": 0,
+      "warnings": 0,
+      "elapsed_s": 73.44,
+      "native_log_sha256": "abbd8fc6b6b3eba9425d87898ca0be2405d292802a57100bf342d36a3e4280fe"
+    }
+  ],
+  "scope": "Hosted full regression suites at the ledger/product source checkpoint; no new scientific upload or accepted location.",
+  "warnings_note": "Python 3.11 warnings are rasterio.transform PendingDeprecationWarning about matrix multiplication; no failures or skipped tests were reported."
+}
