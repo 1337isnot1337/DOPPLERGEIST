@@ -22,6 +22,13 @@ PR #188 adds resumable clock partitions for single cells that exceed the
 association-count limit. The full-day overloaded cell's 23,136 associations
 were preserved across eight partitions; 142 tracks remained unsupported. See
 [DATA_AND_SCALE](DATA_AND_SCALE.md) for the scope of these checks.
+PR #191 excludes unsupported trajectories only when their entire spline is
+provably outside the search radius. PR #193 adds bounded exact-input acoustic
+reuse for dense tiles and an explicit upload-search worker setting. A complete
+3,795-association partition preserved its full payload and retention checksum;
+its CPU time changed from 76.05 to 74.60 seconds. A denser 5,000-association
+sample changed from 90.45 to 74.21 CPU seconds with identical scored rows.
+Neither measurement predicts nationwide runtime or establishes a location.
 
 The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
@@ -51,16 +58,19 @@ At this handoff the upload search is still running; no coordinate has been
 accepted. On the originating machine, the job, `resume.json`, discovery output,
 search checkpoints and archived earlier revisions are under
 `/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
-The active search uses the code merged at `e633fd5` and run hash
-`8b7c3fa51d2d9c54863ee752208d3a2bb29acd22f1213c6c2c671a34de47a773`;
+The active search uses the code merged at `23c9d4a` and run hash
+`e8cd6dc88f03a228047766dc97d2650655a7bd4ffd68fe54623e93bafd766545`;
 check its current API/status and source identity before intervening. The separate
 homelab stages tiles under the same identity; its coordinator imports verified
-results only after pausing the local job. A search checkpoint from different code
-must not be mixed in without a specifically validated migration. The only such
+results only after pausing the local job. The local search is configured for 12
+workers and homelab stages with eight. A monitor resumes only the configured
+wall-time timeout after transferring available remote checkpoints; it does not
+resume a user cancellation or another failure. A search checkpoint from different
+code must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty root tiles after checking both
-identities and ledger checksums. On the switch from `d8679e3` to `e633fd5`, 413
-such tiles were migrated; the preceding search is archived locally as
-`search-before-clock-e633fd5`. Check final coverage, unsupported-motion and
+identities and ledger checksums. On the switch to `23c9d4a`, 413 such tiles were
+migrated; the preceding search is archived locally as
+`search-before-dense-23c9d4a`. Check final coverage, unsupported-motion and
 retention evidence before describing any candidate as a localization.
 
 ## Read first
