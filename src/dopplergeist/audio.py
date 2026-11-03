@@ -67,18 +67,27 @@ def trace_ridge(spectrum, max_slope=12.0, smoothness=0.12, max_up_slope=1.0):
     history = np.zeros((nt, nf), dtype=np.int16)
     state = strength[:, 0].copy()
     frequency_index = np.arange(nf)
+    up_width = max(0, int(np.floor(max_up_slope * dt / df)))
+    transitions = []
+    for shift in range(-up_width, width + 1):
+        first, last = max(0, -shift), min(nf, nf - shift)
+        if first >= last:
+            continue
+        destination = slice(first, last)
+        source = slice(first + shift, last + shift)
+        penalty = smoothness * (shift * df / dt) ** 2 * dt
+        transitions.append((destination, source, frequency_index[source], penalty))
     for j in range(1, nt):
         best = np.full(nf, -np.inf)
         parent = np.zeros(nf, dtype=np.int16)
-        up_width = max(0, int(np.floor(max_up_slope * dt / df)))
-        for shift in range(-up_width, width + 1):
-            previous = frequency_index + shift
-            valid = (previous >= 0) & (previous < nf)
-            score = np.full(nf, -np.inf)
-            score[valid] = state[previous[valid]] - smoothness * (shift * df / dt) ** 2 * dt
-            better = score > best
-            best[better] = score[better]
-            parent[better] = previous[better]
+        # Valid predecessors are contiguous slices. Reuse their bounds and
+        # penalties instead of allocating masks and full score arrays per shift.
+        # Shift order and strict improvement preserve the original tie rule.
+        for destination, source, previous, penalty in transitions:
+            score = state[source] - penalty
+            better = score > best[destination]
+            np.copyto(best[destination], score, where=better)
+            np.copyto(parent[destination], previous, where=better, casting="unsafe")
         state = best + strength[:, j]
         history[j] = parent
     path = np.empty(nt, dtype=int)
