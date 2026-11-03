@@ -16,7 +16,7 @@ import numpy as np
 from pyproj import Transformer
 from scipy.optimize import minimize
 
-from .geometry import Track, ecef
+from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
 
 @dataclass
@@ -449,11 +449,11 @@ def batch_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
     for track, measurement in zip(tracks, measurements):
         spec, ridge, weight, _ = measurement
         times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
-        # The solver's 1e-7 stopping tolerance is below half a floating-point
-        # ULP throughout these emission times. Once an individual trial has
-        # stopped, further vector iterations therefore leave it unchanged.
-        # Older epochs retain the original per-trial path.
-        if track.time[0] < 2**30:
+        # Once the solver tolerance is below half an emission-time ULP, a
+        # stopped individual trial remains unchanged in further iterations.
+        # Negative or lower-precision epochs retain the per-trial path.
+        if (track.time[0] < 0 or
+                np.spacing(track.time[0]) <= 2 * _EMISSION_ITERATION_TOLERANCE_S):
             batches.append(None)
             continue
         if times.shape != ridge.shape or times.shape != weight.shape or times.ndim != 1:

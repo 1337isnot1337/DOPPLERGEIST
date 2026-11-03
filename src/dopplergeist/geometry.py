@@ -11,6 +11,8 @@ from scipy.interpolate import CubicHermiteSpline
 from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 
+_EMISSION_ITERATION_TOLERANCE_S = 1e-7
+
 
 class AcousticSupportError(ValueError):
     """A trajectory cannot support the assumed emission-time acoustic model."""
@@ -186,7 +188,7 @@ class Track:
             tau = updated
             # A fixed point at Unix-epoch precision would repeat identically
             # even when its unrounded correction exceeds the tolerance.
-            if np.max(np.abs(correction)) < 1e-7 or unchanged:
+            if np.max(np.abs(correction)) < _EMISSION_ITERATION_TOLERANCE_S or unchanged:
                 break
         delta = self.position(tau) - observer
         distance = np.linalg.norm(delta, axis=-1)
