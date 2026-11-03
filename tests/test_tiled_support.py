@@ -114,11 +114,25 @@ def test_actual_classified_robust_scorer_supplies_finite_core_ids(tmp_path):
         output_dir=tmp_path / "classified", bounds=bounds,
         budget=SearchBudget(spacing_m=1000, tile_cells=4, top_k=2, refine_spacing_m=1000),
         scoring={"mode": "robust_ridge", "recording_start_window_s": [origin, origin], "time_sweep_s": 0})
-    assert result["ranked"] and result["status"] == "complete" and result["model_support_complete"]
+    assert result["ranked"] and result["status"] == "complete" and result["model_assessment_complete"]
+    assert not result["model_support_complete"]
     assert result["finite_search_evidence"]["complete"]
     assert result["core_assessed_mode_ids"] == [r["mode_id"] for r in result["ranked"]]
     assert result["model_support"]["evaluated_trials"] > 0
-    assert result["model_support"]["unknown_trials"] == result["model_support"]["unreported_trial_envelopes"] == 0
+    assert result["model_support"]["unknown_trials"] > 0
+    assert result["model_support"]["unbounded_score_candidates"] == result["model_support"]["unreported_trial_envelopes"] == 0
+    assert result["finite_search_evidence"]["best_unknown_score_upper_bound"] < min(r["score"] for r in result["ranked"])
+
+    # A retention limit larger than this existing scenario's candidate set
+    # leaves its original fully fitted support check intact.
+    exhaustive = search_national([index], Terrain(constant_m=0), events, measurements, time_range_s=times,
+        output_dir=tmp_path / "classified-exhaustive", bounds=bounds,
+        budget=SearchBudget(spacing_m=1000, tile_cells=4, top_k=100, refine_spacing_m=1000),
+        scoring={"mode": "robust_ridge", "recording_start_window_s": [origin, origin], "time_sweep_s": 0})
+    assert exhaustive["ranked"] and exhaustive["status"] == "complete" and exhaustive["model_support_complete"]
+    assert exhaustive["finite_search_evidence"]["complete"]
+    assert exhaustive["core_assessed_mode_ids"] == [r["mode_id"] for r in exhaustive["ranked"]]
+    assert exhaustive["model_support"]["unknown_trials"] == exhaustive["model_support"]["unreported_trial_envelopes"] == 0
 
 
 def test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preserves_clean_rows(tmp_path):
