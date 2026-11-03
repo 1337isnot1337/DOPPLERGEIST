@@ -1,4 +1,4 @@
-name: Tests
+name: Installation and static checks
 on:
   push:
     branches: [main]
@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   test:
+    name: Python ${{ matrix.python }} installation and static checks
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -26,12 +27,31 @@ jobs:
           python-version: ${{ matrix.python }}
           cache: pip
           cache-dependency-path: pyproject.toml
-      - name: Install ffmpeg and package
+      - name: Install runtime and package
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          python -m pip install '.[test]'
-      - name: Test
-        run: python -m pytest -q
+          python -m pip install .
+          python -m pip check
+      # The owner requires real recordings for further validation. The historical
+      # pytest suite generates synthetic inputs, so this workflow does not run it.
+      - name: Compile source without executing experiments
+        run: python -m compileall -q src scripts
       - name: CLI smoke check
         run: dopplergeist --help
+      - name: Check installed modules and packaged browser assets
+        run: |
+          python -I - <<'PY'
+          from importlib import resources
+          from pathlib import Path
+          import dopplergeist
+          from dopplergeist import automatic, jobs, service
+
+          package = Path(dopplergeist.__file__).resolve().parent
+          assert "site-packages" in package.parts, package
+          web = resources.files("dopplergeist.web")
+          for name in ("index.html", "app.js", "style.css"):
+              assert web.joinpath(name).is_file(), name
+              assert web.joinpath(name).read_bytes(), name
+          print("Installed package imports and browser assets passed; no audio or tracks generated.")
+          PY

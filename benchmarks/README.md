@@ -149,3 +149,81 @@ on the committed helper, without repeating the unchanged 40-clip experiment.
 The missing microphone/UTC evidence described above still prevents these cases
 from qualifying as real geolocation acceptance. Further validation must use real
 recordings and geolocations under the user's real-data-only directive.
+
+## Real NASA supplied-trajectory session benchmark
+
+`scripts/benchmark_nasa_session.py` uses original NASA pressure samples and measured
+GPS trajectories. The [case manifest](nasa-session-cases-20261103.json) pins four
+original MAT files from the
+[public NASA archive](https://data.nasa.gov/docs/datasets/rfk401li/small_uav_acoustics.zip).
+Retrieve only those original members, without downloading the complete archive:
+
+```sh
+python scripts/download_nasa_cases.py --output data/nasa-originals
+```
+
+The download directory must be new. If the original files already exist, add
+`--verify-only` to check them without downloading or modifying anything.
+The downloader verifies ZIP lengths and CRCs plus the manifest's byte sizes and
+SHA256 values. Preparation also checks the original identities before reading them.
+
+The runner preserves channel 2 samples and original acoustic/GPS timestamps.
+It uses synchronized seconds of day; calendar dates remain unresolved. It does
+not invent an absolute UTC epoch. The local search domain comes from the full
+GPS footprint with fixed padding. Microphone truth is read only during preparation
+and later evaluation, not by search. One supplied trajectory does not imply one
+encounter or one independent acoustic event.
+
+With the package installed, run each stage into a new output directory:
+
+```sh
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py prepare \
+  --source-directory data/nasa-originals \
+  --case-manifest benchmarks/nasa-session-cases-20261103.json \
+  --output results/nasa-new/prepared
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py search \
+  --inputs results/nasa-new/prepared/search-inputs.json \
+  --domain results/nasa-new/prepared/search-domain.json \
+  --output results/nasa-new/search
+PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py evaluate \
+  --search-directory results/nasa-new/search \
+  --truth results/nasa-new/prepared/evaluation-truth.json \
+  --output results/nasa-new/evaluation.json
+```
+
+Defaults use automatic discovery with a 2 s spectral window and 0.5 s hop,
+50 m grid cells, zero clock offset, and separate constant-tone and 2% drift fits.
+The [result table](nasa-session-results-20261103.csv) preserves every development
+case and both discovery settings. These are supplied-track experiments, not an
+automatic aircraft-association or nationwide validation corpus.
+
+| Recording | Proposals at 2 s / 0.5 s | Proposals at 0.5 s / 0.125 s | Primary result |
+|---|---:|---:|---|
+| Cub 107 | 0 | 0 | No fit or location |
+| Edge 038 | 0 | 0 | No fit or location |
+| Edge 065 | 1 | 0 | Conditional best-mode error 474.0 m; source identity unconfirmed |
+| Edge 066 | 0 | 0 | No fit or location |
+
+Edge 065's proposal covers 1.5–19.0 s near 94–102 Hz. The strong harmonic flyover
+and measured-track closest approach occur near 30.6 s. The publisher notes a
+background propeller aircraft at the start, so the proposal may belong to it.
+Both source-tone models rank the same point, but this does not validate drone
+localization. Each grid has 3,632 supported points and 568 unknown points.
+A competing mode is 1,899 m from truth, and similar losses extend over kilometres.
+The CSV's 100/500/1,000 m fields describe only the conditional best-mode error;
+they do not indicate accepted or correctly associated locations. The high-speed
+pair's primary discovery and grid search took 6.56 s in the recorded run.
+
+The single shorter-window development comparison returned zero proposals in all
+four recordings, with no fitting or truth access. It did not improve discovery.
+To reproduce that setting, use a new search directory and add these search options:
+
+```sh
+--discovery-window-s 0.5 --discovery-hop-s 0.125
+```
+
+Every other default remains unchanged. No detector threshold was relaxed, no
+synthetic data were generated, and all original negative results are retained.
+The reusable CLI was also run against all four originals with the isolated
+installed package. Preparation, default search, evaluation and the shorter-window
+search all completed and reproduced the proposal counts above.

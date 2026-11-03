@@ -32,7 +32,7 @@ python -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
 ```
 
-Use a new output directory for each experiment. Run the tests with `.venv/bin/python -m pytest -q`. For pinned environments and clean-install evidence, see [Setup](docs/SETUP.md); native Windows execution has not been verified.
+Use a new output directory for each experiment. Automatic CI checks installation, source compilation, CLI help and packaged assets without generated data. The [real-world data policy](AGENTS.md#real-world-data-only) supersedes older blanket pytest instructions. For pinned environments and historical clean-install evidence, see [Setup](docs/SETUP.md). Native Windows execution remains unverified.
 
 ### Discover events in a recording
 

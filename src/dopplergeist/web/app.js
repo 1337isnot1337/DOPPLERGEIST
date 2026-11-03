@@ -141,7 +141,17 @@ $('cancel').addEventListener('click', async () => {
   try { const value = await api(`/api/jobs/${activeJob}/cancel`, {method: 'POST'}); render(value); await artifacts(activeJob); }
   catch (error) { $('connection').textContent = error.message; }
 });
-api('/api/capabilities').then(value => { maxBytes = value.max_upload_bytes; $('limits').textContent = `Up to ${(maxBytes / 1024 / 1024).toFixed(0)} MB per file. Analysis budget: ${(value.max_runtime_s / 60).toFixed(0)} minutes per job.`; }).catch(error => { $('upload-error').textContent = error.message; });
+api('/api/capabilities').then(value => {
+  maxBytes = value.max_upload_bytes;
+  $('limits').textContent = `Up to ${(maxBytes / 1024 / 1024).toFixed(0)} MB per file. Analysis budget: ${(value.max_runtime_s / 60).toFixed(0)} minutes per job.`;
+  if (value.provider_configured === false) {
+    $('data-setup').textContent = 'Historical flight data is not configured. Restart the service with --online to download public data, or provide an offline configuration. Downloads and indexes can require tens of gigabytes or more and hours.';
+    $('data-setup').hidden = false;
+  } else if (value.online_enabled) {
+    $('data-setup').textContent = 'Public flight and terrain data may be downloaded to the local cache. Archives and indexes can require tens of gigabytes or more and hours.';
+    $('data-setup').hidden = false;
+  }
+}).catch(error => { $('upload-error').textContent = error.message; });
 renderRecent();
 const savedJob = new URLSearchParams(location.search).get('job');
 if (savedJob && /^[0-9a-f]{32}$/.test(savedJob)) selectJob(savedJob);

@@ -9,6 +9,9 @@ from dopplergeist.matching import RidgeTimes
 from dopplergeist.search import score_candidate
 
 
+SCHEDULE = {"scheduled_trials": 3, "empty_clock_domain": False,
+            "trial_count_semantics": "disjoint_evaluated_rejected_unknown"}
+
 class Model:
     def __init__(self, last_supported=np.inf, error=None):
         self.last_supported, self.error = last_supported, error
@@ -38,7 +41,7 @@ def score(model, *, ridge_hz=120.0, association=False, bounds=None):
 def test_all_declared_clock_trials_are_evaluated():
     result = score(Model())
     assert result["score"] == pytest.approx(0)
-    assert result["scoring_assessment"] == {"complete": True, "evaluated_trials": 3,
+    assert result["scoring_assessment"] == {**SCHEDULE, "complete": True, "evaluated_trials": 3,
         "rejected_trials": 0, "unknown_trials": 0, "reasons": []}
 
 
@@ -54,7 +57,7 @@ def test_finite_best_does_not_hide_unknown_clock_trial():
 def test_completed_acoustic_rejection_is_classified_without_a_finite_best():
     result = score(Model(), ridge_hz=200, association=True)
     assert result["score"] == -np.inf
-    assert result["scoring_assessment"] == {"complete": True, "evaluated_trials": 0,
+    assert result["scoring_assessment"] == {**SCHEDULE, "complete": True, "evaluated_trials": 0,
         "rejected_trials": 3, "unknown_trials": 0, "reasons": ["acoustic_loss_exceeds_limit"]}
 
 
@@ -62,7 +65,7 @@ def test_typed_emission_failure_stays_unknown_instead_of_losing_candidate_accoun
     error = geometry.AcousticSupportError("test-flight", "non_monotone_arrival")
     result = score(Model(error=error))
     assert result["score"] == -np.inf
-    assert result["scoring_assessment"] == {"complete": False, "evaluated_trials": 0,
+    assert result["scoring_assessment"] == {**SCHEDULE, "complete": False, "evaluated_trials": 0,
         "rejected_trials": 0, "unknown_trials": 3,
         "reasons": ["test-flight: non_monotone_arrival"]}
 
@@ -84,5 +87,6 @@ def test_unrelated_value_error_is_not_relabelled_as_trajectory_support():
 def test_empty_clock_domain_is_not_a_vacuous_completed_assessment():
     result = score(Model(), bounds=[5, 6])
     assert result["score"] == -np.inf
-    assert result["scoring_assessment"] == {"complete": False, "evaluated_trials": 0,
-        "rejected_trials": 0, "unknown_trials": 1, "reasons": ["no_clock_trials"]}
+    assert result["scoring_assessment"] == {**SCHEDULE, "scheduled_trials": 0,
+        "empty_clock_domain": True, "complete": False, "evaluated_trials": 0,
+        "rejected_trials": 0, "unknown_trials": 0, "reasons": ["no_clock_trials"]}

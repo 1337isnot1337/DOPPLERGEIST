@@ -1,0 +1,11 @@
+{
+  "wheel": "dopplergeist-0.1.0-py3-none-any.whl",
+  "wheel_sha256": "42310bafaa89af9ff3a4d152b36dcfa5439d9be80d0ad299fd347e012aca5c6b",
+  "source_commit": "db9db65aad7a6fe6fa9fc5fd31a9c45c72f4f68d",
+  "installed_package_files_matching_source": 25,
+  "pip_check": true,
+  "cli_help": true,
+  "browser_assets": true,
+  "source_package": "dopplergeist",
+  "scope": "offline installed-package verification; no data generation"
+}
