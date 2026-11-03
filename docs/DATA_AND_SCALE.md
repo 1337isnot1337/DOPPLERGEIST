@@ -84,12 +84,15 @@ worker processes for the built-in cached-terrain provider, automatically choosin
 one fewer worker than the available logical CPUs, with a minimum of one. Custom
 terrain providers use serial execution. Hard limits on grid cells, tracks, samples,
 CPA rows and candidate combinations bound each worker's allocations; total memory
-grows with the worker count. When a tile exceeds a per-tile capacity limit, the
-search divides it into smaller nonoverlapping grid rectangles and checkpoints
-each completed piece. Fine search also divides overloaded rectangles. A capacity
-failure at a single grid cell, missing data, and other errors remain visible as
-incomplete work. Reducing `tile_cells` trades scheduling overhead for smaller
-working sets.
+grows with the worker count. An overloaded track query is retried with the same
+conservative observer-distance test used by the scorer. Tracks with unsupported
+motion remain in the result so their uncertainty is recorded. If a recognized
+capacity limit is still exceeded, the search divides the tile into smaller
+nonoverlapping grid rectangles and checkpoints each completed piece. Fine search
+also divides overloaded rectangles.
+A capacity failure at a single grid cell, missing data, and other errors remain
+visible as incomplete work. Reducing `tile_cells` trades scheduling overhead for
+smaller working sets.
 
 Workers retain private score ledgers. The parent verifies their identities and
 checksums before importing a completed tile, and merges rankings in deterministic
@@ -99,6 +102,12 @@ serial run using a global floor has a different checkpoint identity. On one
 shared-machine replay of two real grid points from a full-day search, one worker
 took 64.93 seconds and two took 38.95 seconds including startup, with identical
 payloads and ledgers. This small sample does not predict nationwide runtime.
+
+In one real full-day grid cell, the track retry reduced 1,929 queried tracks to
+614 within the configured memory limit. All 200 tracks with unsupported motion
+remained. Complete scoring with the full and reduced sets produced identical
+results, support records and retention checksums. This does not establish that
+other overloaded cells will fit within the limits or resolve unsupported motion.
 
 Candidate scores are merged deterministically with approach identities, then
 global finalists are refined on the same global grid in bounded subtiles. The
