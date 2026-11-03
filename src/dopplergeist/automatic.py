@@ -276,6 +276,8 @@ def _search(request, recording, events, output, config, search_progress):
     scoring = {"mode": "robust_ridge", "c": c, "time_origin": lo if lo == hi else None,
                "time_sweep_s": 0 if lo == hi else 5, "time_step_s": 0.5,
                "recording_start_window_s": [lo, hi]}
+    if config.get("resume_legacy_first_batch"):
+        scoring["legacy_first_batch"] = True
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
                              bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
                              scoring=scoring, filters=filters, input_hashes=hashes,

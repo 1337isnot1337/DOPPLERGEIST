@@ -1,10 +1,10 @@
 """Batched robust ridge fits with the scalar model's arithmetic order."""
 import numpy as np
 
-from .matching import _frequency_scale, _ridge_fit_inputs
+from .matching import _fit_ridge_uncached, _frequency_scale, _ridge_fit_inputs
 
 
-def first_event_fits(measurement, event, factors, emissions):
+def first_event_fits(measurement, event, factors, emissions, *, legacy_arithmetic=False):
     """Fit supported clocks together, or return None for the ordinary fitter.
 
     This uses the same six iterations, box constraints, and diagnostics as the
@@ -23,7 +23,7 @@ def first_event_fits(measurement, event, factors, emissions):
         return None
     low, high = event["f0_range_hz"]
     # Keep scalar numeric promotion for noncanonical parameter types.
-    if any(type(value) not in (int, float) for value in (sigma, fraction, low, high)):
+    if not legacy_arithmetic and any(type(value) not in (int, float) for value in (sigma, fraction, low, high)):
         return None
     y, w = ridge[measured], weights[measured]
     independent = len(np.unique(times[measured]))
@@ -40,8 +40,9 @@ def first_event_fits(measurement, event, factors, emissions):
         # The scalar fitter squares Python floats here. NumPy's array square
         # can differ by one ULP, which changes later IRLS steps and mode scores.
         try:
-            prior = np.fromiter(((2 * sigma / float(value))**2 for value in cap),
-                                dtype=float, count=len(cap))
+            prior = ((2 * sigma / cap)**2 if legacy_arithmetic else
+                     np.fromiter(((2 * sigma / float(value))**2 for value in cap),
+                                 dtype=float, count=len(cap)))
         except (OverflowError, ZeroDivisionError):
             return None
         for iteration in range(6):
@@ -80,9 +81,10 @@ def first_event_fits(measurement, event, factors, emissions):
                 effective = w / residual_scale
         loss = np.average(2 * sigma**2 * (residual_scale - 1), weights=w, axis=1)
         try:
-            penalty = np.fromiter(
-                ((2 * sigma * float(drift) / float(bound))**2 / independent
-                 for drift, bound in zip(beta, cap)), dtype=float, count=len(cap))
+            penalty = ((2 * sigma * beta / cap)**2 / independent if legacy_arithmetic else
+                       np.fromiter(
+                           ((2 * sigma * float(drift) / float(bound))**2 / independent
+                            for drift, bound in zip(beta, cap)), dtype=float, count=len(cap)))
         except (OverflowError, ZeroDivisionError):
             return None
         score = -np.sqrt(loss + penalty)
@@ -97,4 +99,13 @@ def first_event_fits(measurement, event, factors, emissions):
              "rmse_hz": float(rmse[i]), "support_fraction": 1.0, "sample_count": int(len(y)),
              "independent_sample_count": independent, "outlier_fraction": float(outlier[i])}
             for i in range(len(alpha))]
+    if legacy_arithmetic:
+        # Saved searches before the scalar-consistent correction used this
+        # array arithmetic and these three fallback checks for the first group.
+        # Preserve their exact scores while batching later groups normally.
+        for i in {0, len(results)//2, len(results)-1}:
+            scalar = _fit_ridge_uncached(None, None, measurement, 0., event["f0_range_hz"],
+                                         343., sigma, fraction, acoustic_result=(factors[i], emissions[i]))
+            if results[i] != scalar:
+                return None
     return results
