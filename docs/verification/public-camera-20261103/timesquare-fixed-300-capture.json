@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "source_page": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+  "camera": "tsstreet",
+  "requested_duration_s": 300.0,
+  "status": "captured",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "39f679cb7c54d33ee366906a5dbc4e6f6e4cdfa074ffb653b6db304382026ecf",
+  "page_fetch": {
+    "started_utc": "2026-11-03T01:00:46.916334Z",
+    "finished_utc": "2026-11-03T01:00:47.203821Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:00:47 GMT",
+    "sha256": "f08d5beaf6f3c438132f52a04b97a3d239e231a8e4790151af0ed0849cfe3179",
+    "bytes": 173242
+  },
+  "camera_name": "Street Cam",
+  "stream_url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/playlist.m3u8",
+  "stream_url_sha256": "d56781009a733c288b958cb08121819f1b0db2ccf5751d42aa9954cfb374f25d",
+  "provider_map_reference": {
+    "lat": 40.75941552728725,
+    "lon": -73.98521661758423,
+    "kind": "provider_map_marker",
+    "uncertainty_m": null,
+    "source": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+    "timezone": "America/New_York"
+  },
+  "playlist_fetch": {
+    "started_utc": "2026-11-03T01:00:47.211899Z",
+    "finished_utc": "2026-11-03T01:00:47.304571Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:00:47 GMT",
+    "sha256": "cb10fc9c5afc1567fff5968540b541734805acb5d36b58bc57a1535c3a9626e0",
+    "bytes": 231
+  },
+  "media_playlist_fetch": {
+    "started_utc": "2026-11-03T01:00:47.304834Z",
+    "finished_utc": "2026-11-03T01:00:47.398131Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 01:00:47 GMT",
+    "sha256": "049191ac9fe55df51239ff24cbd39b2a43df546b6b2e263b9d90dcf1219b3d19",
+    "bytes": 511
+  },
+  "initial_media_segments": [
+    {
+      "sequence": 45757,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w886857771_45757.ts",
+      "duration_s": 6.066,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 45758,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w886857771_45758.ts",
+      "duration_s": 6.067,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 45759,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w886857771_45759.ts",
+      "duration_s": 6.166,
+      "broadcaster_start_utc": null
+    }
+  ],
+  "broadcaster_segment_clock_present": false,
+  "clock_limitations": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ],
+  "audio_timeline": "source A/V timestamps, rebased together; audio gaps may be padded by aresample",
+  "decoder_command_redacted": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "warning",
+    "-copyts",
+    "-start_at_zero",
+    "-rw_timeout",
+    "15000000",
+    "-user_agent",
+    "Mozilla/5.0",
+    "-headers",
+    "Referer: https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet\r\n",
+    "-i",
+    "https://videos-3.earthcam.com/fecnetwork/9974.flv/playlist.m3u8?[query omitted]",
+    "-t",
+    "300.0",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-af",
+    "aresample=async=1:first_pts=0",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "64k",
+    "/home/user/dopplergeist-public-camera-20261103/results/camera-capture-timesquare-fixed-20261103-0101/audio.mp3",
+    "-t",
+    "300.0",
+    "-map",
+    "0:v:0",
+    "-c:v",
+    "copy",
+    "-an",
+    "-f",
+    "null",
+    "/dev/null"
+  ],
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "capture_started_utc": "2026-11-03T01:00:47.468169Z",
+  "decoder_exit_code": 0,
+  "capture_finished_utc": "2026-11-03T01:05:34.372111Z",
+  "capture_elapsed_s": 286.9039479601197,
+  "audio": {
+    "path": "audio.mp3",
+    "bytes": 2401101,
+    "sha256": "6853afb5dd7967209a5c5adc529c48a582e67112a63ef04d3989970a88d781e4"
+  },
+  "audio_probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "16000",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "300.096000"
+    }
+  },
+  "decoded_duration_s": 300.0
+}

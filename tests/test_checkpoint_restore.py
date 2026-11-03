@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import tarfile
 import tempfile
@@ -29,7 +30,7 @@ class CheckpointRestoreTests(unittest.TestCase):
                 member = tarfile.TarInfo(name)
                 member.size = len(content)
                 bundle.addfile(member, io.BytesIO(content))
-        self.asset = {"bytes": self.archive.stat().st_size,
+        self.asset = {"name": self.archive.name, "bytes": self.archive.stat().st_size,
                       "sha256": RESTORE.digest(self.archive),
                       "files": [{"path": name, "bytes": len(content),
                                  "sha256": hashlib.sha256(content).hexdigest()}
@@ -47,14 +48,14 @@ class CheckpointRestoreTests(unittest.TestCase):
 
     def test_member_checksum_failure_writes_no_destination_files(self):
         self.asset["files"][-1]["sha256"] = "0" * 64
-        with self.assertRaisesRegex(ValueError, "Checksum or size mismatch"):
+        with self.assertRaisesRegex(ValueError, "Checksum/size mismatch"):
             RESTORE.restore_archive(self.archive, self.asset, self.destination)
         self.assertEqual(list(self.destination.iterdir()), [])
 
     def test_manifest_missing_member_is_rejected_before_writes(self):
         self.asset["files"].append({"path": "data/source/missing.txt", "bytes": 0,
                                     "sha256": hashlib.sha256(b"").hexdigest()})
-        with self.assertRaisesRegex(ValueError, "Missing manifest files"):
+        with self.assertRaisesRegex(ValueError, "missing manifest files"):
             RESTORE.restore_archive(self.archive, self.asset, self.destination)
         self.assertEqual(list(self.destination.iterdir()), [])
 
@@ -74,7 +75,7 @@ class CheckpointRestoreTests(unittest.TestCase):
                 "--manifest", str(self.root / "unused-manifest.json"),
                 "--receipt", str(receipt)]
         with (patch("sys.argv", argv),
-              patch.object(RESTORE.urllib.request, "urlopen") as download,
+              patch.object(RESTORE.SHARED, "download_asset") as download,
               patch.object(RESTORE, "restore_archive") as restore):
             with self.assertRaisesRegex(FileExistsError, "receipt"):
                 RESTORE.main()
@@ -82,6 +83,26 @@ class CheckpointRestoreTests(unittest.TestCase):
         restore.assert_not_called()
         self.assertEqual(receipt.read_bytes(), b'{"status": "prior evidence"}\n')
         self.assertEqual(list(self.destination.iterdir()), [])
+
+    def test_failed_shared_download_retains_failure_receipt(self):
+        manifest = self.root / "manifest.json"
+        manifest.write_text(json.dumps({"assets": [self.asset]}))
+        receipt = self.root / "download-failure.json"
+        argv = [str(SCRIPT), "--destination", str(self.destination),
+                "--manifest", str(manifest), "--receipt", str(receipt)]
+        with (patch("sys.argv", argv),
+              patch.object(RESTORE, "ASSETS", (self.archive.name,)),
+              patch.object(RESTORE.SHARED, "download_asset", side_effect=RuntimeError("release access unavailable")),
+              patch.object(RESTORE, "restore_archive") as restore):
+            with self.assertRaisesRegex(RuntimeError, "release access unavailable"):
+                RESTORE.main()
+        restore.assert_not_called()
+        record = json.loads(receipt.read_text())
+        self.assertEqual(record["status"], "failed")
+        self.assertEqual(record["assets"], [])
+        self.assertEqual(record["restoration_implementation"]["download"], "gh release download")
+        self.assertFalse(record["restoration_implementation"]["credentials_recorded"])
+        self.assertFalse((self.destination / "data").exists())
 
 
 if __name__ == "__main__":

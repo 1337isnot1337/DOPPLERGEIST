@@ -56,6 +56,16 @@ def _altitude_bias(track, bias_m):
     return shifted
 
 
+def predict_fitted_ridge(track, observer, receive_times_s, diagnostics, c=343.0):
+    """Render the frozen fitted source model; unsupported track times stay NaN."""
+    factor, emitted, _ = track.acoustic(receive_times_s, observer, c)
+    slope = diagnostics.get("source_drift_hz_s", 0.0)
+    if slope and "source_reference_emission_time_s" not in diagnostics:
+        raise ValueError("A drifting-source prediction needs its fitted emission-time reference")
+    reference = diagnostics.get("source_reference_emission_time_s", 0.0)
+    return factor*(diagnostics["f0_hz"]+slope*(emitted-reference))
+
+
 def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                            time_tolerance_s=5.0, silence=None, min_events=1,
                            max_events=3, max_candidates=20000):
@@ -219,6 +229,8 @@ def fit_ridge(track, observer, measurement, start_time, f0_bounds, c=343.0,
     penalty = (2 * sigma_hz * drift / cap)**2 / independent_samples if cap else 0.0
     return {"score": -float(np.sqrt(loss + penalty)), "f0_hz": float(fit[0]),
             "source_drift_hz": drift, "source_drift_hz_s": drift / span,
+            "source_reference_emission_time_s": float((emission.min()+emission.max())/2),
+            "source_span_s": span,
             "drift_bound_hz": float(cap), "drift_at_bound": bool(cap and abs(drift) > 0.99 * cap),
             "rmse_hz": float(np.sqrt(np.average(residual**2, weights=w))),
             "support_fraction": 1.0, "sample_count": int(len(y)),

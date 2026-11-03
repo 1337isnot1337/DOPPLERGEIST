@@ -8,11 +8,18 @@ from pathlib import Path
 
 
 def implementation_provenance(code_root):
-    """Retain the legacy code digest and list its individual Python sources."""
+    """Hash this package, retaining legacy paths relative to its install parent.
+
+    The parent can be a checkout's src directory or an installed site-packages
+    directory. Unrelated installed libraries are not implementation sources.
+    """
     root = Path(code_root).resolve()
+    package_root = root / "aircraft_geoloc"
+    if not package_root.is_dir():
+        raise FileNotFoundError(f"Implementation package is absent: {package_root}")
     digest = hashlib.sha256()
     sources = []
-    for path in sorted(root.rglob("*.py")):
+    for path in sorted(package_root.rglob("*.py")):
         relative = str(path.relative_to(root))
         data = path.read_bytes()
         # Preserve the existing aggregate digest format for downstream readers.

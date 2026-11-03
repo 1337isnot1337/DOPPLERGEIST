@@ -266,3 +266,23 @@ def test_unestablished_flight_datum_prevents_complete_sensitivity():
     assert not result["sensitivity"]["complete"]
     assert result["sensitivity"]["altitude_basis"]["a"] == ["barometric", "unspecified"]
     assert any("datum" in p["reason"] for p in result["sensitivity"]["failures"])
+
+
+def test_overlay_prediction_uses_fitted_emission_drift_and_preserves_support():
+    from aircraft_geoloc.matching import predict_fitted_ridge
+    epoch = 1_790_000_000.0
+    measured = measurement(drift=1.8)
+    track = Flyover(epoch+30)
+    fit = fit_ridge(track, None, measured, epoch, [118, 122])
+    predicted = predict_fitted_ridge(track, None, epoch+measured[0].time, fit)
+    rms = np.sqrt(np.mean((predicted-measured[1])**2))
+    assert abs(rms-fit["rmse_hz"]) < 1e-10
+    assert rms < 0.1
+    constant = fit["f0_hz"]*track.acoustic(epoch+measured[0].time, None, 343)[0]
+    assert np.sqrt(np.mean((constant-measured[1])**2)) > 0.4
+    assert epoch < fit["source_reference_emission_time_s"] < epoch+60
+    limited = Flyover(epoch+30, support=epoch+54)
+    assert np.isnan(predict_fitted_ridge(limited, None, [epoch+55], fit)[0])
+    incomplete = {k:v for k,v in fit.items() if k != "source_reference_emission_time_s"}
+    with pytest.raises(ValueError, match="reference"):
+        predict_fitted_ridge(track, None, epoch+measured[0].time, incomplete)

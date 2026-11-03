@@ -121,18 +121,46 @@ class ProvenanceTests(unittest.TestCase):
         self.assertNotIn("ground_truth_used_by_search", declaration)
         self.assertTrue(any("ground truth" in text for text in declaration["limitations"]))
 
+    def test_wheel_layout_excludes_unrelated_installed_packages(self):
+        roots = [self.root / "checkout/src", self.root / "venv/lib/python/site-packages"]
+        files = {"aircraft_geoloc/__init__.py": b"version = 1\n",
+                 "aircraft_geoloc/web/__init__.py": b"assets = True\n"}
+        for root in roots:
+            for name, data in files.items():
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+        installed = roots[1]
+        sibling = installed / "unrelated_package/module.py"
+        sibling.parent.mkdir()
+        sibling.write_bytes(b"external = 1\n")
+        (installed / "unrelated.py").write_bytes(b"external = 2\n")
+        checkout = implementation_provenance(roots[0])
+        wheel = implementation_provenance(installed)
+        self.assertEqual({row["relative_path"] for row in wheel["sources"]}, set(files))
+        self.assertEqual(wheel["sha256"], checkout["sha256"])
+        sibling.write_bytes(b"external = 3\n")
+        self.assertEqual(implementation_provenance(installed)["sha256"], wheel["sha256"])
+        (installed / "aircraft_geoloc/web/__init__.py").write_bytes(b"assets = False\n")
+        self.assertNotEqual(implementation_provenance(installed)["sha256"], wheel["sha256"])
+        with self.assertRaises(FileNotFoundError):
+            implementation_provenance(sibling.parent)
+
     def test_code_manifest_preserves_legacy_digest_and_detects_code_changes(self):
         root = self.root / "src"
-        (root / "pkg").mkdir(parents=True)
-        (root / "a.py").write_bytes(b"a = 1\n")
-        (root / "pkg/b.py").write_bytes(b"b = 2\n")
+        package = root / "aircraft_geoloc"
+        (package / "pkg").mkdir(parents=True)
+        (package / "a.py").write_bytes(b"a = 1\n")
+        (package / "pkg/b.py").write_bytes(b"b = 2\n")
         (root / "ignored.txt").write_bytes(b"not Python source")
         result = implementation_provenance(root)
-        expected = hashlib.sha256(b"a.py" + b"a = 1\n" + b"pkg/b.py" + b"b = 2\n").hexdigest()
+        expected = hashlib.sha256(b"aircraft_geoloc/a.py" + b"a = 1\n" +
+                                  b"aircraft_geoloc/pkg/b.py" + b"b = 2\n").hexdigest()
         self.assertEqual(result["sha256"], expected)
-        self.assertEqual([row["relative_path"] for row in result["sources"]], ["a.py", "pkg/b.py"])
+        self.assertEqual([row["relative_path"] for row in result["sources"]],
+                         ["aircraft_geoloc/a.py", "aircraft_geoloc/pkg/b.py"])
         self.assertEqual(result["sources"][1]["sha256"], hashlib.sha256(b"b = 2\n").hexdigest())
-        (root / "pkg/b.py").write_bytes(b"b = 3\n")
+        (package / "pkg/b.py").write_bytes(b"b = 3\n")
         self.assertNotEqual(implementation_provenance(root)["sha256"], expected)
 
 

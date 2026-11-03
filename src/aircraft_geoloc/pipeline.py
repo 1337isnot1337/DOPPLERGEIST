@@ -163,13 +163,16 @@ def plot_results(output,ranked,tracks,measurements,c=343.0):
     fig.savefig(output/"location-scores.png",dpi=160)
     plt.close(fig)
     lookup={t.id:t for t in tracks}
+    from .matching import predict_fitted_ridge
     for i,(spec,ridge,weight,fit) in enumerate(measurements):
         best=ranked[0]
         track=lookup[best["flight_ids"][i]]
-        factor,_,_=track.acoustic(best["recording_start_time_s"]+spec.time,ecef(best["lat"],best["lon"],best["elev_m"]),c)
+        diagnostics=dict(best.get("event_diagnostics", [{} for _ in measurements])[i],f0_hz=best["f0_hz"][i])
+        predicted=predict_fitted_ridge(track,ecef(best["lat"],best["lon"],best["elev_m"]),
+            best["recording_start_time_s"]+spec.time,diagnostics,c)
         fig,ax=plt.subplots(figsize=(10,4),layout="constrained")
         ax.pcolormesh(spec.time,spec.frequency,spec.contrast,shading="auto",cmap="magma",vmin=0,vmax=6)
-        ax.plot(spec.time,best["f0_hz"][i]*factor,color="cyan",lw=1.1,label="Best physical model")
+        ax.plot(spec.time,predicted,color="cyan",lw=1.1,label="Best physical model")
         ax.set(xlabel="Recording time (s)",ylabel="Frequency (Hz)",title=f"Event {i+1}: shared clock, {track.id}")
         ax.legend(loc="upper right")
         fig.savefig(output/f"event-{i+1}-best-model.png",dpi=160)

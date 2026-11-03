@@ -46,6 +46,36 @@ jobs:
           ffmpeg -version > results/ci-environment/ffmpeg-version.txt
       - name: Run repository tests
         run: python -m pytest -q --junitxml=results/ci-environment/pytest.xml
+      - name: Verify provenance from an installed wheel
+        run: |
+          checkpoint_wheel_dir="$RUNNER_TEMP/checkpoint-wheel"
+          python -m pip wheel --no-deps --wheel-dir "$checkpoint_wheel_dir/dist" .
+          python -m venv "$checkpoint_wheel_dir/venv"
+          "$checkpoint_wheel_dir/venv/bin/python" -m pip install --no-deps "$checkpoint_wheel_dir"/dist/*.whl
+          "$checkpoint_wheel_dir/venv/bin/python" -I - results/ci-environment/wheel-provenance.json <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          import aircraft_geoloc
+          from aircraft_geoloc.provenance import implementation_provenance
+          package = Path(aircraft_geoloc.__file__).resolve().parent
+          assert "site-packages" in package.parts, package
+          expected = implementation_provenance(Path("src"))
+          observed = implementation_provenance(package.parent)
+          assert observed["sha256"] == expected["sha256"]
+          probe = package.parent / "unrelated_checkpoint_probe.py"
+          try:
+              probe.write_text("unrelated = True\n")
+              assert implementation_provenance(package.parent) == observed
+          finally:
+              probe.unlink(missing_ok=True)
+          receipt = {"passed": True, "package_path": str(package),
+                     "installed_wheel_matches_checkout": True,
+                     "unrelated_installed_file_excluded": True, "implementation": observed}
+          Path(sys.argv[1]).write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps({"wheel_provenance_passed": True, "package_path": str(package),
+                            "source_files": len(observed["sources"])}))
+          PY
       - name: Replay configured synthetic methodology
         run: python scripts/ci_checkpoint_replay.py --output results/ci-synthetic --case-timeout-s 600
       - name: Upload evidence, including failed runs
@@ -80,7 +110,13 @@ jobs:
           sudo apt-get install -y ffmpeg
           python -m pip install -e . pytest
           python -m pip check
-      - name: Restore and verify public checkpoint assets
+      - name: Check authenticated release downloader
+        run: |
+          sudo apt-get install -y gh
+          gh --version
+      - name: Restore and verify checkpoint assets with read-only authentication
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: python scripts/restore_ci_checkpoint.py --destination . --receipt results/ci-restore.json
       - name: Replay source-informed regional reference
         run: python scripts/ci_checkpoint_replay.py --output results/ci-regional --real-config data/source/reproduce-local.json --case-timeout-s 900

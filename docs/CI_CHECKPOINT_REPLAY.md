@@ -3,7 +3,7 @@
 The `Checkpoint methodology replay` workflow installs the project in a fresh
 Ubuntu/Python 3.12 GitHub Actions runner, runs the tests, generates independent
 synthetic audio and executes both configured CLI cases. A dependent job restores
-the three public regional-input bundles and repeats the real regional case.
+the three regional-input release bundles and repeats the real regional case.
 Logs and receipts are preserved when a step fails.
 
 This verifies the configured methodology. Automatic event discovery, MP3 upload
@@ -12,7 +12,7 @@ separate acceptance gates.
 
 ## Commands
 
-With project dependencies, pytest, ffmpeg and ffprobe installed:
+With project dependencies, pytest, ffmpeg, ffprobe and GitHub CLI installed:
 
 ```bash
 python -m pytest -q
@@ -24,7 +24,11 @@ python scripts/ci_checkpoint_replay.py --output results/new-regional-replay --re
 Each replay output directory must be new. Restoration refuses to overwrite any
 existing destination file. Use a fresh checkout to restore regional data. The
 three archives total 1,517,171,699 compressed bytes; extraction and staging require
-additional disk space. Downloads are public and use no credentials.
+additional disk space. The wrapper uses the shared `scripts/restore_artifacts.py`
+downloader and extraction checks. GitHub CLI must have read access to the release
+through its existing authentication or `GH_TOKEN`. The workflow supplies its
+read-only GitHub token only to the restoration step. Receipts never record the
+credential; they record the shared restorer's source hash.
 
 ## Checks and limits
 
@@ -36,7 +40,8 @@ Each synthetic case must locate within 100 m and select the expected flights.
 Every requested case, including failures, appears in the receipt.
 
 Regional archives and every contained file must match their sizes and SHA256
-values in the committed manifest. No source MP4 is restored. After search, the
+values in the committed manifest. Shared validation runs in a temporary staging
+directory before the wrapper publishes new files. No source MP4 is restored. After search, the
 regional result is compared with the checked-in public-platform reference.
 Source-informed windows/bounds and the unverified independent recording clock
 remain explicit. Passing this case does not establish blind real-world accuracy.
@@ -48,6 +53,11 @@ the exact parsed configuration, ridge files, type database and configured
 DEM/geoid files. `provenance.truth_separation` is `not_assessed`: hashes cannot
 establish how event windows or search bounds were selected. Used Copernicus tile
 hashes are explicitly incomplete when the provider does not expose those paths.
+
+Implementation hashes cover only the `aircraft_geoloc` package's Python files.
+The workflow also builds and installs a wheel in a separate virtual environment.
+An isolated Python process checks that its package digest matches the checkout
+and that adding an unrelated installed module cannot change the digest.
 
 ## Evidence and execution
 

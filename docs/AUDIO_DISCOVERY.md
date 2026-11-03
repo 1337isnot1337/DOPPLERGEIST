@@ -107,3 +107,10 @@ truth. Fourteen known synthetic controls retain8 hits/0 misses/0 false alarms.
 The extra unverified reference proposals remain a matching/search cost. Earlier
 3.0-threshold evidence and the faint-pass miss stay preserved; no held-out or
 100m localization claim follows from this development tuning.
+
+Discovery returns all accepted independent groups; it has no global two- or
+three-event maximum. Four- and six-episode generated audio regressions check that
+later events survive and harmonics count once. These audio-only controls test
+retention, not geographic accuracy. The per-frame peak budget remains an explicit
+bounded-analysis setting, and unsupported or missed tones are not a completeness
+guarantee. The contrast 2.5 settings are frozen for the new public-camera batch.

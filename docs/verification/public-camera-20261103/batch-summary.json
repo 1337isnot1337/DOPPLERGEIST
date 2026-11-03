@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "scope": "real public-camera whole-clip discovery and required-input outcomes; no eligible location case",
+  "accuracy_policy": {
+    "report_thresholds_m": [
+      100,
+      500,
+      1000
+    ],
+    "acceptable_error_m": 1000,
+    "preferred_error_m": 500
+  },
+  "detector_tuned_on_captures": false,
+  "frozen_min_contrast": 2.5,
+  "cases": [
+    {
+      "case": "timesquare-prototype-legacy",
+      "label": "prototype at initial producer",
+      "job_id": "dec813ce673742d68526df731a813b44",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "source_sha256": "fb8be2a1ef326392734eb1a94cd3ab44acd4b9540266f377a5946c8c15b21789",
+      "decoded_duration_s": 295.296,
+      "event_count": 0,
+      "candidate_count": 0,
+      "recording_time_supplied": false
+    },
+    {
+      "case": "timesquare-prototype-frozen25",
+      "label": "prototype at frozen2.5",
+      "job_id": "0ead781282514c5099551ef672ab8427",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "source_sha256": "fb8be2a1ef326392734eb1a94cd3ab44acd4b9540266f377a5946c8c15b21789",
+      "decoded_duration_s": 295.296,
+      "event_count": 0,
+      "candidate_count": 0,
+      "recording_time_supplied": false
+    },
+    {
+      "case": "timesquare-fixed-frozen25",
+      "label": "corrected TimesSquare300s",
+      "job_id": "97d159f8e09a48d4aaaecd00572cc8e2",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "source_sha256": "6853afb5dd7967209a5c5adc529c48a582e67112a63ef04d3989970a88d781e4",
+      "decoded_duration_s": 300.0,
+      "event_count": 0,
+      "candidate_count": 0,
+      "recording_time_supplied": false
+    },
+    {
+      "case": "liberty-frozen25",
+      "label": "corrected Liberty300s",
+      "job_id": "93c61feec9b8465486e8d9625d1da2ea",
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "source_sha256": "ae4b53b35c1afe8b07ca6ca4876661016b9dab1818ba3b12c97b4dbd62f8b949",
+      "decoded_duration_s": 300.0,
+      "event_count": 0,
+      "candidate_count": 0,
+      "recording_time_supplied": false
+    }
+  ],
+  "source_availability_failures": [
+    {
+      "camera": "sign_hd",
+      "reason_code": "source_has_no_advertised_audio"
+    }
+  ],
+  "location_evaluable_cases": 0,
+  "asserted_locations": 0,
+  "aircraft_detection_truth_established": false,
+  "automatic_location_goal_completed": false,
+  "limitations": [
+    "No independently bound microphone sample-zero UTC or microphone-coordinate uncertainty.",
+    "No proposals is an observed algorithm outcome, not a certified absence of aircraft.",
+    "Prototype timebase discrepancy and all smoke captures are preserved separately.",
+    "Historical flight acquisition/search are not reached while the recording clock is unestablished."
+  ]
+}
