@@ -1,0 +1,41 @@
+{
+  "sample_count": 4720000,
+  "peak_amplitude": 0.8359885811805725,
+  "time_status": "needs_input",
+  "time_hints": [],
+  "decode": {
+    "decoder": "ffmpeg",
+    "sample_format": "f32le",
+    "channel_policy": "arithmetic channel mean",
+    "source_sample_rate_hz": 4000,
+    "source_channels": 1,
+    "source_codec": "pcm_f32le",
+    "stream_index": 0,
+    "audio_time_zero": "first decoded sample after codec skip/discard",
+    "command": [
+      "ffmpeg",
+      "-nostdin",
+      "-v",
+      "error",
+      "-xerror",
+      "-i",
+      "/home/cinna/aircraft-audio-geolocation/data/synthetic/recording.wav",
+      "-map",
+      "0:a:0",
+      "-vn",
+      "-sn",
+      "-dn",
+      "-af",
+      "pan=mono|c0=1*c0",
+      "-ac",
+      "1",
+      "-ar",
+      "4000",
+      "-acodec",
+      "pcm_f32le",
+      "-f",
+      "f32le",
+      "pipe:1"
+    ]
+  }
+}
