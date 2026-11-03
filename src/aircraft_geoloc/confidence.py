@@ -9,7 +9,7 @@ import math
 
 from pyproj import Geod
 
-from .contracts import validate_result
+from .contracts import utc_timestamp, validate_result
 
 
 @dataclass(frozen=True)
@@ -21,9 +21,10 @@ class DecisionPolicy:
     max_outlier_fraction: float = 0.25
     min_support_fraction: float = 0.95
     near_tie_loss_per_event_hz: float = 0.5
+    near_tie_support_per_group: float = 0.2
 
     def __post_init__(self):
-        for name in ("target_radius_m", "max_event_rmse_hz", "near_tie_loss_per_event_hz"):
+        for name in ("target_radius_m", "max_event_rmse_hz", "near_tie_loss_per_event_hz", "near_tie_support_per_group"):
             if not math.isfinite(getattr(self, name)) or getattr(self, name) <= 0:
                 raise ValueError(f"{name} must be positive and finite")
         if type(self.min_independent_events) is not int or self.min_independent_events < 2:
@@ -38,7 +39,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
 
     ``matching_diagnostics`` uses W3/W5's event-ID keys, plus clock_locked,
     refinement_boundary_limited, alternatives_evaluated and sensitivity.
-    Sensitivity must state complete=True, boundary_limited=False and list tested
+    A known-clock single event requires recording_start_window_s and complete
+    sensitivity across that whole input window (settings.clock_bounds_s). Partial
+    associations explicitly enumerate original unmatched_event_ids; these remain
+    unconfirmed acoustic proposals. Sensitivity must list tested
     sources: frequency, clock, altitude and sound_speed. An altitude-only profile
     cannot justify 100 m spatial precision. The orchestrator owns execution errors
     and missing recording-clock needs_input; malformed evidence is failed here.
@@ -46,7 +50,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     policy = policy or DecisionPolicy()
     if not isinstance(policy, DecisionPolicy):
         raise TypeError("policy must be a DecisionPolicy")
-    diagnostics = {"policy": asdict(policy), "policy_version": "engineering-v1",
+    diagnostics = {"policy": asdict(policy), "policy_version": "engineering-v2",
                    "calibration": "uncalibrated", "probability": None,
                    "limitations": ["Archive availability does not establish capture of every aircraft.",
                                    "Sensitivity checks are not a calibrated confidence interval."]}
@@ -90,10 +94,40 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
             return result("inconsistent_harmonic_association", "Harmonics of one event map to different flight segments.")
         groups[key] = (event, flight)
     diagnostics["independent_event_groups"] = len(groups)
-    if len(groups) < policy.min_independent_events:
+    sensitivity = evidence.get("sensitivity", {})
+    window = evidence.get("recording_start_window_s")
+
+    def interval(value):
+        return (isinstance(value, (list, tuple)) and len(value) == 2 and
+                all(not isinstance(v, bool) and isinstance(v, (int, float)) and math.isfinite(v) for v in value)
+                and value[0] <= value[1])
+
+    if window is not None:
+        if not interval(window):
+            return result("invalid_evidence", "The trusted recording-start window must have two finite ordered endpoints.", "failed")
+        fitted = utc_timestamp(best["recording_start_utc"]).timestamp()
+        if not window[0] <= fitted <= window[1]:
+            return result("recording_clock_mismatch", "The fitted recording start lies outside the trusted recording window.")
+        diagnostics["recording_start_window_s"] = list(window)
+    settings = sensitivity.get("settings", {}) if isinstance(sensitivity, dict) else {}
+    tested_clock = settings.get("clock_bounds_s") if isinstance(settings, dict) else None
+    known_clock = (interval(window) and interval(tested_clock) and
+                   tested_clock[0] <= window[0] and tested_clock[1] >= window[1])
+    diagnostics["known_clock_single_event"] = bool(len(groups) == 1 and known_clock)
+    if len(groups) < policy.min_independent_events and not (len(groups) == 1 and
+            policy.min_independent_events == 2 and known_clock):
         return result("insufficient_independent_events", "Too few independent flyovers constrain location; harmonics count once.")
-    if set(best["event_ids"]) != set(lookup):
-        return result("unexplained_events", "The leading hypothesis leaves discovered events unexplained.")
+    unmatched = set(lookup) - set(best["event_ids"])
+    if unmatched:
+        declared = evidence.get("unmatched_event_ids")
+        if (best["score_kind"] != "matched_group_support_minus_normalized_residual" or
+                not isinstance(declared, list) or not all(isinstance(key, str) for key in declared) or
+                len(set(declared)) != len(declared) or set(declared) != unmatched):
+            return result("unexplained_events", "Unmatched acoustic proposals need an explicit subset-association record.")
+        if any(lookup[key].get("harmonic_group_id", key) in groups for key in unmatched):
+            return result("incomplete_harmonic_group", "A matched flyover omits one of its measured harmonic ridges.")
+    diagnostics["unmatched_event_ids"] = sorted(unmatched)
+    diagnostics["unmatched_proposal_status"] = "unconfirmed acoustic proposals; not labelled aircraft misses"
     if evidence.get("clock_locked") is not True:
         return result("timing_not_established", "One shared recording clock has not been verified across all events.")
     for event, _ in groups.values():
@@ -115,19 +149,27 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         if fit.get("drift_at_bound") is not False:
             return result("source_drift_unresolved", "The source-frequency drift model is missing or reaches its allowed bound.")
 
-    if best["score_kind"] != "negative_robust_ridge_loss_hz":
+    subset_scores = best["score_kind"] == "matched_group_support_minus_normalized_residual"
+    if best["score_kind"] != "negative_robust_ridge_loss_hz" and not subset_scores:
         return result("unsupported_score_kind", "This ranking score has no declared ambiguity threshold in the decision policy.")
+    # Alternatives must fit inside the envelope around the returned point.
+    # Two overlapping target-radius circles do not establish that containment.
+    ambiguity_radius_m = min(policy.target_radius_m,
+                             best.get("uncertainty", {}).get("radius_m", policy.target_radius_m))
     for alternative in candidates[1:]:
-        # Unmatched/subset candidates cannot be compared as equal-size losses.
-        if set(alternative["event_ids"]) != set(best["event_ids"]):
+        # Raw losses require equal event sets; subset support has declared units.
+        if not subset_scores and set(alternative["event_ids"]) != set(best["event_ids"]):
             return result("incomparable_candidates", "Competing candidates do not explain the same event set.")
         separation = abs(Geod(ellps="WGS84").inv(best["lon"], best["lat"], alternative["lon"], alternative["lat"])[2])
         same_flights = dict(zip(best["event_ids"], best["flight_ids"])) == dict(zip(alternative["event_ids"], alternative["flight_ids"]))
-        loss_gap = (best["score"] - alternative["score"]) / len(groups)
-        if (separation > 2 * policy.target_radius_m or not same_flights) and loss_gap <= policy.near_tie_loss_per_event_hz:
-            diagnostics["competing_hypothesis"] = {"separation_m": separation, "loss_gap_per_event_hz": loss_gap,
-                                                   "same_flight_association": same_flights}
-            return result("ambiguous_locations" if separation > 2 * policy.target_radius_m else "ambiguous_flight_match",
+        alternative_groups = {lookup[key].get("harmonic_group_id", key) for key in alternative["event_ids"]}
+        gap = (best["score"] - alternative["score"]) / max(len(groups), len(alternative_groups))
+        threshold = policy.near_tie_support_per_group if subset_scores else policy.near_tie_loss_per_event_hz
+        units = "support_units_per_group" if subset_scores else "loss_hz_per_group"
+        if (separation > ambiguity_radius_m or not same_flights) and gap <= threshold:
+            diagnostics["competing_hypothesis"] = {"separation_m": separation, "score_gap": gap, "gap_units": units,
+                                                   "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
+            return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
                           "Competing hypotheses fit nearly as well; no unique precise location is supported.")
     if evidence.get("alternatives_evaluated") is not True:
         return result("alternatives_not_assessed", "The retained competing hypotheses have not all been assessed.")

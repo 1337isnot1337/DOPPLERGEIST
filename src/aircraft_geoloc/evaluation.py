@@ -100,13 +100,21 @@ def evaluate(manifest, predictions, truth, threshold_m=100, iou_threshold=0.3):
         if located and not candidates:
             raise ValueError(f"Successful result for {key} has no candidate")
         row["location_returned"] = located
+        if candidates and "location" in label:
+            best = candidates[0]
+            for name, low, high in (("lat", -90, 90), ("lon", -180, 180)):
+                if not math.isfinite(best[name]) or not low <= best[name] <= high:
+                    raise ValueError(f"Invalid {name} for {key}")
+            row["diagnostic_best_candidate_error_m"] = distance_m([best["lat"], best["lon"]], label["location"])
+            if "flight_ids" in label:
+                row["diagnostic_flight_ids_correct"] = best.get("flight_ids") == label["flight_ids"]
         if located:
             best = candidates[0]
             for name, low, high in (("lat", -90, 90), ("lon", -180, 180)):
                 if not math.isfinite(best[name]) or not low <= best[name] <= high:
                     raise ValueError(f"Invalid {name} for {key}")
             if "location" in label:
-                row["location_error_m"] = distance_m([best["lat"], best["lon"]], label["location"])
+                row["location_error_m"] = row["diagnostic_best_candidate_error_m"]
                 row["within_threshold"] = row["location_error_m"] <= threshold_m
             if "flight_ids" in label:
                 row["flight_ids_correct"] = best.get("flight_ids") == label["flight_ids"]
