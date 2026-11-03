@@ -1,0 +1,17 @@
+{
+  "source_run": "six-event-cli-isolated-v2-20261103",
+  "tile_checkpoints": 76328,
+  "every_member_sha256_verified": true,
+  "raw_checkpoints_preserved": true,
+  "archive": {
+    "path": "six-event-coarse-checkpoints-20261103.tar.gz",
+    "bytes": 7757799,
+    "sha256": "9d4ed19173e7d86ef5f75594413a44f36f08c6f05fd76ab916d6e8a12937c3c4"
+  },
+  "member_manifest": {
+    "path": "six-event-coarse-checkpoints-20261103.jsonl",
+    "bytes": 9268478,
+    "sha256": "e440cc063cb409e24a4579e1a084c8849dacfcab5ada6231d05634fd1b7c484b"
+  },
+  "elapsed_s": 78.51614213804714
+}

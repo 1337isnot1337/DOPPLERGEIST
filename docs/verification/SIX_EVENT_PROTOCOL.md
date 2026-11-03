@@ -66,6 +66,32 @@ only makes FFprobe and FFmpeg preflights pass. A second run uses a new output
 directory with the identical installed wheel, input bytes and work policy. The
 environment repair supplies no data or scientific hint to the backend.
 
+## Runtime diagnostic during the unchanged run
+
+After the full coarse pass, a separate input-only process examined one already
+scored cell. Its selection used the largest serialized coarse checkpoint, then
+the retained row with most matched groups and highest score. It used no truth.
+The original scorer produced 63 subset candidates and made 384 actual ridge-fit
+calls for six distinct exact input combinations, each called 64 times. The
+zero-width clock sweep evaluates the same clock twice, in addition to repeated
+per-event fits across matched subsets.
+
+A separate bounded-cache control on that same cell called the original fitter
+six times, with six cache entries under a declared 4,096-entry maximum. Every
+returned candidate, score and diagnostic has the same semantic content hash as
+the unmodified scorer: `5a987a10cdabfbcb17c1eda73b507682efc1021ca861773b336916bf3e39de19`.
+The instrumented cell checks took 1.138 s and 0.107 s, respectively. This is a
+local implementation experiment, not a production patch, global equivalence
+proof or measured end-to-end speedup. The original immutable job is unchanged.
+In the cached receipt, `fit_requests` counts 384 calls into the wrapper,
+`original_fit_calls` counts six actual fits, and `repeat_fit_calls` denotes 378
+repeated input requests served by the cache.
+
+The first diagnostic harness failed on an incorrect `Terrain` keyword. Its
+source/log is retained. The corrected diagnostic and the predeclared score
+participation helper use the existing `geoid_path` constructor keyword; the
+scientific selection, fixed clock and coordinate offsets are unchanged.
+
 At the source freeze, finite-search decision semantics are still under producer
 review. A correct close hypothesis is not automatically an accepted result, and
 this run cannot establish independent national real-audio performance. Preserve

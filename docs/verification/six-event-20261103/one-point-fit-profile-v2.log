@@ -1,0 +1,41 @@
+{
+  "scope": "single previously scored automatically selected receiver cell, repeated fit inputs counted while executing original scorer; no cache, truth, global sweep or speedup claim",
+  "selection": "largest completed coarse checkpoint by bytes, then most matched groups, then highest stored score",
+  "tile": "tile--22_118.json",
+  "point_id": 46,
+  "point_lat": 40.03416901829226,
+  "point_lon": -100.02095101334798,
+  "work": {
+    "per_event_survivors": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "survivors": 63,
+    "hypotheses_examined": 63,
+    "work_units": 330,
+    "max_matched_events": 6,
+    "event_cap_limited": false,
+    "unmatched_proposals_allowed": true,
+    "cpa_rows": 6,
+    "candidates": 63
+  },
+  "candidate_rows_returned": 63,
+  "returned_rows_content_hash": "5a987a10cdabfbcb17c1eda73b507682efc1021ca861773b336916bf3e39de19",
+  "fit_calls": 384,
+  "unique_exact_fit_inputs": 6,
+  "repeat_fit_calls": 378,
+  "fit_multiplicities": {
+    "64": 6
+  },
+  "fit_elapsed_s": 1.0326586065348238,
+  "total_elapsed_s": 1.137934722006321,
+  "recording_start_window_s": [
+    1790000000.0,
+    1790000000.0
+  ],
+  "instrumentation": "wrapper around matching.fit_ridge in this diagnostic process only; original called for every invocation"
+}

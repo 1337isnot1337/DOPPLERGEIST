@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/outputs/one_point_fit_profile.py", line 18, in <module>
+    terrain=Terrain(config['terrain']['rasters'],geoid_raster=config['terrain']['geoid_raster'])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Terrain.__init__() got an unexpected keyword argument 'geoid_raster'

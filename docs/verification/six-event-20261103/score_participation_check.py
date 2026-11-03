@@ -26,7 +26,7 @@ full = next((r for r in rows if len(r.get('event_indices', [])) == len(events)),
 if full is not None and (not selected or full != selected[0]): selected.append(full)
 config = json.loads(Path('/inputs/operator.json').read_text())
 index = FlightIndex(config['flight_indexes'][0])
-terrain = Terrain(config['terrain']['rasters'], geoid_raster=config['terrain']['geoid_raster'])
+terrain = Terrain(config['terrain']['rasters'], geoid_path=config['terrain']['geoid_raster'])
 identity = json.loads((job/'search/manifest.json').read_text())['configuration']
 xy = Transformer.from_crs('EPSG:4326', 'EPSG:5070', always_xy=True)
 ll = Transformer.from_crs('EPSG:5070', 'EPSG:4326', always_xy=True)
