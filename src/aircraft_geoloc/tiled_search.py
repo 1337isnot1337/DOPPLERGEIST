@@ -163,6 +163,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     track_lookup = {track.id: track for track in tracks}
     for candidate in candidates:
         settings = dict(parameters)
+        scoring_candidate = candidate
         if start_window:
             if start_window[0] == start_window[1] and settings.get("time_origin") is None:
                 settings["time_origin"] = start_window[0]
@@ -177,8 +178,12 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 lo, hi = max(lo, anchor-sweep), min(hi, anchor+sweep)
             if lo > hi:
                 continue
-            settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
-        row = score_candidate(candidate, lookup[candidate["point_id"]], track_lookup, events, measurements, **settings)
+            if "event_indices" in candidate:
+                scoring_candidate = dict(candidate, recording_start_bounds_s=[lo, hi])
+                settings.update(time_origin=None, time_sweep_s=0)
+            else:
+                settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
+        row = score_candidate(scoring_candidate, lookup[candidate["point_id"]], track_lookup, events, measurements, **settings)
         row["pass_emission_times_s"] = [float(p["emission_time"]) for p in candidate["passes"]]
         ranked.append(row)
     return merge_candidates(ranked, budget.top_k), dict(counts, cpa_rows=count, candidates=len(candidates))

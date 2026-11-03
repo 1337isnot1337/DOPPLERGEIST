@@ -197,3 +197,19 @@ def test_uncertain_window_keeps_valid_shared_clock_beyond_cpa_anchor(tmp_path):
     assert ranked
     assert abs(ranked[0]["recording_start_time_s"]-origin) < .02
     assert ranked[0]["event_indices"] == [0, 1]
+
+
+def test_narrow_trusted_window_near_sweep_edge_is_not_shrunk_again(tmp_path):
+    _, tracks, events, measurements, bounds, _, origin = scenario(tmp_path, receiver_offset=(250, 250))
+    points = tile_points((1, 7601, 2, 7602), 250, bounds, Terrain(constant_m=0), "EPSG:5070")
+    observer = ecef(points.lat.iloc[0], points.lon.iloc[0], 0)
+    shifted = []
+    for track, (spec, _, weight, fit) in zip(tracks, measurements):
+        factor, _, _ = track.acoustic(origin+7.05+spec.time, observer)
+        shifted.append((spec, 120*factor, weight, fit))
+    window = (origin+7., origin+7.1)
+    ranked, _ = _score(points, tracks, events, shifted, SearchBudget(),
+                       {"mode": "robust_ridge", "time_sweep_s": 5., "time_step_s": .5}, {}, start_window=window)
+    assert ranked
+    assert window[0] <= ranked[0]["recording_start_time_s"] <= window[1]
+    assert ranked[0]["event_indices"] == [0, 1]
