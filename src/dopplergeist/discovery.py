@@ -6,6 +6,7 @@ aircraft identity. No straight-pass speed/slant fit is required for acceptance.
 from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
+from statistics import median
 
 import numpy as np
 from scipy import ndimage, optimize, signal
@@ -92,8 +93,14 @@ def _paths(spec, settings):
             speed = delta / dt[:, None]
             slopes = []
             for path in active:
-                tail = np.asarray(path[-8:])
-                slopes.append(float(np.median(np.diff(tail[:, 1]) / np.diff(tail[:, 0]))) if len(tail) >= 3 else 0.0)
+                tail = path[-8:]
+                if len(tail) >= 3:
+                    slopes.append(float(median(
+                        (right[1] - left[1]) / (right[0] - left[0])
+                        for left, right in zip(tail, tail[1:])
+                    )))
+                else:
+                    slopes.append(0.0)
             allowed = (speed >= -np.maximum(8, last[:, 1, None] * 0.08)) & (speed <= np.maximum(1.0, last[:, 1, None] * 0.008))
             predicted_delta = np.asarray(slopes)[:, None] * dt[:, None]
             costs = np.abs(delta - predicted_delta) / np.maximum(1.0, last[:, 1, None] * 0.01)
