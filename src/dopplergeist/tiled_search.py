@@ -701,13 +701,20 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 Path(worker_path).unlink()
             except OSError:
                 pass
-            return checkpoint
         except (DataUnavailable, ValueError, OSError) as error:
             if payload is not None and not isinstance(error, TileFailure):
                 provenance = {key: payload.get(key, []) for key in
                               ("terrain_files", "terrain_ocean_tiles", "terrain_failures")}
                 return TileFailure(str(error), provenance)
             return error
+        advance_progress(cells)
+        return checkpoint
+
+    def advance_progress(cells):
+        nonlocal processed_cells
+        processed_cells += (cells[2]-cells[0]) * (cells[3]-cells[1])
+        if coarse_cells:
+            report_search_progress(0.8 * processed_cells / coarse_cells)
 
     with context as pool:
         roots = grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs)
@@ -774,10 +781,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         next_wave.extend((child_id, tuple(child_cells)) for child_id, child_cells in children)
                     else:
                         failures.append({"tile": tile_id, "reason": str(error)})
-                if terminal:
-                    processed_cells += (cells[2]-cells[0]) * (cells[3]-cells[1])
-                    if coarse_cells:
-                        report_search_progress(0.8 * processed_cells / coarse_cells)
+                if terminal and (pool is None or was_cached or isinstance(prepared, BaseException)):
+                    advance_progress(cells)
             wave = sorted(next_wave, key=tile_order) if next_wave else None
         report_search_progress(0.8, force=True)
     coarse = list(ranked)

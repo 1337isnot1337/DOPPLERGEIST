@@ -544,8 +544,6 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 return dual_flags[index]
             def dual_at(index):
                 nonlocal dual_pruned
-                if index != 0:
-                    return False
                 rejected = bool(dual_flags_at(index)[trial])
                 dual_pruned += int(rejected)
                 return rejected
@@ -637,7 +635,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
                     unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
                     unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
-                    unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
+                    unknown_score_bound_method=("nonnegative_loss_validated_fits_and_acoustic_dual"
+                                                if dual_pruned else "nonnegative_loss_and_validated_event_fits"))
                 if partial_prunes:
                     assessment["retention_score_floor"] = score_floor
                     assessment["retention_pruned_trials"] = partial_prunes
