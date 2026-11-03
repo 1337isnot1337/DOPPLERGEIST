@@ -37,6 +37,14 @@ elsewhere. An entire native interval is conservatively unsupported, including
 its slower portions; this guard does not split or repair it. Existing
 `non_monotone_arrival` failures and messages are preserved.
 
+The finite Newton iteration must also finish with an emission-time correction
+within 1e-7 s or four receive-timestamp ULPs, whichever is larger. A finite last
+iterate is insufficient: a subsonic straight near-sonic control previously
+returned emission times about 293 s from the analytic solution after ten
+iterations. An unfinished solve now raises `emission_solver_not_converged` and
+remains unknown. Samples outside the declared trajectory support retain NaNs;
+they do not require an extrapolated converged root.
+
 The robust clock-trial adapter records these failures as unknown, never as an
 acoustic rejection or an evaluated fit. A perfect ridge match cannot establish
 physical support. The guard does not change source observations, velocity
