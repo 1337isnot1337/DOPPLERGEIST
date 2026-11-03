@@ -325,5 +325,115 @@
     "current_source": "4f528cdfb5ca424aa54dc94d552bcf6b939ba66a",
     "wall_speedup": 1.834361663554258,
     "cpu_speedup": 1.83398760908611
+  },
+  "post_merge_single_pair": {
+    "scope": "One fresh sequential full HTTP pair after integration of main d9649ee; separate from the earlier three-pair series.",
+    "repetitions": 1,
+    "order": [
+      "baseline",
+      "current"
+    ],
+    "fresh_runs": true,
+    "resumed": false,
+    "baseline": {
+      "source_revision": "d9649ee5e369b31072d40c4882a5b7e0a7bfa177",
+      "ridge_fit_backend": "python-irls-v1",
+      "wall_s": 111.66278903800003,
+      "cpu_s": 111.390858
+    },
+    "current": {
+      "source_revision": "0a8947c51a9e2cb37a9e9b97376ac96414cda67b",
+      "ridge_fit_backend": "native-c-irls-v2-pairwise:35bd104a678fc97cb35fb33e66f2e32dd45e5c074d42cd2e02bafa3136dafdd1",
+      "wall_s": 78.8628532319999,
+      "cpu_s": 78.63496099999999,
+      "public_runtime_equivalent": "0f18629772a853de6982012320c7b94263e950b3"
+    },
+    "environment_matches_three_pair_series": true,
+    "timing_basis": "Regional timing.json: HTTP verification and final control checks; initial input checks and imports excluded.",
+    "wall_speedup": 1.4159110970726456,
+    "cpu_speedup": 1.4165564093050165,
+    "wall_reduction_percent": 29.37409685767204,
+    "controls": {
+      "same_audio_request_operator_verifier_interpreter": true,
+      "source_and_backend_unchanged": true,
+      "full_pipeline_verified": {
+        "baseline": true,
+        "current": true
+      },
+      "all_event_groups_considered": true,
+      "detail_plots": "none"
+    },
+    "verification": {
+      "passed": true,
+      "semantic_differences": 0,
+      "checked_artifacts": {
+        "json": 20,
+        "sqlite": 1,
+        "root_json": 3
+      },
+      "ledger_rows_per_arm": {
+        "search/retention.sqlite": {
+          "bounds": 29738,
+          "records": 852,
+          "run": 1,
+          "stages": 12
+        }
+      },
+      "outcome_each_arm": {
+        "ridges": 17,
+        "independent_groups": 15,
+        "candidates": 23,
+        "status": "inconclusive",
+        "reason_code": "search_incomplete"
+      }
+    },
+    "observed_phase_seconds": {
+      "baseline": {
+        "queued": 0.25206613540649414,
+        "intake": 7.334578037261963,
+        "discovery": 6.363407850265503,
+        "acquisition": 0.820188045501709,
+        "search": 51.3278648853302,
+        "refinement": 41.35225701332092
+      },
+      "current": {
+        "queued": 0.25531911849975586,
+        "intake": 6.303623914718628,
+        "discovery": 5.360157012939453,
+        "acquisition": 0.538628101348877,
+        "search": 33.26204991340637,
+        "refinement": 28.04397487640381
+      }
+    },
+    "phase_note": "Phase durations use first observed HTTP transitions and include polling uncertainty. Unobserved short phases have no inferred duration.",
+    "limitations": [
+      "One sequential pair, not a repeated-run estimate.",
+      "Regional source-informed controls and incomplete aircraft coverage do not establish location accuracy or nationwide runtime.",
+      "The earlier three-pair measurements and pre-reset measurements retain their original pinned sources and remain separate."
+    ],
+    "array_comparison": {
+      "passed": true,
+      "difference_count": 0,
+      "checked": {
+        "intake_diagnostics": 1,
+        "decoded_pcm": 1,
+        "csv": 17,
+        "npz": 0,
+        "npz_arrays": 0,
+        "png": 1
+      },
+      "manifest_verified_artifacts": {
+        "baseline": 20,
+        "current": 20
+      },
+      "decoded_pcm_bytes_per_arm": 57602952,
+      "normalization": "Only the exact input.mp3 path in intake.decode.command is replaced.",
+      "array_rule": "Equal member names, dtype, shape, and element bits; no numerical tolerance. Memory layout does not affect equality.",
+      "limitations": [
+        "PNG encoding metadata and NPZ ZIP packaging are not compared.",
+        "The separate JSON/SQLite comparator remains required.",
+        "Equal outputs establish baseline consistency, not location accuracy."
+      ]
+    }
   }
 }

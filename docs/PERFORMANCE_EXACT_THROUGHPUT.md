@@ -28,6 +28,7 @@ Every run returns `inconclusive / search_incomplete`.
 The experiment measures runtime and computational agreement, without establishing a location.
 
 These runs use Python 3.12.3, SQLite 3.45.1, CPU 4, one numerical thread, and tmpfs output.
+Every run uses preloaded aircraft and terrain inputs; these timings exclude network downloads.
 The source trees, input bytes, dependencies, verifier, and plotting policy stay fixed across all six runs.
 Optional event-detail plots are disabled by both source defaults and the explicit benchmark policy.
 
@@ -36,6 +37,27 @@ Wall time falls from **141.0466 to 76.8914 seconds**, a **1.834×** speedup, wit
 This comparison includes upstream improvements integrated during the task.
 The repeated comparison against `21262e` measures the additional gain from this implementation.
 The starting-main pair stays outside the repeated-pair statistics.
+
+### Final integration with PR225
+
+Main advanced to `d9649ee` after the repeated series.
+The final merge preserves its canonical-container checks and cache invalidation when the batch fitter changes.
+The fitting arithmetic stays unchanged.
+
+One additional fresh sequential pair compares that main revision with local `0a8947c`.
+The public equivalent is [0f186297](https://github.com/1337isnot1337/DOPPLERGEIST/commit/0f18629772a853de6982012320c7b94263e950b3).
+Wall time falls from **111.6628 to 78.8629 seconds**, a **1.416×** speedup and **29.37%** reduction.
+Process-and-child CPU falls from **111.3909 to 78.6350 seconds**.
+The [same HTTP report](../benchmarks/results/exact-throughput-http-final-20261103.json) records this separate pair without changing the earlier statistics.
+
+The final pair passes every input, environment, backend, plotting, full-pipeline, and source-immutability control.
+Its scientific JSON and complete logical ledger match exactly, including the same counts and inconclusive decision reported above.
+An additional artifact comparison finds zero differences in decoded audio, 17 CSV files, and one decoded PNG pixel array.
+It also validates 20 artifacts per run against their finalized manifests.
+PNG encoding metadata is outside that comparison.
+
+Both performance CI jobs now build an editable native installation for the source checkout that their benchmarks import.
+They assert the source path and loaded native backend before downloading inputs or running experiments.
 
 ## Repeated scoring and fitting controls
 
@@ -252,6 +274,17 @@ The regional runner defaults to the original detail-plot policy, `all`.
 The explicit `none` policy matches these current source defaults.
 Source defaults and actual output counts must agree.
 The comparator preserves exact scientific numbers and logical ledger rows.
+
+The supplemental helper compares decoded audio, CSV values, and PNG pixels after the timed workflows finish:
+
+```bash
+for DG_PAIR in 001 002 003; do
+  python scripts/check_real_upload_arrays.py \
+    --baseline "results/throughput-three-pairs/pair-${DG_PAIR}-baseline" \
+    --current "results/throughput-three-pairs/pair-${DG_PAIR}-current" \
+    --output "results/throughput-three-pairs/pair-${DG_PAIR}-arrays.json"
+done
+```
 
 ### Reproduce the native batch component
 
