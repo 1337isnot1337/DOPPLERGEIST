@@ -171,7 +171,15 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     records = table.to_dict("records")
     grouped, survivors = [], []
     for event in events:
-        frame = filter_event(table, event, time_origin, time_tolerance_s)
+        frame = filter_event(table, event, None, time_tolerance_s)
+        if time_origin is not None:
+            start = frame.receive_time - event["cpa_receive_s"]
+            tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
+            # Use the same inclusive shared-clock intervals as the traversal.
+            # A separate CPA filter omitting offset tolerance can discard valid
+            # boundary passages before the intersection is considered.
+            frame = frame[(start - tolerance <= time_origin + time_tolerance_s) &
+                          (start + tolerance >= time_origin - time_tolerance_s)]
         reserve(len(frame))
         survivors.append(len(frame))
         grouped.append({p: [records[i] for i in group.index] for p, group in frame.groupby("point_id")})
