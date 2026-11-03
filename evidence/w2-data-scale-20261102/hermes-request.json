@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus"
+  },
+  "time_window": {
+    "start_utc": "2026-09-08T20:00:30Z",
+    "end_utc": "2026-09-08T20:00:30Z",
+    "source": "user",
+    "source_detail": "Synthetic recording start declared by independent generator"
+  },
+  "audio_path": "/home/cinna/dopplergeist-w2-integration-check/results/hermes-upload-20261102/jobs/d6b95239e12147afa053147f17bb392d/input.mp3"
+}
