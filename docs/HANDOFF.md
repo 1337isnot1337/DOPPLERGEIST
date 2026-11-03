@@ -54,7 +54,9 @@ homelab stages tiles under the same identity; its coordinator imports verified
 results only after pausing the local job. A search checkpoint from different code
 must not be mixed in without a specifically validated migration. The only such
 migration used here accepts strictly empty tiles after checking both identities
-and ledger checksums. Check final coverage, unsupported-motion and retention
+and ledger checksums. Its `checkpoint-migration-42053ae-to-d8679e3.json` record
+lists the 413 verified empty stages, the two revisions and run hashes, and the
+migration-script hash. Check final coverage, unsupported-motion and retention
 evidence before describing any candidate as a localization.
 
 ## Read first
