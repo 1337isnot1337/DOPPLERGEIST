@@ -1,12 +1,14 @@
 """Capture public webcam audio with explicit clock and map-reference provenance.
 
-EarthCam pages expose their normal public HLS URL in json_base. This tool uses
-that URL without credentials. Captured bytes, HTTP/capture times and broadcaster
-segment timestamps are distinct; absent segment timestamps never become UTC.
+EarthCam and HDOnTap pages expose normal public HLS URLs in JSON player metadata.
+This tool uses those URLs without credentials. Captured bytes, HTTP/capture times
+and broadcaster segment timestamps are distinct; absent segment timestamps never
+become UTC.
 """
 import argparse
 from datetime import datetime, timedelta, timezone
 import hashlib
+from html.parser import HTMLParser
 import json
 import math
 import os
@@ -62,6 +64,37 @@ def earthcam_metadata(html, camera):
     if not stream or urlsplit(stream).scheme not in {"http", "https"}:
         raise ValueError("Selected camera has no public HTTP stream")
     return selected
+
+
+def hdontap_metadata(html):
+    """Read the ordinary public embed's JSON player data without executing JS."""
+    class PlayerData(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.inside = False
+            self.chunks = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "script" and dict(attrs).get("id") == "player-data":
+                self.inside = True
+
+        def handle_data(self, data):
+            if self.inside:
+                self.chunks.append(data)
+
+        def handle_endtag(self, tag):
+            if tag == "script":
+                self.inside = False
+
+    parser = PlayerData()
+    parser.feed(html)
+    if not parser.chunks:
+        raise ValueError("Public HDOnTap embed has no JSON player-data")
+    data = json.loads("".join(parser.chunks))
+    stream = data.get("streamSrc")
+    if not isinstance(stream, str) or urlsplit(stream).scheme not in {"http", "https"}:
+        raise ValueError("Public HDOnTap embed has no HTTP streamSrc")
+    return {"stream": stream, "name": "HDOnTap public embed", "hasaudio": None}
 
 
 def media_segments(text, base_url):
@@ -127,25 +160,32 @@ def decoded_duration(path):
     return count / (4 * 16000)
 
 
-def capture(page_url, camera, output, duration_s):
+def capture(page_url, camera, output, duration_s, provider="earthcam"):
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
-    receipt = {"schema_version": 1, "source_page": page_url, "camera": camera,
+    receipt = {"schema_version": 1, "source_page": page_url, "camera": camera, "provider": provider,
                "requested_duration_s": duration_s, "status": "failed",
                "recording_start_utc": None, "recording_clock_established": False,
                "truth_used_for_event_detection": False, "location_validation_eligible": False,
                "implementation_sha256": sha256(Path(__file__).read_bytes())}
     try:
         page, receipt["page_fetch"] = fetch(page_url, page_url)
-        metadata = earthcam_metadata(page.decode(), camera)
+        if provider == "earthcam":
+            metadata = earthcam_metadata(page.decode(), camera)
+        elif provider == "hdontap":
+            metadata = hdontap_metadata(page.decode())
+        else:
+            raise ValueError("Unsupported public camera provider")
         stream = metadata["stream"]
         receipt["camera_name"] = metadata.get("name")
+        receipt["source_audio_advertised"] = metadata.get("hasaudio")
         receipt["stream_url"] = public_stream_url(stream)
         receipt["stream_url_sha256"] = sha256(stream.encode())
-        receipt["provider_map_reference"] = {
+        receipt["provider_map_reference"] = ({
             "lat": float(metadata["map_lat"]), "lon": float(metadata["map_long"]),
             "kind": "provider_map_marker", "uncertainty_m": None,
             "source": page_url, "timezone": metadata.get("timezone")}
+            if metadata.get("map_lat") is not None and metadata.get("map_long") is not None else None)
         master, receipt["playlist_fetch"] = fetch(stream, page_url)
         playlist_url = stream
         playlist = master.decode()
@@ -213,15 +253,18 @@ def capture(page_url, camera, output, duration_s):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--page", required=True)
-    parser.add_argument("--camera", required=True)
+    parser.add_argument("--provider", choices=("earthcam", "hdontap"), default="earthcam")
+    parser.add_argument("--camera", help="EarthCam camera key, or optional source alias for HDOnTap")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--duration-s", type=float, default=300)
     args = parser.parse_args(argv)
+    if args.provider == "earthcam" and not args.camera:
+        parser.error("--camera is required for EarthCam")
     if not math.isfinite(args.duration_s) or not 0 < args.duration_s <= 3600:
         parser.error("--duration-s must be finite and between 0 and 3600")
     if urlsplit(args.page).scheme not in {"http", "https"} or "\n" in args.page or "\r" in args.page:
         parser.error("--page must be an HTTP URL without header control characters")
-    receipt = capture(args.page, args.camera, args.output, args.duration_s)
+    receipt = capture(args.page, args.camera, args.output, args.duration_s, args.provider)
     print(json.dumps(receipt, indent=2, allow_nan=False))
     return 0 if receipt["status"] == "captured" else 1
 
