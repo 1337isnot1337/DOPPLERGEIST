@@ -25,7 +25,10 @@ simple and predeclared: normally at least two independent flyovers, <=3 Hz event
 For `negative_robust_ridge_loss_hz`, a competing loss within 0.5 Hz per independent
 event is a near tie. The declared subset-support score has a separate
 dimensionless near-tie threshold of 0.2 support units per independent group;
-it is not a Hz threshold or probability. Other score kinds have no declared gap
+it is not a Hz threshold or probability. A near-tied alternative must fit inside
+the actual returned radius, capped at the precision target; overlapping target
+circles do not establish containment. A 70 m envelope therefore cannot certify
+a near-tied mode 90 m or 150 m from its center. Other score kinds have no declared gap
 threshold and abstain. These are regression-tested engineering choices, **not
 empirically calibrated thresholds for arbitrary aircraft audio**. No held-out
 real recordings have established their false-localization rate.
