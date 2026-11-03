@@ -1,5 +1,10 @@
 # Independent four-flyover fixture
 
+This is a supplementary development regression. The primary integration agent's
+frozen [canonical 3/4/6-event renderer](https://github.com/1337isnot1337/DOPPLERGEIST/blob/1f0342594bdc7fc7089a075b6dbf26aca9342711/scripts/make_multi_event_case.py)
+owns the acceptance-upload inputs. This fixture does not replace that corpus or
+request a second national acceptance sweep.
+
 Generate into a new directory:
 
 ```bash

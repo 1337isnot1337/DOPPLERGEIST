@@ -171,3 +171,66 @@ def test_all_four_independent_flyovers_are_checked():
     assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
     diag["e3"]["rmse_hz"] = 8
     assert decide((events, candidates, coverage, diag))["reason_code"] == "inconsistent_event_match"
+
+
+def finite_evidence():
+    events, candidates, coverage, diag = evidence()
+    candidates.append(dict(candidates[0], lat=45., score=-4.))
+    diag.update(alternatives_evaluated=False, assessed_mode_ids=["a", "b"], candidate_mode_ids=["a", "b"],
+                finite_search_evidence={"schema_version": 1, "scope": "evaluated_finite_grid", "complete": True,
+                    "score_kind": candidates[0]["score_kind"], "spacing_m": 1000., "refine_spacing_m": 100.,
+                    "max_event_groups": 2, "retained_modes": [{"mode_id": "a", "score": -1., "event_groups": 2},
+                        {"mode_id": "b", "score": -4., "event_groups": 2}],
+                    "discarded_count": 7, "best_discarded_score": -5., "pruning_accounted_for": True,
+                    "limitations": ["Evaluated grids only; no continuous-space uniqueness."]})
+    return events, candidates, coverage, diag
+
+
+def test_finite_search_can_pass_without_claiming_continuous_exhaustion():
+    bundle = finite_evidence()
+    result = decide(bundle)
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
+    bundle[3]["sensitivity"]["sources"] = ["altitude"]
+    assert decide(bundle)["reason_code"] == "uncertainty_not_established"
+
+
+@pytest.mark.parametrize("kind,reason", [("discard", "retention_may_hide_alternatives"),
+    ("complete", "finite_search_incomplete"), ("pruning", "finite_search_incomplete"),
+    ("assessed", "finite_modes_not_assessed"), ("mapping", "finite_candidate_mapping_incomplete"),
+    ("lost_score", "finite_candidate_scores_inconsistent")])
+def test_finite_search_cannot_hide_omitted_or_near_tied_modes(kind, reason):
+    bundle = finite_evidence()
+    diag = bundle[3]
+    finite = diag["finite_search_evidence"]
+    diag["alternatives_evaluated"] = True  # Optimistic legacy flag cannot override evidence.
+    if kind == "discard": finite["best_discarded_score"] = -1.2
+    elif kind == "complete": finite["complete"] = False
+    elif kind == "pruning": finite["pruning_accounted_for"] = False
+    elif kind == "assessed": diag["assessed_mode_ids"] = ["a"]
+    elif kind == "mapping": diag["candidate_mode_ids"] = ["a", "a"]
+    elif kind == "lost_score": finite["retained_modes"][1]["score"] = 0.
+    result = decide(bundle)
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == reason
+
+
+def test_finite_retention_bound_uses_declared_subset_units():
+    events, candidates, coverage, diag = finite_evidence()
+    kind = "matched_group_support_minus_normalized_residual"
+    candidates[0].update(score=1.8, score_kind=kind)
+    candidates[1].update(score=0.1, score_kind=kind)
+    finite = diag["finite_search_evidence"]
+    finite.update(score_kind=kind, best_discarded_score=1.5)
+    for mode, score in zip(finite["retained_modes"], (1.8, 0.1)): mode["score"] = score
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "retention_may_hide_alternatives"
+    finite["best_discarded_score"] = 1.2
+    assert decide((events, candidates, coverage, diag))["status"] == "succeeded"
+
+
+def test_malformed_finite_flags_fail_instead_of_looking_like_insufficient_data():
+    bundle = finite_evidence()
+    bundle[3]["finite_search_evidence"]["complete"] = 1
+    result = decide(bundle)
+    assert result["status"] == "failed"
+    assert result["reason_code"] == "invalid_evidence"
