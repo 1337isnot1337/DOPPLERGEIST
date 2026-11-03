@@ -153,7 +153,8 @@ def predict_fitted_ridge(track, observer, receive_times_s, diagnostics, c=343.0)
 
 def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                            time_tolerance_s=5.0, silence=None, min_events=1,
-                           max_events=None, max_candidates=20000, anchor_window=None):
+                           max_events=None, max_candidates=20000, anchor_window=None,
+                           pair_screen=None):
     """Bounded subset hypotheses, retaining explicitly unmatched proposals.
 
     Default to every independent group. Intersect shared-clock intervals before
@@ -162,6 +163,9 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     Exceeding it fails visibly so the outer driver reports incomplete coverage.
     An optional half-open anchor window selects the first matched passage's
     implied recording start without clipping the shared-clock fit interval.
+    ``pair_screen`` may remove an event/flight/receiver row only when its caller
+    supplies supported rejection evidence for the fixed shared recording clock;
+    its bounded report is returned with the candidate counts.
     """
     from .search import filter_association_event
     max_events = max(min_events, len(events)) if max_events is None else max_events
@@ -172,6 +176,7 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
             anchor_window[0] >= anchor_window[1]):
         raise ValueError("Anchor window must be an increasing half-open interval")
     candidates, examined, work = [], 0, 0
+    pair_screen_reports = []
     def reserve(units):
         nonlocal work
         work += units
@@ -181,9 +186,20 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     table = table.reset_index(drop=True)
     records = table.to_dict("records")
     grouped, survivors = [], []
-    for event in events:
+    for event_index, event in enumerate(events):
         frame = filter_association_event(table, event, offset_tolerance_s, time_origin, time_tolerance_s)
         reserve(len(frame))
+        before_screen = len(frame)
+        if pair_screen is not None and len(frame):
+            frame, report = pair_screen(event_index, event, frame)
+            if (not hasattr(frame, "index") or len(frame) > before_screen
+                    or not frame.index.isin(table.index).all()):
+                raise ValueError("Pair screen must return rows from the supplied CPA table")
+            if not isinstance(report, dict):
+                raise ValueError("Pair screen must return an evidence dictionary")
+            pair_screen_reports.append({"event_index": event_index, "before": before_screen,
+                                       "after": len(frame), **report})
+            reserve(before_screen - len(frame))
         survivors.append(len(frame))
         groups = {}
         tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
@@ -279,7 +295,8 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     return candidates, {"per_event_survivors": survivors, "survivors": len(candidates),
                         "hypotheses_examined": examined, "work_units": work, "max_matched_events": max_events,
                         "event_cap_limited": max_events < len(events),
-                        "unmatched_proposals_allowed": True}
+                        "unmatched_proposals_allowed": True,
+                        "event_pair_screen": pair_screen_reports}
 
 
 def association_score(result, events):
