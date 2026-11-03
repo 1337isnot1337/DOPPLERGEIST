@@ -61,6 +61,17 @@ def test_public_page_metadata_is_json_not_executed_javascript():
         capture.earthcam_metadata('var json_base=' + json.dumps({"cam": {"test": camera}}), "test")
 
 
+def test_hdontap_public_embed_json_preserves_normal_stream_without_executing_js():
+    page = '<script>throw Error("do not execute")</script><script type="application/json" id="player-data">' + json.dumps(
+        {"streamSrc": "https://example.org/live/playlist.m3u8?t=temporary\u0026e=123"}) + '</script>'
+    metadata = capture.hdontap_metadata(page)
+    assert metadata["stream"] == "https://example.org/live/playlist.m3u8?t=temporary&e=123"
+    assert metadata["hasaudio"] is None
+    assert capture.public_stream_url(metadata["stream"]) == "https://example.org/live/playlist.m3u8"
+    with pytest.raises(ValueError, match="player-data"):
+        capture.hdontap_metadata('<script>const x="not a source";</script>')
+
+
 def test_failed_http_capture_retains_status_and_no_false_clock(tmp_path, monkeypatch):
     from urllib.error import HTTPError
 
