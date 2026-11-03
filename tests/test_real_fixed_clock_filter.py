@@ -1,11 +1,14 @@
 """Fixed-clock boundary regression using an observed ADS-B passage and audio proposal."""
 import numpy as np
 import pandas as pd
+import pytest
 
 from dopplergeist.matching import association_candidates
+from dopplergeist.search import pair_candidates
 
 
-def test_real_passage_is_kept_at_inclusive_clock_endpoints():
+@pytest.mark.parametrize("find_candidates", [association_candidates, pair_candidates])
+def test_real_passage_is_kept_at_inclusive_clock_endpoints(find_candidates):
     event = {'cpa_receive_s': 301.25, 'speed_range_mps': [1.0, 308.7],
              'slant_range_m': [1.0, 20000.0], 'quality': {'cpa_tolerance_s': 7.25}}
     passage = {'point_id': 0, 'flight_id': '06a128', 'emission_time': 1788899665.5239854,
@@ -17,15 +20,15 @@ def test_real_passage_is_kept_at_inclusive_clock_endpoints():
     for clock, expected in ((np.nextafter(left, -np.inf), False), (left, True),
                             (np.nextafter(left, np.inf), True), (np.nextafter(right, -np.inf), True),
                             (right, True), (np.nextafter(right, np.inf), False)):
-        candidates, _ = association_candidates(pd.DataFrame([passage]), [event],
-                                                offset_tolerance_s=5, time_origin=clock,
-                                                time_tolerance_s=0)
+        candidates, _ = find_candidates(pd.DataFrame([passage]), [event],
+                                        offset_tolerance_s=5, time_origin=clock,
+                                        time_tolerance_s=0)
         assert bool(candidates) is expected
 
     # The declared clock window may itself span multiple seconds.
     for clock, expected in ((np.nextafter(left - 3, -np.inf), False), (left - 3, True),
                             (right + 3, True), (np.nextafter(right + 3, np.inf), False)):
-        candidates, _ = association_candidates(pd.DataFrame([passage]), [event],
-                                                offset_tolerance_s=5, time_origin=clock,
-                                                time_tolerance_s=3)
+        candidates, _ = find_candidates(pd.DataFrame([passage]), [event],
+                                        offset_tolerance_s=5, time_origin=clock,
+                                        time_tolerance_s=3)
         assert bool(candidates) is expected

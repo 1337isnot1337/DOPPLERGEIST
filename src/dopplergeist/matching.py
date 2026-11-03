@@ -156,7 +156,7 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     entries, branch visits and stored assignments share an explicit work budget.
     Exceeding it fails visibly so the outer driver reports incomplete coverage.
     """
-    from .search import filter_event
+    from .search import filter_association_event
     max_events = max(min_events, len(events)) if max_events is None else max_events
     if not 1 <= min_events <= max_events or max_candidates < 1:
         raise ValueError("Invalid association event/candidate budget")
@@ -171,15 +171,7 @@ def association_candidates(table, events, offset_tolerance_s=5.0, time_origin=No
     records = table.to_dict("records")
     grouped, survivors = [], []
     for event in events:
-        frame = filter_event(table, event, None, time_tolerance_s)
-        if time_origin is not None:
-            start = frame.receive_time - event["cpa_receive_s"]
-            tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
-            # Use the same inclusive shared-clock intervals as the traversal.
-            # A separate CPA filter omitting offset tolerance can discard valid
-            # boundary passages before the intersection is considered.
-            frame = frame[(start - tolerance <= time_origin + time_tolerance_s) &
-                          (start + tolerance >= time_origin - time_tolerance_s)]
+        frame = filter_association_event(table, event, offset_tolerance_s, time_origin, time_tolerance_s)
         reserve(len(frame))
         survivors.append(len(frame))
         grouped.append({p: [records[i] for i in group.index] for p, group in frame.groupby("point_id")})
