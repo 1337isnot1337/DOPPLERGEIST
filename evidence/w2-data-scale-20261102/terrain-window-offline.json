@@ -1,0 +1,39 @@
+{
+  "provider": "Copernicus GLO-90",
+  "vertical_datum": "EGM2008 converted to ellipsoidal",
+  "files": [
+    {
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/tileList.txt",
+      "path": "results/w2-terrain-20261102/cache/tileList.txt",
+      "sha256": "e5a5efe088e70506bc1007d22006bdcb09b0ec03177b62f9652363c13f49ed97",
+      "bytes": 1111950
+    },
+    {
+      "url": "https://cdn.proj.org/us_nga_egm08_25.tif",
+      "path": "results/w2-terrain-20261102/cache/us_nga_egm08_25.tif",
+      "sha256": "4191d471eefebf24091b56dbc604353cb3b8cf8cc70e448bb9ae56a272bef17a",
+      "bytes": 80585622
+    },
+    {
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N39_00_W096_00_DEM/Copernicus_DSM_COG_30_N39_00_W096_00_DEM.tif",
+      "path": "results/w2-terrain-20261102/cache/Copernicus_DSM_COG_30_N39_00_W096_00_DEM.tif",
+      "sha256": "82685cfa946f50323593d901a1762658cb8e06d447c9d7cfe760060de1148174",
+      "bytes": 5055057
+    },
+    {
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N40_00_W097_00_DEM/Copernicus_DSM_COG_30_N40_00_W097_00_DEM.tif",
+      "path": "results/w2-terrain-20261102/cache/Copernicus_DSM_COG_30_N40_00_W097_00_DEM.tif",
+      "sha256": "a04c1da3d8dffaa4a75dddb3ffde5890e9b38ee45cb49d3692fe9eaf8a1a03b9",
+      "bytes": 4975081
+    }
+  ],
+  "catalogue_absent_ocean_tiles": [],
+  "failures": [],
+  "offline": true,
+  "ellipsoidal_height_m": [
+    331.2636966705322,
+    385.92816734313965
+  ],
+  "elapsed_s": 0.7641693630139343,
+  "process_peak_rss_mib": 251.37890625
+}

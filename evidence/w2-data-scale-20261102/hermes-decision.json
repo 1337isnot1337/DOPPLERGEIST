@@ -1,0 +1,302 @@
+{
+  "status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "message": "The search did not finish the entire requested area and time window.",
+  "diagnostics": {
+    "policy": {
+      "target_radius_m": 100.0,
+      "min_independent_events": 2,
+      "max_event_rmse_hz": 3.0,
+      "max_outlier_fraction": 0.25,
+      "min_support_fraction": 0.95,
+      "near_tie_loss_per_event_hz": 0.5
+    },
+    "policy_version": "engineering-v1",
+    "calibration": "uncalibrated",
+    "probability": null,
+    "limitations": [
+      "Archive availability does not establish capture of every aircraft.",
+      "Sensitivity checks are not a calibrated confidence interval."
+    ]
+  },
+  "candidates": [
+    {
+      "lat": 40.005497681067446,
+      "lon": -75.00002259349255,
+      "score": 0.9634901937256635,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z",
+      "uncertainty": {
+        "radius_m": 322.44093522799704,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.00442702505588,
+      "lon": -75.00047641019862,
+      "score": 0.8799755558817949,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.00878095950013,
+      "lon": -74.99918122864182,
+      "score": 0.711827293338994,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.00007308643887,
+      "lon": -75.00177143461823,
+      "score": 0.6638760277554745,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.994741072522885,
+      "lon": -74.99730177004922,
+      "score": 0.6393963178061846,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.99038718685109,
+      "lon": -74.99859681228081,
+      "score": 0.6258151053490688,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.99571914362429,
+      "lon": -75.0030663019288,
+      "score": 0.5483678204365223,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.01313488979638,
+      "lon": -74.99788588991971,
+      "score": 0.4973822851460866,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.9860332969188,
+      "lon": -74.99989169742352,
+      "score": 0.44884001812888796,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.99136519658738,
+      "lon": -75.0043610121584,
+      "score": 0.3951828472158849,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.01411294279171,
+      "lon": -75.00365190736062,
+      "score": 0.39395418402682647,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.009758951090284,
+      "lon": -75.0049469139086,
+      "score": 0.38164699985174166,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.01748881596946,
+      "lon": -74.9965903940042,
+      "score": 0.37336587397970833,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.985055084925776,
+      "lon": -74.99412798657265,
+      "score": 0.35723863684668966,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.00780270422299,
+      "lon": -74.99341570054033,
+      "score": 0.3516537571005156,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.98940891349284,
+      "lon": -74.99283276949203,
+      "score": 0.3511219965846263,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.99909495395894,
+      "lon": -74.99600657070069,
+      "score": 0.3505152985254736,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.01846693038338,
+      "lon": -75.00235674365524,
+      "score": 0.33441842759902596,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.01215657310055,
+      "lon": -74.99212002967224,
+      "score": 0.33253767258683953,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 39.98167940270123,
+      "lon": -75.00118642550552,
+      "score": 0.3112748846235167,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    },
+    {
+      "lat": 40.003448831184045,
+      "lon": -74.9947112142071,
+      "score": 0.30368398313529144,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001"
+      ],
+      "flight_ids": [
+        "synthetic-actor"
+      ],
+      "recording_start_utc": "2026-09-08T20:00:30Z"
+    }
+  ]
+}

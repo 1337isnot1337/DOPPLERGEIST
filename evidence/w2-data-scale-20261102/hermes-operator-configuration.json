@@ -1,0 +1,22 @@
+{
+  "flight_indexes": [
+    "/home/cinna/dopplergeist-w2-integration-check/results/hermes-upload-20261102/flight-index.sqlite"
+  ],
+  "terrain": {
+    "constant_m": 50.0
+  },
+  "offline": true,
+  "filters": {
+    "association": "subsets",
+    "min_events": 1,
+    "max_events": 2
+  },
+  "search_budget": {
+    "spacing_m": 5000.0,
+    "tile_cells": 16,
+    "top_k": 20,
+    "refine_spacing_m": 500.0,
+    "refine_finalists": 1
+  },
+  "refine_finalists": 1
+}
