@@ -6,22 +6,22 @@
   and 3.14.8 for this checkpoint; CI also exercises the declared Python 3.11 minimum.
 - `ffmpeg` and `ffprobe` on PATH. The MP3 smoke tests use ffmpeg's `libmp3lame`
   encoder. Install the normal ffmpeg package for your operating system.
-- GitHub CLI (`gh`) authenticated with access to this private repository when
+- GitHub CLI (`gh`) with access to this repository when
   downloading the checkpoint assets. Local/offline runs do not require GitHub access.
 
 Create an isolated environment from the repository root:
 
 ```bash
 python -m venv .venv
-.venv/bin/python -m pip install -e '.[test]'
-.venv/bin/python -m pytest -q
+.venv/bin/python -m pip install .
+.venv/bin/dopplergeist --version
 .venv/bin/dopplergeist --help
 ```
 
-Do not use `--system-site-packages` for a clean-install check. The test extra
-declares pytest. Production dependencies are declared in `pyproject.toml`; the
-upload service uses the standard library and its static assets are included as
-package data when the product component is present.
+Do not use `--system-site-packages` for a clean-install check. Production
+dependencies are declared in `pyproject.toml`; browser assets are included in the
+package. The historical pytest suite generates synthetic inputs and should not be
+run under the current real-world-only policy in [AGENTS.md](../AGENTS.md#real-world-data-only).
 
 ## Pinned Python 3.14 reproduction
 
@@ -33,7 +33,7 @@ snapshot, not a claim that those same package versions support Python 3.11.
 python3.14 -m venv .venv
 .venv/bin/python -m pip install -r requirements/py314-linux.lock
 .venv/bin/python -m pip install --no-deps -e .
-.venv/bin/python -m pytest -q
+.venv/bin/dopplergeist --help
 ```
 
 The original experiment environment is separately recorded in
@@ -69,9 +69,9 @@ manual restoration details.
 
 ## Checks and evidence
 
-CI installs into a clean runner on Python 3.11 and 3.14, runs unit/contract tests
-and an actual small MP3 encode/decode check, then verifies CLI startup. It does not
-download the large research assets or represent its tests as a national benchmark.
+CI installs into clean Python 3.11 and 3.14 runners, compiles the source, checks
+CLI startup and verifies packaged browser assets. It does not run the historical
+synthetic-generating pytest suite or establish a national benchmark.
 
 The clean-install replay receipt and complete short synthetic replay artifacts
 are in [evidence/packaging-20261102](../evidence/packaging-20261102). The restored
