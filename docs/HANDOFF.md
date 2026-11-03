@@ -12,7 +12,14 @@ local improvement, not a nationwide runtime or localization-accuracy result. The
 manually estimated narrow speed/range bands from the reference video were not
 copied into automatic rejection rules.
 
-The current priority is independent real-world evidence. The
+PR #175 corrects acoustic-bound provenance, #180 screens later event clocks,
+#181 reports completed parallel checkpoints, and #182 retries overloaded track
+queries with the existing conservative distance sieve. A real overloaded cell
+retained 614 of 1,929 queried tracks, including all 200 unsupported tracks;
+full and filtered scoring had identical results and retention checksums. The
+unsupported motion remains a limitation, not a verified absence of aircraft.
+
+The full-day reference upload and independent real-world evidence remain open. The
 [real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
 survey and a 25-row reviewed candidate index. The requested 20 known-location
 usable aircraft recordings plus five unknown-location usable aircraft recordings
@@ -22,6 +29,33 @@ recordings were matched to flights or localized.
 
 The [swarm task plan](AGENT_TASKS.md) provides 12 actionable GitHub issues,
 dependencies, suggested agent allocation and a copyable assignment prompt.
+
+## Full-day reference upload (November 3)
+
+The public source is [the original audio/video](https://www.youtube.com/watch?v=4CxVxuMVkMc);
+the separate [method video](https://www.youtube.com/watch?v=UytYrhYLOKI) explains
+the analysis. The uploaded MP3 has SHA-256
+`674df668c25608ef3e9199bf3b48d760642456d679729c9661ac5cb2a22e179c`.
+The automatic test uses the whole recording, no supplied flight IDs or selected
+location, CONUS coverage, and a broad 2026-09-08 00:00 to 2026-09-09 12:00 UTC
+window covering the stated local calendar day without a start time. Audio
+discovery produced 17 ridges; the daily ADSB.lol indexes retain all aircraft
+types. A video image can help check a result, but is not by itself a precise
+recorder GPS measurement.
+
+At this handoff the upload search is still running; no coordinate has been
+accepted. On the originating machine, the job, `resume.json`, discovery output,
+search checkpoints and archived earlier revisions are under
+`/home/cinna/.local/state/dopplergeist-original-upload-20261103/jobs-current/a90452172daf453986cf9bed846b0e2d/`.
+The active search is pinned to commit `d8679e3` and run hash
+`f9aeb360db3d8f2586b2954b53d32db767e65fc2840c01d1be261eb294413a5b`;
+check its current API/status and source identity before intervening. The separate
+homelab stages tiles under the same identity; its coordinator imports verified
+results only after pausing the local job. A search checkpoint from different code
+must not be mixed in without a specifically validated migration. The only such
+migration used here accepts strictly empty tiles after checking both identities
+and ledger checksums. Check final coverage, unsupported-motion and retention
+evidence before describing any candidate as a localization.
 
 ## Read first
 
