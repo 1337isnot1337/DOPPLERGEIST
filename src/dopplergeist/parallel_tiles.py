@@ -109,12 +109,25 @@ _worker = None
 
 def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, measurements,
                            bounds, time_range, budget, parameters, filters, start_window,
-                           crs, ledger_directory, run_hash, score_kind):
+                           crs, ledger_directory, run_hash, score_kind, terrain_kind="cached"):
     """Initialize read-only indexes and reusable terrain state inside one worker."""
     global _worker
+    if terrain_kind == "cached":
+        terrain = CachedTerrain(terrain_root, **terrain_options)
+    elif terrain_kind == "explicit":
+        from atexit import register
+        from .terrain import Terrain
+        terrain = Terrain(**terrain_options)
+        rasters = list(terrain.rasters)
+        if terrain.geoid:
+            rasters.extend(terrain.geoid.rasters)
+        for raster in rasters:
+            register(raster.close)
+    else:
+        raise ValueError("Unsupported tile worker terrain")
     _worker = {
         "indexes": [FlightIndex(path) for path in index_paths],
-        "terrain": CachedTerrain(terrain_root, **terrain_options),
+        "terrain": terrain,
         "events": events, "measurements": measurements, "bounds": bounds,
         "time_range": time_range, "budget": budget, "parameters": parameters,
         "filters": filters, "start_window": start_window, "crs": crs,
@@ -133,14 +146,15 @@ def score_tile(stage, cells, score_floor=None):
     terrain = state["terrain"]
     terrain.last_sample_files = set()
     terrain.last_sample_ocean_tiles = set()
-    failures_before = len(terrain.failures)
+    failures_before = len(getattr(terrain, "failures", ()))
     path = None
 
     def observed_terrain():
         names = getattr(terrain, "last_sample_files", set())
-        return {"terrain_files": [terrain.files[name] for name in sorted(names) if name in terrain.files],
+        files = getattr(terrain, "files", {})
+        return {"terrain_files": [files[name] for name in sorted(names) if name in files],
                 "terrain_ocean_tiles": sorted(getattr(terrain, "last_sample_ocean_tiles", set())),
-                "terrain_failures": terrain.failures[failures_before:]}
+                "terrain_failures": getattr(terrain, "failures", [])[failures_before:]}
 
     try:
         radius = max(event["slant_range_m"][1] for event in state["events"])
@@ -192,7 +206,9 @@ def score_tile(stage, cells, score_floor=None):
 def score_tile_with_cache_state(stage, cells, score_floor=None):
     """Return the worker's resident DEM keys for scheduling; never persist them."""
     payload, worker_path = score_tile(stage, cells, score_floor)
-    cache_keys = tuple(path.stem for path in _worker["terrain"]._tile_cache)
+    terrain = _worker["terrain"]
+    cache_keys = (tuple(path.stem for path in terrain._tile_cache) if hasattr(terrain, "_tile_cache")
+                  else tuple(Path(raster.name).stem for raster in terrain.rasters))
     return payload, worker_path, cache_keys
 
 

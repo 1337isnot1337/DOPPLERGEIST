@@ -1568,3 +1568,32 @@ A different encoding requires an explicit declaration and the canonical WAV iden
 Both new-encoding arms must still process the complete recording, consider every group, and produce exactly equal outputs.
 These regional computation controls use source-informed bounds and clock evidence.
 They do not establish independent location accuracy, nationwide completion time, or a cold-cache acquisition speedup.
+
+## Explicit terrain and tile workers
+
+A real MP3 replay from [Eclipse Soundscapes ESID 762](https://zenodo.org/records/21786378)
+compared one versus six tile workers with the same cached all-aircraft April 8
+index, explicit Copernicus DEM and EGM2008 geoid. The test used a source-informed
+Texas regional box `[-98.98, 30.29, -98.73, 30.47]`, the provisional
+`04:26:49–04:28:49Z` recording-start window, 750 m coarse spacing and 150 m
+finalist spacing. It used source `f898ee1` with native backends on the homelab;
+all runs searched 20 tiles and 852 grid points. Inputs and clock are not an
+independent accuracy benchmark.
+
+In three alternating pairs (1/6, 6/1, 1/6), complete upload wall times were
+13.971, 13.094 and 13.301 s with one worker, and 12.425, 12.950 and 12.280 s
+with six: medians **13.301 vs 12.425 s**, or **1.07x** on this workload.
+Median search-stage times were **6.440 vs 5.713 s**. All event lists, 105
+ordered candidates and inconclusive decisions matched exactly; the first pair
+also had 5,495 identical scored retention rows and identical assessed-mode IDs.
+Each run reported complete requested geographic search and available data. This is not a
+national runtime estimate. A separate 212-point comparison was slower with six
+workers: 16.84 vs 17.47 s end to end, one pair.
+
+Coverage accounting differed: serial global-floor pruning recorded 82,374
+unknown and 8,332 rejected trials, while parallel per-tile work recorded 26,955
+unknown and 63,751 rejected. Both sums were 90,706 and the best discarded
+score bound was identical, but the individual diagnostics and discarded counts
+were not identical. Different workloads may have different outcomes. The saved
+real-input reports and job artifacts are on the homelab under
+`/srv/homelab/datasets/dopplergeist-explicit-terrain-benchmark-20261103/`.
