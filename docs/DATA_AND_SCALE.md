@@ -16,11 +16,20 @@ All aircraft types remain eligible. The archive is downloaded once per day/provi
 later uploads reuse the derived index without opening/downloading the archive.
 
 The on-disk SQLite index has spatial and time indexes, source hashes, explicit
-source scope, per-payload checksums and altitude labels. Disk staging supports
+source scope, per-payload checksums and altitude/classification labels. Disk staging supports
 arbitrary input order. Query predicates select whole gap-split segments; they
 never clip geometry or extrapolate across a gap. Daily release namespaces prevent
 ID collisions. Segments on separate days are not joined across midnight; a ridge
 requiring unsupported geometry is rejected by the physical model.
+
+Version-two bounds enclose complete Hermite curves using ECEF cubic Bezier
+control hulls, including excursions beyond measured latitudes/longitudes. The
+normalizer hash versions raw caches and derived bounds. Legacy sample-bounds
+indexes disable spatial pruning; oversized queries fail visibly under the search
+budgets. Rebuild those indexes for efficient queries. Missing velocity components
+use the shared segment-local inference helper, preserving finite measurements
+including zeros. Legacy Parquets that already replaced missing velocities with
+zero require raw re-ingestion before claiming corrected motion.
 
 `scripts/index_flights.py` restores an index from a supplied Parquet. Its required
 bounds, UTC interval and source note describe ingestion coverage. Use
@@ -36,6 +45,9 @@ as ocean; missing downloads and nodata are explicit failures. Existing terrain
 caches require the operator's explicit `adopt_existing=True` and format validation
 before receipts are created. A caller-supplied geoid must use EGM2008; the old
 regional EGM96 approximation is not the default automatic input.
+
+Sampling reads local raster windows, including for the global geoid, and respects
+the published half-pixel COG tile shift at exact degree boundaries.
 
 The returned `AcquiredInputs` has `.indexes`, `.terrain`, `.bounds`,
 `.time_range_s` (absolute emission window), `.recording_start_window_s`, and
@@ -81,6 +93,13 @@ Reports distinguish complete/partial computation, source scope, missing tiles,
 refinement failure, runtime and Linux process peak RSS. A complete tile is never
 labelled a complete national search. The product/confidence workers translate
 this internal report to the shared coverage and result contracts.
+
+Source completeness includes an acoustic halo outside observer bounds: a
+CONUS-cropped flight table cannot establish complete border coverage.
+`filters={"association": "subsets"}` delegates bounded event/group subset
+association to the matching worker and preserves unmatched proposals.
+`alternative_modes_exhaustively_assessed` remains false because coarse-grid and
+top-k retention do not establish exhaustive alternative-mode recall.
 
 ## Checks
 
