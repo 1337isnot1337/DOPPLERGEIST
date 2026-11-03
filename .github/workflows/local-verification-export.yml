@@ -18,9 +18,6 @@ jobs:
     name: Export six unchanged regional real inputs
     runs-on: ubuntu-24.04
     timeout-minutes: 40
-    env:
-      REGIONAL_RESTORATION_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-restoration
-      REGIONAL_EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-export
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -38,6 +35,8 @@ jobs:
       - name: Restore existing checksummed release assets
         env:
           GH_TOKEN: ${{ github.token }}
+          REGIONAL_RESTORATION_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-restoration
+          REGIONAL_EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-export
         run: |
           mkdir -p "$REGIONAL_EXPORT_DIRECTORY"
           python scripts/restore_ci_checkpoint.py \
@@ -46,6 +45,9 @@ jobs:
             --manifest evidence/artifact-manifest.json \
             --receipt "$REGIONAL_EXPORT_DIRECTORY/restoration-receipt.json"
       - name: Reverify and export only the six declared inputs
+        env:
+          REGIONAL_RESTORATION_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-restoration
+          REGIONAL_EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-regional-export
         run: |
           python - <<'PY'
           import datetime
