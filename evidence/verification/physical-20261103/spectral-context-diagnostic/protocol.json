@@ -1,0 +1,20 @@
+{
+  "time_expansion_each_side_s": 120.0,
+  "band_rule": "[0.5 * detected_low, 2 * detected_high], clipped to 40..1600 Hz",
+  "spectral_window_s": 2.0,
+  "spectral_hop_s": 0.25,
+  "excluded_core_guard_s": 2.0,
+  "sideband_offsets_hz": [
+    -10.0,
+    -5.0,
+    5.0,
+    10.0
+  ],
+  "score": "predicted-curve contrast minus mean sideband contrast; equal event weighting",
+  "sample_support": "identical bins with valid trajectories and all spectral samples for every association",
+  "nuisance_parameters": "frozen original f0 and linear emission-time drift; no validation refit",
+  "candidate_selection": "best original core-fit row for every retained event/flight association",
+  "bootstrap": "2000 paired resamples of 10 s blocks within each event; descriptive only",
+  "no_truth_read": true,
+  "scope": "development diagnostic on an already inspected synthetic recording; not independent acceptance"
+}

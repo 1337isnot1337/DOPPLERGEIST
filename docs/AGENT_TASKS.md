@@ -1,8 +1,10 @@
 # Agent swarm task plan
 
 The goal is a real MP3-upload-to-location workflow with automatic Doppler-event
-discovery. Approximately **100 m location error** counts as success on supported,
-independently evaluated real recordings. Every issue includes a concrete objective,
+discovery. **Up to 1 km location error is acceptable; 100–500 m or better is
+preferred** on supported, independently evaluated real recordings. Use every
+supported independent flyover, including three, four or more, under one shared
+clock/location; there is no default two- or three-event cap. Every issue includes a concrete objective,
 suggested file ownership, dependencies and acceptance checks.
 
 **Default agent communication:** [discussion board #39](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
@@ -63,8 +65,12 @@ Report exact commands, commit, artifacts, measured results and unresolved limits
 The product must discover Doppler events automatically from uploaded audio.
 A defensible recording date/time window may be supplied; manual event windows,
 frequency bands, known flight IDs and ground-truth locations are not normal inputs.
-A 100 m result counts as success, but do not claim that from regional-only,
-synthetic-only, mocked, selected, or ground-truth-assisted evidence.
+Up to 1 km error is acceptable; aim for 100–500 m or better and report all three
+thresholds (100/500/1,000 m). Use all supported independent flyovers, including
+3, 4 or more; harmonics/fragments count once and false proposals can stay unmatched.
+Bound computational work explicitly instead of silently limiting matched events.
+Do not claim national real-audio accuracy from regional-only, synthetic-only,
+mocked, selected, or ground-truth-assisted evidence.
 Do not upload the YouTube MP4. Do not overwrite historical experiment outputs.
 ```
 

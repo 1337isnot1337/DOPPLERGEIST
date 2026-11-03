@@ -78,3 +78,32 @@ without errors; 28 have at least one proposal, 12 have none, 102 proposals total
 The run never supplied their frequency annotations. These counts do not establish
 true aircraft-event recall/precision: fragments and incidental sources remain
 unverified. Every prediction is saved under evidence/audio/w1-20261102/public40-4a49646.
+
+Fragment follow-up: compatible disjoint ridge fragments can join across at most
+20 s when the gap is at most 35% of the combined observed span, both endpoint
+slopes descend, the observed frequency drop/rate is compatible with those slopes,
+and each endpoint has only one compatible continuation. Competing continuations
+remain separate. No frequency samples are invented across missing intervals;
+harmonic comparison excludes unsupported spans. `fragment_count` and
+`max_observed_gap_s` retain missing-support evidence, and `fragment_links` records
+accepted/ambiguous continuations with reasons. This is a tonal continuity
+hypothesis; it does not prove a flight identity.
+
+`quality.frequency_sigma_hz` is the integration consumer's canonical robust-loss
+scale, with `frequency_uncertainty_hz` retained for compatibility. Both currently
+carry the same resolution/robust-deviation diagnostic, with no statistical or
+probability calibration implied by the field name. Matching applies its >=1 Hz
+loss-scale floor. Later tests against the already public DG-02 controls are
+regressions, not newly held-out accuracy evidence.
+
+Sensitivity follow-up lowers the global seed contrast threshold from3.0 to2.5.
+At this setting the full synthetic recording still yields2 groups, with first
+ridge support extended from143–180.5s to119–196s. The reference emits16 proposals,
+including a short1265.5–1282s ridge in the documented faint passage; post-run
+comparison with the archived manual ridge gives median absolute difference
+0.692Hz over23 points (90th percentile2.139Hz). This is acoustic overlap with an
+existing development measurement, not independently known aircraft or location
+truth. Fourteen known synthetic controls retain8 hits/0 misses/0 false alarms.
+The extra unverified reference proposals remain a matching/search cost. Earlier
+3.0-threshold evidence and the faint-pass miss stay preserved; no held-out or
+100m localization claim follows from this development tuning.

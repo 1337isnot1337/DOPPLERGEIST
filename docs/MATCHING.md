@@ -93,3 +93,38 @@ kinds must not be mixed in a ranking. Confidence must still consider competing
 locations, matched group count, omitted proposals, source coverage and residual
 diagnostics. Single-event candidates remain available for a defensible known
 clock, and do not by themselves establish a supported location.
+
+## Full sensitivity scenarios
+
+`matching.profile_candidate(candidate, track_lookup, all_events,
+all_measurements, terrain, recording_start_window_s=...)` reruns the leading
+association under declared perturbations. It returns the nominal refined
+candidate with a `sensitivity` artifact containing every scenario, failed
+scenario, boundary flag, tested source and maximum displacement from nominal.
+It checks each matched ridge with positive/negative frequency offsets and
+linear tilts at the declared loss scale, a constant-source alternative, allowed
+clock endpoints, relative-height offsets (default 150 m), and sound-speed
+offsets (default 5 m/s). Every scenario uses one shared clock and stays inside
+the request window. An exact clock remains fixed. Defaults are declared
+engineering ranges, not estimated meteorology, a survey, or statistical coverage.
+
+`complete` requires finite support for every scenario and successful local
+optimization. `boundary_limited` remains separate. A missing/failed scenario
+cannot silently shrink the envelope; confidence must abstain when evidence is
+incomplete or exceeds its declared precision. This finite envelope does not
+cover every possible model error, and distant competing modes still require
+the outer search. The bounded source-frequency solve uses the exact optimum
+of its two-variable convex box problem; regression tests compare it against
+SciPy's independent constrained solver, including boundary optima.
+
+Altitude scenarios include both common observer-height shifts and independent
+positive/negative biases for every matched flight segment. A constant geodetic
+height bias adjusts the trajectory derivatives by the derivative of that height
+displacement, preserving the original measured motion and never mutating the
+source track. The receipt records each flight's altitude basis and bias. Unknown,
+barometric, unspecified or mixed non-geometric bases keep sensitivity incomplete;
+a generic height envelope cannot establish a common datum. The trusted terrain
+and flight heights must already share a defensible ellipsoidal datum. Geometric
+interpolation remains labelled and subject to the declared perturbation range.
+Terrain must expose an applied geoid conversion or an explicit ellipsoidal-datum
+declaration; an unlabelled constant/raster surface keeps the envelope incomplete.
