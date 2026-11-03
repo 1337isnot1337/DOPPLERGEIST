@@ -1,0 +1,39 @@
+......................................F.F                                [100%]
+=================================== FAILURES ===================================
+____________ test_exact_declared_discard_margin_remains_competitive ____________
+
+    def test_exact_declared_discard_margin_remains_competitive():
+        case = bundle()
+        finite = case[3]["finite_search_evidence"]
+        finite.update(discarded_count=1, best_discarded_score=1.4)
+        # The declared real-valued gap is (1.8-1.4)/2 == 0.2. Rounding cannot
+        # promote equality across the existing strict-more-than retention gate.
+        result = decide(case)
+>       assert result["status"] == "inconclusive"
+E       AssertionError: assert 'succeeded' == 'inconclusive'
+E         
+E         - inconclusive
+E         + succeeded
+
+../DOPPLERGEIST-finite-review/tests/test_finite_evidence_independent.py:102: AssertionError
+___________ test_exact_declared_retained_margin_remains_competitive ____________
+
+    def test_exact_declared_retained_margin_remains_competitive():
+        case = bundle()
+        case[1].append(dict(case[1][0], lat=45.0, score=1.4))
+        case[3]["candidate_mode_ids"].append("seed-b")
+        case[3]["assessed_mode_ids"].append("seed-b")
+        case[3]["finite_search_evidence"]["retained_modes"].append(
+            {"mode_id": "seed-b", "score": 1.4, "event_groups": 2})
+        result = decide(case)
+>       assert result["status"] == "inconclusive"
+E       AssertionError: assert 'succeeded' == 'inconclusive'
+E         
+E         - inconclusive
+E         + succeeded
+
+../DOPPLERGEIST-finite-review/tests/test_finite_evidence_independent.py:120: AssertionError
+=========================== short test summary info ============================
+FAILED ::test_exact_declared_discard_margin_remains_competitive - AssertionEr...
+FAILED ::test_exact_declared_retained_margin_remains_competitive - AssertionE...
+2 failed, 39 passed in 0.12s

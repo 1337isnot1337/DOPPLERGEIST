@@ -1,0 +1,52 @@
+{
+  "scope": "Independent finite-decision controls and conservative roundoff repair; no national replay or acceptance promotion.",
+  "baseline_source": "4bdc1fd144ad37b416faa216e78ac88652c3922d",
+  "fixed_source": "fd7f63e5f4d7d133a721b57bab4de91c90911878",
+  "fixed_source_tree": "90adefa3f938ef3355f9de7b7d4f186441b82339",
+  "boundary": {
+    "leading_score": 1.8,
+    "competing_score": 1.4,
+    "groups": 2,
+    "policy_margin": 0.2,
+    "computed_gap": 0.20000000000000007,
+    "baseline_status": "succeeded",
+    "fixed_status": "inconclusive"
+  },
+  "guard": {
+    "relative_tolerance": 1e-12,
+    "absolute_tolerance": 1e-12,
+    "scope": "Only equality at roundoff; can only preserve an inconclusive outcome."
+  },
+  "files": {
+    "src/aircraft_geoloc/confidence.py": {
+      "sha256": "5f4e087c61d495bbe5026bb1f81229f52edd0540fbf517ddcb0614cb0b291930",
+      "bytes": 20358
+    },
+    "tests/test_finite_evidence_independent.py": {
+      "sha256": "27b61543817b1f598e29489fa754579282dfe9eae3ce291f762ce63229744a3b",
+      "bytes": 5683
+    }
+  },
+  "test_results": {
+    "before": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "2",
+      "skipped": "0",
+      "tests": "41",
+      "time": "0.125",
+      "timestamp": "2026-11-02T22:16:31.215425-04:00",
+      "hostname": "05c893b10fbb"
+    },
+    "after-fullsuite": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "176",
+      "time": "20.829",
+      "timestamp": "2026-11-02T22:15:43.053206-04:00",
+      "hostname": "05c893b10fbb"
+    }
+  }
+}
