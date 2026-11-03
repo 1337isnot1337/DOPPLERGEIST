@@ -443,11 +443,40 @@ def _compare_retained_spectra(recording, rows, prepared_events, indexes, config,
     return report
 
 
+def _refinement_tracks(indexes, needed, bounds, time_range, sample_limit):
+    """Load only a finalist's whole segments within the original query envelope."""
+    from .data_access import DataUnavailable, FlightIndex
+
+    tracks = {}
+    for index in indexes:
+        # Preserve custom query adapters and their filtering behavior. The native
+        # index can restrict names in SQL before decompressing unrelated flights.
+        named = type(index) is FlightIndex
+        source = (index.lookup(needed, bounds=bounds, time_range=time_range,
+                               max_tracks=max(1, len(needed)), max_samples=sample_limit)
+                  if named else index.query(bounds, time_range))
+        try:
+            for track in source:
+                if track.id in needed:
+                    tracks[track.id] = track
+                    if sum(len(item.time) for item in tracks.values()) > sample_limit:
+                        raise ValueError("Refinement trajectory sample budget exceeded")
+        except DataUnavailable as error:
+            if named and str(error) == "Flight lookup sample budget exceeded":
+                raise ValueError("Refinement trajectory sample budget exceeded") from error
+            raise
+    return tracks
+
+
 def _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish, decision_progress, *, recording=None):
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
-    from .matching import profile_candidate, refine_candidate
+    from .matching import _cache_ridge_fits, profile_candidate, refine_candidate
+    # Each finalist and the complete sensitivity profile own an exact-input
+    # cache. Profile's internal refinements share its scope; other calls do not.
+    refine_candidate = _cache_ridge_fits(refine_candidate)
+    profile_candidate = _cache_ridge_fits(profile_candidate)
     raw = list(search.get("ranked", []))
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
@@ -494,16 +523,10 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             margin = max_range / 60000.0 + 0.3
             bounds = (row["lon"]-margin, row["lat"]-margin, row["lon"]+margin, row["lat"]+margin)
             needed = set(row["flight_ids"])
-            tracks = {}
             lo = start_window[0] + min(e["start_s"] for e in prepared_events) - max_range / 300 - 120
             hi = start_window[1] + max(e["end_s"] for e in prepared_events) + 120
-            for index in indexes:
-                for track in index.query(bounds, (lo, hi)):
-                    if track.id in needed:
-                        tracks[track.id] = track
-                        sample_limit = config.get("search_budget", {}).get("max_track_samples_per_tile", 500000)
-                        if sum(len(item.time) for item in tracks.values()) > sample_limit:
-                            raise ValueError("Refinement trajectory sample budget exceeded")
+            sample_limit = config.get("search_budget", {}).get("max_track_samples_per_tile", 500000)
+            tracks = _refinement_tracks(indexes, needed, bounds, (lo, hi), sample_limit)
             if needed - tracks.keys():
                 raise ValueError("Candidate flight segments are unavailable for refinement")
             row = dict(row, altitude_basis={flight: sorted(set(getattr(track, "altitude_basis", ["unspecified"]))) for flight, track in tracks.items()})

@@ -496,42 +496,51 @@ class FlightIndex:
         except (OSError, ValueError, KeyError, TypeError) as error:
             raise DataUnavailable(f"Invalid/truncated Parquet: {parquet}: {error}") from error
 
+    def _query_scope(self, bounds, time_range):
+        """Use the same conservative envelope for broad and named queries."""
+        west, south, east, north = bounds
+        start, end = time_range
+        current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
+        compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
+        if (not self.report.get("continuous_geometry_bounds") or
+                self.report.get("normalizer_sha256") not in compatible):
+            # Old indexes used sample-only bounds or different derivatives.
+            # Disable unsafe spatial pruning, preserving explicit budgets.
+            return "", "s.start<=? AND s.end>=?", (end, start)
+        return (" JOIN spatial r ON s.id=r.id",
+                "r.west<=? AND r.east>=? AND r.south<=? AND r.north>=? AND s.start<=? AND s.end>=?",
+                (east, west, north, south, end, start))
+
     def query(self, bounds, time_range):
         """Yield complete segments touching the query, retaining gaps and labels.
 
         Callers expand receiver bounds for acoustic range and event duration.
         An R-tree rectangle can return harmless extra tracks, never clipped ones.
         """
-        west, south, east, north = bounds
-        start, end = time_range
+        join, predicate, params = self._query_scope(bounds, time_range)
         with self.connect() as db:
-            sql = """SELECT s.name,s.payload,s.payload_hash FROM segments s JOIN spatial r ON s.id=r.id
-                WHERE r.west<=? AND r.east>=? AND r.south<=? AND r.north>=?
-                AND s.start<=? AND s.end>=? ORDER BY s.name"""
-            params = (east, west, north, south, end, start)
-            current_normalizer = sha256(Path(__file__).with_name("tracks.py"))
-            compatible = (current_normalizer, *_EQUIVALENT_NORMALIZERS.get(current_normalizer, ()))
-            if (not self.report.get("continuous_geometry_bounds") or
-                    self.report.get("normalizer_sha256") not in compatible):
-                # Old indexes used sample-only bounds or different derivatives.
-                # Disable unsafe spatial pruning, preserving explicit budgets.
-                sql = "SELECT name,payload,payload_hash FROM segments WHERE start<=? AND end>=? ORDER BY name"
-                params = (end, start)
+            sql = ("SELECT s.name,s.payload,s.payload_hash FROM segments s" + join
+                   + " WHERE " + predicate + " ORDER BY s.name")
             for name, payload, expected in db.execute(sql, params):
                 if hashlib.sha256(payload).hexdigest() != expected:
                     raise DataUnavailable(f"Corrupt flight payload: {name}")
                 frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
                 yield _frame_track(name, frame)
 
-    def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000):
+    def lookup(self, identifiers, *, max_tracks=2000, max_samples=500000,
+               bounds=None, time_range=None):
         """Yield named whole segments without scanning unrelated trajectories.
 
         Missing names are omitted; callers must compare requested and returned
         IDs. Limits reject excess work explicitly, never truncate a trajectory.
+        Supply both bounds and time_range to apply the same envelope as query,
+        including its conservative fallback for older geometry indexes.
         This lookup establishes no spatial, temporal or receiver completeness.
         """
         if any(type(value) is not int or value <= 0 for value in (max_tracks, max_samples)):
             raise ValueError("Flight lookup limits must be positive integers")
+        if (bounds is None) != (time_range is None):
+            raise ValueError("Flight lookup bounds and time_range must be supplied together")
         names = set()
         for name in identifiers:
             if not isinstance(name, str) or not name:
@@ -540,14 +549,18 @@ class FlightIndex:
             if len(names) > max_tracks:
                 raise DataUnavailable("Flight lookup identifier budget exceeded")
         names, samples = sorted(names), 0
+        join, predicate, scope_params = ("", "", ())
+        if bounds is not None:
+            join, predicate, scope_params = self._query_scope(bounds, time_range)
         with self.connect() as db:
             # Stay below SQLite's conservative bound on bound SQL parameters.
             for first in range(0, len(names), 500):
                 batch = names[first:first+500]
                 placeholders = ",".join("?" for _ in batch)
-                sql = ("SELECT name,payload,payload_hash FROM segments WHERE name IN ("
-                       + placeholders + ") ORDER BY name")
-                for name, payload, expected in db.execute(sql, batch):
+                sql = ("SELECT s.name,s.payload,s.payload_hash FROM segments s" + join
+                       + " WHERE s.name IN (" + placeholders + ")"
+                       + (" AND " + predicate if predicate else "") + " ORDER BY s.name")
+                for name, payload, expected in db.execute(sql, (*batch, *scope_params)):
                     if hashlib.sha256(payload).hexdigest() != expected:
                         raise DataUnavailable(f"Corrupt flight payload: {name}")
                     frame = pd.DataFrame(json.loads(gzip.decompress(payload)))

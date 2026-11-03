@@ -335,7 +335,49 @@ def _ridge_trial_classification(result, events, association):
 
 
 
+_CEILING_FLOAT_FIELDS = (
+    "support_fraction", "score", "f0_hz", "source_drift_hz", "source_drift_hz_s",
+    "source_reference_emission_time_s", "source_span_s", "drift_bound_hz", "rmse_hz", "outlier_fraction",
+)
+
+
 def _association_event_ceiling(diagnostic, score, frequency, event, limit):
+    """Reuse a validated ceiling only for the same complete scalar evidence.
+
+    Fit dictionaries are copied for each association. Content keys preserve
+    mutation checks while avoiding repeated validation of the same clock fit.
+    Noncanonical numeric types retain the original validation and arithmetic.
+    """
+    from .matching import _ridge_fit_cache
+    cache = _ridge_fit_cache.get()
+    if (cache is None or cache.max_entries <= 0 or type(diagnostic) is not dict
+            or type(event) is not dict or type(event.get("quality", {})) is not dict):
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    bounds = event.get("f0_range_hz")
+    if type(bounds) not in (list, tuple) or len(bounds) != 2:
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    values = tuple(diagnostic.get(name) for name in _CEILING_FLOAT_FIELDS)
+    fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+    counts = (diagnostic.get("sample_count"), diagnostic.get("independent_sample_count"))
+    optimizer = diagnostic.get("optimizer_success", True)
+    if (not all(type(value) is float for value in (*values, score, frequency, limit, *bounds, fraction))
+            or not all(type(value) is int for value in counts) or type(optimizer) is not bool):
+        return _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    key = (_ridge_trial_classification, values, counts, optimizer, score, frequency,
+           tuple(bounds), fraction, limit)
+    entries = cache.ceiling_entries
+    previous = entries.get(key)
+    if previous is not None:
+        entries.move_to_end(key)
+        return previous
+    result = _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit)
+    entries[key] = result
+    if len(entries) > cache.max_entries:
+        entries.popitem(last=False)
+    return result
+
+
+def _association_event_ceiling_uncached(diagnostic, score, frequency, event, limit):
     """Validate one fitted group's contribution before tightening a ceiling."""
     single = {"score_kind": "negative_robust_ridge_loss_hz", "score": score,
               "event_scores": [score], "f0_hz": [frequency], "event_diagnostics": [diagnostic]}

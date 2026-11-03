@@ -1,9 +1,10 @@
 """Batched robust ridge fits with the scalar model's arithmetic order."""
 import numpy as np
 
-from .matching import _frequency_scale, _ridge_fit_inputs
+from .matching import _cache_batch_ridge_fits, _frequency_scale, _ridge_fit_inputs
 
 
+@_cache_batch_ridge_fits
 def first_event_fits(measurement, event, factors, emissions):
     """Fit supported clocks together, or return None for the ordinary fitter.
 

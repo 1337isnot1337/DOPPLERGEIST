@@ -10,11 +10,13 @@ from dataclasses import dataclass
 from functools import wraps
 import hashlib
 from itertools import chain
+import sys
 
 import numpy as np
 from pyproj import Transformer
 from scipy.optimize import minimize
 
+from .audio import Spectrum
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
 
@@ -53,6 +55,10 @@ class _RidgeFitCache:
         self.measurement_entries = OrderedDict()
         self.measurement_bytes = 0
         self.measurement_limit = 4 * 1024 * 1024
+        self.batch_entries = OrderedDict()
+        self.batch_bytes = 0
+        self.batch_limit = 16 * 1024 * 1024
+        self.ceiling_entries = OrderedDict()
 
     def prepared_measurement(self, measurement, sigma_hz, drift_fraction, key):
         """Reuse selected samples only after checking their current content key."""
@@ -159,6 +165,76 @@ def _cache_ridge_fits(function, *, max_entries=4096):
             return function(*args, **kwargs)
         finally:
             _ridge_fit_cache.reset(token)
+
+    return run
+
+
+def _cache_batch_ridge_fits(function):
+    """Reuse identical source fits across associations within one scoring call.
+
+    Every lookup checks current input bytes. The cache cannot turn changed
+    measurements, propagation arrays or model parameters into an old result.
+    Successful diagnostics contain immutable scalars; independent dictionary
+    copies prevent callers from modifying the saved fit. Custom representations
+    retain the ordinary fitter and its validation behavior.
+    """
+    @wraps(function)
+    def run(measurement, event, factors, emissions):
+        cache = _ridge_fit_cache.get()
+        if cache is None or cache.batch_limit <= 0 or cache.max_entries <= 0:
+            return function(measurement, event, factors, emissions)
+        if (type(measurement) not in (list, tuple) or len(measurement) != 4
+                or type(event) is not dict or type(event.get("quality", {})) is not dict):
+            return function(measurement, event, factors, emissions)
+        spec, ridge, weight, _ = measurement
+        if type(spec) not in (RidgeTimes, Spectrum):
+            return function(measurement, event, factors, emissions)
+        arrays = (spec.time, ridge, weight, factors, emissions)
+        if any(type(value) is not np.ndarray or value.dtype.kind not in "biuf" for value in arrays):
+            return function(measurement, event, factors, emissions)
+        bounds = event.get("f0_range_hz")
+        sigma = _frequency_scale(event)
+        fraction = event.get("quality", {}).get("source_drift_fraction", 0.02)
+        if (type(bounds) not in (list, tuple) or len(bounds) != 2
+                or any(type(value) not in (int, float) for value in (sigma, fraction, *bounds))):
+            return function(measurement, event, factors, emissions)
+        parameters = tuple(_fit_argument_key(value) for value in (sigma, fraction, bounds))
+        # Equal values can have different NumPy reduction orders when their
+        # strides differ. Preserve layout as well as every numeric input byte.
+        content = tuple((value.dtype.str, value.shape, value.strides, value.flags.aligned,
+                         hashlib.sha256(value.tobytes()).digest())
+                        for value in arrays)
+        key = function, parameters, content
+        if key in cache.batch_entries:
+            cache.batch_entries.move_to_end(key)
+            return [diagnostic.copy() for diagnostic in cache.batch_entries[key][0]]
+        result = function(measurement, event, factors, emissions)
+        if result is not None:
+            # Builtin type tags and literal diagnostic keys already live in the
+            # module. Charge every other key/scalar object to each entry, even
+            # when shared. Check the actual OrderedDict size after insertion
+            # too, since its backing table can grow or retain capacity.
+            def key_size(value):
+                if isinstance(value, type):
+                    return 0
+                return sys.getsizeof(value) + (sum(map(key_size, value)) if isinstance(value, tuple) else 0)
+
+            size = (key_size(key) + sys.getsizeof((None, None)) + sys.getsizeof(0) + sys.getsizeof(result)
+                    + sum(sys.getsizeof(diagnostic)
+                          + sum(sys.getsizeof(value) for value in diagnostic.values())
+                          for diagnostic in result))
+            if size <= cache.batch_limit:
+                while cache.batch_entries and (
+                        cache.batch_bytes + size + sys.getsizeof(cache.batch_entries) > cache.batch_limit
+                        or len(cache.batch_entries) >= cache.max_entries):
+                    _, (_, removed) = cache.batch_entries.popitem(last=False)
+                    cache.batch_bytes -= removed
+                cache.batch_entries[key] = ([diagnostic.copy() for diagnostic in result], size)
+                cache.batch_bytes += size
+                while cache.batch_entries and cache.batch_bytes + sys.getsizeof(cache.batch_entries) > cache.batch_limit:
+                    _, (_, removed) = cache.batch_entries.popitem(last=False)
+                    cache.batch_bytes -= removed
+        return result
 
     return run
 
