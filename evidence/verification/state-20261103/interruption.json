@@ -1,0 +1,19 @@
+{
+  "status": "interrupted",
+  "completed_matrix": false,
+  "reason": "Primary stopped the run before the first decision while narrowing this checkpoint to source/receipt validation.",
+  "runner_pid": 2436355,
+  "signalled_process_groups": [
+    2436355,
+    2436409,
+    2436419
+  ],
+  "runtime_commit": "b6de6db5d5c94e08cdcabbe4469fec47cfa81751",
+  "runner_commit": "06d60ef8003d68da55d2bd5614827bf1f7fa5c81",
+  "utc": "2026-11-03T03:19:30Z",
+  "input_scope": "Entirely synthetic three-event fixture; no third-party recording was analyzed.",
+  "last_persisted_job_status": "running",
+  "last_persisted_job_stage": "search",
+  "decision_artifact_present": false,
+  "observed_case_count": 1
+}

@@ -5,16 +5,24 @@ dependencies, suggested agent allocation and a copyable assignment prompt.
 
 ## Read first
 
-The user wants a full MP3-upload-to-location pipeline, with automatic Doppler-event
-detection and approximately 100 m accuracy. The current CLI is a research
-prototype with manually selected event windows. Do not describe it as a finished
-upload product or treat the regional reference case as a nationwide validation.
+The user wants a full MP3-upload-to-location pipeline with automatic Doppler-event
+detection. Up to **1,000 m** error is acceptable; **100–500 m or better** is
+preferred. Report all three thresholds. Whole-recording intake, automatic discovery
+and bounded tiled search are implemented on `main`; the configured research CLI
+also remains available with manually selected events. Product integration and
+independent real-recording acceptance are separate gates. Check the
+[README](../README.md), [pinned verification note](VERIFICATION_2026-11-03.md) and
+current PR state before making a present-tense feature assessment. Do not treat a
+regional reference case or a synthetic result as nationwide real-audio validation.
 
 The original implementation was not released. This repository contains our
 independent implementation and the accumulated evidence, including unsuccessful
 cases. [PROGRESS.md](PROGRESS.md) lists the verified results and limits.
 
-## Suggested independent work areas
+## Original work-area split
+
+This table preserves the initial planning split. It is not an inventory of missing
+features or a new assignment; use current issues and the discussion board for those.
 
 | Area | Main files | Concrete next result |
 | --- | --- | --- |
@@ -64,8 +72,9 @@ files are sufficient. The original source MP4 is not uploaded, at the user's req
 - `search.cpa_table_dense` is a retained test oracle. The production sparse CPA
   path must retain multiple local approaches and match the reference on small cases.
 - Event clocks remain locked together. Independent shifts can manufacture a match.
-- Search currently raises on an empty candidate set. An interface should translate
-  that into an explicit inconclusive outcome without inventing a best location.
+- The configured research pipeline raises on an empty candidate set. This legacy
+  behavior does not establish the outcome of the separate automatic job workflow;
+  inspect that workflow's actual result and decision artifacts.
 - The 40-passage dataset supplies helpful frequency annotations but lacks the
   explicit recorder-coordinate/audio-clock evidence needed here for location tests.
 

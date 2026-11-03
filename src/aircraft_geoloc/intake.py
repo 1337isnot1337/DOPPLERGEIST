@@ -40,9 +40,11 @@ def probe_media(source):
             ["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json", str(path)],
             capture_output=True, check=True, text=True)
         probe = json.loads(result.stdout)
-    except FileNotFoundError as exc:
-        raise AudioIntakeError("decoder_unavailable", "ffprobe is required for audio intake") from exc
+    except OSError as exc:
+        raise AudioIntakeError("decoder_unavailable", "ffprobe could not start; check executable and runtime dependencies") from exc
     except (subprocess.CalledProcessError, json.JSONDecodeError) as exc:
+        if isinstance(exc, subprocess.CalledProcessError) and exc.returncode in (126, 127):
+            raise AudioIntakeError("decoder_unavailable", "ffprobe could not start; check runtime dependencies") from exc
         raise AudioIntakeError("invalid_media", "Media probe failed; file is unsupported or corrupt") from exc
     audio = [s for s in probe.get("streams", []) if s.get("codec_type") == "audio"]
     if not audio:
@@ -128,8 +130,8 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
             temporary = Path(cache.name)
             try:
                 process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=errors)
-            except FileNotFoundError as exc:
-                raise AudioIntakeError("decoder_unavailable", "ffmpeg is required for audio intake") from exc
+            except OSError as exc:
+                raise AudioIntakeError("decoder_unavailable", "ffmpeg could not start; check executable and runtime dependencies") from exc
             count, peak, remainder = 0, 0.0, b""
             try:
                 while block := process.stdout.read(256 * 1024):
@@ -144,6 +146,8 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
                     cache.write(block[:usable])
                     remainder = block[usable:]
                 code = process.wait()
+                if code in (126, 127):
+                    raise AudioIntakeError("decoder_unavailable", "ffmpeg could not start; check runtime dependencies")
                 if code or remainder:
                     raise AudioIntakeError("decode_failed", "Audio decode failed; media may be truncated or corrupt")
             finally:

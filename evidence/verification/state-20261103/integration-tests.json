@@ -1,0 +1,22 @@
+{
+  "source_commit": "b6de6db5d5c94e08cdcabbe4469fec47cfa81751",
+  "source_tree": "74cef6f494db32b9950e944a3a9ebbb9c3e58454",
+  "pytest_summary": {
+    "passed": 264,
+    "subtests_passed": 14,
+    "elapsed_s": 133.03,
+    "skipped": 0
+  },
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "278",
+    "time": "133.032",
+    "timestamp": "2026-11-02T21:06:26.387820-06:00",
+    "hostname": "Asus"
+  },
+  "xml_sha256": "82529708a3cb14c778ae5e1bf915b1c4c09e60824b1a9f5b6ae031bf847f3c5e",
+  "scope": "Frozen runner/runtime checks; actual matrix outcomes remain separate."
+}

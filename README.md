@@ -1,126 +1,108 @@
-# DOPPLERGEIST
+<p align="center">
+  <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
+</p>
 
-# WORK IN PROGRESS !!! This is NOT done yet. Completion target in the next few hours. 
+DOPPLERGEIST investigates **where an audio recording was made** by comparing the Doppler patterns of passing aircraft with historical flight trajectories. It combines acoustic measurements, aircraft motion, sound travel time and terrain to rank possible recording locations. The application runs locally; there are no plans for a hosted service.
 
-An independent reconstruction of the aircraft-sound geolocation method described
-in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI). The pipeline
-measures Doppler curves, compares them with historical ADS-B trajectories, accounts
-for terrain and sound travel time, and ranks candidate recording positions.
+**Experimental software.** Configured localization replays and automatic audio-event discovery are available on `main`. The complete automatic MP3-to-location workflow is still under integration, and independent nationwide accuracy on real recordings has not been established. A plausible coordinate alone is insufficient evidence for a location.
 
-**The target is automatic MP3-to-location analysis: up to 1 km error is acceptable,
-with 100–500 m or better preferred. Independent national real-audio accuracy is
-not yet verified.** Automatic
-event discovery, historical-data indexing, tiled search, partial event matching
-and physical sensitivity checks are implemented. The upload service and decision
-rules are being integrated in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19).
-The configured `run` CLI remains available for research replays. A defensible
-recording date or bounded time window is needed to select historical flight data;
-an undated audio file does not itself establish that clock. The matcher now considers all supported independent flyovers, including three,
-four or more, under explicit computation budgets; harmonics and fragments of
-one flyover count once. Product integration and accepted multi-event replays
-remain pending.
+[Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
 
-## Verified results
+## Quickstart
 
-| Case | Result | Scope |
-| --- | --- | --- |
-| Independent synthetic two-event audio | 21.89 m error; correct flight pair | Unknown recording start; three candidate regions; truth withheld from search |
-| Independent synthetic 60-second event | 40.87 m error; correct flight | Known recording start; manually selected event |
-| Original recording, two events | 43.86 m from published public-platform coordinate | Regional search; source-informed windows and bounds; reference coordinate is not surveyed ground truth |
-| Original recording, faint 60-second event | 357.47 m from the same reference | Regional search; clock borrowed from the two-event result; exceeded the original checkpoint's 100 m threshold |
-| Separate 40-passage acoustic dataset | 33 detections; median speed error 6.85%, slant error 15.37% among detections | Annotation-assisted frequency bands; feature benchmark, not location validation |
-
-These are the original configured checkpoints. The independent clean replay
-reproduces the real two-event winner exactly; its synthetic two-event run yields
-15.40 m with changed ridge measurements, recorded as `baseline_changed` rather
-than silently replacing the 21.89 m result. See the
-[complete clean replay evidence](docs/verification/CLEAN_REPLAY.md).
-
-Automatic discovery processed all 40 separate public WAVs without supplied event
-windows or bands: 28 recordings produced proposals, 12 did not, with 102 proposals
-in total. Those proposals are not certified aircraft detections. The fixed
-synthetic detection controls recorded 8 hits, no misses and no false alarms across
-14 cases. [All outcomes and source revisions](docs/AUDIO_DISCOVERY.md) remain
-available. Automatic national synthetic runs also retain distant competing modes
-and inconclusive results in [the integration evidence](docs/verification/INTEGRATION.md).
-The [integration receipts](docs/verification/INTEGRATION.md) pin each tested source
-revision and its scope. The independent
-[three-, four- and six-flyover fixtures](docs/MULTI_EVENT_FIXTURES.md) produce
-13/13 detected events with unchanged settings; their released media and complete
-receipts support the next full upload tests. Independently timed real field
-recordings remain a separate unmet acceptance gate. Scores and finite sensitivity checks are not calibrated location probabilities.
-
-A [targeted raw-trajectory audit](research/trajectory-motion/README.md) found
-legacy fabricated motion components and persistent position/time jumps. One
-stored curve peaks near 52,044 m/s, driven by native observations about 14.6 km
-apart in 0.42 seconds. Fresh normalization fixes two tested motion artifacts but
-leaves unsupported source sequences. Explicit handling and lost-coverage checks
-remain a scientific correctness gate; these are input/model defects, not actual
-aircraft-speed measurements or new location-accuracy results.
-
-For parallel implementation, start with the [agent task plan](docs/AGENT_TASKS.md)
-and [discussion board](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
-The [tracking issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1) indexes tasks.
-Then read [the implementation handoff](docs/HANDOFF.md),
-[current evidence](docs/PROGRESS.md), and [the reconstructed methodology](docs/METHODOLOGY.md).
-Readable reports and plots are checked into [evidence/results](evidence/results).
-Large inputs and complete outputs are in the
-[checkpoint release](https://github.com/1337isnot1337/dopplergeist/releases/tag/checkpoint-2026-11-02).
-See [artifact download and verification instructions](docs/ARTIFACTS.md).
-The YouTube MP4 is intentionally excluded.
-
-## Install and run
-
-Python 3.11+ and `ffmpeg` are required. Python 3.14 was used for this checkpoint;
-the recorded dependency versions are in [evidence/runtime.json](evidence/runtime.json).
-See [clean installation, pinned dependencies and selective restoration](docs/SETUP.md)
-for a fresh checkout.
+Requires **Python 3.11+**, **FFmpeg** (`ffmpeg` and `ffprobe` on `PATH`) and Git. Install FFmpeg through your operating system's package manager, then run from a shell on Linux or macOS:
 
 ```bash
+git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
+cd DOPPLERGEIST
 python -m venv .venv
-.venv/bin/pip install -e '.[test]'
-.venv/bin/python -m pytest -q
+.venv/bin/python -m pip install -e '.[test]'
+
 .venv/bin/python scripts/make_synthetic_cases.py
-.venv/bin/aircraft-geoloc run data/synthetic/two-events.json --output results/replay-two-events
-.venv/bin/aircraft-geoloc run data/synthetic/known-time-minute.json --output results/replay-known-minute
+.venv/bin/aircraft-geoloc run \
+  data/synthetic/known-time-minute.json \
+  --output results/known-time-demo
 ```
 
-After restoring the release data, reproduce the real regional case with:
+This generates deterministic audio and flight tracks, then runs a **configured synthetic localization experiment** with a known recording clock and a selected 60-second event. It needs no external datasets or data-service credentials. Inspect `results/known-time-demo/report.json` for the leading hypothesis, `ranked.json` for alternatives, and the PNG plots for diagnostic comparisons. The historical checkpoint identified the correct flight with **40.87 m error**; this is a synthetic result, not a real-world accuracy claim.
+
+Use a new output directory for each experiment. Run the tests with `.venv/bin/python -m pytest -q`. For pinned environments and clean-install evidence, see [Setup](docs/SETUP.md); native Windows execution has not been verified.
+
+### Discover events in a recording
+
+Automatic discovery scans an entire recording for moving acoustic frequency patterns **without hand-selecting event windows or frequency bands**:
 
 ```bash
-.venv/bin/aircraft-geoloc run data/source/reproduce-local.json --output results/replay-reference
+.venv/bin/python scripts/discover_audio.py \
+  path/to/recording.mp3 \
+  --output results/my-discovery
 ```
 
-Use a new output directory to preserve the original evidence. Historical reports
-retain their original paths and implementation hashes; those paths are provenance,
-not requirements for a new checkout. Configuration paths resolve relative to the
-configuration file.
+Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`. **These are acoustic event proposals, not coordinates or certified aircraft detections.** See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
 
-## Inputs and model
+## How it works
 
-Canonical CSV/Parquet columns are `flight_id,time_s,lat,lon,alt_m,typecode`.
-Timestamps are Unix seconds or UTC ISO strings; heights and speeds use SI units.
-Optional `east_mps,north_mps,up_mps` provide flight velocity. KML `gx:Track` and
-readsb/ADSB.lol traces have importers. Track gaps are split; extrapolation is
-disallowed. Known-jet exclusion is configurable through the supplied type database.
-The faint reference event requires retaining jets.
+1. **Measure the audio.** Decode the recording, identify frequency tracks, and group harmonics that belong to the same flyover.
+2. **Collect trajectories.** Retrieve aircraft positions for a justified recording-time window and track available data coverage.
+3. **Model the sound.** Predict Doppler frequency and arrival time from aircraft trajectories, receiver geometry, and sound propagation.
+4. **Compare locations.** Search candidate receiver positions, reconcile independent flyovers, and retain competing explanations rather than forcing an answer.
 
-For aircraft position **x** at emission time tau and receiver **o**, the solver uses:
+The central complication is that the plane **moves while its sound travels**. DOPPLERGEIST models emission time separately from reception time. See [Methodology](docs/METHODOLOGY.md) for equations, assumptions, and implementation details.
 
+## Capabilities and limits
+
+- **Available on `main`:** `aircraft-geoloc run` for configured localization experiments, `measure` for selected acoustic events, and `scripts/discover_audio.py` for whole-recording intake and discovery. Flight indexing, bounded tiled search, multi-flyover matching, physical refinement and conservative decision logic exist as components.
+- **Under integration:** the local upload interface, persistent jobs and automatic `analyze`, `serve` and `job` commands remain in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19). They are not supported commands on `main`. [Upload verification](https://github.com/1337isnot1337/DOPPLERGEIST/pull/32) and [final acceptance](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) remain separate gates.
+- **Not independently validated:** nationwide geolocation accuracy on real recordings, calibrated location probabilities, and the false-localization rate of the acceptance rules.
+
+The target is a supported location estimate within **1,000 m**, preferably **100–500 m or better**, using real recordings without truth-informed event selection or geographic bounds. Evaluation reports 100/500/1,000 m thresholds without rewriting historical experiments' original thresholds.
+
+Recording-time evidence matters: audio-relative seconds do not identify which day's flights to search. A defensible start time or bounded UTC window is needed; file modification and upload times do not establish the recording clock. All supported independent flyovers share one clock, while harmonics count once and unconfirmed proposals may remain unmatched.
+
+Missing events, incomplete flight coverage, competing locations or inadequate sensitivity evidence can require an **inconclusive** outcome. Ranking scores and sensitivity envelopes are not calibrated probabilities. The configured research CLI emits ranked hypotheses; it does not execute the complete upload acceptance workflow. Trajectory interpolation and physically inconsistent input motion also remain [documented limitations](research/trajectory-motion/README.md). See [Decision rules](docs/CONFIDENCE.md).
+
+## Experimental results
+
+The published project artifacts preserve both successful fits and cases where the system could not justify a location.
+
+| Experiment | Reported finding | Important qualification |
+| --- | --- | --- |
+| Independent synthetic, two events | **21.89 m** error, correct flight pair | Original configured checkpoint; unknown start time, three candidate regions, truth withheld from search |
+| Clean synthetic two-event replay | **15.40 m** error | Ridge measurements and winner changed; cause unresolved, not an exact reproduction |
+| Known-time synthetic flyover | **40.87 m** error, correct flight | Manually configured 60-second event |
+| Original real recording, two flyovers | **43.86 m** from a public reference coordinate | Source-informed regional bounds and event windows; reference coordinate is **not surveyed ground truth** |
+| Original faint real flyover | **357.47 m** from the same reference | Clock inherited from the two-event fit; missed its original 100 m target |
+
+The two real-regional winners reproduce in a clean environment. See the [clean replay report](docs/verification/CLEAN_REPLAY.md) and [CI replay evidence](docs/CI_VERIFICATION_2026-11-02.md) for measurements and provenance.
+
+Automatic pipeline results require a different reading:
+
+- **Event discovery:** frozen synthetic fixtures with three, four and six flyovers yielded **13/13** discovered events with unchanged settings. This establishes detection on those fixtures, not accepted localization. See [multi-event fixtures](docs/MULTI_EVENT_FIXTURES.md).
+- **Full synthetic national searches:** one product-integration run processed **4,940** coarse tiles and ranked a hypothesis **1,046,023 m** from truth first; the correct flight pair was fourth at **6.16 m**. A separate browser/API upload on another integration revision led with a candidate **0.65 m** from truth. **Both ended inconclusive** because alternatives remained unresolved. Neither is an accepted automatic location. See [integration evidence](docs/verification/INTEGRATION.md), [product run](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19) and [upload replay](https://github.com/1337isnot1337/DOPPLERGEIST/pull/32).
+- **Real acoustic benchmarks:** the [annotation-assisted feature benchmark](docs/PROGRESS.md) detected **33/40** passages, with median speed/slant errors of **6.85% / 15.37%** among detections. Separate automatic discovery produced **102 proposals across 28/40 recordings**; these are not certified aircraft detections. Corrected 300-second Times Square and Statue of Liberty webcam clips each yielded **zero supported proposals** under frozen settings. These datasets lack the established recorder clock and microphone-coordinate evidence needed for location-accuracy validation. See [discovery results](docs/AUDIO_DISCOVERY.md), [timing audit](docs/verification/REAL_DATA_TIMING.md) and [public-camera benchmark](docs/verification/PUBLIC_CAMERA_BENCHMARK.md).
+
+### Replay the historical reference case
+
+Large research inputs live in checksummed release assets. With an authenticated GitHub CLI (`gh`) that can access the release, restore only the regional replay's required bundles:
+
+```bash
+.venv/bin/python scripts/restore_artifacts.py \
+  --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+.venv/bin/aircraft-geoloc run \
+  data/source/reproduce-local.json \
+  --output results/my-reference-replay
 ```
-t_received = tau + norm(x(tau) - o) / c
-frequency = f0 * c / (c + dot(velocity(tau), x(tau)-o)/norm(x(tau)-o))
-```
 
-Positive range rate means the aircraft is receding. All events share one recording
-clock adjustment; rest frequency is fitted separately for each event. Scoring
-uses either spectrogram contrast along the predicted curves or measured-ridge
-residuals. Terrain and aircraft heights must use a consistent vertical datum;
-the supplied real configurations include a geoid correction.
+The restorer checks hashes and preserves conflicting local files. The original source YouTube MP4 is not redistributed. See [artifact restoration](docs/ARTIFACTS.md) and the [checkpoint release](https://github.com/1337isnot1337/DOPPLERGEIST/releases/tag/checkpoint-2026-11-02).
 
-## Sources
+## Documentation and references
 
-This is independently written code, not a release from the video author.
-External data retain their own licenses and attribution requirements, described
-in [data provenance](docs/DATA_SOURCES.md). No blanket license for those assets is
-implied by this repository.
+- [Methodology](docs/METHODOLOGY.md) — geometry, Doppler and acoustic propagation
+- [Installation and reproducibility](docs/SETUP.md) — environments, verification, restoration
+- [Automatic event discovery](docs/AUDIO_DISCOVERY.md) — detector design and known failure modes
+- [Confidence and decision rules](docs/CONFIDENCE.md) — ambiguity, abstention, incomplete coverage
+- [Integration verification](docs/verification/INTEGRATION.md) — end-to-end results and caveats
+- [Data and search contracts](docs/DATA_AND_SCALE.md) — trajectory indexing, coverage and geographic search
+- [Implementation handoff](docs/HANDOFF.md), [acceptance issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39) — ongoing work; the handoff includes historical context and is not a current feature inventory
+
+DOPPLERGEIST is an **independent reconstruction** of the approach described in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI), with independently written code. It is not a release by or affiliation with the video's author. External recordings, ADS-B and terrain assets retain their own rights and attribution requirements; see [data provenance](docs/DATA_SOURCES.md). The banner's outlined typography and illustrative model are documented in [asset notes](assets/README.md).

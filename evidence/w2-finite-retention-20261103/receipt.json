@@ -1,0 +1,42 @@
+{
+  "source_commit": "9f6081662ceb6b990cd9e0977235703cc70ad7e4",
+  "test_command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-finite-main-gate-20261103/tests.xml",
+  "pytest_summary": "228 passed, 6 subtests passed in 75.82s; zero failures or skips",
+  "native_junit_attributes": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "234",
+    "time": "75.799",
+    "timestamp": "2026-11-02T21:16:40.163883-06:00",
+    "hostname": "Asus"
+  },
+  "retention_commands": [
+    "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python scripts/benchmark_finite_retention.py results/w2-finite-ledger-16384-main-20261103 --modes 16384 --stage-size 1024 --top-k 100",
+    "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python scripts/benchmark_finite_retention.py results/w2-finite-ledger-131072-main-20261103 --modes 131072 --stage-size 1024 --top-k 100"
+  ],
+  "artifacts": {
+    "ledger-16384.json": {
+      "bytes": 18935,
+      "sha256": "fc2e3a900df654fa9be306d60cdc849f4aa2a4a0d47cff3ec2e96bb1e958c268"
+    },
+    "tests.log": {
+      "bytes": 364,
+      "sha256": "2dfa4df2875c32f8ed3b73704e8f087c9570260cf1b4d7e66d7834a6e0b94ecf"
+    },
+    "ledger-131072.json": {
+      "bytes": 19201,
+      "sha256": "511c1d0ff1f196cf26560cad17e8f32dae244d5bf3cd968a416b26b0a9f102c6"
+    },
+    "tests.xml": {
+      "bytes": 29864,
+      "sha256": "6df60d9a0abfc9c72226f341c360ddff0968e3b42d53ec92baf3f1df8a6fd7bd"
+    }
+  },
+  "limitations": [
+    "Invented scored-seed ledger fixtures do not establish search recall or localization accuracy.",
+    "Scorer classified-trial adapter is an explicit integration dependency; missing metadata stays incomplete.",
+    "Independent real nationwide GPS/UTC validation remains unmet."
+  ]
+}

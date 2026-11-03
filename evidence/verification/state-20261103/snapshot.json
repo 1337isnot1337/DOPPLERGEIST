@@ -1,0 +1,67 @@
+{
+  "observed_utc": "2026-11-03T03:23:22Z",
+  "main_commit": "8cdb7ae357137e7d7255b87b7ff88a4d281f6d7c",
+  "product_pr": {
+    "baseRefName": "main",
+    "headRefOid": "211b478d5142af3df3b1ab3da8d606d48e620d4a",
+    "isDraft": true,
+    "number": 19,
+    "state": "OPEN",
+    "url": "https://github.com/1337isnot1337/DOPPLERGEIST/pull/19"
+  },
+  "acceptance_issues": [
+    {
+      "number": 13,
+      "state": "OPEN",
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/issues/13"
+    },
+    {
+      "number": 53,
+      "state": "OPEN",
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/issues/53"
+    },
+    {
+      "number": 61,
+      "state": "OPEN",
+      "url": "https://github.com/1337isnot1337/DOPPLERGEIST/issues/61"
+    }
+  ],
+  "main_paths_verified": [
+    "src/aircraft_geoloc/intake.py",
+    "src/aircraft_geoloc/discovery.py",
+    "src/aircraft_geoloc/tiled_search.py",
+    "scripts/discover_audio.py",
+    ".github/workflows/tests.yml",
+    ".github/workflows/checkpoint-replay.yml",
+    "requirements/py314-linux.lock"
+  ],
+  "historical_receipt_xml_reparsed": true,
+  "historical_test_suite_rerun": false,
+  "artifacts": {
+    "field-metadata-screen.json": {
+      "bytes": 1853,
+      "sha256": "39d1440f3224bac13a808693b76f5d2f49759cf471b33a776c66ea1adc78ba09"
+    },
+    "integration-pytest.xml": {
+      "bytes": 35021,
+      "sha256": "82529708a3cb14c778ae5e1bf915b1c4c09e60824b1a9f5b6ae031bf847f3c5e"
+    },
+    "integration-tests.json": {
+      "bytes": 629,
+      "sha256": "2fc42e633854edc00f2915015846ad453d8f2ddaa831765d1bf6d056f8cb24e7"
+    },
+    "interruption.json": {
+      "bytes": 693,
+      "sha256": "2122afb6d7a62a9cbf20445bd86913e0be2441088bdd57af51cc44ca964a9fec"
+    },
+    "main-based-pytest.xml": {
+      "bytes": 28656,
+      "sha256": "25e95992cd44c5227e8983c042b3b7ba7c8ef54d7075cd2f172e11c0f7fa0674"
+    },
+    "main-based-tests.json": {
+      "bytes": 907,
+      "sha256": "9bb08f451a3c4e2f3390b8a7257d8ca86dd7c10d5a2a24070860070843a3a122"
+    }
+  },
+  "main_based_suite_rerun_source": "ee2bbe2037881a2f7aa222afc0c88469932c87ae"
+}
