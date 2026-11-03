@@ -1,0 +1,25 @@
+{
+  "tested_commit": "401b2e74ee8d85aae9116d841ff8eb83f3d86bd1",
+  "tested_tree": "8e1a3e1205ec9aae2054a790705f295271997e18",
+  "python": "3.14.8",
+  "system_site_packages": false,
+  "pytest_summary": {
+    "passed": 254,
+    "subtests_passed": 14,
+    "skipped": 0,
+    "elapsed_s": 65.6
+  },
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "268",
+    "time": "65.597",
+    "timestamp": "2026-11-02T20:17:06.459962-06:00",
+    "hostname": "Asus"
+  },
+  "junit_sha256": "79685a301fa603f20bd218b888d0a9d0548ae2bdb64dc7671f49c759febe88a1",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 <clean-py314>/bin/python -m pytest -q --junitxml=<receipt>",
+  "scope": "Frozen product-review combination; separate from main-based source and no supported location claim."
+}

@@ -1,0 +1,81 @@
+{
+  "generator_commit": "1f0342594bdc7fc7089a075b6dbf26aca9342711",
+  "detector_commit": "47261fee8f75cea9c8354ef95da2b7dd3c451cf9",
+  "canonical_evidence_pr": 60,
+  "canonical_evidence_commit": "26a5bff74e9aba664e5f951cca8fa26f26e3eaf0",
+  "independent_full_outputs_local": "/home/cinna/dopplergeist-w1-gap-plots/results/w1-canonical-multi-1f03425",
+  "full_readable_local_branch": "swarm/w1-multi-evidence@c696d00",
+  "all_predictions_completed_before_truth_join": true,
+  "cases": [
+    {
+      "case_id": "case-001",
+      "labelled_events_post_run": 3,
+      "measured_groups": 3,
+      "canonical_artifact": "evidence/verification/multi-event-20261103/events-3/discovery/discovery.json",
+      "canonical_discovery_sha256": "3f91bc5fec2e55d945fa277e32d9a750901eeeb49afc9c6a32a240ffc23c292a",
+      "independent_discovery_sha256": "3f91bc5fec2e55d945fa277e32d9a750901eeeb49afc9c6a32a240ffc23c292a",
+      "discovery_json_identical": true,
+      "event_arrays_identical": true,
+      "settings_identical": true,
+      "input_sha256": "1fed2fab5b8ee01eed774ad2bc1f82f87db85574100d2d818b6117a230193c61",
+      "independent_runtime_s": 7.081333560025087,
+      "independent_peak_memory_bytes": 334311424,
+      "producer_provenance": {
+        "source_sha256": "1fed2fab5b8ee01eed774ad2bc1f82f87db85574100d2d818b6117a230193c61",
+        "code_sha256": {
+          "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "discovery.py": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+          "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+        },
+        "adapter_sha256": "a1982c2e465aa0c40c57cf9e22327ba7749e4073ee470a6f55823e55862e9b5a"
+      }
+    },
+    {
+      "case_id": "case-002",
+      "labelled_events_post_run": 4,
+      "measured_groups": 4,
+      "canonical_artifact": "evidence/verification/multi-event-20261103/events-4/discovery/discovery.json",
+      "canonical_discovery_sha256": "d907b8eb1aa45fdc44ea55346be8f65eccf454cb46169749ae0ff86c60f43ca3",
+      "independent_discovery_sha256": "d907b8eb1aa45fdc44ea55346be8f65eccf454cb46169749ae0ff86c60f43ca3",
+      "discovery_json_identical": true,
+      "event_arrays_identical": true,
+      "settings_identical": true,
+      "input_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+      "independent_runtime_s": 6.271858203021111,
+      "independent_peak_memory_bytes": 402087936,
+      "producer_provenance": {
+        "source_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+        "code_sha256": {
+          "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "discovery.py": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+          "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+        },
+        "adapter_sha256": "a1982c2e465aa0c40c57cf9e22327ba7749e4073ee470a6f55823e55862e9b5a"
+      }
+    },
+    {
+      "case_id": "case-003",
+      "labelled_events_post_run": 6,
+      "measured_groups": 6,
+      "canonical_artifact": "evidence/verification/multi-event-20261103/events-6/discovery/discovery.json",
+      "canonical_discovery_sha256": "5826c33bab53fb21be413fe04a1af20d3eb1e114f5f7dcfaaddecb779298a3b3",
+      "independent_discovery_sha256": "5826c33bab53fb21be413fe04a1af20d3eb1e114f5f7dcfaaddecb779298a3b3",
+      "discovery_json_identical": true,
+      "event_arrays_identical": true,
+      "settings_identical": true,
+      "input_sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee",
+      "independent_runtime_s": 8.180221388000064,
+      "independent_peak_memory_bytes": 353128448,
+      "producer_provenance": {
+        "source_sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee",
+        "code_sha256": {
+          "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "discovery.py": "6a44c1728e8c1b0f282ca2751db050ac4bdf53998b1d8336d213ec790a83f6f7",
+          "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f"
+        },
+        "adapter_sha256": "a1982c2e465aa0c40c57cf9e22327ba7749e4073ee470a6f55823e55862e9b5a"
+      }
+    }
+  ],
+  "scope": "Independent frozen audio-stage replay; development synthetic data, no localization or sealed-real-holdout claim."
+}

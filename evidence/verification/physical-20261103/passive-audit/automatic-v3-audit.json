@@ -1,0 +1,276 @@
+{
+  "completed_at_utc": "2026-11-03T01:44:50.411454+00:00",
+  "run": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v3-20261103/bb3e96c615d44abaa75bcf75db2cbeb3",
+  "source_commit": "98b14955741f32cf6fb7592bbf44df050a5bd309",
+  "auditor_sha256": "e84ad6e8b4945df6f9633a4f179496f307443e392ab0aea30c69b88e508ba96e",
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "integrity_checks_passed": true,
+  "accepted_location": false,
+  "localization_accuracy_evaluated": false,
+  "truth_opened": false,
+  "scope": "Independent persisted-evidence audit; no producer execution, accuracy acceptance or calibrated uncertainty claim.",
+  "files": [
+    {
+      "path": "result.json",
+      "sha256": "f0631ba6474cfeda49459f6a8f8f7558f0ad93b20d3f4b6a918bf59afe686cde",
+      "bytes": 84326
+    },
+    {
+      "path": "request.json",
+      "sha256": "133c43158160589a760eb5fec2ec92ffee51e3846233528b7c444311d1e42097",
+      "bytes": 452
+    },
+    {
+      "path": "operator.json",
+      "sha256": "3c82098cda1c04e416bd4a5387dfc11c64587ee7c4bc6101c862fac8496dd6da",
+      "bytes": 384
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "2f1d9db8bb15e265d122838e3d0abcc417d9d3ce61918f2fb176a6b250a2b370",
+      "bytes": 3112
+    },
+    {
+      "path": "decision.json",
+      "sha256": "f35757aafc73a8c332b276a63f4dda6bbe3313638969cf6f99d6eeb92b740879",
+      "bytes": 43670
+    },
+    {
+      "path": "refined-candidates.json",
+      "sha256": "e69ab2fa7e941a004749b4f5c7e9eebbd30870b122e1aee304379ebd9646ed77",
+      "bytes": 265305
+    },
+    {
+      "path": "search/manifest.json",
+      "sha256": "f0b7e9a6db2aec241d259fbd8c4b2819758ad283ffba009b26795096d060b078",
+      "bytes": 47529
+    },
+    {
+      "path": "search/search-report.json",
+      "sha256": "3e2586bfa4b6f4075d414055dc78164743096c79e743c29850aa4083cba45b3b",
+      "bytes": 247861
+    }
+  ],
+  "event_contributions": [
+    {
+      "prepared_index": 0,
+      "original_event_ids": [
+        "event-0001"
+      ],
+      "residual_score": -0.10658564550404626,
+      "normalized_support": 0.9644714514986512,
+      "rmse_hz": 0.10799687068185512,
+      "sample_count": 137
+    },
+    {
+      "prepared_index": 1,
+      "original_event_ids": [
+        "event-0002"
+      ],
+      "residual_score": -0.06548345789728503,
+      "normalized_support": 0.978172180700905,
+      "rmse_hz": 0.06559767536523628,
+      "sample_count": 155
+    }
+  ],
+  "checks": [
+    {
+      "check": "source_files_match_declared_commit",
+      "passed": true,
+      "files": {
+        "__init__.py": {
+          "expected": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+          "actual": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+          "matches": true
+        },
+        "audio.py": {
+          "expected": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+          "actual": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+          "matches": true
+        },
+        "automatic.py": {
+          "expected": "088620bc081ab8458c3a4e343aeca73e4ee08e38993e61cee99fcf9d7dc2f3d5",
+          "actual": "088620bc081ab8458c3a4e343aeca73e4ee08e38993e61cee99fcf9d7dc2f3d5",
+          "matches": true
+        },
+        "cli.py": {
+          "expected": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+          "actual": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+          "matches": true
+        },
+        "confidence.py": {
+          "expected": "2d30077fe25c51522786f4314192666a60830697e3013f064ffe5ac2cee6c801",
+          "actual": "2d30077fe25c51522786f4314192666a60830697e3013f064ffe5ac2cee6c801",
+          "matches": true
+        },
+        "contracts.py": {
+          "expected": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+          "actual": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+          "matches": true
+        },
+        "data_access.py": {
+          "expected": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+          "actual": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+          "matches": true
+        },
+        "discovery.py": {
+          "expected": "c357a6cdf01364bdcf0e05e1241a913073a43123ebbfdb6e06a4e0f61477c589",
+          "actual": "c357a6cdf01364bdcf0e05e1241a913073a43123ebbfdb6e06a4e0f61477c589",
+          "matches": true
+        },
+        "evaluation.py": {
+          "expected": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071",
+          "actual": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071",
+          "matches": true
+        },
+        "geometry.py": {
+          "expected": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+          "actual": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+          "matches": true
+        },
+        "intake.py": {
+          "expected": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "actual": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+          "matches": true
+        },
+        "jobs.py": {
+          "expected": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+          "actual": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+          "matches": true
+        },
+        "matching.py": {
+          "expected": "e90115129818d03bd36771e17f5db0169db0df0e934a877346a8d923d029b0dd",
+          "actual": "e90115129818d03bd36771e17f5db0169db0df0e934a877346a8d923d029b0dd",
+          "matches": true
+        },
+        "pipeline.py": {
+          "expected": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+          "actual": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+          "matches": true
+        },
+        "search.py": {
+          "expected": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+          "actual": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+          "matches": true
+        },
+        "service.py": {
+          "expected": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+          "actual": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+          "matches": true
+        },
+        "terrain.py": {
+          "expected": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+          "actual": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+          "matches": true
+        },
+        "tiled_search.py": {
+          "expected": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5",
+          "actual": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5",
+          "matches": true
+        },
+        "tracks.py": {
+          "expected": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+          "actual": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+          "matches": true
+        }
+      }
+    },
+    {
+      "check": "search_and_orchestration_source_agree",
+      "passed": true
+    },
+    {
+      "check": "canonical_audio_bytes",
+      "passed": true,
+      "sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2"
+    },
+    {
+      "check": "operator_configuration_hash",
+      "passed": true
+    },
+    {
+      "check": "configuration_and_run_hashes",
+      "passed": true,
+      "run_hash": "74c3d39765fc99f88393477fe519f255dd556ee73980d94dbc48dc7f0c66797d"
+    },
+    {
+      "check": "checkpoint_payload_hashes",
+      "passed": true,
+      "checked": 19278,
+      "mismatches": []
+    },
+    {
+      "check": "checkpoint_work_counts",
+      "passed": true,
+      "checkpoint_tiles": 19278,
+      "checkpoint_points": 17664
+    },
+    {
+      "check": "decision_result_consistency",
+      "passed": true
+    },
+    {
+      "check": "candidate_count_consistency",
+      "passed": true,
+      "raw": 111,
+      "public": 111
+    },
+    {
+      "check": "candidate_coordinates_and_scores",
+      "passed": true,
+      "mismatches": []
+    },
+    {
+      "check": "candidate_order",
+      "passed": true
+    },
+    {
+      "check": "every_discovered_group_prepared",
+      "passed": true,
+      "discovered": 2,
+      "prepared": 2
+    },
+    {
+      "check": "all_hypothesis_clocks_in_trusted_window",
+      "passed": true,
+      "outside": [],
+      "window_s": [
+        1790000000.0,
+        1790000000.0
+      ]
+    },
+    {
+      "check": "shared_clock_evidence",
+      "passed": true
+    },
+    {
+      "check": "matched_groups_and_diagnostic_lengths",
+      "passed": true,
+      "matched_groups": 2,
+      "expected_minimum": 2
+    },
+    {
+      "check": "original_event_and_flight_mapping",
+      "passed": true
+    },
+    {
+      "check": "public_clock_matches_joint_clock",
+      "passed": true
+    },
+    {
+      "check": "per_event_residual_evidence",
+      "passed": true
+    },
+    {
+      "check": "all_matched_events_contribute_to_score",
+      "passed": true,
+      "expected": -0.1720691034013313,
+      "recorded": -0.1720691034013313
+    },
+    {
+      "check": "diagnostics_match_selected_sensitivity",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "scope": "I/O-only regression on previously evaluated canonical synthetic case; no new holdout/localization claim",
+  "events_identical": true,
+  "event_groups": 6,
+  "expected_events_sha256": "ca91364341c611ac1e5127b0bb19f0dfd7e0db717875039f48b54b14c15b3dfb",
+  "actual_events_sha256": "ca91364341c611ac1e5127b0bb19f0dfd7e0db717875039f48b54b14c15b3dfb",
+  "decoded_cache_sha256": "5a2f1b1922d1b6c46117f51314bd154cedd3cfa4cb53b27b558a8ab09623ba15",
+  "runtime_s": 2.1885961570078507
+}

@@ -1,0 +1,76 @@
+{
+  "pid": 1911304,
+  "input_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+  "detector_sha256": "c357a6cdf01364bdcf0e05e1241a913073a43123ebbfdb6e06a4e0f61477c589",
+  "events": 4,
+  "event_groups": [
+    {
+      "id": "event-0001",
+      "start_s": 75.0,
+      "end_s": 240.0
+    },
+    {
+      "id": "event-0002",
+      "start_s": 295.5,
+      "end_s": 480.0
+    },
+    {
+      "id": "event-0003",
+      "start_s": 518.0,
+      "end_s": 709.5
+    },
+    {
+      "id": "event-0004",
+      "start_s": 740.0,
+      "end_s": 933.0
+    }
+  ],
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 2.5,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_fragment_gap_s": 20.0,
+    "max_peaks_per_frame": 60
+  },
+  "stages": [
+    {
+      "stage": "python_start",
+      "elapsed_s": 0.00021110600209794939,
+      "ru_maxrss_kib": 23132,
+      "VmHWM_kib": 19580,
+      "VmRSS_kib": 19580
+    },
+    {
+      "stage": "imports_complete",
+      "elapsed_s": 1.0990942390053533,
+      "ru_maxrss_kib": 107200,
+      "VmHWM_kib": 108744,
+      "VmRSS_kib": 108744
+    },
+    {
+      "stage": "intake_complete",
+      "elapsed_s": 1.514426606008783,
+      "ru_maxrss_kib": 109396,
+      "VmHWM_kib": 109552,
+      "VmRSS_kib": 109552
+    },
+    {
+      "stage": "discovery_and_plots_complete",
+      "elapsed_s": 7.738433482008986,
+      "ru_maxrss_kib": 385008,
+      "VmHWM_kib": 385008,
+      "VmRSS_kib": 384332
+    }
+  ],
+  "generation_executed": false,
+  "scope": "Intake plus discovery/plots only; no search or location acceptance."
+}

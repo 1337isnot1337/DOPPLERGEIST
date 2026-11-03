@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/launch.py",
+    "--config",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/runtime-e6a7824.json",
+    "--work",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/smoke-e6a7824-output",
+    "--smoke"
+  ],
+  "source_commit": "e6a78249c8bd29bc552e3da4d2803fa6b28565fa",
+  "published_same_tree_commit": "455bb4ca3d3e92360b9cf695bbc2376df576f8a1",
+  "exit_code": 0,
+  "elapsed_s": 0.8579460860000836,
+  "analysis_jobs_submitted": 0,
+  "scope": "Package/input isolation smoke only; no discovery or localization run"
+}
