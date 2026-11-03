@@ -20,7 +20,7 @@ from pyproj import Transformer
 
 from .data_access import CONUS, DataUnavailable, content_hash, sha256, write_json
 from .finite_search import RetentionLedger, bounded_assessment, classified_assessment, identify_mode, mode_seed
-from .geometry import AcousticSupportError
+from .geometry import AcousticSupportError, ecef
 from .matching import _cache_ridge_fits
 from .search import cpa_table, filter_association_event, pair_candidates, score_candidate
 
@@ -65,6 +65,40 @@ def _key(row):
     seed = row.get("mode_seed") or mode_seed(row)
     return (tuple(seed["event_indices"]), tuple(seed["flight_ids"]), tuple(seed["pass_emission_times_s"]),
             tuple(seed["position"]), seed["recording_start_time_s"])
+
+
+class _RetainedScoreFloor:
+    """A lower bound on the kth score from distinct, assessed modes only."""
+
+    def __init__(self, top_k, initial=None):
+        self.top_k, self.initial = top_k, initial
+        self.scores = {}
+        self.value = initial
+
+    def observe(self, row):
+        if (row.get("core_assessment_complete") is not True
+                or row.get("score_kind") != "matched_group_support_minus_normalized_residual"
+                or not math.isfinite(row["score"])):
+            return
+        identity, score = identify_mode(row), row["score"]
+        if (identity not in self.scores and len(self.scores) == self.top_k
+                and score <= min(self.scores.values())):
+            return
+        self.scores[identity] = max(score, self.scores.get(identity, -math.inf))
+        if len(self.scores) > self.top_k:
+            del self.scores[min(self.scores, key=self.scores.get)]
+        if len(self.scores) == self.top_k:
+            local = min(self.scores.values())
+            self.value = local if self.initial is None else max(local, self.initial)
+
+
+def _retained_score_floor(rows, top_k):
+    # merge_candidates already returned distinct, ordered modes, at most top_k.
+    if len(rows) != top_k or any(row.get("core_assessment_complete") is not True
+            or row.get("score_kind") != "matched_group_support_minus_normalized_residual"
+            or not math.isfinite(row["score"]) for row in rows):
+        return None
+    return min(row["score"] for row in rows)
 
 
 def merge_candidates(rows, top_k, *, ledger=None, stage=None, bounds=()):
@@ -154,9 +188,26 @@ def _tracks(indexes, bounds, time_range, budget):
     return tracks
 
 
+def _association_clock_window(start_window, sweep_s):
+    """Enclose every association clock that could reach the scoring window."""
+    lower, upper = map(float, start_window)
+    if not all(math.isfinite(v) for v in (lower, upper, sweep_s)) or lower > upper or sweep_s < 0:
+        raise ValueError("Recording clock bounds and sweep must be finite and ordered")
+    # Association intervals are expanded by the scorer before intersection with
+    # the requested window. Prune only outside that expanded envelope. Round
+    # both the envelope and its center/radius representation outward at Unix
+    # timestamp precision, so an inclusive endpoint cannot disappear.
+    lower = math.nextafter(lower - sweep_s, -math.inf)
+    upper = math.nextafter(upper + sweep_s, math.inf)
+    center = lower + (upper - lower) / 2
+    tolerance = math.nextafter(max(center - lower, upper - center), math.inf)
+    return center, tolerance
+
+
 @_cache_ridge_fits
-def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None):
+def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None):
     radius = max(e["slant_range_m"][1] for e in events)
+    observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     tables, count = [], 0
     unsupported = []
     # Bound materialized CPA rows before pairing; one track at a time keeps the
@@ -170,6 +221,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         chunk_points = max(1, budget.max_cpa_rows // samples)
         track_tables, track_rows = [], 0
         try:
+            if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
+                continue
             for first in range(0, len(points), chunk_points):
                 table = cpa_table([track], points.iloc[first:first + chunk_points], radius, parameters.get("c", 343.0), budget.cpa_step_s)
                 track_rows += len(table)
@@ -201,6 +254,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     subset = filters.get("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full") == "subsets"
     if subset:
         from .matching import association_candidates
+        if start_window is not None and kwargs["time_origin"] is None:
+            kwargs["time_origin"], kwargs["time_tolerance_s"] = _association_clock_window(
+                start_window, parameters.get("time_sweep_s", 5.0))
         candidates, counts = association_candidates(table, events, **kwargs,
             min_events=filters.get("min_events", 1), max_events=filters.get("max_events") or len(events),
             max_candidates=budget.max_candidates_per_tile)
@@ -213,8 +269,16 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if upper > budget.max_candidates_per_tile:
             raise DataUnavailable("Tile candidate memory budget exceeded; reduce tile_cells")
         candidates, counts = pair_candidates(table, events, **kwargs)
+    screened = subset and parameters.get("mode") == "robust_ridge"
+    # Every accepted association has a nonnegative score, even before K modes
+    # exist. A strict zero floor can reject only residual-incompatible trials.
+    cutoff = _RetainedScoreFloor(budget.top_k, 0.0 if score_floor is None else max(0.0, score_floor)) if screened else None
+    if screened:
+        # Find competitive multi-group modes before spending fits on singletons.
+        # All remaining modes still receive a score or a persisted score bound.
+        candidates.sort(key=lambda candidate: (candidate["point_id"], -len(candidate["event_indices"])))
     # Attach approach identities before scoring, since legacy rank drops passes.
-    ranked, unclassified, rejected = [], 0, 0
+    ranked, unclassified, rejected, retention_pruned = [], 0, 0, 0
     bounds = []
     trial_counts = dict(evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
     unclassified_assessments = []
@@ -243,6 +307,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             else:
                 settings.update(time_origin=(lo + hi) / 2, time_sweep_s=(hi - lo) / 2)
         point = lookup[candidate["point_id"]]
+        if cutoff is not None and cutoff.value is not None:
+            settings["score_floor"] = cutoff.value
         try:
             row = score_candidate(scoring_candidate, point, track_lookup, events, measurements, **settings)
         except AcousticSupportError as error:
@@ -253,11 +319,14 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                        event_indices=candidate.get("event_indices", list(range(len(events)))),
                        support_failure=_support_error(error))
         row["pass_emission_times_s"] = [float(p["emission_time"]) for p in candidate["passes"]]
+        finite_score = row["score"] is not None and math.isfinite(row["score"])
         known = (classified_assessment(row) if settings.get("mode") == "robust_ridge" else
-                 settings.get("time_origin") is not None and settings.get("time_sweep_s", 5) == 0 and math.isfinite(row["score"]))
-        row["core_assessment_complete"] = bool(known and math.isfinite(row["score"]))
+                 settings.get("time_origin") is not None and settings.get("time_sweep_s", 5) == 0 and finite_score)
+        row["core_assessment_complete"] = bool(known and finite_score)
         if settings.get("mode") == "robust_ridge":
             assessment = row.get("scoring_assessment")
+            if isinstance(assessment, dict) and assessment.get("unknown_score_bound_method") == "group_count_ceiling":
+                assessment["retention_score_floor"] = settings["score_floor"]
             if isinstance(assessment, dict) and all(type(assessment.get(k)) is int and assessment[k] >= 0
                                                   for k in ("evaluated_trials", "rejected_trials", "unknown_trials")):
                 for key in ("evaluated_trials", "rejected_trials", "unknown_trials"):
@@ -276,18 +345,22 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 "recording_start_bounds_s": scoring_candidate.get("recording_start_bounds_s"),
                 "clock_settings": {k: settings.get(k) for k in ("time_origin", "time_sweep_s", "time_step_s")},
                 "scoring_assessment": row.get("scoring_assessment"), "support_failure": row.get("support_failure"),
-                "finite_best": math.isfinite(row["score"])}
+                "finite_best": finite_score}
             unclassified_assessments.append(detail)
             if bounded_assessment(row):
                 bounds.append({"bound_id": "bound-" + content_hash(detail), "detail": detail,
                                "groups_count": len(detail["event_indices"]),
                                "upper_score": detail["scoring_assessment"]["unknown_score_upper_bound"]})
-        if math.isfinite(row["score"]):
+                retention_pruned += "retention_score_floor" in detail["scoring_assessment"]
+        if finite_score:
             ranked.append(row)
+            if cutoff is not None:
+                cutoff.observe(row)
         elif known:
             rejected += 1
     kept = merge_candidates(ranked, budget.top_k, ledger=ledger, stage=stage, bounds=bounds)
     return kept, dict(counts, cpa_rows=count, candidates=len(candidates), unclassified_score_candidates=unclassified,
+                      retention_score_pruned_candidates=retention_pruned,
                       bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
                       unclassified_candidate_assessments=unclassified_assessments, **trial_counts)
@@ -401,7 +474,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 points = tile_points(cells, budget.spacing_m, bounds, terrain, crs) if tracks else pd.DataFrame()
                 if len(points):
                     rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                          ledger=ledger, stage=stage)
+                                          ledger=ledger, stage=stage,
+                                          score_floor=_retained_score_floor(ranked, budget.top_k))
                 else:
                     rows, counts = [], {}
                     ledger.record(stage, [], [], 0)
@@ -454,7 +528,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         tracks = _tracks(indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s, budget)
                         stage = f"fine:{seed_index}:{x0}:{y0}"
                         rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                              ledger=ledger, stage=stage)
+                                              ledger=ledger, stage=stage,
+                                              score_floor=_retained_score_floor(ranked, budget.top_k))
                         _record_support(output, stage, counts, support)
                         fine_stages += 1
                         refinement_points_searched += len(points)

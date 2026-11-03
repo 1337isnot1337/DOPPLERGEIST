@@ -1,0 +1,505 @@
+{
+  "selection": "first eligible distinct sites in Zenodo mostrecent search order; first 600 continuous seconds of UTC-named WAV files on 2024-04-08, selected before audio or scanner results",
+  "sites": [
+    {
+      "site": "846",
+      "record_id": 22229306,
+      "title": "2024-04-08 Total Solar Eclipse ESID#846",
+      "record_url": "https://zenodo.org/records/22229306",
+      "zip_name": "ESID_846_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22229306/files/ESID_846_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22229306/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22229306/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "849",
+      "record_id": 22008871,
+      "title": "2024-04-08 Total Solar Eclipse ESID#849",
+      "record_url": "https://zenodo.org/records/22008871",
+      "zip_name": "ESID_849_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22008871/files/ESID_849_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22008871/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22008871/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "724",
+      "record_id": 22228212,
+      "title": "2024-04-08 Total Solar Eclipse ESID#724",
+      "record_url": "https://zenodo.org/records/22228212",
+      "zip_name": "ESID_724_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22228212/files/ESID_724_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22228212/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22228212/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "706",
+      "record_id": 22227872,
+      "title": "2024-04-08 Total Solar Eclipse ESID#706",
+      "record_url": "https://zenodo.org/records/22227872",
+      "zip_name": "ESID_706_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22227872/files/ESID_706_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22227872/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22227872/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "688",
+      "record_id": 22025528,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#688",
+      "record_url": "https://zenodo.org/records/22025528",
+      "zip_name": "ESID_688_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22025528/files/ESID_688_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22025528/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22025528/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "656",
+      "record_id": 22224306,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#656",
+      "record_url": "https://zenodo.org/records/22224306",
+      "zip_name": "ESID_656_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22224306/files/ESID_656_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22224306/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22224306/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "530",
+      "record_id": 22224181,
+      "title": "2024-04-08 Total Solar Eclipse ESID#530",
+      "record_url": "https://zenodo.org/records/22224181",
+      "zip_name": "ESID_530_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22224181/files/ESID_530_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22224181/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22224181/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "485",
+      "record_id": 22224082,
+      "title": "2024-04-08 Total Solar Eclipse ESID#485",
+      "record_url": "https://zenodo.org/records/22224082",
+      "zip_name": "ESID_485_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22224082/files/ESID_485_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22224082/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22224082/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "426",
+      "record_id": 22216455,
+      "title": "2024-04-08 Total Solar Eclipse ESID#426",
+      "record_url": "https://zenodo.org/records/22216455",
+      "zip_name": "ESID_426_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22216455/files/ESID_426_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22216455/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22216455/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "281",
+      "record_id": 22214458,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#281",
+      "record_url": "https://zenodo.org/records/22214458",
+      "zip_name": "ESID_281_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22214458/files/ESID_281_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22214458/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22214458/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "938",
+      "record_id": 22078888,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#938",
+      "record_url": "https://zenodo.org/records/22078888",
+      "zip_name": "ESID_938_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22078888/files/ESID_938_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22078888/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22078888/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "861",
+      "record_id": 22074775,
+      "title": "2024-04-08 Total Solar Eclipse ESID#861",
+      "record_url": "https://zenodo.org/records/22074775",
+      "zip_name": "ESID_861_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22074775/files/ESID_861_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22074775/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22074775/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "769",
+      "record_id": 22073039,
+      "title": "2024-04-08 Total Solar Eclipse ESID#769",
+      "record_url": "https://zenodo.org/records/22073039",
+      "zip_name": "ESID_769_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22073039/files/ESID_769_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22073039/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22073039/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "244",
+      "record_id": 22067654,
+      "title": "2024-04-08 Total Solar Eclipse ESID#244",
+      "record_url": "https://zenodo.org/records/22067654",
+      "zip_name": "ESID_244_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22067654/files/ESID_244_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22067654/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22067654/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "516",
+      "record_id": 22062744,
+      "title": "2024-04-08 Total Solar Eclipse ESID#516",
+      "record_url": "https://zenodo.org/records/22062744",
+      "zip_name": "ESID_516_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22062744/files/ESID_516_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22062744/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22062744/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "847",
+      "record_id": 22059635,
+      "title": "2024-04-08 Total Solar Eclipse ESID#847",
+      "record_url": "https://zenodo.org/records/22059635",
+      "zip_name": "ESID_847_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22059635/files/ESID_847_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22059635/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22059635/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "732",
+      "record_id": 22053960,
+      "title": "2024-04-08 Total Solar Eclipse ESID#732",
+      "record_url": "https://zenodo.org/records/22053960",
+      "zip_name": "ESID_732_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22053960/files/ESID_732_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22053960/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22053960/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "172",
+      "record_id": 22051591,
+      "title": "2024-04-08 Total Solar Eclipse ESID#172",
+      "record_url": "https://zenodo.org/records/22051591",
+      "zip_name": "ESID_172_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22051591/files/ESID_172_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22051591/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22051591/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "696",
+      "record_id": 22050432,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#696",
+      "record_url": "https://zenodo.org/records/22050432",
+      "zip_name": "ESID_696_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22050432/files/ESID_696_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22050432/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22050432/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "103",
+      "record_id": 22049202,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#103",
+      "record_url": "https://zenodo.org/records/22049202",
+      "zip_name": "ESID_103_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22049202/files/ESID_103_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22049202/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22049202/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "681",
+      "record_id": 22047233,
+      "title": "2024-04-08 Total Solar Eclipse ESID#681",
+      "record_url": "https://zenodo.org/records/22047233",
+      "zip_name": "ESID_681_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22047233/files/ESID_681_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22047233/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22047233/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "917",
+      "record_id": 22040771,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#917",
+      "record_url": "https://zenodo.org/records/22040771",
+      "zip_name": "ESID_917_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22040771/files/ESID_917_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22040771/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22040771/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "517",
+      "record_id": 22036986,
+      "title": "2024-04-08 Total Solar Eclipse ESID#517",
+      "record_url": "https://zenodo.org/records/22036986",
+      "zip_name": "ESID_517_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22036986/files/ESID_517_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22036986/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22036986/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "078",
+      "record_id": 22035840,
+      "title": "2024-04-08 Total Solar Eclipse ESID#078",
+      "record_url": "https://zenodo.org/records/22035840",
+      "zip_name": "ESID_078_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22035840/files/ESID_078_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22035840/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22035840/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "756",
+      "record_id": 22030700,
+      "title": "2024-04-08 Total Solar Eclipse ESID#756",
+      "record_url": "https://zenodo.org/records/22030700",
+      "zip_name": "ESID_756_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22030700/files/ESID_756_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22030700/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22030700/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "341",
+      "record_id": 22025737,
+      "title": "2024-04-08 Total Solar Eclipse ESID#341",
+      "record_url": "https://zenodo.org/records/22025737",
+      "zip_name": "ESID_341_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22025737/files/ESID_341_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22025737/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22025737/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "700",
+      "record_id": 22021604,
+      "title": "2024-04-08 Total Solar Eclipse ESID#700",
+      "record_url": "https://zenodo.org/records/22021604",
+      "zip_name": "ESID_700_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22021604/files/ESID_700_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22021604/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22021604/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "175",
+      "record_id": 22020198,
+      "title": "2024-04-08 Total Solar Eclipse ESID#175",
+      "record_url": "https://zenodo.org/records/22020198",
+      "zip_name": "ESID_175_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22020198/files/ESID_175_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22020198/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22020198/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "783",
+      "record_id": 22019602,
+      "title": "2024-04-08 Total Solar Eclipse ESID#783",
+      "record_url": "https://zenodo.org/records/22019602",
+      "zip_name": "ESID_783_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22019602/files/ESID_783_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22019602/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22019602/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "757",
+      "record_id": 22018533,
+      "title": "2024-04-08 Total Solar Eclipse ESID#757",
+      "record_url": "https://zenodo.org/records/22018533",
+      "zip_name": "ESID_757_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22018533/files/ESID_757_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22018533/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22018533/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "787",
+      "record_id": 22017476,
+      "title": "2024-04-08 Total Solar Eclipse ESID#787",
+      "record_url": "https://zenodo.org/records/22017476",
+      "zip_name": "ESID_787_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22017476/files/ESID_787_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22017476/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22017476/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "920",
+      "record_id": 22014438,
+      "title": "2024-04-08 Total Solar Eclipse ESID#920",
+      "record_url": "https://zenodo.org/records/22014438",
+      "zip_name": "ESID_920_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22014438/files/ESID_920_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22014438/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22014438/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "922",
+      "record_id": 22004441,
+      "title": "2024-04-08 Total Solar Eclipse ESID#922",
+      "record_url": "https://zenodo.org/records/22004441",
+      "zip_name": "ESID_922_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22004441/files/ESID_922_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22004441/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22004441/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "712",
+      "record_id": 22003692,
+      "title": "2024-04-08 Total Solar Eclipse ESID#712",
+      "record_url": "https://zenodo.org/records/22003692",
+      "zip_name": "ESID_712_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22003692/files/ESID_712_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22003692/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22003692/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "962",
+      "record_id": 22002491,
+      "title": "2024-04-08 Total Solar Eclipse ESID#962",
+      "record_url": "https://zenodo.org/records/22002491",
+      "zip_name": "ESID_962_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/22002491/files/ESID_962_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/22002491/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/22002491/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "665",
+      "record_id": 21999916,
+      "title": "2024-04-08 Total Solar Eclipse ESID#665",
+      "record_url": "https://zenodo.org/records/21999916",
+      "zip_name": "ESID_665_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21999916/files/ESID_665_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21999916/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21999916/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "715",
+      "record_id": 21997131,
+      "title": "2024-04-08 Total Solar Eclipse ESID#715",
+      "record_url": "https://zenodo.org/records/21997131",
+      "zip_name": "ESID_715_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21997131/files/ESID_715_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21997131/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21997131/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "350",
+      "record_id": 21810498,
+      "title": "2024-04-08 Total Solar Eclipse ESID#350",
+      "record_url": "https://zenodo.org/records/21810498",
+      "zip_name": "ESID_350_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21810498/files/ESID_350_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21810498/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21810498/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "371",
+      "record_id": 21717105,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#371",
+      "record_url": "https://zenodo.org/records/21717105",
+      "zip_name": "ESID_371_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21717105/files/ESID_371_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21717105/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21717105/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "333",
+      "record_id": 21927995,
+      "title": "2024-04-08 Total Solar Eclipse ESID#333",
+      "record_url": "https://zenodo.org/records/21927995",
+      "zip_name": "ESID_333_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21927995/files/ESID_333_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21927995/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21927995/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "249",
+      "record_id": 21833634,
+      "title": "2024-04-08 Total Solar Eclipse ESID#249",
+      "record_url": "https://zenodo.org/records/21833634",
+      "zip_name": "ESID_249_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21833634/files/ESID_249_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21833634/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21833634/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "323",
+      "record_id": 21832317,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#323",
+      "record_url": "https://zenodo.org/records/21832317",
+      "zip_name": "ESID_323_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21832317/files/ESID_323_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21832317/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21832317/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "805",
+      "record_id": 21785544,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#805",
+      "record_url": "https://zenodo.org/records/21785544",
+      "zip_name": "ESID_805_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21785544/files/ESID_805_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21785544/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21785544/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "910",
+      "record_id": 21824662,
+      "title": "2024-04-08 Total Solar Eclipse ESID#910",
+      "record_url": "https://zenodo.org/records/21824662",
+      "zip_name": "ESID_910_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21824662/files/ESID_910_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21824662/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21824662/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "762",
+      "record_id": 21786378,
+      "title": "2024-04-08 Total Solar Eclipse ESID#762",
+      "record_url": "https://zenodo.org/records/21786378",
+      "zip_name": "ESID_762_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21786378/files/ESID_762_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21786378/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21786378/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "710",
+      "record_id": 21722091,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#710",
+      "record_url": "https://zenodo.org/records/21722091",
+      "zip_name": "ESID_710_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21722091/files/ESID_710_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21722091/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21722091/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "518",
+      "record_id": 21831379,
+      "title": "2024-04-08 Total Solar Eclipse ESID#518",
+      "record_url": "https://zenodo.org/records/21831379",
+      "zip_name": "ESID_518_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21831379/files/ESID_518_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21831379/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21831379/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "505",
+      "record_id": 21808323,
+      "title": "2024-04-08 Total Solar Eclipse ESID#505",
+      "record_url": "https://zenodo.org/records/21808323",
+      "zip_name": "ESID_505_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21808323/files/ESID_505_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21808323/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21808323/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "443",
+      "record_id": 21755346,
+      "title": "2024-04-08 Partial Solar Eclipse ESID#443",
+      "record_url": "https://zenodo.org/records/21755346",
+      "zip_name": "ESID_443_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21755346/files/ESID_443_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21755346/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21755346/files/total_eclipse_data.csv/content"
+    },
+    {
+      "site": "445",
+      "record_id": 21743960,
+      "title": "2024-04-08 Total Solar Eclipse ESID#445",
+      "record_url": "https://zenodo.org/records/21743960",
+      "zip_name": "ESID_445_2024_04_08.zip",
+      "zip_url": "https://zenodo.org/api/records/21743960/files/ESID_445_2024_04_08.zip/content",
+      "catalog_url": "https://zenodo.org/api/records/21743960/files/file_list.csv/content",
+      "location_url": "https://zenodo.org/api/records/21743960/files/total_eclipse_data.csv/content"
+    }
+  ]
+}

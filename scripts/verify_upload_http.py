@@ -4,6 +4,8 @@
 Exit zero means HTTP, persistence, stage evidence, and outcome checks passed.
 The receipt separately preserves the producer's scientific status. An expected
 inconclusive response is never counted as supported localization or accuracy.
+With --require-full-pipeline, verification also requires every pipeline stage
+and at least one returned candidate; an early exit cannot pass that requirement.
 The existing browser verifier is independent and remains unchanged.
 """
 from __future__ import annotations
@@ -618,6 +620,27 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
     return result
 
 
+def inspect_discovery_counts(events, provenance):
+    """Count independent groups separately from their measured harmonic ridges."""
+    groups = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
+    if provenance.get("discovered_events") != groups:
+        raise ValueError("Provenance has a different independent-event count")
+    # Older producers recorded only the group count. The ridge artifact still
+    # identifies every event; check the additional counter when it is present.
+    if "discovered_ridges" in provenance and provenance["discovered_ridges"] != len(events):
+        raise ValueError("Provenance has a different discovered-ridge count")
+    return {"event_groups": groups, "ridge_records": len(events)}
+
+
+def complete_pipeline_with_candidates(evidence, candidate_count):
+    """An operational full-path check is stronger than an expected early exit."""
+    stages = {"automatic_provenance", "intake", "discovery", "acquisition",
+              "search", "refinement", "decision"}
+    return (evidence.get("passed") is True and evidence.get("full_pipeline_observed") is True
+            and stages.issubset(evidence.get("stages_verified", []))
+            and type(candidate_count) is int and candidate_count > 0)
+
+
 def inspect_pipeline_evidence(directory, final, wire, operator):
     """Check stage receipts, separately from HTTP success or location accuracy.
 
@@ -703,7 +726,7 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
             require(discovery.get("source_sha256") == input_record["sha256"]
                     and discovery.get("events") == events, "Discovery source or events differ from the terminal result")
             if not interrupted:
-                require(provenance.get("discovered_events") == len(events), "Provenance has a different discovered-event count")
+                report["discovery_counts"] = inspect_discovery_counts(events, provenance)
             chunks = discovery.get("chunks")
             require(isinstance(chunks, list) and chunks, "Discovery has no whole-recording chunk evidence")
             covered = 0.0
@@ -853,9 +876,12 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
 
 
 def verify_http(audio, output, *, request=None, operator=None, expect_status,
-                expect_reason=None, timeout_s=600.0, poll_interval_s=0.25):
+                expect_reason=None, timeout_s=600.0, poll_interval_s=0.25,
+                require_full_pipeline=False):
     if expect_status not in TERMINAL:
         raise ValueError("Declare an expected terminal status before execution")
+    if type(require_full_pipeline) is not bool:
+        raise ValueError("require_full_pipeline must be a boolean")
     for name, value in (("timeout_s", timeout_s), ("poll_interval_s", poll_interval_s)):
         if not math.isfinite(value) or value <= 0:
             raise ValueError(f"{name} must be finite and positive")
@@ -882,6 +908,7 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
         "python_executable": sys.executable, "python_version": sys.version,
         "verification_passed": False, "http_checks_passed": False, "pipeline_evidence_passed": False,
         "full_pipeline_observed": False, "supported_decision": False,
+        "require_full_pipeline": require_full_pipeline, "full_pipeline_requirements_met": False,
         "location_accuracy_evaluated": False, "browser_verified": False,
         "interrupted": False, "interruption_signal": None,
         "limitations": ["HTTP verification does not establish location accuracy or browser behavior.",
@@ -965,6 +992,8 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
                         write_json(output / "pipeline-evidence.json", evidence)
                         receipt["pipeline_evidence_passed"] = evidence["passed"]
                         receipt["full_pipeline_observed"] = evidence["full_pipeline_observed"]
+                        receipt["full_pipeline_requirements_met"] = complete_pipeline_with_candidates(
+                            evidence, receipt.get("candidate_count"))
                         receipt["pipeline_evidence_errors"] = evidence["errors"]
                         files = {path.relative_to(directory).as_posix(): {"bytes": path.stat().st_size, "sha256": sha256(path)}
                                  for path in sorted(directory.rglob("*")) if path.is_file() and not path.is_symlink()}
@@ -976,7 +1005,12 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
                         and receipt.get("terminal_result_preserved_after_shutdown")
                         and receipt["service"]["returncode"] == 0 and not receipt["service"]["forced_kill"]
                         and not receipt.get("shutdown_error") and not receipt["interrupted"])
-                    receipt["verification_passed"] = verified and bool(receipt.get("expectation_matched"))
+                    if require_full_pipeline and not receipt["full_pipeline_requirements_met"]:
+                        receipt["requirement_error"] = (
+                            "Full pipeline verification requires verified acquisition, search, refinement, "
+                            "and decision stages with at least one candidate.")
+                    receipt["verification_passed"] = (verified and bool(receipt.get("expectation_matched"))
+                        and (not require_full_pipeline or receipt["full_pipeline_requirements_met"]))
                     receipt["supported_decision"] = (verified and receipt["full_pipeline_observed"]
                                                      and receipt.get("status") == "succeeded")
             except Exception as exc:
@@ -1004,6 +1038,8 @@ def main(argv=None):
     parser.add_argument("--time-source", default="Explicit verification recording-start window")
     parser.add_argument("--expect-status", choices=sorted(TERMINAL), required=True)
     parser.add_argument("--expect-reason")
+    parser.add_argument("--require-full-pipeline", action="store_true",
+                        help="Fail unless every pipeline stage is verified and at least one candidate is returned")
     parser.add_argument("--timeout-s", type=float, default=600)
     parser.add_argument("--poll-interval-s", type=float, default=0.25)
     args = parser.parse_args(argv)
@@ -1017,7 +1053,8 @@ def main(argv=None):
         operator = json.loads(args.operator_config.read_text()) if args.operator_config else {}
         receipt = verify_http(args.audio, args.output, request=request, operator=operator,
             expect_status=args.expect_status, expect_reason=args.expect_reason,
-            timeout_s=args.timeout_s, poll_interval_s=args.poll_interval_s)
+            timeout_s=args.timeout_s, poll_interval_s=args.poll_interval_s,
+            require_full_pipeline=args.require_full_pipeline)
     except (OSError, ValueError, TypeError) as exc:
         parser.error(str(exc))
     print(json.dumps({"report": str(args.output.resolve() / "http-verification.json"),
@@ -1025,9 +1062,11 @@ def main(argv=None):
                       "http_checks_passed": receipt["http_checks_passed"],
                       "pipeline_evidence_passed": receipt["pipeline_evidence_passed"],
                       "full_pipeline_observed": receipt["full_pipeline_observed"],
+                      "full_pipeline_requirements_met": receipt["full_pipeline_requirements_met"],
                       "reason_code": receipt.get("reason_code"), "supported_decision": receipt["supported_decision"],
                       "location_accuracy_evaluated": False, "interrupted": receipt["interrupted"],
-                      "interruption_signal": receipt["interruption_signal"], "error": receipt.get("error")}))
+                      "interruption_signal": receipt["interruption_signal"], "error": receipt.get("error"),
+                      "requirement_error": receipt.get("requirement_error")}))
     return 0 if receipt["verification_passed"] else 1
 
 

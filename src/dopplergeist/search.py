@@ -1,8 +1,10 @@
 """Geometric event filters, silence constraints and locked multi-event scoring."""
 from itertools import product
+import math
 
 import numpy as np
 import pandas as pd
+from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
@@ -100,6 +102,41 @@ def cpa_table(tracks,points,max_distance,c=343.0,step_s=2.0,chunk_size=512):
             distance2=np.sum((pos[sample]-obs[observer_index])**2,axis=1)
             previous=np.r_[False,(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1)]
             following=np.r_[(observer_index[1:]==observer_index[:-1])&(sample[1:]==sample[:-1]+1),False]
+            # An endpoint sample can be the sampled minimum even when the
+            # continuous spline turns strictly inside its adjacent interval.
+            # Check the endpoint range-rate signs before optimizing the actual
+            # spline; an endpoint alone is not evidence of a complete pass.
+            eligible = np.flatnonzero(counts >= 2)
+            ends = np.cumsum(counts)[eligible]
+            starts = ends - counts[eligible]
+            for end in (False, True):
+                edge_indices = ends - 1 if end else starts
+                adjacent = edge_indices - 1 if end else edge_indices + 1
+                mask = ((sample[edge_indices] == (len(t)-1 if end else 0))
+                        & (previous[edge_indices] if end else following[edge_indices])
+                        & (distance2[edge_indices] <= distance2[adjacent]))
+                oi_edge = eligible[mask]
+                if not len(oi_edge):
+                    continue
+                lo, hi = (t[-2], t[-1]) if end else (t[0], t[1])
+                endpoints = pos[[-2, -1]] if end else pos[[0, 1]]
+                velocities = track.speed_vector(np.array([lo, hi]))
+                radial_start = np.sum((endpoints[0] - obs[oi_edge]) * velocities[0], axis=1)
+                radial_end = np.sum((endpoints[1] - obs[oi_edge]) * velocities[1], axis=1)
+                for j in np.flatnonzero((radial_start < 0) & (radial_end > 0)):
+                    observer = obs[oi_edge[j]]
+                    fit = minimize_scalar(lambda dt: np.sum((track.position(lo + dt) - observer) ** 2),
+                                          bounds=(0, hi-lo), method="bounded", options={"xatol": 0.001})
+                    when = lo + fit.x
+                    if not fit.success or not lo < when < hi or not np.isfinite(fit.fun):
+                        raise AcousticSupportError(track.id, "cpa_endpoint_solver_not_converged",
+                                                   emission_intervals_s=[[float(lo), float(hi)]])
+                    distance = np.sqrt(fit.fun)
+                    if distance <= max_distance:
+                        rows.append({"point_id": int(point_ids[chosen[oi_edge[j]]]), "flight_id": track.id,
+                                     "emission_time": float(when), "receive_time": float(when + distance/c),
+                                     "distance_m": float(distance),
+                                     "speed_mps": float(np.linalg.norm(track.speed_vector(when)))})
             minima=(previous&following&(distance2<=np.r_[np.inf,distance2[:-1]])&
                     (distance2<np.r_[distance2[1:],np.inf]))
             indices=np.flatnonzero(minima)
@@ -230,6 +267,8 @@ def _ridge_trial_classification(result, events, association):
     can be rejected only by the existing association residual thresholds.
     """
     def finite(value):
+        if type(value) is float:
+            return math.isfinite(value)
         return (isinstance(value, (int, float, np.integer, np.floating))
                 and not isinstance(value, (bool, np.bool_)) and np.isfinite(value))
 
@@ -267,8 +306,7 @@ def _ridge_trial_classification(result, events, association):
         drift, cap = diagnostic["source_drift_hz"], diagnostic["drift_bound_hz"]
         if not bounds[0] * fraction <= cap <= bounds[1] * fraction or abs(drift) > cap:
             return "unknown", "fit_outside_declared_drift_domain"
-        if not np.isclose(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"], drift,
-                          rtol=1e-12, atol=1e-12):
+        if abs(diagnostic["source_drift_hz_s"] * diagnostic["source_span_s"] - drift) > 1e-12 + 1e-12 * abs(drift):
             return "unknown", "inconsistent_source_drift"
     if "optimizer_success" in result and result["optimizer_success"] is not True:
         return "unknown", "failed_optimizer"
@@ -341,8 +379,61 @@ def _association_trial_bound(result, events):
     return min(maximum, upper)
 
 
+def _validate_score_ceiling_inputs(events, measurements):
+    """Do not hide malformed fit inputs behind an unperformed-fit certificate."""
+    from .matching import _frequency_scale, _ridge_fit_inputs
+    for event, measurement in zip(events, measurements):
+        value = _frequency_scale(event)
+        if not isinstance(value, (int, float, np.number)) or isinstance(value, (bool, np.bool_)):
+            raise ValueError("Frequency loss scales must be finite and positive")
+        try:
+            scale = float(value)
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("Frequency loss scales must be finite and positive") from error
+        if not np.isfinite(scale) or scale <= 0 or not np.isfinite(3*scale):
+            raise ValueError("Frequency loss scales must be finite and positive")
+        _ridge_fit_inputs(measurement, scale, event.get("quality", {}).get("source_drift_fraction", 0.02))
+        bounds = event.get("f0_range_hz")
+        if (not isinstance(bounds, (list, tuple)) or len(bounds) != 2
+                or not all(isinstance(value, (int, float, np.number)) and not isinstance(value, (bool, np.bool_))
+                           and np.isfinite(value) for value in bounds)
+                or not 0 < bounds[0] <= bounds[1]):
+            raise ValueError("Source frequency bounds must be finite, positive and ordered")
+
+
+def _screen_association_trial(tracks, events, measurements, observer, start, c, acoustic_at, floor):
+    """Fit groups until a conservative residual ceiling cannot reach the floor.
+
+    Unperformed groups each contribute at most one. The existing validated-fit
+    bound rounds upward and never uses missing evidence as a rejection.
+    """
+    from .matching import score_ridges
+    diagnostics = []
+    missing = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
+    for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
+        acoustic = None if acoustic_at is None else [acoustic_at(index)]
+        single = score_ridges([track], [event], [measurement], observer, start, c, acoustic_results=acoustic)
+        diagnostics.extend(single["event_diagnostics"])
+        remaining = len(events) - len(diagnostics)
+        if remaining:
+            partial = diagnostics + [missing] * remaining
+            bound = _association_trial_bound({
+                "score_kind": "matched_group_support_minus_normalized_residual",
+                "event_scores": [d["score"] for d in partial],
+                "f0_hz": [d["f0_hz"] for d in partial], "event_diagnostics": partial}, events)
+            if bound is not None and bound < floor:
+                return None, bound
+    return {"score": float(sum(d["score"] for d in diagnostics)),
+            "event_scores": [d["score"] for d in diagnostics],
+            "f0_hz": [d["f0_hz"] for d in diagnostics], "event_diagnostics": diagnostics,
+            "score_kind": "negative_robust_ridge_loss_hz"}, None
+
+
 def score_candidate(candidate, point, tracks, events, measurements, mode="brightness",
-                    time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0):
+                    time_origin=None, time_sweep_s=5.0, time_step_s=0.5, c=343.0,
+                    score_floor=None):
+    """Score one hypothesis; a bounded score-floor result has no numeric score."""
+    all_events, all_measurements = events, measurements
     association = "event_indices" in candidate
     association_fields = {}
     if association:
@@ -361,6 +452,18 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         raise ValueError(f"Unknown scoring mode: {mode}")
     if time_step_s <= 0 or time_sweep_s < 0:
         raise ValueError("Need positive clock step and nonnegative sweep")
+    if score_floor is not None:
+        if not association or mode != "robust_ridge":
+            raise ValueError("score_floor is only supported for robust_ridge associations")
+        if isinstance(score_floor, (bool, np.bool_)):
+            raise ValueError("score_floor must be finite")
+        try:
+            score_floor = float(score_floor)
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError("score_floor must be finite") from error
+        if not np.isfinite(score_floor):
+            raise ValueError("score_floor must be finite")
+        _validate_score_ceiling_inputs(events, measurements)
     observer = ecef(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
     # their true absolute geometry/time. This implements the locked offset.
@@ -377,6 +480,11 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             shifts = []
         else:
             shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
+    # linspace(..., 2) produces the same trial twice for a fixed clock. Keep
+    # one evaluation and report one trial; the fitted clock and score are
+    # unchanged, including the first-shift tie rule.
+    if len(shifts) > 1 and shifts[0] == shifts[-1]:
+        shifts = shifts[:1]
     best = {"score":-np.inf}
     if mode == "robust_ridge":
         best["score_kind"] = ("matched_group_support_minus_normalized_residual" if association
@@ -387,12 +495,49 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                   "empty_clock_domain": len(shifts) == 0}
     reasons = set()
     unknown_bounds = []
-    for shift in shifts:
+    partial_prunes = 0
+    # Every accepted group contributes at most one; a strict comparison keeps ties eligible.
+    floor_pruned = bool(score_floor is not None and len(shifts) > 0 and len(events) < score_floor)
+    if floor_pruned:
+        best["score"] = None
+        assessment["unknown_trials"] = len(shifts)
+        reasons.add("matched_group_count_below_score_floor")
+    selected_tracks = ([tracks[p["flight_id"]] for p in candidate["passes"]]
+                       if mode == "robust_ridge" and not floor_pruned else None)
+    batches = None
+    lazy_batches = None
+    if mode == "robust_ridge" and not floor_pruned and len(shifts) > 1:
+        from .matching import _iter_acoustic_trials, batch_acoustic_trials
+        if association and score_floor is not None:
+            lazy_batches = iter(_iter_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c))
+            batches = []
+        else:
+            batches = batch_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c)
+    for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
+            def acoustic_at(index):
+                if lazy_batches is not None:
+                    while len(batches) <= index:
+                        batches.append(next(lazy_batches))
+                batch = batches[index]
+                return None if batch is None else (batch[0][trial], batch[1][trial])
+            precomputed = ([acoustic_at(index) for index in range(len(events))]
+                           if batches is not None and lazy_batches is None else None)
             try:
-                result = score_ridges([tracks[p["flight_id"]] for p in candidate["passes"]],
-                                      events,measurements,observer,anchor+shift,c)
+                if association and score_floor is not None:
+                    result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
+                                                              anchor+shift, c, acoustic_at if batches is not None else None,
+                                                              score_floor)
+                    if result is None:
+                        partial_prunes += 1
+                        assessment["unknown_trials"] += 1
+                        reasons.add("partial_group_score_below_retention_floor")
+                        unknown_bounds.append(upper)
+                        continue
+                else:
+                    result = score_ridges(selected_tracks, events, measurements, observer, anchor+shift, c,
+                                          acoustic_results=precomputed)
             except AcousticSupportError as error:
                 assessment["unknown_trials"] += 1
                 reasons.add(str(error))
@@ -426,18 +571,34 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             best = {"score":total,"event_scores":scores,"f0_hz":f0s,
                     "recording_start_time_s":float(anchor+shift),"time_adjustment_s":float(shift)}
     if mode == "robust_ridge":
+        if partial_prunes and np.isfinite(best["score"]) and best["score"] >= score_floor:
+            # Competitive modes retain their complete original diagnostics. Cached
+            # fits are reused; skipped clocks are evaluated rather than relabelled.
+            return score_candidate(candidate, point, tracks, all_events, all_measurements, mode,
+                                   time_origin, time_sweep_s, time_step_s, c)
         if not len(shifts):
             reasons.add("no_clock_trials")
         assessment["complete"] = bool(len(shifts) and assessment["unknown_trials"] == 0)
         assessment["reasons"] = sorted(reasons)
         if association and assessment["unknown_trials"]:
-            finite_bounds = [value for value in unknown_bounds if value is not None and np.isfinite(value)]
-            assessment.update(
-                bounded_unknown_trials=sum(value is not None for value in unknown_bounds),
-                bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
-                unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
-                unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
-                unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
+            if floor_pruned:
+                assessment.update(
+                    bounded_unknown_trials=len(shifts),
+                    bounded_unknown_rejections=0,
+                    unknown_score_upper_bound=float(len(events)),
+                    unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
+                    unknown_score_bound_method="group_count_ceiling")
+            else:
+                finite_bounds = [value for value in unknown_bounds if value is not None and np.isfinite(value)]
+                assessment.update(
+                    bounded_unknown_trials=sum(value is not None for value in unknown_bounds),
+                    bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
+                    unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
+                    unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
+                    unknown_score_bound_method="nonnegative_loss_and_validated_event_fits")
+                if partial_prunes:
+                    assessment["retention_score_floor"] = score_floor
+                    assessment["retention_pruned_trials"] = partial_prunes
         best["scoring_assessment"] = assessment
     return dict(best,**association_fields,point_id=int(point.point_id),lat=float(point.lat),lon=float(point.lon),elev_m=float(point.elev_m),
                 x=float(point.x),y=float(point.y),flight_ids=[p["flight_id"] for p in candidate["passes"]])

@@ -227,3 +227,145 @@ synthetic data were generated, and all original negative results are retained.
 The reusable CLI was also run against all four originals with the isolated
 installed package. Preparation, default search, evaluation and the shorter-window
 search all completed and reproduced the proposal counts above.
+
+## Real WSU supplied-trajectory session benchmark
+
+`scripts/benchmark_wsu_session.py` processes the complete 246.8-second recording
+from WSU's October 11, 2024 flight 5, using device 1/channel 1 selected before
+acoustic inspection. The [dataset](https://doi.org/10.26183/07nm-4p35) and
+[publisher README](https://rds.westernsydney.edu.au/Centres/ICNS/2026/Jahir_Rodriguez/README.md)
+credit Belman Jahir Rodríguez, Sergio F. Chevtchenko, Marcelo Herrera Martínez,
+Yeshwanth Bethi and Saeed Afshar. External recordings and metadata retain their
+CC BY-SA 4.0 license. This repository's adapter is independently written.
+
+Retrieve these four original public inputs into a new directory. The adapter
+checks their pinned lengths and hashes; these identify the versions downloaded
+for the experiment and are not publisher-issued checksums.
+
+```sh
+mkdir -p data
+mkdir data/wsu-test1-originals
+wsu_source='https://rds.westernsydney.edu.au/Centres/ICNS/2026/Jahir_Rodriguez'
+wsu_flight="$wsu_source/dataset/test_1/Oct_11_2024/flight_5"
+curl -fL "$wsu_flight/device_1_nosync.wav" -o data/wsu-test1-originals/device_1_nosync.wav
+curl -fL "$wsu_flight/Oct-11th-2024-03-49PM-Flight-Airdata.csv" -o data/wsu-test1-originals/flight.csv
+curl -fL "$wsu_flight/alignment_params.json" -o data/wsu-test1-originals/alignment_params.json
+curl -fL "$wsu_source/dataset/test_1/Oct_11_2024/ref/DJIFlightRecord_2024-10-11_%5B14-32-34%5D.csv" -o data/wsu-test1-originals/reference.csv
+
+PYTHONPATH=src .venv/bin/python scripts/benchmark_wsu_session.py discover \
+  --audio data/wsu-test1-originals/device_1_nosync.wav \
+  --output results/wsu-new/discovery
+PYTHONPATH=src .venv/bin/python scripts/benchmark_wsu_session.py search \
+  --discovery results/wsu-new/discovery \
+  --flight-csv data/wsu-test1-originals/flight.csv \
+  --alignment data/wsu-test1-originals/alignment_params.json \
+  --output results/wsu-new/search
+PYTHONPATH=src .venv/bin/python scripts/benchmark_wsu_session.py evaluate \
+  --search results/wsu-new/search \
+  --reference-csv data/wsu-test1-originals/reference.csv \
+  --output results/wsu-new/evaluation.json
+```
+
+The original six-channel PCM32 WAV is 284,313,644 bytes at 48 kHz. The published
+alignment maps audio time 82.0 s to flight-log row 39 (elapsed time 3,900 ms).
+Every trajectory row is retained, using
+`audio_seconds = 82 + (flight_milliseconds - 3900) / 1000`. The resulting
+trajectory support is 78.1–241.1 s. Reference coordinates are opened only by
+`evaluate`; discovery reads only audio, and search uses only the supplied flight.
+This process separation is not a sealed holdout.
+
+| Stage | Recorded result |
+| --- | --- |
+| Complete-recording discovery, unchanged defaults | Four proposals, all at 60.0–82.0 s; 2.80 s, 505 MiB peak RSS |
+| Conditional search | All four proposals retained; 624 cells per scenario; constant-tone and 2% drift fits |
+| Motion support | Zero fully supported fits in 4,992 attempted fits; every proposal has ridge samples before the first measured flight state |
+| Final outcome | `no_supported_fit`; no coordinate, location error, or accepted localization |
+
+Discovery ran at `1aa763b`; final search ran at `a661424` in 2.31 s with 157 MiB
+peak RSS. The direct discovery/matching modules were unchanged between these
+revisions. No detector thresholds or event windows were adjusted after inspection.
+The four proposals remain unconfirmed sounds; missing trajectory support does
+not establish their source identity or a false-alarm rate.
+
+This low-speed multirotor case has limited Doppler variation. The measured log's
+maximum reported horizontal speed is 11.40 m/s. A post-result calculation using
+the published array reference and nominal 343 m/s sound speed gives radial speeds
+of -7.66 to +7.41 m/s and a 4.30% relative decline from the maximum modeled
+frequency factor to its minimum. The largest modeled decline among sampled
+12-second intervals is 3.35%, close to
+discovery's fixed 3% minimum. Discovery also requires at least 12 seconds,
+4 Hz decline and sustained ridge support. Some modeled intervals cross the
+fractional threshold, so low speed
+alone does not explain why frozen discovery and the supplied trajectory yielded
+no supported match.
+These telemetry calculations establish a difficult operating regime, not a
+diagnosed implementation defect or a measured rotor-frequency model.
+
+The camera-based audio/GPS alignment has no measured uncertainty. The WAV has no
+recording-clock tags; rounded UTC labels in the flight CSV do not establish the
+audio clock. Published MSL heights are used as a common-datum approximation, with
+flat receiver height derived from the initial aircraft altitude plus microphone
+height. The grid covers the supplied flight footprint plus 500 m, rounded outward
+to 100 m and sampled at 50 m cell centers. Clock error, altitude datum, weather,
+background aircraft, and microphone GPS uncertainty remain unresolved. This
+Australian supplied-flight experiment does not verify national acquisition,
+automatic flight identification, or the independent real-location acceptance gate.
+
+## Real reference full HTTP pipeline
+
+This development replay verifies actual intake, automatic discovery, input
+acquisition, tiled search, physical refinement and decision through the local
+HTTP service. It uses the complete real recording, no supplied acoustic windows,
+frequency bands or flight IDs, and the default CONUS request. Its restored flight
+index and terrain are regional and incomplete. Its 20-second recording-start
+interval surrounds a historical fitted clock, not an independently measured one.
+It cannot satisfy independent real-location acceptance.
+
+Restore the published inputs, build the partial index, and encode the entire
+recording. The helper refuses an existing output directory. FFmpeg's `-n` flag
+preserves an existing MP3.
+
+```sh
+.venv/bin/python scripts/restore_artifacts.py \
+  --bundle data-source --bundle data-adsb-derived --bundle data-terrain
+.venv/bin/python scripts/prepare_reference_upload.py \
+  --data-root data --output results/reference-upload-setup-new
+ffmpeg -n -nostdin -hide_banner -loglevel error \
+  -i data/source/reference-recording.wav -map 0:a:0 \
+  -codec:a libmp3lame -q:a 2 results/reference-whole-new.mp3
+.venv/bin/python scripts/verify_upload_http.py \
+  --audio results/reference-whole-new.mp3 \
+  --operator-config results/reference-upload-setup-new/operator.json \
+  --start-utc 2026-09-08T20:17:20Z --end-utc 2026-09-08T20:17:40Z \
+  --time-source 'Development interval around the historical fitted clock; not independently measured recording time' \
+  --expect-status inconclusive --require-full-pipeline \
+  --timeout-s 1800 --poll-interval-s 1 \
+  --output results/reference-http-new
+```
+
+At `a661424`, the actual upload completed in 253.71 seconds, with 16 independent
+groups, 18 ridge records and 23 returned hypotheses. All seven operational
+stages passed the strict verifier. The scientific decision remained
+`inconclusive / search_incomplete`; `supported_decision` was false.
+A fresh run after integration with upstream at `7df7c04` completed in 223.75
+seconds, again passing the strict verifier with the same leading hypothesis,
+counts and scientific status. The new audio resume checkpoint was created;
+this run did not test restarting an interrupted analysis.
+The leading diagnostic hypothesis was 65,998.78 m from the unsurveyed public
+reference, measured after outputs were frozen. It misses all three distance
+tiers, and this source-informed replay is ineligible for independent accuracy.
+
+The search completed 19,190 of 19,278 tiles. This count includes empty tiles:
+256 coarse points and 243 refinement points were actually scored, with possible
+overlap between the grids. Eighty-six tiles lacked terrain coverage and two
+exhausted the association budget. All 16 independent groups remained eligible;
+there was no two- or three-event cap. Separate real-point diagnosis found
+56 points in one failed tile that individually exceed 20,000 associations.
+Smaller tiles alone cannot remove that failure.
+
+The strict undated control returned `needs_input / recording_time_required`
+and correctly failed the full-pipeline requirement. A separate Chromium check
+loaded and reloaded the completed timed job, displayed its hypotheses and
+incomplete-coverage warnings, and reported no page errors. It did not rerun the
+analysis. Source revisions, measured runtimes and limits for these experiments
+are kept together in [the compact result](real-http-2026-11-03/summary.json).
