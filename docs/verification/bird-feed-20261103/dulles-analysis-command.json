@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/home/user/dopplergeist-e2e-20261102/.venv/bin/python",
+    "-m",
+    "aircraft_geoloc.cli",
+    "analyze",
+    "results/bird-dulles-frozen-20261103-0220/audio.mp3",
+    "--jobs",
+    "results/bird-dulles-automatic-20261103"
+  ],
+  "environment": {
+    "PYTHONPATH": "/home/user/dopplergeist-camera-integration-20261103/src",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "git_commit": "e227c5db20427f6753a141f369da69a51ab9d4f2",
+  "operator_configuration": {},
+  "resources": {
+    "max_rss_kib": 209488.0,
+    "user_cpu_s": 6.66,
+    "system_cpu_s": 0.84,
+    "elapsed_s": 7.88
+  },
+  "source_hash_preserved": true,
+  "manual_event_or_band_inputs": false,
+  "true_location_inputs": false,
+  "guessed_recording_clock_inputs": false,
+  "confirmed_aircraft_labels": false
+}

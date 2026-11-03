@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_page": "https://hdontap.com/stream/630308/hummingbird-feeders-of-california-live-webcam/embed/",
+  "camera": "hummingbird-feeders-ca",
+  "provider": "hdontap",
+  "requested_duration_s": 12.0,
+  "status": "failed",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "1f721c037ad1c01e3a196c48fd40f29c9134017b27989a1d9fa7600a89ec47b2",
+  "page_fetch": {
+    "started_utc": "2026-11-03T02:09:41.342720Z",
+    "finished_utc": "2026-11-03T02:09:41.606740Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:09:41 GMT",
+    "sha256": "acf30b5e8cdfb4bc305b2fb9875772e458585be51b452adf157682c479e65f21",
+    "bytes": 6654
+  },
+  "error_type": "ValueError",
+  "error": "Capture failed; inspect local source/decoder evidence."
+}

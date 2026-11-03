@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "analysis_git_commit": "e227c5db20427f6753a141f369da69a51ab9d4f2",
+  "min_contrast": 2.5,
+  "full_recordings": [
+    {
+      "source": "hanover",
+      "audio_sha256": "79fa9c864151890c3dcf7077271ae6a0fe3167444d803ddfcfd0404835ed1a46",
+      "duration_s": 300.0,
+      "rms_dbfs": -53.438406555831435,
+      "peak_full_scale": 0.04228263720870018,
+      "proposal_count": 1,
+      "proposals_are_confirmed_independent_aircraft": false,
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "coordinate_returned": false,
+      "resources": {
+        "max_rss_kib": 169560.0,
+        "user_cpu_s": 4.65,
+        "system_cpu_s": 0.88,
+        "elapsed_s": 5.58
+      },
+      "events": [
+        {
+          "event_id": "event-0001",
+          "harmonic_group_id": "harmonics-0001",
+          "start_s": 215.0,
+          "end_s": 230.5,
+          "band_hz": [
+            78.29959234595299,
+            95.29009886085987
+          ],
+          "quality": {
+            "median_contrast": 3.3584460020065308,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.8571428571428571,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 1.5,
+            "frequency_drop_hz": 14.41554434702266
+          }
+        }
+      ]
+    },
+    {
+      "source": "dulles",
+      "audio_sha256": "ee92c8daee24b77d068ecc29ab2c27b5cc66b86608f723824e1284798989cdb0",
+      "duration_s": 300.0,
+      "rms_dbfs": -48.9259241099127,
+      "peak_full_scale": 0.07285074889659882,
+      "proposal_count": 7,
+      "proposals_are_confirmed_independent_aircraft": false,
+      "status": "needs_input",
+      "reason_code": "recording_time_required",
+      "coordinate_returned": false,
+      "resources": {
+        "max_rss_kib": 209488.0,
+        "user_cpu_s": 6.66,
+        "system_cpu_s": 0.84,
+        "elapsed_s": 7.88
+      },
+      "events": [
+        {
+          "event_id": "event-0001",
+          "harmonic_group_id": "harmonics-0001",
+          "start_s": 249.0,
+          "end_s": 264.5,
+          "band_hz": [
+            449.63054597377777,
+            513.7759980708361
+          ],
+          "quality": {
+            "median_contrast": 3.2048813104629517,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.8571428571428571,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 1.5,
+            "frequency_drop_hz": 51.061428354354575
+          }
+        },
+        {
+          "event_id": "event-0002",
+          "harmonic_group_id": "harmonics-0002",
+          "start_s": 250.5,
+          "end_s": 279.0,
+          "band_hz": [
+            647.75,
+            1256.3565380126238
+          ],
+          "quality": {
+            "median_contrast": 3.1736122369766235,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.7407407407407407,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 2.0,
+            "frequency_drop_hz": 565.2285262383521
+          }
+        },
+        {
+          "event_id": "event-0003",
+          "harmonic_group_id": "harmonics-0003",
+          "start_s": 252.5,
+          "end_s": 276.5,
+          "band_hz": [
+            696.2290257960558,
+            1246.902706682682
+          ],
+          "quality": {
+            "median_contrast": 3.03969407081604,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.7555555555555555,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 2.0,
+            "frequency_drop_hz": 523.5219938158989
+          }
+        },
+        {
+          "event_id": "event-0004",
+          "harmonic_group_id": "harmonics-0004",
+          "start_s": 253.5,
+          "end_s": 272.5,
+          "band_hz": [
+            774.9807303771377,
+            1241.7605085223913
+          ],
+          "quality": {
+            "median_contrast": 3.1362853050231934,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.6571428571428571,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 2.0,
+            "frequency_drop_hz": 425.8910069167614
+          }
+        },
+        {
+          "event_id": "event-0005",
+          "harmonic_group_id": "harmonics-0005",
+          "start_s": 270.5,
+          "end_s": 300.0,
+          "band_hz": [
+            569.0451513938606,
+            782.8811295256019
+          ],
+          "quality": {
+            "median_contrast": 3.0390785932540894,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.8214285714285714,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 2.0,
+            "frequency_drop_hz": 161.11350107192993
+          }
+        },
+        {
+          "event_id": "event-0006",
+          "harmonic_group_id": "harmonics-0006",
+          "start_s": 273.0,
+          "end_s": 291.0,
+          "band_hz": [
+            1164.0543908029795,
+            1436.827676936984
+          ],
+          "quality": {
+            "median_contrast": 2.8826338052749634,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.7878787878787878,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 1.5,
+            "frequency_drop_hz": 246.88341315090656
+          }
+        },
+        {
+          "event_id": "event-0007",
+          "harmonic_group_id": "harmonics-0007",
+          "start_s": 282.0,
+          "end_s": 300.0,
+          "band_hz": [
+            138.8416046500206,
+            149.75
+          ],
+          "quality": {
+            "median_contrast": 3.288947582244873,
+            "harmonic_count": 1.0,
+            "support_fraction": 0.8484848484848485,
+            "frequency_resolution_hz": 0.5,
+            "time_uncertainty_s": 1.0,
+            "frequency_uncertainty_hz": 0.5,
+            "frequency_sigma_hz": 0.5,
+            "fragment_count": 1.0,
+            "max_observed_gap_s": 1.5,
+            "frequency_drop_hz": 8.305429058149457
+          }
+        }
+      ]
+    }
+  ],
+  "smoke_recordings": [
+    "hanover-quality-capture.json",
+    "dulles-quality-capture.json"
+  ],
+  "source_access_evidence": [
+    "hummingbird-quality-capture.json",
+    "access-audit.json"
+  ],
+  "confirmed_aircraft_events": null,
+  "location_accuracy_eligible_cases": 0,
+  "location_error_thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "manual_windows_bands_ids_locations_or_clock_guesses": false,
+  "no_event_count_cap_added": true
+}

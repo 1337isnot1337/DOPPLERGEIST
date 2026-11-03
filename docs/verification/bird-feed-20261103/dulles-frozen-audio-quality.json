@@ -1,0 +1,10 @@
+{
+  "sample_rate_hz": 16000,
+  "decoded_duration_s": 300.0,
+  "rms_full_scale": 0.003578522848664735,
+  "rms_dbfs": -48.9259241099127,
+  "peak_full_scale": 0.07285074889659882,
+  "nonzero_fraction": 0.9996697916666667,
+  "clipped_fraction": 0.0,
+  "physical_spl_calibrated": false
+}

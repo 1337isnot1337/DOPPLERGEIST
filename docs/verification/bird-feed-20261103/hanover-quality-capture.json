@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "source_page": "https://hdontap.com/stream/204942/hanover-eagles-nest-live-cam/embed/",
+  "camera": "hanover-eagles",
+  "provider": "hdontap",
+  "requested_duration_s": 12.0,
+  "status": "captured",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "1f721c037ad1c01e3a196c48fd40f29c9134017b27989a1d9fa7600a89ec47b2",
+  "page_fetch": {
+    "started_utc": "2026-11-03T02:00:10.045011Z",
+    "finished_utc": "2026-11-03T02:00:10.347227Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:00:10 GMT",
+    "sha256": "aece95767b60dd7fe6958e3315f4142598eb66870bd85432d89ee6d7cca74c65",
+    "bytes": 9482
+  },
+  "camera_name": "HDOnTap public embed",
+  "source_audio_advertised": null,
+  "stream_url": "https://live.hdontap.com/hls/hosb7/ngrp:hdontap_hanover-eagles_pov_avmix_all/playlist.m3u8",
+  "stream_url_sha256": "e9500c7f28a3b851dadd7f0824ccef829f550f10c7704267f4fcfcf3d8cd5685",
+  "provider_map_reference": null,
+  "playlist_fetch": {
+    "started_utc": "2026-11-03T02:00:10.349444Z",
+    "finished_utc": "2026-11-03T02:00:11.378153Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:00:11 GMT",
+    "sha256": "2ff650e3c049a72dec5a4c0524502ec6c4fd6463e98cf792179eb3bbc7474c21",
+    "bytes": 1076
+  },
+  "media_playlist_fetch": {
+    "started_utc": "2026-11-03T02:00:11.378392Z",
+    "finished_utc": "2026-11-03T02:00:11.971416Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:00:11 GMT",
+    "sha256": "f053c0be5eb26147dd96afc1e971f11c468c77b1f3f84492102e52678e977192",
+    "bytes": 639
+  },
+  "initial_media_segments": [
+    {
+      "sequence": 34179,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb7/ngrp:hdontap_hanover-eagles_pov_avmix_all/media-u3ccm95vl_b9849299_34179.ts",
+      "duration_s": 10.0,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 34180,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb7/ngrp:hdontap_hanover-eagles_pov_avmix_all/media-u3ccm95vl_b9849299_34180.ts",
+      "duration_s": 9.99,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 34181,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb7/ngrp:hdontap_hanover-eagles_pov_avmix_all/media-u3ccm95vl_b9849299_34181.ts",
+      "duration_s": 10.07,
+      "broadcaster_start_utc": null
+    }
+  ],
+  "broadcaster_segment_clock_present": false,
+  "clock_limitations": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ],
+  "audio_timeline": "source A/V timestamps, rebased together; audio gaps may be padded by aresample",
+  "decoder_command_redacted": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "warning",
+    "-copyts",
+    "-start_at_zero",
+    "-rw_timeout",
+    "15000000",
+    "-user_agent",
+    "Mozilla/5.0",
+    "-headers",
+    "Referer: https://hdontap.com/stream/204942/hanover-eagles-nest-live-cam/embed/\r\n",
+    "-i",
+    "https://live.hdontap.com/hls/hosb7/ngrp:hdontap_hanover-eagles_pov_avmix_all/playlist.m3u8?[query omitted]",
+    "-t",
+    "12.0",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-af",
+    "aresample=async=1:first_pts=0",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "64k",
+    "/home/user/dopplergeist-public-camera-20261103/results/bird-hanover-quality-20261103-0145/audio.mp3",
+    "-t",
+    "12.0",
+    "-map",
+    "0:v:0",
+    "-c:v",
+    "copy",
+    "-an",
+    "-f",
+    "null",
+    "/dev/null"
+  ],
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "capture_started_utc": "2026-11-03T02:00:12.042784Z",
+  "decoder_exit_code": 0,
+  "capture_finished_utc": "2026-11-03T02:00:26.212295Z",
+  "capture_elapsed_s": 14.169519250979647,
+  "audio": {
+    "path": "audio.mp3",
+    "bytes": 97101,
+    "sha256": "c7a96b32e5f601f777ba2c2eff7f12b0dffe9dae2063ea171aa02cfbe4c45976"
+  },
+  "audio_probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "16000",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "12.096000"
+    }
+  },
+  "decoded_duration_s": 12.0
+}

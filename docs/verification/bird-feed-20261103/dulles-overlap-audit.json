@@ -1,0 +1,188 @@
+{
+  "scope": "compare already-produced proposals at shared measured times; no source-identity or independent-aircraft label",
+  "frequency_resolution_hz": 0.5,
+  "pairs": [
+    {
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "common_ridge_frames": 16,
+      "common_interval_s": [
+        252.0,
+        262.5
+      ],
+      "median_abs_frequency_difference_hz": 718.4942601956427,
+      "rms_frequency_difference_hz": 715.7769137940544,
+      "max_abs_frequency_difference_hz": 741.9633854492567
+    },
+    {
+      "event_ids": [
+        "event-0001",
+        "event-0003"
+      ],
+      "common_ridge_frames": 17,
+      "common_interval_s": [
+        253.5,
+        263.5
+      ],
+      "median_abs_frequency_difference_hz": 698.5133730620146,
+      "rms_frequency_difference_hz": 698.4698694944256,
+      "max_abs_frequency_difference_hz": 737.2553935647011
+    },
+    {
+      "event_ids": [
+        "event-0001",
+        "event-0004"
+      ],
+      "common_ridge_frames": 10,
+      "common_interval_s": [
+        254.5,
+        263.5
+      ],
+      "median_abs_frequency_difference_hz": 686.9726276120637,
+      "rms_frequency_difference_hz": 688.0520570251375,
+      "max_abs_frequency_difference_hz": 733.9145814627409
+    },
+    {
+      "event_ids": [
+        "event-0002",
+        "event-0003"
+      ],
+      "common_ridge_frames": 27,
+      "common_interval_s": [
+        253.5,
+        275.5
+      ],
+      "median_abs_frequency_difference_hz": 7.430204838514328,
+      "rms_frequency_difference_hz": 10.715285729896983,
+      "max_abs_frequency_difference_hz": 22.825178429484367
+    },
+    {
+      "event_ids": [
+        "event-0002",
+        "event-0004"
+      ],
+      "common_ridge_frames": 17,
+      "common_interval_s": [
+        254.5,
+        271.5
+      ],
+      "median_abs_frequency_difference_hz": 14.562666941434145,
+      "rms_frequency_difference_hz": 15.445501575918552,
+      "max_abs_frequency_difference_hz": 25.76926962286234
+    },
+    {
+      "event_ids": [
+        "event-0002",
+        "event-0005"
+      ],
+      "common_ridge_frames": 7,
+      "common_interval_s": [
+        271.5,
+        277.5
+      ],
+      "median_abs_frequency_difference_hz": 8.790433585643768,
+      "rms_frequency_difference_hz": 13.30235472999643,
+      "max_abs_frequency_difference_hz": 19.868870474398136
+    },
+    {
+      "event_ids": [
+        "event-0002",
+        "event-0006"
+      ],
+      "common_ridge_frames": 5,
+      "common_interval_s": [
+        274.5,
+        277.5
+      ],
+      "median_abs_frequency_difference_hz": 691.3910849690437,
+      "rms_frequency_difference_hz": 692.5428024760583,
+      "max_abs_frequency_difference_hz": 730.1932659745216
+    },
+    {
+      "event_ids": [
+        "event-0003",
+        "event-0004"
+      ],
+      "common_ridge_frames": 18,
+      "common_interval_s": [
+        254.5,
+        271.5
+      ],
+      "median_abs_frequency_difference_hz": 11.669570880010724,
+      "rms_frequency_difference_hz": 17.621564979439473,
+      "max_abs_frequency_difference_hz": 36.259599674493074
+    },
+    {
+      "event_ids": [
+        "event-0003",
+        "event-0005"
+      ],
+      "common_ridge_frames": 7,
+      "common_interval_s": [
+        271.5,
+        275.5
+      ],
+      "median_abs_frequency_difference_hz": 5.119735971093178,
+      "rms_frequency_difference_hz": 11.985126785092918,
+      "max_abs_frequency_difference_hz": 27.299075312912464
+    },
+    {
+      "event_ids": [
+        "event-0003",
+        "event-0006"
+      ],
+      "common_ridge_frames": 4,
+      "common_interval_s": [
+        274.0,
+        275.5
+      ],
+      "median_abs_frequency_difference_hz": 703.6248995643109,
+      "rms_frequency_difference_hz": 702.6895540735884,
+      "max_abs_frequency_difference_hz": 716.0985463112593
+    },
+    {
+      "event_ids": [
+        "event-0005",
+        "event-0006"
+      ],
+      "common_ridge_frames": 23,
+      "common_interval_s": [
+        274.0,
+        290.0
+      ],
+      "median_abs_frequency_difference_hz": 604.8205433115363,
+      "rms_frequency_difference_hz": 626.7183911647306,
+      "max_abs_frequency_difference_hz": 711.4830217510462
+    },
+    {
+      "event_ids": [
+        "event-0005",
+        "event-0007"
+      ],
+      "common_ridge_frames": 24,
+      "common_interval_s": [
+        283.0,
+        299.0
+      ],
+      "median_abs_frequency_difference_hz": 441.21397136943415,
+      "rms_frequency_difference_hz": 440.9845334768566,
+      "max_abs_frequency_difference_hz": 461.44388949871063
+    },
+    {
+      "event_ids": [
+        "event-0006",
+        "event-0007"
+      ],
+      "common_ridge_frames": 11,
+      "common_interval_s": [
+        283.0,
+        289.5
+      ],
+      "median_abs_frequency_difference_hz": 1042.028350174427,
+      "rms_frequency_difference_hz": 1042.2861263943491,
+      "max_abs_frequency_difference_hz": 1068.172250032425
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /home/user/dopplergeist-e2e-20261102/.venv/bin/python -m pytest -q",
+  "passed": 200,
+  "subtests_passed": 6,
+  "warnings": 1,
+  "elapsed_s": 63.76,
+  "python_version": "3.12.3",
+  "log_sha256": "1161a7fdd0dd702a14638fe100dc05896fa6d213e2f6bb087444e6068e8d15ad",
+  "capture_script_sha256": "1f721c037ad1c01e3a196c48fd40f29c9134017b27989a1d9fa7600a89ec47b2",
+  "scope": "full suite on bird adapter source; bird automatic jobs independently use frozen e227c5d"
+}

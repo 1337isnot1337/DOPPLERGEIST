@@ -1,0 +1,33 @@
+[
+  {
+    "source": "cornell-feederwatch",
+    "source_page": "https://www.allaboutbirds.org/cams/cornell-lab-feederwatch/",
+    "checked_utc": "2026-11-03T02:16:29.905089Z",
+    "status": "page_unavailable",
+    "error_type": "HTTPError",
+    "http_error_status": 403
+  },
+  {
+    "source": "hummingbird-feeders-ca",
+    "source_page": "https://hdontap.com/stream/630308/hummingbird-feeders-of-california-live-webcam/embed/",
+    "checked_utc": "2026-11-03T02:16:30.015278Z",
+    "fetch": {
+      "started_utc": "2026-11-03T02:16:30.015304Z",
+      "finished_utc": "2026-11-03T02:16:30.277354Z",
+      "http_status": 200,
+      "http_date": "Tue, 03 Nov 2026 02:16:30 GMT",
+      "sha256": "acf30b5e8cdfb4bc305b2fb9875772e458585be51b452adf157682c479e65f21",
+      "bytes": 6654
+    },
+    "status": "source_unavailable",
+    "reason": "Public HDOnTap embed has no JSON player-data"
+  },
+  {
+    "source": "marco-island-eagle",
+    "source_page": "https://www.earthcam.com/usa/florida/marcoisland/eagle/",
+    "status": "metadata_has_no_advertised_audio",
+    "capture_attempted": false,
+    "stored_page_sha256": "feda739b15df568ec6e8482320f6d0885247d125daf543dca344aaa5d700ca42",
+    "recording_clock_established": false
+  }
+]

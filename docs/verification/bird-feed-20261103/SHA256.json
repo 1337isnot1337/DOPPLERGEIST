@@ -1,0 +1,167 @@
+[
+  {
+    "path": "access-audit.json",
+    "sha256": "6660d1b3ef938fc7c3ae77f1890d4277ee8ea937b0587f2731d8be7ecac443a1",
+    "bytes": 1229
+  },
+  {
+    "path": "batch-summary.json",
+    "sha256": "ed6817787aa95894139bef51b81dc34a49f8f2ebe08b6c35543e3ddc0b64c111",
+    "bytes": 7577
+  },
+  {
+    "path": "dulles-analysis-command.json",
+    "sha256": "95f9ad4c2a88be0bf456112f200643e744f56cced1a3e1299503a010df2bdf80",
+    "bytes": 816
+  },
+  {
+    "path": "dulles-discovery.json",
+    "sha256": "adfe48086cbbaa5bd4d27aaf9625c7d8200d54954da510df7e9d5e51017442a8",
+    "bytes": 55573
+  },
+  {
+    "path": "dulles-discovery.png",
+    "sha256": "584e4ea4163ea95474130f39dfc0d9ed92e22a0a00482c2e0102245cfcf35bad",
+    "bytes": 61934
+  },
+  {
+    "path": "dulles-event-0001.png",
+    "sha256": "6aa6cec7a12f6cd94118c94ee4ae3a23d7df6a6cae94a64ddf127eb2b45fc104",
+    "bytes": 88307
+  },
+  {
+    "path": "dulles-event-0002.png",
+    "sha256": "5631aa15b71527220fa0e53c34d14e2f5df0f9ecd7e8026bbd081edb1c712115",
+    "bytes": 135043
+  },
+  {
+    "path": "dulles-event-0003.png",
+    "sha256": "a8699b8a86773a4722dbbccea53801c9ccd18d172a0cc404aecaba92849486cd",
+    "bytes": 120448
+  },
+  {
+    "path": "dulles-event-0004.png",
+    "sha256": "8e0121261a540b0c85d626fb0d885de00eeecb985f92ede76418dd1ba80873f7",
+    "bytes": 108264
+  },
+  {
+    "path": "dulles-event-0005.png",
+    "sha256": "e8267bb60df53c1cffa65eb0b832cf473d8966377579204aef2dc7debde1b2d2",
+    "bytes": 125861
+  },
+  {
+    "path": "dulles-event-0006.png",
+    "sha256": "6391fdbcaf741551d4bf20cd892946b8f48b56b065595b594c4b0e5cfec5edfa",
+    "bytes": 105689
+  },
+  {
+    "path": "dulles-event-0007.png",
+    "sha256": "0466fc2c1ea8042a69aa373bb967c8b889915761178d18f2d630c5dd8b7ed427",
+    "bytes": 59315
+  },
+  {
+    "path": "dulles-frozen-audio-quality.json",
+    "sha256": "e486803d0109901102b54fc23eab6c51942ccda87ee6336d31ca2e4027071b96",
+    "bytes": 283
+  },
+  {
+    "path": "dulles-frozen-capture.json",
+    "sha256": "ec86ea46d06515e9628232d4d27bc0543d1951f13d31bf15bad9a22f5265ff99",
+    "bytes": 4394
+  },
+  {
+    "path": "dulles-overlap-audit.json",
+    "sha256": "25ce3f7eda29ee94b916df3296a0788b25bff8d2aa780a6d9c2880d2bdf6c311",
+    "bytes": 4919
+  },
+  {
+    "path": "dulles-provenance.json",
+    "sha256": "145b78caae8899ac78fc34d86b1708378e65b9decbeaa92e842b7f192eac172d",
+    "bytes": 2456
+  },
+  {
+    "path": "dulles-quality-audio-quality.json",
+    "sha256": "20f0cc4d694684f5eb678bd802e81f6cf829464373f0fcc9e11ae112bceeb6fe",
+    "bytes": 286
+  },
+  {
+    "path": "dulles-quality-capture.json",
+    "sha256": "9d00fecd487358f01a2a8d38657d18dffff8abcea34877b664b9b19f8c6411bb",
+    "bytes": 4388
+  },
+  {
+    "path": "dulles-request.json",
+    "sha256": "cbc58abce0b90f8894f5dd4d84a63f621957e69f0805388aa7bac2f80dd58836",
+    "bytes": 217
+  },
+  {
+    "path": "dulles-result.json",
+    "sha256": "6412924481388076b6e0f11099f6a66c5ac2ec1048f9463051301a58c77cd995",
+    "bytes": 34823
+  },
+  {
+    "path": "hanover-analysis-command.json",
+    "sha256": "48f6af1bbf4df441122a56a3cdf20d47af30aa9f7fb7beca9c980d092541a298",
+    "bytes": 818
+  },
+  {
+    "path": "hanover-discovery.json",
+    "sha256": "8df0de6eb11bcabbae8fe0b7444f5ca1c2e30f40cd689cb66b68df8f60be4a00",
+    "bytes": 7045
+  },
+  {
+    "path": "hanover-discovery.png",
+    "sha256": "77a478aadb75ce1c6617233e6e5f2b675563fdc1f04927c899c125986ac543ae",
+    "bytes": 50303
+  },
+  {
+    "path": "hanover-event-0001.png",
+    "sha256": "10f9542d29568c81e16888abf12be091a9f1c6146206c8a2d3da1a7955514ba0",
+    "bytes": 58818
+  },
+  {
+    "path": "hanover-frozen-audio-quality.json",
+    "sha256": "6abf80386c22bc95b6c000068afee1d044c674e3a77c290f939048ebe1ce1dee",
+    "bytes": 286
+  },
+  {
+    "path": "hanover-frozen-capture.json",
+    "sha256": "5c6ab3714bbbb107bbefedc645c3b0b9cc8fda0c7016f5ea8cf59d73e2d5b629",
+    "bytes": 4453
+  },
+  {
+    "path": "hanover-provenance.json",
+    "sha256": "63826916f74e58354890845b04b71a9000fd12209106eaf88389627303143454",
+    "bytes": 2456
+  },
+  {
+    "path": "hanover-quality-audio-quality.json",
+    "sha256": "0b9e71f163ce3d4f79d81602fec7728d53796913371c32e726ee4cfe3e19a735",
+    "bytes": 158
+  },
+  {
+    "path": "hanover-quality-capture.json",
+    "sha256": "09ef46171c9946ecb444d087b8c271a131d453263b4c16561c902c42be17644c",
+    "bytes": 4448
+  },
+  {
+    "path": "hanover-request.json",
+    "sha256": "0c59463fa7ecda23aadeee64f6c0a701f0f3e25d722a7161bb047f7fa231cb34",
+    "bytes": 218
+  },
+  {
+    "path": "hanover-result.json",
+    "sha256": "aadba2688f5d4d1bb51e99993139df94452654132de54ef907342651fe177e28",
+    "bytes": 4853
+  },
+  {
+    "path": "hummingbird-quality-capture.json",
+    "sha256": "d736ab35e926e279fd52bcc8eda57a31b7ce34f391d73fb8d460456c9ceea291",
+    "bytes": 897
+  },
+  {
+    "path": "test-receipt.json",
+    "sha256": "b2239651c0d9c5ab902ef5588b687926978f1288415487a773b2d27d71d6c23f",
+    "bytes": 533
+  }
+]

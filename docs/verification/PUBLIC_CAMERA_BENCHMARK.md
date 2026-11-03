@@ -1,5 +1,8 @@
 # Public-camera audio benchmarks
 
+The follow-up [bird-feed benchmark](BIRD_FEED_BENCHMARK.md) adds public HDOnTap
+sources and compares their audio levels and whole-clip event proposals.
+
 The user requested real-audio benchmarks from public webcams, beginning with
 [EarthCam Times Square Street Cam](https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet).
 Capture audio with a new output directory:

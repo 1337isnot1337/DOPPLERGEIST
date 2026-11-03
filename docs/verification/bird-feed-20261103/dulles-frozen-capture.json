@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "source_page": "https://hdontap.com/stream/216179/dulles-greenway-eagles-nest-live-cam/embed/",
+  "camera": "dulles-greenway-eagles",
+  "provider": "hdontap",
+  "requested_duration_s": 300.0,
+  "status": "captured",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "1f721c037ad1c01e3a196c48fd40f29c9134017b27989a1d9fa7600a89ec47b2",
+  "page_fetch": {
+    "started_utc": "2026-11-03T02:15:26.162152Z",
+    "finished_utc": "2026-11-03T02:15:26.415993Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:15:26 GMT",
+    "sha256": "840d94831bff97c239f741a4021524352ea0cbf47ba75b73588c3dd25e13b827",
+    "bytes": 11212
+  },
+  "camera_name": "HDOnTap public embed",
+  "source_audio_advertised": null,
+  "stream_url": "https://live.hdontap.com/hls/hosb6/dullesgreenway_eaglecam.stream/playlist.m3u8",
+  "stream_url_sha256": "7e39d1ecc8afec61a0a489e2ecc373c3c96f73b8afee796b0b445e06a909a18c",
+  "provider_map_reference": null,
+  "playlist_fetch": {
+    "started_utc": "2026-11-03T02:15:26.417800Z",
+    "finished_utc": "2026-11-03T02:15:27.383367Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:15:27 GMT",
+    "sha256": "257c8b5d4e3141fc784fe8a35a33498182d724350f7370163cbed2b7553a58c4",
+    "bytes": 269
+  },
+  "media_playlist_fetch": {
+    "started_utc": "2026-11-03T02:15:27.383488Z",
+    "finished_utc": "2026-11-03T02:15:27.923838Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 02:15:27 GMT",
+    "sha256": "443c317f8b199908f0ca0a86500966904d004c3a80140c53bc22a06b71d9414a",
+    "bytes": 580
+  },
+  "initial_media_segments": [
+    {
+      "sequence": 1493,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb6/dullesgreenway_eaglecam.stream/media-us96jhkgs_1493.ts",
+      "duration_s": 10.344,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 1494,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb6/dullesgreenway_eaglecam.stream/media-us96jhkgs_1494.ts",
+      "duration_s": 10.343,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 1495,
+      "url": "https://edge01.virginia.nginx.hdontap.com/hosb6/dullesgreenway_eaglecam.stream/media-us96jhkgs_1495.ts",
+      "duration_s": 10.344,
+      "broadcaster_start_utc": null
+    }
+  ],
+  "broadcaster_segment_clock_present": false,
+  "clock_limitations": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ],
+  "audio_timeline": "source A/V timestamps, rebased together; audio gaps may be padded by aresample",
+  "decoder_command_redacted": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "warning",
+    "-copyts",
+    "-start_at_zero",
+    "-rw_timeout",
+    "15000000",
+    "-user_agent",
+    "Mozilla/5.0",
+    "-headers",
+    "Referer: https://hdontap.com/stream/216179/dulles-greenway-eagles-nest-live-cam/embed/\r\n",
+    "-i",
+    "https://live.hdontap.com/hls/hosb6/dullesgreenway_eaglecam.stream/playlist.m3u8?[query omitted]",
+    "-t",
+    "300.0",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-af",
+    "aresample=async=1:first_pts=0",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "64k",
+    "/home/user/dopplergeist-public-camera-20261103/results/bird-dulles-frozen-20261103-0220/audio.mp3",
+    "-t",
+    "300.0",
+    "-map",
+    "0:v:0",
+    "-c:v",
+    "copy",
+    "-an",
+    "-f",
+    "null",
+    "/dev/null"
+  ],
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "capture_started_utc": "2026-11-03T02:15:27.991148Z",
+  "decoder_exit_code": 0,
+  "capture_finished_utc": "2026-11-03T02:20:16.327521Z",
+  "capture_elapsed_s": 288.33637922094204,
+  "audio": {
+    "path": "audio.mp3",
+    "bytes": 2401101,
+    "sha256": "ee92c8daee24b77d068ecc29ab2c27b5cc66b86608f723824e1284798989cdb0"
+  },
+  "audio_probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "16000",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "300.096000"
+    }
+  },
+  "decoded_duration_s": 300.0
+}

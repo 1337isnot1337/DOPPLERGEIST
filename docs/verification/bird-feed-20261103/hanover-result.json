@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "job_id": "6595f3cb146b44a7895699ee16847b51",
+  "status": "needs_input",
+  "coverage": {
+    "search_complete": false,
+    "data_status": "unavailable",
+    "limitations": [],
+    "requested_area": {
+      "coverage": "conus"
+    }
+  },
+  "recording": {
+    "source_sha256": "79fa9c864151890c3dcf7077271ae6a0fe3167444d803ddfcfd0404835ed1a46",
+    "duration_s": 300.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": null
+  },
+  "events": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 215.0,
+      "end_s": 230.5,
+      "band_hz": [
+        78.29959234595299,
+        95.29009886085987
+      ],
+      "ridge": [
+        {
+          "time_s": 216.0,
+          "frequency_hz": 93.12791338562965,
+          "weight": 4.029667377471924
+        },
+        {
+          "time_s": 216.5,
+          "frequency_hz": 93.99798405379988,
+          "weight": 3.045241355895996
+        },
+        {
+          "time_s": 217.0,
+          "frequency_hz": 94.29009886085987,
+          "weight": 2.873744487762451
+        },
+        {
+          "time_s": 217.5,
+          "frequency_hz": 94.1950316876173,
+          "weight": 3.018665313720703
+        },
+        {
+          "time_s": 218.0,
+          "frequency_hz": 93.75,
+          "weight": 3.3889851570129395
+        },
+        {
+          "time_s": 218.5,
+          "frequency_hz": 93.10742849111557,
+          "weight": 3.150094747543335
+        },
+        {
+          "time_s": 219.5,
+          "frequency_hz": 91.20005062222481,
+          "weight": 2.5848686695098877
+        },
+        {
+          "time_s": 220.0,
+          "frequency_hz": 90.8967570438981,
+          "weight": 3.5175325870513916
+        },
+        {
+          "time_s": 221.5,
+          "frequency_hz": 89.25,
+          "weight": 3.365247964859009
+        },
+        {
+          "time_s": 222.0,
+          "frequency_hz": 88.64947533607483,
+          "weight": 3.6459031105041504
+        },
+        {
+          "time_s": 222.5,
+          "frequency_hz": 88.20309486985207,
+          "weight": 4.183460712432861
+        },
+        {
+          "time_s": 223.0,
+          "frequency_hz": 87.75,
+          "weight": 3.801309108734131
+        },
+        {
+          "time_s": 223.5,
+          "frequency_hz": 86.49690966052003,
+          "weight": 3.806507110595703
+        },
+        {
+          "time_s": 224.0,
+          "frequency_hz": 85.92961294203997,
+          "weight": 4.198019504547119
+        },
+        {
+          "time_s": 224.5,
+          "frequency_hz": 85.30127219855785,
+          "weight": 3.7351484298706055
+        },
+        {
+          "time_s": 225.0,
+          "frequency_hz": 84.25,
+          "weight": 3.3516440391540527
+        },
+        {
+          "time_s": 225.5,
+          "frequency_hz": 83.51497899368405,
+          "weight": 3.789581775665283
+        },
+        {
+          "time_s": 226.0,
+          "frequency_hz": 82.8249107003212,
+          "weight": 3.5134847164154053
+        },
+        {
+          "time_s": 226.5,
+          "frequency_hz": 81.90914936363697,
+          "weight": 2.902862787246704
+        },
+        {
+          "time_s": 227.0,
+          "frequency_hz": 81.29699578881264,
+          "weight": 2.6769168376922607
+        },
+        {
+          "time_s": 228.0,
+          "frequency_hz": 79.69567604362965,
+          "weight": 2.5308637619018555
+        },
+        {
+          "time_s": 228.5,
+          "frequency_hz": 79.29959234595299,
+          "weight": 2.60438871383667
+        },
+        {
+          "time_s": 229.0,
+          "frequency_hz": 79.66625100374222,
+          "weight": 2.8443102836608887
+        },
+        {
+          "time_s": 229.5,
+          "frequency_hz": 80.01902873627841,
+          "weight": 2.732832670211792
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.3584460020065308,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8571428571428571,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 14.41554434702266
+      }
+    }
+  ],
+  "stage": "complete",
+  "progress": 1,
+  "artifacts": {
+    "provenance": "provenance.json",
+    "request": "request.json",
+    "intake": "intake/intake.json",
+    "recording": "intake/recording.json",
+    "discovery": "discovery/discovery.json",
+    "discovery_plot": "discovery/discovery.png",
+    "event-0001": "discovery/event-0001.png"
+  },
+  "required_fields": [
+    "time_window"
+  ],
+  "reason_code": "recording_time_required",
+  "message": "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks."
+}
