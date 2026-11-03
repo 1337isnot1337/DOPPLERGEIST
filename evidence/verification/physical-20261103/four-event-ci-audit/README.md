@@ -148,3 +148,24 @@ candidate cards are collapsed; this audit does not claim an expansion interactio
 
 The independent field corpus with trustworthy microphone location and sample-zero
 UTC remains issue #53. This finite synthetic development case does not close it.
+
+## Follow-up: actual saved-job service readback
+
+`ui-readback/` records a later check of a full independent copy of the 4,965-file
+completed backend job, served by the original `e2bb3dc` implementation. The real
+HTTP API returns the same result JSON semantically, including all 105 candidates,
+four events and the unchanged inconclusive status. The actual artifact endpoint
+lists 4,964 files. Its downloaded `refined-candidates.json` matches the original
+434,500 bytes and SHA256 exactly. No new upload or scientific run was submitted.
+The service exited normally with code zero. All 4,965 job-file hashes were
+unchanged after shutdown; the transient manager lock is outside that comparison.
+
+The intended browser expansion check remains **unverified locally**. Official
+Playwright browser downloads for both the installed package and the exact CI
+browser version returned a 195-byte `Site Unavailable` HTML body instead of a ZIP.
+The dedicated cloud browser could not reach this runtime's loopback service
+(`net::ERR_CONNECTION_REFUSED`). The native response headers/body and the HTTP
+readback/lifecycle receipts preserve those limits. This follow-up therefore adds
+actual service restart/download evidence, not an expanded-candidate screenshot
+or a new localization result. The original CI mobile-layout check remains the
+source for its observed 390-pixel document/viewport equality.

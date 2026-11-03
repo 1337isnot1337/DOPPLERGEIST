@@ -1,10 +1,10 @@
 {
-  "scope": "Durable selected records from completed CI run 41562469268; this manifest excludes itself.",
+  "scope": "Durable selected records from completed CI run 41562469268 and separately labelled saved-job HTTP readback; this manifest excludes itself.",
   "files": [
     {
       "path": "README.md",
-      "bytes": 8532,
-      "sha256": "32647c6af955289352801f16c9e29c1801c01d8939ae85c9528b49736bbc4881"
+      "bytes": 9919,
+      "sha256": "a6e29e58d9b51b419512a98051ec172b6d55bedaab239d89ee3b0b74260c13fc"
     },
     {
       "path": "artifact-audit.json",
@@ -85,6 +85,46 @@
       "path": "source-records.zip",
       "bytes": 703197,
       "sha256": "d03e4a2b1dccc45cebdf1ac9515a79832dd4b360e33a45a56a60665100f1bfa2"
+    },
+    {
+      "path": "ui-readback/browser-download-headers.txt",
+      "bytes": 318,
+      "sha256": "ec511d596ddd986180fa8b447d61a5c660df73dcdfa7530aeed4592e75d48b2b"
+    },
+    {
+      "path": "ui-readback/browser-download-prefix.bin",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7"
+    },
+    {
+      "path": "ui-readback/ci-browser-download-headers.txt",
+      "bytes": 319,
+      "sha256": "7687576daf3f7d909f5d7c69ccdc19af179a5e6e677b6188b3b566a27b3a4d59"
+    },
+    {
+      "path": "ui-readback/ci-browser-download-prefix.bin",
+      "bytes": 195,
+      "sha256": "5b131ca14aa96311d3432b0062c7443d3b0e6346ec279bd376a75f0a76bcd5d7"
+    },
+    {
+      "path": "ui-readback/http-readback.json",
+      "bytes": 1583,
+      "sha256": "0e3a3c6babc213897df85effca9d1026fe6765beab2382d5511f0d6c6ced43f8"
+    },
+    {
+      "path": "ui-readback/preparation.json",
+      "bytes": 1000,
+      "sha256": "bca4f998d77a017b509af43ea0b0d7c54fa73cf904f39eeb38d7542dd77bb349"
+    },
+    {
+      "path": "ui-readback/serve_saved_job.py",
+      "bytes": 3111,
+      "sha256": "cee751c4087037b127b281c6fa5db2be120deb4deb0302ccfe4e6e33ed40ad74"
+    },
+    {
+      "path": "ui-readback/service-lifecycle.json",
+      "bytes": 1014,
+      "sha256": "c885bbe6b74a93c4c8cb94889009ea06d2934355cec4bcf161906bdc9741fbe6"
     }
   ]
 }

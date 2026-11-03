@@ -1,0 +1,33 @@
+{
+  "scope": "Saved terminal result readback only; no upload or scientific run.",
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "command": [
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.venv/bin/python",
+    "-m",
+    "aircraft_geoloc.cli",
+    "serve",
+    "--jobs",
+    "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/ci-four-event-ui-readback-20261103/jobs",
+    "--port",
+    "8795",
+    "--max-runtime",
+    "3600"
+  ],
+  "started_utc": "2026-11-03T02:36:37.216500+00:00",
+  "files_before": 4965,
+  "server_pid": 49076,
+  "capabilities": {
+    "schema_version": 1,
+    "coverage": "conus",
+    "max_upload_bytes": 104857600,
+    "max_runtime_s": 3600.0,
+    "max_pending": 4
+  },
+  "ready_utc": "2026-11-03T02:36:37.322980+00:00",
+  "stop_requested_utc": "2026-11-03T02:37:12.470918+00:00",
+  "service_exit_code": 0,
+  "stopped_utc": "2026-11-03T02:37:12.486506+00:00",
+  "files_after": 4965,
+  "job_file_bytes_unchanged": true,
+  "changed_paths": []
+}

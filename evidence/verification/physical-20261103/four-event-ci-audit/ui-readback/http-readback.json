@@ -1,0 +1,43 @@
+{
+  "scope": "Actual HTTP API readback of copied terminal result through original implementation; browser interaction unavailable locally. No upload or new scientific run.",
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "job_id": "bfe6866813b34141a2ed84d64612110a",
+  "checks": {
+    "result_semantically_identical": true,
+    "status_unchanged_inconclusive": true,
+    "candidate_count_105": true,
+    "event_count_4": true,
+    "refined_candidates_listed": true,
+    "download_bytes_identical": true
+  },
+  "all_checks_pass": true,
+  "artifact_count": 4964,
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a",
+      "status": 200,
+      "bytes": 166686,
+      "sha256": "4e95bdb18798bb9af8f08f6cf4e095c6e5cec49ce5643568975d2e7a388c7cfa"
+    },
+    {
+      "method": "GET",
+      "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts",
+      "status": 200,
+      "bytes": 248809,
+      "sha256": "b87526b43993a950a960f05906ec86c5db674a164b280c1eb32f9e492f90cc9c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/jobs/bfe6866813b34141a2ed84d64612110a/artifacts/refined-candidates.json",
+      "status": 200,
+      "bytes": 434500,
+      "sha256": "c383ba027e33b7b334ffe391869fbc312dc3334ae9c43f726bf05650ab2eb481"
+    }
+  ],
+  "ui_interaction_verified": false,
+  "browser_blockers": [
+    "Official Playwright browser downloads returned a 195-byte Site Unavailable HTML body instead of a ZIP.",
+    "Dedicated cloud browser cannot reach this runtime loopback: net::ERR_CONNECTION_REFUSED."
+  ]
+}

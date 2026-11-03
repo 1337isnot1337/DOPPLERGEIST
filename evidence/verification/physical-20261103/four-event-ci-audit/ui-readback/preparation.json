@@ -1,0 +1,24 @@
+{
+  "scope": "Actual completed result served by its original implementation for UI interaction/readback only; no upload, search or reference evaluation.",
+  "source_commit": "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec",
+  "source_path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/ci-four-event-41562469268/extracted/ci-upload/implementation/src",
+  "job_id": "bfe6866813b34141a2ed84d64612110a",
+  "original_result_sha256": "64695a031cc08799bed114bcb02f5db9eb2d0af7ec08f353dfc525b7f20f3624",
+  "web_sources": {
+    "app.js": {
+      "sha256": "c9075975143d6faaf5ed1fa23b076bb57a0fa38b3858610a7c9755c00f6c54d4",
+      "bytes": 9314
+    },
+    "index.html": {
+      "sha256": "35cc114ec2eb4818757faa7f462ae273ab3b49621f374f5ef7b4e22ee2700be3",
+      "bytes": 3575
+    },
+    "style.css": {
+      "sha256": "57936a98a266bbdf5090ecc6a6a52b707f59e89efcae10c6627a881236399c1e",
+      "bytes": 4599
+    }
+  },
+  "jobs_before": [
+    "bfe6866813b34141a2ed84d64612110a"
+  ]
+}
