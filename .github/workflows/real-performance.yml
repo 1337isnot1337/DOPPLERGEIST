@@ -73,12 +73,12 @@ jobs:
         run: python scripts/restore_artifacts.py --bundle data-adsb-derived --bundle data-terrain
       - name: Prepare index and baseline
         run: |
-          python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           baseline_commit=$(git rev-parse --verify --end-of-options "${BASELINE_REF}^{commit}")
           git worktree add --detach "$RUNNER_TEMP/baseline" "$baseline_commit"
           if [ -f "$RUNNER_TEMP/baseline/setup.py" ]; then
             (cd "$RUNNER_TEMP/baseline" && python setup.py build_ext --inplace)
           fi
+          PYTHONPATH="$RUNNER_TEMP/baseline/src" python scripts/prepare_reference_upload.py --data-root data --output benchmark-inputs
           mkdir -p benchmark-inputs/reference-checkout
           ln -s "$GITHUB_WORKSPACE/evidence/results" benchmark-inputs/reference-checkout/results
           ln -s "$GITHUB_WORKSPACE/data" benchmark-inputs/reference-checkout/data
@@ -183,6 +183,7 @@ jobs:
           path: |
             results/cpa-rows.json
             results/real-acoustic-controls.json
+            results/flight-preparation.json
             results/performance-*/comparison.json
             results/performance-*/*/summary.json
             results/current-point.prof
