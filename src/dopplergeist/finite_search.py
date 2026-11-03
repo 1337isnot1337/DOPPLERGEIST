@@ -63,7 +63,8 @@ def bounded_assessment(row):
             or row.get("score_kind") != kind
             or assessment.get("unknown_score_bound_method") not in
                ("nonnegative_loss_and_validated_event_fits", "group_count_ceiling",
-                "nonnegative_loss_validated_fits_and_acoustic_dual")
+                "nonnegative_loss_validated_fits_and_acoustic_dual",
+                "nonnegative_loss_validated_fits_and_acoustic_floor_dual")
             or not isinstance(indices, list) or not indices
             or any(type(i) is not int or i < 0 for i in indices) or indices != sorted(set(indices))
             or len(row.get("flight_ids", [])) != len(indices)):
@@ -83,9 +84,15 @@ def bounded_assessment(row):
         return False
     method = assessment["unknown_score_bound_method"]
     dual = assessment.get("acoustic_bound_rejected_trials", 0)
-    if type(dual) is not int:
+    floor_dual = assessment.get("acoustic_floor_pruned_trials", 0)
+    if type(dual) is not int or type(floor_dual) is not int:
         return False
-    if method == "nonnegative_loss_validated_fits_and_acoustic_dual":
+    if method == "nonnegative_loss_validated_fits_and_acoustic_floor_dual":
+        if not (0 < floor_dual <= bounded-rejected and 0 <= dual <= rejected):
+            return False
+    elif floor_dual != 0:
+        return False
+    elif method == "nonnegative_loss_validated_fits_and_acoustic_dual":
         if not 0 < dual <= rejected:
             return False
     elif dual != 0:

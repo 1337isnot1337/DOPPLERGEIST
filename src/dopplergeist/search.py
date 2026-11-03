@@ -411,8 +411,10 @@ def _screen_association_trial(tracks, events, measurements, observer, start, c, 
     diagnostics = []
     missing = {"score": -np.inf, "f0_hz": np.nan, "support_fraction": 0.0}
     for index, (track, event, measurement) in enumerate(zip(tracks, events, measurements)):
-        if dual_at is not None and dual_at(index):
-            return None, -np.inf
+        if dual_at is not None:
+            upper = dual_at(index)
+            if upper is not None:
+                return None, upper
         acoustic = None if acoustic_at is None else [acoustic_at(index)]
         if index == 0 and first_fit is not None:
             single = {"event_diagnostics": [first_fit]}
@@ -521,6 +523,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
     first_fits, first_batch_attempted = None, False
     dual_flags = {}
     dual_pruned = 0
+    floor_dual_pruned = 0
     for trial, shift in enumerate(() if floor_pruned else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
@@ -537,23 +540,33 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     acoustic_at(index)
                     batch = batches[index]
                     if batch is None:
-                        dual_flags[index] = np.zeros(len(shifts), dtype=bool)
+                        dual_flags[index] = (np.zeros(len(shifts), dtype=bool),
+                                             np.full(len(shifts), np.nan))
                     else:
                         from .acoustic_screen import ridge_trial_rejections
-                        dual_flags[index] = ridge_trial_rejections(measurements[index], events[index], *batch)
+                        dual_flags[index] = ridge_trial_rejections(measurements[index], events[index], *batch,
+                                                                  score_floor=score_floor, group_count=len(events))
                 return dual_flags[index]
             def dual_at(index):
-                nonlocal dual_pruned
-                rejected = bool(dual_flags_at(index)[trial])
+                nonlocal dual_pruned, floor_dual_pruned
+                rejections, bounds = dual_flags_at(index)
+                rejected = bool(rejections[trial])
                 dual_pruned += int(rejected)
-                return rejected
+                if rejected:
+                    return -np.inf
+                upper = bounds[trial]
+                if np.isfinite(upper):
+                    floor_dual_pruned += 1
+                    return float(upper)
+                return None
             try:
                 if association and score_floor is not None:
                     if not first_batch_attempted and batches is not None and lazy_batches is not None and time_origin is None:
                         first_batch_attempted = True
                         acoustic_at(0)
                         if batches[0] is not None:
-                            eligible = np.flatnonzero(~dual_flags_at(0))
+                            rejected, upper = dual_flags_at(0)
+                            eligible = np.flatnonzero(~rejected & ~np.isfinite(upper))
                             if len(eligible) >= 4:
                                 from .batch_ridge import first_event_fits
                                 factors, emissions = batches[0]
@@ -611,6 +624,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
     if mode == "robust_ridge":
         if dual_pruned:
             assessment["acoustic_bound_rejected_trials"] = dual_pruned
+        if floor_dual_pruned:
+            assessment["acoustic_floor_pruned_trials"] = floor_dual_pruned
         if partial_prunes and np.isfinite(best["score"]) and best["score"] >= score_floor:
             # Competitive modes retain their complete original diagnostics. Cached
             # fits are reused; skipped clocks are evaluated rather than relabelled.
@@ -635,7 +650,9 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     bounded_unknown_rejections=sum(value == -np.inf for value in unknown_bounds if value is not None),
                     unknown_score_upper_bound=max(finite_bounds) if finite_bounds else None,
                     unknown_score_bound_kind="matched_group_support_minus_normalized_residual",
-                    unknown_score_bound_method=("nonnegative_loss_validated_fits_and_acoustic_dual"
+                    unknown_score_bound_method=("nonnegative_loss_validated_fits_and_acoustic_floor_dual"
+                                                if floor_dual_pruned else
+                                                "nonnegative_loss_validated_fits_and_acoustic_dual"
                                                 if dual_pruned else "nonnegative_loss_and_validated_event_fits"))
                 if partial_prunes:
                     assessment["retention_score_floor"] = score_floor
