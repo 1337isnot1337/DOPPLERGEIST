@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import json
 from importlib.metadata import version
+import math
 from pathlib import Path
 import platform
 import shutil
@@ -24,13 +25,40 @@ LEGACY_SOURCES = {
     "finite_search.py": "78ed9fca6cb13c9754ea0f4438f1bb54bbcdc488ead2a4d77a15f149b6d77b1c",
 }
 
+# Complete code-map identity for the real combined scorer/scheduler used by
+# the 7ae saved continuation. Unlike the older legacy scorer above, this code
+# already used the batched scoring arithmetic now on main.
+CB996DC_CODE_FINGERPRINT = "c66d402b750381303bd0c7d9c828d2294942227176ccb3cb157f0ef6299cbe40"
+
+
+def _legacy_source_profile(configuration):
+    code = configuration.get("code", {})
+    if all(code.get(name) == digest for name, digest in LEGACY_SOURCES.items()):
+        return "legacy-first-batch"
+    if content_hash(code) == CB996DC_CODE_FINGERPRINT:
+        return "combined-cb996dc"
+    return None
+
+
+def _combined_min_events(configuration):
+    """Preserve cb996dc's broad-clock default when current main resumes it."""
+    filters = configuration.get("filters", {})
+    if "min_events" in filters:
+        return filters["min_events"]
+    events = configuration["events"]
+    max_events = filters.get("max_events") or len(events)
+    start_window = configuration["scoring"].get("recording_start_window_s")
+    clock_window_width = math.inf if start_window is None else start_window[1] - start_window[0]
+    default = min(2, max_events) if len(events) > 1 and clock_window_width > 10.0 else 1
+    return default
+
 
 def upgrade_legacy_job(directory):
-    """Prepare a replacement search before swapping it into a stopped job.
+    """Prepare a compatible replacement search before swapping a stopped job.
 
     Completed payloads and retention records stay unchanged. The old directory
-    and audio/operator identities remain available for rollback. New work uses
-    staged batching with the saved first-group arithmetic and fallback checks.
+    and audio/operator identities remain available for rollback. The old
+    first-batch arithmetic is retained only for the matching legacy source.
     """
     from .automatic import _audio_identity, _digest
     from . import geometry, matching
@@ -41,12 +69,14 @@ def upgrade_legacy_job(directory):
         return None
     manifest = json.loads((search / "manifest.json").read_text())
     old = manifest["configuration"]
-    if any(old["code"].get(name) != digest for name, digest in LEGACY_SOURCES.items()):
+    source_profile = _legacy_source_profile(old)
+    if source_profile is None:
         return None
+    legacy_first_batch = source_profile == "legacy-first-batch"
     if getattr(matching, "_native_fit_irls", None) is not None:
-        raise ValueError("Legacy checkpoint continuation requires the Python ridge fitter")
+        raise ValueError("Checkpoint compatibility requires the Python ridge fitter")
     if geometry.ACOUSTIC_BACKEND != "python-acoustic-v1":
-        raise ValueError("Legacy checkpoint continuation requires the Python acoustic solver")
+        raise ValueError("Checkpoint compatibility requires the Python acoustic solver")
     if (old["scoring"].get("mode") != "robust_ridge" or old.get("coarse_floor_policy") != "per_tile"
             or old["scoring"].get("time_origin") is not None
             or old.get("filters", {}).get("association") != "subsets"):
@@ -72,11 +102,14 @@ def upgrade_legacy_job(directory):
     if events != old["events"]:
         raise ValueError("Prepared events no longer match the saved search")
     current = deepcopy(old)
+    if source_profile == "combined-cb996dc":
+        current.setdefault("filters", {})["min_events"] = _combined_min_events(old)
     from .provenance import implementation_files
     package_root = Path(__file__).parent
     current["code"] = {p.relative_to(package_root).as_posix(): _digest(p)
                        for p in implementation_files(package_root, recursive=False)}
-    current["scoring"]["legacy_first_batch"] = True
+    if legacy_first_batch:
+        current["scoring"]["legacy_first_batch"] = True
     new_hash = content_hash(current)
     suffix = uuid.uuid4().hex[:12]
     staged = directory / f".search-upgrade-{suffix}"
@@ -107,14 +140,18 @@ def upgrade_legacy_job(directory):
     write_json(staged / "manifest.json", {"run_hash": new_hash, "configuration": current})
     report = {"version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
               "old_run_hash": manifest["run_hash"], "new_run_hash": new_hash,
-              "tiles_preserved": tiles, "legacy_first_batch": True,
+              "tiles_preserved": tiles, "legacy_first_batch": legacy_first_batch,
+              "compatible_source": source_profile,
               "previous_search": str(previous), "identity_backup": str(backup)}
     write_json(backup / "upgrade.json", report)
     search.rename(previous)
     try:
         staged.rename(search)
         audio["identity"] = identity
-        operator["resume_legacy_first_batch"] = True
+        if legacy_first_batch:
+            operator["resume_legacy_first_batch"] = True
+        else:
+            operator.pop("resume_legacy_first_batch", None)
         write_json(directory / "resume.json", audio)
         write_json(directory / "operator.json", operator)
         write_json(directory / "checkpoint-upgrade.json", report)
@@ -137,6 +174,7 @@ def compatible_checkpoint_runs(output, run_hash):
     if path.exists():
         report = json.loads(path.read_text())
         if (report.get("version") == 1 and report.get("new_run_hash") == run_hash
-                and report.get("legacy_first_batch") is True):
+                and (report.get("legacy_first_batch") is True
+                     or report.get("compatible_source") == "combined-cb996dc")):
             accepted.add(report["old_run_hash"])
     return accepted
