@@ -21,12 +21,16 @@ proposal counts, not confirmed aircraft or estimates of detection sensitivity.
 Some titles describe music, moving recorders or edited audio, and a no-proposal
 result is not evidence that an aircraft was present but missed.
 
-Of the 47 proposal-bearing videos, 21 received a quick visual spectrogram
-review: three were labeled plausible Doppler-like, two plausible but with
-abrupt changes consistent with edits, and 16 ambiguous. The other 26 remain
-unreviewed. None of the three proposals from indoor searches has an established
-indoor aircraft source; all three were visually ambiguous. These results do not
-show whether indoor recording, a phone, or poor audio quality succeeds or fails.
+All 47 proposal-bearing videos received a quick single-reviewer spectrogram
+inspection: five were labeled plausible Doppler-like, five plausible but with
+visible changes or repetition consistent with edits or reused audio, and 37
+ambiguous. These labels do not confirm aircraft identity or event independence.
+The [remaining 26 case notes](youtube-expanded-visual-review-20261103.csv)
+record individual reasons from 0–1000 Hz contact sheets; the previous 21 reviews are retained in the case
+table and local review receipts. None of the three proposals from indoor
+searches has an established indoor aircraft source; all three were visually
+ambiguous. These results do not show whether indoor recording, a phone, or poor
+audio quality succeeds or fails.
 
 Most scans cover the first 180 seconds, or the full video when shorter. Decoded
 durations ranged from 12.54 to 180.01 seconds; this is not an analysis of entire
