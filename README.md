@@ -5,12 +5,14 @@ in [colsto's video](https://www.youtube.com/watch?v=UytYrhYLOKI). The pipeline
 measures Doppler curves, compares them with historical ADS-B trajectories, accounts
 for terrain and sound travel time, and ranks candidate recording positions.
 
-**The target product is an MP3 upload followed by automatic event discovery and
-location estimation, with 100 m error counting as success. That product is not
-implemented yet.** The current CLI requires selected event windows, frequency
-bands, flight data, and search configuration. A recording date or bounded time
-window is also needed to select historical flight data; an undated audio file does
-not itself provide that information.
+**The target is automatic MP3-to-location analysis, with 100 m error counting as
+success. Independent national real-audio accuracy is not yet verified.** Automatic
+event discovery, historical-data indexing, tiled search, partial event matching
+and physical sensitivity checks are implemented. The upload service and decision
+rules are being integrated in [PR #19](https://github.com/1337isnot1337/DOPPLERGEIST/pull/19).
+The configured `run` CLI remains available for research replays. A defensible
+recording date or bounded time window is needed to select historical flight data;
+an undated audio file does not itself establish that clock.
 
 ## Verified results
 
@@ -22,12 +24,24 @@ not itself provide that information.
 | Original recording, faint 60-second event | 357.47 m from the same reference | Regional search; clock borrowed from the two-event result; does not meet the 100 m target |
 | Separate 40-passage acoustic dataset | 33 detections; median speed error 6.85%, slant error 15.37% among detections | Annotation-assisted frequency bands; feature benchmark, not location validation |
 
-The real two-event result has been reproduced with the faster CPA implementation
-at the same winning point and score. No blind nationwide real-audio run has been
-completed. Scores are ranking statistics, not calibrated probabilities.
+These are the original configured checkpoints. The independent clean replay
+reproduces the real two-event winner exactly; its synthetic two-event run yields
+15.40 m with changed ridge measurements, recorded as `baseline_changed` rather
+than silently replacing the 21.89 m result. See the
+[complete clean replay evidence](docs/verification/CLEAN_REPLAY.md).
+
+Automatic discovery processed all 40 separate public WAVs without supplied event
+windows or bands: 28 recordings produced proposals, 12 did not, with 102 proposals
+in total. Those proposals are not certified aircraft detections. The fixed
+synthetic detection controls recorded 8 hits, no misses and no false alarms across
+14 cases. [All outcomes and source revisions](docs/AUDIO_DISCOVERY.md) remain
+available. Automatic national synthetic runs also retain distant competing modes
+and inconclusive results in [the integration evidence](docs/verification/INTEGRATION.md).
+Scores and finite sensitivity checks are not calibrated location probabilities.
 
 For parallel implementation, start with the [agent task plan](docs/AGENT_TASKS.md)
-and [tracking issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1).
+and [discussion board](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
+The [tracking issue](https://github.com/1337isnot1337/DOPPLERGEIST/issues/1) indexes tasks.
 Then read [the implementation handoff](docs/HANDOFF.md),
 [current evidence](docs/PROGRESS.md), and [the reconstructed methodology](docs/METHODOLOGY.md).
 Readable reports and plots are checked into [evidence/results](evidence/results).
