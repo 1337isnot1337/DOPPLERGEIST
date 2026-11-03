@@ -98,10 +98,10 @@ A further end-to-end HTTP upload of the same MP3 searched a regional index
 prepared from the [ADSB.lol daily archive](https://github.com/adsblol/globe_history_2026/releases/tag/v2026.05.14-planes-readsb-staging-0).
 The archive contained 69,762 traces; conservative selection retained **466
 nearby aircraft**, including jets and unknown types, with 5,341 indexed track
-segments. The approximately 10-second recording-start window was unchanged.
-The roughly 5.5 km search box was centered on an inferred reference and is
-therefore a strong, reference-derived prior. Event windows, frequency bands,
-and flight IDs were not supplied to the upload.
+segments. The approximately 10-second recording-start window was unchanged. The search
+used the Livermore city-area box (`-121.84, 37.65, -121.70, 37.73`), originally
+chosen before the inferred reference was calculated. Event windows, frequency
+bands, and flight IDs were not supplied to the upload.
 
 The job searched **12 of 12 tile pieces** and 1,754 grid points, refined its
 candidates, and returned **105 ordered results**. Its declared archive coverage
