@@ -43,6 +43,12 @@ def _ecef_to_geographic():
     return Transformer.from_crs("EPSG:4978", "EPSG:4979", always_xy=True)
 
 
+@lru_cache(maxsize=32)
+def _terrain_transformer(crs):
+    from pyproj import Transformer
+    return Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+
+
 def _continuous_bounds(track):
     """Bound entire Hermite curves using their cubic Bezier control hulls.
 
@@ -485,12 +491,11 @@ class CachedTerrain:
         """Read only the local pixel window, including for the global geoid."""
         import rasterio
         from rasterio.windows import Window
-        from pyproj import Transformer
         if not len(lat):
             return np.array([])
         try:
             with rasterio.open(path) as raster:
-                x, y = Transformer.from_crs("EPSG:4326", raster.crs, always_xy=True).transform(lon, lat)
+                x, y = _terrain_transformer(raster.crs).transform(lon, lat)
                 col, row = (~raster.transform) @ (np.asarray(x), np.asarray(y))
                 col, row = np.floor(col).astype(int), np.floor(row).astype(int)
                 if np.any((col < 0) | (col >= raster.width) | (row < 0) | (row >= raster.height)):
