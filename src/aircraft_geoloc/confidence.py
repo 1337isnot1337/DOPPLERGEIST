@@ -34,6 +34,12 @@ class DecisionPolicy:
                 raise ValueError(f"{name} must lie in [0, 1]")
 
 
+def _near_tied(gap, margin):
+    # Decimal policy margins and subtracted scores can differ at roundoff.
+    # Equality remains competitive; this small guard cannot create acceptance.
+    return gap <= margin or math.isclose(gap, margin, rel_tol=1e-12, abs_tol=1e-12)
+
+
 def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
     """Check producer-accounted evaluated modes, without a continuous-space claim."""
     if not isinstance(evidence, dict) or type(evidence.get("schema_version")) is not int or evidence["schema_version"] != 1:
@@ -103,7 +109,7 @@ def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
         threshold = (policy.near_tie_support_per_group if candidates[0]["score_kind"] ==
                      "matched_group_support_minus_normalized_residual" else policy.near_tie_loss_per_event_hz)
         details["discarded_score_gap_per_group"] = gap
-        if gap <= threshold:
+        if _near_tied(gap, threshold):
             return "retention_may_hide_alternatives", details
     return None, details
 
@@ -246,7 +252,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         gap = (best["score"] - alternative["score"]) / max(len(groups), len(alternative_groups))
         threshold = policy.near_tie_support_per_group if subset_scores else policy.near_tie_loss_per_event_hz
         units = "support_units_per_group" if subset_scores else "loss_hz_per_group"
-        if (separation > ambiguity_radius_m or not same_flights) and gap <= threshold:
+        if (separation > ambiguity_radius_m or not same_flights) and _near_tied(gap, threshold):
             diagnostics["competing_hypothesis"] = {"separation_m": separation, "score_gap": gap, "gap_units": units,
                                                    "same_flight_association": same_flights, "checked_radius_m": ambiguity_radius_m}
             return result("ambiguous_locations" if separation > ambiguity_radius_m else "ambiguous_flight_match",
