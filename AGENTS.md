@@ -94,6 +94,22 @@ documentation that asks for exhaustive receipts, hashes or audit packages.
   names once active work and downstream dependencies are accounted for. Never
   discard unique useful changes or interfere with another worker's active checkout.
 
+## Real-world data only
+
+**The owner requires REAL recordings and real-world geolocation tests. NO MORE
+SYNTHETIC DATA.** Stop synthetic benchmark and data-generation work. Do not launch
+new generated flyover recordings, aircraft-track fixtures, synthetic baselines,
+null recordings or artificial benchmark corpora. Existing synthetic results are
+historical; they do not satisfy the current validation requirement.
+
+- Use actual audio and historical aircraft observations for empirical evaluation.
+  Establish a defensible recording time and independent location reference; report
+  uncertainty or missing ground truth honestly.
+- Prioritize obtaining usable real recordings and making the pipeline work on them.
+  Do not substitute another simulated success or detection-only fixture for this.
+- Existing unit tests remain software checks, not real-world validation. Do not
+  expand them into more fake field data or use their counts as accuracy evidence.
+
 ## Scientific and product boundaries
 
 - Audio-relative seconds and absolute UTC are distinct. File modification/upload

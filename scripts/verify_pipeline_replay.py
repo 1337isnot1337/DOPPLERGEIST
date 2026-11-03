@@ -158,7 +158,7 @@ def verify_case(name, output, timeout_s):
     try:
         config = ROOT / CASES[name]["config"]
         receipt["search_inputs"] = [digest(path) for path in input_files(config)]
-        command = [sys.executable, "-m", "aircraft_geoloc.cli", "run", str(config),
+        command = [sys.executable, "-m", "dopplergeist.cli", "run", str(config),
                    "--output", str(output / "pipeline")]
         receipt.update(execute(command, output, timeout_s))
         if receipt["exit_code"] == 0:

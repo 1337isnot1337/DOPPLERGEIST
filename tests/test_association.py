@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aircraft_geoloc.matching import RidgeTimes, association_candidates, refine_candidate
-from aircraft_geoloc.search import score_candidate
+from dopplergeist.matching import RidgeTimes, association_candidates, refine_candidate
+from dopplergeist.search import score_candidate
 
 
 class Flyover:

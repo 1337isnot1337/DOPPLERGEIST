@@ -3,7 +3,7 @@ import pytest
 import rasterio
 from rasterio.transform import from_origin
 
-from aircraft_geoloc.terrain import Terrain
+from dopplergeist.terrain import Terrain
 
 
 def test_raster_height_and_geoid_are_combined_and_missing_coverage_is_rejected(tmp_path):

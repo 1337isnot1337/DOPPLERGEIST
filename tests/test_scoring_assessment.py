@@ -4,9 +4,9 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from aircraft_geoloc import geometry
-from aircraft_geoloc.matching import RidgeTimes
-from aircraft_geoloc.search import score_candidate
+from dopplergeist import geometry
+from dopplergeist.matching import RidgeTimes
+from dopplergeist.search import score_candidate
 
 
 class Model:
