@@ -532,10 +532,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                 return None if batch is None else (batch[0][trial], batch[1][trial])
             precomputed = ([acoustic_at(index) for index in range(len(events))]
                            if batches is not None and lazy_batches is None else None)
-            def dual_at(index):
-                nonlocal dual_pruned
-                if index != 0:
-                    return False
+            def dual_flags_at(index):
                 if index not in dual_flags:
                     acoustic_at(index)
                     batch = batches[index]
@@ -544,7 +541,12 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                     else:
                         from .acoustic_screen import ridge_trial_rejections
                         dual_flags[index] = ridge_trial_rejections(measurements[index], events[index], *batch)
-                rejected = bool(dual_flags[index][trial])
+                return dual_flags[index]
+            def dual_at(index):
+                nonlocal dual_pruned
+                if index != 0:
+                    return False
+                rejected = bool(dual_flags_at(index)[trial])
                 dual_pruned += int(rejected)
                 return rejected
             try:
@@ -553,8 +555,16 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
                         first_batch_attempted = True
                         acoustic_at(0)
                         if batches[0] is not None:
-                            from .batch_ridge import first_event_fits
-                            first_fits = first_event_fits(measurements[0], events[0], *batches[0])
+                            eligible = np.flatnonzero(~dual_flags_at(0))
+                            if len(eligible) >= 4:
+                                from .batch_ridge import first_event_fits
+                                factors, emissions = batches[0]
+                                fitted = first_event_fits(measurements[0], events[0],
+                                                          factors[eligible], emissions[eligible])
+                                if fitted is not None:
+                                    first_fits = [None] * len(shifts)
+                                    for index, fit in zip(eligible, fitted):
+                                        first_fits[index] = fit
                     result, upper = _screen_association_trial(selected_tracks, events, measurements, observer,
                                                               anchor+shift, c, acoustic_at if batches is not None else None,
                                                               score_floor, dual_at if batches is not None and time_origin is None else None,
