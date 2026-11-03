@@ -41,3 +41,13 @@ Fresh normalization alone does not repair an observation jump. Hand measured
 handling requirements to W2/W3; leave issue64 open until production handling and
 explicit lost-coverage semantics pass verification. The audit uses no audio,
 recording coordinates, flight-match truth or new worker deployment.
+
+Follow-up ablation after the first run: the height difference is specifically
+137.16m, with historical barometric labels versus fresh ellipsoidal-interpolated
+labels. Test the normalization order by applying the SAME current normalizer to
+the clipped raw trace and to the full raw trace before clipping. This tests whether
+outside-window geometric-minus-baro observations explain the difference; it does
+not assert either interpolation is independently verified physical altitude. Also
+count historical nonzero components where the fresh source is missing, because
+a missing heading treated as zero can fabricate a northward component as well as
+zero eastward velocity. Preserve the first frozen report alongside this follow-up.

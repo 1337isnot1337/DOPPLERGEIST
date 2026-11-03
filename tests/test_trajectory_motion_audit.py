@@ -67,6 +67,20 @@ def test_audit_keeps_measured_zeros_and_does_not_bridge_a_gap():
     assert compared["velocity_components"]["up_mps"]["canonical_zero_fresh_missing"] == 1
 
 
+def test_clipping_before_normalization_can_remove_height_reference_observations():
+    from aircraft_geoloc.tracks import adsblol_frame
+    raw = {"icao": "abcdef", "timestamp": 1000., "trace": [
+        [i, 40., -100., 1000., None, None, 0, 0, {}, 0, 1450. if i == 0 else None, 0]
+        for i in range(3)]}
+    full = adsblol_frame(raw)
+    window = full[full.time_s >= 1001]
+    clipped = adsblol_frame(dict(raw, trace=raw["trace"][1:]))
+    comparison = audit.compare_observations(clipped, window)
+    assert comparison["paired_times"] == 2
+    assert comparison["height_delta_fresh_minus_canonical_m"] == pytest.approx([137.16, 137.16])
+    assert comparison["altitude_basis_pairs"] == [{"canonical": "barometric", "fresh": "ellipsoidal_interpolated", "rows": 2}]
+
+
 @pytest.mark.parametrize("duration", [0., -1., np.inf])
 def test_invalid_duration_is_explicit(duration):
     with pytest.raises(ValueError, match="duration"):

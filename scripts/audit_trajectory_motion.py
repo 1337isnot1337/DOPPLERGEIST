@@ -108,8 +108,12 @@ def compare_observations(canonical, fresh):
     return {"canonical_only_times": int((common._merge == "left_only").sum()),
             "fresh_only_times": int((common._merge == "right_only").sum()), "paired_times": len(paired),
             "max_ecef_observation_difference_m": float(np.linalg.norm(xyz[0] - xyz[1], axis=1).max()) if len(paired) else None,
+            "height_delta_fresh_minus_canonical_m": [float((paired.alt_m_fresh-paired.alt_m_canonical).min()),
+                                                      float((paired.alt_m_fresh-paired.alt_m_canonical).max())] if len(paired) else None,
+            "altitude_basis_pairs": paired.groupby(["altitude_basis_canonical", "altitude_basis_fresh"]).size().rename_axis(["canonical", "fresh"]).reset_index(name="rows").to_dict("records"),
             "velocity_components": {col: {
                 "canonical_zero_fresh_missing": int(((paired[col+"_canonical"] == 0) & paired[col+"_fresh"].isna()).sum()),
+                "canonical_nonzero_fresh_missing": int((paired[col+"_canonical"].notna() & (paired[col+"_canonical"] != 0) & paired[col+"_fresh"].isna()).sum()),
                 "both_finite_differing": int((paired[col+"_canonical"].notna() & paired[col+"_fresh"].notna() &
                                              (abs(paired[col+"_canonical"] - paired[col+"_fresh"]) > 1e-9)).sum())}
                 for col in ("east_mps", "north_mps", "up_mps")}}
@@ -136,7 +140,7 @@ def main():
     write(args.output / "declaration.json", declaration)
     canonical = pd.read_parquet(args.canonical, filters=[("flight_id", "in", args.ids)])
     canonical.to_json(args.output / "canonical-observations.json", orient="records", double_precision=15)
-    fresh, fresh_full, raw_members, scanned = {}, {}, [], 0
+    fresh, fresh_full, raw_members, order_comparisons, scanned = {}, {}, [], {}, 0
     with io.BufferedReader(SplitReader(args.parts), buffer_size=1024*1024) as stream, tarfile.open(fileobj=stream, mode="r|*") as archive:
         while (member := archive.next()) is not None:
             archive.members.clear()
@@ -161,6 +165,9 @@ def main():
             frame = tracks.adsblol_frame(document)  # Normalize full trace before restricting time.
             fresh_full[identity] = frame
             fresh[identity] = frame[frame.time_s.between(*args.window)].copy()
+            clipped = dict(document, trace=[p for p in document["trace"]
+                if args.window[0] <= document["timestamp"]+p[0] <= args.window[1]])
+            order_comparisons[identity] = compare_observations(tracks.adsblol_frame(clipped), fresh[identity])
             raw_members.append({"member": member.name, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
                                 "raw_observations": len(document["trace"]), "normalized_full_rows": len(frame)})
             print(json.dumps({"found": identity, "window_rows": len(fresh[identity])}), flush=True)
@@ -181,6 +188,7 @@ def main():
                     frame = pd.DataFrame(json.loads(gzip.decompress(payload)))
                     indexed.append({"id": name, "audit": audit_frame(frame, 343.0)})
                 audits.append({"identity": identity, "observation_comparison": compare_observations(old, current),
+                    "normalization_order_comparison": order_comparisons[identity],
                     "canonical": audit_frame(old, 343.0), "fresh": audit_frame(current, 343.0),
                     "fresh_full_support": audit_frame(fresh_full[identity], 343.0, interval_window=args.window),
                     "indexed": indexed})
