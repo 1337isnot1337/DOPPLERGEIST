@@ -85,13 +85,16 @@ def detected(identity="a", harmonic=1):
 
 
 def test_adapter_retains_jet_with_misleading_straight_geometry_and_merges_harmonics():
-    events, measurements = prepare_events([detected(), detected("harmonic", 2)])
+    primary = dict(detected(), quality={"frequency_uncertainty_hz": 1.5})
+    events, measurements = prepare_events([primary, detected("harmonic", 2)])
     table = pd.DataFrame([dict(point_id=0, flight_id="jet", receive_time=42, emission_time=28,
                                speed_mps=155, distance_m=4900)])
     assert len(events) == 1
     assert len(measurements[0][1]) == 200
     assert len(filter_event(table, events[0], time_origin=0)) == 1
     assert events[0]["event_ids"] == ["a", "harmonic"]
+    assert events[0]["quality"]["frequency_loss_scale_hz"] == 1.5
+    assert events[0]["quality"]["frequency_uncertainty_hz"] == 1.5
     # Duplicating harmonic evidence changes neither the fit nor its normalization.
     single, sm = prepare_events([detected()])
     one = fit_ridge(Flyover(), None, sm[0], 0, single[0]["f0_range_hz"])
