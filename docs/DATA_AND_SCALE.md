@@ -76,13 +76,14 @@ report = search_national(
 ```
 
 There is one EPSG:5070 origin and integer grid. Half-open tile cores own receiver
-cells exactly once; expanded queries retain boundary flight segments. Only the
-receiver grid is partitioned. Original flight geometry, emission-time propagation,
+cells exactly once; expanded queries retain boundary flight segments. Original
+flight geometry, emission-time propagation,
 event offsets and score units are identical in every tile. One shared clock is
 constrained to the supplied recording-start window. Coarse tiles use separate
 worker processes for the built-in cached-terrain provider, automatically choosing
-one fewer worker than the available logical CPUs, with a minimum of one. Custom
-terrain providers use serial execution. Hard limits on grid cells, tracks, samples,
+one fewer worker than the available logical CPUs, with a minimum of one. The
+upload operator can override that count with the positive integer `search_workers`.
+Custom terrain providers use serial execution. Hard limits on grid cells, tracks, samples,
 CPA rows and candidate combinations bound each worker's allocations; total memory
 grows with the worker count. An overloaded track query is retried with the same
 conservative observer-distance test used by the scorer. Tracks with unsupported
@@ -119,6 +120,11 @@ retaining all 200 tracks with unsupported motion. Complete scoring with the full
 and reduced sets produced identical results, support records and retention
 checksums. Other overloaded cells may still exceed the limits.
 
+With the spline-hull proof enabled, the same cell retained 426 tracks, including
+12 unsupported tracks. Full scoring with the original and filtered sets again
+produced identical results and retention checksums; the retry took 40.66 CPU
+seconds, compared with about 39.9 CPU seconds before the change.
+
 For a trajectory with unsupported motion, the distance sieve can still exclude
 it when the bounding boxes of every cubic-spline control hull are outside the
 observer set's search radius. This proof does not assume subsonic motion. In a
@@ -146,6 +152,14 @@ For the first event, a measured-ridge loss bound can screen individual clocks;
 the remaining supported clocks are fitted together. Representative batched
 fits are checked against the scalar fitter, with fallback for mismatches or
 unsupported and numerically degenerate batches.
+
+For association sets of at least 1,000 candidates, repeated acoustic batches
+reuse exact track, receiver, time-array and sound-speed inputs in a per-worker
+32 MiB cache. Sparse searches keep the ordinary path. A complete real-data clock
+partition with 3,795 associations took 76.05 → 74.60 CPU seconds with identical
+payloads and retention checksums. A 5,000-association sample from a denser cell
+took 90.45 → 74.21 CPU seconds with identical scored rows. These measurements
+are specific to those workloads, not nationwide runtime estimates.
 
 Unperformed trials remain unknown with explicit conservative bounds in the
 retention ledger. A competitive candidate receives full evaluation, preserving

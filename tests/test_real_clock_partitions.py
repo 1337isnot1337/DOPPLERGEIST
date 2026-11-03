@@ -96,7 +96,13 @@ def test_real_clock_partition_restart_and_scores(tmp_path, monkeypatch):
             time_range_s=index.report["coverage"]["time_range_s"], output_dir=tmp_path / name, bounds=bounds,
             budget=budget, scoring=settings, workers=1, search_progress=progress)
 
-    baseline = run("baseline")
+    # The sparse real replay must retain the ordinary propagation path.
+    from dopplergeist.matching import _RidgeFitCache
+    with monkeypatch.context() as patch:
+        def unexpected_cache(*args, **kwargs):
+            pytest.fail("sparse search should not use the acoustic batch cache")
+        patch.setattr(_RidgeFitCache, "acoustic_batch", unexpected_cache)
+        baseline = run("baseline")
     original = tiled._score
     def force_split(*args, **kwargs):
         if kwargs.get("anchor_window") is None:

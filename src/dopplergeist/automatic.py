@@ -105,6 +105,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic audio components are not installed: {exc}")
     discovery_options = config.get("discovery", {})
+    search_workers = config.get("search_workers")
+    if search_workers is not None and (type(search_workers) is not int or search_workers < 1):
+        return finish("failed", "invalid_configuration", "search_workers must be a positive integer.")
     if not isinstance(discovery_options, dict) or discovery_options.keys() - {"chunk_s", "overlap_s"}:
         return finish("failed", "invalid_configuration", "Operator discovery settings support only chunk_s and overlap_s.")
     try:
@@ -276,6 +279,7 @@ def _search(request, recording, events, output, config, search_progress):
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
                              bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
                              scoring=scoring, filters=filters, input_hashes=hashes,
+                             workers=config.get("search_workers"),
                              search_progress=search_progress)
     write_json(output / "data-provenance.json", {"flight_indexes": [index.report for index in indexes],
                "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes})
