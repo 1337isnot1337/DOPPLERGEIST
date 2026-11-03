@@ -1,0 +1,90 @@
+{
+  "integration_commit": "87143f5db99454f14541d736be6e5338b5d2ee76",
+  "published_source_commit": "98b14955741f32cf6fb7592bbf44df050a5bd309",
+  "executed_and_published_tree": "6e284fdcc92f10e151cda00181bed8880308acf1",
+  "source_commit_note": "Published commit preserves the exact executed Git tree; parent/commit metadata differ.",
+  "job_id": "bb3e96c615d44abaa75bcf75db2cbeb3",
+  "source_unchanged": true,
+  "source_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+  "implementation_unchanged_after_run": true,
+  "implementation_files_checked": 19,
+  "pipeline_executed": true,
+  "supported_localization": false,
+  "independent_real_accuracy_validation": false,
+  "status": "inconclusive",
+  "reason_code": "ambiguous_locations",
+  "runtime_s": 226.10791356200025,
+  "files": {
+    "data-provenance.json": {
+      "sha256": "78eeb0af97393f2d3925f61c42ee6281cd03b4800f972a9cbf1dbb164856094e",
+      "bytes": 1508
+    },
+    "decision.json": {
+      "sha256": "f35757aafc73a8c332b276a63f4dda6bbe3313638969cf6f99d6eeb92b740879",
+      "bytes": 43670
+    },
+    "discovery.json": {
+      "sha256": "67111905357e64bd3255e17bfe4570abab222caf88808c0d4d0d22ebd0ef20c2",
+      "bytes": 70258
+    },
+    "index-report.json": {
+      "sha256": "b26d838fb65abbb08002adadea600202a2a310d260d26dd7e8c12418bc5631e3",
+      "bytes": 1208
+    },
+    "intake.json": {
+      "sha256": "98fa9304517f897f485343a159164bfc9a4d383f9d385f359dcb0ea699018715",
+      "bytes": 911
+    },
+    "operator.json": {
+      "sha256": "3c82098cda1c04e416bd4a5387dfc11c64587ee7c4bc6101c862fac8496dd6da",
+      "bytes": 384
+    },
+    "post-search-evaluation.json": {
+      "sha256": "53731f211584a2a7e8fe47820a6309c0f9d2772fdbdcf252d7b6b340b9c5ee50",
+      "bytes": 3118
+    },
+    "provenance.json": {
+      "sha256": "2f1d9db8bb15e265d122838e3d0abcc417d9d3ce61918f2fb176a6b250a2b370",
+      "bytes": 3112
+    },
+    "recording.json": {
+      "sha256": "a960d68499f35f52717384bc28b3146c37e7444a424332e2a03c0f65a419af61",
+      "bytes": 417
+    },
+    "refined-candidates.json": {
+      "sha256": "e69ab2fa7e941a004749b4f5c7e9eebbd30870b122e1aee304379ebd9646ed77",
+      "bytes": 265305
+    },
+    "request.json": {
+      "sha256": "133c43158160589a760eb5fec2ec92ffee51e3846233528b7c444311d1e42097",
+      "bytes": 452
+    },
+    "result.json": {
+      "sha256": "f0631ba6474cfeda49459f6a8f8f7558f0ad93b20d3f4b6a918bf59afe686cde",
+      "bytes": 84326
+    },
+    "run-input-receipt.json": {
+      "sha256": "e9cc7fcd393237a191240add4666bef07c210a12001da125ac56a01e0557fff4",
+      "bytes": 1010
+    },
+    "search-manifest.json": {
+      "sha256": "f0b7e9a6db2aec241d259fbd8c4b2819758ad283ffba009b26795096d060b078",
+      "bytes": 47529
+    },
+    "search-report.json": {
+      "sha256": "3e2586bfa4b6f4075d414055dc78164743096c79e743c29850aa4083cba45b3b",
+      "bytes": 247861
+    },
+    "independent-audit.json": {
+      "sha256": "ba6f879e002400054862374cc8c9847e9465f11d9d9b0362a1f6643d0dbe28a4",
+      "bytes": 16776
+    }
+  },
+  "limitations": [
+    "Known synthetic development regression, not an independent real or held-out accuracy result.",
+    "Truth and the opaque identifier map were read after the search; this run did not use OS-level access isolation.",
+    "All 19,278 finite-grid tiles were searched; continuous-space mode recall is not established.",
+    "Top candidate altitude-only radius is not a complete uncertainty bound. Its duplicate full-profile attempt reports unestablished ellipsoidal terrain datum.",
+    "Policy target was 100 m at execution; the later 1,000 m requirement does not relabel this historical outcome."
+  ]
+}

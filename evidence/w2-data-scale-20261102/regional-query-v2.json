@@ -1,0 +1,14 @@
+{
+  "index_version": 2,
+  "continuous_geometry_bounds": true,
+  "index_sha256": "1e3365524bae3b98c668adbf05358d5ba1a0cba895521c7e2135055c0415962c",
+  "segments": 269,
+  "contains_expected_faint_flight": true,
+  "altitude_basis_labels": [
+    "barometric",
+    "ellipsoidal",
+    "ellipsoidal_interpolated"
+  ],
+  "query_elapsed_s": 1.9628966839809436,
+  "scope": "Regional cache acceptance, not location evaluation"
+}

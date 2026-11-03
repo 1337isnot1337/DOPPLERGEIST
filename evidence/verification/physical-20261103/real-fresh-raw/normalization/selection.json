@@ -1,0 +1,28 @@
+{
+  "aircraft_type_filter": null,
+  "bounds_order": "west,south,east,north",
+  "bounds_origin": "Fixed fallback specified in the verification assignment, declared before reading the raw archive; not derived from the recorder coordinate.",
+  "bounds_wsen": [
+    -76.0,
+    38.0,
+    -71.0,
+    43.0
+  ],
+  "declared_at_utc": "2026-11-03T00:53:17.817530+00:00",
+  "guard": "More than one degree beyond every edge of the old Parquet observed extent.",
+  "identity_filter": null,
+  "limitations": [
+    "Regional and source-informed; not national coverage or independent location acceptance.",
+    "Observed archive capture is not complete aircraft coverage.",
+    "Missing velocity components remain unavailable until segment-local inference during track loading.",
+    "Barometric altitude remains labelled; normalization does not prove datum consistency."
+  ],
+  "max_member_bytes": 67108864,
+  "normalizer_exclusion": "adsblol_frame omits raw samples whose altitude slot is not numeric; record these separately. No additional spatial, time, identity, type or quality filtering.",
+  "retention_rule": "Pass each selected complete raw trace unmodified to tracks.adsblol_frame; retain every row emitted by that normalizer, including rows and times outside the selection box.",
+  "row_group_size": 65536,
+  "scope": "source_informed_legacy_regional_regression_inputs",
+  "selection_rule": "Select a raw aircraft trace if any finite observed latitude/longitude sample falls inside the inclusive bounds, regardless of altitude, type, identity or time.",
+  "source_date": "2026-09-08",
+  "time_filter": null
+}

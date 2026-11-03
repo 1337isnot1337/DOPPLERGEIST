@@ -1,0 +1,70 @@
+{
+  "status": "configured_replay_reproduced",
+  "executed_source_tree": "043eec047e89cbf546d95a463faebab982e785a9",
+  "published_source_commit": "e1134427a5255def32444363d90669c473df68f7",
+  "elapsed_s": 50.91162495299977,
+  "clock_input": null,
+  "comparison": {
+    "score": {
+      "observed": 5.608620381268418,
+      "frozen": 5.608620381268417,
+      "exact_equal": false,
+      "difference": 8.881784197001252e-16,
+      "difference_ulps": 1.0
+    },
+    "lat": {
+      "observed": 40.87693175890468,
+      "frozen": 40.87693175890468,
+      "exact_equal": true
+    },
+    "lon": {
+      "observed": -73.52498229500986,
+      "frozen": -73.52498229500986,
+      "exact_equal": true
+    },
+    "elev_m": {
+      "observed": -31.25569725036621,
+      "frozen": -31.25569725036621,
+      "exact_equal": true
+    },
+    "recording_start_time_s": {
+      "observed": 1788898649.6620934,
+      "frozen": 1788898649.6620934,
+      "exact_equal": true
+    },
+    "flight_ids": {
+      "observed": [
+        "a1dfeb:1",
+        "ace391:3"
+      ],
+      "frozen": [
+        "a1dfeb:1",
+        "ace391:3"
+      ],
+      "exact_equal": true
+    },
+    "f0_hz": {
+      "observed": [
+        112.4,
+        126.0
+      ],
+      "frozen": [
+        112.4,
+        126.0
+      ],
+      "exact_equal": true
+    }
+  },
+  "score_note": "One floating-point ULP differs; coordinates, elevation, clock, flight identities and source frequencies are exactly equal. No improved accuracy claim.",
+  "frozen_evaluation": {
+    "reference_source": "https://app.osprey-watch.org/nest/3916",
+    "reference_coordinate": [
+      40.8766,
+      -73.5247
+    ],
+    "reference_precision_degrees": 0.0001,
+    "error_m": 43.85847078233993,
+    "scope": "regional search; published public nest-platform coordinate; not a blind national result"
+  },
+  "scope": "Manual event/band settings and source-informed regional bounds, with original downstream jet filter; recording clock is inferred by the shared two-event fit. Not independent automatic/nationwide validation."
+}

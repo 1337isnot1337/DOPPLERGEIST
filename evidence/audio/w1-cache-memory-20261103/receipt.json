@@ -1,0 +1,22 @@
+{
+  "scope": "Synthetic raw-cache memory stress, not field acquisition or full-pipeline RSS",
+  "baseline_commit": "63d620f",
+  "fixed_reader_commit": "1f95689915edd207b028ed8366c0536cebd449fc",
+  "baseline_module_sha256": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+  "fixed_module_sha256": "15fe2a2823a57fb5856973a4b2cc711444ec5a667c1f6fc0d5e31bb482912d6a",
+  "cache_values": "zero float32, synthetic fixtures",
+  "chunk_s": 120,
+  "overlap_s": 60,
+  "rss_growth_mib": {
+    "32": {
+      "before": 35.578125,
+      "after": 3.625
+    },
+    "128": {
+      "before": 131.7265625,
+      "after": 3.671875
+    }
+  },
+  "rss_regression_commit": "975da54",
+  "tested_intake_test_sha256": "e0e3383826aff871cd66a2a9b99d750fbdba1186bf100819aeb5519a32f5304e"
+}

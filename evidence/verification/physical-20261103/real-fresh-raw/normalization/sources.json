@@ -1,0 +1,25 @@
+{
+  "checksum_evidence": {
+    "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/raw-restoration.json",
+    "sha256": "ed91655ce87f3c410ae87e3b78bf98961e2a265e637727c0258a96e09db7ccec",
+    "status": "Parent task verified downloaded part SHA-256 values; this run checks sizes and records those receipts."
+  },
+  "parts_in_order": [
+    {
+      "bytes": 2000000000,
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.aa",
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/raw/v2026.09.08-planes-readsb-staging-0.tar.aa",
+      "sha256": "c2d4a8ed715d4e39cb137991857a46af6b33c96bf425cdbc66cfcc979d16fdf4",
+      "url": "https://github.com/adsblol/globe_history_2026/releases/download/v2026.09.08-planes-readsb-staging-0/v2026.09.08-planes-readsb-staging-0.tar.aa"
+    },
+    {
+      "bytes": 1874212864,
+      "name": "v2026.09.08-planes-readsb-staging-0.tar.ab",
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/raw/v2026.09.08-planes-readsb-staging-0.tar.ab",
+      "sha256": "4e73ee4880daf3cc1976c85061213caeeeaf398714438434cea7b2fa6b555f07",
+      "url": "https://github.com/adsblol/globe_history_2026/releases/download/v2026.09.08-planes-readsb-staging-0/v2026.09.08-planes-readsb-staging-0.tar.ab"
+    }
+  ],
+  "provider": "adsb.lol readsb daily archive",
+  "source_release_metadata_sha256": "d48923d6d6a5cc2466305932a72b4daa67522e3222be3a939589d1ff488f5c5f"
+}

@@ -1,0 +1,19 @@
+{
+  "allocated_in_parent_bytes": 134217728,
+  "parent_peak_rss_kib": 145612,
+  "child_before_parent_allocation": {
+    "ru_maxrss_kib": 14796,
+    "proc_status": [
+      "VmHWM:\t   14108 kB",
+      "VmRSS:\t   14108 kB"
+    ]
+  },
+  "fresh_exec_child_after_parent_allocation": {
+    "ru_maxrss_kib": 145740,
+    "proc_status": [
+      "VmHWM:\t   14108 kB",
+      "VmRSS:\t   14108 kB"
+    ]
+  },
+  "scope": "Controlled RSS-counter diagnostic only. Does not identify ancestry or cause of the historical four-event outlier."
+}

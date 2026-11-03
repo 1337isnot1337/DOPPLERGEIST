@@ -52,14 +52,29 @@ seven-role suggestion. Do not have several agents independently rewrite
 | Priority / role | Task | Boundary and deliverable |
 | --- | --- | --- |
 | **Highest: independent field-data acquisition** | [#53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) | Obtain a documented multi-device/environment corpus with independent GPS and sample-zero UTC, plus a sealed holdout. Separate from W4's evaluator. Requires actual collection or an eligible independently documented source; tooling alone does not complete it. |
+| **High: end-to-end invariance verification** | [#61](https://github.com/1337isnot1337/DOPPLERGEIST/issues/61) | Replay evidence-preserving bitrate/rate/gain/channel/silence/chunk variants through the complete system. Predeclare consistency tolerances; retain all outcomes and flag accepted distant jumps. Separate from codec unit checks and destructive stress testing. |
+| **High: independent historical-track audit** | [#62](https://github.com/1337isnot1337/DOPPLERGEIST/issues/62) | Compare genuinely independent ADS-B archives, then source-swap frozen localization replays. Report time/position/altitude/gap discrepancies and the resulting error budget; separate from W2 ingestion. |
+| **Medium: actionable inconclusive guidance** | [#63](https://github.com/1337isnot1337/DOPPLERGEIST/issues/63) | Derive concise next steps from actual competing modes, clock, acoustic evidence, coverage and work limits. Coordinate additive product/decision contracts with W5/W4; guidance cannot change acceptance. |
 | Atmospheric propagation audit | [#49](https://github.com/1337isnot1337/DOPPLERGEIST/issues/49) | Frozen-model falsification with independent wind/temperature/refraction fixtures and a measured error budget. No production changes or reference-case tuning. |
 | Recording robustness audit | [#54](https://github.com/1337isnot1337/DOPPLERGEIST/issues/54) | Measure effects of phone processing, compression, microphone wind noise, reverberation, motion and rate changes. Report failure ranges before proposing correction models. |
 
 These are task assignments, not worker launches. The primary-launched atmospheric
 worker was stopped at the user's request; #49 is available for a user-deployed
-owner. Coordinate all three workstreams on discussion board #39. Preserve every
+owner. Coordinate these workstreams on discussion board #39. Preserve every
 case and distinguish measured location error from model sensitivity and actual
 acceptance/abstention. Report outcomes at 100, 500 and 1,000 m.
+
+## Current integration priorities — 2026-11-03 UTC
+
+Complete the correctness gates [#52](https://github.com/1337isnot1337/DOPPLERGEIST/pull/52)
+and [#64](https://github.com/1337isnot1337/DOPPLERGEIST/issues/64), integrate the
+all-event driver/local application, and obtain the independent field corpus #53
+before expanding major features. National null/look-elsewhere calibration and
+leave-one-flyover-out prediction are focused additions to existing #9/#3
+confidence/evaluation ownership; their frozen protocols are in #9. They do not
+create another worker role. Keep unsupported tracks, omitted coverage and failed
+profiles explicit. Prioritize repeatable local loopback operation; hosted-service
+development is outside this phase. Existing CI remains verification.
 
 ## Ready-to-copy assignment prompt
 
