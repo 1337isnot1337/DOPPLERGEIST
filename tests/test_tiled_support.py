@@ -151,6 +151,8 @@ def test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preser
                 for f in json.loads(p.read_text())["unsupported_cpa_tracks"]]
     assert failures and all(f["track_id"] == raw.id and f["reason"] == "non_subsonic_motion" for f in failures)
     assert all(f["emission_time_range_s"] == [raw.time[0], raw.time[-1]] for f in failures)
+    assert all(f["reported_intervals"]["emission_intervals_s"] for f in failures)
+    assert all("receive_intervals_s" not in f["reported_intervals"] for f in failures)
 
 
 def test_cpa_programming_error_is_not_relabelled_as_source_support(tmp_path, monkeypatch):
