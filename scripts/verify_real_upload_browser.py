@@ -126,7 +126,11 @@ def main():
                     page.locator("#submit").click(timeout=milliseconds(30))
                 response = uploaded.value
                 require(response.status == 202, f"UI upload returned HTTP {response.status}")
-                job_id = response.json()["job_id"]
+                # Large uploads can evict response bodies from Chrome's inspector cache.
+                # Read the application's rendered identifier, then fetch results directly.
+                job_label = page.locator("#job-id")
+                expect(job_label).to_have_text(re.compile(r"^JOB [0-9a-f]{32}$"), timeout=milliseconds(30))
+                job_id = job_label.inner_text(timeout=milliseconds(10)).strip().removeprefix("JOB ")
                 require(re.fullmatch(r"[0-9a-f]{32}", job_id), "Invalid submitted job identifier")
                 job_directory = jobs / job_id
                 saved_url = origin + "/?job=" + job_id
