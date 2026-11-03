@@ -377,6 +377,11 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             shifts = []
         else:
             shifts = np.linspace(lower-anchor,upper-anchor,max(1,int(np.ceil((upper-lower)/time_step_s)))+1)
+    # linspace(..., 2) produces the same trial twice for a fixed clock. Keep
+    # one evaluation and report one trial; the fitted clock and score are
+    # unchanged, including the first-shift tie rule.
+    if len(shifts) > 1 and shifts[0] == shifts[-1]:
+        shifts = shifts[:1]
     best = {"score":-np.inf}
     if mode == "robust_ridge":
         best["score_kind"] = ("matched_group_support_minus_normalized_residual" if association
