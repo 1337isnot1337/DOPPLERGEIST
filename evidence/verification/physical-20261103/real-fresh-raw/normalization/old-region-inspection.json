@@ -1,0 +1,35 @@
+{
+  "bytes": 32823780,
+  "declared_ingestion_bounds_recovered": false,
+  "ingestion_log_sha256": "0134e78ff2e263fc3ac0d02e1464d69cfc3076be1d720a2205747db044c38f5e",
+  "ingestion_report": {
+    "barometric_rows": 799,
+    "known_jets_removed": 30178,
+    "no_conus_points": 47708,
+    "retained_aircraft": 1154,
+    "rows": 717735,
+    "trace_files": 79044
+  },
+  "ingestion_report_sha256": "e3dc533e91a690c81e0069dc23f51f24fbf0b3bac48b257533b8df710c687deb",
+  "observed_extents": {
+    "lat": {
+      "max": 41.599964,
+      "min": 40.100005
+    },
+    "lon": {
+      "max": -72.700011,
+      "min": -74.299988
+    },
+    "time_s": {
+      "max": 1788911999.6,
+      "min": 1788825600.17
+    }
+  },
+  "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/data/adsb/2026-09-08/reference-region.parquet",
+  "reason": "Parquet metadata, ingestion report and log omit the old --bounds argument. Observed sample extrema do not prove the original requested bounds.",
+  "row_groups": 1154,
+  "rows": 717735,
+  "schema": "flight_id: string\ntime_s: double\nlat: double\nlon: double\nalt_m: double\nspeed_mps: double\nheading_deg: double\neast_mps: double\nnorth_mps: double\nup_mps: double\ntypecode: string\naltitude_basis: string",
+  "schema_metadata": {},
+  "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0"
+}

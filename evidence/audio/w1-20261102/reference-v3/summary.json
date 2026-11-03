@@ -1,0 +1,179 @@
+{
+  "recording": {
+    "source_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "duration_s": 3600.1845,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "wav",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 3.0,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 8,
+  "events": [
+    {
+      "event_id": "event-0001",
+      "start_s": 701.5,
+      "end_s": 715.5,
+      "band_hz": [
+        64.75,
+        74.68091501295567
+      ],
+      "quality": {
+        "median_contrast": 4.134287357330322,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.585215073078871
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "start_s": 1028.5,
+      "end_s": 1051.0,
+      "band_hz": [
+        63.640354588627815,
+        74.25
+      ],
+      "quality": {
+        "median_contrast": 4.613884925842285,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.405605331063271
+      }
+    },
+    {
+      "event_id": "event-0003",
+      "start_s": 2091.5,
+      "end_s": 2122.5,
+      "band_hz": [
+        154.1359537690878,
+        177.5828729122877
+      ],
+      "quality": {
+        "median_contrast": 4.622637510299683,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9152542372881356,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 17.832199025899172
+      }
+    },
+    {
+      "event_id": "event-0004",
+      "start_s": 2125.0,
+      "end_s": 2178.0,
+      "band_hz": [
+        96.11563101410866,
+        150.5702282860875
+      ],
+      "quality": {
+        "median_contrast": 4.869237422943115,
+        "harmonic_count": 2.0,
+        "support_fraction": 0.9805825242718447,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 45.957594498991966
+      }
+    },
+    {
+      "event_id": "event-0005",
+      "start_s": 3041.5,
+      "end_s": 3060.0,
+      "band_hz": [
+        155.26016502082348,
+        173.722141623497
+      ],
+      "quality": {
+        "median_contrast": 4.221339702606201,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9705882352941176,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 14.497149005532265
+      }
+    },
+    {
+      "event_id": "event-0006",
+      "start_s": 3074.0,
+      "end_s": 3091.5,
+      "band_hz": [
+        115.43621025234461,
+        131.85230506956577
+      ],
+      "quality": {
+        "median_contrast": 3.9181309938430786,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.875,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 13.312445763498545
+      }
+    },
+    {
+      "event_id": "event-0007",
+      "start_s": 3264.0,
+      "end_s": 3299.5,
+      "band_hz": [
+        73.25,
+        87.97645026631653
+      ],
+      "quality": {
+        "median_contrast": 4.47796106338501,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8529411764705882,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 10.600280418992043
+      }
+    },
+    {
+      "event_id": "event-0008",
+      "start_s": 3454.0,
+      "end_s": 3478.5,
+      "band_hz": [
+        217.151369035244,
+        272.75
+      ],
+      "quality": {
+        "median_contrast": 3.7386114597320557,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8478260869565217,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 50.13336477056146
+      }
+    }
+  ],
+  "runtime_s": 31.051409561012406,
+  "peak_rss_kib": 249528,
+  "code_sha256": "d0a9d9b4ba99c819529f11e0db71a65af37b1b5be97092cd7d4311ce16f27006",
+  "git_commit": "9538c466766aa1830b8a48cc6946cc45539a5e80",
+  "working_tree": "?? scripts/discover_audio.py\n?? src/aircraft_geoloc/discovery.py\n?? tests/test_discovery.py",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}

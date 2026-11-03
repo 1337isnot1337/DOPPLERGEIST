@@ -1,0 +1,41 @@
+{
+  "sample_count": 4720000,
+  "peak_amplitude": 0.7712910771369934,
+  "time_status": "ready",
+  "time_hints": [],
+  "decode": {
+    "decoder": "ffmpeg",
+    "sample_format": "f32le",
+    "channel_policy": "arithmetic channel mean",
+    "source_sample_rate_hz": 16000,
+    "source_channels": 1,
+    "source_codec": "mp3",
+    "stream_index": 0,
+    "audio_time_zero": "first decoded sample after codec skip/discard",
+    "command": [
+      "ffmpeg",
+      "-nostdin",
+      "-v",
+      "error",
+      "-xerror",
+      "-i",
+      "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/results/physics-automatic-cli-v2-20261103/d25c32b468cf461ab22743bd45fd540a/input.mp3",
+      "-map",
+      "0:a:0",
+      "-vn",
+      "-sn",
+      "-dn",
+      "-af",
+      "pan=mono|c0=1*c0",
+      "-ac",
+      "1",
+      "-ar",
+      "4000",
+      "-acodec",
+      "pcm_f32le",
+      "-f",
+      "f32le",
+      "pipe:1"
+    ]
+  }
+}

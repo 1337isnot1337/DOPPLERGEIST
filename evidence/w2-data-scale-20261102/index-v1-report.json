@@ -1,0 +1,41 @@
+{
+  "index_version": 1,
+  "sources": [
+    {
+      "path": "/home/cinna/aircraft-audio-geolocation/data/adsb/2026-09-08/conus-alltypes-faint-window.parquet",
+      "sha256": "b43c7cd878d8378bede0705046c9034bed4741930a1669a544688859675c6154",
+      "bytes": 68141282
+    }
+  ],
+  "coverage": {
+    "bounds": [
+      -125.0,
+      24.0,
+      -66.0,
+      50.0
+    ],
+    "time_range_s": [
+      1788899400.0,
+      1788900300.0
+    ],
+    "all_aircraft": true,
+    "source_note": "Checkpoint all-type CONUS 15-minute ingestion; 938158 rows; not independent location evaluation"
+  },
+  "max_gap_s": 30.0,
+  "max_flight_samples": 250000,
+  "input_hash": "6204bfa90db571017ad91b33135b38cf9cf3d2643e6d087db6f46bc138a0acca",
+  "rows": 938158,
+  "invalid_rows": 0,
+  "segments": 10868,
+  "altitude_basis_counts": {
+    "ellipsoidal": 927032,
+    "ellipsoidal_interpolated": 4445,
+    "barometric": 6681
+  },
+  "jets_excluded": false,
+  "unknown_types_retained": true,
+  "geometry_clipped": false,
+  "index_path": "results/w2-index-20261102/conus-alltypes.sqlite",
+  "elapsed_s": 119.30214227401302,
+  "process_peak_rss_mib": 446.0390625
+}

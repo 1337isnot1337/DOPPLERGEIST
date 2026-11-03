@@ -1,0 +1,89 @@
+{
+  "run_hash": "258f6af425d5cc92095a81f001935842dc064bf2698412d3f112fed1e44ebda6",
+  "configuration": {
+    "indexes": [
+      {
+        "input_hash": "c928bed10091462ca7d9a11600e33d8716a7beef1287fca3ef5095fd201b3a34",
+        "file_sha256": "1e3365524bae3b98c668adbf05358d5ba1a0cba895521c7e2135055c0415962c"
+      }
+    ],
+    "terrain": {
+      "constant_m": 0,
+      "rasters": {}
+    },
+    "additional_input_hashes": {},
+    "events": [
+      {
+        "start_s": 430.0,
+        "end_s": 470.0,
+        "cpa_receive_s": 450.0,
+        "speed_range_mps": [
+          1,
+          308
+        ],
+        "slant_range_m": [
+          1,
+          20000
+        ],
+        "f0_range_hz": [
+          50,
+          250
+        ]
+      }
+    ],
+    "acoustic_hashes": [
+      [
+        "c43bbdfda47e423f85cb322b8f770c8374c84f3b8bad05591e286e5a7b2cbbf4",
+        "0fbd1f59cd807a912be019cb55e3cd2a6fca90dde4c4b10266245e95dbeaa5a2",
+        "42d6327413d14ea5474379748cbf672bc16f889757eb153464d962dbe360936e",
+        "0f4ed69067d2471ff42946cb092983add7abe066cd291a7a4dffe0a5f866e2fd",
+        "f8147c0afb55519f4b22aa9274f6f06207bf00e89336cf905aaeb600747c359f"
+      ]
+    ],
+    "bounds": [
+      -125.0,
+      24.0,
+      -66.0,
+      50.0
+    ],
+    "time_range_s": [
+      1788899400.0,
+      1788900300.0
+    ],
+    "budget": {
+      "spacing_m": 20000,
+      "tile_cells": 8,
+      "max_tracks_per_tile": 2000,
+      "max_track_samples_per_tile": 500000,
+      "max_cpa_rows": 100000,
+      "max_candidates_per_tile": 20000,
+      "top_k": 100,
+      "refine_spacing_m": 20000,
+      "refine_finalists": 10,
+      "cpa_step_s": 2.0,
+      "max_tiles": null
+    },
+    "scoring": {
+      "mode": "ridge",
+      "time_origin": 1788899400.0,
+      "time_sweep_s": 0
+    },
+    "filters": {},
+    "crs": "EPSG:5070",
+    "code": {
+      "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+      "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+      "cli.py": "591b4f6b6f08fb649acd0003f432bbd4f01ab3f9f8858b094245c54b9260ac00",
+      "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+      "data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+      "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+      "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+      "matching.py": "323e3028ba1d2734e65e5185c01d5c9e05ed0dda30e688013ca417b51f442061",
+      "pipeline.py": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+      "search.py": "f22b3f4f06d5c0998a3b5f25e881dcea2eaf96d8b4cfc415b82b2aefe88ee640",
+      "terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+      "tiled_search.py": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5",
+      "tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec"
+    }
+  }
+}

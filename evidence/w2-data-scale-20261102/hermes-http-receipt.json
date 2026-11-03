@@ -1,0 +1,30 @@
+{
+  "job_id": "d6b95239e12147afa053147f17bb392d",
+  "status": "inconclusive",
+  "reason_code": "search_incomplete",
+  "events": 1,
+  "candidates": 21,
+  "coverage": {
+    "search_complete": false,
+    "data_status": "partial",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "Search did not complete the full requested area, data interval or refinement.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "elapsed_s": 139.95445074999589,
+  "upload_sha256": "6237634eea2e80bf5deacc73d71590dbb28b111e261eee89cc5e4f59ac21dbb5",
+  "original_download_identical": true,
+  "job_directory": "/home/cinna/dopplergeist-w2-integration-check/results/hermes-upload-20261102/jobs/d6b95239e12147afa053147f17bb392d",
+  "search_scope": "CONUS; no coordinate or flight identity supplied in request",
+  "limitations": [
+    "Independent synthetic reference, not real national localization",
+    "Historical query extends beyond supplied synthetic track interval; partial coverage is expected",
+    "Constant orthometric ground; no datum-conversion claim"
+  ]
+}

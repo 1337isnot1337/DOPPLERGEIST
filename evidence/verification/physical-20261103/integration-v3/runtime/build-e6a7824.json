@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "-c",
+    "import setuptools.build_meta as backend; print(backend.build_wheel('/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/wheels-e6a7824'))"
+  ],
+  "source_commit": "e6a78249c8bd29bc552e3da4d2803fa6b28565fa",
+  "source_tree": "1b2dcbbe0e39de1053b0ccec60b543fc19560274",
+  "published_same_tree_commit": "455bb4ca3d3e92360b9cf695bbc2376df576f8a1",
+  "exit_code": 0,
+  "elapsed_s": 0.21449567299987393,
+  "network_used": false,
+  "build_backend": "Existing base-runtime setuptools.build_meta; no package installation",
+  "source_archive_sha256": "65ef6bb7e7ca223a040570a301fa1b792634d5892cf0aa8ffec3a9ef922ad6dd",
+  "wheel_files": [
+    {
+      "path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/wheels-e6a7824/aircraft_geoloc_reproduction-0.1.0-py3-none-any.whl",
+      "bytes": 89942,
+      "sha256": "e5abb62c66911ad293b52799d3b7e9aa7069194812a611df1965e19d84d3737d"
+    }
+  ]
+}

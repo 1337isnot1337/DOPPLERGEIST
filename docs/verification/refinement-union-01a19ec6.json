@@ -1,0 +1,60 @@
+{
+  "baseline_commit": "b831c78",
+  "before_fix": {
+    "point_visits": 50,
+    "unique_points": 35,
+    "regression": "Failed because 50 evaluations contained only 35 distinct cells"
+  },
+  "after_fix": {
+    "refinement_points_searched": 35,
+    "refinement_points_skipped": 15,
+    "status": "complete"
+  },
+  "dense_union_physics_oracle": "Passed flight/coordinate/score/clock comparison at existing eight-decimal score and five-decimal clock precision; retained at least two flight associations.",
+  "test_command": "PYTHONPATH=src /home/cinna/dopplergeist-e2e-01a19ec6/.venv/bin/python -m pytest -q --basetemp=results/refinement-union-full-01a19ec6",
+  "test_result": "83 passed, 1 warning in 23.58s",
+  "runtime_speedup_claim": null,
+  "national_fixture_overlap": {
+    "coarse_finalists": 5,
+    "fine_point_visits": 8405,
+    "unique_fine_cells": 5863,
+    "duplicate_point_visits": 2542,
+    "duplicate_fraction": 0.3024390243902439,
+    "rectangles": [
+      [
+        -3420,
+        18960,
+        -3379,
+        19001
+      ],
+      [
+        5400,
+        13420,
+        5441,
+        13461
+      ],
+      [
+        5400,
+        13420,
+        5441,
+        13461
+      ],
+      [
+        -12940,
+        23300,
+        -12899,
+        23341
+      ],
+      [
+        5420,
+        13420,
+        5461,
+        13461
+      ]
+    ]
+  },
+  "initial_fix_source_sha256": "826b4baa960242b3200bcd47d6f76629771fa37da143f1dd6b8427c2dc21569b",
+  "main_integration_commit": "9f1bee6924e4216801e5e01cf2439bd0c45b31a1",
+  "main_source_sha256": "fa02113409d440886ce7525752394ae5c49a1e7e14dfe9e0c53c36d7b395df1f",
+  "main_test_result": "120 passed, 1 warning in 40.59s"
+}

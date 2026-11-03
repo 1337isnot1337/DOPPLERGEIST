@@ -1,0 +1,28 @@
+{
+  "generator_commit": "1f03425",
+  "detector_commit": "47261fe",
+  "cases": [
+    {
+      "case_id": "case-001",
+      "canonical_generation": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-3-20261103/generation.json",
+      "canonical_generation_sha256": "decf40973392e73ebb55a0c9fdfdbfdf67806f1039432cecd4cf0456ca6becd1",
+      "generator_sha256": "55c6af189b150f1b8bf18a1c32258d00e9407545d97c3923b8d38d28bd0a7d13",
+      "audio_sha256": "1fed2fab5b8ee01eed774ad2bc1f82f87db85574100d2d818b6117a230193c61"
+    },
+    {
+      "case_id": "case-002",
+      "canonical_generation": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-4-20261103/generation.json",
+      "canonical_generation_sha256": "35b3f3da9d743a30bad8c89ea0a1c8e7ba2acf0fa2dfd0369c5cfb8d94f22236",
+      "generator_sha256": "55c6af189b150f1b8bf18a1c32258d00e9407545d97c3923b8d38d28bd0a7d13",
+      "audio_sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85"
+    },
+    {
+      "case_id": "case-003",
+      "canonical_generation": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-6-20261103/generation.json",
+      "canonical_generation_sha256": "7c83b7ffaafb4e7f47e91e2dc05f1d216e25e4666293a46608623ca4f240312b",
+      "generator_sha256": "55c6af189b150f1b8bf18a1c32258d00e9407545d97c3923b8d38d28bd0a7d13",
+      "audio_sha256": "1ab55fb23eb2dff907ef48d81e3dabb33524b34af12c58e714b96212b9f69aee"
+    }
+  ],
+  "truth_access": "No truth labels read before discovery; only canonical MP3 and label-free requests staged for subprocesses."
+}

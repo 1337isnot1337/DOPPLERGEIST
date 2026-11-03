@@ -1,0 +1,120 @@
+{
+  "scope": "All files in this integration-v3 directory except this manifest",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4190,
+      "sha256": "416c99f59d77077e535e0bac925ecbebc87b6c4f30942779d3b9232efc400f98"
+    },
+    {
+      "path": "canonical-release-manifest.json",
+      "bytes": 5541,
+      "sha256": "2d787ac061014319a5260c5e17a0e76fe362964b6b4385c3a0cb7e89b56ab82c"
+    },
+    {
+      "path": "canonical-restoration.json",
+      "bytes": 717,
+      "sha256": "5fc7a7b2ee3424e20aeb5845e8673464fd6aac09670d68fffd9f5d750fe52976"
+    },
+    {
+      "path": "index-report.json",
+      "bytes": 1160,
+      "sha256": "d74896ea6eff006674b0727c4b0959201221b3ce0b5999fed88115929d82c470"
+    },
+    {
+      "path": "operator.json",
+      "bytes": 400,
+      "sha256": "f92da6cf516d03b82841cba6d253ca269325d3e3403662e2035feeffd2e840f2"
+    },
+    {
+      "path": "preparation-receipt.json",
+      "bytes": 1167,
+      "sha256": "f1a1cc202fd5ab9796164af1b6fc3cb20f5da6cae2f1356468aa4f3edea17656"
+    },
+    {
+      "path": "pytest.log",
+      "bytes": 261,
+      "sha256": "60836b91ca546769262b2b66d6d90e2306f839ecc0c6e2f40eeb650563399657"
+    },
+    {
+      "path": "pytest.xml",
+      "bytes": 26266,
+      "sha256": "04021558386d124c5c48b98b63ae51be4b72a9c08fe72e78be22983e1800fe89"
+    },
+    {
+      "path": "runtime/app-e5abb62c6691-receipt.json",
+      "bytes": 5110,
+      "sha256": "3887e7153ad090fe4c4fb44952b2631727f848d76ec0e69fd1c87879d8b47b5a"
+    },
+    {
+      "path": "runtime/build-attempt-001.json",
+      "bytes": 766,
+      "sha256": "7ba1597f21a6955e58985fd5ba0b37483b65907cad4fd41aacd2c99581202a7f"
+    },
+    {
+      "path": "runtime/build-e6a7824.json",
+      "bytes": 1089,
+      "sha256": "629069eec1f59143e8f5154e244abdfd7be732f83d15458a97fffa3ed6942602"
+    },
+    {
+      "path": "runtime/build-e6a7824.stdout",
+      "bytes": 6718,
+      "sha256": "f43efe104d2f70c54782998247c47a02c0c5581063860f9a0d3dc2f0c7a5c93f"
+    },
+    {
+      "path": "runtime/external-client.json",
+      "bytes": 685,
+      "sha256": "dda6ef13d71654a5203cc417a5a7148431a210bb8f5a32f247d57849e0a0e01f"
+    },
+    {
+      "path": "runtime/launch.py",
+      "bytes": 4591,
+      "sha256": "1a4970b2d4c4ae589eaa9081d90fff69fbdd31206f629835e71e9e84649f79a3"
+    },
+    {
+      "path": "runtime/prepare_app.py",
+      "bytes": 2254,
+      "sha256": "f075c754b90bab5bd01197f2301f3c6a6a58f102802f0004518f9a02078c322a"
+    },
+    {
+      "path": "runtime/runtime-e6a7824.json",
+      "bytes": 990,
+      "sha256": "93101a876bd7f02ffbd67acef162e67ae58829c135636ac5d51c40364140d7bb"
+    },
+    {
+      "path": "runtime/smoke-e6a7824.json",
+      "bytes": 801,
+      "sha256": "7ebc1d8a8e9acb36f36aea86100c1d29882c29b23d74f0c55f07c730cdd93236"
+    },
+    {
+      "path": "runtime/smoke-e6a7824.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "runtime/smoke-e6a7824.stdout",
+      "bytes": 2850,
+      "sha256": "1e8aeb9a4488ca3da102538ecfb07f279363ced9c7593a587a419ea3a73241fc"
+    },
+    {
+      "path": "runtime/smoke_inside.py",
+      "bytes": 4358,
+      "sha256": "b2706da35913b938b6bf6362e07c6c5203145d61468dcac58984830a97e93149"
+    },
+    {
+      "path": "source.json",
+      "bytes": 1582,
+      "sha256": "0731f87822088a611fb85be4f3523ab260038bdbbfa71bb1e71f06d4de824961"
+    },
+    {
+      "path": "test-receipt.json",
+      "bytes": 732,
+      "sha256": "c54e13a43e9274c67af1a3c571e157d83cf5f6664e4394af4cfb6869bb31e389"
+    },
+    {
+      "path": "upload-request.json",
+      "bytes": 194,
+      "sha256": "9e3e61863e60ac0ed62365fcc8ce665bc539252d842f056f9b677b8999cf96fc"
+    }
+  ]
+}

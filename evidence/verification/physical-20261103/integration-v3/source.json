@@ -1,0 +1,31 @@
+{
+  "executed_local_commit": "e6a78249c8bd29bc552e3da4d2803fa6b28565fa",
+  "published_same_tree_commit": "455bb4ca3d3e92360b9cf695bbc2376df576f8a1",
+  "tree": "1b2dcbbe0e39de1053b0ccec60b543fc19560274",
+  "published_branch": "verify/physical-integration-v3-20261103",
+  "components": {
+    "main": "52bd3866c806e8bcbea842d96d30b653340d6657",
+    "W1": "47261fee8f75cea9c8354ef95da2b7dd3c451cf9",
+    "W2": "50c01271fc4edc0c4743959b442234a9da46e570",
+    "W3": "5657f603cf37611686d860f2b9a54d55488e42a0",
+    "W4": "ed806545beb1d86e8276a26cdb664584c80981ad",
+    "W5": "4eca3c694e22b3c1651cf26d6d2ea06f3e51137c",
+    "profile_authority_local": "2ad7f82d31d0fc379e1a9eb26a536e8c9e8c5601",
+    "profile_authority_published": "de6c9ae2dd18481d1238121acd52be294057fb14",
+    "primary_fixture": "26a5bff74e9aba664e5f951cca8fa26f26e3eaf0"
+  },
+  "checks": {
+    "repository_and_external_tests": 205,
+    "failed": 0,
+    "skipped": 0,
+    "loopback_service_tests_executed": true,
+    "installed_wheel_isolated_smoke_passed": true,
+    "analysis_jobs_submitted_for_this_checkpoint": 0
+  },
+  "limitations": [
+    "Pending W5 score-normalization and trusted-clock/unmatched-event diagnostics adapter is not included.",
+    "Finite-search alternatives flag remains false; this revision cannot establish an accepted automatic result.",
+    "All-event unit checks and namespace smoke do not establish independent real/national localization accuracy.",
+    "The actual canonical four-event HTTP/browser job is owned by the upload verifier; no duplicate national sweep was submitted here."
+  ]
+}

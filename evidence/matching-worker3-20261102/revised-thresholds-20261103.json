@@ -1,0 +1,51 @@
+{
+  "criterion_revision": "user update2026-11-03; historical100m reports unchanged",
+  "acceptable_error_m": 1000,
+  "preferred_error_m": 500,
+  "closer_is_better": true,
+  "scope": "manually configured regional development; source-informed bounds/bands and derived faint clock; no independent national accuracy claim",
+  "point_error_outcomes": [
+    {
+      "case": "two-events",
+      "phase": "before",
+      "mode": "brightness",
+      "error_m": 43.858470781993354,
+      "within_100m": true,
+      "within_500m": true,
+      "within_1000m": true,
+      "point_error_class": "preferred_or_better"
+    },
+    {
+      "case": "two-events",
+      "phase": "after",
+      "mode": "robust_ridge",
+      "error_m": 116.16466431592579,
+      "within_100m": false,
+      "within_500m": true,
+      "within_1000m": true,
+      "point_error_class": "preferred_or_better"
+    },
+    {
+      "case": "faint",
+      "phase": "before",
+      "mode": "ridge",
+      "error_m": 357.468676835423,
+      "within_100m": false,
+      "within_500m": true,
+      "within_1000m": true,
+      "point_error_class": "preferred_or_better"
+    },
+    {
+      "case": "faint",
+      "phase": "after",
+      "mode": "robust_ridge",
+      "error_m": 537.5661874833211,
+      "within_100m": false,
+      "within_500m": false,
+      "within_1000m": true,
+      "point_error_class": "acceptable"
+    }
+  ],
+  "supported_precision_claim": false,
+  "reason": "Regional source-informed evidence; clock/location reference limits; boundary-truncated sensitivity remains unresolved."
+}

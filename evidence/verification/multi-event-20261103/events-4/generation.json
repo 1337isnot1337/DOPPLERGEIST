@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "scope": "synthetic multi-event development fixture",
+  "seed": 20261103,
+  "event_count": 4,
+  "duration_s": 960,
+  "sample_rate_hz": 8000,
+  "generator_sha256": "55c6af189b150f1b8bf18a1c32258d00e9407545d97c3923b8d38d28bd0a7d13",
+  "encoder_command": [
+    "ffmpeg",
+    "-v",
+    "error",
+    "-nostdin",
+    "-i",
+    "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-4-20261103/renderer/recording.wav",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "32k",
+    "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-4-20261103/inputs/recording.mp3"
+  ],
+  "ffmpeg": "ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+  "input_files": {
+    "coverage.json": {
+      "sha256": "714632e98da102bdd1dc5138148dd7f401d5d68304208a2d0eaf9c2849b532bb",
+      "bytes": 241
+    },
+    "geoid.tif": {
+      "sha256": "5e0de6d7e61a474a96993fdef7efe0aa2ca74ffc35c6d659c6020e5425bbcdae",
+      "bytes": 2509
+    },
+    "recording.mp3": {
+      "sha256": "6c44970b812d9147146c2f712c5012efd255ce80bb240aa6c1d9f3a796c45e85",
+      "bytes": 3841100
+    },
+    "request.json": {
+      "sha256": "44f8c8ef67d150f10f6d55b87061d07ec3767c3f314d0df46b491680070c9c7d",
+      "bytes": 227
+    },
+    "terrain.tif": {
+      "sha256": "27f022d8df74d62632b7ee789f42dd90b3d333ccc7e348ab3c2e5d02650a470b",
+      "bytes": 2689
+    },
+    "tracks.parquet": {
+      "sha256": "3c9465f1816ed71c097eda451db9c7c2f42fa317163cb406ca7fc0a7be25a258",
+      "bytes": 171645
+    }
+  },
+  "renderer_wav_sha256": "a2783a2b3a08b454a3768b449db02786c75cf073c2e60e0870982e149fec3e2a",
+  "truth_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6",
+  "limits": [
+    "Finite synthetic traffic is not a real national archive.",
+    "The first two events have similar remote distractors; later passes differ.",
+    "Do not mount this manifest, generator, renderer or truth directory in a blinded search."
+  ]
+}

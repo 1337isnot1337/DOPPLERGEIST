@@ -1,0 +1,19 @@
+{
+  "criterion_source": "Updated user requirement; AGENTS.md5707b78 and Discussion39/19363776",
+  "source_evaluation": "hermes-post-search-evaluation.json",
+  "thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "candidate_within_threshold": {
+    "100": true,
+    "500": true,
+    "1000": true
+  },
+  "top_candidate_error_m": 11.461470671832378,
+  "original_pipeline_status": "inconclusive",
+  "original_reason_code": "search_incomplete",
+  "supported_location_success": false,
+  "interpretation": "Post-search diagnostic candidate thresholds only; coverage and ambiguity rules still apply. Original run and decision unchanged."
+}

@@ -1,0 +1,227 @@
+{
+  "scope": "manually configured regional development; source-informed bounds/bands and derived faint clock; no independent national accuracy claim",
+  "truth_joined_after_searches_completed": true,
+  "raw_scores_are_not_probabilities": true,
+  "outcomes": [
+    {
+      "case": "two-events",
+      "phase": "before",
+      "mode": "brightness",
+      "code_commit": "b66411e",
+      "error_m": 43.858470781993354,
+      "meets_100m": true,
+      "best": {
+        "score": 5.608620381268417,
+        "event_scores": [
+          2.62630103588047,
+          2.982319345387947
+        ],
+        "f0_hz": [
+          112.4,
+          126.0
+        ],
+        "recording_start_time_s": 1788898649.6620934,
+        "time_adjustment_s": -0.5,
+        "point_id": 41,
+        "lat": 40.87693175890468,
+        "lon": -73.52498229500986,
+        "elev_m": -31.25569725036621,
+        "x": 1861200.0,
+        "y": 2206325.0,
+        "flight_ids": [
+          "a1dfeb:1",
+          "ace391:3"
+        ]
+      },
+      "flight_combinations_ranked": [
+        [
+          "a1dfeb:1",
+          "ace391:3"
+        ]
+      ],
+      "elapsed_s": 89.01008657697821,
+      "implementation_sha256": "85757086799d7e3573fcde072285115d5a77333e7a273a594a3249e53faa1d44",
+      "source_run": "/home/cinna/dopplergeist-w3-matching/results/matching-development-20261102-b/two-events-brightness/search",
+      "report_sha256": "ad05c2f925bb08c30ec97b9886c99d5304856a780dca7eec005f32478f9439e6"
+    },
+    {
+      "case": "two-events",
+      "phase": "after",
+      "mode": "robust_ridge",
+      "code_commit": "41992be",
+      "error_m": 116.16466431592579,
+      "meets_100m": false,
+      "best": {
+        "score": -0.7060326279801237,
+        "event_scores": [
+          -0.24647670540372824,
+          -0.4595559225763954
+        ],
+        "f0_hz": [
+          112.99917629456931,
+          126.06183527051357
+        ],
+        "event_diagnostics": [
+          {
+            "score": -0.24647670540372824,
+            "f0_hz": 112.99917629456931,
+            "source_drift_hz": -1.6913915336479446,
+            "source_drift_hz_s": -0.010073607109707798,
+            "drift_bound_hz": 2.254473560907471,
+            "drift_at_bound": false,
+            "rmse_hz": 0.2705283726625158,
+            "support_fraction": 1.0,
+            "sample_count": 711,
+            "independent_sample_count": 711,
+            "outlier_fraction": 0.0
+          },
+          {
+            "score": -0.4595559225763954,
+            "f0_hz": 126.06183527051357,
+            "source_drift_hz": -1.893901622130575,
+            "source_drift_hz_s": -0.02212208883289741,
+            "drift_bound_hz": 2.52,
+            "drift_at_bound": false,
+            "rmse_hz": 0.5055007089777943,
+            "support_fraction": 1.0,
+            "sample_count": 333,
+            "independent_sample_count": 333,
+            "outlier_fraction": 0.0
+          }
+        ],
+        "score_kind": "negative_robust_ridge_loss_hz",
+        "recording_start_time_s": 1788898650.4030805,
+        "time_adjustment_s": 0.29012475013732875,
+        "point_id": 14,
+        "lat": 40.87580210353373,
+        "lon": -73.52380882400408,
+        "elev_m": -31.25569725036621,
+        "x": 1861325.0,
+        "y": 2206225.0,
+        "flight_ids": [
+          "a1dfeb:1",
+          "ace391:3"
+        ]
+      },
+      "flight_combinations_ranked": [
+        [
+          "a1dfeb:1",
+          "ace391:3"
+        ]
+      ],
+      "elapsed_s": 250.56704033198184,
+      "implementation_sha256": "9753ee9d0a8aacd9d18e891e66c8dd51bb8b4c2936159c3d7091a67872f0b632",
+      "source_run": "/home/cinna/dopplergeist-w3-clock/results/matching-development-41992be-20261102-c/two-events-robust_ridge/search",
+      "report_sha256": "b857820c80a40c6443b9c1cb245ae8cd9a11cee5fe2907813c67f9c5720ed30b"
+    },
+    {
+      "case": "faint",
+      "phase": "before",
+      "mode": "ridge",
+      "code_commit": "b66411e",
+      "error_m": 357.468676835423,
+      "meets_100m": false,
+      "best": {
+        "score": -2.4296749185036983,
+        "event_scores": [
+          -2.4296749185036983
+        ],
+        "f0_hz": [
+          390.76743821007324
+        ],
+        "recording_start_time_s": 1788898650.5,
+        "time_adjustment_s": 0.5,
+        "point_id": 73,
+        "lat": 40.878427510058614,
+        "lon": -73.52819115491744,
+        "elev_m": -31.25569725036621,
+        "x": 1860900.0,
+        "y": 2206425.0,
+        "flight_ids": [
+          "a38237"
+        ]
+      },
+      "flight_combinations_ranked": [
+        [
+          "a38237"
+        ]
+      ],
+      "elapsed_s": 428.06497732701246,
+      "implementation_sha256": "85757086799d7e3573fcde072285115d5a77333e7a273a594a3249e53faa1d44",
+      "source_run": "/home/cinna/dopplergeist-w3-matching/results/matching-development-20261102-b/faint-ridge/search",
+      "report_sha256": "569bc4224e8bf09e55d28b56d9571562e455b24b62f72f3d227777ea5016b652"
+    },
+    {
+      "case": "faint",
+      "phase": "after",
+      "mode": "robust_ridge",
+      "code_commit": "41992be",
+      "error_m": 537.5661874833211,
+      "meets_100m": false,
+      "best": {
+        "score": -1.5600105915154565,
+        "event_scores": [
+          -1.5600105915154565
+        ],
+        "f0_hz": [
+          392.0201120419585
+        ],
+        "event_diagnostics": [
+          {
+            "score": -1.5600105915154565,
+            "f0_hz": 392.0201120419585,
+            "source_drift_hz": -3.07761158693153,
+            "source_drift_hz_s": -0.051739033979174565,
+            "drift_bound_hz": 7.835796531838883,
+            "drift_at_bound": false,
+            "rmse_hz": 2.4012297846562363,
+            "support_fraction": 1.0,
+            "sample_count": 233,
+            "independent_sample_count": 233,
+            "outlier_fraction": 0.19076611937100438
+          }
+        ],
+        "score_kind": "negative_robust_ridge_loss_hz",
+        "recording_start_time_s": 1788898651.5,
+        "time_adjustment_s": 1.5,
+        "point_id": 31,
+        "lat": 40.88086716682876,
+        "lon": -73.52771117708704,
+        "elev_m": -31.25569725036621,
+        "x": 1860875.0,
+        "y": 2206700.0,
+        "flight_ids": [
+          "a38237"
+        ]
+      },
+      "flight_combinations_ranked": [
+        [
+          "a38237"
+        ]
+      ],
+      "elapsed_s": 491.04574023597525,
+      "implementation_sha256": "9753ee9d0a8aacd9d18e891e66c8dd51bb8b4c2936159c3d7091a67872f0b632",
+      "source_run": "/home/cinna/dopplergeist-w3-clock/results/matching-development-41992be-20261102-c/faint-robust_ridge/search",
+      "report_sha256": "0bd4ae5db2b26c598a464407e13b1ccc754cad47962efd4a8f7bf0f0771e085e"
+    }
+  ],
+  "common_height_profile": {
+    "code_commit": "41992be",
+    "radius_m": 606.9540624786865,
+    "boundary_limited": true,
+    "limitation": "older common-height scenarios; independent-flight biases/datum gate are subsequent PR41; not supported100m uncertainty"
+  },
+  "preserved_incomplete_runs": [
+    "/home/cinna/dopplergeist-w3-matching/results/matching-development-20261102-a",
+    "/home/cinna/dopplergeist-w3-matching/results/matching-development-20261102-b/faint-robust_ridge",
+    "/home/cinna/dopplergeist-w3-clock/results/matching-profile-two-events-20261102-a"
+  ],
+  "solver_optimization_regression": {
+    "same_two_event_winner": true,
+    "same_two_event_score": true,
+    "diagnostic_differences": "approximately1e-16",
+    "old_control_ms_per_fit": 6.4775,
+    "new_control_ms_per_fit": 1.3163,
+    "timing_scope": "small identical noisy control, concurrent host load, not national throughput"
+  }
+}

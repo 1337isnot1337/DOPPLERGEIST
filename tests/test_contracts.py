@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from aircraft_geoloc.contracts import (
+from dopplergeist.contracts import (
     event_measure_settings, validate_candidate, validate_event, validate_recording,
     validate_request, validate_result,
 )
