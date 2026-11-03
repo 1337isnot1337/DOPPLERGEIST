@@ -125,7 +125,29 @@ class Track:
         separation larger than the radius proves the entire cubic trajectory
         and its sampled polyline cannot enter any observer's search sphere.
         """
-        self.validate_motion_support(c)
+        try:
+            self.validate_motion_support(c)
+        except AcousticSupportError:
+            # A non-subsonic track can still be excluded without assuming a
+            # speed limit: every cubic Hermite segment lies in the convex hull
+            # of its four Bezier control points. Bound each hull and the whole
+            # observer set by boxes, and exclude only if every pair is distant.
+            observers = np.asarray(observers, dtype=float).reshape(-1, 3)
+            if len(observers) and np.isfinite(radius) and np.all(np.isfinite(observers)):
+                dt = np.diff(self.time)[:, None]
+                velocity = self.speed_vector(self.time)
+                p0, p1 = self.xyz[:-1], self.xyz[1:]
+                controls = np.stack((p0, p0 + dt * velocity[:-1] / 3,
+                                     p1 - dt * velocity[1:] / 3, p1), axis=1)
+                if np.all(np.isfinite(controls)):
+                    lo, hi = controls.min(axis=1), controls.max(axis=1)
+                    lower, upper = observers.min(axis=0), observers.max(axis=0)
+                    separation = np.maximum(np.maximum(lo - upper, lower - hi), 0)
+                    scale = max(1., float(np.max(np.abs(controls))), float(np.max(np.abs(observers))), abs(radius))
+                    margin = 1e-6 + 128 * np.finfo(float).eps * scale
+                    if np.all(np.linalg.norm(separation, axis=1) > radius + margin):
+                        return True
+            raise
         if not np.isfinite(radius):
             return False
         scale = max(1.0, float(np.max(np.abs(self._xyz_min))),
