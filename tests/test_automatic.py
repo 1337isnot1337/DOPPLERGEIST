@@ -120,3 +120,13 @@ def test_subset_association_preserves_original_event_identity(tmp_path):
     assert "event-0" not in diagnostics
     assert diagnostics["event-1"]["rmse_hz"] == .1
     assert diagnostics["event-2"]["rmse_hz"] == .2
+
+
+def test_complete_tile_work_is_separate_from_partial_flight_coverage():
+    from aircraft_geoloc.automatic import _coverage
+    coverage = _coverage({"search": {"coverage": "conus"}},
+        {"status": "partial", "tiles_total": 819, "tiles_completed": 819,
+         "tile_failures": [], "refinement_failure": None, "data_scope_complete": False}, {})
+    assert coverage["search_complete"] is True
+    assert coverage["data_status"] == "partial"
+    assert "historical_flight_scope_or_audible_border_region" in coverage["missing_data"]
