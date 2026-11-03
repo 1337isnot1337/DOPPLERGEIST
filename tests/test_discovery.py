@@ -1,12 +1,13 @@
 import numpy as np
+import pytest
 import soundfile as sf
 
 from aircraft_geoloc.contracts import validate_event
-from aircraft_geoloc.discovery import discover_events
+from aircraft_geoloc.discovery import DiscoverySettings, _stitch_fragments, discover_events
 from aircraft_geoloc.intake import intake_recording
 
 
-def _audio(tmp_path, events, duration=180):
+def _audio(tmp_path, events, duration=180, mute=None):
     sr = 4000
     t = np.arange(sr * duration) / sr
     data = np.random.default_rng(9133).normal(0, 0.08, len(t))
@@ -16,6 +17,8 @@ def _audio(tmp_path, events, duration=180):
         frequency = f0 * (1 - 0.18 * relative / np.sqrt(relative ** 2 + 8 ** 2))
         phase = 2 * np.pi * np.cumsum(frequency) / sr
         amplitude = 0.16 * np.exp(-(relative / 24) ** 2) * (np.abs(relative) < 44)
+        if mute is not None:
+            amplitude *= (t < mute[0]) | (t > mute[1])
         for harmonic in harmonics:
             data += amplitude / harmonic * np.sin(harmonic * phase)
     path = tmp_path / "recording.wav"
@@ -79,3 +82,38 @@ def test_switching_stationary_tones_do_not_make_a_flyover(tmp_path):
     path = tmp_path / "switching.wav"
     sf.write(path, data, sr)
     assert discover_events(intake_recording(path, tmp_path / "intake")) == []
+
+
+def test_interrupted_tone_is_one_event_without_invented_gap_observations(tmp_path):
+    recording = _audio(tmp_path, [(65, 120, [1, 2])], duration=140, mute=(58, 69))
+    events = discover_events(recording)
+    assert len(events) == 1
+    event = events[0]
+    assert event["quality"]["fragment_count"] >= 2
+    assert event["quality"]["max_observed_gap_s"] >= 7
+    assert not any(60 < point["time_s"] < 67 for point in event["ridge"])
+    assert event["quality"]["frequency_sigma_hz"] == event["quality"]["frequency_uncertainty_hz"]
+
+
+def test_ambiguous_fragment_continuations_remain_separate():
+    def path(start, end, offset=0):
+        t = np.arange(start, end, 0.5)
+        return np.column_stack((t, 180 - 0.7 * t + offset, np.full(len(t), 5)))
+    first, second, competitor = path(0, 24), path(30, 55), path(31, 56, 0.5)
+    assert len(_stitch_fragments([first, second, competitor], DiscoverySettings())) == 3
+    assert len(_stitch_fragments([first, second], DiscoverySettings())) == 1
+    assert len(_stitch_fragments([first, path(50, 80)], DiscoverySettings())) == 2
+
+
+@pytest.mark.parametrize("count", [4, 6])
+def test_all_independent_flyovers_are_retained(tmp_path, count):
+    centers = [65 + 100 * i for i in range(count)]
+    frequencies = [120, 170, 230, 140, 260, 190]
+    recording = _audio(tmp_path, [(center, frequency, [1, 2])
+                                 for center, frequency in zip(centers, frequencies)],
+                       duration=100 * count + 30)
+    events = discover_events(recording)
+    assert len(events) == count
+    for center, event in zip(centers, events):
+        assert event["start_s"] < center < event["end_s"]
+        assert event["quality"]["harmonic_count"] >= 2

@@ -1,0 +1,19 @@
+E                                                                        [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_blind_whole_file_seams_harmonics_and_separate_events __
+
+self = PosixPath('/home/cinna/dopplergeist-w1-gap-plots/results/pytest-gap-plot-current-main')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/cinna/dopplergeist-w1-gap-plots/results/pytest-gap-plot-current-main'
+
+/usr/lib/python3.14/pathlib/__init__.py:1011: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/test_discovery.py::test_blind_whole_file_seams_harmonics_and_separate_events
+1 error in 1.46s

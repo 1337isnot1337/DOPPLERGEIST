@@ -67,6 +67,20 @@ detector settings on development controls before examining held-out predictions.
 These small public synthetic splits are regression controls, not independent real
 validation or an estimate of performance over arbitrary sound distributions.
 
+The [isolated live receipt](reports/discovery-isolation-20261102/receipt.json) and
+[all-case report](reports/discovery-isolation-20261102/report.json) exercise the
+actual W1 intake/discovery source frozen at `62066ac` (discovery `4a49646`). Each
+subprocess had both truth directories masked with bubblewrap, a read-only root,
+private `/tmp`, disabled network and only its own output directory writable.
+A separate probe verified label files were absent inside that namespace. All
+14 cases completed: 8/8 labelled events, zero misses and zero false alarms, with
+4/4 events in each split. All cases remain discovery-only inconclusive without
+coordinates. Total per-case elapsed time was 120.1 s; maximum per-case peak RSS
+was 240,021,504 bytes, including plotting/import/codec overhead. The receipt pins
+source/input/prediction hashes and preserves the two failed isolation-harness
+attempts; their failures are not detector outcomes. These results do not measure
+historical flight association or real-world localization accuracy.
+
 Detection evaluation merges harmonic groups and uses maximum-cardinality temporal
 IoU matching at 0.3 (predeclared). It reports TP, misses and false alarms. Localization
 uses WGS84 geodesic error with a 100 m threshold, marks wrong flight associations as

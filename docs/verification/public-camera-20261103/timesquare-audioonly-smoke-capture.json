@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "source_page": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+  "camera": "tsstreet",
+  "requested_duration_s": 12.0,
+  "status": "captured",
+  "recording_start_utc": null,
+  "recording_clock_established": false,
+  "truth_used_for_event_detection": false,
+  "location_validation_eligible": false,
+  "implementation_sha256": "05f51ba5dd69ee492afeffa36905c3a6b85a06fa143774b6fd01e943f8078bac",
+  "page_fetch": {
+    "started_utc": "2026-11-03T00:55:38.967587Z",
+    "finished_utc": "2026-11-03T00:55:39.203515Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 00:55:39 GMT",
+    "sha256": "7bb5d465e60a69520c0b77a1e030a22bf96f3cebd2676cbd0c5bbe19ab60b281",
+    "bytes": 173234
+  },
+  "camera_name": "Street Cam",
+  "stream_url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/playlist.m3u8",
+  "stream_url_sha256": "6a8104c4154e55acf4cfc51a49a9588782afb342cebb32fce09b0322443fbb38",
+  "provider_map_reference": {
+    "lat": 40.75941552728725,
+    "lon": -73.98521661758423,
+    "kind": "provider_map_marker",
+    "uncertainty_m": null,
+    "source": "https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet",
+    "timezone": "America/New_York"
+  },
+  "playlist_fetch": {
+    "started_utc": "2026-11-03T00:55:39.211546Z",
+    "finished_utc": "2026-11-03T00:55:39.297190Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 00:55:39 GMT",
+    "sha256": "cd6023a6f07a1cfef30907d5def23ac2352d868b1cec29912dbbb2d33e275431",
+    "bytes": 232
+  },
+  "media_playlist_fetch": {
+    "started_utc": "2026-11-03T00:55:39.297440Z",
+    "finished_utc": "2026-11-03T00:55:39.376643Z",
+    "http_status": 200,
+    "http_date": "Tue, 03 Nov 2026 00:55:39 GMT",
+    "sha256": "9f18b26d9be332b075902996a0d3e2e8ebb4c8d79916f937ac767c34c4e015bf",
+    "bytes": 513
+  },
+  "initial_media_segments": [
+    {
+      "sequence": 45706,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w1081847619_45706.ts",
+      "duration_s": 6.237,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 45707,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w1081847619_45707.ts",
+      "duration_s": 6.069,
+      "broadcaster_start_utc": null
+    },
+    {
+      "sequence": 45708,
+      "url": "https://videos-3.earthcam.com/fecnetwork/9974.flv/media_w1081847619_45708.ts",
+      "duration_s": 6.07,
+      "broadcaster_start_utc": null
+    }
+  ],
+  "broadcaster_segment_clock_present": false,
+  "clock_limitations": [
+    "Capture/HTTP times are receipt times, not microphone sample-zero UTC.",
+    "A map marker does not establish a surveyed microphone coordinate or uncertainty.",
+    "Broadcaster segment timestamps, if present, still require binding to the first captured audio sample."
+  ],
+  "decoder_command_redacted": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "warning",
+    "-rw_timeout",
+    "15000000",
+    "-user_agent",
+    "Mozilla/5.0",
+    "-headers",
+    "Referer: https://www.earthcam.com/usa/newyork/timessquare/?cam=tsstreet\r\n",
+    "-i",
+    "https://videos-3.earthcam.com/fecnetwork/9974.flv/playlist.m3u8?[query omitted]",
+    "-t",
+    "12.0",
+    "-map",
+    "0:a:0",
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "16000",
+    "-c:a",
+    "libmp3lame",
+    "-b:a",
+    "64k",
+    "/home/user/dopplergeist-public-camera-20261103/results/camera-capture-smoke-20261103-0056/audio.mp3"
+  ],
+  "ffmpeg_version": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+  "capture_started_utc": "2026-11-03T00:55:39.447490Z",
+  "decoder_exit_code": 0,
+  "capture_finished_utc": "2026-11-03T00:55:41.068131Z",
+  "capture_elapsed_s": 1.6206571829970926,
+  "audio": {
+    "path": "audio.mp3",
+    "bytes": 97101,
+    "sha256": "ab6ca93ce945489d4c655264e71d5ac8983da24634afd6e1c80376fa96e745a7"
+  },
+  "audio_probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "mp3",
+        "sample_rate": "16000",
+        "channels": 1
+      }
+    ],
+    "format": {
+      "duration": "12.096000"
+    }
+  }
+}

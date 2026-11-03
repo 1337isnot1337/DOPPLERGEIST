@@ -42,10 +42,11 @@ process. Use a new output directory for every run.
 
 Development evidence before DG-02 controls: full synthetic WAV (1180 s), 2
 proposals spanning both planted passes, 7.24 s / 238044 KiB peak RSS; full public
-reference WAV (3600.18425 s after decode), 8 proposals, 31.05 s / 249528 KiB peak
+reference WAV (3600.1845 s after decode), 8 proposals, 31.05 s / 249528 KiB peak
 RSS. The two prominent known passes are covered, but are fragmented into multiple
-proposals; the documented faint pass is missed. Six other reference proposals
-are unmatched/unverified, not labelled aircraft or certified false alarms. No
+proposals; the documented faint pass is missed. Six proposals do not cover either documented pass center; some appear to be
+fragments of the same pass. Their identities remain unverified. They are not
+labelled aircraft or certified false alarms. No
 complete real event annotation exists to calculate reference precision/recall.
 Earlier v1/v2 diagnostics preserve a missed synthetic event and excess proposals.
 These are development checks, not independent location/nationwide validation.
@@ -62,3 +63,54 @@ They cover complete-file seams, harmonic grouping including an absent fundamenta
 simultaneous unrelated events, noise/stationary/upward-sweep rejection, short
 unsupported clips, and crossfading stationary tones. Fixed-setting DG-02 corpus
 results are recorded separately in the audio evidence handoff.
+
+Fixed-code DG-02 control check at discovery commit `4a49646`: all 14 opaque-input
+cases processed, 8 planted events found, 0 misses and 0 false alarms at event
+IoU >= 0.3. Both the development and public deterministic held_out split find
+4/4 events. Noise, stationary, upward electronic sweep and short clips produce
+no event; harmonic, overlapping and MP3 positives are retained. Detection ran
+through the label-free subprocess runner; a later process read truth for scoring.
+No detector/settings changes followed the control run. These controls have no
+eligible location cases and do not establish real-aircraft identity or accuracy.
+
+Additional unchanged-code public-audio check: all 40 complete passage WAVs process
+without errors; 28 have at least one proposal, 12 have none, 102 proposals total.
+The run never supplied their frequency annotations. These counts do not establish
+true aircraft-event recall/precision: fragments and incidental sources remain
+unverified. Every prediction is saved under evidence/audio/w1-20261102/public40-4a49646.
+
+Fragment follow-up: compatible disjoint ridge fragments can join across at most
+20 s when the gap is at most 35% of the combined observed span, both endpoint
+slopes descend, the observed frequency drop/rate is compatible with those slopes,
+and each endpoint has only one compatible continuation. Competing continuations
+remain separate. No frequency samples are invented across missing intervals;
+harmonic comparison excludes unsupported spans. `fragment_count` and
+`max_observed_gap_s` retain missing-support evidence, and `fragment_links` records
+accepted/ambiguous continuations with reasons. This is a tonal continuity
+hypothesis; it does not prove a flight identity.
+
+`quality.frequency_sigma_hz` is the integration consumer's canonical robust-loss
+scale, with `frequency_uncertainty_hz` retained for compatibility. Both currently
+carry the same resolution/robust-deviation diagnostic, with no statistical or
+probability calibration implied by the field name. Matching applies its >=1 Hz
+loss-scale floor. Later tests against the already public DG-02 controls are
+regressions, not newly held-out accuracy evidence.
+
+Sensitivity follow-up lowers the global seed contrast threshold from3.0 to2.5.
+At this setting the full synthetic recording still yields2 groups, with first
+ridge support extended from143–180.5s to119–196s. The reference emits16 proposals,
+including a short1265.5–1282s ridge in the documented faint passage; post-run
+comparison with the archived manual ridge gives median absolute difference
+0.692Hz over23 points (90th percentile2.139Hz). This is acoustic overlap with an
+existing development measurement, not independently known aircraft or location
+truth. Fourteen known synthetic controls retain8 hits/0 misses/0 false alarms.
+The extra unverified reference proposals remain a matching/search cost. Earlier
+3.0-threshold evidence and the faint-pass miss stay preserved; no held-out or
+100m localization claim follows from this development tuning.
+
+Discovery returns all accepted independent groups; it has no global two- or
+three-event maximum. Four- and six-episode generated audio regressions check that
+later events survive and harmonics count once. These audio-only controls test
+retention, not geographic accuracy. The per-frame peak budget remains an explicit
+bounded-analysis setting, and unsupported or missed tones are not a completeness
+guarantee. The contrast 2.5 settings are frozen for the new public-camera batch.

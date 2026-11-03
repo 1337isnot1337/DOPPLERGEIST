@@ -1,0 +1,443 @@
+{
+  "recording": {
+    "source_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+    "duration_s": 3600.1845,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "wav",
+    "time_window": null
+  },
+  "time_status": "needs_input",
+  "settings": {
+    "chunk_s": 120.0,
+    "overlap_s": 60.0,
+    "min_frequency_hz": 40.0,
+    "max_frequency_hz": 1600.0,
+    "window_s": 2.0,
+    "hop_s": 0.5,
+    "min_contrast": 3.0,
+    "min_duration_s": 12.0,
+    "min_support": 0.65,
+    "min_drop_hz": 4.0,
+    "min_fractional_drop": 0.03,
+    "max_gap_s": 2.0,
+    "max_peaks_per_frame": 60
+  },
+  "events_found": 24,
+  "events": [
+    {
+      "event_id": "event-0001",
+      "start_s": 383.0,
+      "end_s": 411.0,
+      "band_hz": [
+        64.38280098885298,
+        74.60069167613983
+      ],
+      "quality": {
+        "median_contrast": 4.07977557182312,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9433962264150944,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.703736053779721
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "start_s": 499.0,
+      "end_s": 515.0,
+      "band_hz": [
+        168.22658345103264,
+        180.30404742062092
+      ],
+      "quality": {
+        "median_contrast": 4.571996212005615,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8620689655172413,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 8.090527459979057
+      }
+    },
+    {
+      "event_id": "event-0003",
+      "start_s": 541.0,
+      "end_s": 572.0,
+      "band_hz": [
+        64.95021637901664,
+        74.58391650766134
+      ],
+      "quality": {
+        "median_contrast": 3.7430766820907593,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9830508474576272,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 5.70168037712574
+      }
+    },
+    {
+      "event_id": "event-0004",
+      "start_s": 701.5,
+      "end_s": 715.5,
+      "band_hz": [
+        64.75,
+        74.68091501295567
+      ],
+      "quality": {
+        "median_contrast": 4.134287357330322,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.585215073078871
+      }
+    },
+    {
+      "event_id": "event-0005",
+      "start_s": 855.0,
+      "end_s": 902.5,
+      "band_hz": [
+        64.01478313095868,
+        74.75
+      ],
+      "quality": {
+        "median_contrast": 4.466590881347656,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9891304347826086,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 8.260094806551933
+      }
+    },
+    {
+      "event_id": "event-0006",
+      "start_s": 904.5,
+      "end_s": 959.0,
+      "band_hz": [
+        64.00656939018518,
+        74.60404352843761
+      ],
+      "quality": {
+        "median_contrast": 4.272238254547119,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9905660377358491,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 8.302378676831722
+      }
+    },
+    {
+      "event_id": "event-0007",
+      "start_s": 1028.5,
+      "end_s": 1051.0,
+      "band_hz": [
+        63.640354588627815,
+        74.25
+      ],
+      "quality": {
+        "median_contrast": 4.613884925842285,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.405605331063271
+      }
+    },
+    {
+      "event_id": "event-0008",
+      "start_s": 1086.0,
+      "end_s": 1105.0,
+      "band_hz": [
+        177.4483849965036,
+        187.0119374850765
+      ],
+      "quality": {
+        "median_contrast": 3.2513809204101562,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.6571428571428571,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 7.02713318169117
+      }
+    },
+    {
+      "event_id": "event-0009",
+      "start_s": 1558.5,
+      "end_s": 1576.5,
+      "band_hz": [
+        56.64274622499943,
+        73.96357931941748
+      ],
+      "quality": {
+        "median_contrast": 4.380419015884399,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9090909090909091,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 9.014511527493596
+      }
+    },
+    {
+      "event_id": "event-0010",
+      "start_s": 1597.0,
+      "end_s": 1620.0,
+      "band_hz": [
+        175.79783481359482,
+        187.54339481517673
+      ],
+      "quality": {
+        "median_contrast": 3.300187826156616,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7674418604651163,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 9.455781489610672
+      }
+    },
+    {
+      "event_id": "event-0011",
+      "start_s": 1620.5,
+      "end_s": 1643.0,
+      "band_hz": [
+        161.45331156998873,
+        176.68514376878738
+      ],
+      "quality": {
+        "median_contrast": 3.919959545135498,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8809523809523809,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 10.92038517864421
+      }
+    },
+    {
+      "event_id": "event-0012",
+      "start_s": 1647.5,
+      "end_s": 1664.5,
+      "band_hz": [
+        91.26109014451504,
+        103.25
+      ],
+      "quality": {
+        "median_contrast": 3.865022659301758,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8709677419354839,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 9.287811590824276
+      }
+    },
+    {
+      "event_id": "event-0013",
+      "start_s": 2091.5,
+      "end_s": 2122.5,
+      "band_hz": [
+        154.1359537690878,
+        177.5828729122877
+      ],
+      "quality": {
+        "median_contrast": 4.622637510299683,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9152542372881356,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 17.832199025899172
+      }
+    },
+    {
+      "event_id": "event-0014",
+      "start_s": 2125.0,
+      "end_s": 2178.0,
+      "band_hz": [
+        96.11563101410866,
+        150.5702282860875
+      ],
+      "quality": {
+        "median_contrast": 4.869237422943115,
+        "harmonic_count": 3.0,
+        "support_fraction": 0.9805825242718447,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 45.957594498991966
+      }
+    },
+    {
+      "event_id": "event-0015",
+      "start_s": 2229.0,
+      "end_s": 2244.5,
+      "band_hz": [
+        92.20043168962002,
+        113.38426522165537
+      ],
+      "quality": {
+        "median_contrast": 3.720369338989258,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8571428571428571,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 15.738085594028234
+      }
+    },
+    {
+      "event_id": "event-0016",
+      "start_s": 2619.0,
+      "end_s": 2647.0,
+      "band_hz": [
+        389.9591342397034,
+        416.2277810573578
+      ],
+      "quality": {
+        "median_contrast": 5.20387601852417,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9433962264150944,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 11.77305619418621
+      }
+    },
+    {
+      "event_id": "event-0017",
+      "start_s": 2725.0,
+      "end_s": 2747.0,
+      "band_hz": [
+        85.49179234262556,
+        99.96315637230873
+      ],
+      "quality": {
+        "median_contrast": 4.210865497589111,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.926829268292683,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 10.60323373787105
+      }
+    },
+    {
+      "event_id": "event-0018",
+      "start_s": 2952.5,
+      "end_s": 3033.5,
+      "band_hz": [
+        91.79258012771606,
+        122.21409596502781
+      ],
+      "quality": {
+        "median_contrast": 3.793515682220459,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9245283018867925,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 14.12503650970757
+      }
+    },
+    {
+      "event_id": "event-0019",
+      "start_s": 3041.5,
+      "end_s": 3060.0,
+      "band_hz": [
+        155.26016502082348,
+        173.722141623497
+      ],
+      "quality": {
+        "median_contrast": 4.221339702606201,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9705882352941176,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 14.497149005532265
+      }
+    },
+    {
+      "event_id": "event-0020",
+      "start_s": 3074.0,
+      "end_s": 3091.5,
+      "band_hz": [
+        115.43621025234461,
+        131.85230506956577
+      ],
+      "quality": {
+        "median_contrast": 3.9181309938430786,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.875,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 13.312445763498545
+      }
+    },
+    {
+      "event_id": "event-0021",
+      "start_s": 3196.0,
+      "end_s": 3213.0,
+      "band_hz": [
+        64.01678706519306,
+        73.53076967969537
+      ],
+      "quality": {
+        "median_contrast": 4.987512111663818,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 5.62792556732893
+      }
+    },
+    {
+      "event_id": "event-0022",
+      "start_s": 3264.0,
+      "end_s": 3299.5,
+      "band_hz": [
+        73.25,
+        87.97645026631653
+      ],
+      "quality": {
+        "median_contrast": 4.502387046813965,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8529411764705882,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 10.600280418992043
+      }
+    },
+    {
+      "event_id": "event-0023",
+      "start_s": 3454.0,
+      "end_s": 3478.5,
+      "band_hz": [
+        217.151369035244,
+        272.75
+      ],
+      "quality": {
+        "median_contrast": 3.7386114597320557,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8478260869565217,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 50.11381070688367
+      }
+    },
+    {
+      "event_id": "event-0024",
+      "start_s": 3461.5,
+      "end_s": 3511.5,
+      "band_hz": [
+        64.75,
+        74.6228000074625
+      ],
+      "quality": {
+        "median_contrast": 4.900810718536377,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_drop_hz": 4.498696301132441
+      }
+    }
+  ],
+  "runtime_s": 19.194279079005355,
+  "peak_rss_kib": 201608,
+  "code_sha256": "4d02459c95bb7b1c3c48c49b4e912fe226d417258c4c88970aeee5baf2037064",
+  "git_commit": "9538c466766aa1830b8a48cc6946cc45539a5e80",
+  "working_tree": "?? scripts/discover_audio.py\n?? src/aircraft_geoloc/discovery.py\n?? tests/test_discovery.py",
+  "scope": "Blind acoustic discovery only; no aircraft association or location estimate"
+}

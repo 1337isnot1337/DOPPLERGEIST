@@ -24,12 +24,13 @@ class DiscoverySettings:
     max_frequency_hz: float = 1600.0
     window_s: float = 2.0
     hop_s: float = 0.5
-    min_contrast: float = 3.0
+    min_contrast: float = 2.5
     min_duration_s: float = 12.0
     min_support: float = 0.65
     min_drop_hz: float = 4.0
     min_fractional_drop: float = 0.03
     max_gap_s: float = 2.0
+    max_fragment_gap_s: float = 20.0
     max_peaks_per_frame: int = 60
 
     def __post_init__(self):
@@ -139,6 +140,14 @@ def _overlap(a, b):
     if last <= first:
         return None
     t = np.arange(first, last + 0.001, 0.5)
+    supported = np.ones(len(t), dtype=bool)
+    for path in (a, b):
+        following = np.clip(np.searchsorted(path[:, 0], t), 0, len(path) - 1)
+        previous = np.maximum(0, following - 1)
+        supported &= np.minimum(np.abs(t - path[following, 0]), np.abs(t - path[previous, 0])) <= 1.0
+    t = t[supported]
+    if len(t) < 3:
+        return None
     return t, np.interp(t, a[:, 0], a[:, 1]), np.interp(t, b[:, 0], b[:, 1])
 
 
@@ -185,6 +194,59 @@ def _harmonic_groups(paths):
     return sorted(groups, key=lambda group: group[0][0, 0])
 
 
+def _stitch_fragments(paths, settings, diagnostics=None):
+    """Join only reciprocal-unique, locally compatible tonal continuations.
+
+    Missing samples remain missing. A stitch is an acoustic hypothesis, not a
+    flight identity or an independent event. Competing continuations stay split.
+    """
+    paths = sorted(paths, key=lambda path: path[0, 0])
+    incoming = [[] for _ in paths]
+    outgoing = [[] for _ in paths]
+    for i, left in enumerate(paths):
+        tail = left[left[:, 0] >= left[-1, 0] - 6]
+        rate_left = -np.polyfit(tail[:, 0] - tail[0, 0], tail[:, 1], 1)[0]
+        for j in range(i + 1, len(paths)):
+            right = paths[j]
+            gap = right[0, 0] - left[-1, 0]
+            if gap <= 0 or gap > settings.max_fragment_gap_s:
+                continue
+            if gap / (right[-1, 0] - left[0, 0]) > 0.35:
+                continue
+            head = right[right[:, 0] <= right[0, 0] + 6]
+            rate_right = -np.polyfit(head[:, 0] - head[0, 0], head[:, 1], 1)[0]
+            drop = left[-1, 1] - right[0, 1]
+            rate = drop / gap
+            tolerance = max(2 / settings.window_s, 0.015 * left[-1, 1])
+            if min(rate_left, rate_right) <= 0.05 or drop < -tolerance or drop > left[-1, 1] * 0.3:
+                continue
+            if not 0.4 * min(rate_left, rate_right) - tolerance / gap <= rate <= 2.5 * max(rate_left, rate_right) + tolerance / gap:
+                continue
+            outgoing[i].append(j)
+            incoming[j].append(i)
+    following = {i: targets[0] for i, targets in enumerate(outgoing)
+                 if len(targets) == 1 and len(incoming[targets[0]]) == 1}
+    if diagnostics is not None:
+        for i, targets in enumerate(outgoing):
+            for j in targets:
+                accepted = following.get(i) == j
+                diagnostics.append({"from_start_s": float(paths[i][0, 0]), "from_end_s": float(paths[i][-1, 0]),
+                    "to_start_s": float(paths[j][0, 0]), "to_end_s": float(paths[j][-1, 0]),
+                    "gap_s": float(paths[j][0, 0] - paths[i][-1, 0]), "accepted": accepted,
+                    "reason": "reciprocal_unique_continuation" if accepted else "ambiguous_continuation"})
+    consumed, result = set(), []
+    for first in range(len(paths)):
+        if first in consumed:
+            continue
+        chain, current = [paths[first]], first
+        while current in following:
+            current = following[current]
+            chain.append(paths[current])
+            consumed.add(current)
+        result.append(np.concatenate(chain))
+    return result
+
+
 def discover_events(recording, *, output_dir=None, settings=None):
     """Return shared DetectedEvent dictionaries from a disk-backed recording.
 
@@ -211,6 +273,8 @@ def discover_events(recording, *, output_dir=None, settings=None):
         paths.extend(found)
         chunks.append({"start_s": start, "duration_s": len(data) / sr, "usable_paths": len(found)})
     paths = _merge_duplicates(paths)
+    fragment_links = []
+    paths = _stitch_fragments(paths, settings, fragment_links)
     groups = _harmonic_groups(paths)
     events = []
     for index, group in enumerate(groups):
@@ -223,6 +287,7 @@ def discover_events(recording, *, output_dir=None, settings=None):
             orders.add(min(_HARMONIC_RATIOS, key=lambda value: abs(value - ratio)))
         margin = 2 / settings.window_s
         smooth = ndimage.median_filter(f, size=5, mode="nearest")
+        frequency_scale = float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth))))
         event = {"event_id": f"event-{index + 1:04d}", "harmonic_group_id": f"harmonics-{index + 1:04d}",
                  "start_s": max(0.0, float(t[0] - settings.window_s / 2)),
                  "end_s": min(recording.metadata["duration_s"], float(t[-1] + settings.window_s / 2)),
@@ -232,16 +297,20 @@ def discover_events(recording, *, output_dir=None, settings=None):
                              "support_fraction": min(1.0, len(t) / (np.ptp(t) / settings.hop_s + 1)),
                              "frequency_resolution_hz": 1 / settings.window_s,
                              "time_uncertainty_s": settings.window_s / 2,
-                             "frequency_uncertainty_hz": float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth)))),
+                             "frequency_uncertainty_hz": frequency_scale,
+                             "frequency_sigma_hz": frequency_scale,
+                             "fragment_count": float(1 + np.sum(np.diff(t) > settings.max_gap_s)),
+                             "max_observed_gap_s": float(np.max(np.diff(t))),
                              "frequency_drop_hz": float(np.median(f[:max(3, len(f) // 6)]) - np.median(f[-max(3, len(f) // 6):]))}}
         events.append(validate_event(event))
     if output:
         diagnostics = {"source_sha256": recording.metadata["source_sha256"], "settings": asdict(settings),
                        "events": events, "chunks": chunks, "ridge_count": len(paths),
+                       "fragment_links": fragment_links,
                        "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
                        "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"}
         (output / "discovery.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
-        _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"])
+        _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
         for event, group in zip(events, groups):
             np.savetxt(output / f"{event['event_id']}.csv", group[0], delimiter=",",
                        header="time_s,frequency_hz,weight", comments="")
@@ -249,15 +318,17 @@ def discover_events(recording, *, output_dir=None, settings=None):
     return events
 
 
-def _plot_groups(groups, path, duration):
+def _plot_groups(groups, path, duration, max_gap_s=2.0):
     import matplotlib
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
     fig, ax = plt.subplots(figsize=(12, 5), layout="constrained")
     for index, group in enumerate(groups):
         for harmonic, points in enumerate(group):
-            ax.plot(points[:, 0], points[:, 1], lw=0.8, alpha=0.8,
-                    label=f"Event {index + 1}" if harmonic == 0 else None)
+            segments = np.split(points, np.flatnonzero(np.diff(points[:, 0]) > max_gap_s) + 1)
+            for segment_index, segment in enumerate(segments):
+                ax.plot(segment[:, 0], segment[:, 1], color=f"C{index % 10}", lw=0.8, alpha=0.8,
+                        label=f"Event {index + 1}" if harmonic == 0 and segment_index == 0 else None)
     ax.set(xlim=(0, duration), xlabel="Recording-relative time (s)", ylabel="Measured frequency (Hz)",
            title="Automatic whole-recording moving-tone proposals (harmonics grouped)")
     if groups:
@@ -279,7 +350,8 @@ def _plot_event(recording, group, event, settings, path):
     ax.pcolormesh(spec.time, spec.frequency, spec.contrast, shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
-        ax.plot(points[:, 0], points[:, 1], color="cyan", lw=0.9)
+        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > settings.max_gap_s) + 1):
+            ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=0.9)
     low = min(points[:, 1].min() for points in group)
     high = max(points[:, 1].max() for points in group)
     ax.set(xlim=(first, last), ylim=(max(settings.min_frequency_hz, low * 0.9), high * 1.1),

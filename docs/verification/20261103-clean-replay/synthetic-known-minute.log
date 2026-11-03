@@ -1,0 +1,17 @@
+Event 1 {"f0_hz": 134.0212033500025, "speed_mps": 87.80050231322679, "slant_m": 1766.5678105194554, "cpa_receive_s": 155.7639865164261, "rmse_hz": 0.14128946474526496, "frequency_drop_hz": 58.14650108032899, "optimizer_success": true, "ridge_contrast": 3.2070720139180606, "detected": true}
+Grid: 7341 points; 6 trajectory segments
+Coarse filters: {'per_event_survivors': [267], 'pairs_before_silence': 267, 'silence_rejected': 0, 'survivors': 267}
+Scoring filters: {'per_event_survivors': [1049], 'pairs_before_silence': 1049, 'silence_rejected': 0, 'survivors': 1049}
+Scored 100/1049 candidates
+Scored 200/1049 candidates
+Scored 300/1049 candidates
+Scored 400/1049 candidates
+Scored 500/1049 candidates
+Scored 600/1049 candidates
+Scored 700/1049 candidates
+Scored 800/1049 candidates
+Scored 900/1049 candidates
+Scored 1000/1049 candidates
+Scored 100/243 candidates
+Scored 200/243 candidates
+Best: {"score": -0.12777456051000627, "event_scores": [-0.12777456051000627], "f0_hz": [135.05888588159837], "recording_start_time_s": 1790000000.5, "time_adjustment_s": 0.5, "point_id": 139, "lat": 40.03158825366124, "lon": -100.01784804510696, "elev_m": 120.0, "x": -339750.0, "y": 1897700.0, "flight_ids": ["true-A"]}

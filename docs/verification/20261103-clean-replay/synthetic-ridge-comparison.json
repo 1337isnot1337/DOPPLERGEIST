@@ -1,0 +1,18 @@
+[
+  {
+    "event": 1,
+    "frames": 733,
+    "changed_ridge_frames": 67,
+    "maximum_ridge_difference_hz": 6.625,
+    "maximum_archived_weight_difference_on_current_spectrum": 0.23568214891686412,
+    "archived_weight_frames_matching_current_spectrum_1e_10": 637
+  },
+  {
+    "event": 2,
+    "frames": 733,
+    "changed_ridge_frames": 34,
+    "maximum_ridge_difference_hz": 2.121672777300688,
+    "maximum_archived_weight_difference_on_current_spectrum": 0.10947818015100808,
+    "archived_weight_frames_matching_current_spectrum_1e_10": 610
+  }
+]
