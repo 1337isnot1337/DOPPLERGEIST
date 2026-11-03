@@ -48,7 +48,7 @@ jobs:
               "reference_count": len(git("show-ref").splitlines()),
               "git_fsck_passed": True,
               "git_bundle_verify_passed": True,
-              "credentials_included": False,
+              "checkout_auth_configuration_included": False,
               "scope": "Git objects and references only; no working-tree Git configuration or credentials"
           }
           (directory / "export.json").write_text(json.dumps(report, indent=2) + "\n")
