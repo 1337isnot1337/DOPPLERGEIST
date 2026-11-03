@@ -18,6 +18,21 @@ from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
+try:
+    from . import _native_ridge as _native_ridge_module
+    from ._native_ridge import fit_irls as _native_fit_irls
+except ImportError:
+    _native_ridge_module = None
+    _native_fit_irls = None
+
+if _native_ridge_module is None:
+    RIDGE_FIT_BACKEND = "python-irls-v1"
+else:
+    from pathlib import Path
+
+    _native_binary_hash = hashlib.sha256(Path(_native_ridge_module.__file__).read_bytes()).hexdigest()
+    RIDGE_FIT_BACKEND = f"native-c-irls-v1:{_native_binary_hash}"
+
 
 @dataclass
 class RidgeTimes:
@@ -476,6 +491,23 @@ def _fit_ridge_uncached(track, observer, measurement, start_time, f0_bounds, c=3
     span = max(float(np.ptp(emission)), 1e-9)
     u = (emission - (emission.min() + emission.max()) / 2) / span
     cap = float(np.clip(np.median(y / factor), *f0_bounds)) * drift_fraction
+    if _native_fit_irls is not None:
+        try:
+            native = _native_fit_irls(factor, u, y, w, float(f0_bounds[0]),
+                                      float(f0_bounds[1]), cap, float(sigma_hz),
+                                      independent_samples)
+        except (BufferError, TypeError, ValueError, OverflowError):
+            native = None
+        if native is not None and all(np.isfinite(value) for value in native):
+            score, f0, drift, rmse, outlier_fraction = native
+            return {"score": float(score), "f0_hz": float(f0),
+                    "source_drift_hz": float(drift), "source_drift_hz_s": float(drift/span),
+                    "source_reference_emission_time_s": float((emission.min()+emission.max())/2),
+                    "source_span_s": span, "drift_bound_hz": float(cap),
+                    "drift_at_bound": bool(cap and abs(drift) > 0.99*cap),
+                    "rmse_hz": float(rmse), "support_fraction": 1.0,
+                    "sample_count": int(len(y)), "independent_sample_count": independent_samples,
+                    "outlier_fraction": float(outlier_fraction)}
     effective = w.copy()
     basis = (factor**2, u**2)
     for _ in range(6):

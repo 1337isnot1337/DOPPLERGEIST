@@ -268,3 +268,15 @@ The diagnostic contains measured event ridges, observed `cpa_rows`, one receiver
 matching/scoring modules with the current fitter and requires identical shared
 geometry. Timing includes scoring with a bounded fit cache. Scaling experiments
 and location-accuracy evidence must be labelled separately.
+
+The optional CPython C extension fuses the six robust ridge-fit iterations and
+releases the GIL for the numeric loop; installations without a working C
+compiler keep the Python implementation. On a saved real fixture (70 recorded
+associations, 38 tracks, 12 points and 15 independent groups), four paired
+process-CPU comparisons measured 2.17-2.97x lower scoring time with the C path.
+All 70 candidate orderings and the top five retained mode IDs matched. The
+maximum candidate-score difference was 8.9e-16, so the exact retention checksum
+changed. The search manifest includes the native binary identity in its run
+configuration, preventing Python and compiled-backend checkpoints from being
+mixed. This is a bounded local scoring measurement; no full tile, national
+runtime, or localization-accuracy result has been established.

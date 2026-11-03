@@ -1,6 +1,7 @@
 """Stdlib-only regression checks, also collected by pytest."""
 import hashlib
 import json
+from importlib.machinery import EXTENSION_SUFFIXES
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -162,6 +163,24 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(result["sources"][1]["sha256"], hashlib.sha256(b"b = 2\n").hexdigest())
         (package / "pkg/b.py").write_bytes(b"b = 3\n")
         self.assertNotEqual(implementation_provenance(root)["sha256"], expected)
+
+    def test_native_ridge_binary_is_hashed_only_when_present(self):
+        root = self.root / "native-src"
+        package = root / "dopplergeist"
+        package.mkdir(parents=True)
+        (package / "matching.py").write_bytes(b"score = 1\n")
+        python_only = implementation_provenance(root)
+        self.assertEqual([row["relative_path"] for row in python_only["sources"]],
+                         ["dopplergeist/matching.py"])
+
+        binary = package / f"_native_ridge{EXTENSION_SUFFIXES[0]}"
+        binary.write_bytes(b"native binary v1")
+        native = implementation_provenance(root)
+        self.assertEqual({row["relative_path"] for row in native["sources"]},
+                         {"dopplergeist/matching.py", f"dopplergeist/{binary.name}"})
+        self.assertNotEqual(native["sha256"], python_only["sha256"])
+        binary.write_bytes(b"native binary v2")
+        self.assertNotEqual(implementation_provenance(root)["sha256"], native["sha256"])
 
 
 if __name__ == "__main__":
