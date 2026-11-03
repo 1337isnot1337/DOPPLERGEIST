@@ -1,0 +1,100 @@
+from copy import deepcopy
+
+import pytest
+
+from aircraft_geoloc.confidence import DecisionPolicy, decide_location
+from aircraft_geoloc.contracts import validate_result
+
+
+def evidence():
+    events = [{"event_id": f"e{i}", "start_s": i * 100, "end_s": i * 100 + 20,
+               "band_hz": [90, 200], "harmonic_group_id": f"g{i}",
+               "ridge": [{"time_s": i * 100 + t, "frequency_hz": 140 - t} for t in [0, 10, 20]]}
+              for i in range(2)]
+    candidate = {"lat": 40., "lon": -100., "score": -1., "score_kind": "negative_robust_ridge_loss_hz",
+                 "event_ids": ["e0", "e1"], "flight_ids": ["a", "b"],
+                 "recording_start_utc": "2026-09-21T14:13:20Z",
+                 "uncertainty": {"radius_m": 70., "kind": "sensitivity", "method": "fixture_full_perturbation"}}
+    coverage = {"search_complete": True, "data_status": "available", "limitations": ["Aircraft capture is incomplete."]}
+    diagnostic = {"clock_locked": True, "alternatives_evaluated": True, "refinement_boundary_limited": False,
+                  "sensitivity": {"complete": True, "boundary_limited": False, "radius_m": 70.,
+                                  "sources": ["frequency", "clock", "altitude", "sound_speed"]}}
+    for event in events:
+        diagnostic[event["event_id"]] = {"rmse_hz": 0.7, "outlier_fraction": 0.1,
+                                         "support_fraction": 1.0, "drift_at_bound": False}
+    return events, [candidate], coverage, diagnostic
+
+
+def decide(bundle):
+    events, candidates, coverage, diagnostic = bundle
+    return decide_location(events, candidates, coverage, matching_diagnostics=diagnostic)
+
+
+def test_complete_fixture_passes_without_probability_and_preserves_inputs():
+    bundle = evidence()
+    before = deepcopy(bundle)
+    result = decide(bundle)
+    assert result["status"] == "succeeded"
+    assert result["diagnostics"]["probability"] is None
+    assert result["diagnostics"]["calibration"] == "uncalibrated"
+    assert bundle == before
+    wire = {"schema_version": 1, "job_id": "example", "events": bundle[0], "candidates": bundle[1],
+            "coverage": bundle[2], **{k: v for k, v in result.items() if k != "diagnostics"}}
+    assert validate_result(wire)["status"] == "succeeded"
+
+
+@pytest.mark.parametrize("kind,reason", [
+    ("noise", "no_doppler_events"), ("missing", "missing_flight_data"),
+    ("partial", "partial_flight_coverage"), ("incomplete", "search_incomplete"),
+    ("harmonics", "insufficient_independent_events"), ("clock", "timing_not_established"),
+    ("residual", "inconsistent_event_match"), ("support", "insufficient_track_support"),
+    ("drift", "source_drift_unresolved"), ("altitude_only", "uncertainty_not_established"),
+    ("no_alternatives", "alternatives_not_assessed"), ("wide", "location_uncertainty_too_large"),
+    ("boundary", "refinement_boundary_limited"), ("no_tracks", "no_matching_flights")])
+def test_insufficient_evidence_abstains(kind, reason):
+    events, candidates, coverage, diag = evidence()
+    if kind == "noise": events, candidates = [], []
+    elif kind == "missing": coverage["data_status"] = "unavailable"
+    elif kind == "partial": coverage["data_status"] = "partial"
+    elif kind == "incomplete": coverage["search_complete"] = False
+    elif kind == "harmonics":
+        events[1]["harmonic_group_id"] = events[0]["harmonic_group_id"]
+        candidates[0]["flight_ids"] = ["a", "a"]
+    elif kind == "clock": diag["clock_locked"] = False
+    elif kind == "residual": diag["e0"]["rmse_hz"] = 8
+    elif kind == "support": diag["e0"]["support_fraction"] = 0.5
+    elif kind == "drift": diag["e0"]["drift_at_bound"] = True
+    elif kind == "altitude_only": diag["sensitivity"]["sources"] = ["altitude"]
+    elif kind == "no_alternatives": diag["alternatives_evaluated"] = False
+    elif kind == "wide": candidates[0]["uncertainty"]["radius_m"] = 500
+    elif kind == "boundary": diag["sensitivity"]["boundary_limited"] = True
+    elif kind == "no_tracks": candidates = []
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "inconclusive"
+    assert result["reason_code"] == reason
+
+
+def test_distant_tie_and_same_location_different_flights():
+    events, candidates, coverage, diag = evidence()
+    alternative = dict(candidates[0], lat=45., score=-1.2)
+    result = decide((events, candidates + [alternative], coverage, diag))
+    assert result["reason_code"] == "ambiguous_locations"
+    alternative.update(lat=40., flight_ids=["x", "y"])
+    assert decide((events, candidates + [alternative], coverage, diag))["reason_code"] == "ambiguous_flight_match"
+
+
+def test_malformed_results_fail_instead_of_masquerading_as_insufficient_evidence():
+    events, candidates, coverage, diag = evidence()
+    candidates[0]["score"] = float("nan")
+    result = decide((events, candidates, coverage, diag))
+    assert result["status"] == "failed"
+    assert result["reason_code"] == "invalid_evidence"
+    with pytest.raises(ValueError):
+        DecisionPolicy(min_independent_events=1)
+
+
+def test_w3_vertical_only_profile_is_not_a_100m_confidence_claim():
+    events, candidates, coverage, diag = evidence()
+    diag["sensitivity"] = {"radius_m": 0.0, "kind": "sensitivity", "method": "profiled_relative_altitude_offsets",
+                           "complete": True, "boundary_limited": False, "profiles": []}
+    assert decide((events, candidates, coverage, diag))["reason_code"] == "uncertainty_not_established"
