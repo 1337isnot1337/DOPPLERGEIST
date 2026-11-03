@@ -1,0 +1,2635 @@
+{
+  "schema_version": 1,
+  "job_id": "388a6b84f3814f029ea7a7477e89e2d4",
+  "status": "inconclusive",
+  "coverage": {
+    "search_complete": true,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "recording": {
+    "source_sha256": "e7cb2594c76adfa5d83068f17ddcf061e320e3738662b262366112b9d13ef143",
+    "duration_s": 1180.0,
+    "sample_rate_hz": 4000,
+    "channels": 1,
+    "source_format": "mp3",
+    "time_window": {
+      "start_utc": "2026-09-21T14:13:20Z",
+      "end_utc": "2026-09-21T14:13:20Z",
+      "source": "user",
+      "source_detail": "Synthetic renderer declares this exact recording-start epoch."
+    }
+  },
+  "events": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 143.0,
+      "end_s": 180.5,
+      "band_hz": [
+        111.99079792015254,
+        155.68893902003765
+      ],
+      "ridge": [
+        {
+          "time_s": 144.0,
+          "frequency_hz": 154.68893902003765,
+          "weight": 3.2479021549224854
+        },
+        {
+          "time_s": 144.5,
+          "frequency_hz": 154.49320429423824,
+          "weight": 3.708847761154175
+        },
+        {
+          "time_s": 146.0,
+          "frequency_hz": 151.75,
+          "weight": 3.2281041145324707
+        },
+        {
+          "time_s": 148.0,
+          "frequency_hz": 148.30593053996563,
+          "weight": 3.221714973449707
+        },
+        {
+          "time_s": 148.5,
+          "frequency_hz": 147.19269432127476,
+          "weight": 3.4229156970977783
+        },
+        {
+          "time_s": 149.0,
+          "frequency_hz": 146.57104247808456,
+          "weight": 3.1660807132720947
+        },
+        {
+          "time_s": 149.5,
+          "frequency_hz": 145.43271443247795,
+          "weight": 3.2360081672668457
+        },
+        {
+          "time_s": 150.0,
+          "frequency_hz": 144.38960691541433,
+          "weight": 3.2818851470947266
+        },
+        {
+          "time_s": 150.5,
+          "frequency_hz": 143.52970313467085,
+          "weight": 3.7254254817962646
+        },
+        {
+          "time_s": 151.0,
+          "frequency_hz": 142.6371397525072,
+          "weight": 3.8682260513305664
+        },
+        {
+          "time_s": 151.5,
+          "frequency_hz": 142.0041731595993,
+          "weight": 3.475233554840088
+        },
+        {
+          "time_s": 152.0,
+          "frequency_hz": 140.7056906223297,
+          "weight": 3.3670835494995117
+        },
+        {
+          "time_s": 152.5,
+          "frequency_hz": 139.68987123668194,
+          "weight": 3.096039295196533
+        },
+        {
+          "time_s": 153.0,
+          "frequency_hz": 138.83763305842876,
+          "weight": 3.653174877166748
+        },
+        {
+          "time_s": 153.5,
+          "frequency_hz": 138.13625833392143,
+          "weight": 3.5525996685028076
+        },
+        {
+          "time_s": 154.0,
+          "frequency_hz": 137.25,
+          "weight": 3.0197629928588867
+        },
+        {
+          "time_s": 154.5,
+          "frequency_hz": 136.20563100278378,
+          "weight": 3.2556612491607666
+        },
+        {
+          "time_s": 155.0,
+          "frequency_hz": 135.46289021149278,
+          "weight": 3.432295560836792
+        },
+        {
+          "time_s": 155.5,
+          "frequency_hz": 134.29801240563393,
+          "weight": 3.617288589477539
+        },
+        {
+          "time_s": 156.0,
+          "frequency_hz": 133.68293794989586,
+          "weight": 3.4009628295898438
+        },
+        {
+          "time_s": 156.5,
+          "frequency_hz": 132.72576758265495,
+          "weight": 3.0809600353240967
+        },
+        {
+          "time_s": 157.0,
+          "frequency_hz": 131.85886345803738,
+          "weight": 3.510284423828125
+        },
+        {
+          "time_s": 157.5,
+          "frequency_hz": 131.15969309210777,
+          "weight": 3.5860393047332764
+        },
+        {
+          "time_s": 158.0,
+          "frequency_hz": 130.40977632254362,
+          "weight": 3.6750333309173584
+        },
+        {
+          "time_s": 158.5,
+          "frequency_hz": 129.69304977357388,
+          "weight": 3.6783852577209473
+        },
+        {
+          "time_s": 159.0,
+          "frequency_hz": 128.75,
+          "weight": 3.445660352706909
+        },
+        {
+          "time_s": 159.5,
+          "frequency_hz": 128.12131996452808,
+          "weight": 3.734097480773926
+        },
+        {
+          "time_s": 160.0,
+          "frequency_hz": 127.46782797574997,
+          "weight": 3.793799877166748
+        },
+        {
+          "time_s": 160.5,
+          "frequency_hz": 126.83915796875954,
+          "weight": 3.553610324859619
+        },
+        {
+          "time_s": 161.0,
+          "frequency_hz": 126.20926977694035,
+          "weight": 3.297233819961548
+        },
+        {
+          "time_s": 161.5,
+          "frequency_hz": 125.51799566484988,
+          "weight": 3.3804240226745605
+        },
+        {
+          "time_s": 162.0,
+          "frequency_hz": 124.82572321593761,
+          "weight": 3.8572781085968018
+        },
+        {
+          "time_s": 162.5,
+          "frequency_hz": 124.4144694507122,
+          "weight": 3.7738609313964844
+        },
+        {
+          "time_s": 163.0,
+          "frequency_hz": 123.75,
+          "weight": 3.3386006355285645
+        },
+        {
+          "time_s": 163.5,
+          "frequency_hz": 123.21719814836979,
+          "weight": 3.3830811977386475
+        },
+        {
+          "time_s": 164.0,
+          "frequency_hz": 122.5512470267713,
+          "weight": 3.6369659900665283
+        },
+        {
+          "time_s": 164.5,
+          "frequency_hz": 122.08754778653383,
+          "weight": 3.535527467727661
+        },
+        {
+          "time_s": 165.0,
+          "frequency_hz": 121.67995169758797,
+          "weight": 3.558588981628418
+        },
+        {
+          "time_s": 165.5,
+          "frequency_hz": 121.20865002274513,
+          "weight": 3.399874448776245
+        },
+        {
+          "time_s": 166.0,
+          "frequency_hz": 120.76433244347572,
+          "weight": 3.51092791557312
+        },
+        {
+          "time_s": 166.5,
+          "frequency_hz": 120.19966042041779,
+          "weight": 3.190091371536255
+        },
+        {
+          "time_s": 167.0,
+          "frequency_hz": 119.8335878700018,
+          "weight": 3.3204526901245117
+        },
+        {
+          "time_s": 167.5,
+          "frequency_hz": 119.42619532346725,
+          "weight": 3.257443904876709
+        },
+        {
+          "time_s": 168.0,
+          "frequency_hz": 118.96408362314105,
+          "weight": 3.828413248062134
+        },
+        {
+          "time_s": 168.5,
+          "frequency_hz": 118.65413646399975,
+          "weight": 3.5559401512145996
+        },
+        {
+          "time_s": 169.0,
+          "frequency_hz": 118.12601798772812,
+          "weight": 3.448315143585205
+        },
+        {
+          "time_s": 169.5,
+          "frequency_hz": 117.80580532550812,
+          "weight": 3.608919143676758
+        },
+        {
+          "time_s": 170.0,
+          "frequency_hz": 117.67074204981327,
+          "weight": 3.6804652214050293
+        },
+        {
+          "time_s": 170.5,
+          "frequency_hz": 117.2818565517664,
+          "weight": 3.2286617755889893
+        },
+        {
+          "time_s": 171.0,
+          "frequency_hz": 116.8130473792553,
+          "weight": 3.3267412185668945
+        },
+        {
+          "time_s": 171.5,
+          "frequency_hz": 116.62439190596342,
+          "weight": 3.585479974746704
+        },
+        {
+          "time_s": 172.0,
+          "frequency_hz": 116.34046646952629,
+          "weight": 3.120664358139038
+        },
+        {
+          "time_s": 173.0,
+          "frequency_hz": 115.65621262788773,
+          "weight": 3.0831081867218018
+        },
+        {
+          "time_s": 173.5,
+          "frequency_hz": 115.51871503330767,
+          "weight": 3.2483737468719482
+        },
+        {
+          "time_s": 175.5,
+          "frequency_hz": 114.32818140089512,
+          "weight": 3.156935930252075
+        },
+        {
+          "time_s": 176.0,
+          "frequency_hz": 114.21760827302933,
+          "weight": 3.391439437866211
+        },
+        {
+          "time_s": 176.5,
+          "frequency_hz": 114.0886272341013,
+          "weight": 3.411531925201416
+        },
+        {
+          "time_s": 177.0,
+          "frequency_hz": 113.9520529024303,
+          "weight": 3.1855344772338867
+        },
+        {
+          "time_s": 178.5,
+          "frequency_hz": 113.14757053554058,
+          "weight": 3.0936450958251953
+        },
+        {
+          "time_s": 179.0,
+          "frequency_hz": 112.99697306007147,
+          "weight": 3.4474995136260986
+        },
+        {
+          "time_s": 179.5,
+          "frequency_hz": 112.99079792015254,
+          "weight": 3.1567001342773438
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.411531925201416,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8472222222222222,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 32.72875064611435
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "harmonic_group_id": "harmonics-0002",
+      "start_s": 1038.5,
+      "end_s": 1112.0,
+      "band_hz": [
+        95.91330191493034,
+        145.54331961646676
+      ],
+      "ridge": [
+        {
+          "time_s": 1039.5,
+          "frequency_hz": 144.54331961646676,
+          "weight": 3.013625144958496
+        },
+        {
+          "time_s": 1040.0,
+          "frequency_hz": 144.5272501874715,
+          "weight": 3.084876775741577
+        },
+        {
+          "time_s": 1040.5,
+          "frequency_hz": 144.38463068008423,
+          "weight": 3.0373833179473877
+        },
+        {
+          "time_s": 1042.0,
+          "frequency_hz": 143.84213949739933,
+          "weight": 3.253692388534546
+        },
+        {
+          "time_s": 1042.5,
+          "frequency_hz": 143.89501675218344,
+          "weight": 3.1400105953216553
+        },
+        {
+          "time_s": 1043.5,
+          "frequency_hz": 143.59311442822218,
+          "weight": 3.1054842472076416
+        },
+        {
+          "time_s": 1044.0,
+          "frequency_hz": 143.37636536359787,
+          "weight": 3.2598249912261963
+        },
+        {
+          "time_s": 1045.0,
+          "frequency_hz": 143.18084312975407,
+          "weight": 3.0868983268737793
+        },
+        {
+          "time_s": 1045.5,
+          "frequency_hz": 142.97432013973594,
+          "weight": 3.068394660949707
+        },
+        {
+          "time_s": 1047.0,
+          "frequency_hz": 142.3405165374279,
+          "weight": 3.1114749908447266
+        },
+        {
+          "time_s": 1049.0,
+          "frequency_hz": 141.53470461070538,
+          "weight": 3.409099817276001
+        },
+        {
+          "time_s": 1049.5,
+          "frequency_hz": 141.38145998865366,
+          "weight": 3.8447988033294678
+        },
+        {
+          "time_s": 1050.0,
+          "frequency_hz": 141.1833195090294,
+          "weight": 3.8235082626342773
+        },
+        {
+          "time_s": 1050.5,
+          "frequency_hz": 140.84621773660183,
+          "weight": 3.393493890762329
+        },
+        {
+          "time_s": 1051.0,
+          "frequency_hz": 140.73944306373596,
+          "weight": 3.702242851257324
+        },
+        {
+          "time_s": 1051.5,
+          "frequency_hz": 140.36322204768658,
+          "weight": 3.820887565612793
+        },
+        {
+          "time_s": 1052.0,
+          "frequency_hz": 140.08273991197348,
+          "weight": 3.7893500328063965
+        },
+        {
+          "time_s": 1052.5,
+          "frequency_hz": 139.97419171966612,
+          "weight": 3.550936222076416
+        },
+        {
+          "time_s": 1053.0,
+          "frequency_hz": 139.44544097408652,
+          "weight": 3.535222291946411
+        },
+        {
+          "time_s": 1053.5,
+          "frequency_hz": 139.2315245270729,
+          "weight": 3.4623160362243652
+        },
+        {
+          "time_s": 1054.0,
+          "frequency_hz": 138.87282828986645,
+          "weight": 3.596771717071533
+        },
+        {
+          "time_s": 1054.5,
+          "frequency_hz": 138.66139122843742,
+          "weight": 3.919416666030884
+        },
+        {
+          "time_s": 1055.0,
+          "frequency_hz": 138.35910764336586,
+          "weight": 3.4225542545318604
+        },
+        {
+          "time_s": 1055.5,
+          "frequency_hz": 137.84826551377773,
+          "weight": 3.2993836402893066
+        },
+        {
+          "time_s": 1056.0,
+          "frequency_hz": 137.55732138454914,
+          "weight": 3.6256723403930664
+        },
+        {
+          "time_s": 1056.5,
+          "frequency_hz": 137.16646601259708,
+          "weight": 3.2646846771240234
+        },
+        {
+          "time_s": 1057.5,
+          "frequency_hz": 136.37297135591507,
+          "weight": 3.502410650253296
+        },
+        {
+          "time_s": 1058.0,
+          "frequency_hz": 135.8388536274433,
+          "weight": 3.4751739501953125
+        },
+        {
+          "time_s": 1058.5,
+          "frequency_hz": 135.42433327436447,
+          "weight": 3.6180617809295654
+        },
+        {
+          "time_s": 1059.0,
+          "frequency_hz": 135.05363096296787,
+          "weight": 3.72273325920105
+        },
+        {
+          "time_s": 1059.5,
+          "frequency_hz": 134.3593557626009,
+          "weight": 3.478621482849121
+        },
+        {
+          "time_s": 1060.0,
+          "frequency_hz": 133.9656400680542,
+          "weight": 3.8175580501556396
+        },
+        {
+          "time_s": 1060.5,
+          "frequency_hz": 133.51549956388772,
+          "weight": 3.5791828632354736
+        },
+        {
+          "time_s": 1061.0,
+          "frequency_hz": 132.90788008272648,
+          "weight": 3.560678720474243
+        },
+        {
+          "time_s": 1061.5,
+          "frequency_hz": 132.3532451093197,
+          "weight": 3.4333174228668213
+        },
+        {
+          "time_s": 1062.0,
+          "frequency_hz": 131.6579733788967,
+          "weight": 3.643183469772339
+        },
+        {
+          "time_s": 1062.5,
+          "frequency_hz": 131.20114789903164,
+          "weight": 3.4957008361816406
+        },
+        {
+          "time_s": 1063.0,
+          "frequency_hz": 130.4927587932907,
+          "weight": 3.566866397857666
+        },
+        {
+          "time_s": 1063.5,
+          "frequency_hz": 129.97998066805303,
+          "weight": 3.4949333667755127
+        },
+        {
+          "time_s": 1064.0,
+          "frequency_hz": 129.21916216611862,
+          "weight": 3.2397494316101074
+        },
+        {
+          "time_s": 1064.5,
+          "frequency_hz": 128.58585204184055,
+          "weight": 3.105971336364746
+        },
+        {
+          "time_s": 1065.0,
+          "frequency_hz": 127.79624989628792,
+          "weight": 3.434242010116577
+        },
+        {
+          "time_s": 1065.5,
+          "frequency_hz": 127.22730220854282,
+          "weight": 3.7126264572143555
+        },
+        {
+          "time_s": 1066.0,
+          "frequency_hz": 126.47065883688629,
+          "weight": 3.2560231685638428
+        },
+        {
+          "time_s": 1066.5,
+          "frequency_hz": 125.65942525863647,
+          "weight": 3.5394747257232666
+        },
+        {
+          "time_s": 1067.0,
+          "frequency_hz": 125.0064198137261,
+          "weight": 3.663822889328003
+        },
+        {
+          "time_s": 1068.0,
+          "frequency_hz": 123.42656224966049,
+          "weight": 3.0397138595581055
+        },
+        {
+          "time_s": 1069.5,
+          "frequency_hz": 121.00950391683728,
+          "weight": 3.49930477142334
+        },
+        {
+          "time_s": 1070.0,
+          "frequency_hz": 120.53630335256457,
+          "weight": 3.2031939029693604
+        },
+        {
+          "time_s": 1070.5,
+          "frequency_hz": 119.54769003763795,
+          "weight": 3.426790475845337
+        },
+        {
+          "time_s": 1071.0,
+          "frequency_hz": 118.95510174706578,
+          "weight": 3.6441054344177246
+        },
+        {
+          "time_s": 1071.5,
+          "frequency_hz": 118.19675253331661,
+          "weight": 3.685575485229492
+        },
+        {
+          "time_s": 1072.0,
+          "frequency_hz": 117.4246059730649,
+          "weight": 3.1555933952331543
+        },
+        {
+          "time_s": 1072.5,
+          "frequency_hz": 116.56390389800072,
+          "weight": 3.5717358589172363
+        },
+        {
+          "time_s": 1073.0,
+          "frequency_hz": 116.06901412457228,
+          "weight": 3.280280113220215
+        },
+        {
+          "time_s": 1073.5,
+          "frequency_hz": 115.02566719055176,
+          "weight": 3.383643388748169
+        },
+        {
+          "time_s": 1074.0,
+          "frequency_hz": 114.50896560028195,
+          "weight": 3.534595012664795
+        },
+        {
+          "time_s": 1074.5,
+          "frequency_hz": 113.90373677015305,
+          "weight": 3.384631872177124
+        },
+        {
+          "time_s": 1075.0,
+          "frequency_hz": 113.02930250763893,
+          "weight": 3.4130735397338867
+        },
+        {
+          "time_s": 1075.5,
+          "frequency_hz": 112.49907954171067,
+          "weight": 3.4334819316864014
+        },
+        {
+          "time_s": 1076.0,
+          "frequency_hz": 111.83512465655804,
+          "weight": 3.4773030281066895
+        },
+        {
+          "time_s": 1077.0,
+          "frequency_hz": 110.52100275456905,
+          "weight": 3.680894136428833
+        },
+        {
+          "time_s": 1077.5,
+          "frequency_hz": 110.09354390949011,
+          "weight": 3.9210872650146484
+        },
+        {
+          "time_s": 1078.0,
+          "frequency_hz": 109.48146697692573,
+          "weight": 3.496391534805298
+        },
+        {
+          "time_s": 1078.5,
+          "frequency_hz": 108.89609564840794,
+          "weight": 3.539182186126709
+        },
+        {
+          "time_s": 1079.0,
+          "frequency_hz": 108.2886858433485,
+          "weight": 3.719971179962158
+        },
+        {
+          "time_s": 1079.5,
+          "frequency_hz": 107.82936245203018,
+          "weight": 3.8348655700683594
+        },
+        {
+          "time_s": 1080.0,
+          "frequency_hz": 107.46205799281597,
+          "weight": 3.5908336639404297
+        },
+        {
+          "time_s": 1080.5,
+          "frequency_hz": 106.96451258286834,
+          "weight": 3.275200605392456
+        },
+        {
+          "time_s": 1081.0,
+          "frequency_hz": 106.45703207328916,
+          "weight": 3.7284345626831055
+        },
+        {
+          "time_s": 1081.5,
+          "frequency_hz": 106.0701579451561,
+          "weight": 3.501049041748047
+        },
+        {
+          "time_s": 1082.0,
+          "frequency_hz": 105.58412370830774,
+          "weight": 3.613422393798828
+        },
+        {
+          "time_s": 1082.5,
+          "frequency_hz": 105.18453954160213,
+          "weight": 3.60184907913208
+        },
+        {
+          "time_s": 1083.0,
+          "frequency_hz": 104.75,
+          "weight": 3.6463663578033447
+        },
+        {
+          "time_s": 1083.5,
+          "frequency_hz": 104.42061176151037,
+          "weight": 4.1382646560668945
+        },
+        {
+          "time_s": 1084.0,
+          "frequency_hz": 104.08780051767826,
+          "weight": 4.308328151702881
+        },
+        {
+          "time_s": 1084.5,
+          "frequency_hz": 103.75963833928108,
+          "weight": 4.023961544036865
+        },
+        {
+          "time_s": 1085.0,
+          "frequency_hz": 103.51472035981715,
+          "weight": 3.846071481704712
+        },
+        {
+          "time_s": 1085.5,
+          "frequency_hz": 103.17335863411427,
+          "weight": 3.824005603790283
+        },
+        {
+          "time_s": 1086.0,
+          "frequency_hz": 102.83688831329346,
+          "weight": 3.8282973766326904
+        },
+        {
+          "time_s": 1086.5,
+          "frequency_hz": 102.52706103399396,
+          "weight": 3.702227830886841
+        },
+        {
+          "time_s": 1087.0,
+          "frequency_hz": 102.30128881335258,
+          "weight": 3.4921021461486816
+        },
+        {
+          "time_s": 1087.5,
+          "frequency_hz": 102.00405974453315,
+          "weight": 3.819829225540161
+        },
+        {
+          "time_s": 1088.0,
+          "frequency_hz": 101.80684027075768,
+          "weight": 3.8634250164031982
+        },
+        {
+          "time_s": 1088.5,
+          "frequency_hz": 101.58480161428452,
+          "weight": 4.017685890197754
+        },
+        {
+          "time_s": 1089.0,
+          "frequency_hz": 101.38424531370401,
+          "weight": 3.6906509399414062
+        },
+        {
+          "time_s": 1089.5,
+          "frequency_hz": 101.09617125242949,
+          "weight": 3.7483253479003906
+        },
+        {
+          "time_s": 1090.0,
+          "frequency_hz": 100.91058446466923,
+          "weight": 3.7643582820892334
+        },
+        {
+          "time_s": 1090.5,
+          "frequency_hz": 100.75,
+          "weight": 3.8155457973480225
+        },
+        {
+          "time_s": 1091.0,
+          "frequency_hz": 100.44784091040492,
+          "weight": 3.8921165466308594
+        },
+        {
+          "time_s": 1091.5,
+          "frequency_hz": 100.30530002713203,
+          "weight": 3.536421537399292
+        },
+        {
+          "time_s": 1092.0,
+          "frequency_hz": 100.23867167532444,
+          "weight": 3.8638529777526855
+        },
+        {
+          "time_s": 1092.5,
+          "frequency_hz": 99.97628159448504,
+          "weight": 3.852703332901001
+        },
+        {
+          "time_s": 1093.0,
+          "frequency_hz": 99.80117456614971,
+          "weight": 3.874157428741455
+        },
+        {
+          "time_s": 1093.5,
+          "frequency_hz": 99.7887157946825,
+          "weight": 3.802727222442627
+        },
+        {
+          "time_s": 1094.0,
+          "frequency_hz": 99.5344225987792,
+          "weight": 3.921907424926758
+        },
+        {
+          "time_s": 1094.5,
+          "frequency_hz": 99.34534648060799,
+          "weight": 3.7214303016662598
+        },
+        {
+          "time_s": 1095.0,
+          "frequency_hz": 99.22854128479958,
+          "weight": 3.147216796875
+        },
+        {
+          "time_s": 1095.5,
+          "frequency_hz": 99.17133741080761,
+          "weight": 3.7013299465179443
+        },
+        {
+          "time_s": 1096.0,
+          "frequency_hz": 99.02147263102233,
+          "weight": 3.664454221725464
+        },
+        {
+          "time_s": 1096.5,
+          "frequency_hz": 98.85172662138939,
+          "weight": 3.476091146469116
+        },
+        {
+          "time_s": 1097.0,
+          "frequency_hz": 98.89686744660139,
+          "weight": 3.509160041809082
+        },
+        {
+          "time_s": 1097.5,
+          "frequency_hz": 98.69680351018906,
+          "weight": 3.1007189750671387
+        },
+        {
+          "time_s": 1098.0,
+          "frequency_hz": 98.59011930972338,
+          "weight": 3.477431297302246
+        },
+        {
+          "time_s": 1098.5,
+          "frequency_hz": 98.49123537540436,
+          "weight": 3.2322354316711426
+        },
+        {
+          "time_s": 1099.0,
+          "frequency_hz": 98.36966836452484,
+          "weight": 3.302608013153076
+        },
+        {
+          "time_s": 1099.5,
+          "frequency_hz": 98.32925216853619,
+          "weight": 3.7726850509643555
+        },
+        {
+          "time_s": 1100.0,
+          "frequency_hz": 98.1736781001091,
+          "weight": 3.5147550106048584
+        },
+        {
+          "time_s": 1100.5,
+          "frequency_hz": 98.05771194770932,
+          "weight": 3.470400094985962
+        },
+        {
+          "time_s": 1101.0,
+          "frequency_hz": 98.05515710636973,
+          "weight": 3.2876570224761963
+        },
+        {
+          "time_s": 1101.5,
+          "frequency_hz": 98.02247370034456,
+          "weight": 3.2527735233306885
+        },
+        {
+          "time_s": 1103.5,
+          "frequency_hz": 97.72069072723389,
+          "weight": 3.092627763748169
+        },
+        {
+          "time_s": 1104.0,
+          "frequency_hz": 97.51892160996795,
+          "weight": 3.3073883056640625
+        },
+        {
+          "time_s": 1104.5,
+          "frequency_hz": 97.58515206724405,
+          "weight": 3.5540897846221924
+        },
+        {
+          "time_s": 1105.0,
+          "frequency_hz": 97.5572900660336,
+          "weight": 3.597748041152954
+        },
+        {
+          "time_s": 1105.5,
+          "frequency_hz": 97.35043999552727,
+          "weight": 3.352968454360962
+        },
+        {
+          "time_s": 1106.0,
+          "frequency_hz": 97.37720243632793,
+          "weight": 3.293379068374634
+        },
+        {
+          "time_s": 1106.5,
+          "frequency_hz": 97.32940602302551,
+          "weight": 3.04060959815979
+        },
+        {
+          "time_s": 1108.5,
+          "frequency_hz": 97.02927721105516,
+          "weight": 3.0696399211883545
+        },
+        {
+          "time_s": 1109.0,
+          "frequency_hz": 97.0349292755127,
+          "weight": 3.3829948902130127
+        },
+        {
+          "time_s": 1109.5,
+          "frequency_hz": 97.07209225744009,
+          "weight": 3.1079652309417725
+        },
+        {
+          "time_s": 1111.0,
+          "frequency_hz": 96.91330191493034,
+          "weight": 3.2333147525787354
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.5246750116348267,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8472222222222222,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 44.28468917682767
+      }
+    }
+  ],
+  "stage": "complete",
+  "progress": 1,
+  "artifacts": {
+    "provenance": "provenance.json",
+    "request": "request.json",
+    "intake": "intake/intake.json",
+    "recording": "intake/recording.json",
+    "discovery": "discovery/discovery.json",
+    "discovery_plot": "discovery/discovery.png",
+    "search_report": "search/search-report.json",
+    "refinement": "refined-candidates.json",
+    "data_provenance": "data-provenance.json",
+    "decision": "decision.json",
+    "event-0001": "discovery/event-0001.png",
+    "event-0002": "discovery/event-0002.png"
+  },
+  "candidates": [
+    {
+      "lat": 35.000057148871385,
+      "lon": -89.99998357704526,
+      "score": 1.8871689454820832,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 107.17468400274421,
+        "method": "declared_perturbation_profiles",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 35.000057148871385,
+      "lon": -89.99998357704526,
+      "score": 1.8871689454820832,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 107.20043708500016,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.0317165120325,
+      "lon": -100.01821576498205,
+      "score": 1.8859089359984622,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 100.93778278376475,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03171652041066,
+      "lon": -100.01821583005915,
+      "score": 1.885908922984091,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 100.92685464220389,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 43.00013132147989,
+      "lon": -112.00005850939831,
+      "score": 1.8811559701687348,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 111.80480616509475,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 43.000131328190996,
+      "lon": -112.0000583590041,
+      "score": 1.8811559685246388,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z",
+      "uncertainty": {
+        "radius_m": 111.82012921586946,
+        "method": "profiled_relative_altitude_offsets",
+        "kind": "sensitivity"
+      }
+    },
+    {
+      "lat": 40.03156939118181,
+      "lon": -100.01843863537528,
+      "score": 1.8426904921540128,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.000340301288176,
+      "lon": -111.99985571667271,
+      "score": 1.8220812243826594,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00019029518254,
+      "lon": -112.00107148245839,
+      "score": 1.7577327282389235,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03160711337007,
+      "lon": -100.01725745452812,
+      "score": 1.7434508959893606,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413,
+      "score": 1.7360530173705961,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99966943153726,
+      "lon": -90.00049375178413,
+      "score": 1.7360530173705961,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605,
+      "score": 1.699123322365887,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00050502889571,
+      "lon": -89.99932148400605,
+      "score": 1.699123322365887,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378,
+      "score": 1.6811955227448516,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.999613039511175,
+      "lon": -89.99939119531378,
+      "score": 1.6811955227448516,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706,
+      "score": 1.6801039763344785,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00056142152546,
+      "lon": -90.00042405321706,
+      "score": 1.6801039763344785,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03153165791117,
+      "lon": -100.01961981498012,
+      "score": 1.6669850394241332,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00049029613849,
+      "lon": -111.99863994559982,
+      "score": 1.6214967668249725,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99945778861459,
+      "lon": -111.99964907553621,
+      "score": 1.6030538330094934,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173,
+      "score": 1.6010713577270308,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99972581321143,
+      "lon": -90.00159630987173,
+      "score": 1.6010713577270308,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03246109335949,
+      "lon": -100.01848861149095,
+      "score": 1.5965512349440307,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032498816033176,
+      "lon": -100.01730741598882,
+      "score": 1.5806537058123236,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.999307784632556,
+      "lon": -112.00086482621806,
+      "score": 1.5722111559892848,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00004027782172,
+      "lon": -112.00228724295647,
+      "score": 1.5594390451805349,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538,
+      "score": 1.5290223774726184,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00061780380319,
+      "lon": -90.00152662404538,
+      "score": 1.5290223774726184,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03067768937548,
+      "lon": -100.01838866050191,
+      "score": 1.5251585036005428,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.999607781341446,
+      "lon": -111.99843331956731,
+      "score": 1.5179353137472553,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.001222814839394,
+      "lon": -112.00006236309645,
+      "score": 1.5099132860770856,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261,
+      "score": 1.5066439704615116,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00044862591397,
+      "lon": -89.99821891641261,
+      "score": 1.5066439704615116,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03242335960329,
+      "lon": -100.01966980575072,
+      "score": 1.5019026807161608,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031644824475926,
+      "lon": -100.01607627243902,
+      "score": 1.5001598382428372,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99955663713321,
+      "lon": -89.99828864046096,
+      "score": 1.4965957356401813,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99955663713321,
+      "lon": -89.99828864046096,
+      "score": 1.4965957356401813,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03071541107835,
+      "lon": -100.01720749430936,
+      "score": 1.468179844365491,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00107280661009,
+      "lon": -112.0012781439863,
+      "score": 1.4616691741950087,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03063995659037,
+      "lon": -100.0195698254522,
+      "score": 1.4444629610938886,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99877744070735,
+      "lon": -90.00056344873397,
+      "score": 1.438285844320244,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99877744070735,
+      "lon": -90.00056344873397,
+      "score": 1.438285844320244,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00139701743864,
+      "lon": -89.99925177108072,
+      "score": 1.4346113578445672,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00139701743864,
+      "lon": -89.99925177108072,
+      "score": 1.4346113578445672,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00137281181326,
+      "lon": -111.99884657691916,
+      "score": 1.427997401639589,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99915776939546,
+      "lon": -112.00208057161252,
+      "score": 1.4206207672721058,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031493913558165,
+      "lon": -100.0208009933423,
+      "score": 1.4204033737220767,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99872104928491,
+      "lon": -89.99946090500397,
+      "score": 1.3855206511101406,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99872104928491,
+      "lon": -89.99946090500397,
+      "score": 1.3855206511101406,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.001453410672084,
+      "lon": -90.0003543530327,
+      "score": 1.3817895585225515,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.001453410672084,
+      "lon": -90.0003543530327,
+      "score": 1.3817895585225515,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.0009227871254,
+      "lon": -112.00249391958837,
+      "score": 1.3758743059241365,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03253652762431,
+      "lon": -100.01612621924471,
+      "score": 1.3709653707693445,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99883382177801,
+      "lon": -90.00166599408114,
+      "score": 1.3638567090730098,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99883382177801,
+      "lon": -90.00166599408114,
+      "score": 1.3638567090730098,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99978218453371,
+      "lon": -90.00269886957628,
+      "score": 1.347405952761189,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99978218453371,
+      "lon": -90.00269886957628,
+      "score": 1.347405952761189,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03075312169894,
+      "lon": -100.01602632687492,
+      "score": 1.346520031201866,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.032385614764586,
+      "lon": -100.02085099876777,
+      "score": 1.3457162821374284,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.033390519067844,
+      "lon": -100.01735737869151,
+      "score": 1.3419204250561905,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99975776281309,
+      "lon": -111.99721755831179,
+      "score": 1.3318844139246673,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00064027973346,
+      "lon": -111.99742416924006,
+      "score": 1.3299453871825586,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00067417572889,
+      "lon": -90.0026291964907,
+      "score": 1.3171646323660489,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00067417572889,
+      "lon": -90.0026291964907,
+      "score": 1.3171646323660489,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03335279590874,
+      "lon": -100.01853858884897,
+      "score": 1.3089596275172197,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.998425274959786,
+      "lon": -112.00065817526512,
+      "score": 1.3058620861271373,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.998575276818315,
+      "lon": -111.99944243968672,
+      "score": 1.3022905969555771,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99866464751068,
+      "lon": -89.99835836289147,
+      "score": 1.2735732831137019,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99866464751068,
+      "lon": -89.99835836289147,
+      "score": 1.2735732831137019,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.001509793553396,
+      "lon": -90.00145693660203,
+      "score": 1.2728551649670174,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.001509793553396,
+      "lon": -90.00145693660203,
+      "score": 1.2728551649670174,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00134061385312,
+      "lon": -89.99814919074639,
+      "score": 1.2675796716839087,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00134061385312,
+      "lon": -89.99814919074639,
+      "score": 1.2675796716839087,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.029785987940265,
+      "lon": -100.0183386868708,
+      "score": 1.2667542756553893,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99989024920576,
+      "lon": -112.0035029981666,
+      "score": 1.2618499669803742,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99950022440338,
+      "lon": -89.99718608722596,
+      "score": 1.2616608817112687,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99950022440338,
+      "lon": -89.99718608722596,
+      "score": 1.2616608817112687,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99872526742183,
+      "lon": -111.99822669882148,
+      "score": 1.251550726692958,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00210532926844,
+      "lon": -112.00026901480761,
+      "score": 1.2408013465924266,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.000392212580266,
+      "lon": -89.99711635043705,
+      "score": 1.2355105281968048,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.000392212580266,
+      "lon": -89.99711635043705,
+      "score": 1.2355105281968048,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03331506166696,
+      "lon": -100.01971979776403,
+      "score": 1.234389786210612,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03060221272304,
+      "lon": -100.02075098915986,
+      "score": 1.229413730137159,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02974825564067,
+      "lon": -100.0195198371669,
+      "score": 1.2268968787783572,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00225532836599,
+      "lon": -111.99905321352558,
+      "score": 1.2242507707396204,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.02982370915776,
+      "lon": -100.0171575353325,
+      "score": 1.221343892838584,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99827526184633,
+      "lon": -112.00187390555631,
+      "score": 1.2115491028783312,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.002289005140234,
+      "lon": -89.99918205653775,
+      "score": 1.2058647300961853,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.002289005140234,
+      "lon": -89.99918205653775,
+      "score": 1.2058647300961853,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03168252449938,
+      "lon": -100.01489508910836,
+      "score": 1.2056181748694195,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.9978854490355,
+      "lon": -90.00063314406661,
+      "score": 1.1957147462363373,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.9978854490355,
+      "lon": -90.00063314406661,
+      "score": 1.1957147462363373,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.00195531891535,
+      "lon": -112.00148481080203,
+      "score": 1.1934993030559324,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.001522797531635,
+      "lon": -111.99763078545482,
+      "score": 1.1640391771775846,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 43.000772756385466,
+      "lon": -112.00370968990228,
+      "score": 1.1638120102229448,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99782905821666,
+      "lon": -89.9995306130767,
+      "score": 1.152768718347243,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99782905821666,
+      "lon": -89.9995306130767,
+      "score": 1.152768718347243,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 42.99887524677026,
+      "lon": -111.99701095266981,
+      "score": 1.152355959904099,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.03342823114428,
+      "lon": -100.01617616729203,
+      "score": 1.1489098965017446,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00234539897739,
+      "lon": -90.00028465123098,
+      "score": 1.14854300129947,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 35.00234539897739,
+      "lon": -90.00028465123098,
+      "score": 1.14854300129947,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.031456158122815,
+      "lon": -100.02198217046146,
+      "score": 1.147438866166591,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 40.0307908212373,
+      "lon": -100.01484515819895,
+      "score": 1.145194956831556,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99889019249684,
+      "lon": -90.0027685410452,
+      "score": 1.1438793923941093,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    },
+    {
+      "lat": 34.99889019249684,
+      "lon": -90.0027685410452,
+      "score": 1.1438793923941093,
+      "score_kind": "matched_group_support_minus_normalized_residual",
+      "event_ids": [
+        "event-0001",
+        "event-0002"
+      ],
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "recording_start_utc": "2026-09-21T14:13:20Z"
+    }
+  ],
+  "reason_code": "unsupported_score_kind",
+  "message": "This ranking score has no declared ambiguity threshold in the decision policy."
+}

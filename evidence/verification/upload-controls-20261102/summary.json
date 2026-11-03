@@ -1,0 +1,114 @@
+{
+  "scope": "real automatic product negative controls; no positive localization or national accuracy established",
+  "routes": [
+    "cli",
+    "api",
+    "browser"
+  ],
+  "cases": [
+    {
+      "case": "tagged-untimed",
+      "passed": true,
+      "input_sha256": "b4efeb218f815628b286551f501d15c76beb32d393029aaea5714f4b2be4f2d3",
+      "integration_commit": "e39bdc84b3ca1a7ed1c3a648817ea47c805f1996",
+      "elapsed_s": 7.351908914744854,
+      "outcomes": [
+        {
+          "mode": "cli",
+          "status": "needs_input",
+          "reason_code": "recording_time_required",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "api",
+          "status": "needs_input",
+          "reason_code": "recording_time_required",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "browser",
+          "status": "needs_input",
+          "reason_code": "recording_time_required",
+          "original_hash_verified": true
+        }
+      ]
+    },
+    {
+      "case": "timed-noise",
+      "passed": true,
+      "input_sha256": "cedc36e2ecddc78e12fc1435d4df96afc7dddf4d918e05aa09011d5165d09505",
+      "integration_commit": "e39bdc84b3ca1a7ed1c3a648817ea47c805f1996",
+      "elapsed_s": 7.247567181009799,
+      "outcomes": [
+        {
+          "mode": "cli",
+          "status": "inconclusive",
+          "reason_code": "no_supported_events",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "api",
+          "status": "inconclusive",
+          "reason_code": "no_supported_events",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "browser",
+          "status": "inconclusive",
+          "reason_code": "no_supported_events",
+          "original_hash_verified": true
+        }
+      ]
+    },
+    {
+      "case": "invalid",
+      "passed": true,
+      "input_sha256": "da62df0fbc6268447c1dadfa27f65e5125c0dffe1d09f2779bc97090ed32fe2b",
+      "integration_commit": "e39bdc84b3ca1a7ed1c3a648817ea47c805f1996",
+      "elapsed_s": 5.077566280029714,
+      "outcomes": [
+        {
+          "mode": "cli",
+          "status": "failed",
+          "reason_code": "invalid_media",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "api",
+          "status": "failed",
+          "reason_code": "invalid_media",
+          "original_hash_verified": true
+        },
+        {
+          "mode": "browser",
+          "status": "failed",
+          "reason_code": "invalid_media",
+          "original_hash_verified": true
+        }
+      ]
+    },
+    {
+      "case": "timed-noise-mobile",
+      "passed": true,
+      "input_sha256": "cedc36e2ecddc78e12fc1435d4df96afc7dddf4d918e05aa09011d5165d09505",
+      "integration_commit": "a5ebbb61ed8f2e6d4c6868c6b3cfca1fc1e9c8b4",
+      "elapsed_s": 4.156098909676075,
+      "outcomes": [
+        {
+          "mode": "browser",
+          "status": "inconclusive",
+          "reason_code": "no_supported_events",
+          "original_hash_verified": true
+        }
+      ]
+    }
+  ],
+  "files_sha256": {
+    "invalid.json": "fada91c3854ea97829882b233c1b6656a0e619969aecfd5b66b38e30f56bab7d",
+    "tagged-untimed.json": "3cfe20f3a4d026d3ee59af78eb05c8788b8d9e0b1b8e05408cace9b2fe633b55",
+    "timed-noise-desktop.png": "f99a7d484a79ba6e53421f0df6201d761a580d2528206b4c54f6f961e9c04382",
+    "timed-noise-mobile.json": "a61cabe3ef646bd7fe773a8565a2ed625d3f6f4cfef08a6f2ef670a63f637999",
+    "timed-noise-mobile.png": "87b30d54cac048833cfe10c4d0289af03a699b1c3786fff627578459474c6394",
+    "timed-noise.json": "92939f252b78f897e0c3a304445436a580c68f577c463a1973bde413568a23c8"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "scope": "real-recording MP3 relative timing and discovery only; no location validation",
+  "source_wav_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+  "submitted_mp3_sha256": "19acbbbf67b99be81d22e286da25b7593f6e2d6c2f6f25e7b00091cf4f1bf6b2",
+  "integration_commit": "b953d74d3100b22409c28feffc0bfa3c02c6f574",
+  "source_sample_rate_hz": 48000,
+  "sample_rate_hz": 4000,
+  "source_reference_samples": 14400738,
+  "decoded_samples": 14400737,
+  "pilots": [
+    {
+      "center_s": 120.0,
+      "offset_s": 1.6800089849602495e-06,
+      "correlation": 0.9991275641032601
+    },
+    {
+      "center_s": 2156.0,
+      "offset_s": 1.5214370038450715e-07,
+      "correlation": 0.9982065025395332
+    },
+    {
+      "center_s": 3076.0,
+      "offset_s": 9.330269744070476e-07,
+      "correlation": 0.9982092869432289
+    }
+  ],
+  "route_events_sha256": {
+    "cli": "256052b542de49af4669d624e157f9f19c6d87c6190c6a5f43a334c658c7f35b",
+    "api": "256052b542de49af4669d624e157f9f19c6d87c6190c6a5f43a334c658c7f35b",
+    "browser": "256052b542de49af4669d624e157f9f19c6d87c6190c6a5f43a334c658c7f35b"
+  },
+  "acoustic_proposals": 9,
+  "limitations": [
+    "Acoustic proposals are not verified aircraft.",
+    "Source-informed prominent event centers are used only for post-run waveform comparison.",
+    "No defensible recorder UTC was submitted; all three routes requested it.",
+    "Known faint-event miss and real independent/national location validation remain open."
+  ]
+}

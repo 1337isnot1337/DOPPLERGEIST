@@ -1,0 +1,26 @@
+{
+  "files_sha256": {
+    "browser-helper.log": "22d3ac9e9ef9e908759494e6b78ad7d752626b31b8d09cea00239e5f716d730a",
+    "evaluation-after-search.json": "39fa9d9cba258792f22f7e2e0ee0d9140f6a359accf27ad2b8e86f605872b29c",
+    "index-report.json": "8d21faf30096fab4f0eb25ee99d74cebf00b99e233cc02bda87de087df51fe02",
+    "launch_blinded_backend.py": "63edcdcdb18e7449d250a3a6a21eb103e36639f8b0b7270aa3971af0667734e1",
+    "mobile-overflow-elements.json": "ca89f8638a0b50bf07f41639c59296ba2edc292bebdc256ebdd02e7e8753612e",
+    "namespace-probe.json": "25fe8e5af39aaa943bd1658d8bd0f899f075fca0d33f68b076f9ace13c343f4d",
+    "page-mobile.png": "b47eb23055577d51bd99e2146845bd8283f89a348df7ca4d1c7c3ded66781801",
+    "result.json": "07936945471e7c98b14a0394c02c5f773ca9fd3dd6ac4e372a0b5351835ce215",
+    "search-report.json": "2c68e553d625248b0f10a3efe4525107c0874d27097a7f1a455989f813fd5039",
+    "server-command.json": "c32e2e4a1aef1f420ee3173fa7c8456fc019397dbc2cdc2897284597a684b91f"
+  },
+  "large_local_artifacts": {
+    "browser_trace": {
+      "path": "/home/cinna/DOPPLERGEIST-upload-acceptance/results/blinded-browser-20261102/browser/trace.zip",
+      "bytes": 13985697,
+      "sha256": "65b32c0609292b5daa3b0e37e4409a115efa58faf20f220da2bb24e9a70f24c1"
+    }
+  },
+  "initial_setup_failure": {
+    "returncode": 127,
+    "stdout": "",
+    "stderr": "/usr/bin/ffprobe: error while loading shared libraries: libblas.so.3: cannot open shared object file: No such file or directory\n"
+  }
+}

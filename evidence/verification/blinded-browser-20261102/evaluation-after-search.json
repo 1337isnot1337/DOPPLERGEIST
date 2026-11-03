@@ -1,0 +1,1102 @@
+{
+  "scope": "installed-wheel automatic browser CONUS synthetic pipeline with filesystem-isolated labels",
+  "backend_source_commit": "5acacf2fe434449f726be3eda7bfbd764a4b497a",
+  "result_status": "inconclusive",
+  "reason_code": "unsupported_score_kind",
+  "auto_events": 2,
+  "candidates": 106,
+  "tiles_completed": 19278,
+  "tiles_total": 19278,
+  "data_scope_complete": true,
+  "search_elapsed_s": 205.37639327999204,
+  "search_peak_rss_mib": 310.94140625,
+  "input_hash": "e7cb2594c76adfa5d83068f17ddcf061e320e3738662b262366112b9d13ef143",
+  "uploaded_hash_verified": true,
+  "browser_acceptance_passed": false,
+  "browser_failure": "real candidate score labels overflow mobile390 to412px",
+  "evaluation_performed_only_after_backend_stopped": true,
+  "top_candidate": {
+    "rank": 1,
+    "error_m": 1046024.73912748,
+    "score": 1.8871689454820832,
+    "flight_ids": [
+      "57ef4ed94fc2ccf8",
+      "ef567498fdaec85d"
+    ],
+    "matches_true_pair": false
+  },
+  "best_true_pair": {
+    "rank": 4,
+    "error_m": 6.505245821579339,
+    "score": 1.885908922984091,
+    "flight_ids": [
+      "748b0c51490a0aa4",
+      "810856bea965adef"
+    ],
+    "matches_true_pair": true
+  },
+  "within_100m": 5,
+  "accepted_location_success": false,
+  "all_case_evaluation": [
+    {
+      "rank": 1,
+      "error_m": 1046024.73912748,
+      "score": 1.8871689454820832,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 2,
+      "error_m": 1046024.73912748,
+      "score": 1.8871689454820832,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 3,
+      "error_m": 6.510865461166067,
+      "score": 1.8859089359984622,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 4,
+      "error_m": 6.505245821579339,
+      "score": 1.885908922984091,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 5,
+      "error_m": 1052001.8805106322,
+      "score": 1.8811559701687348,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 6,
+      "error_m": 1052001.868804877,
+      "score": 1.8811559685246388,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 7,
+      "error_m": 21.885529691476,
+      "score": 1.8426904921540128,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 8,
+      "error_m": 1051991.5447839876,
+      "score": 1.8220812243826594,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 9,
+      "error_m": 1052083.562948563,
+      "score": 1.7577327282389235,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 10,
+      "error_m": 89.1822875541064,
+      "score": 1.7434508959893606,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 11,
+      "error_m": 1046011.4966058539,
+      "score": 1.7360530173705961,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 12,
+      "error_m": 1046011.4966058539,
+      "score": 1.7360530173705961,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 13,
+      "error_m": 1046045.4666161569,
+      "score": 1.699123322365887,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 14,
+      "error_m": 1046045.4666161569,
+      "score": 1.699123322365887,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 15,
+      "error_m": 1046097.331740354,
+      "score": 1.6811955227448516,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 16,
+      "error_m": 1046097.331740354,
+      "score": 1.6811955227448516,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 17,
+      "error_m": 1045959.6271834107,
+      "score": 1.6801039763344785,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 18,
+      "error_m": 1045959.6271834107,
+      "score": 1.6801039763344785,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 19,
+      "error_m": 115.62238404419993,
+      "score": 1.6669850394241332,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 20,
+      "error_m": 1051899.528257344,
+      "score": 1.6214967668249725,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 21,
+      "error_m": 1051951.1630181607,
+      "score": 1.6030538330094934,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 22,
+      "error_m": 1045925.6641400695,
+      "score": 1.6010713577270308,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 23,
+      "error_m": 1045925.6641400695,
+      "score": 1.6010713577270308,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 24,
+      "error_m": 82.92831879740659,
+      "score": 1.5965512349440307,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 25,
+      "error_m": 119.67049091887542,
+      "score": 1.5806537058123236,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 26,
+      "error_m": 1052043.1847885551,
+      "score": 1.5722111559892848,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 27,
+      "error_m": 1052175.582750645,
+      "score": 1.5594390451805349,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 28,
+      "error_m": 1045873.7904188159,
+      "score": 1.5290223774726184,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 29,
+      "error_m": 1045873.7904188159,
+      "score": 1.5290223774726184,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 30,
+      "error_m": 117.14662723939321,
+      "score": 1.5251585036005428,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 31,
+      "error_m": 1051859.1428851283,
+      "score": 1.5179353137472553,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 32,
+      "error_m": 1052031.934323032,
+      "score": 1.5099132860770856,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 33,
+      "error_m": 1046131.3087163942,
+      "score": 1.5066439704615116,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 34,
+      "error_m": 1046131.3087163942,
+      "score": 1.5066439704615116,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 35,
+      "error_m": 140.7026865629188,
+      "score": 1.5019026807161608,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 36,
+      "error_m": 189.1878624966544,
+      "score": 1.5001598382428372,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 37,
+      "error_m": 1046183.1695429125,
+      "score": 1.4965957356401813,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 38,
+      "error_m": 1046183.1695429125,
+      "score": 1.4965957356401813,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 39,
+      "error_m": 145.69976553314865,
+      "score": 1.468179844365491,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 40,
+      "error_m": 1052123.9488813533,
+      "score": 1.4616691741950087,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 41,
+      "error_m": 163.04082051063114,
+      "score": 1.4444629610938886,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 42,
+      "error_m": 1046063.3728457205,
+      "score": 1.438285844320244,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 43,
+      "error_m": 1046063.3728457205,
+      "score": 1.438285844320244,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 44,
+      "error_m": 1045993.6083102262,
+      "score": 1.4346113578445672,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 45,
+      "error_m": 1045993.6083102262,
+      "score": 1.4346113578445672,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 46,
+      "error_m": 1051939.9214032085,
+      "score": 1.427997401639589,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 47,
+      "error_m": 1052135.20819589,
+      "score": 1.4206207672721058,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 48,
+      "error_m": 215.92164932655223,
+      "score": 1.4204033737220767,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 49,
+      "error_m": 1046149.2036818347,
+      "score": 1.3855206511101406,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 50,
+      "error_m": 1046149.2036818347,
+      "score": 1.3855206511101406,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 51,
+      "error_m": 1045907.7645793761,
+      "score": 1.3817895585225515,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 52,
+      "error_m": 1045907.7645793761,
+      "score": 1.3817895585225515,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 53,
+      "error_m": 1052215.965077749,
+      "score": 1.3758743059241365,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 54,
+      "error_m": 205.25351795593758,
+      "score": 1.3709653707693445,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 55,
+      "error_m": 1045977.5446788893,
+      "score": 1.3638567090730098,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 56,
+      "error_m": 1045977.5446788893,
+      "score": 1.3638567090730098,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 57,
+      "error_m": 1045839.834343661,
+      "score": 1.347405952761189,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 58,
+      "error_m": 1045839.834343661,
+      "score": 1.347405952761189,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 59,
+      "error_m": 221.5797305145455,
+      "score": 1.346520031201866,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 60,
+      "error_m": 230.39411152721263,
+      "score": 1.3457162821374284,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 61,
+      "error_m": 200.82603044143687,
+      "score": 1.3419204250561905,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 62,
+      "error_m": 1051767.1243898894,
+      "score": 1.3318844139246673,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 63,
+      "error_m": 1051807.5133690597,
+      "score": 1.3299453871825586,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 64,
+      "error_m": 1045787.9563230305,
+      "score": 1.3171646323660489,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 65,
+      "error_m": 1045787.9563230305,
+      "score": 1.3171646323660489,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 66,
+      "error_m": 181.43251112959842,
+      "score": 1.3089596275172197,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 67,
+      "error_m": 1052002.814402186,
+      "score": 1.3058620861271373,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 68,
+      "error_m": 1051910.7890264061,
+      "score": 1.3022905969555771,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 69,
+      "error_m": 1046235.0371865745,
+      "score": 1.2735732831137019,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 70,
+      "error_m": 1046235.0371865745,
+      "score": 1.2735732831137019,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 71,
+      "error_m": 1045821.923516111,
+      "score": 1.2728551649670174,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 72,
+      "error_m": 1045821.923516111,
+      "score": 1.2728551649670174,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 73,
+      "error_m": 1046079.4547080016,
+      "score": 1.2675796716839087,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 74,
+      "error_m": 1046079.4547080016,
+      "score": 1.2675796716839087,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 75,
+      "error_m": 215.89381370129016,
+      "score": 1.2667542756553893,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 76,
+      "error_m": 1052267.6041898085,
+      "score": 1.2618499669803742,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 77,
+      "error_m": 1046269.0100128694,
+      "score": 1.2616608817112687,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 78,
+      "error_m": 1046269.0100128694,
+      "score": 1.2616608817112687,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 79,
+      "error_m": 1051818.7652874226,
+      "score": 1.251550726692958,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 80,
+      "error_m": 1052072.331634433,
+      "score": 1.2408013465924266,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 81,
+      "error_m": 1046217.1534834644,
+      "score": 1.2355105281968048,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 82,
+      "error_m": 1046217.1534834644,
+      "score": 1.2355105281968048,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 83,
+      "error_m": 214.16926709447247,
+      "score": 1.234389786210612,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 84,
+      "error_m": 244.55132938009152,
+      "score": 1.229413730137159,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 85,
+      "error_m": 243.80018772458803,
+      "score": 1.2268968787783572,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 86,
+      "error_m": 1051980.3223218676,
+      "score": 1.2242507707396204,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 87,
+      "error_m": 232.69253389193904,
+      "score": 1.221343892838584,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 88,
+      "error_m": 1052094.8414143373,
+      "score": 1.2115491028783312,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 89,
+      "error_m": 1045941.7568235376,
+      "score": 1.2058647300961853,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 90,
+      "error_m": 1045941.7568235376,
+      "score": 1.2058647300961853,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 91,
+      "error_m": 289.81835126416604,
+      "score": 1.2056181748694195,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 92,
+      "error_m": 1046115.2559020375,
+      "score": 1.1957147462363373,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 93,
+      "error_m": 1046115.2559020375,
+      "score": 1.1957147462363373,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 94,
+      "error_m": 1052164.3425860684,
+      "score": 1.1934993030559324,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 95,
+      "error_m": 1051847.9101223112,
+      "score": 1.1640391771775846,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 96,
+      "error_m": 1052307.982911793,
+      "score": 1.1638120102229448,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 97,
+      "error_m": 1046201.0824396252,
+      "score": 1.152768718347243,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 98,
+      "error_m": 1046201.0824396252,
+      "score": 1.152768718347243,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 99,
+      "error_m": 1051726.7431856643,
+      "score": 1.152355959904099,
+      "flight_ids": [
+        "e8c5b013104ec525",
+        "f15d03c4b5361cd4"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 100,
+      "error_m": 260.9760330061191,
+      "score": 1.1489098965017446,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 101,
+      "error_m": 1045855.9087947273,
+      "score": 1.14854300129947,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 102,
+      "error_m": 1045855.9087947273,
+      "score": 1.14854300129947,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 103,
+      "error_m": 316.60676819075894,
+      "score": 1.147438866166591,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 104,
+      "error_m": 311.9788418816842,
+      "score": 1.145194956831556,
+      "flight_ids": [
+        "748b0c51490a0aa4",
+        "810856bea965adef"
+      ],
+      "matches_true_pair": true
+    },
+    {
+      "rank": 105,
+      "error_m": 1045891.7191820008,
+      "score": 1.1438793923941093,
+      "flight_ids": [
+        "57ef4ed94fc2ccf8",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    },
+    {
+      "rank": 106,
+      "error_m": 1045891.7191820008,
+      "score": 1.1438793923941093,
+      "flight_ids": [
+        "b79cc2f4fd657b2f",
+        "ef567498fdaec85d"
+      ],
+      "matches_true_pair": false
+    }
+  ]
+}

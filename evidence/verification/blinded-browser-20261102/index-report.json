@@ -1,0 +1,39 @@
+{
+  "index_version": 2,
+  "sources": [
+    {
+      "sha256": "a406060a16e1622ad9ab89cb297ba7376f3939d177506a529b7fab27550f42af",
+      "transformation": "opaque identifiers; mapping unavailable to analysis"
+    }
+  ],
+  "coverage": {
+    "bounds": [
+      -135,
+      15,
+      -55,
+      60
+    ],
+    "time_range_s": [
+      1789999000,
+      1790003000
+    ],
+    "all_aircraft": true,
+    "scope": "synthetic generator universe only; not real traffic",
+    "synthetic": true
+  },
+  "normalizer_sha256": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+  "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "max_gap_s": 30.0,
+  "max_flight_samples": 250000,
+  "input_hash": "3eebcd797465b69a0b71c5c1db40a1800e25f79a4ae4bb64a994bbbd043f47dc",
+  "rows": 1617,
+  "invalid_rows": 0,
+  "segments": 7,
+  "altitude_basis_counts": {
+    "unspecified": 1617
+  },
+  "jets_excluded": false,
+  "unknown_types_retained": true,
+  "geometry_clipped": false,
+  "continuous_geometry_bounds": true
+}
