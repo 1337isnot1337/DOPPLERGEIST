@@ -1,0 +1,126 @@
+{
+  "scope": "JSON encoding only for a completed real tile; no scoring or pipeline speed claim",
+  "input": "/workspace/scratch/be56be4080ef/measurements/upload-baseline/jobs/ca6030889b74472e983fd2cdf3c81a59/search/tile-58_68~2~3.json",
+  "input_bytes": 39363929,
+  "candidate_associations": 19977,
+  "all_decoded_outputs_exact": true,
+  "payload_hash_unchanged": true,
+  "retention_checksum_unchanged": true,
+  "runs": [
+    {
+      "repetition": 1,
+      "encoding": "pretty",
+      "wall_seconds": 1.363638642999831,
+      "cpu_seconds": 1.3627130250000001,
+      "bytes": 39363929
+    },
+    {
+      "repetition": 1,
+      "encoding": "compact",
+      "wall_seconds": 0.2668106649998663,
+      "cpu_seconds": 0.2668126719999999,
+      "bytes": 23490375
+    },
+    {
+      "repetition": 2,
+      "encoding": "compact",
+      "wall_seconds": 0.28472605499973724,
+      "cpu_seconds": 0.28471583099999975,
+      "bytes": 23490375
+    },
+    {
+      "repetition": 2,
+      "encoding": "pretty",
+      "wall_seconds": 1.1696782859999075,
+      "cpu_seconds": 1.1692302669999997,
+      "bytes": 39363929
+    },
+    {
+      "repetition": 3,
+      "encoding": "pretty",
+      "wall_seconds": 1.1917218049993608,
+      "cpu_seconds": 1.1912622210000006,
+      "bytes": 39363929
+    },
+    {
+      "repetition": 3,
+      "encoding": "compact",
+      "wall_seconds": 0.2871776769998178,
+      "cpu_seconds": 0.28717892699999936,
+      "bytes": 23490375
+    },
+    {
+      "repetition": 4,
+      "encoding": "compact",
+      "wall_seconds": 0.28859559099964827,
+      "cpu_seconds": 0.28853438500000017,
+      "bytes": 23490375
+    },
+    {
+      "repetition": 4,
+      "encoding": "pretty",
+      "wall_seconds": 1.320897430999139,
+      "cpu_seconds": 1.3204166070000003,
+      "bytes": 39363929
+    },
+    {
+      "repetition": 5,
+      "encoding": "pretty",
+      "wall_seconds": 1.5711264759993355,
+      "cpu_seconds": 1.570734088,
+      "bytes": 39363929
+    },
+    {
+      "repetition": 5,
+      "encoding": "compact",
+      "wall_seconds": 0.2919367089998559,
+      "cpu_seconds": 0.29180276199999966,
+      "bytes": 23490375
+    }
+  ],
+  "pretty": {
+    "cpu_seconds": 1.3204166070000003,
+    "wall_seconds": 1.320897430999139,
+    "bytes": 39363929
+  },
+  "compact": {
+    "cpu_seconds": 0.28717892699999936,
+    "wall_seconds": 0.2871776769998178,
+    "bytes": 23490375
+  },
+  "cpu_speedup": 4.5978882252735875,
+  "size_reduction_fraction": 0.403251260817994,
+  "schema_version": 1,
+  "date": "2026-11-03",
+  "python": "3.12.14",
+  "method": {
+    "repeats_per_encoding": 5,
+    "order": "Alternating pretty/compact, then compact/pretty; raw runs below preserve actual order.",
+    "timing_scope": "json.dumps plus trailing newline only. Excludes loading, decoding, equality checks, file writes, scoring and the pipeline.",
+    "comparison": "Complete canonical decoded JSON, every field and array order; no numerical tolerance. Also checked original pretty bytes and unchanged payload hash and retention checksum.",
+    "baseline_encoding": {
+      "indent": 2,
+      "separators": null,
+      "allow_nan": false
+    },
+    "optimized_encoding": {
+      "indent": null,
+      "separators": [
+        ",",
+        ":"
+      ],
+      "allow_nan": false
+    }
+  },
+  "provenance": {
+    "raw_measurement": "pipeline-work/compact-checkpoints/summary.json",
+    "original_harness": "pipeline-work/compact-checkpoints/benchmark.py",
+    "reproduction_harness": "scripts/benchmark_real_checkpoint_encoding.py",
+    "input_origin": "Completed tile from the real MP3 upload baseline search, not a generated fixture.",
+    "baseline_commit": "aa3dff686c989524daa20c081a816b792d9c8890",
+    "local_implementation_commit": "5952603",
+    "public_implementation_commit": "5699a657d57dc4f66b74ef000e20d3ba88f84704",
+    "measurement_before_edit": true,
+    "source_limit": "The timed expressions were tested before the equivalent writer hook was applied. These are encoding measurements, not timings of the complete atomic writer."
+  }
+}
