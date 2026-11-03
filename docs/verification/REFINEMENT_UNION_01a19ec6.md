@@ -23,7 +23,8 @@ five. At least two flight associations must survive the comparison.
 Before the fix, the test fails because 50 scored points contain only 35 distinct
 cells. After the fix, all 35 cells are scored once and 15 duplicate visits are
 skipped. All five tiled-search tests pass; the full base-branch suite passes
-83 tests in 23.58 s. The adjacent receipt records hashes and commands.
+83 tests in 23.58 s. After merging observed main, all 120 tests passed in
+40.59 s at integration `9f1bee6`. The adjacent receipt records hashes and commands.
 
 The large automatic run's 2,542 duplicate visits are a measured workload
 opportunity, not a measured wall-time speedup. This change does not tighten
