@@ -1,0 +1,63 @@
+name: Export verified repository history
+
+on:
+  push:
+    branches: [worker/clone-bundle-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify and export full Git history
+        shell: bash
+        env:
+          EXPORT_DIRECTORY: ${{ runner.temp }}/dopplergeist-git-export
+        run: |
+          mkdir -p "$EXPORT_DIRECTORY"
+          test "$(git rev-parse --is-shallow-repository)" = false
+          git fsck --full > "$EXPORT_DIRECTORY/git-fsck.txt" 2>&1
+          git bundle create "$EXPORT_DIRECTORY/DOPPLERGEIST.bundle" --all
+          git bundle verify "$EXPORT_DIRECTORY/DOPPLERGEIST.bundle" > "$EXPORT_DIRECTORY/bundle-verify.txt" 2>&1
+          git show-ref > "$EXPORT_DIRECTORY/refs.txt"
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          directory = pathlib.Path(os.environ["EXPORT_DIRECTORY"])
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          target = "e2bb3dce63591ff7c92a0f985b40dd6a01a24cec"
+          target_tree = git("rev-parse", target + "^{tree}")
+          assert target_tree == "4db8aec1e8fc0f3b41b18e9d43a9ab07f608247f"
+          bundle = directory / "DOPPLERGEIST.bundle"
+          report = {
+              "repository": "1337isnot1337/DOPPLERGEIST",
+              "export_commit": git("rev-parse", "HEAD"),
+              "verified_pipeline_commit": target,
+              "verified_pipeline_tree": target_tree,
+              "shallow": git("rev-parse", "--is-shallow-repository") == "true",
+              "bundle_bytes": bundle.stat().st_size,
+              "bundle_sha256": hashlib.sha256(bundle.read_bytes()).hexdigest(),
+              "reference_count": len(git("show-ref").splitlines()),
+              "git_fsck_passed": True,
+              "git_bundle_verify_passed": True,
+              "credentials_included": False,
+              "scope": "Git objects and references only; no working-tree Git configuration or credentials"
+          }
+          (directory / "export.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Retain complete history and integrity receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dopplergeist-git-history-${{ github.sha }}
+          path: ${{ runner.temp }}/dopplergeist-git-export/
+          if-no-files-found: error
+          retention-days: 30
