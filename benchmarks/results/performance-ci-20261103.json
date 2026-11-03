@@ -517,5 +517,10 @@
         "forced_kill": false
       }
     }
+  },
+  "memory_measurement": {
+    "metric": "Reported getrusage(RUSAGE_SELF).ru_maxrss",
+    "scope": "Worker lifetime through scoring, including imports and input loading.",
+    "limitation": "Linux can retain an inherited peak across exec. These runs did not capture separate post-exec VmHWM or parent RSS, so precise memory savings are not established. CPU/wall timing and exact payload comparisons are unaffected."
   }
 }

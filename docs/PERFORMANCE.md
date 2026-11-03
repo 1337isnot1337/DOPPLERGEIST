@@ -15,7 +15,7 @@ Each result is the median of three runs per source in separate Python processes.
 The harness alternates baseline/current, current/baseline, then baseline/current.
 OpenBLAS, OpenMP, and MKL each use one thread.
 
-| Recording-start window | Baseline CPU | Optimized CPU | CPU speedup | Baseline wall time | Optimized wall time | Median peak RSS, baseline → optimized |
+| Recording-start window | Baseline CPU | Optimized CPU | CPU speedup | Baseline wall time | Optimized wall time | Median reported peak RSS, baseline → optimized |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | ±120 seconds | 68.9247 s | 25.5895 s | **2.6935×** | 69.0860 s | 25.5983 s | 264.76 → 263.95 MiB |
 | ±10 seconds | 4.6782 s | 4.0092 s | **1.1669×** | 4.6818 s | 4.0125 s | 207.25 → 205.05 MiB |
@@ -24,6 +24,10 @@ Broad-window CPU ranges were 66.2767–69.0722 seconds for the baseline and 25.1
 Narrow-window CPU ranges were 4.5853–6.0251 seconds and 3.2851–4.3290 seconds, respectively.
 The narrow workload has more timing variation and a smaller benefit.
 Peak RSS includes imports, input loading, and diagnostic capture through the end of scoring.
+These are reported `getrusage(RUSAGE_SELF).ru_maxrss` readings.
+Linux can retain an inherited peak across execution, and these runs did not capture separate `VmHWM` readings.
+The table therefore does not establish precise memory savings.
+CPU time, wall time, and exact-output comparisons are unaffected by this memory-measurement limitation.
 
 The machine used an AMD EPYC 9V74 processor, Linux 6.18.57, and Python 3.12.14.
 Package versions were NumPy 2.3.5, SciPy 1.17.0, and pandas 2.2.3.
