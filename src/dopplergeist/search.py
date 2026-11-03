@@ -379,8 +379,11 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         # The group-count ceiling is valid only for the normalized score's positive loss scales.
         from .matching import _frequency_scale
         for event in events:
+            value = _frequency_scale(event)
+            if isinstance(value, (bool, np.bool_)):
+                raise ValueError("Frequency loss scales must be finite and positive")
             try:
-                scale = float(_frequency_scale(event))
+                scale = float(value)
             except (TypeError, ValueError, OverflowError) as error:
                 raise ValueError("Frequency loss scales must be finite and positive") from error
             if not np.isfinite(scale) or scale <= 0:
