@@ -25,6 +25,10 @@ root=Path(__file__).resolve().parents[1]
 directory=root/"data/adsb"/args.date
 west,south,east,north=args.bounds
 time_range=[unix_time(t) for t in args.time_range] if args.time_range else None
+output_path=directory/args.output
+report_path=directory/(Path(args.output).stem+"-ingestion-report.json")
+if output_path.exists() or report_path.exists():
+    raise FileExistsError("Ingestion output exists; choose a new --output name to preserve historical evidence")
 types_path=root/"data/source/icao_aircraft_types.json"
 if not types_path.exists():
     r=requests.get("https://raw.githubusercontent.com/wiedehopf/tar1090-db/master/db/icao_aircraft_types.js",timeout=60)
@@ -64,6 +68,7 @@ class SplitReader(io.RawIOBase):
 paths=sorted(directory.glob("*.tar.a?"))
 if len(paths)<2:raise ValueError("Daily archive download is incomplete")
 stats={"trace_files":0,"known_jets_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
+stats["normalization_scope"]="full_native_trace_before_row_selection"
 writer=None
 with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
     with tarfile.open(fileobj=stream,mode="r|") as archive:
@@ -80,19 +85,25 @@ with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
             if not trace:
                 stats["no_conus_points"]+=1
                 continue
-            d["trace"]=trace
+            # The cheap raw selection above can reject an irrelevant aircraft,
+            # but altitude calibration needs this aircraft's full native trace.
             frame=adsblol_frame(d)
+            if frame.empty:continue
+            keep=frame.lat.between(south,north)&frame.lon.between(west,east)
+            if time_range is not None:
+                keep&=frame.time_s.between(*time_range)
+            frame=frame.loc[keep].copy()
             if frame.empty:continue
             frame["heading_deg"]=frame.heading_deg.astype(float)
             # Bound schema explicitly so an all-null metadata field in one
             # aircraft cannot change a later parquet batch's physical type.
             schema=pa.schema([(c,pa.string() if c in ["flight_id","typecode","altitude_basis"] else pa.float64()) for c in frame.columns])
             batch=pa.Table.from_pandas(frame,schema=schema,preserve_index=False)
-            if writer is None:writer=pq.ParquetWriter(directory/args.output,schema,compression="zstd")
+            if writer is None:writer=pq.ParquetWriter(output_path,schema,compression="zstd")
             writer.write_table(batch)
             stats["retained_aircraft"]+=1;stats["rows"]+=len(frame)
             stats["barometric_rows"]+=int((frame.altitude_basis=="barometric").sum())
             if stats["retained_aircraft"]%500==0:print(stats,flush=True)
 if writer:writer.close()
-(directory/(Path(args.output).stem+"-ingestion-report.json")).write_text(json.dumps(stats,indent=2)+"\n")
+report_path.write_text(json.dumps(stats,indent=2)+"\n")
 print(stats,flush=True)

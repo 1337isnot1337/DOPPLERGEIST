@@ -1,0 +1,71 @@
+{
+  "tile": "7_15",
+  "tracks": 131,
+  "points": 64,
+  "finite_oracle_rows": 1,
+  "retained_rows": 1,
+  "typed_candidate_failures": [
+    {
+      "flight_id": "c01125",
+      "point_id": 30,
+      "reason": "non_monotone_arrival"
+    }
+  ],
+  "nonfinite_oracle_rows": 0,
+  "model_support_complete": false,
+  "model_support": {
+    "unsupported_cpa_track_evaluations": 0,
+    "unclassified_score_candidates": 1,
+    "evaluated_trials": 0,
+    "rejected_trials": 0,
+    "unknown_trials": 0,
+    "unreported_trial_envelopes": 1
+  },
+  "clean_scores_equal_oracle": true,
+  "ranked": [
+    {
+      "score": -8.178462780316792,
+      "event_scores": [
+        -8.178462780316792
+      ],
+      "f0_hz": [
+        122.85333375295724
+      ],
+      "recording_start_time_s": 1788899400.0,
+      "time_adjustment_s": 0.0,
+      "point_id": 14,
+      "lat": 43.85640313100443,
+      "lon": -80.44690892663525,
+      "elev_m": 0.0,
+      "x": 1240000.0,
+      "y": 2420000.0,
+      "flight_ids": [
+        "c080aa"
+      ],
+      "pass_emission_times_s": [
+        1788899821.875165
+      ],
+      "core_assessment_complete": true,
+      "mode_seed": {
+        "event_indices": [
+          0
+        ],
+        "flight_ids": [
+          "c080aa"
+        ],
+        "pass_emission_times_s": [
+          1788899821.875165
+        ],
+        "position": [
+          1240000.0,
+          2420000.0,
+          43.85640313100443,
+          -80.44690892663525,
+          0.0
+        ],
+        "recording_start_time_s": 1788899400.0
+      },
+      "mode_id": "mode-22555ca1c51aa8530ae5d569c3eff8064694a839e29a0cb9c48a4d2465ade277"
+    }
+  ]
+}

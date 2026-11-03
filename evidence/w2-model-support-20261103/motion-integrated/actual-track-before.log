@@ -1,0 +1,38 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preserves_clean_rows _
+
+tmp_path = PosixPath('/tmp/pytest-of-user/pytest-205/test_real_interior_supersonic_0')
+
+    def test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preserves_clean_rows(tmp_path):
+        index, tracks, events, measurements, bounds, times, origin = scenario(tmp_path)
+        inverse = Transformer.from_crs("EPSG:5070", "EPSG:4326", always_xy=True)
+        lon, lat = inverse.transform([-1000., 0., 1000.], [1900000.]*3)
+        # Measured zero knot motion hides an interior Hermite speed > 700 m/s.
+        bad = pd.DataFrame({"flight_id": "actual-invalid-observations", "time_s": origin+np.array([149., 151., 153.]),
+                            "lat": lat, "lon": lon, "alt_m": 1200., "altitude_basis": "ellipsoidal",
+                            "east_mps": 0., "north_mps": 0., "up_mps": 0.})
+        frames = [pd.DataFrame({"flight_id": t.id, "time_s": t.time, "lat": t.lat, "lon": t.lon,
+                                "alt_m": t.altitude, "altitude_basis": "ellipsoidal"}) for t in tracks]
+        mixed = FlightIndex.build(tmp_path / "actual-mixed.sqlite", frames+[bad], sources=[], coverage=index.report["coverage"])
+        raw = next(t for t in mixed.query(bounds, times) if t.id == "actual-invalid-observations")
+        assert np.max(np.linalg.norm(raw.speed_vector(raw.time), axis=1)) == 0
+        assert np.linalg.norm(raw.speed_vector(origin+150)) > 700
+        kwargs = dict(time_range_s=times, bounds=bounds,
+                      budget=SearchBudget(spacing_m=1000, tile_cells=4, refine_spacing_m=1000),
+                      scoring={"mode": "ridge", "time_origin": origin, "time_sweep_s": 0})
+        clean = search_national([index], Terrain(constant_m=0), events, measurements,
+                                output_dir=tmp_path / "actual-clean", **kwargs)
+        output = tmp_path / "actual-mixed"
+        result = search_national([mixed], Terrain(constant_m=0), events, measurements, output_dir=output, **kwargs)
+        assert compact(result["ranked"]) == compact(clean["ranked"])
+>       assert result["status"] == "partial" and not result["model_support_complete"]
+E       AssertionError: assert ('complete' == 'partial'
+E         
+E         - partial
+E         + complete)
+
+tests/test_tiled_support.py:146: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_tiled_support.py::test_real_interior_supersonic_track_is_partial_before_cpa_filters_and_preserves_clean_rows
+1 failed in 2.89s

@@ -14,8 +14,10 @@ from scipy.signal import find_peaks
 
 class AcousticSupportError(ValueError):
     """A trajectory cannot support the assumed emission-time acoustic model."""
-    def __init__(self, track_id, reason):
+    def __init__(self, track_id, reason, *, emission_intervals_s=None, receive_intervals_s=None):
         self.track_id, self.reason = track_id, reason
+        self.emission_intervals_s = emission_intervals_s
+        self.receive_intervals_s = receive_intervals_s
         super().__init__(f"{track_id}: {reason}")
 
 
@@ -60,12 +62,80 @@ class Track:
             v = np.gradient(self.xyz, self.relative_time, axis=0)
         self.spline = CubicHermiteSpline(self.relative_time, self.xyz, v, extrapolate=False)
         self.derivative = self.spline.derivative()
+        # The derivative's quadratic Bezier control vectors bound its speed.
+        # Most clean intervals need no polynomial roots; exact maxima are cached
+        # only when this inexpensive upper bound reaches the requested c.
+        v = np.asarray(v)
+        middle = 3*np.diff(self.xyz, axis=0)/np.diff(self.time)[:, None]-v[:-1]-v[1:]
+        self._speed_upper = np.maximum.reduce([np.linalg.norm(a, axis=1)
+            for a in (v[:-1], middle, v[1:])])
+        self._speed_peak = np.full(len(self.time)-1, np.nan)
 
     def position(self, t):
         return self.spline(np.asarray(t) - self.origin)
 
     def speed_vector(self, t):
         return self.derivative(np.asarray(t) - self.origin)
+
+    def _unsupported_motion_intervals(self, c):
+        """Find non-subsonic native spline intervals, caching speed extrema.
+
+        Velocity is quadratic in normalized interval time. Its squared norm is
+        quartic, so endpoints and real roots of its cubic derivative enumerate
+        all extrema (in double precision). A small margin treats the sonic
+        boundary as unsupported.
+        """
+        limit = c*(1-1e-10)
+        suspicious = np.flatnonzero(self._speed_upper >= limit)
+        for i in suspicious:
+            dt = self.time[i+1]-self.time[i]
+            if np.isnan(self._speed_peak[i]):
+                a, b, d = self.derivative.c[:, i]
+                a, b = a*dt**2, b*dt
+                stationary = [2*np.dot(b, d), 2*(np.dot(b, b)+2*np.dot(a, d)),
+                              6*np.dot(a, b), 4*np.dot(a, a)]
+                roots = np.polynomial.polynomial.polyroots(stationary)
+                samples = [0., 1.] + [float(r.real) for r in roots
+                    if abs(r.imag) <= 1e-8 and 0 < r.real < 1]
+                self._speed_peak[i] = max(np.linalg.norm((a*u+b)*u+d) for u in samples)
+        return suspicious[self._speed_peak[suspicious] >= limit]
+
+    def validate_motion_support(self, c=343.0):
+        """Require subsonic motion throughout the source used for CPA proposals.
+
+        The outer search may isolate this track and retain incomplete coverage.
+        Direct ridge scoring instead tests the time-local arrival envelope below.
+        """
+        indices = self._unsupported_motion_intervals(c)
+        if len(indices):
+            raise AcousticSupportError(self.id, "non_subsonic_motion",
+                emission_intervals_s=[[float(self.time[i]), float(self.time[i+1])] for i in indices])
+
+    def _check_motion_support(self, receive_time, observer, c):
+        """Reject possible arrivals from unsupported native emission intervals.
+
+        Bezier position boxes conservatively enclose affected arrival times,
+        without assuming monotonic propagation in an unsupported interval.
+        """
+        emissions, arrivals = [], []
+        for i in self._unsupported_motion_intervals(c):
+            dt = self.time[i+1]-self.time[i]
+            p0, p1 = self.xyz[i:i+2]
+            v0, v1 = self.speed_vector(self.time[i:i+2])
+            controls = np.array([p0, p0+dt*v0/3, p1-dt*v1/3, p1])
+            lo, hi = controls.min(axis=0), controls.max(axis=0)
+            nearest = np.maximum(np.maximum(lo-observer, observer-hi), 0)
+            farthest = np.maximum(np.abs(lo-observer), np.abs(hi-observer))
+            arrival_lo = self.time[i]+np.linalg.norm(nearest)/c
+            arrival_hi = self.time[i+1]+np.linalg.norm(farthest)/c
+            # Enlarge for Unix-epoch rounding rather than excluding an endpoint.
+            tolerance = max(1e-7, 4*abs(np.spacing(max(abs(arrival_lo), abs(arrival_hi)))))
+            if np.any((receive_time >= arrival_lo-tolerance) & (receive_time <= arrival_hi+tolerance)):
+                emissions.append([float(self.time[i]), float(self.time[i+1])])
+                arrivals.append([float(arrival_lo-tolerance), float(arrival_hi+tolerance)])
+        if emissions:
+            raise AcousticSupportError(self.id, "non_subsonic_motion",
+                emission_intervals_s=emissions, receive_intervals_s=arrivals)
 
     def acoustic(self, receive_time, observer, c=343.0):
         """Return Doppler factor, emission time and range at receiver-clock times.
@@ -95,10 +165,19 @@ class Track:
         distance = np.linalg.norm(delta, axis=-1)
         radial = np.sum(delta * self.speed_vector(tau), axis=-1) / distance
         factor = c / (c + radial)
+        self._check_motion_support(t, observer, c)
+        arrival_derivative = 1+radial/c
+        if np.any(arrival_derivative <= 0):
+            raise AcousticSupportError(self.id, "non_monotone_arrival")
+        remaining_correction = (tau-t+distance/c)/arrival_derivative
+        tolerance = np.maximum(1e-7, 4*np.abs(np.spacing(t)))
+        if np.any(supported & (~np.isfinite(remaining_correction) | (np.abs(remaining_correction) > tolerance))):
+            raise AcousticSupportError(self.id, "emission_solver_not_converged")
         return tuple(np.where(supported, a, np.nan) for a in (factor, tau, distance))
 
     def closest_approaches(self, observer, max_distance=np.inf, c=343.0, step=2.0):
         """All interior local 3-D minima, including repeated passes by one flight."""
+        self.validate_motion_support(c)
         sample = np.unique(np.r_[np.arange(self.time[0], self.time[-1], step), self.time[-1]])
         range2 = np.sum((self.position(sample) - observer) ** 2, axis=-1)
         indices = find_peaks(-range2)[0]
