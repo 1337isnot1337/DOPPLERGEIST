@@ -1,0 +1,13 @@
+{
+  "truth_opened_utc": "2026-11-03T03:04:15.774185+00:00",
+  "original_job_finished_utc": "2026-11-03T03:02:03.893774+00:00",
+  "score_participation_completed_before_truth_open": true,
+  "truth_source_archive_sha256": "a6d79edca1407324ad77fee6b97812eb11f7a84cdb2308d12bd8f2663d4b396c",
+  "truth_member": "multi-event-6/truth/labels.json",
+  "truth_sha256": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9",
+  "truth_bytes": 2998,
+  "evaluation_directory_outside_backend_mounts": true,
+  "original_pipeline_status": "inconclusive",
+  "original_reason_code": "ambiguous_locations",
+  "initial_truth_member_lookup": "looked for /truth.json; no member matched; no label bytes read in that failed lookup"
+}

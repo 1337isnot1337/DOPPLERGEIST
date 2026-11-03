@@ -58,6 +58,13 @@ clock and flight assignment fixed and reuse only the normal bounded per-event
 source fits. Save every event's residual and normalized support contribution.
 This checks whether later groups enter the score and respond to geometry; it is
 not leave-one-flyover-out prediction, a new global search or a confidence claim.
+If a work limit or other terminal failure prevents publication of the search
+report, reconstruct the completed coarse ranking from every retained tile
+checkpoint using the frozen merge function and checking each payload hash. Apply
+the same declared row selection to that coarse ranking. Label it post-terminal
+coarse reconstruction, with refinement incomplete; it cannot replace the actual
+job result or establish accepted localization. This fallback is fixed before
+opening any truth labels.
 
 The first namespace launch terminated before decoding: FFprobe could not resolve
 `libblas.so.3`, whose system symlink traverses `/etc/alternatives`. Its failed job

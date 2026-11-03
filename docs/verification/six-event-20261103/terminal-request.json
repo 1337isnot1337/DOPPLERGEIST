@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "search": {
+    "coverage": "conus"
+  },
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user",
+    "source_detail": "Declared clock in the frozen synthetic fixture"
+  },
+  "audio_path": "/outputs/jobs/33632675dc964547bb2c5626e55a10e4/input.mp3"
+}
