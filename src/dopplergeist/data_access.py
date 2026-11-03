@@ -281,7 +281,7 @@ class FlightIndex:
                         namespace = coverage.get("release_tag", "")
                         name = flight + (f"@{namespace}" if namespace else "") + (f":{index}" if groups.max() else "")
                         track = _frame_track(name, chunk)
-                        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), mtime=0)
+                        payload = gzip.compress(chunk.to_json(orient="records", double_precision=15).encode(), compresslevel=6, mtime=0)
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
                                          (name, float(chunk.time_s.iloc[0]), float(chunk.time_s.iloc[-1]), payload, hashlib.sha256(payload).hexdigest()))
                         db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *_continuous_bounds(track)))
