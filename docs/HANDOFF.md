@@ -1,28 +1,24 @@
 # Implementation handoff
 
-## Current owner priority: optimization (November 3)
+## Optimization priority: merged improvements (November 3)
 
-Strengthen the cheap-to-expensive search hierarchy before further large national
-searches. Do not copy manually selected speed/distance bands into automatic
-discovery, or silently remove jets, single-event hypotheses or missing data.
+The requested cheap-to-expensive screening work is now on `main`: PR #158 added
+the conservative broad-window measured-ridge screen; PR #169 added a fixed-clock
+event/flight precheck; PR #170 batches compatible clock fits; PRs #173–174 advance
+fit pruning and adaptive tile handling. On one real regional development point,
+#158 preserved the same 92 retained rows while reducing full nonlinear fits from
+30,361 to 17,202 and process CPU from 48.27 to 30.04 seconds. That is a measured
+local improvement, not a nationwide runtime or localization-accuracy result. The
+manually estimated narrow speed/range bands from the reference video were not
+copied into automatic rejection rules.
 
-Two exploratory optimizations were tested and **not landed**, because the existing
-batch fit cache changed their performance benefit. On real automatic associations,
-early residual rejection reduced an uncached replay from about8.0–8.3s to5.75s,
-but a production-cache comparison was slower. Bounded acoustic-sample reuse cut
-101,955 retarded-time sample evaluations to4,259 and preserved all70 result rows
-exactly, but still made602 rather than609 acoustic calls and did not improve
-runtime consistently. Candidate elimination alone is not a measured speedup.
-The next concrete experiment is batching the shared-clock sample union before
-fitting, reducing function calls as well as sample count. Another available task
-is processing larger matched subsets first and pruning below Top-K using the
-certified score ceiling of one unit per matched group, while preserving finite
-mode bounds. No experimental screening/cache change was applied to production.
-
-The parallel [real-audio collection](REAL_AUDIO_CORPUS.md) has392 source records
-and18 completed scans; the requested20-known/5-unknown usable benchmark is still
-unmet. Its source table retains failures and negatives. No new corpus recordings
-were matched to flights or localized.
+The current priority is independent real-world evidence. The
+[real-audio collection](REAL_AUDIO_CORPUS.md) now includes a 314-video scanner
+survey and a 25-row reviewed candidate index. The requested 20 known-location
+usable aircraft recordings plus five unknown-location usable aircraft recordings
+is still unmet: publisher site coordinates do not establish microphone accuracy,
+and moving-tone review does not confirm aircraft identity. No new corpus
+recordings were matched to flights or localized.
 
 The [swarm task plan](AGENT_TASKS.md) provides 12 actionable GitHub issues,
 dependencies, suggested agent allocation and a copyable assignment prompt.

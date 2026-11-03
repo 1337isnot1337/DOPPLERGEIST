@@ -1,70 +1,107 @@
-# Online audio collection and scanner survey
+# Real audio collection and Doppler-candidate review
 
-The owner's current priority is search optimization. Continue this collection in
-parallel without launching geolocation or aircraft matching on its recordings.
-The requested benchmark remains **20 location-known usable clips plus 5
-location-unresolved usable clips**. It is not complete.
+All new recordings in this collection were processed with the automatic audio
+scanner only. No flight matching, aircraft association or geolocation was run on
+the collected clips. No coordinates, flight IDs or recording windows were scanner
+inputs. Downloaded media, detailed ridge outputs and review plots stay local.
 
-`scripts/collect_audio_corpus.py` searches public YouTube/Freesound pages, obtains
-audio-only MP3 excerpts, runs the unchanged intake/discovery scanner, and exports a
-single CSV retaining download failures and zero-proposal recordings. It accepts no
-flight IDs, locations, frequency bands or event windows as scanner inputs.
-Media, full ridges and source descriptions stay local. No source video is committed.
+The broad video survey and the smaller candidate index serve different purposes:
+the survey preserves positive, negative and failed outcomes; the index collects
+the strongest reviewed real-recording leads for follow-up. Neither is an accepted
+aircraft-localization benchmark yet.
 
-## Current collection
+## Broad online-video survey
 
-[Source and result table](../benchmarks/online-audio-survey-20261103.csv):
+The [expanded case table](../benchmarks/youtube-expanded-scan-20261103.csv) and
+[summary](../benchmarks/youtube-expanded-scan-20261103.md) contain 314 distinct
+YouTube video IDs. The final per-ID outcomes are 273 successful scans, 41
+unsuccessful acquisitions, 47 successful scans with moving-tone proposals and
+226 successful scans with no proposals. All 47 proposal cases received a quick
+single-reviewer spectrogram screen: five were labeled *candidate Doppler-like*,
+five looked plausible but showed possible edits or repetition, and 37 remained
+ambiguous. These labels do not confirm aircraft identity or continuous recording
+time.
 
-- 392 source records: 287 YouTube videos and 105 Freesound sounds.
-- 18 YouTube excerpts scanned, totaling 45.57 minutes: 6 with moving-tone
-  proposals and 12 with none. These are scanner results, not confirmed aircraft.
-- 246 acquisition failures, retained separately from scanner negatives.
-  Freesound preview URLs returned HTTP 403; later YouTube attempts failed with
-  connection refused. The remaining 128 sources have not been scanned.
-- The initial C-130 pilot excerpt also yielded zero proposals; it is separate
-  from the table's 18 completed excerpts.
+Successful-scan proposals by query category were:
 
-Queries cover targeted aircraft, outdoor walks, birds/nature, indoor recordings,
-phone/movement and adverse conditions. The table records the search category;
-actual equipment and environment still require source review. This is an English
-search-selected sample, not a random or representative sample of YouTube.
+| Search category | Scanned | With proposals |
+| --- | ---: | ---: |
+| Aircraft-targeted | 62 | 18 |
+| Outdoor walks | 48 | 10 |
+| Site-named aircraft | 26 | 8 |
+| Adverse conditions | 39 | 4 |
+| Birds and nature | 26 | 3 |
+| Indoor | 29 | 3 |
+| Phone movement | 43 | 1 |
 
-Do not count a source as a usable benchmark merely because the scanner found a
-tone. An onboard takeoff recording, for example, can contain engine-frequency
-changes without representing a fixed observer hearing aircraft Doppler. Sound
-effects and edited/looped ambience also require review. A zero result means the
-current scanner found no qualifying proposal, not that no aircraft was audible.
+These categories describe the searches, not verified microphones or recording
+conditions. Results are query-selected, not random or representative of YouTube.
+Most scans cover the first 180 seconds, or the entire source if shorter; this is
+not full-video screening for long sources. The three indoor proposals were all
+ambiguous. A no-proposal result applies only to the analyzed excerpt.
 
-Publisher map pins are labeled as such, with unknown microphone accuracy.
-Upload time is not recording UTC. A source lacking independently established time
-and precise location can still support acoustic tests, but cannot establish
-100–1,000 m geolocation accuracy. Unknown-location clips must not be localized
-as part of this collection task.
+The original [392-source survey snapshot](../benchmarks/online-audio-survey-20261103.csv)
+is retained unchanged as a historical artifact. The expanded table reconciles it
+with retries and the separate site-named search, deduplicates by video ID and
+preserves unsuccessful acquisition outcomes and multiple attempts.
 
-## Resume and coordination
+## Candidate index
 
-Local corpus root:
-`/home/cinna/.local/state/dopplergeist-audio-corpus-20261103`.
-It contains `sources.jsonl`, `audio/`, `scans/`, `logs/`, the two search plans,
-and `catalog.csv`. Decoded temporary audio is removed after scanning. The full
-MP3 excerpts and measured ridges remain available to other local workers.
+The [25-row candidate index](../benchmarks/audio-candidate-index-20261103.csv)
+contains:
+
+- **20 Eclipse Soundscapes site recordings** with a reviewed descending tonal
+  band and a publisher-reported site coordinate. Two of the 20 have weak or
+  interrupted visual support. The coordinate reference is kept separately in
+  [the truth-separated table](../benchmarks/truth-separated/audio-candidate-location-references-20261103.csv).
+  The publisher coordinate is for a deployment site; microphone placement error
+  is unknown. Filename-derived times are claims, not independently verified UTC.
+- **Five YouTube candidates** labeled *candidate Doppler-like* in the visual
+  review. Their exact receiver coordinates are unprovided; some titles mention a
+  coarse place. Aircraft identity, recording UTC and independence from editing
+  are not established.
+
+The Eclipse and YouTube candidates are real recordings and real moving-tone
+evidence, but the source of the tonal bands has not been confirmed as aircraft.
+The site coordinate is not a surveyed microphone coordinate. These clips are
+useful candidate material for further evidence gathering; they cannot yet measure
+100–1,000 m localization error. The requested **20 known-location usable aircraft
+clips plus five usable unknown-location aircraft clips remains unmet** until
+aircraft/source identity and the needed receiver position/time evidence are
+independently established.
+
+The candidate exporter uses only the committed scanner/review manifests and local
+publisher metadata. It creates the location table separately:
 
 ```bash
-PYTHONPATH=src python scripts/collect_audio_corpus.py search \
-  --root /path/to/corpus --plan benchmarks/online-audio-search-plan-20261103.json
-PYTHONPATH=src python scripts/collect_audio_corpus.py run \
-  --root /path/to/corpus --workers 2 --seconds 180
-PYTHONPATH=src python scripts/collect_audio_corpus.py export --root /path/to/corpus
+python scripts/export_audio_candidate_index.py \
+  --truth-root /home/cinna/.local/state/dopplergeist-eclipse-corpus-20261103 \
+  --index benchmarks/audio-candidate-index-20261103.csv \
+  --truth benchmarks/truth-separated/audio-candidate-location-references-20261103.csv
 ```
 
-Install `requests`, the project's scanner dependencies, FFmpeg and yt-dlp.
-Completed/failed sources are skipped on subsequent runs; use `--retry` to retry
-failures. `--category` selects a search category. Optional `reviews.json` maps
-source IDs to reviewed fields/notes, which override catalog fields on export.
-Clips use the first available 180 seconds, or the complete shorter source; a live
-source's relative start is not established recording UTC.
+Never pass the truth-separated coordinate table into the scanner or use it to
+narrow an evaluation search. The exporter does not download or rescan audio.
 
-Coordinate in [Discussion 39](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39):
-W1 owns the broader YouTube survey, W5 distinct known-site YouTube clips, and W4
-the separate AeroSonicDB sample. Check video IDs before downloading duplicates.
-Keep externally sourced media local unless redistribution permission is clear.
+## Acquisition and scanner reproduction
+
+The broad survey used the predeclared query plan
+[`online-audio-search-plan-20261103.json`](../benchmarks/online-audio-search-plan-20261103.json)
+and [`collect_audio_corpus.py`](../scripts/collect_audio_corpus.py). Collection
+clips use the first available 180 seconds, or the full shorter source; sample
+zero and upload time are not recording UTC. The collector's scanner settings are
+recorded in the saved scan JSON under the local corpus roots. No source video or
+audio is committed.
+
+The expanded table can be regenerated without download or rescanning when its
+six local collection roots remain available:
+
+```bash
+python scripts/export_youtube_survey_20261103.py \
+  --state-root /home/cinna/.local/state \
+  --output /tmp/youtube-expanded-scan-20261103.csv
+```
+
+Source rights and continued online availability are not established by this
+survey. Retain failed downloads, ambiguous proposals and no-proposal excerpts in
+any future update.
