@@ -1,0 +1,101 @@
+{
+  "integration_commit": "98081e742faf3c66167500e5666936b7d1db2c35",
+  "evaluation_completed_utc": "2026-11-03T00:47:54.630608+00:00",
+  "evaluation_only_truth_path": "data/synthetic/truth.json",
+  "evaluation_only_truth_sha256": "377bbc1306548f3258431b3247443113b894feb94731f7c9d5ac9b2b56f316ae",
+  "job_id": "d25c32b468cf461ab22743bd45fd540a",
+  "status": "inconclusive",
+  "reason_code": "ambiguous_flight_match",
+  "coverage": {
+    "search_complete": true,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "A constant terrain model was supplied; real terrain and altitude-datum accuracy are not established."
+    ],
+    "requested_area": {
+      "coverage": "conus"
+    },
+    "missing_data": []
+  },
+  "search_summary": {
+    "status": "complete",
+    "tiles_total": 19278,
+    "tiles_completed": 19278,
+    "unsearched_tiles": 0,
+    "data_scope_complete": true,
+    "tile_failures": [],
+    "refinement_failure": null,
+    "elapsed_s": 174.88390971600006,
+    "process_peak_rss_mib": 278.26171875,
+    "grid_points_searched": 17664
+  },
+  "association_results": [
+    {
+      "flight_ids": [
+        "a996be0c6cc3",
+        "f4463eca673d"
+      ],
+      "evaluation_labels": [
+        "known-jet",
+        "false1-B"
+      ],
+      "score": -0.1741169135403465,
+      "lat": 35.00005583999889,
+      "lon": -89.99999816990483,
+      "position_error_m": 1046023.7345280438,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "c6ffc69306d1",
+        "f4463eca673d"
+      ],
+      "evaluation_labels": [
+        "false1-A",
+        "false1-B"
+      ],
+      "score": -0.1741169135403465,
+      "lat": 35.00005583999889,
+      "lon": -89.99999816990483,
+      "position_error_m": 1046023.7345280438,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "f4a942f158fc",
+        "159329fe8c9f"
+      ],
+      "evaluation_labels": [
+        "true-A",
+        "true-B"
+      ],
+      "score": -0.1748357878204711,
+      "lat": 40.03171548893152,
+      "lon": -100.01822776178045,
+      "position_error_m": 5.551273761497274,
+      "refined": true
+    },
+    {
+      "flight_ids": [
+        "b4703f435dd4",
+        "8c99c17de3e1"
+      ],
+      "evaluation_labels": [
+        "false2-A",
+        "false2-B"
+      ],
+      "score": -0.18741277066036577,
+      "lat": 43.000130162360975,
+      "lon": -112.00007927622752,
+      "position_error_m": 1052003.4905386448,
+      "refined": true
+    }
+  ],
+  "limitations": [
+    "Synthetic regression with public existing truth, not a held-out real/nationwide accuracy result.",
+    "Product request did not contain event windows, bands, selected flights or observer coordinates.",
+    "All seven trajectories were retained; one jet-tagged track is a positional duplicate of a false track.",
+    "Inconclusive is not successful localization; no output candidate is accepted as a verified receiver location."
+  ]
+}

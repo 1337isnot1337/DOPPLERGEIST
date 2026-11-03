@@ -1,0 +1,13 @@
+{
+  "source_sha256": "20f7322e8fc8bc18b63c9d88f12f031b2b1a1cc4a1c6d2411fff8afdc325f6b2",
+  "duration_s": 1180.0,
+  "sample_rate_hz": 4000,
+  "channels": 1,
+  "source_format": "mp3",
+  "time_window": {
+    "start_utc": "2026-09-21T14:13:20Z",
+    "end_utc": "2026-09-21T14:13:20Z",
+    "source": "user",
+    "source_detail": "Controlled independent synthetic generator epoch; exact-clock integration control"
+  }
+}
