@@ -20,12 +20,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("audio")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--plot-summary", action="store_true",
+                        help="render the recording-level ridge overview plot")
+    parser.add_argument("--plot-event-details", action="store_true",
+                        help="render one spectrogram PNG per discovered event (slower)")
     args = parser.parse_args()
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)
     began = time.monotonic()
     recording = intake_recording(args.audio, output / "intake")
-    events = discover_events(recording, output_dir=output / "discovery")
+    events = discover_events(recording, output_dir=output / "discovery",
+                             plot_summary=args.plot_summary,
+                             plot_event_details=args.plot_event_details)
     root = Path(__file__).resolve().parents[1]
     sources = sorted((root / "src" / "dopplergeist").glob("*.py"))
     code_hash = hashlib.sha256()
