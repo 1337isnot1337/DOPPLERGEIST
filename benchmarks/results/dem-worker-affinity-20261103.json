@@ -1,0 +1,91 @@
+{
+  "tiles": [
+    "-19_7",
+    "-18_7",
+    "-17_7",
+    "-16_7",
+    "-15_7",
+    "-14_7"
+  ],
+  "points_per_tile": [
+    1024,
+    1024,
+    1024,
+    1024,
+    1024,
+    1024
+  ],
+  "repetitions": 2,
+  "workers": 2,
+  "chunk_size": 2,
+  "shared_pool": {
+    "elapsed_s": 13.646711387002142,
+    "ordered_hashes": [
+      "22387a651f2f204b1c5e904d39d7f31678571806f085792641f9ddaabb08cf9a",
+      "30b4ba42d862fc9db9a6df780ab9b53e5fef3baa793bc40c964e5678b6ebe90f",
+      "0ab2c28d818dc32d39a1f4ba5acf0e20535744353b20f8a93a28a4d6161e81db",
+      "c30cfe92b379377344657a069b0d1bbeba536029c2ec33c6862fe8125e75daa6",
+      "34624a4dba49acfe0d5da054b143c841599a3c175715ee94187f1c0446cd2b9f",
+      "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0",
+      "22387a651f2f204b1c5e904d39d7f31678571806f085792641f9ddaabb08cf9a",
+      "30b4ba42d862fc9db9a6df780ab9b53e5fef3baa793bc40c964e5678b6ebe90f",
+      "0ab2c28d818dc32d39a1f4ba5acf0e20535744353b20f8a93a28a4d6161e81db",
+      "c30cfe92b379377344657a069b0d1bbeba536029c2ec33c6862fe8125e75daa6",
+      "34624a4dba49acfe0d5da054b143c841599a3c175715ee94187f1c0446cd2b9f",
+      "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0"
+    ],
+    "worker_count": 2,
+    "workers": [
+      {
+        "dem_raster_opens": 19,
+        "cache_hits": 0,
+        "cache_misses": 11,
+        "cpu_s": 1.9719897010000014,
+        "resident_dem_tiles": 4
+      },
+      {
+        "dem_raster_opens": 24,
+        "cache_hits": 11,
+        "cache_misses": 16,
+        "cpu_s": 2.2134649629999994,
+        "resident_dem_tiles": 4
+      }
+    ]
+  },
+  "worker_affine": {
+    "elapsed_s": 10.155085653997958,
+    "ordered_hashes": [
+      "22387a651f2f204b1c5e904d39d7f31678571806f085792641f9ddaabb08cf9a",
+      "30b4ba42d862fc9db9a6df780ab9b53e5fef3baa793bc40c964e5678b6ebe90f",
+      "0ab2c28d818dc32d39a1f4ba5acf0e20535744353b20f8a93a28a4d6161e81db",
+      "c30cfe92b379377344657a069b0d1bbeba536029c2ec33c6862fe8125e75daa6",
+      "34624a4dba49acfe0d5da054b143c841599a3c175715ee94187f1c0446cd2b9f",
+      "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0",
+      "22387a651f2f204b1c5e904d39d7f31678571806f085792641f9ddaabb08cf9a",
+      "30b4ba42d862fc9db9a6df780ab9b53e5fef3baa793bc40c964e5678b6ebe90f",
+      "0ab2c28d818dc32d39a1f4ba5acf0e20535744353b20f8a93a28a4d6161e81db",
+      "c30cfe92b379377344657a069b0d1bbeba536029c2ec33c6862fe8125e75daa6",
+      "34624a4dba49acfe0d5da054b143c841599a3c175715ee94187f1c0446cd2b9f",
+      "ab89c86583610a4420a75925a239925797e38b9779de83ca8614aeb4b0112ad0"
+    ],
+    "worker_count": 2,
+    "workers": [
+      {
+        "dem_raster_opens": 22,
+        "cache_hits": 7,
+        "cache_misses": 13,
+        "cpu_s": 2.2020988649999986,
+        "resident_dem_tiles": 4
+      },
+      {
+        "dem_raster_opens": 16,
+        "cache_hits": 8,
+        "cache_misses": 10,
+        "cpu_s": 1.6895734730000003,
+        "resident_dem_tiles": 4
+      }
+    ]
+  },
+  "elevation_arrays_equal": true,
+  "note": "Real saved-grid terrain replay; not a full-search timing or accuracy result."
+}

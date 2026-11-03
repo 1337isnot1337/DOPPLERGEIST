@@ -188,6 +188,27 @@ def _sample_tile_terrain(points, terrain):
     return points
 
 
+def _tile_dem_keys(cells, spacing, bounds, crs, catalog):
+    """Conservatively predict DEMs touched by a tile for worker affinity."""
+    x0, y0, x1, y1 = cells
+    west, south, east, north = _to_geographic(crs).transform_bounds(
+        x0 * spacing, y0 * spacing, x1 * spacing, y1 * spacing, densify_pts=21)
+    west, south = max(west, bounds[0]), max(south, bounds[1])
+    east, north = min(east, bounds[2]), min(north, bounds[3])
+    if west > east or south > north:
+        return ()
+    south_key, north_key = math.floor(south - 1 / 2400), math.floor(north - 1 / 2400)
+    west_key, east_key = math.floor(west + 1 / 2400), math.floor(east + 1 / 2400)
+    keys = []
+    for latitude in range(south_key, north_key + 1):
+        for longitude in range(west_key, east_key + 1):
+            tag = (f"Copernicus_DSM_COG_30_{'N' if latitude >= 0 else 'S'}{abs(latitude):02d}_00_"
+                   f"{'E' if longitude >= 0 else 'W'}{abs(longitude):03d}_00_DEM")
+            if tag in catalog:
+                keys.append(tag)
+    return tuple(keys)
+
+
 def tile_points(cells, spacing, bounds, terrain, crs):
     return _sample_tile_terrain(_tile_coordinates(cells, spacing, bounds, crs), terrain)
 
@@ -622,9 +643,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     event_limit_applied = filters["association"] == "subsets" and event_limit < len(events)
     import os
     from contextlib import ExitStack, nullcontext
-    from .data_access import CachedTerrain, _index_pool
+    from .data_access import CachedTerrain
     from .parallel_retention import import_retention_stage
-    from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results
+    from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results, tile_worker_lanes
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
     total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
     if budget.max_tiles is None:
@@ -759,14 +780,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         initargs = ([index.path for index in indexes], terrain.root, terrain_options, events, measurements,
                     bounds, time_range_s, budget, parameters, filters, start_window, crs,
                     output / ".tile-workers", run_hash, score_kind)
-        context = _index_pool(workers, initialize_tile_worker, initargs)
+        context = tile_worker_lanes(
+            workers, initialize_tile_worker, initargs,
+            lambda cells: _tile_dem_keys(cells, budget.spacing_m, bounds, crs, terrain.catalog))
     else:
         context = nullcontext(None)
     def finish_tile(stage, cells, future):
         checkpoint = output / f"tile-{stage[len('coarse:'):]}.json"
         payload = None
         try:
-            payload, worker_path = future.result()
+            payload, worker_path, *_ = future.result()
             import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
             write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
                        compact=True)
