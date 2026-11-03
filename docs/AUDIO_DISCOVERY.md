@@ -42,10 +42,11 @@ process. Use a new output directory for every run.
 
 Development evidence before DG-02 controls: full synthetic WAV (1180 s), 2
 proposals spanning both planted passes, 7.24 s / 238044 KiB peak RSS; full public
-reference WAV (3600.18425 s after decode), 8 proposals, 31.05 s / 249528 KiB peak
+reference WAV (3600.1845 s after decode), 8 proposals, 31.05 s / 249528 KiB peak
 RSS. The two prominent known passes are covered, but are fragmented into multiple
-proposals; the documented faint pass is missed. Six other reference proposals
-are unmatched/unverified, not labelled aircraft or certified false alarms. No
+proposals; the documented faint pass is missed. Six proposals do not cover either documented pass center; some appear to be
+fragments of the same pass. Their identities remain unverified. They are not
+labelled aircraft or certified false alarms. No
 complete real event annotation exists to calculate reference precision/recall.
 Earlier v1/v2 diagnostics preserve a missed synthetic event and excess proposals.
 These are development checks, not independent location/nationwide validation.
@@ -62,3 +63,12 @@ They cover complete-file seams, harmonic grouping including an absent fundamenta
 simultaneous unrelated events, noise/stationary/upward-sweep rejection, short
 unsupported clips, and crossfading stationary tones. Fixed-setting DG-02 corpus
 results are recorded separately in the audio evidence handoff.
+
+Fixed-code DG-02 control check at discovery commit `4a49646`: all 14 opaque-input
+cases processed, 8 planted events found, 0 misses and 0 false alarms at event
+IoU >= 0.3. Both the development and public deterministic held_out split find
+4/4 events. Noise, stationary, upward electronic sweep and short clips produce
+no event; harmonic, overlapping and MP3 positives are retained. Detection ran
+through the label-free subprocess runner; a later process read truth for scoring.
+No detector/settings changes followed the control run. These controls have no
+eligible location cases and do not establish real-aircraft identity or accuracy.

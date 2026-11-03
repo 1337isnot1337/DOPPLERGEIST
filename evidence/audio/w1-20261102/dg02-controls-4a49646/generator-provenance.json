@@ -1,0 +1,10 @@
+{
+  "generator": "make_benchmark_controls.py",
+  "generator_sha256": "be52c4ac7a998302e0920522eea38c48cfa42f2b57ef21c3a24e69ce0ff7d80f",
+  "license": "Repository code license; generated audio contains no third-party media.",
+  "seeds": {
+    "development": 892741,
+    "held_out": 219305
+  },
+  "limits": "Public deterministic synthetic splits, not independent real validation. Short clips are unsupported constraints."
+}
