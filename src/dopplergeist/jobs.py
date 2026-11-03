@@ -82,7 +82,7 @@ class JobManager:
     def get(self, job_id):
         return read_json(self.directory(job_id) / "result.json")
 
-    def submit(self, metadata, source, size, *, suffix=".mp3", _search_seed=None, _config=None):
+    def submit(self, metadata, source, size, *, suffix=".mp3", _search_seed=None, _config=None, _expected_digest=None):
         """Copy exactly size bytes from a binary stream before launching analysis."""
         if size <= 0 or (_search_seed is None and size > self.max_upload_bytes):
             raise ValueError(f"Audio size must be 1..{self.max_upload_bytes} bytes")
@@ -108,6 +108,9 @@ class JobManager:
                     target.write(block)
                     digest.update(block)
                     remaining -= len(block)
+            if _expected_digest is not None and digest.hexdigest() != _expected_digest:
+                result(directory, "failed", reason_code="input_changed", message="Original job audio has changed.")
+                raise ValueError("Original job audio has changed")
             request["audio_path"] = str(audio)
             write_json(directory / "request.json", request)
             write_json(directory / "operator.json", self.config if _config is None else _config)
@@ -122,30 +125,25 @@ class JobManager:
 
     def resume(self, job_id):
         """Start a new job from a stopped wall-time-limited search's checkpoints."""
-        with self._mutex:
-            directory = self.directory(job_id)
-            old = self.get(job_id)
-            if old["status"] != "inconclusive" or old.get("reason_code") != "work_limit":
-                raise ValueError("Only a job stopped by its wall-time limit can be resumed")
-            search = directory / "search"
-            if (not (search / "manifest.json").is_file() or not (search / "retention.sqlite").is_file()
-                    or not any(search.glob("tile-*.json"))):
-                raise ValueError("No search checkpoints are available for this job")
-            original = read_json(directory / "input.json")
-            audio = directory / original["path"]
-            if audio.parent != directory or not audio.is_file():
-                raise ValueError("Original job audio is unavailable")
-            if audio.stat().st_size != original["bytes"]:
-                raise ValueError("Original job audio has changed")
-            request = read_json(directory / "request.json")
-            config = read_json(directory / "operator.json")
-            with audio.open("rb") as source:
-                digest = hashlib.file_digest(source, "sha256").hexdigest()
-                if digest != original["sha256"]:
-                    raise ValueError("Original job audio has changed")
-                source.seek(0)
-                return self.submit(request, source, original["bytes"], suffix=audio.suffix,
-                                   _search_seed=search, _config=config)
+        directory = self.directory(job_id)
+        old = self.get(job_id)
+        if old["status"] != "inconclusive" or old.get("reason_code") != "work_limit":
+            raise ValueError("Only a job stopped by its wall-time limit can be resumed")
+        search = directory / "search"
+        if (not (search / "manifest.json").is_file() or not (search / "retention.sqlite").is_file()
+                or not any(search.glob("tile-*.json"))):
+            raise ValueError("No search checkpoints are available for this job")
+        original = read_json(directory / "input.json")
+        audio = directory / original["path"]
+        if audio.parent != directory or not audio.is_file():
+            raise ValueError("Original job audio is unavailable")
+        if audio.stat().st_size != original["bytes"]:
+            raise ValueError("Original job audio has changed")
+        request = read_json(directory / "request.json")
+        config = read_json(directory / "operator.json")
+        with audio.open("rb") as source:
+            return self.submit(request, source, original["bytes"], suffix=audio.suffix,
+                               _search_seed=search, _config=config, _expected_digest=original["sha256"])
 
     def _run(self, directory):
         try:
