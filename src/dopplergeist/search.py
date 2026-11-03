@@ -147,18 +147,21 @@ def filter_event(table, event, time_origin=None, time_tolerance=5.0):
     return table.loc[keep]
 
 
+def filter_association_event(table, event, offset_tolerance_s, time_origin, time_tolerance_s):
+    """Filter with the same shared-clock interval used by association."""
+    frame = filter_event(table, event)
+    if time_origin is not None:
+        start = frame.receive_time - event["cpa_receive_s"]
+        tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
+        frame = frame[(start - tolerance <= time_origin + time_tolerance_s) &
+                      (start + tolerance >= time_origin - time_tolerance_s)]
+    return frame
+
+
 def pair_candidates(table, events, offset_tolerance_s=5.0, time_origin=None,
                     time_tolerance_s=5.0, silence=None):
-    filtered = []
-    for event in events:
-        frame = filter_event(table, event)
-        if time_origin is not None:
-            start = frame.receive_time - event["cpa_receive_s"]
-            tolerance = event.get("quality", {}).get("cpa_tolerance_s", 0) + offset_tolerance_s/2
-            # Match the inclusive clock intersection used for complete pairs.
-            frame = frame[(start - tolerance <= time_origin + time_tolerance_s) &
-                          (start + tolerance >= time_origin - time_tolerance_s)]
-        filtered.append(frame)
+    filtered = [filter_association_event(table, event, offset_tolerance_s, time_origin, time_tolerance_s)
+                for event in events]
     if any(frame.empty for frame in filtered):
         return [],{"per_event_survivors":[len(f) for f in filtered],"pairs_before_silence":0,"silence_rejected":0}
     group = [dict(tuple(frame.groupby("point_id"))) for frame in filtered]
