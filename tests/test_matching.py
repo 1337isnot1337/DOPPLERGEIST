@@ -95,6 +95,8 @@ def test_adapter_retains_jet_with_misleading_straight_geometry_and_merges_harmon
     assert events[0]["event_ids"] == ["a", "harmonic"]
     assert events[0]["quality"]["frequency_loss_scale_hz"] == 1.5
     assert events[0]["quality"]["frequency_uncertainty_hz"] == 1.5
+    legacy_scale, _ = prepare_events([dict(detected(), quality={"frequency_sigma_hz": 0.2})])
+    assert legacy_scale[0]["quality"]["frequency_loss_scale_hz"] == 1.0
     # Duplicating harmonic evidence changes neither the fit nor its normalization.
     single, sm = prepare_events([detected()])
     one = fit_ridge(Flyover(), None, sm[0], 0, single[0]["f0_range_hz"])
@@ -133,6 +135,7 @@ def physical_case():
         lon, lat, altitude = inverse.transform(*xyz.T)
         tracks[identity] = Track(identity, t + epoch, lat, lon, altitude,
                                  velocity=np.tile(velocity, (len(t), 1)))
+        tracks[identity].altitude_basis = ["ellipsoidal"]*len(t)
         receive = np.arange(center - 35, center + 35, 1.0)
         slant = np.linalg.norm(cross)
         ridge = straight_doppler(receive, f0, 80, slant, center + slant / 343)
@@ -140,7 +143,7 @@ def physical_case():
         events.append(dict(f0_range_hz=[f0 - 1, f0 + 1], quality={"source_drift_fraction": 0}))
     seed = dict(lat=40.0015, lon=-99.998, elev_m=100, recording_start_time_s=epoch + 0.5,
                 flight_ids=["a", "b"], point_id=0)
-    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0), vertical_datum="ellipsoidal")
     return observer, epoch, seed, tracks, events, measurements, terrain
 
 
@@ -201,9 +204,11 @@ def test_full_sensitivity_reoptimizes_all_sources_without_moving_exact_utc():
     sensitivity = result["sensitivity"]
     assert set(sensitivity["sources"]) >= {"frequency", "clock", "altitude", "sound_speed", "source_frequency"}
     assert sensitivity["complete"] and not sensitivity["boundary_limited"]
+    assert sensitivity["terrain_vertical_datum"] == "ellipsoidal"
     assert sensitivity["radius_m"] > 0
     assert all(p["recording_start_time_s"] == epoch for p in sensitivity["profiles"])
     assert len(sensitivity["profiles"]) >= 15
+    assert len([p for p in sensitivity["profiles"] if p["flight_altitude_bias"] is not None]) == 4
     assert np.linalg.norm(ecef(result["lat"], result["lon"], 100)-observer) < 10
 
 
@@ -234,3 +239,30 @@ def test_exhausted_real_optimizer_cannot_report_complete_sensitivity(monkeypatch
     result = refine_candidate(seed, {"a": Flyover()}, [dict(f0_range_hz=[119, 121])], [measurement()], terrain)
     assert not result["sensitivity"]["complete"]
     assert not any(p["optimizer_success"] for p in result["sensitivity"]["profiles"])
+
+
+def test_flight_altitude_bias_preserves_derivatives_and_original_track():
+    from aircraft_geoloc.matching import _altitude_bias
+    observer, epoch, seed, tracks, events, measurements, terrain = physical_case()
+    original = tracks["a"]
+    shifted = _altitude_bias(original, 150)
+    np.testing.assert_allclose(shifted.altitude-original.altitude, 150)
+    assert np.max(np.linalg.norm(shifted.position(original.time)-original.position(original.time), axis=1)) > 149.9
+    delta = shifted.xyz-original.xyz
+    expected = original.speed_vector(original.time)+np.gradient(delta, original.relative_time, axis=0)
+    np.testing.assert_allclose(shifted.speed_vector(original.time), expected, atol=1e-9)
+    assert tracks["b"].altitude_basis == ["ellipsoidal"]*len(tracks["b"].time)
+
+
+def test_unestablished_flight_datum_prevents_complete_sensitivity():
+    from aircraft_geoloc.matching import profile_candidate
+    track = Flyover()
+    track.altitude_basis = ["barometric", "unspecified"]
+    seed = dict(lat=40, lon=-100, recording_start_time_s=0, flight_ids=["a"])
+    terrain = SimpleNamespace(sample=lambda lat, lon: np.array(100.0))
+    result = profile_candidate(seed, {"a": track}, [dict(f0_range_hz=[119, 121])], [measurement()], terrain,
+                               recording_start_window_s=(0, 0), altitude_uncertainty_m=0,
+                               sound_speed_uncertainty_mps=0)
+    assert not result["sensitivity"]["complete"]
+    assert result["sensitivity"]["altitude_basis"]["a"] == ["barometric", "unspecified"]
+    assert any("datum" in p["reason"] for p in result["sensitivity"]["failures"])
