@@ -1,0 +1,10 @@
+{
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /home/user/dopplergeist-e2e-20261102/.venv/bin/python -m pytest -q",
+  "git_commit": "39634c3fc565a3d025a661f90eddae54430591f9",
+  "passed": 196,
+  "elapsed_s": 87.78,
+  "log_sha256": "35da47c2e766dbcb9bd3df3dda840024dfb59032d84580c2cedd924b5055887f",
+  "merge_resolution": "both independent appended tiled-search test sets retained",
+  "producer_implementation_changed_in_verifier_lane": false,
+  "runtime_wheel_sha256": "62d310e01d4a4e26317ad11b686e604bb79551c934efc73b02f6fc89bf1c28a8"
+}
