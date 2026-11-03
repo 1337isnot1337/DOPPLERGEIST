@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from aircraft_geoloc.data_access import CachedTerrain, DataUnavailable, FlightIndex, archive_frames, download
+from aircraft_geoloc.data_access import CachedTerrain, DataUnavailable, FlightCache, FlightIndex, archive_frames, download
 
 
 def samples():
@@ -63,6 +63,7 @@ class Response:
     def __enter__(self): return self
     def __exit__(self, *args): pass
     def raise_for_status(self): pass
+    def json(self): return json.loads(self.data)
     def iter_content(self, size): yield self.data
 
 
@@ -178,3 +179,50 @@ def test_index_partial_velocity_inference_preserves_measured_zero(tmp_path):
     assert abs(np.dot(track.speed_vector(5), vertical)) < 1e-9
     assert np.linalg.norm(track.speed_vector(5)) > 10
     assert track.velocity_inferred_components["up_mps"] == 0
+
+
+def test_date_acquisition_ingests_all_types_and_reuses_validated_offline_index(tmp_path):
+    start = pd.Timestamp("2026-09-08T00:00:00Z").timestamp()
+    stream = io.BytesIO()
+    with tarfile.open(fileobj=stream, mode="w") as archive:
+        for identity, code in [("a12345", "B738"), ("b12345", "H500"), ("c12345", "ZZZZ")]:
+            trace = {"icao": identity, "timestamp": start, "t": code, "trace": [
+                [i, 40, -100+i*.001, 3000, 100, 90, 0, 0, {}, None, 3200, 0] for i in [0, 5, 10]]}
+            raw = gzip.compress(json.dumps(trace).encode())
+            member = tarfile.TarInfo(f"trace_full_{identity}.json"); member.size = len(raw)
+            archive.addfile(member, io.BytesIO(raw))
+    payload = stream.getvalue()
+    asset = {"name": "day.tar.aa", "size": len(payload), "digest": "sha256:"+hashlib.sha256(payload).hexdigest(),
+             "browser_download_url": "https://fixture.invalid/day.tar.aa"}
+
+    class Provider:
+        def __init__(self): self.calls = []
+        def get(self, url, **kwargs):
+            self.calls.append(url)
+            if url.startswith("https://api.github.com/"):
+                return Response(json.dumps({"tag_name": "v2026.09.08-planes-readsb-staging-0", "assets": [asset]}).encode())
+            if url == asset["browser_download_url"]:
+                return Response(payload)
+            if url.endswith("icao_aircraft_types.js"):
+                return Response(b'let types={"B738":{"desc":"L2J"},"H500":{"desc":"H1T"}};')
+            raise AssertionError(f"Unexpected network request: {url}")
+
+    provider = Provider()
+    index = FlightCache(tmp_path, session=provider).acquire_day("2026-09-08")
+    tracks = list(index.query([-101, 39, -99, 41], [start, start+10]))
+    assert {t.typecode: t.aircraft_class for t in tracks} == {"B738": "jet", "H500": "turbine", "ZZZZ": "unclassified"}
+    assert all(t.altitude_basis == ["ellipsoidal"]*3 for t in tracks)
+    assert len(provider.calls) == 3 and index.report["rows"] == 9
+    repeat = FlightCache(tmp_path, offline=True, session=provider).acquire_day("2026-09-08")
+    assert repeat.report == index.report and len(provider.calls) == 3
+    assert index.report["coverage"]["release_tag"] == "v2026.09.08-planes-readsb-staging-0"
+    index.path.unlink()
+    (tmp_path / "2026-09-08/staging-0/day.tar.aa").write_bytes(payload[:100])
+    with pytest.raises(DataUnavailable, match="Truncated cache"):
+        FlightCache(tmp_path, offline=True, session=provider).acquire_day("2026-09-08")
+    release_path = tmp_path / "2026-09-08/staging-0/release.json"
+    release_path.write_text(json.dumps({"tag_name": "wrong-day", "assets": [asset]}))
+    with pytest.raises(DataUnavailable, match="requested tag"):
+        FlightCache(tmp_path, offline=True, session=provider).acquire_day("2026-09-08")
+    with pytest.raises(DataUnavailable, match="Offline release"):
+        FlightCache(tmp_path, offline=True, session=provider).acquire_day("2026-09-09")

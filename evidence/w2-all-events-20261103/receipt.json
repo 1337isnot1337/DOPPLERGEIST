@@ -1,0 +1,57 @@
+{
+  "source_commit": "c22e68259774aa3db72ef4abe8f252f32a70ae55",
+  "driver_commit": "8750e91",
+  "association_dependency": "5657f60",
+  "association_core": "e827f17",
+  "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-all-events-final-tests-20261103.xml",
+  "passed": 141,
+  "failed": 0,
+  "skipped": 0,
+  "elapsed_s": 78.04,
+  "precision_requirement": {
+    "acceptable_m": 1000,
+    "preferred_m": [
+      100,
+      500
+    ],
+    "historical_results_relabelled": false
+  },
+  "event_groups_tested": [
+    3,
+    4,
+    6
+  ],
+  "later_event_changes_joint_score": true,
+  "distractor_explicitly_unmatched": true,
+  "exact_and_interval_clocks_constrained": true,
+  "explicit_smaller_event_cap_is_partial": true,
+  "national_queue_count_is_arithmetic": true,
+  "runtime": {
+    "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+    "platform": "Linux-7.2.10-arch1-1-x86_64-with-glibc2.44",
+    "packages": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "pandas": "2.3.3",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "pyarrow": "26.0.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "files": {
+    "release-tests.log": "080d37440a7d8c49864340612f976e61bcedb04f44e2ce922b2c10adc36e63bc",
+    "release-tests.xml": "6a9f0b89bc74c06fc0c0b96eb2974ee489255ccd42923c71b3a144e0e7d7f2f9",
+    "tests.log": "7852e2a3b817e91e89ba21ca6540fee9786d4cc785afc64ff860250d105da150",
+    "tests.xml": "570f2761590972fd07039fd2b9838a5a225e5b49235885a69c34a18853e77dab"
+  },
+  "release_check": {
+    "source_commit": "da140cb",
+    "command": "PYTHONPATH=src /home/cinna/aircraft-audio-geolocation/.venv/bin/python -m pytest -q --junitxml=results/w2-all-events-release-tests-20261103.xml",
+    "passed": 142,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_s": 48.0,
+    "receipt": "release-tests.xml"
+  }
+}

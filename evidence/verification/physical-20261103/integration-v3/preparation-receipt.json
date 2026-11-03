@@ -1,0 +1,26 @@
+{
+  "fixture_generator_commit": "1f03425",
+  "preparation_source_commit": "3f4a6b1bc3447b4b996dd0402f3aa8f97b7765a1",
+  "index_elapsed_s": 0.18193746899987673,
+  "files": {
+    "index-report.json": {
+      "sha256": "d74896ea6eff006674b0727c4b0959201221b3ce0b5999fed88115929d82c470",
+      "bytes": 1160
+    },
+    "flight-index-v2.sqlite": {
+      "sha256": "e33c0cc1f14afe3e38e93a9d0d341a08fed037e7bf5eb260870db888e7c78aab",
+      "bytes": 229376
+    },
+    "upload-request.json": {
+      "sha256": "9e3e61863e60ac0ed62365fcc8ce665bc539252d842f056f9b677b8999cf96fc",
+      "bytes": 194
+    },
+    "operator.json": {
+      "sha256": "f92da6cf516d03b82841cba6d253ca269325d3e3403662e2035feeffd2e840f2",
+      "bytes": 400
+    }
+  },
+  "truth_read": false,
+  "scope": "Declared finite synthetic population from the primary shared four-flyover renderer. Normal operator inputs contain no event windows, frequency bands, identity map or receiver coordinate.",
+  "budget_note": "Declared before product execution: default 2 km outer grid, 100 m refinement, 20 finalists, 200 retained rows, 2 km spatial profile box. Any exhausted work or boundary remains a limitation."
+}

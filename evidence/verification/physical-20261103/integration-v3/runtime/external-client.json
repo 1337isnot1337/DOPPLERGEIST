@@ -1,0 +1,11 @@
+{
+  "reference_commit": "15e91e9",
+  "reference_git_blob": "ddb5a9c577bce09fc1e2d5c27ac85fe9ea41ace6",
+  "reference_sha256": "063abf6ebb98f1506cafdccd87d927fa7019547e37059b3388f1624b6f2fbf9c",
+  "external_client_path": "/workspace/scratch/4cfe67e9d1bc/DOPPLERGEIST/.artifacts/physical-verification/isolated-runtime/external-client/verify_upload.py",
+  "current_sha256": "063abf6ebb98f1506cafdccd87d927fa7019547e37059b3388f1624b6f2fbf9c",
+  "current_matches_reference": true,
+  "client_modified": false,
+  "client_is_mounted_inside": false,
+  "copy_reason": "V3 working tree does not contain scripts/verify_upload.py; byte-exact published client restored here without modifications."
+}

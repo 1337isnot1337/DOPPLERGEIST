@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "threshold_m": 1000,
+  "event_iou_threshold": 0.3,
+  "cases": [
+    {
+      "case_id": "case-001",
+      "split": "development",
+      "scope": "canonical_independent_emission_audio_discovery",
+      "status": "inconclusive",
+      "reason_code": "discovery_only",
+      "location_accuracy_eligible": false,
+      "eligibility_limit": "Frozen canonical synthetic audio discovery only; no localization performed.",
+      "runtime_s": 7.081333560025087,
+      "peak_memory_bytes": 334311424,
+      "true_positives": 3,
+      "misses": 0,
+      "false_alarms": 0,
+      "location_returned": false
+    },
+    {
+      "case_id": "case-002",
+      "split": "development",
+      "scope": "canonical_independent_emission_audio_discovery",
+      "status": "inconclusive",
+      "reason_code": "discovery_only",
+      "location_accuracy_eligible": false,
+      "eligibility_limit": "Frozen canonical synthetic audio discovery only; no localization performed.",
+      "runtime_s": 6.271858203021111,
+      "peak_memory_bytes": 402087936,
+      "true_positives": 4,
+      "misses": 0,
+      "false_alarms": 0,
+      "location_returned": false
+    },
+    {
+      "case_id": "case-003",
+      "split": "development",
+      "scope": "canonical_independent_emission_audio_discovery",
+      "status": "inconclusive",
+      "reason_code": "discovery_only",
+      "location_accuracy_eligible": false,
+      "eligibility_limit": "Frozen canonical synthetic audio discovery only; no localization performed.",
+      "runtime_s": 8.180221388000064,
+      "peak_memory_bytes": 353128448,
+      "true_positives": 6,
+      "misses": 0,
+      "false_alarms": 0,
+      "location_returned": false
+    }
+  ],
+  "summary": {
+    "cases": 3,
+    "eligible_location_cases": 0,
+    "successful_locations_within_threshold": 0,
+    "localization_errors_m": [],
+    "false_localizations": 0,
+    "false_localization_rate": 0.0,
+    "false_localization_denominator": 3,
+    "inconclusive_rate": 1.0,
+    "execution_failures": 0,
+    "needs_input": 0,
+    "detection_true_positives": 13,
+    "detection_misses": 0,
+    "detection_false_alarms": 0,
+    "detection_recall": 1.0,
+    "detection_precision": 1.0
+  },
+  "by_split": {
+    "development": {
+      "cases": 3,
+      "eligible_location_cases": 0,
+      "successful_locations_within_threshold": 0,
+      "localization_errors_m": [],
+      "false_localizations": 0,
+      "false_localization_rate": 0.0,
+      "false_localization_denominator": 3,
+      "inconclusive_rate": 1.0,
+      "execution_failures": 0,
+      "needs_input": 0,
+      "detection_true_positives": 13,
+      "detection_misses": 0,
+      "detection_false_alarms": 0,
+      "detection_recall": 1.0,
+      "detection_precision": 1.0
+    }
+  },
+  "by_scope": {
+    "canonical_independent_emission_audio_discovery": {
+      "cases": 3,
+      "eligible_location_cases": 0,
+      "successful_locations_within_threshold": 0,
+      "localization_errors_m": [],
+      "false_localizations": 0,
+      "false_localization_rate": 0.0,
+      "false_localization_denominator": 3,
+      "inconclusive_rate": 1.0,
+      "execution_failures": 0,
+      "needs_input": 0,
+      "detection_true_positives": 13,
+      "detection_misses": 0,
+      "detection_false_alarms": 0,
+      "detection_recall": 1.0,
+      "detection_precision": 1.0
+    }
+  },
+  "limits": [
+    "Synthetic and manually configured regional results do not validate automatic national search.",
+    "Uncalibrated sensitivity is not a coverage probability."
+  ],
+  "evaluated_location_thresholds_m": [
+    100,
+    500,
+    1000
+  ],
+  "truth_joined_after_all_predictions": true,
+  "evaluation_truth_sources": [
+    {
+      "case_id": "case-001",
+      "truth_path_evaluation_only": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-3-20261103/truth/labels.json",
+      "truth_sha256": "a26654c5d4a941b74a635d072b7e82b7707ea9038c0bdb21843a27eda84eb319"
+    },
+    {
+      "case_id": "case-002",
+      "truth_path_evaluation_only": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-4-20261103/truth/labels.json",
+      "truth_sha256": "339d4517ee1197070404ea1caf901ce5705eb6e10a8dc23bd2b42c3c034f85d6"
+    },
+    {
+      "case_id": "case-003",
+      "truth_path_evaluation_only": "/home/cinna/dopplergeist-multi-event-fixture-20261103/data/multi-event-6-20261103/truth/labels.json",
+      "truth_sha256": "e514bb0c2e8bc2ad23733817fbc82c830bbd5c14b378247debc4e62941f84bb9"
+    }
+  ],
+  "generator_commit": "1f03425",
+  "discovery_commit": "47261fe"
+}

@@ -43,11 +43,20 @@ synthetic detection controls recorded 8 hits, no misses and no false alarms acro
 14 cases. [All outcomes and source revisions](docs/AUDIO_DISCOVERY.md) remain
 available. Automatic national synthetic runs also retain distant competing modes
 and inconclusive results in [the integration evidence](docs/verification/INTEGRATION.md).
-The latest combined source passes 175 repository tests. The independent
+The [integration receipts](docs/verification/INTEGRATION.md) pin each tested source
+revision and its scope. The independent
 [three-, four- and six-flyover fixtures](docs/MULTI_EVENT_FIXTURES.md) produce
 13/13 detected events with unchanged settings; their released media and complete
 receipts support the next full upload tests. Independently timed real field
 recordings remain a separate unmet acceptance gate. Scores and finite sensitivity checks are not calibrated location probabilities.
+
+A [targeted raw-trajectory audit](research/trajectory-motion/README.md) found
+legacy fabricated motion components and persistent position/time jumps. One
+stored curve peaks near 52,044 m/s, driven by native observations about 14.6 km
+apart in 0.42 seconds. Fresh normalization fixes two tested motion artifacts but
+leaves unsupported source sequences. Explicit handling and lost-coverage checks
+remain a scientific correctness gate; these are input/model defects, not actual
+aircraft-speed measurements or new location-accuracy results.
 
 For parallel implementation, start with the [agent task plan](docs/AGENT_TASKS.md)
 and [discussion board](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).

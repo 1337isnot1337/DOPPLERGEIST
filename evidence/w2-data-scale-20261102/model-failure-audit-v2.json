@@ -1,0 +1,64 @@
+{
+  "scope": "Audit of failed analytic-ridge traffic-scale tiles; not localization evaluation",
+  "input_index_hash": "c928bed10091462ca7d9a11600e33d8716a7beef1287fca3ef5095fd201b3a34",
+  "failures": [
+    {
+      "flight_id": "a6cc10:2",
+      "typecode": "H500",
+      "altitude_basis": [
+        "barometric"
+      ],
+      "reason": "Acoustic model requires a subsonic source",
+      "sampled_max_hermite_speed_mps": 1011.2692986880065,
+      "recorded_max_knot_speed_mps": 0.28448,
+      "tiles": [
+        "9_9"
+      ]
+    },
+    {
+      "flight_id": "ae8b78",
+      "typecode": "",
+      "altitude_basis": [
+        "barometric"
+      ],
+      "reason": "Acoustic model requires a subsonic source",
+      "sampled_max_hermite_speed_mps": 413.58130664012356,
+      "recorded_max_knot_speed_mps": 129.12544400000002,
+      "tiles": [
+        "9_9"
+      ]
+    },
+    {
+      "flight_id": "ae05a8",
+      "typecode": "K35R",
+      "altitude_basis": [
+        "barometric"
+      ],
+      "reason": "Acoustic model requires a subsonic source",
+      "sampled_max_hermite_speed_mps": 449.727844394831,
+      "recorded_max_knot_speed_mps": 136.84220055560502,
+      "tiles": [
+        "5_13"
+      ]
+    },
+    {
+      "flight_id": "c01125",
+      "typecode": "C172",
+      "altitude_basis": [
+        "ellipsoidal",
+        "ellipsoidal_interpolated"
+      ],
+      "reason": "Acoustic model requires a subsonic source",
+      "sampled_max_hermite_speed_mps": 14600.194462988531,
+      "recorded_max_knot_speed_mps": 189.84602254223952,
+      "tiles": [
+        "7_15"
+      ]
+    }
+  ],
+  "non_exception_candidates_checked": 17,
+  "finite_score_candidates": 17,
+  "nonfinite_score_candidates": 0,
+  "elapsed_s": 5.645507592998911,
+  "limitation": "Legacy input imputed null motion values as finite zeros; no inference of actual supersonic aircraft is justified. Fresh raw traces are needed for repair."
+}
