@@ -541,7 +541,7 @@ class AcquiredInputs:
 
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
-                   terrain_options=None, max_sound_range_m=20000.0):
+                   terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
@@ -554,7 +554,12 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     if window is None:
         raise ValueError("A defensible recording-start time window is required")
     start, end = (utc_timestamp(window[k]).timestamp() for k in ("start_utc", "end_utc"))
-    times = (start - max_sound_range_m / 300.0 - 30.0, end + recording["duration_s"] + 30.0)
+    first = start - max_sound_range_m / 300.0 - 30.0
+    if earliest_emission_s is not None:
+        if not np.isfinite(earliest_emission_s):
+            raise ValueError("Earliest emission time must be finite")
+        first = max(first, earliest_emission_s)
+    times = (first, end + recording["duration_s"] + 30.0)
     root = Path(cache_root)
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
