@@ -37,6 +37,17 @@ _EQUIVALENT_NORMALIZERS = {
 }
 
 
+def _staging_rows(frame):
+    """Keep pandas' normalized JSON rows without encoding each one twice."""
+    payload = frame.to_json(orient="records", double_precision=15)
+    decoder = json.JSONDecoder()
+    position = 1  # Skip the opening array bracket.
+    while position < len(payload) - 1:
+        row, end = decoder.raw_decode(payload, position)
+        yield str(row["flight_id"]), row["time_s"], payload[position:end]
+        position = end + 1  # Skip the comma (or closing bracket).
+
+
 def _frame_track(name, frame):
     velocity, inferred = _segment_velocity(frame)
     track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
@@ -278,9 +289,8 @@ class FlightIndex:
                     clean["aircraft_class"] = clean.typecode.map(class_map).astype(object).fillna("unclassified") if "typecode" in clean else "unclassified"
                     altitude.update(clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)})
                     # pandas normalizes numpy scalars/NaNs to JSON numbers/null.
-                    records = json.loads(clean.to_json(orient="records", double_precision=15))
-                    db.executemany("INSERT INTO samples VALUES(?,?,?)", [(str(r["flight_id"]), r["time_s"], json.dumps(r)) for r in records])
-                    rows += len(records)
+                    db.executemany("INSERT INTO samples VALUES(?,?,?)", _staging_rows(clean))
+                    rows += len(clean)
                 db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
