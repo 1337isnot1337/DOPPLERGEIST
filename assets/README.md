@@ -66,3 +66,8 @@ published flight data. It uses USGS / USDA NAIP imagery and data from Praveen
 Pathak's [Zenodo dataset](https://doi.org/10.5281/zenodo.23424278) (CC BY 4.0).
 [Setup, limitations and rendering instructions](../docs/LIVERMORE_DEMO.md)
 explain the inferred reference and the incomplete model assessment.
+
+`livermore-automatic-mp3.png` depicts the separate automatic MP3 upload and
+its retained aircraft-search scores, using the same USGS / USDA NAIP imagery.
+The [all-aircraft case study](../docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking)
+describes the selected map points, inferred reference, and run limitations.
