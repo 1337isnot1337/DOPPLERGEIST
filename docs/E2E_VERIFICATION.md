@@ -155,3 +155,42 @@ reload and the mobile overflow check. Wheel/source hashes and full results are
 in `evidence/verification/installed-wheel-20261102/`. This packaging check used
 the isolated producer snapshot plus packaging PR #29; it does not cover the
 national-search module, which was not yet in that snapshot.
+
+## Filesystem-isolated full browser pipeline
+
+An installed wheel built from source integration `5acacf2f` executed the actual
+synthetic MP3 upload form in Chromium. A separate Linux filesystem/pid namespace
+exposed the runtime, opaque flight index, operator configuration and job outputs.
+Source checkouts, benchmark labels, the identifier map and host authentication
+were absent. The namespace and installed-source probe is preserved. Evaluation
+read ground truth only after the backend was stopped.
+
+The request contained only CONUS coverage and the renderer's stated start epoch.
+Intake, two automatic events, seven v2-indexed trajectory segments, all
+19,278 CONUS tiles, 100 m grid refinement, numerical refinement and the decision
+stage ran. Search took 205.38 s and reached 310.94 MiB peak RSS; synthetic data
+scope was complete, including the audible-border guards. The original MP3 hash
+matched the persisted original and recording metadata.
+
+This run did **not** pass final acceptance:
+
+- The final decision was `inconclusive / unsupported_score_kind`: the frozen
+  decision policy did not declare a threshold for the subset-association score.
+- The leading candidate was 1,046 km from truth. The best true-pair candidate
+  was 6.51 m away at rank 4, and five of 106 rows were within 100 m. A good
+  candidate in the list does not establish a successful localization.
+- The real candidate view overflowed the 390 px mobile viewport to 412 px.
+  The long score-kind string had 355 px scroll width in a 276 px paragraph.
+  Earlier noise/required-input pages lacked candidates and did not expose it.
+
+All numerical results, the actual failed mobile render, helper error, filesystem
+probe and exact launcher are in `evidence/verification/blinded-browser-20261102/`.
+The larger browser trace remains local with a checked-in size/hash receipt. The
+first namespace setup attempt lacked BLAS loader symlinks and failed before
+decode; its exact error is retained in the manifest. Adding system loader paths
+resolved the runtime setup without exposing labels.
+
+The browser harness records the artifact count and keeps the default collapsed
+download list when there are more than 200 entries, bounding screenshot memory.
+It does not truncate candidate hypotheses or count an inconclusive job as a
+supported location. Confidence and UI owners were notified through discussion #39.

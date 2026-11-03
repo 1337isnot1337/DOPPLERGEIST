@@ -1,0 +1,48 @@
+{
+  "installed_package": "/venv/lib/python3.12/site-packages/aircraft_geoloc",
+  "visible_root": [
+    "dev",
+    "etc",
+    "inputs",
+    "lib",
+    "lib64",
+    "output",
+    "proc",
+    "tmp",
+    "usr",
+    "venv"
+  ],
+  "mounted_inputs": [
+    "operator.json",
+    "tracks.lock",
+    "tracks.sqlite"
+  ],
+  "decoder_versions": {
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers"
+  },
+  "truth_paths_absent": true,
+  "host_authentication_environment_absent": true,
+  "installed_sources_sha256": {
+    "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+    "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "automatic.py": "39b5cca9ff515af364681200b26ca0626babcdd3efea774867bbf061fe86d17d",
+    "cli.py": "91f62e955aa3a343ae2f916cff83ef7f58bc3b55e13dc5f40ff795bb6bd7e447",
+    "confidence.py": "b34e41b7db279c8a601adb6eb6b5cd7d5936cadfb43f941523f6c9daaa6c9b79",
+    "contracts.py": "66e311197e69fc6636dea33e25ae2acccfeba2845b0561963f33112c932a969f",
+    "data_access.py": "88eabb03560a97942ec131f8edd56fba3719a7b1e407f517e7bc45994fe67218",
+    "discovery.py": "c19e7b126bbb95bfaf676692b5156643aa35d1ed4493f54463cfb66e4dd62be2",
+    "evaluation.py": "5331eee02df2e22396e44c8c07110129297c9cedadeee4d9bccd415b9b0ad071",
+    "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "intake.py": "c1d4c792c9e1cec1a9315b354d6fa58c0d4326c6773b19719bd859e7571c5648",
+    "jobs.py": "b493140edabde20674d46022d683a462002bb336a30e2db4fde6f65890a8e0d9",
+    "matching.py": "a9b8267b488c1f96625a844f465e872aab1a4ae3c526e151e0e89d22e286c9aa",
+    "pipeline.py": "d2361725283053a0911a803717f8dab6e59ed8e1c20e305f191aeea693156adb",
+    "search.py": "ac8414127d58192119b85bd1519a288aca1eda7ed24ceb07385b2b601c6ad47b",
+    "service.py": "0a5c81b6c88a7bf83a487272019e14a102dccc8fe27b823ad4f3335a28476f4d",
+    "terrain.py": "b8258fa2d950c2348c78e019f9e97ce9fe6c760cf7fd47a81d1a21d23362948a",
+    "tiled_search.py": "1baf17e409479cffc0d6cfbbdacf5e562082c80180080487ec56eb778a966ab5",
+    "tracks.py": "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    "web/__init__.py": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+  }
+}

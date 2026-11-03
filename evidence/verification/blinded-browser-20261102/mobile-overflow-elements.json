@@ -1,0 +1,70 @@
+{
+  "viewport_width": 390,
+  "document_width": 412,
+  "offenders": [
+    {
+      "tag": "DIV",
+      "cls": "candidate",
+      "text": "1. 35.000057, -89.999984Sensitivity radius: 107 m \u00b7 declared_perturbation_profilesScore 1.8872 (matched_group_support_minus_normalized_residual); not a probability.Flights: 57ef4ed",
+      "scrollWidth": 370,
+      "clientWidth": 306,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "P",
+      "cls": "",
+      "text": "Score 1.8872 (matched_group_support_minus_normalized_residual); not a probability.",
+      "scrollWidth": 355,
+      "clientWidth": 276,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "DIV",
+      "cls": "candidate",
+      "text": "2. 35.000057, -89.999984Sensitivity radius: 107 m \u00b7 profiled_relative_altitude_offsetsScore 1.8872 (matched_group_support_minus_normalized_residual); not a probability.Flights: 57e",
+      "scrollWidth": 370,
+      "clientWidth": 306,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "P",
+      "cls": "",
+      "text": "Score 1.8872 (matched_group_support_minus_normalized_residual); not a probability.",
+      "scrollWidth": 355,
+      "clientWidth": 276,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "DIV",
+      "cls": "candidate",
+      "text": "3. 40.031717, -100.018216Sensitivity radius: 101 m \u00b7 profiled_relative_altitude_offsetsScore 1.8859 (matched_group_support_minus_normalized_residual); not a probability.Flights: 74",
+      "scrollWidth": 370,
+      "clientWidth": 306,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "P",
+      "cls": "",
+      "text": "Score 1.8859 (matched_group_support_minus_normalized_residual); not a probability.",
+      "scrollWidth": 355,
+      "clientWidth": 276,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "DIV",
+      "cls": "candidate",
+      "text": "4. 40.031717, -100.018216Sensitivity radius: 101 m \u00b7 profiled_relative_altitude_offsetsScore 1.8859 (matched_group_support_minus_normalized_residual); not a probability.Flights: 74",
+      "scrollWidth": 370,
+      "clientWidth": 306,
+      "overflowWrap": "normal"
+    },
+    {
+      "tag": "P",
+      "cls": "",
+      "text": "Score 1.8859 (matched_group_support_minus_normalized_residual); not a probability.",
+      "scrollWidth": 355,
+      "clientWidth": 276,
+      "overflowWrap": "normal"
+    }
+  ]
+}
