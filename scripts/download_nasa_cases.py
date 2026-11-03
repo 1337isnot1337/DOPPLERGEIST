@@ -20,11 +20,14 @@ import struct
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zlib
 
 
 URL = "https://data.nasa.gov/docs/datasets/rfk401li/small_uav_acoustics.zip"
+SOURCE_HOST = "data-nasa-bucket-production.s3.us-east-1.amazonaws.com"
+SOURCE_PATH = "/datasets/rfk401li/small_uav_acoustics.zip"
 MANIFEST = Path(__file__).resolve().parents[1] / "benchmarks/nasa-session-cases-20261103.json"
 LIMIT = 64 * 1024**2
 RETRIES = 3
@@ -72,8 +75,20 @@ def transient(error):
 
 class FixedSourceRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, response, code, message, headers, newurl):
-        if newurl != URL:
-            raise ValueError("NASA redirected outside the fixed source URL")
+        try:
+            target = urllib.parse.urlsplit(newurl)
+            official_storage = (
+                target.scheme == "https" and target.hostname == SOURCE_HOST
+                and target.path == SOURCE_PATH and target.username is None
+                and target.password is None and target.port in (None, 443)
+                and not target.fragment
+            )
+        except ValueError:
+            official_storage = False
+        if newurl != URL and not official_storage:
+            raise ValueError("NASA redirected outside the approved archive locations")
+        # NASA signs this redirect. Keep its query only in the active request;
+        # every range starts at URL, with no saved redirect URL or query logging.
         return super().redirect_request(request, response, code, message, headers, newurl)
 
 
@@ -126,8 +141,8 @@ class Archive:
             value = f"bytes={lo}-{hi}"
             if hasattr(self, "tail") and self.tail_start <= lo <= hi < self.size:
                 return self.tail[lo - self.tail_start:hi - self.tail_start + 1], lo, self.size
-        request = urllib.request.Request(URL, headers={"Range": value, "Accept-Encoding": "identity"})
         for attempt in range(RETRIES + 1):
+            request = urllib.request.Request(URL, headers={"Range": value, "Accept-Encoding": "identity"})
             try:
                 with self.opener.open(request, timeout=30) as response:
                     match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)", response.headers.get("Content-Range", ""))
