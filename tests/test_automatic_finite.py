@@ -8,7 +8,7 @@ from aircraft_geoloc import automatic, matching
 from aircraft_geoloc.jobs import read_json
 
 
-@pytest.mark.parametrize("bad_core", [None, "partial_support", "missing_core", "missing_id"])
+@pytest.mark.parametrize("bad_core", [None, "partial_support", "missing_core", "missing_id", "near_cluster"])
 def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path, monkeypatch, bad_core):
     events = [{"event_id": f"event-{i}", "start_s": i*100., "end_s": i*100.+20., "band_hz": [90., 200.],
                "ridge": [{"time_s": i*100.+t, "frequency_hz": 140.-t} for t in (0., 10., 20.)]} for i in range(2)]
@@ -25,10 +25,13 @@ def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path
         rows[1]["event_diagnostics"] = []
     elif bad_core == "missing_id":
         rows[1].pop("mode_id")
+    elif bad_core == "near_cluster":
+        rows[1].update(lat=40.001, score=-.2)
+        rows[1]["event_diagnostics"] = [dict(fit, score=-.1) for fit in rows[1]["event_diagnostics"]]
     evidence = {"schema_version": 1, "scope": "evaluated_finite_grid", "complete": True,
                 "score_kind": "negative_robust_ridge_loss_hz", "spacing_m": 1000., "refine_spacing_m": 100.,
                 "max_event_groups": 2, "retained_modes": [{"mode_id": "mode-a", "score": -.1, "event_groups": 2},
-                                                          {"mode_id": "mode-b", "score": -10., "event_groups": 2}],
+                                                          {"mode_id": "mode-b", "score": rows[1]["score"], "event_groups": 2}],
                 "discarded_count": 0, "best_discarded_score": None, "pruning_accounted_for": True,
                 "limitations": ["Evaluated points only; unperformed refinements and continuous space are not covered."]}
     search = {"ranked": rows, "status": "complete", "scoring_time_is_locked": True,
@@ -60,11 +63,18 @@ def test_finite_scope_assesses_supported_frozen_seeds_and_preserves_ids(tmp_path
     assert diagnostics["unrefined_hypotheses"] == 1
     assert len(diagnostics["candidate_mode_ids"]) == len(final["candidates"])
     assert diagnostics["candidate_mode_ids"].count("mode-a") == 2
-    if bad_core is None:
+    if bad_core in (None, "near_cluster"):
         assert final["status"] == "succeeded", final
         assert diagnostics["assessed_mode_ids"] == ["mode-a", "mode-b"]
         decision = read_json(tmp_path/"decision.json")
         assert decision["diagnostics"]["finite_search"]["continuous_space_uniqueness"] == "not established"
+        assert decision["candidates"] == final["candidates"]
+        if bad_core == "near_cluster":
+            uncertainty = final["candidates"][0]["uncertainty"]
+            assert uncertainty["method"] == "finite_mode_and_tested_profile_union"
+            assert 110. < uncertainty["radius_m"] < 112.
+            assert final["candidates"][0]["lat"] == 40.
+            assert final["candidates"][0]["score"] == -.1
     else:
         assert final["status"] == "inconclusive", final
         assert diagnostics["assessed_mode_ids"] == ["mode-a"]
