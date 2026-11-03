@@ -81,7 +81,7 @@ def make_controls(output):
     write_json(hidden / "labels.json", labels)
     write_json(output / "provenance.json", {"generator": str(Path(__file__).name),
                "generator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-               "license": "Repository code license; generated audio contains no third-party media.",
+               "license": "Generated audio contains no third-party media; the repository has no declared license.",
                "seeds": {"development": 892741, "held_out": 219305},
                "limits": "Public deterministic synthetic splits, not independent real validation. Short clips are unsupported constraints."})
     return inputs / "manifest.json"

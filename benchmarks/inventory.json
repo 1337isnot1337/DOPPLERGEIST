@@ -5,7 +5,7 @@
   "datasets": {
     "independent_synthetic": {
       "source": "scripts/make_synthetic_cases.py; seed 78139; independent emission-domain renderer",
-      "license": "Repository source license; generated fixtures",
+      "license": "Generated fixtures contain no third-party media; repository has no declared license",
       "clock": "Explicit synthetic epoch 1790000000; no filesystem inference",
       "location_precision": "Exact simulated coordinate; not a real recording",
       "files": [
