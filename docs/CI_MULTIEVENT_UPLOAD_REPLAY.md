@@ -16,8 +16,33 @@ non-identifier value, and preserves the original Parquet and mapping separately.
 
 ## Run
 
-Install the project, test dependencies, FFmpeg and Playwright Chromium. Use a
-fresh output path for every attempt:
+Use Git and Python 3.11 or newer. The recorded run used Python 3.12.15.
+Create a separate clone in a destination that does not exist:
+
+```bash
+git clone --no-checkout https://github.com/1337isnot1337/DOPPLERGEIST.git DOPPLERGEIST-upload-e2bb3dce
+```
+
+If the clone command fails, stop. After the clone succeeds, select the exact
+integration commit that contains the tested producer combination:
+
+```bash
+cd DOPPLERGEIST-upload-e2bb3dce
+git checkout --detach e2bb3dce63591ff7c92a0f985b40dd6a01a24cec
+```
+
+Both `ffmpeg` and `ffprobe` must be available on `PATH`. The tested Ubuntu 24.04
+workflow installs FFmpeg with these commands:
+
+```bash
+sudo apt-get update -qq
+sudo apt-get install -y ffmpeg
+ffmpeg -version
+ffprobe -version
+```
+
+Install the project, test dependencies, and Playwright Chromium. Use a fresh
+output path for every attempt:
 
 ```bash
 python -m pip install -e '.[test]' playwright
