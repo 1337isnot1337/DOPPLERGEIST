@@ -1,0 +1,53 @@
+{
+  "scope": "Independent physical small-grid accounting controls for the agreed but not yet implemented finite producer; no accuracy/acceptance claim.",
+  "baseline_source": "5adc13e6138a0c926cc453ec475fa7d4dbddbd25",
+  "test_sha256": "8ae91bebbb561946e3470aacd595f563370a081a7ab253ee0e309301646f3e3d",
+  "baseline_result": "4 expected readiness failures: 3 missing finite metadata, 1 rounded-key collapse; zero scorer mocks.",
+  "physical_oracles": [
+    {
+      "case": "test_actual_grid_drop_bound_an0",
+      "wide_rows": 9,
+      "retained_rows": 3,
+      "distinct_dropped_rows": 6,
+      "best_dropped_score_oracle": 0.9999999999999978,
+      "leading_score": 1.9999999999999967,
+      "same_coarse_leader": true,
+      "files": {
+        "wide": {
+          "sha256": "59309405e2d33938c80f3e8dfa5d158d5cf56587e7cafb729715195112bfbf5a",
+          "run_hash": "257b0aad928b26bac8732c695beb4d20bc68f257471fc87f414d4a4088618829"
+        },
+        "narrow": {
+          "sha256": "818291245cbbc83fac85b841a8ab8404a3706c7425d96b8f219a809673a93dc3",
+          "run_hash": "1773db297917bed3ba9e9f3a0bc31394745c15b7b4322b1f4c569d1c52164772"
+        }
+      }
+    },
+    {
+      "case": "test_actual_fine_grid_retentio0",
+      "wide_rows": 43,
+      "retained_rows": 3,
+      "distinct_dropped_rows": 40,
+      "best_dropped_score_oracle": 1.5158507056568205,
+      "leading_score": 1.999999999999999,
+      "same_coarse_leader": true,
+      "files": {
+        "wide": {
+          "sha256": "c04d3c93b84d68fbdc3571b24e827587f73402128d7573274500977e823f7c07",
+          "run_hash": "79aca51b6fdf19f7d8c0d80b1f9eb0b1ca245eabea7ef7aa15b171f07220a3c6"
+        },
+        "narrow": {
+          "sha256": "45b7153b8620455a475438961db2443b3ba8637072ce9e44f76426ab508613cf",
+          "run_hash": "5b0f0feb11a50a230cdd631306a5d6ffbbb12c46afd75b7ddeebeed55a0d2775"
+        }
+      }
+    }
+  ],
+  "publication_base": "605af6efb99972294c4ca76c1d9557f3472954e3",
+  "production_files_changed": [],
+  "source_reports_archive": {
+    "bytes": 15031,
+    "sha256": "6c69b7062e592fa105962007254abd41b62afb6fb4abfeb92a6a0c588952d2da",
+    "members": 4
+  }
+}

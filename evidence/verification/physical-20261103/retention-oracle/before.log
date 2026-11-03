@@ -1,0 +1,96 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____ test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume _____
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-25/test_actual_grid_drop_bound_an0')
+
+    def test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume(tmp_path):
+        full, kwargs, budget = execute(tmp_path)
+        narrow_budget = replace(budget, top_k=3)
+        narrow = search_national(**kwargs, budget=narrow_budget, output_dir=tmp_path/"narrow")
+>       check_bound(full, narrow)
+
+tests/test_finite_retention_oracle.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': '257b0aad928b26bac8732c695beb4d20bc68f257471fc87f414d4a4088618829', 'status': 'complete', 'ranked': [{'sc...7912336112, 'source_drift_hz': -1.9700613302748258, 'source_drift_hz_s': -0.031015453900595822, ...}], ...}, ...], ...}
+retained = {'run_hash': '1773db297917bed3ba9e9f3a0bc31394745c15b7b4322b1f4c569d1c52164772', 'status': 'complete', 'ranked': [{'sc...99999999999999, 'source_drift_hz': 1.456725384419045e-14, 'source_drift_hz_s': 2.29337884780015e-16, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() <= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+>       finite = retained["finite_search_evidence"]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'finite_search_evidence'
+
+tests/test_finite_retention_oracle.py:40: KeyError
+______ test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score ______
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-25/test_actual_fine_grid_retentio0')
+
+    def test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score(tmp_path):
+        full, kwargs, budget = execute(tmp_path, refine=True)
+        narrow = search_national(**kwargs, budget=replace(budget, top_k=3), output_dir=tmp_path/"narrow")
+        # Both runs select the same single coarse refinement seed. Therefore the
+        # high-retention run is an oracle over the same declared evaluated points.
+        assert identity(full["coarse_ranked"][0]) == identity(narrow["coarse_ranked"][0])
+>       check_bound(full, narrow)
+
+tests/test_finite_retention_oracle.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+full = {'run_hash': '79aca51b6fdf19f7d8c0d80b1f9eb0b1ca245eabea7ef7aa15b171f07220a3c6', 'status': 'complete', 'ranked': [{'sc...96165722505, 'source_drift_hz': -1.732850555113381, 'source_drift_hz_s': -0.027280917050222637, ...}], ...}, ...], ...}
+retained = {'run_hash': '5b0f0feb11a50a230cdd631306a5d6ffbbb12c46afd75b7ddeebeed55a0d2775', 'status': 'complete', 'ranked': [{'sc...20016054553669, 'source_drift_hz': -0.47130654396410465, 'source_drift_hz_s': -0.007419965136480613, ...}], ...}], ...}
+
+    def check_bound(full, retained):
+        full_rows = {identity(row): row for row in full["ranked"]}
+        kept = {identity(row): row for row in retained["ranked"]}
+        assert kept.keys() <= full_rows.keys()
+        discarded = [row for key, row in full_rows.items() if key not in kept]
+        assert discarded
+>       finite = retained["finite_search_evidence"]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'finite_search_evidence'
+
+tests/test_finite_retention_oracle.py:40: KeyError
+__ test_event_omission_and_unfinished_tiles_cannot_certify_finite_completion ___
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-25/test_event_omission_and_unfini0')
+
+    def test_event_omission_and_unfinished_tiles_cannot_certify_finite_completion(tmp_path):
+        _, kwargs, budget = execute(tmp_path, count=4)
+        capped = search_national(**kwargs, budget=budget, filters={"max_events": 3},
+                                output_dir=tmp_path/"capped")
+        stopped = search_national(**kwargs, budget=replace(budget, max_tiles=1),
+                                 output_dir=tmp_path/"stopped")
+        for report in (capped, stopped):
+            assert report["status"] == "partial"
+>           assert report["finite_search_evidence"]["complete"] is False
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'finite_search_evidence'
+
+tests/test_finite_retention_oracle.py:94: KeyError
+________ test_nearby_distinct_seeds_are_not_erased_as_exact_duplicates _________
+
+    def test_nearby_distinct_seeds_are_not_erased_as_exact_duplicates():
+        original = {"score": 1.0, "event_indices": [0], "flight_ids": ["a"],
+                    "pass_emission_times_s": [100.0], "x": 0.0, "y": 0.0,
+                    "lat": 40.0, "lon": -100.0, "recording_start_time_s": 0.0}
+        moved = dict(original, x=1e-7, lon=-100.0+1e-12)
+        later = dict(original, recording_start_time_s=1e-7)
+        other_pass = dict(original, pass_emission_times_s=[100.0001])
+        rows = merge_candidates([original, moved, later, other_pass, original], 10)
+>       assert len(rows) == 4
+E       AssertionError: assert 1 == 4
+E        +  where 1 = len([{'score': 1.0, 'event_indices': [0], 'flight_ids': ['a'], 'pass_emission_times_s': [100.0], ...}])
+
+tests/test_finite_retention_oracle.py:105: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_finite_retention_oracle.py::test_actual_grid_drop_bound_and_mode_ids_survive_partition_and_resume
+FAILED tests/test_finite_retention_oracle.py::test_actual_fine_grid_retention_cannot_hide_the_best_dropped_score
+FAILED tests/test_finite_retention_oracle.py::test_event_omission_and_unfinished_tiles_cannot_certify_finite_completion
+FAILED tests/test_finite_retention_oracle.py::test_nearby_distinct_seeds_are_not_erased_as_exact_duplicates
+4 failed in 4.77s
