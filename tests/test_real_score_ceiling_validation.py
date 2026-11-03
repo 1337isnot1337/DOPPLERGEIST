@@ -11,6 +11,7 @@ import pytest
 from dopplergeist.data_access import FlightIndex
 from dopplergeist.finite_search import bounded_assessment
 from dopplergeist.matching import association_candidates, prepare_events
+from dopplergeist import matching
 from dopplergeist.search import score_candidate
 
 
@@ -60,3 +61,46 @@ def test_real_singleton_retains_source_drift_parameter_errors():
                 score_candidate(singleton, point, tracks, configured, measurements,
                                 mode="robust_ridge", score_floor=floor)
 
+
+def test_real_partial_residual_ceiling_skips_fits_without_claiming_support(monkeypatch):
+    source = os.environ.get("DOPPLERGEIST_REAL_CPA_FIXTURE")
+    if not source:
+        pytest.skip("set DOPPLERGEIST_REAL_CPA_FIXTURE to the real reference diagnostic")
+    fixture = json.loads(Path(source).read_text())
+    events, measurements = prepare_events(fixture["events"])
+    candidates, _ = association_candidates(pd.DataFrame(fixture["cpa_rows"]), events, max_candidates=20000)
+    pair = next(candidate for candidate in candidates if len(candidate["event_indices"]) == 2)
+    tracks = {track.id: track for track in FlightIndex(fixture["real_index"]).lookup(
+        [entry["flight_id"] for entry in pair["passes"]])}
+    point = SimpleNamespace(**fixture["point"], x=0.0, y=0.0)
+    original = matching._fit_ridge_uncached
+    calls = []
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(matching, "_fit_ridge_uncached", counted)
+    baseline = score_candidate(pair, point, tracks, events, measurements, mode="robust_ridge", time_sweep_s=0)
+    full_fits = len(calls)
+    calls.clear()
+    screened = score_candidate(pair, point, tracks, events, measurements, mode="robust_ridge",
+                               time_sweep_s=0, score_floor=2.0)
+    assessment = screened["scoring_assessment"]
+    assert len(calls) < full_fits
+    assert bounded_assessment(screened)
+    assert assessment["complete"] is False
+    assert assessment["retention_pruned_trials"] == assessment["unknown_trials"]
+    upper = assessment["unknown_score_upper_bound"]
+    if upper is None:
+        assert assessment["bounded_unknown_rejections"] == assessment["unknown_trials"]
+        upper = -float("inf")
+    assert baseline["score"] <= upper < 2.0
+
+    # A skipped group's invalid model parameter still fails, using the same
+    # recorded observations and candidate rather than generated field data.
+    configured = copy.deepcopy(events)
+    configured[pair["event_indices"][1]]["quality"]["source_drift_fraction"] = 0.2
+    with pytest.raises(ValueError, match="drift fraction"):
+        score_candidate(pair, point, tracks, configured, measurements, mode="robust_ridge",
+                        time_sweep_s=0, score_floor=2.0)

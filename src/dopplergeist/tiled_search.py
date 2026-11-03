@@ -270,7 +270,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             raise DataUnavailable("Tile candidate memory budget exceeded; reduce tile_cells")
         candidates, counts = pair_candidates(table, events, **kwargs)
     screened = subset and parameters.get("mode") == "robust_ridge"
-    cutoff = _RetainedScoreFloor(budget.top_k, score_floor) if screened else None
+    # Every accepted association has a nonnegative score, even before K modes
+    # exist. A strict zero floor can reject only residual-incompatible trials.
+    cutoff = _RetainedScoreFloor(budget.top_k, 0.0 if score_floor is None else max(0.0, score_floor)) if screened else None
     if screened:
         # Find competitive multi-group modes before spending fits on singletons.
         # All remaining modes still receive a score or a persisted score bound.
@@ -349,7 +351,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 bounds.append({"bound_id": "bound-" + content_hash(detail), "detail": detail,
                                "groups_count": len(detail["event_indices"]),
                                "upper_score": detail["scoring_assessment"]["unknown_score_upper_bound"]})
-                retention_pruned += detail["scoring_assessment"]["unknown_score_bound_method"] == "group_count_ceiling"
+                retention_pruned += "retention_score_floor" in detail["scoring_assessment"]
         if finite_score:
             ranked.append(row)
             if cutoff is not None:

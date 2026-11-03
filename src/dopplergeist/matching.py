@@ -449,13 +449,18 @@ def score_ridges(tracks, events, measurements, observer, recording_start_s, c=34
 
 def batch_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_samples=262144):
     """Evaluate repeated receive times together, falling back on support errors."""
+    return list(_iter_acoustic_trials(tracks, measurements, observer, starts, c, max_samples))
+
+
+def _iter_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_samples=262144):
+    """Defer each group's batch until a surviving trial actually needs it."""
     from .geometry import AcousticSupportError
 
     starts = np.asarray(starts, dtype=float)
     if starts.ndim != 1 or not np.all(np.isfinite(starts)):
-        return [None] * len(measurements)
+        yield from (None for _ in measurements)
+        return
     remaining = max_samples
-    batches = []
     for track, measurement in zip(tracks, measurements):
         spec, ridge, weight, _ = measurement
         times, ridge, weight = (np.asarray(a, dtype=float) for a in (spec.time, ridge, weight))
@@ -464,26 +469,25 @@ def batch_acoustic_trials(tracks, measurements, observer, starts, c=343.0, max_s
         # Negative or lower-precision epochs retain the per-trial path.
         if (track.time[0] < 0 or
                 np.spacing(track.time[0]) <= 2 * _EMISSION_ITERATION_TOLERANCE_S):
-            batches.append(None)
+            yield None
             continue
         if times.shape != ridge.shape or times.shape != weight.shape or times.ndim != 1:
-            batches.append(None)
+            yield None
             continue
         measured = np.isfinite(times) & np.isfinite(ridge) & (weight > 0)
         size = len(starts) * int(measured.sum())
         if measured.sum() < 10 or not np.all(np.isfinite(weight)) or np.any(weight < 0) or size > remaining:
-            batches.append(None)
+            yield None
             continue
         receive = starts[:, None] + times[measured][None, :]
         unique, inverse = np.unique(receive, return_inverse=True)
         try:
             factor, emission, _ = track.acoustic(unique, observer, c)
         except AcousticSupportError:
-            batches.append(None)
+            yield None
             continue
-        batches.append((factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)))
         remaining -= size
-    return batches
+        yield factor[inverse].reshape(receive.shape), emission[inverse].reshape(receive.shape)
 
 
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,

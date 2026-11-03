@@ -91,6 +91,34 @@ coarse spacing is a computational budget, not a proof that an isolated minimum
 could not be missed between cells. Keep this limitation visible in confidence
 decisions. `top_k` limits retained candidates; raw scores are not probabilities.
 
+Robust subset scoring visits larger associations first **within each receiver
+point**, preserving fit-cache locality. Every accepted group contributes at most
+one nonnegative score unit. The current kth score from distinct, fully assessed
+modes therefore supplies a safe lower cutoff: an association with too few groups
+cannot enter Top-K. While fitting a shared-clock trial, validated residuals can
+tighten that ceiling or establish a residual rejection before the remaining
+groups are fitted. Comparisons are strict, so ties remain eligible. Acoustic
+batches for later groups are deferred until a surviving trial needs them.
+
+Unperformed trials remain unknown with explicit conservative bounds in the
+retention ledger. A competitive candidate receives full evaluation, preserving
+its original fitted diagnostics. The initial zero cutoff only rejects trials
+that cannot satisfy the existing residual limits. This does not narrow the
+automatic speed/range constraints or establish completeness between grid cells.
+
+Real-observation computation replays for PR #152 measured the following; neither
+is an independent localization-accuracy test:
+
+| Replay | Source fits, before → after | Acoustic calls, before → after | Retained results |
+| --- | --- | --- | --- |
+| 169-point refinement neighborhood, 1,859 associations | 14,196 → 14,196 | 3,380 → 1,963 | All 100 identical, including diagnostics and best discarded score |
+| 256 evenly spaced associations from 10,549 at one saved receiver point | 30,361 → 19,629 | 879 → 689 | All 92 identical, with conservative omitted-trial bounds |
+
+The first replay took 20.13 → 15.86 seconds in one paired run. The second saved
+about 8–28% wall time across paired runs under varying machine load; operation
+counts were stable. These measurements do not predict nationwide runtime. The
+group-count ceiling alone did not show a reliable speedup on the existing cache.
+
 Manifest and tile receipts hash configuration, input index files, event
 measurements, implementation and terrain files. Interrupted jobs reuse completed
 tiles with the same identity. Changed inputs require a new output directory.
@@ -127,12 +155,21 @@ than converting scores into that accuracy claim.
 
 ## Checks
 
+Use actual recorded observations; do not run the historical generated-data suites.
+
 ```bash
-PYTHONPATH=src /path/to/python -m pytest -q tests/test_data_access.py tests/test_tiled_search.py
+DOPPLERGEIST_REAL_CPA_FIXTURE=/path/to/real-cpa-diagnostic.json \
+  PYTHONPATH=src python -m pytest -q \
+  tests/test_real_retention_floor.py tests/test_real_score_ceiling_validation.py
+
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python scripts/benchmark_acoustic_sieve.py \
+  --fixture /path/to/real-cpa-diagnostic.json --baseline 72cdebb \
+  --output results/my-new-sieve-comparison
 ```
 
-Tests include split archive streaming, byte-range/checksum failures, explicit
-offline errors, jets/unknowns, gap/no-extrapolation behavior, whole-segment queries,
-datum conversion, tiled/untiled agreement at a boundary, deterministic repeated
-approach preservation, checkpoint reuse, and visible partial/budget failures.
-Scaling experiments and location-accuracy evidence must be labelled separately.
+The diagnostic contains measured event ridges, observed `cpa_rows`, one receiver
+`point` and the local `real_index` path. The benchmark can override that path with
+`--index`; no media or native index is bundled. It compares isolated baseline
+matching/scoring modules with the current fitter and requires identical shared
+geometry. Timing includes scoring with a bounded fit cache. Scaling experiments
+and location-accuracy evidence must be labelled separately.
