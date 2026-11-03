@@ -82,7 +82,12 @@ def main():
                     write(output / "api-result.json", response.json())
                     listing = context.request.get(f"{base}/api/jobs/{job_id}/artifacts").json()["artifacts"]
                     downloads = []
-                    assert {item["path"] for item in listing} == set(original), "Artifact listing changed"
+                    public = {name for name in original
+                              if Path(name).name not in {"operator.json", "cancel"}
+                              and not name.endswith(".tmp") and not (fixture / name).is_symlink()}
+                    assert {item["path"] for item in listing} == public, "Public artifact listing changed"
+                    private = context.request.get(f"{base}/api/jobs/{job_id}/artifacts/operator.json")
+                    assert private.status == 404, "Private operator configuration is downloadable"
                     for item in listing:
                         downloaded = context.request.get(f"{base}/api/jobs/{job_id}/artifacts/{quote(item['path'], safe='/')}")
                         body = downloaded.body()
