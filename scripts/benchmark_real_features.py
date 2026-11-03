@@ -14,6 +14,7 @@ import pandas as pd
 import soundfile as sf
 
 from aircraft_geoloc.audio import measure,fit_flyover
+from aircraft_geoloc.tracks import unix_time
 
 root=Path(__file__).resolve().parents[1]
 source=root/"data/research/zenodo-23424278"
@@ -25,7 +26,7 @@ for reference in references.itertuples():
     began=time.monotonic()
     folder=next((source/"extracted").glob("*/"+reference.case))
     annotations=pd.read_csv(folder/"frequency_vs_time_used.csv")
-    manual_t=pd.to_datetime(annotations.time_utc).astype("int64").to_numpy()/1e9
+    manual_t=annotations.time_utc.map(unix_time).to_numpy()
     manual_t-=manual_t[0]
     manual_f=annotations.frequency_hz.to_numpy()
     row={"case":reference.case,"category":reference.category,

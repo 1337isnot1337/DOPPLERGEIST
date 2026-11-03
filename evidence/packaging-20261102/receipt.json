@@ -1,0 +1,163 @@
+{
+  "python": "3.14.8",
+  "platform": "Linux-7.2.10-arch1-1-x86_64-with-glibc2.44",
+  "installed_package_path": "/home/cinna/.cache/dopplergeist/clean-py314-20261102/lib/python3.14/site-packages/aircraft_geoloc/__init__.py",
+  "isolated_venv": true,
+  "dependencies": [
+    {
+      "name": "affine",
+      "version": "3.0.1"
+    },
+    {
+      "name": "aircraft-geoloc-reproduction",
+      "version": "0.1.0"
+    },
+    {
+      "name": "attrs",
+      "version": "26.1.0"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.10.23"
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1"
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.2"
+    },
+    {
+      "name": "click",
+      "version": "8.5.0"
+    },
+    {
+      "name": "contourpy",
+      "version": "1.4.0"
+    },
+    {
+      "name": "cycler",
+      "version": "0.12.1"
+    },
+    {
+      "name": "fonttools",
+      "version": "4.68.0"
+    },
+    {
+      "name": "idna",
+      "version": "3.20"
+    },
+    {
+      "name": "iniconfig",
+      "version": "2.3.1"
+    },
+    {
+      "name": "kiwisolver",
+      "version": "1.5.1"
+    },
+    {
+      "name": "matplotlib",
+      "version": "3.11.2"
+    },
+    {
+      "name": "numpy",
+      "version": "2.5.4"
+    },
+    {
+      "name": "packaging",
+      "version": "26.3"
+    },
+    {
+      "name": "pandas",
+      "version": "3.1.0"
+    },
+    {
+      "name": "pillow",
+      "version": "13.0.0"
+    },
+    {
+      "name": "pip",
+      "version": "26.2.1"
+    },
+    {
+      "name": "pluggy",
+      "version": "1.7.0"
+    },
+    {
+      "name": "pyarrow",
+      "version": "26.0.0"
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12"
+    },
+    {
+      "name": "Pygments",
+      "version": "2.21.0"
+    },
+    {
+      "name": "pyparsing",
+      "version": "3.3.3"
+    },
+    {
+      "name": "pyproj",
+      "version": "3.8.0"
+    },
+    {
+      "name": "pytest",
+      "version": "9.2.0"
+    },
+    {
+      "name": "python-dateutil",
+      "version": "4.0.0"
+    },
+    {
+      "name": "rasterio",
+      "version": "1.5.2"
+    },
+    {
+      "name": "requests",
+      "version": "2.34.2"
+    },
+    {
+      "name": "scipy",
+      "version": "1.18.1"
+    },
+    {
+      "name": "soundfile",
+      "version": "0.14.0"
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.6"
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0"
+    }
+  ],
+  "restored_asset": "data-synthetic.tar.gz",
+  "restored_asset_sha256": "c4169ea77a263e0567afd36800a21d131c6976877f4e0bfebfcf15239cdc00e2",
+  "restoration_command": "python scripts/restore_artifacts.py --bundle data-synthetic --cache NEW_CACHE --destination NEW_CHECKOUT",
+  "replay_command": "aircraft-geoloc run NEW_CHECKOUT/data/synthetic/known-time-minute.json --output NEW_OUTPUT",
+  "replay_error_m": 40.87444831462204,
+  "replay_flight_ids": [
+    "true-A"
+  ],
+  "replay_elapsed_s": 14.24192835498252,
+  "validation_scope": "clean-install known-time synthetic replay with selected event; not automatic or real/national accuracy",
+  "pandas_timestamp_check": {
+    "version": "3.1.0",
+    "old_assumed_ns_one_second_delta": 0.0010000001639127731,
+    "unix_time_one_second_delta": 1.0
+  },
+  "tests": {
+    "python314": "39 passed in 5.78s; clean installed package",
+    "python312": "39 passed in 7.93s; clean installed package"
+  }
+}
