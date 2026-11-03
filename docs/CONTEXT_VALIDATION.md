@@ -110,3 +110,7 @@ evaluation, input/code/array hashes and the namespace probe are under
 `evidence/context-validation-20261103/`; larger NPZ/CSV files remain local with
 their exact hashes. The implementation's full base-plus-consumer suite passed
 132 tests; all 11 focused context tests passed after adding memory instrumentation.
+After refreshing main and adopting W3's canonical predictor, all 210 tests and
+six subtests passed. The installed namespace replay at calculation source
+`1f986c5` reproduced the complete ranking exactly in 2.98 s / 532.44 MiB. Its
+source/namespace receipt is `canonical-predictor-replay.json`.

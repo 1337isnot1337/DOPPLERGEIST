@@ -1,0 +1,24 @@
+{
+  "consumer_commit": "1f986c5b310eecf81afb4e9513bc11ff6ab0d7e4",
+  "canonical_predictor": "matching.predict_fitted_ridge",
+  "ranking_bit_identical_to_0dbfceb": true,
+  "candidate_mode_count": 106,
+  "supported_event_count": 2,
+  "all_modes_compared": true,
+  "elapsed_s": 2.9823389570228755,
+  "process_peak_rss_mib": 532.4375,
+  "report_sha256": "177f251717e110154f3434d087da5ab1c3964dcca02eabfd52b128b7d1e1cc82",
+  "report_directory": "/home/cinna/DOPPLERGEIST-upload-acceptance/results/context-replay-106-canonical-20261103/diagnostic",
+  "namespace_probe": {
+    "module": "/venv/lib/python3.12/site-packages/aircraft_geoloc/context_validation.py",
+    "host_checkouts_absent": true,
+    "evaluation_parent_absent": true,
+    "job_read_only": true
+  },
+  "implementation_sha256": "54a5d304d023f9d904c99790b8ea9e79dab4c72173995013e6d3c06f96aff395",
+  "implementation_dependencies_sha256": {
+    "audio.py": "f9248876059f7f05f3f3db8575e43b9c12f96c536c70b8afc298cfdebcb977a0",
+    "geometry.py": "f892fac88864d8095ce47a1e3e6139235b86061fb0814944867436cb5a92bb94",
+    "matching.py": "b735cdc0fcb38632b16309a44dfaffce5937a8e1b6d2c9946d6f77a30c97f8ce"
+  }
+}

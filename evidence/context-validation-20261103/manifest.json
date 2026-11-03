@@ -4,12 +4,15 @@
   "scope": "development replay of all106 frozen synthetic modes, not changed job decision",
   "all_modes_compared": true,
   "readable_files_sha256": {
+    "canonical-predictor-replay.json": "e965135a8071c8dbf052dd961469f5b3632f2653a21a7edd013b596f1880701f",
     "command.json": "05f9ea230558ce7c0de358fdb53d9de332f6bd8c9c26473098bb02393789544f",
     "evaluation-after-context.json": "15a3edb845eb0a78e5fdc8094bf0b69c7cb20136fddd70916c18c8c812a5f25c",
     "namespace-probe.json": "d7b6c80c2d7f1ca81b8eac551bfc7ccee34bafc8c918fd26dd686c50ea1ac30e",
+    "pytest-current-main.log": "f800f96af132971c3e1492e1e131e9015042a305f98adbbde24f811d3a97f6c5",
     "pytest.log": "f81ddd7575e89ea4acf9406f6fe7df8d4bd497ed499f1cc80052ed5b00e5b182",
     "report.json": "f2d2b763ebef91294ccaf010c62c4fa2b0e272af7a16534ed8fbf9f5215ec869",
-    "run-receipt.json": "3f71b5009fe3125dcaf516bbb7cd5791f8bc21f99262f86e2a7de452feb40d17"
+    "run-receipt.json": "3f71b5009fe3125dcaf516bbb7cd5791f8bc21f99262f86e2a7de452feb40d17",
+    "summary.json": "911faf469723a598e53ac146197fc8841f3368dd7eadbdcd67ba71cb0f19ffcf"
   },
   "large_local_artifacts": {
     "event-0001-validation.csv": {
