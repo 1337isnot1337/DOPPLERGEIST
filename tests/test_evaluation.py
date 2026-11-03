@@ -66,6 +66,9 @@ def test_runner_does_not_require_truth_and_measures_each_process(tmp_path):
     assert result["one"]["status"] == "inconclusive"
     assert result["one"]["runtime_s"] > 0
     assert result["one"]["peak_memory_bytes"] > 0
+    failure = runner.run(inputs / "manifest.json", tmp_path / "failure", [str(tmp_path / "absent-executable")])
+    assert failure["one"]["status"] == "failed"
+    assert failure["one"]["peak_memory_bytes"] is None
     with pytest.raises(FileExistsError):
         runner.run(inputs / "manifest.json", tmp_path / "run", [sys.executable])
 

@@ -41,22 +41,30 @@ def run(manifest_path, output, command):
         staged_request.write_text(json.dumps(request, indent=2) + "\n")
         argv = [arg.replace("{request}", str(staged_request)).replace("{output}", str(folder)) for arg in command]
         began = time.monotonic()
+        peak_memory = None
+        exit_code = None
         with (folder / "process.log").open("wb") as log:
-            process = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT)
-            _, status, usage = os.wait4(process.pid, 0)
-            process.returncode = os.waitstatus_to_exitcode(status)
+            try:
+                process = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT)
+                _, status, usage = os.wait4(process.pid, 0)
+                process.returncode = exit_code = os.waitstatus_to_exitcode(status)
+                peak_memory = usage.ru_maxrss * 1024
+            except OSError as exc:
+                log.write(str(exc).encode())
         elapsed = time.monotonic() - began
         result_path = folder / "result.json"
-        if process.returncode or not result_path.exists():
+        if exit_code != 0 or not result_path.exists():
             result = {"status": "failed", "reason_code": "benchmark_execution_failed"}
         else:
             try:
                 from aircraft_geoloc.contracts import validate_result
                 result = validate_result(json.loads(result_path.read_text()))
+                if result["status"] not in {"succeeded", "inconclusive", "failed", "needs_input", "cancelled"}:
+                    raise ValueError("Benchmark worker did not finish with a terminal result")
             except (ValueError, KeyError, TypeError) as exc:
                 result = {"status": "failed", "reason_code": "invalid_result", "message": str(exc)}
-        result.update(runtime_s=elapsed, peak_memory_bytes=usage.ru_maxrss * 1024,
-                      exit_code=process.returncode, request_sha256=sha256(staged_request),
+        result.update(runtime_s=elapsed, peak_memory_bytes=peak_memory,
+                      exit_code=exit_code, request_sha256=sha256(staged_request),
                       audio_sha256=case["audio_sha256"])
         predictions[key] = result
         (output / "predictions.json").write_text(json.dumps(predictions, indent=2, allow_nan=False) + "\n")
