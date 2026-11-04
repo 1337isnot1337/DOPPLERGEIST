@@ -34,6 +34,8 @@ def test_watch_real_job_and_interrupt_only_the_watcher():
     assert watcher.returncode == 130 and stdout == ''
     assert 'search files observed (unverified:' in stderr and 'file-count rate' in stderr
     assert 'newest matching file modified' in stderr
+    assert 'newest search write ' in stderr
+    assert 'unverified file activity' in stderr
     assert 'Stopped watching; the job continues.' in stderr
     assert json.loads((job / 'result.json').read_text())['status'] == 'running'
 
