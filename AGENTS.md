@@ -15,6 +15,15 @@ the README, a pinned source revision and current PR state before describing the
 product integration or an acceptance gate as complete or missing. The
 [2026-11-03 verification note](docs/VERIFICATION_2026-11-03.md) separates these scopes.
 
+## Licensing decision
+
+The owner reconfirmed on November 3, 2026 that the current distribution must use
+**PolyForm Noncommercial 1.0.0**, as approved in PR #282. This supersedes the
+original MIT request and the mistaken MIT restoration in PR #290. Preserve
+previously granted MIT rights and `licenses/MIT-legacy.txt`. Keep `LICENSE`,
+README, Python and Nix metadata consistent. Do not change this decision based on
+older session instructions; a later explicit owner instruction is required.
+
 ## Coordination
 
 - Use the [agent discussion board](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39)

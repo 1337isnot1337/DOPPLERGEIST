@@ -196,9 +196,20 @@ See [NASA benchmark setup and results](benchmarks/README.md#real-nasa-supplied-t
 
 ## License
 
-DOPPLERGEIST code is licensed under the [MIT License](LICENSE). External
-recordings, flight and terrain data, and other third-party materials retain
-their own rights and terms.
+DOPPLERGEIST is currently distributed under the [PolyForm Noncommercial
+License 1.0.0](LICENSE) (`PolyForm-Noncommercial-1.0.0`). It permits use,
+modification, and redistribution for noncommercial purposes. Commercial use
+not otherwise authorized requires permission from the relevant rights holders. This is
+source-available software, not OSI-approved open-source software.
+
+**Prior MIT grants remain valid.** Code and versions previously released under
+the MIT License remain available under their previously granted MIT rights.
+The earlier license notice is retained in
+[licenses/MIT-legacy.txt](licenses/MIT-legacy.txt). See
+[Commercial licensing and license history](COMMERCIAL-LICENSING.md).
+
+External recordings, flight and terrain data, and other third-party materials
+retain their own rights and terms.
 
 ## Star History
 
