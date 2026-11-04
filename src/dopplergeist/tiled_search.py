@@ -1201,6 +1201,16 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         try:
             fine = budget.refine_spacing_m
             width = math.ceil(budget.spacing_m / fine)
+            # Adaptive subdivision preserves cell area, so this denominator stays valid.
+            fine_work_total = len(chosen) * (2 * width + 1) ** 2
+            fine_work_done = 0
+
+            def advance_fine_progress(cells):
+                nonlocal fine_work_done
+                fine_work_done += (cells[2] - cells[0]) * (cells[3] - cells[1])
+                fraction = 0.8 + 0.2 * fine_work_done / fine_work_total
+                report_search_progress(fraction, force=True)
+
             completed_rectangles = []
             if parallel:
                 from collections import deque
@@ -1246,6 +1256,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                 restore_terrain(payload)
                                 refinement_points_skipped += payload["skipped"]
                                 if worker_path is None and "retention_checksum" not in payload:
+                                    advance_fine_progress(cells)
                                     continue
                                 if worker_path is not None:
                                     import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
@@ -1261,10 +1272,10 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                 refinement_points_searched += payload["grid_points"]
                                 ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
                                                           ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
+                                advance_fine_progress(cells)
                         finally:
                             discard_pending_fine_ledgers(inflight)
                         completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
-                        report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
             else:
                 for seed_index, row in enumerate(chosen):
                     # Subdivide the refinement square as well, retaining hard grid limits.
@@ -1290,6 +1301,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                     points = points[keep]
                                     if not len(points):
                                         refinement_points_skipped += skipped
+                                        advance_fine_progress(cells)
                                         continue
                                     try:
                                         tracks, points = _tracks_for_points(
@@ -1321,8 +1333,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                 refinement_points_searched += payload["grid_points"]
                                 ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
                                                           ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
+                                advance_fine_progress(cells)
                     completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
-                    report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
         except (DataUnavailable, ValueError, OSError) as error:
             refinement_failure = str(error)
     coverage = [i.coverage_for(bounds, time_range_s) for i in indexes]
