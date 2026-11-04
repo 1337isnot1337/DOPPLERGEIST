@@ -46,7 +46,7 @@ jobs:
       - name: Check terrain seams against observed Copernicus raster footprints
         run: python -m pytest -q tests/test_real_terrain_tile_seams.py
       - name: Check experimental episode artifacts from recorded media
-        run: python -m pytest -q tests/test_real_episode_artifact.py tests/test_real_episode_motion.py tests/test_real_episode_cli.py
+        run: python -m pytest -q tests/test_real_episode_artifact.py tests/test_real_episode_motion.py tests/test_real_episode_cli.py tests/test_real_episode_repair.py
       - name: Check progress reporting against recorded empty-tile checkpoints
         run: |
           python - <<'PY'

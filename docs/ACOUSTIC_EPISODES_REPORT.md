@@ -295,3 +295,14 @@ fragment splits, uncertain peak/contrast models, and uncalibrated confidence and
 confusing-source rates. A future detector change needs separate real controls;
 this evidence does not establish flight identity, localization accuracy or a
 nationwide end-to-end result.
+
+## Repair follow-up (2026-11-04)
+
+The historical results above remain unchanged. The separate
+[repair report](ACOUSTIC_EPISODES_REPAIR.md) traces the six lost signals on identical
+samples, documents bounded reversible fragment association and safe interleaving,
+and compares original451b67f, pre-repair PR3447e33 and the repaired opt-in scanner.
+It includes unfavorable inputs, partial coverage, additional confusing-source
+proposals and operational failures. The follow-up PR is draft and unmerged;
+none of this changes the production discovery route or establishes aircraft
+identity, physical motion, source multiplicity or localization accuracy.
