@@ -206,7 +206,8 @@ def score_tile(stage, cells, score_floor=None):
 
 def discard_pending_fine_ledgers(inflight):
     """Remove successful worker ledgers that were not consumed after an abort."""
-    for _, _, future in inflight:
+    for item in inflight:
+        future = item[2]
         try:
             _, path = future.result()
         except BaseException:

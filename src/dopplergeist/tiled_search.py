@@ -877,6 +877,20 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                   else {"robust_ridge": "negative_robust_ridge_loss_hz", "ridge": "negative_ridge_rmse_hz",
                         "brightness": "summed_spectral_contrast"}[mode])
     ledger = RetentionLedger(output / "retention.sqlite", run_hash, score_kind)
+    fine_manifest = output / "fine-checkpoint-config.json"
+    fine_config = {"run_hash": run_hash, "workers": workers if parallel else 1}
+    has_fine_checkpoints = any(output.glob("fine-tile-*.json"))
+    fine_config_written = False
+    if fine_manifest.exists():
+        try:
+            previous_fine_config = json.loads(fine_manifest.read_text())
+        except (OSError, ValueError) as error:
+            raise DataUnavailable("Corrupt fine-stage checkpoint configuration") from error
+        if previous_fine_config != fine_config and has_fine_checkpoints:
+            raise DataUnavailable("Fine-stage checkpoints require the same search worker count")
+        fine_config_written = previous_fine_config == fine_config
+    elif has_fine_checkpoints:
+        raise DataUnavailable("Fine-stage checkpoint configuration is missing")
     began, ranked, failures, done, processed_cells, resumed, points_searched = time.monotonic(), [], [], 0, 0, 0, 0
     counted_clock_cells = set()
     support = dict(unsupported_cpa_track_evaluations=0, unclassified_score_candidates=0,
@@ -890,6 +904,38 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 terrain.files[Path(source["path"]).name] = source
             terrain.ocean_tiles.update(provenance.get("terrain_ocean_tiles", []))
             terrain.failures.extend(provenance.get("terrain_failures", []))
+
+    def fine_checkpoint(stage, cells, exclusions, score_floor, payload=None):
+        """Persist or validate a complete fine-piece payload and its ledger."""
+        nonlocal fine_config_written
+        coordinates = "_".join(str(value) for value in cells)
+        path = output / f"fine-tile-{stage.replace(':', '-')}-{coordinates}.json"
+        parameters = {"stage": stage, "cells": list(cells),
+                      "exclusions": [list(rectangle) for rectangle in exclusions], "score_floor": score_floor}
+        if payload is not None:
+            if not fine_config_written:
+                write_json(fine_manifest, fine_config)
+                fine_config_written = True
+            record = {"run_hash": run_hash, "parameters": parameters,
+                      "payload_hash": content_hash([parameters, payload]), "payload": payload}
+            write_json(path, record, compact=True)
+            return None
+        if not path.exists():
+            return None
+        try:
+            record = json.loads(path.read_text())
+            saved = record["payload"]
+            if (record["run_hash"] != run_hash
+                    or record["payload_hash"] != content_hash([record["parameters"], saved])):
+                raise DataUnavailable("Corrupt fine-tile checkpoint")
+            if record["parameters"] != parameters:
+                return None
+            for source in saved.get("terrain_files", []):
+                if _verified_terrain_hash(source["path"], terrain_hash_cache) != source["sha256"]:
+                    raise DataUnavailable("Terrain changed since fine-tile checkpoint")
+            return saved if ledger.stage_valid(stage, saved["retention_checksum"]) else None
+        except (KeyError, TypeError, ValueError, OSError) as error:
+            raise DataUnavailable("Corrupt fine-tile checkpoint") from error
 
     def tile_request(tile_id, cells):
         stage = f"coarse:{tile_id}"
@@ -1091,6 +1137,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     refinement_failure = None
     refinement_points_searched, refinement_points_skipped = 0, 0
     fine_stages = 0
+    fine_resumed = 0
     if ranked and budget.refine_spacing_m < budget.spacing_m:
         chosen, seen = [], set()
         for row in ranked:
@@ -1106,6 +1153,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             completed_rectangles = []
             if parallel:
                 from collections import deque
+                from concurrent.futures import Future
                 from .data_access import _index_pool
                 from .parallel_tiles import discard_pending_fine_ledgers, score_fine_tile
 
@@ -1125,10 +1173,15 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                     # The currently retained floor is conservative for every
                                     # submitted piece, even if later merges raise it.
                                     floor = _retained_score_floor(ranked, budget.top_k)
-                                    future = fine_pool.submit(score_fine_tile, stage, cells, fine,
-                                                              tuple(completed_rectangles), floor)
-                                    inflight.append((cells, stage, future))
-                                cells, stage, future = inflight.popleft()
+                                    cached = fine_checkpoint(stage, cells, completed_rectangles, floor)
+                                    if cached is None:
+                                        future = fine_pool.submit(score_fine_tile, stage, cells, fine,
+                                                                  tuple(completed_rectangles), floor)
+                                    else:
+                                        future = Future()
+                                        future.set_result((cached, None))
+                                    inflight.append((cells, stage, future, floor))
+                                cells, stage, future, floor = inflight.popleft()
                                 try:
                                     payload, worker_path = future.result()
                                 except (DataUnavailable, ValueError, OSError) as error:
@@ -1141,13 +1194,17 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                     continue
                                 restore_terrain(payload)
                                 refinement_points_skipped += payload["skipped"]
-                                if worker_path is None:
+                                if worker_path is None and "retention_checksum" not in payload:
                                     continue
-                                import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
-                                try:
-                                    Path(worker_path).unlink()
-                                except OSError:
-                                    pass
+                                if worker_path is not None:
+                                    import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
+                                    try:
+                                        Path(worker_path).unlink()
+                                    except OSError:
+                                        pass
+                                    fine_checkpoint(stage, cells, completed_rectangles, floor, payload)
+                                else:
+                                    fine_resumed += 1
                                 _record_support(output, stage, payload["counts"], support)
                                 fine_stages += 1
                                 refinement_points_searched += payload["grid_points"]
@@ -1168,35 +1225,50 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             pending = [root]
                             while pending:
                                 cells = pending.pop()
-                                points = tile_points(cells, fine, bounds, terrain, crs)
-                                keep = np.ones(len(points), dtype=bool)
-                                for left, bottom, right, top in completed_rectangles:
-                                    keep &= ~((points.x >= left * fine) & (points.x < right * fine)
-                                              & (points.y >= bottom * fine) & (points.y < top * fine))
-                                skipped = int((~keep).sum())
-                                points = points[keep]
-                                if not len(points):
-                                    refinement_points_skipped += skipped
-                                    continue
-                                try:
-                                    tracks, points = _tracks_for_points(
-                                        indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
-                                        budget, points, terrain, radius, parameters.get("c", 343.0))
-                                    stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
-                                    rows, counts = _score(points, tracks, events, measurements, budget, parameters, filters, start_window,
-                                                          ledger=ledger, stage=stage,
-                                                          score_floor=_retained_score_floor(ranked, budget.top_k))
-                                except (DataUnavailable, ValueError, OSError) as error:
-                                    parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
-                                    if not parts:
-                                        raise
-                                    pending.extend(reversed(parts))
-                                    continue
-                                refinement_points_skipped += skipped
-                                _record_support(output, stage, counts, support)
+                                stage = f"fine:{seed_index}:{cells[0]}:{cells[1]}"
+                                floor = _retained_score_floor(ranked, budget.top_k)
+                                payload = fine_checkpoint(stage, cells, completed_rectangles, floor)
+                                if payload is None:
+                                    failures_before = len(getattr(terrain, "failures", ()))
+                                    points = tile_points(cells, fine, bounds, terrain, crs)
+                                    keep = np.ones(len(points), dtype=bool)
+                                    for left, bottom, right, top in completed_rectangles:
+                                        keep &= ~((points.x >= left * fine) & (points.x < right * fine)
+                                                  & (points.y >= bottom * fine) & (points.y < top * fine))
+                                    skipped = int((~keep).sum())
+                                    points = points[keep]
+                                    if not len(points):
+                                        refinement_points_skipped += skipped
+                                        continue
+                                    try:
+                                        tracks, points = _tracks_for_points(
+                                            indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
+                                            budget, points, terrain, radius, parameters.get("c", 343.0))
+                                        rows, counts = _score(points, tracks, events, measurements, budget, parameters,
+                                                              filters, start_window, ledger=ledger, stage=stage,
+                                                              score_floor=floor)
+                                    except (DataUnavailable, ValueError, OSError) as error:
+                                        parts = _split_tile_cells(cells) if _tile_capacity_error(error) else []
+                                        if not parts:
+                                            raise
+                                        pending.extend(reversed(parts))
+                                        continue
+                                    files = getattr(terrain, "files", {})
+                                    names = getattr(terrain, "last_sample_files", set())
+                                    payload = {"ranked": rows, "counts": counts, "grid_points": len(points),
+                                               "skipped": skipped, "retention_checksum": ledger.checksum(stage),
+                                               "terrain_files": [files[name] for name in sorted(names) if name in files],
+                                               "terrain_ocean_tiles": sorted(getattr(terrain, "last_sample_ocean_tiles", set())),
+                                               "terrain_failures": getattr(terrain, "failures", [])[failures_before:]}
+                                    fine_checkpoint(stage, cells, completed_rectangles, floor, payload)
+                                else:
+                                    fine_resumed += 1
+                                    restore_terrain(payload)
+                                refinement_points_skipped += payload["skipped"]
+                                _record_support(output, stage, payload["counts"], support)
                                 fine_stages += 1
-                                refinement_points_searched += len(points)
-                                ranked = merge_candidates(itertools.chain(ranked, rows), budget.top_k,
+                                refinement_points_searched += payload["grid_points"]
+                                ranked = merge_candidates(itertools.chain(ranked, payload["ranked"]), budget.top_k,
                                                           ledger=ledger, stage=f"fine-global:{seed_index}:{cells[0]}:{cells[1]}")
                     completed_rectangles.append((cx - width, cy - width, cx + width + 1, cy + width + 1))
                     report_search_progress(0.8 + 0.2 * (seed_index + 1) / len(chosen))
@@ -1254,6 +1326,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "model_support_complete": model_complete, "model_support": dict(support, diagnostics_directory="support"),
               "model_assessment_complete": model_assessed,
               "refinement_points_searched": refinement_points_searched, "refinement_points_skipped": refinement_points_skipped,
+              "refinement_stages_resumed": fine_resumed,
               "required_flight_bounds": flight_bounds,
               "candidate_retention_limit": budget.top_k, "alternative_modes_exhaustively_assessed": False,
               "finite_search_evidence": finite,
