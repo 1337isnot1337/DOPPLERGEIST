@@ -25,6 +25,24 @@ establish geographic coverage. The HTTP evidence verifier checks the recorded
 inequality against the search clock and stage totals; it does not independently
 reload the original aircraft index to verify the recorded emission endpoints.
 
+After these clock exclusions, a tiled CPA stage can prove every unsupported native
+interval spatially irrelevant to its actual receiver set. Both the native spline
+hulls and every original CPA sample edge that touches those intervals must pass
+strict distance bounds. The original spline, sampling lattice, global sample
+step and identity remain intact. See [motion support](MOTION_SUPPORT.md) for the
+proof and numerical limits. Failed proofs keep the original whole-track unknown
+envelope. Successful proofs appear as `interval_supported_cpa_tracks` in stage
+diagnostics, with their original invalid intervals, receiver box, sound speed,
+sampling step and distance bounds. The report counts these evaluations in
+`interval_supported_cpa_track_evaluations` without counting them as unsupported
+CPA work. Acoustic trials still check arrivals from those same invalid intervals
+and remain unknown when their receive envelopes overlap.
+
+The HTTP verifier checks each recorded interval-proof inequality, configuration
+scope, coarse checkpoint, and aggregate count. It does not reconstruct the source
+spline or receiver grid from the aircraft index. This proof narrows a CPA loss
+envelope; it does not establish source correctness or complete spatial coverage.
+
 The additive `model_support` report contains these integer work counts:
 
 - `unsupported_cpa_track_evaluations`: trajectory/stage CPA failures, including

@@ -9,7 +9,7 @@ from scipy.optimize import minimize_scalar
 from scipy.signal import find_peaks
 from scipy.spatial import cKDTree
 
-from .geometry import AcousticSupportError, _CANONICAL_ECEF, ecef
+from .geometry import AcousticSupportError, Track, _CANONICAL_ECEF, ecef
 from .matching import _CANONICAL_NATIVE_EVENT_VALIDATOR, _native_validate_ridge_events
 from .native_cpa import try_cpa_edges
 
@@ -115,8 +115,15 @@ def _cpa_rows(tracks, observers, point_ids, max_distance, c=343.0, step_s=2.0, c
 class _PreparedCPATrack:
     """One validated track/step, reused only across one call's receiver chunks."""
 
-    def __init__(self, track, c, step_s, *, _sample_cache=None):
-        track.validate_motion_support(c)
+    def __init__(self, track, c, step_s, *, _sample_cache=None, motion_observers=None, max_distance=None):
+        self.motion_support = None
+        motion_error = None
+        try:
+            track.validate_motion_support(c)
+        except AcousticSupportError as error:
+            if motion_observers is None or error.reason != "non_subsonic_motion" or _sample_cache is not None:
+                raise
+            motion_error = error
         self.track, self.c, self.step_s = track, c, step_s
         key = (id(track), step_s)
         sampled = None if _sample_cache is None else _sample_cache.get(key)
@@ -130,10 +137,24 @@ class _PreparedCPATrack:
                 _sample_cache[key] = (track, self.time, self.position, self.max_step)
         else:
             _, self.time, self.position, self.max_step = sampled
+        if motion_error is not None:
+            self.motion_support = Track._cpa_interval_exclusion(track, motion_observers, max_distance, c,
+                                                               self.time, self.position, float(self.max_step))
+            if self.motion_support is None:
+                raise motion_error
+            self.motion_support["sample_step_s"] = float(step_s)
         self.lower, self.upper = self.position.min(axis=0), self.position.max(axis=0)
         self.tree = None
 
     def raw_rows(self, observers, point_ids, max_distance, chunk_size=512):
+        if self.motion_support is not None:
+            support = self.motion_support
+            lower, upper = np.asarray(support["observer_box_ecef_m"])
+            if (not np.isfinite(max_distance) or max_distance > support["max_distance_m"]
+                    or self.c != support["sound_speed_mps"] or self.step_s != support["sample_step_s"]
+                    or not np.isfinite(observers).all() or not np.all((observers >= lower) & (observers <= upper))):
+                raise AcousticSupportError(self.track.id, "non_subsonic_motion",
+                                           emission_intervals_s=support["emission_intervals_s"])
         rows = []
         track, t, pos, c = self.track, self.time, self.position, self.c
         near=np.flatnonzero(np.all((observers>=self.lower-max_distance)&

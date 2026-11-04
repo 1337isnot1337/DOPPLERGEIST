@@ -148,6 +148,86 @@ class Track:
             raise AcousticSupportError(self.id, "non_subsonic_motion",
                 emission_intervals_s=[[float(self.time[i]), float(self.time[i+1])] for i in indices])
 
+    def _cpa_interval_exclusion(self, observers, radius, c, sample_time, sample_position, max_step):
+        """Prove bad native intervals cannot affect this sparse CPA query.
+
+        Keep the original spline, sample lattice and global maximum sample
+        step. Bad curves must be outside every receiver sphere. Both endpoints
+        of every lattice edge touching a bad interval must also be outside the
+        original KD-tree radius, so no such edge, sampled minimum or endpoint
+        refinement can be used. A failed proof leaves whole-track CPA unknown.
+        This says nothing about later acoustic arrivals from those intervals.
+        """
+        methods = ("position", "speed_vector", "_unsupported_motion_intervals", "validate_motion_support")
+        if (type(self) is not Track or any(name in self.__dict__ for name in methods)
+                or tuple(getattr(Track, name) for name in methods) != _CANONICAL_CPA_MOTION_FUNCTIONS
+                or type(radius) not in (int, float) or type(c) not in (int, float)
+                or not np.isfinite([radius, c, max_step]).all() or radius <= 0 or c <= 0 or max_step < 0):
+            return None
+        observers = np.asarray(observers)
+        if (observers.dtype != np.dtype(float) or observers.ndim != 2 or observers.shape[1] != 3
+                or not len(observers) or not np.isfinite(observers).all()
+                or sample_time.dtype != np.dtype(float) or sample_time.ndim != 1 or len(sample_time) < 2
+                or sample_position.shape != (len(sample_time), 3)
+                or not np.isfinite(sample_time).all() or not np.isfinite(sample_position).all()
+                or sample_time[0] != self.time[0] or sample_time[-1] != self.time[-1]
+                or not np.all(np.diff(sample_time) > 0)):
+            return None
+        indices = self._unsupported_motion_intervals(c)
+        if not len(indices):
+            return None
+        lower, upper = observers.min(axis=0), observers.max(axis=0)
+        query_radius = float(np.nextafter(radius + 2 * max_step, np.inf))
+        if not np.isfinite(query_radius):
+            return None
+        affected_edges = np.zeros(len(sample_time)-1, dtype=bool)
+        hull_lower = np.inf
+        # No interval-by-receiver matrix: the receiver box encloses the actual
+        # receiver set, and fixed-size interval blocks bound temporary storage.
+        for first in range(0, len(indices), _MOTION_SUPPORT_INTERVAL_BATCH):
+            selected = indices[first:first+_MOTION_SUPPORT_INTERVAL_BATCH]
+            times = self.time[np.column_stack((selected, selected+1))]
+            dt = (times[:, 1]-times[:, 0])[:, None]
+            velocity = self.speed_vector(times)
+            p0, p1 = self.xyz[selected], self.xyz[selected+1]
+            with np.errstate(over="ignore", invalid="ignore"):
+                controls = np.stack((p0, p0+dt*velocity[:, 0]/3,
+                                     p1-dt*velocity[:, 1]/3, p1), axis=1)
+            if not np.isfinite(controls).all():
+                return None
+            lo, hi = controls.min(axis=1), controls.max(axis=1)
+            separation = np.maximum(np.maximum(lo-upper, lower-hi), 0)
+            scale = max(1., float(np.abs(controls).max()), float(np.abs(observers).max()), radius)
+            margin = 1e-6 + 128 * np.finfo(float).eps * scale
+            distances = np.nextafter(np.linalg.norm(separation, axis=1)-margin, -np.inf)
+            if not np.isfinite(distances).all() or not np.all(distances > radius):
+                return None
+            hull_lower = min(hull_lower, float(distances.min()))
+            for start, end in times:
+                tolerance = max(1e-7, 4*abs(np.spacing(max(abs(start), abs(end)))))
+                left = max(0, int(np.searchsorted(sample_time, start-tolerance, side="left"))-1)
+                right = min(len(affected_edges), int(np.searchsorted(sample_time, end+tolerance, side="right")))
+                affected_edges[left:right] = True
+        edges = np.flatnonzero(affected_edges)
+        if not len(edges):
+            return None
+        vertices = np.unique(np.r_[edges, edges+1])
+        positions = sample_position[vertices]
+        separation = np.maximum(np.maximum(positions-upper, lower-positions), 0)
+        scale = max(1., float(np.abs(positions).max()), float(np.abs(observers).max()), query_radius)
+        margin = 1e-6 + 128 * np.finfo(float).eps * scale
+        distances = np.nextafter(np.linalg.norm(separation, axis=1)-margin, -np.inf)
+        if not np.isfinite(distances).all() or not np.all(distances > query_radius):
+            return None
+        return {"track_id": self.id, "method": "outside_native_hulls_and_sample_edges",
+                "emission_time_range_s": [float(self.time[0]), float(self.time[-1])],
+                "emission_intervals_s": [[float(self.time[i]), float(self.time[i+1])] for i in indices],
+                "sound_speed_mps": float(c), "max_distance_m": float(radius),
+                "max_sample_step_m": float(max_step), "query_radius_m": query_radius,
+                "hull_distance_lower_m": hull_lower, "edge_distance_lower_m": float(distances.min()),
+                "sample_count": len(sample_time), "affected_sample_edges": len(edges),
+                "receiver_point_count": len(observers), "observer_box_ecef_m": [lower.tolist(), upper.tolist()]}
+
     def outside_observer_radius(self, observers, radius, c=343.0):
         """Prove all observers are beyond a validated track's range.
 
@@ -363,6 +443,8 @@ class Track:
 
 _NATIVE_POSITION = Track.position
 _NATIVE_POSITION_VELOCITY = Track._position_velocity
+_CANONICAL_CPA_MOTION_FUNCTIONS = (Track.position, Track.speed_vector,
+    Track._unsupported_motion_intervals, Track.validate_motion_support)
 _CANONICAL_ACOUSTIC_FUNCTIONS = (Track.acoustic, Track.position, Track.speed_vector,
     Track._position_velocity, Track._check_motion_support, Track._check_motion_support_scalar,
     Track._unsupported_motion_intervals, _try_native_acoustic, _packed_kinematics)

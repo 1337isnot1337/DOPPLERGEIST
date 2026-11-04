@@ -522,13 +522,26 @@ def _clock_children(tile_id, cells, start_window, parameters, filters, events):
     return children
 
 
+def _track_cpa_batches(prepared, observers, point_ids, radius, step_s, chunk_points, max_rows):
+    batches, count = [], 0
+    for first in range(0, len(observers), chunk_points):
+        rows = _ordered_cpa_rows(prepared.raw_rows(observers[first:first + chunk_points],
+            point_ids[first:first + chunk_points], radius), step_s)
+        count += len(rows)
+        if count > max_rows:
+            raise DataUnavailable("Tile CPA-row memory budget exceeded")
+        if rows:
+            batches.append(np.array(rows, dtype=_CPA_DTYPE))
+    return batches, count
+
+
 @_cache_ridge_fits
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None, anchor_window=None):
     radius = max(e["slant_range_m"][1] for e in events)
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     point_ids = points.point_id.to_numpy(dtype=int)
     cpa_batches, count = [], 0
-    unsupported, clock_excluded = [], []
+    unsupported, clock_excluded, interval_supported = [], [], []
     receive_bounds = _event_receive_time_bounds(events, parameters, filters, start_window)
     # Bound materialized CPA rows before pairing; one track at a time keeps the
     # national traffic count out of the CPA tensor/list allocation.
@@ -545,15 +558,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             if track.outside_observer_radius(observers, radius, parameters.get("c", 343.0)):
                 continue
             prepared = _PreparedCPATrack(track, parameters.get("c", 343.0), budget.cpa_step_s)
-            for first in range(0, len(points), chunk_points):
-                rows = _ordered_cpa_rows(prepared.raw_rows(observers[first:first + chunk_points],
-                    point_ids[first:first + chunk_points], radius), budget.cpa_step_s)
-                track_rows += len(rows)
-                if count + track_rows > budget.max_cpa_rows:
-                    raise DataUnavailable("Tile CPA-row memory budget exceeded")
-                if rows:
-                    track_batches.append(np.array(rows, dtype=_CPA_DTYPE))
-                del rows
+            track_batches, track_rows = _track_cpa_batches(prepared, observers, point_ids, radius,
+                budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count)
         except AcousticSupportError as error:
             if receive_bounds is not None and track.time[0] > receive_bounds[1]:
                 clock_excluded.append({"track_id": track.id, "reason": error.reason,
@@ -574,9 +580,24 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                                            "latest_possible_receive_s": last_receive,
                                            "earliest_event_receive_s": receive_bounds[0]})
                     continue
-            # The typed failure does not identify an exact bad interval. Keep
-            # the entire track/stage as explicitly unassessed, and retain rows
-            # from other tracks. Never repair or clip the source payload here.
+            if error.reason == "non_subsonic_motion":
+                try:
+                    prepared = _PreparedCPATrack(track, parameters.get("c", 343.0), budget.cpa_step_s,
+                                                motion_observers=observers, max_distance=radius)
+                    if prepared.motion_support is None:
+                        raise error
+                    track_batches, track_rows = _track_cpa_batches(prepared, observers, point_ids, radius,
+                        budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count)
+                except AcousticSupportError as local_error:
+                    error = local_error
+                else:
+                    interval_supported.append(prepared.motion_support)
+                    count += track_rows
+                    cpa_batches.extend(track_batches)
+                    continue
+            # A failed interval proof still loses the whole track/stage. Direct
+            # acoustic scoring separately checks arrivals from every original
+            # invalid interval, including intervals proved irrelevant to CPA.
             unsupported.append({"track_id": track.id, "reported_track_id": error.track_id, "reason": error.reason,
                 "reported_intervals": _support_error(error),
                 "emission_time_range_s": [float(track.time[0]), float(track.time[-1])],
@@ -592,7 +613,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         if ledger is not None:
             ledger.record(stage, [], [], 0)
         return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported,
-                    "clock_excluded_unsupported_tracks": clock_excluded}
+                    "clock_excluded_unsupported_tracks": clock_excluded,
+                    "interval_supported_cpa_tracks": interval_supported}
     if parameters.get("mode") == "robust_ridge":
         from .matching import _prepare_score_inputs
         events, measurements = _prepare_score_inputs(events, measurements)
@@ -786,6 +808,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                       bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
                       clock_excluded_unsupported_tracks=clock_excluded,
+                      interval_supported_cpa_tracks=interval_supported,
                       unclassified_candidate_assessments=unclassified_assessments, **trial_counts)
 
 
@@ -795,6 +818,10 @@ def _record_support(output, stage, counts, summary):
     if clock_excluded:
         summary["clock_excluded_unsupported_track_evaluations"] = (
             summary.get("clock_excluded_unsupported_track_evaluations", 0) + clock_excluded)
+    interval_supported = len(counts.get("interval_supported_cpa_tracks", []))
+    if interval_supported:
+        summary["interval_supported_cpa_track_evaluations"] = (
+            summary.get("interval_supported_cpa_track_evaluations", 0) + interval_supported)
     for key in ("unclassified_score_candidates", "bounded_score_candidates", "unbounded_score_candidates",
                 "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"):
         summary[key] += counts.get(key, 0)
@@ -810,11 +837,12 @@ def _record_support(output, stage, counts, summary):
         write_json(output / "support" / (stage.replace(":", "-") + "-event-pair-screen.json"),
                    {"stage": stage, **pair_screen})
     if (counts.get("unsupported_cpa_tracks") or counts.get("unclassified_candidate_assessments")
-            or counts.get("clock_excluded_unsupported_tracks")):
+            or counts.get("clock_excluded_unsupported_tracks") or counts.get("interval_supported_cpa_tracks")):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + ".json"),
                    {"stage": stage, "unsupported_cpa_tracks": counts.get("unsupported_cpa_tracks", []),
                     "clock_excluded_unsupported_tracks": counts.get("clock_excluded_unsupported_tracks", []),
+                    "interval_supported_cpa_tracks": counts.get("interval_supported_cpa_tracks", []),
                     "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])},
                    compact=True)
 
