@@ -53,7 +53,7 @@ def score_block(candidates,lookup,track_lookup,events,measurements,parameters,or
         else:
             unreported+=1
         known=parameters["mode"]=="robust_ridge" and classified_assessment(row)
-        finite=bool(np.isfinite(row["score"]))
+        finite=bool(row["score"] is not None and np.isfinite(row["score"]))
         pass_times=[float(p["emission_time"]) for p in candidate["passes"]]
         if not known:
             anchor=(origin if origin is not None else
@@ -70,7 +70,8 @@ def score_block(candidates,lookup,track_lookup,events,measurements,parameters,or
                 "event_indices":list(candidate.get("event_indices",range(len(events)))),
                 "pass_emission_times_s":pass_times,"recording_start_domain_s":[float(lo),float(hi)],
                 "clock_domain_kind":"scorer_proposal_not_independent_recording_time",
-                "clock_settings":parameters,"scoring_assessment":assessment,"failure":failure,
+                "clock_settings":parameters,"score_kind":row.get("score_kind"),
+                "scoring_assessment":assessment,"failure":failure,
                 "finite_best":finite,"finite_score":float(row["score"]) if finite else None,
                 "reason":(failure["reason"] if failure else "unclassified_clock_envelope"),
                 "coverage_envelope":"whole_candidate_clock_domain_conservative"})

@@ -769,7 +769,9 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         row["core_assessment_complete"] = bool(known and finite_score)
         if settings.get("mode") == "robust_ridge":
             assessment = row.get("scoring_assessment")
-            if isinstance(assessment, dict) and assessment.get("unknown_score_bound_method") == "group_count_ceiling":
+            if (isinstance(assessment, dict)
+                    and assessment.get("unknown_score_bound_method") == "group_count_ceiling"
+                    and "matched_group_count_below_score_floor" in assessment.get("reasons", ())):
                 assessment["retention_score_floor"] = settings["score_floor"]
             if isinstance(assessment, dict) and all(type(assessment.get(k)) is int and assessment[k] >= 0
                                                   for k in ("evaluated_trials", "rejected_trials", "unknown_trials")):

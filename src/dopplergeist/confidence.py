@@ -44,33 +44,21 @@ def _near_tied(gap, margin):
 def _possible_harmonic_overlap(events):
     """Flag an uncalibrated ambiguity; do not merge ridges or assert identity."""
     from .discovery import _HARMONIC_RATIOS
+    from .ridge_overlap import aligned_ridge_observations, reused_ridge_observations
 
     for index, first in enumerate(events):
         for second in events[index + 1:]:
-            if first.get("harmonic_group_id", first["event_id"]) == second.get("harmonic_group_id", second["event_id"]):
+            aligned = aligned_ridge_observations(first, second)
+            if aligned is None:
                 continue
-            low, high = first, second
-            a = {point["time_s"]: point["frequency_hz"] for point in low["ridge"]}
-            b = {point["time_s"]: point["frequency_hz"] for point in high["ridge"]}
-            times = sorted(a.keys() & b.keys())
-            if len(times) < 10:
-                continue
-            span = min(low["ridge"][-1]["time_s"] - low["ridge"][0]["time_s"],
-                       high["ridge"][-1]["time_s"] - high["ridge"][0]["time_s"])
-            if span <= 0 or times[-1] - times[0] < 0.6 * span:
-                continue
-            x, y = (np.array([ridge[t] for t in times], dtype=float) for ridge in (a, b))
             # Chunk paths can follow the same measured peak before branching.
             # A reused sequence is not independent evidence, even when the
             # later divergence fails the whole-ridge harmonic check below.
-            shared = x == y
-            starts = np.flatnonzero(np.convolve(shared, np.ones(5, dtype=int), mode="valid") == 5)
-            if len(starts):
-                start = int(starts[0])
-                return {"event_ids": [low["event_id"], high["event_id"]],
-                        "ambiguity": "reused_ridge_observations", "harmonic_ratio": 1.0,
-                        "aligned_samples": len(times), "shared_ridge_samples": int(shared.sum()),
-                        "shared_run_start_s": times[start], "shared_run_end_s": times[start + 4]}
+            reused = reused_ridge_observations(first, second, aligned=aligned)
+            if reused is not None:
+                return reused
+            low, high = first, second
+            times, x, y = aligned
             if np.median(x) > np.median(y):
                 low, high, x, y = high, low, y, x
             with np.errstate(over="ignore", invalid="ignore", divide="ignore"):

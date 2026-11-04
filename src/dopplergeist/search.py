@@ -798,6 +798,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         raise ValueError(f"Unknown scoring mode: {mode}")
     if time_step_s <= 0 or time_sweep_s < 0:
         raise ValueError("Need positive clock step and nonnegative sweep")
+    from .ridge_overlap import selected_ridge_conflicts
+    shared_observations = selected_ridge_conflicts(events) if association else []
     if score_floor is not None:
         if not association or mode != "robust_ridge":
             raise ValueError("score_floor is only supported for robust_ridge associations")
@@ -809,6 +811,8 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             raise ValueError("score_floor must be finite") from error
         if not np.isfinite(score_floor):
             raise ValueError("score_floor must be finite")
+        _validate_score_ceiling_inputs(events, measurements)
+    elif shared_observations:
         _validate_score_ceiling_inputs(events, measurements)
     observer = _candidate_observer(point.lat,point.lon,point.elev_m)
     # Derive one recording start from the first event; all other events retain
@@ -852,15 +856,23 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
     partial_prunes = 0
     # Every accepted group contributes at most one; a strict comparison keeps ties eligible.
     floor_pruned = bool(score_floor is not None and len(shifts) > 0 and len(events) < score_floor)
-    if floor_pruned:
+    unresolved_overlap = bool(shared_observations and len(shifts) > 0)
+    skip_fits = floor_pruned or unresolved_overlap
+    if skip_fits:
         best["score"] = None
         assessment["unknown_trials"] = len(shifts)
+    if floor_pruned:
         reasons.add("matched_group_count_below_score_floor")
+    if unresolved_overlap:
+        # Keep the joint assignment as an unresolved envelope, not a rejected
+        # physical source combination. Its group count is only an upper bound.
+        reasons.add("reused_ridge_observations")
+        assessment["shared_ridge_observations"] = shared_observations
     selected_tracks = ([tracks[p["flight_id"]] for p in candidate["passes"]]
-                       if mode == "robust_ridge" and not floor_pruned else None)
+                       if mode == "robust_ridge" and not skip_fits else None)
     batches = None
     lazy_batches = None
-    if mode == "robust_ridge" and not floor_pruned and len(shifts) > 1:
+    if mode == "robust_ridge" and not skip_fits and len(shifts) > 1:
         from .matching import _iter_acoustic_trials, batch_acoustic_trials
         if association and score_floor is not None:
             lazy_batches = iter(_iter_acoustic_trials(selected_tracks, measurements, observer, anchor + shifts, c))
@@ -874,7 +886,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
     batched_trials = None
     # Bound the retained per-clock diagnostics; large products keep the scalar
     # traversal rather than allocating an unbounded event-by-clock table.
-    if (mode == "robust_ridge" and not floor_pruned and batches is not None
+    if (mode == "robust_ridge" and not skip_fits and batches is not None
             and len(shifts) >= 4 and len(shifts) * len(events) <= 4096):
         batched_trials, dual_pruned, floor_dual_pruned = _batched_ridge_trials(
             selected_tracks, events, measurements, observer, anchor + shifts, c,
@@ -882,7 +894,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
             score_floor if association else None,
             association and score_floor is not None and time_origin is None,
             legacy_first_batch and association and score_floor is not None and time_origin is None)
-    for trial, shift in enumerate(() if floor_pruned else shifts):
+    for trial, shift in enumerate(() if skip_fits else shifts):
         if mode == "robust_ridge":
             from .matching import score_ridges
             def acoustic_at(index):
@@ -1005,7 +1017,7 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
         assessment["complete"] = bool(len(shifts) and assessment["unknown_trials"] == 0)
         assessment["reasons"] = sorted(reasons)
         if association and assessment["unknown_trials"]:
-            if floor_pruned:
+            if skip_fits:
                 assessment.update(
                     bounded_unknown_trials=len(shifts),
                     bounded_unknown_rejections=0,
@@ -1032,12 +1044,13 @@ def score_candidate(candidate, point, tracks, events, measurements, mode="bright
 
 
 def rank_candidates(candidates, points, tracks, events, measurements, **kwargs):
+    """Return finite rankings; ``pipeline.score_block`` also retains unknown work."""
     lookup = {row.point_id:row for row in points.itertuples()}
     track_lookup = {track.id:track for track in tracks}
     result = []
     for i,candidate in enumerate(candidates):
         row = score_candidate(candidate,lookup[candidate["point_id"]],track_lookup,events,measurements,**kwargs)
-        if np.isfinite(row["score"]):
+        if row["score"] is not None and np.isfinite(row["score"]):
             result.append(row)
         if i and i%100==0:
             print(f"Scored {i}/{len(candidates)} candidates",flush=True)
