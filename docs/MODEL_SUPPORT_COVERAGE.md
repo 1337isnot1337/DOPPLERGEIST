@@ -9,6 +9,18 @@ evaluated, rejected, or covered by a validated score bound. Unsupported CPA
 trajectories, unreported clock trials, and unbounded alternatives keep the search
 partial. A completed tile does not establish complete evidence.
 
+For robust-ridge subset association with a bounded recording-start window and no
+silence filter, an unsupported trajectory that starts strictly after every
+possible event CPA arrival cannot participate in an association. Those tracks
+are reported separately as `clock_excluded_unsupported_tracks` in stage
+diagnostics and counted in `clock_excluded_unsupported_track_evaluations`; their
+original motion failures and conservative clock bounds remain inspectable. The
+bound includes the configured clock sweep, CPA and association tolerances, and
+outward floating-point rounding. Overlap, missing or invalid clock information,
+fixed-clock mode, other scoring modes, and silence filtering retain the usual
+unsupported/partial behavior. This does not repair the source trajectory or
+establish geographic coverage.
+
 The additive `model_support` report contains these integer work counts:
 
 - `unsupported_cpa_track_evaluations`: trajectory/stage CPA failures, including

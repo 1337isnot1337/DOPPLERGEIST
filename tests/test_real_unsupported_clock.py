@@ -1,0 +1,84 @@
+"""Optional regression using an archived real audio/aircraft regional run."""
+import json
+import os
+from pathlib import Path
+
+import pytest
+
+from dopplergeist.data_access import CachedTerrain, FlightIndex
+from dopplergeist.matching import prepare_events
+from dopplergeist.tiled_search import (SearchBudget, _expanded_bounds, _latest_event_receive_time,
+                                       _score, _tracks_for_points, tile_points)
+
+
+def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch):
+    value = os.environ.get("DOPPLERGEIST_REAL_CLOCK_JOB")
+    index_path = os.environ.get("DOPPLERGEIST_REAL_CLOCK_INDEX")
+    terrain_path = os.environ.get("DOPPLERGEIST_REAL_CLOCK_TERRAIN")
+    if not all((value, index_path, terrain_path)):
+        pytest.skip("set the archived real job, aircraft index and terrain cache paths")
+    job = Path(value)
+    config = json.loads((job / "search/manifest.json").read_text())["configuration"]
+    raw = json.loads((job / "discovery/discovery.json").read_text())["events"]
+    params = dict(config["scoring"])
+    window = params.pop("recording_start_window_s")
+    filters = config["filters"]
+    radius = max(event["slant_range_m"][1] for event in config["events"])
+    events, measurements = prepare_events(raw, c=params["c"], max_distance_m=radius)
+    assert events == config["events"]
+    budget = SearchBudget(**config["budget"])
+    terrain = CachedTerrain(terrain_path, offline=True)
+    index = FlightIndex(index_path)
+    support_files = sorted((job / "search/support").glob("coarse-*.json"))
+    tested = 0
+    for support_path in support_files:
+        support = json.loads(support_path.read_text())
+        failures = support.get("unsupported_cpa_tracks", [])
+        if not failures:
+            continue
+        tile_id = support_path.stem.removeprefix("coarse-")
+        payload = json.loads((job / "search" / f"tile-{tile_id}.json").read_text())["payload"]
+        points = tile_points(payload["cells"], budget.spacing_m, config["bounds"], terrain, config["crs"])
+        tracks = list(index.lookup([item["track_id"] for item in failures]))
+        assert tracks
+        latest = _latest_event_receive_time(events, params, filters, window)
+        assert latest is not None and all(track.time[0] > latest for track in tracks)
+        rows, counts = _score(points, tracks, events, measurements, budget, params, filters, window)
+        assert rows == [] and not counts["unsupported_cpa_tracks"]
+        assert {item["track_id"] for item in counts["clock_excluded_unsupported_tracks"]} == {t.id for t in tracks}
+        # A clock that reaches the same unmodified flight must not suppress it.
+        shift = float(tracks[0].time[0] - latest + 1.0)
+        overlapping = [window[0] + shift, window[1] + shift]
+        _, unknown = _score(points, tracks, events, measurements, budget, params, filters, overlapping)
+        assert any(item["track_id"] == tracks[0].id for item in unknown["unsupported_cpa_tracks"])
+        assert _latest_event_receive_time(events, params, {**filters, "silence": {"edge_margin_s": 60}}, window) is None
+        assert _latest_event_receive_time(events, params, filters, None) is None
+        tested += len(tracks)
+    assert tested == 12
+
+    # Compare full-tile scoring on original tracks and measurements with the
+    # old conservative exclusion; every actual retained candidate must agree.
+    supported_stages = [json.loads(path.read_text()) for path in support_files]
+    supported_stages = [value for value in supported_stages if value.get("unsupported_cpa_tracks")]
+    def ranked_count(value):
+        tile_name = value["stage"].removeprefix("coarse:")
+        return len(json.loads((job / "search" / f"tile-{tile_name}.json").read_text())["payload"]["ranked"])
+    support = max(supported_stages, key=ranked_count)
+    assert ranked_count(support) > 0
+    tile_id = support["stage"].removeprefix("coarse:")
+    cells = json.loads((job / "search" / f"tile-{tile_id}.json").read_text())["payload"]["cells"]
+    points = tile_points(cells, budget.spacing_m, config["bounds"], terrain, config["crs"])
+    tracks, points = _tracks_for_points([index], _expanded_bounds(cells, budget.spacing_m, radius, config["crs"]),
+                                       config["time_range_s"], budget, points, terrain, radius, params["c"])
+    import dopplergeist.tiled_search as tiled
+    with monkeypatch.context() as patch:
+        patch.setattr(tiled, "_latest_event_receive_time", lambda *args: None)
+        previous_rows, previous_counts = _score(points, tracks, events, measurements, budget, params, filters, window)
+    rows, counts = _score(points, tracks, events, measurements, budget, params, filters, window)
+    assert rows and counts["candidates"] > 0
+    assert rows == previous_rows
+    assert counts["cpa_rows"] == previous_counts["cpa_rows"]
+    assert counts["candidates"] == previous_counts["candidates"]
+    assert counts["unclassified_candidate_assessments"] == previous_counts["unclassified_candidate_assessments"]
+    assert len(previous_counts["unsupported_cpa_tracks"]) == len(counts["clock_excluded_unsupported_tracks"]) > 0
+    assert not counts["unsupported_cpa_tracks"]

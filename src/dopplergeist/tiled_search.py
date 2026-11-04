@@ -356,6 +356,42 @@ def _association_clock_window(start_window, sweep_s):
     return center, tolerance
 
 
+def _latest_event_receive_time(events, parameters, filters, start_window):
+    """Conservatively bound matchable CPA arrivals for the shared-clock path.
+
+    None means that this optional exclusion is not justified. Silence filters
+    can use passages that match no event, so they cannot use this bound.
+    """
+    if (not start_window or parameters.get("mode") != "robust_ridge"
+            or parameters.get("time_origin") is not None
+            or filters.get("association", "subsets") != "subsets" or filters.get("silence")):
+        return None
+    try:
+        c = float(parameters.get("c", 343.0))
+        offset = float(filters.get("offset_tolerance_s", 5.0))
+        if not math.isfinite(c) or c <= 0 or not math.isfinite(offset) or offset < 0:
+            return None
+        center, clock_tolerance = _association_clock_window(start_window, parameters.get("time_sweep_s", 5.0))
+        upper = math.nextafter(center + clock_tolerance, math.inf)
+        latest = []
+        for event in events:
+            cpa = float(event["cpa_receive_s"])
+            event_tolerance = float(event.get("quality", {}).get("cpa_tolerance_s", 0))
+            if not math.isfinite(cpa) or not math.isfinite(event_tolerance) or event_tolerance < 0:
+                return None
+            margin = math.nextafter(event_tolerance + offset / 2, math.inf)
+            bound = math.nextafter(math.nextafter(upper + margin, math.inf) + cpa, math.inf)
+            # Association calculates receive_time - cpa before comparing clock
+            # intervals. Extra ULPs cover that inverse floating-point rounding.
+            bound += 4 * max(math.ulp(bound), math.ulp(center), math.ulp(cpa))
+            if not math.isfinite(bound):
+                return None
+            latest.append(bound)
+        return max(latest) if latest else None
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None
+
+
 def _tile_anchor_window(tile_id, start_window, parameters, filters, events):
     """Recover a deterministic half-open anchor partition from its tile ID."""
     path = [part for part in tile_id.split("~")[1:] if part.startswith("t")]
@@ -488,7 +524,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     point_ids = points.point_id.to_numpy(dtype=int)
     cpa_batches, count = [], 0
-    unsupported = []
+    unsupported, clock_excluded = [], []
+    latest_receive = _latest_event_receive_time(events, parameters, filters, start_window)
     # Bound materialized CPA rows before pairing; one track at a time keeps the
     # national traffic count out of the CPA tensor/list allocation.
     for track in tracks:
@@ -514,6 +551,12 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                     track_batches.append(np.array(rows, dtype=_CPA_DTYPE))
                 del rows
         except AcousticSupportError as error:
+            if latest_receive is not None and track.time[0] > latest_receive:
+                clock_excluded.append({"track_id": track.id, "reason": error.reason,
+                                       "reported_intervals": _support_error(error),
+                                       "earliest_emission_s": float(track.time[0]),
+                                       "latest_event_receive_s": latest_receive})
+                continue
             # The typed failure does not identify an exact bad interval. Keep
             # the entire track/stage as explicitly unassessed, and retain rows
             # from other tracks. Never repair or clip the source payload here.
@@ -531,7 +574,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     if not cpa_batches:
         if ledger is not None:
             ledger.record(stage, [], [], 0)
-        return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported}
+        return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported,
+                    "clock_excluded_unsupported_tracks": clock_excluded}
     if parameters.get("mode") == "robust_ridge":
         from .matching import _prepare_score_inputs
         events, measurements = _prepare_score_inputs(events, measurements)
@@ -724,11 +768,16 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                       retention_score_pruned_candidates=retention_pruned,
                       bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
+                      clock_excluded_unsupported_tracks=clock_excluded,
                       unclassified_candidate_assessments=unclassified_assessments, **trial_counts)
 
 
 def _record_support(output, stage, counts, summary):
     summary["unsupported_cpa_track_evaluations"] += len(counts.get("unsupported_cpa_tracks", []))
+    clock_excluded = len(counts.get("clock_excluded_unsupported_tracks", []))
+    if clock_excluded:
+        summary["clock_excluded_unsupported_track_evaluations"] = (
+            summary.get("clock_excluded_unsupported_track_evaluations", 0) + clock_excluded)
     for key in ("unclassified_score_candidates", "bounded_score_candidates", "unbounded_score_candidates",
                 "evaluated_trials", "rejected_trials", "unknown_trials", "unreported_trial_envelopes"):
         summary[key] += counts.get(key, 0)
@@ -743,10 +792,12 @@ def _record_support(output, stage, counts, summary):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + "-event-pair-screen.json"),
                    {"stage": stage, **pair_screen})
-    if counts.get("unsupported_cpa_tracks") or counts.get("unclassified_candidate_assessments"):
+    if (counts.get("unsupported_cpa_tracks") or counts.get("unclassified_candidate_assessments")
+            or counts.get("clock_excluded_unsupported_tracks")):
         (output / "support").mkdir(exist_ok=True)
         write_json(output / "support" / (stage.replace(":", "-") + ".json"),
                    {"stage": stage, "unsupported_cpa_tracks": counts.get("unsupported_cpa_tracks", []),
+                    "clock_excluded_unsupported_tracks": counts.get("clock_excluded_unsupported_tracks", []),
                     "unclassified_candidate_assessments": counts.get("unclassified_candidate_assessments", [])},
                    compact=True)
 
