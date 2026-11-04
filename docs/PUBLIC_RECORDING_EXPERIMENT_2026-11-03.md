@@ -105,6 +105,15 @@ these persisted ledgers and does not explain these rankings. This check does
 not establish that the candidate ranking matches the real aircraft or that the
 incomplete searches assessed every alternative.
 
+The five unique flight segments named by the three leading candidates were
+also looked up in the same cached 8 April 2024 flight index. Current main's
+`Track.validate_motion_support(343.0)` accepted all five, with sample counts
+16, 66, 147, 209 and 335; none triggered the non-subsonic-motion rejection.
+This rules out that specific current model-support failure for those retrieved
+segments. It does not establish that the older run used identical interpolation
+or that any segment is the source of its acoustic proposal; no receiver-position
+fit was evaluated.
+
 Across all three, event groups are acoustic proposals rather than verified
 aircraft identities. The ±20-second recording-start windows were assumptions
 based on filenames, and the archive does not establish complete local receiver
