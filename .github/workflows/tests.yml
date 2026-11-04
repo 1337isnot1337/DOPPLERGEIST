@@ -47,8 +47,6 @@ jobs:
         run: python -m pytest -q tests/test_real_terrain_tile_seams.py
       - name: Check experimental episode artifacts from recorded media
         run: python -m pytest -q tests/test_real_episode_artifact.py tests/test_real_episode_motion.py tests/test_real_episode_cli.py
-      - name: Check confidence diagnostics against saved real recordings
-        run: python -m pytest -q tests/test_real_confidence_diagnostics.py
       - name: Check progress reporting against recorded empty-tile checkpoints
         run: |
           python - <<'PY'

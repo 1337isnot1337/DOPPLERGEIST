@@ -8,8 +8,6 @@ inconclusive development tests, not confirmed aircraft-localization benchmarks:
 the audio proposals have not been independently identified as aircraft, and the
 individual clock and microphone-position errors are unknown.
 
-![Rochester acoustic proposal and ranked search results](../assets/public-eclipse-rochester.png)
-
 | Recording | UTC filename start | Groups | Tiles visited | Outcome | Top distance | Closest retained |
 | --- | --- | ---: | ---: | --- | ---: | ---: |
 | [ESID 920, Rochester area](https://zenodo.org/records/22014438) | 02:41:49 | 6 | 16/16 | 105 rows; `search_incomplete` | 14.06 km | 13.48 km, rank 101 |
@@ -37,9 +35,8 @@ an aircraft fit do not themselves establish the physical source of a sound.
 
 ## Rankings and search limits
 
-- [ESID 920: all 105 ranked rows](../benchmarks/results/public-eclipse-920-ranked-20261103.csv)
-- [ESID 430: all 105 ranked rows](../benchmarks/results/public-eclipse-430-ranked-20261103.csv)
-- [ESID 439: all 105 ranked rows](../benchmarks/results/public-eclipse-439-ranked-20261103.csv)
+Per-candidate ranking tables and the Rochester candidate map are retained locally;
+they contain run-specific locations, clock values and flight/event identifiers.
 
 Scores are fit statistics, not probabilities; repeated or nearby rows need not
 be independent locations. Rochester's first five geographically separated
