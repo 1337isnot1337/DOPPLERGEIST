@@ -130,6 +130,8 @@ def main():
         audio=Path(args.audio)
         if not audio.is_file():
             parser.error(f"Audio file is unavailable or not a regular file: {audio}")
+        if args.time_source and not args.start_utc:
+            parser.error("--time-source requires --start-utc")
         if args.end_utc and not args.start_utc:
             parser.error("--end-utc requires --start-utc")
         request={"schema_version":1,"search":{"coverage":"conus"}}
@@ -143,7 +145,10 @@ def main():
             validate_request(dict(request, audio_path=str(audio)))
         except ValueError as exc:
             parser.error(str(exc))
-        manager=JobManager(args.jobs,config,max_runtime_s=args.max_runtime)
+        try:
+            manager=JobManager(args.jobs,config,max_runtime_s=args.max_runtime)
+        except (OSError, ValueError) as exc:
+            parser.error(f"Could not open job store: {exc}")
         try:
             with audio.open("rb") as source:
                 queued=manager.submit(request,source,audio.stat().st_size,suffix=audio.suffix)
@@ -164,22 +169,30 @@ def main():
                     parser.error(f"Could not read job {args.job_id}: {exc}")
                 if not args.watch:
                     break
-                tiles=[path for path in (directory/"search").glob("tile-*.json") if not path.name.endswith(".error.json")]
-                count=len(tiles)
+                search=directory/"search"
+                tiles=[path for path in search.glob("tile-*.json") if not path.name.endswith(".error.json")]
+                fine_supports=[path for path in (search/"support").glob("fine-*.json")
+                               if not path.name.endswith(".error.json")]
+                count=len(tiles)+len(fine_supports)
                 wall_now=time.time()
                 progress=value.get("progress")
-                progress_text=(f", {progress:.1%}" if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 result_age=max(0.0,wall_now-(directory/"result.json").stat().st_mtime)
                 age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
+                stale_after=max(60.0,args.interval*3)
+                progress_stale=" (stale)" if result_age>stale_after else ""
+                progress_text=(f", pipeline progress {progress:.1%}{progress_stale}"
+                               if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", {(count-previous_count)*60/(now-previous_time):.1f} pieces/min since last check"
-                latest=max(tiles,key=lambda path:path.stat().st_mtime,default=None)
-                tile_age=(f", newest tile {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
-                          if latest else "")
+                checkpoints=tiles+fine_supports
+                latest=max(checkpoints,key=lambda path:path.stat().st_mtime,default=None)
+                checkpoint_age=(f", newest checkpoint {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
+                                if latest else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
-                      f"{count} local checkpoint pieces{rate}{tile_age}, "
+                      f"{count} local checkpoint pieces ({len(tiles)} coarse tiles, "
+                      f"{len(fine_supports)} fine support checkpoints){rate}{checkpoint_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
