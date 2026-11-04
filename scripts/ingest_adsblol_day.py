@@ -4,6 +4,7 @@ from datetime import date, datetime, time, timezone
 import gzip
 import io
 import json
+import os
 import tarfile
 from pathlib import Path
 
@@ -46,7 +47,10 @@ if not types_path.exists():
     # The public database is a JS assignment containing one JSON dictionary.
     start,end=text.find("{"),text.rfind("}")+1
     json.loads(text[start:end])
-    types_path.write_text(text[start:end])
+    # Publish atomically: a concurrent ingest that sees the path must never read a partial file.
+    temporary=types_path.with_name(f"{types_path.name}.{os.getpid()}.tmp")
+    temporary.write_text(text[start:end])
+    os.replace(temporary,types_path)
 types=json.loads(types_path.read_text())
 print("Type examples",list(types.items())[:3],flush=True)
 engines={}
