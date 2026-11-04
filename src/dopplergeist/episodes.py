@@ -3,12 +3,17 @@
 All time differences below are seconds. Pairwise constant-scale fits have one
 parameter; group-wide reconciliation prevents weak transitive bridges.
 """
-from collections import Counter
+from collections import Counter, OrderedDict, defaultdict
 from dataclasses import dataclass
 import hashlib
+import heapq
+from bisect import bisect_right
+from math import sqrt
+from statistics import median
 
 import numpy as np
 from scipy import ndimage
+from scipy.optimize import isotonic_regression
 
 
 class DiscoveryError(ValueError):
@@ -35,21 +40,44 @@ def key(ridge):
 
 
 def intervals(times, hop):
-    """Union of observation cells, not of spectrogram-window footprints."""
-    result = []
-    for t in sorted(set(float(t) for t in times)):
-        left, right = max(0.0, t - hop / 2), t + hop / 2
-        if result and left <= result[-1][1] + 1e-8:
-            result[-1][1] = max(result[-1][1], right)
-        else:
-            result.append([left, right])
+    """Union of observed cells; scalar or per-observation hop widths."""
+    widths=np.full(len(times),hop) if np.ndim(hop)==0 else np.asarray(hop)
+    result=[]
+    for t,width in sorted(zip(times,widths)):
+        left,right=max(0.,float(t-width/2)),float(t+width/2)
+        if result and left<=result[-1][1]+1e-8:result[-1][1]=max(result[-1][1],right)
+        else:result.append([left,right])
     return result
+
+
+def support(points, settings):
+    hops=points[:,6] if points.shape[1]>6 else settings.hop_s
+    windows=points[:,7] if points.shape[1]>7 else np.full(len(points),settings.window_s)
+    cells=intervals(points[:,0],hops)
+    observed=sum(b-a for a,b in cells)
+    if np.ptp(windows)<1e-9:
+        independent=observed/float(windows[0])
+    else:
+        # Integrate the maximum available temporal information rate. Overlapping
+        # profiles never add their correlated observations twice.
+        widths=np.full(len(points),hops) if np.ndim(hops)==0 else hops
+        events=[]
+        for i,(t,h,w) in enumerate(zip(points[:,0],widths,windows)):
+            events.extend([(max(0.,float(t-h/2)),1,i,1/float(w)),(float(t+h/2),-1,i,1/float(w))])
+        active=set();heap=[];last=events[0][0] if events else 0.;independent=0.
+        for time,kind,i,density in sorted(events):
+            while heap and heap[0][1] not in active:heapq.heappop(heap)
+            if heap:independent+=(time-last)*(-heap[0][0])
+            if kind==1:active.add(i);heapq.heappush(heap,(-density,i))
+            else:active.discard(i)
+            last=time
+    return cells,float(observed),float(independent)
 
 
 def uncertainty(points, settings):
     f = points[:, 1]
     smooth = ndimage.median_filter(f, size=min(5, len(f) // 2 * 2 + 1), mode="nearest")
-    return float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth))))
+    return float(max(np.median(points[:,4]) if points.shape[1]>4 else 1/settings.window_s, 1.4826*np.median(np.abs(f-smooth))))
 
 
 def aligned(a, b, settings):
@@ -69,12 +97,67 @@ def aligned(a, b, settings):
     return times, np.interp(times, a[:, 0], a[:, 1]), np.interp(times, b[:, 0], b[:, 1])
 
 
+def forecast(points, time, settings, next_sigma=None):
+    """Local prediction and uncertainty in Hz, using observed elapsed seconds.
+
+    Short/noisy histories carry slope uncertainty. Median rate dispersion and
+    observed prediction scatter allow ordinary curvature without a fixed-Hz
+    displacement gate. The same predictor is used by linking and continuity.
+    """
+    tail = points[-8:]
+    last = tail[-1]
+    dt = float(time - last[0])
+    resolution = 1/float(last[7]) if len(last)>7 else 1/settings.window_s
+    measured_sigma = float(last[4]) if len(last)>4 else resolution
+    if next_sigma is None:next_sigma=measured_sigma
+    if len(tail) == 1:
+        return float(last[1]), max(8., float(last[1]) * .08) * dt
+    rates = [(float(b[1]) - float(a[1])) / (float(b[0]) - float(a[0]))
+             for a,b in zip(tail,tail[1:])]
+    rate = median(rates)
+    dispersion = 1.4826 * median(abs(v-rate) for v in rates)
+    scatter = 1.4826 * median(abs(float(p[1])-float(last[1])-rate*(float(p[0])-float(last[0]))) for p in tail)
+    # Contrast is a salience diagnostic, not calibrated SNR. Its bounded factor
+    # expresses weaker measurement information without granting arbitrary jumps.
+    quality = max(1., min(12., float(last[2])))
+    sigma = measured_sigma * sqrt(1 + settings.min_contrast / quality)
+    span = max(float(last[6]) if len(last)>6 else settings.hop_s, float(last[0]-tail[0][0]))
+    rate_uncertainty = sqrt(dispersion**2 + 2*sigma**2/span**2)
+    tolerance = 3*sqrt(sigma**2 + float(next_sigma)**2 + scatter**2 + (dt*rate_uncertainty)**2)
+    return float(last[1]+rate*dt), float(tolerance)
+
+
+def shape_consistency(points,settings):
+    """Assess one monotone leg or one resolved turn against measurement error.
+
+    PAVA is linear in observed samples. Only eight candidate turn positions
+    are tried; fitting noise with arbitrary turns is not allowed.
+    """
+    t,f=points[:,:2].T
+    sigma=points[:,4] if points.shape[1]>4 else np.full(len(f),1/settings.window_s)
+    weights=1/np.maximum(sigma,1e-6)**2
+    candidates=[]
+    for increasing in (True,False):
+        fit=isotonic_regression(f,weights=weights,increasing=increasing).x
+        candidates.append((float(np.mean(((f-fit)/sigma)**2)),fit,'rising' if increasing else 'falling'))
+    for split in np.unique(np.linspace(2,len(f)-3,8,dtype=int)):
+        if split<2 or split>=len(f)-2:continue
+        if min(t[split]-t[0],t[-1]-t[split])<max(settings.window_s,1.):continue
+        if min(np.ptp(f[:split+1]),np.ptp(f[split:]))<3*float(np.median(sigma)):continue
+        for rising in (True,False):
+            first=isotonic_regression(f[:split+1],weights=weights[:split+1],increasing=rising).x
+            last=isotonic_regression(f[split+1:],weights=weights[split+1:],increasing=not rising).x
+            fit=np.r_[first,last]
+            candidates.append((float(np.mean(((f-fit)/sigma)**2))+.25,fit,'turning'))
+    loss,fit,direction=min(candidates,key=lambda x:x[0])
+    return float(np.quantile(np.abs(f-fit)/sigma,.9)),direction
+
+
 def motion(points, settings):
     """Evidence and explicit rejection thresholds, independent of duration gate."""
     t, f, w = points[:, :3].T
-    cells = intervals(t, settings.hop_s)
-    observed = sum(right - left for left, right in cells)
-    span = t[-1] - t[0] + settings.hop_s
+    cells, observed, independent = support(points,settings)
+    span = cells[-1][1]-cells[0][0]
     sigma = uncertainty(points, settings)
     smooth = ndimage.median_filter(f, size=5, mode="nearest")
     dt = np.diff(t)
@@ -84,50 +167,56 @@ def motion(points, settings):
     excursion = float(np.quantile(smooth, .95) - np.quantile(smooth, .05))
     required = max(settings.min_drop_hz, float(np.median(f)) * settings.min_fractional_drop, 4 * sigma)
     moving = valid & (np.abs(slopes) > max(.05, excursion / max(span, 1) * .2))
-    moving_fraction = float(np.sum(dt[moving]) / max(np.sum(dt[valid]), settings.hop_s))
+    hops=points[:,6] if points.shape[1]>6 else np.full(len(points),settings.hop_s)
+    observed_steps=np.minimum(dt,np.minimum(hops[:-1],hops[1:]))
+    moving_fraction=float(np.sum(observed_steps[moving])/max(np.sum(observed_steps[valid]),float(np.min(hops))))
     # Local prediction on actual timestamps, with uncertainty in Hz and slope.
     errors = []
     for i in range(2, len(t)):
         if dt[i - 1] > settings.max_gap_s:
             continue
-        first = max(0, i - 5)
-        local_dt = np.diff(t[first:i])
-        local_good = local_dt <= settings.max_gap_s
-        rates = np.diff(f[first:i]) / local_dt
-        if not np.any(local_good):
-            continue
-        rate = float(np.median(rates[local_good]))
-        tolerance = 3 * sigma + max(.5, abs(rate) * .5) * dt[i - 1]
-        errors.append(abs(f[i] - f[i - 1] - rate * dt[i - 1]) / tolerance)
+        predicted, tolerance = forecast(points[:i], t[i], settings, next_sigma=float(points[i,4]) if points.shape[1]>4 else None)
+        errors.append(abs(f[i]-predicted)/tolerance)
     discontinuity = float(np.quantile(errors, .95)) if errors else 0.0
     signs = np.sign(slopes[moving])
     # A turn requires a sustained resolved leg; repeated reversals are modulation
     # or unresolved wandering, not a compulsory descending-flight template.
     runs = []
-    for sign, duration, is_observed in zip(np.sign(slopes), dt, valid):
+    for sign, duration, is_observed, displacement in zip(np.sign(slopes), observed_steps, valid, np.diff(smooth)):
         if not is_observed or abs(sign) == 0:
             continue
         if runs and runs[-1][0] == sign:
-            runs[-1][1] += min(duration, settings.hop_s)
+            runs[-1][1] += duration
+            runs[-1][2] += abs(displacement)
         else:
-            runs.append([sign, min(duration, settings.hop_s)])
-    sustained = [sign for sign, duration in runs if duration >= max(1.5, span * .08)]
+            runs.append([sign, duration, abs(displacement)])
+    sustained = [sign for sign, duration, displacement in runs
+                 if duration >= max(1.5, observed * .08) and displacement >= max(2*sigma, .15*excursion)]
     turns = sum(a != b for a, b in zip(sustained, sustained[1:]))
     total_variation = float(np.sum(np.abs(np.diff(smooth))[valid]))
     variation_ratio = total_variation / max(excursion, sigma)
     direction = "stationary"
     if len(signs):
         direction = "turning" if turns else ("rising" if np.median(signs) > 0 else "falling")
-    metrics = dict(observed_duration_s=float(observed), span_s=float(span), support_fraction=float(observed / span),
+    metrics = dict(observed_duration_s=float(observed), independent_windows=independent, span_s=float(span), support_fraction=float(observed / span),
                    frequency_excursion_hz=excursion, required_excursion_hz=float(required),
                    frequency_uncertainty_hz=sigma, moving_fraction=moving_fraction,
                    prediction_error_q95=discontinuity, sustained_turns=int(turns),
                    variation_ratio=float(variation_ratio), median_contrast=float(np.median(w)), direction=direction)
+    shape_residual,shape_direction=shape_consistency(points,settings)
+    metrics.update(shape_residual_q90=shape_residual,shape_direction=shape_direction)
     checks = [(excursion >= required, "unresolved_frequency_motion", excursion, required, ">="),
               (moving_fraction >= .35, "insufficient_distributed_motion", moving_fraction, .35, ">="),
               (discontinuity <= 1, "discontinuous_motion", discontinuity, 1, "<="),
+              (shape_residual<=2.,"incoherent_frequency_shape",shape_residual,2.,"<="),
               (turns <= 1, "repeated_modulation", turns, 1, "<="),
               (variation_ratio <= 2.8, "wandering_or_modulation", variation_ratio, 2.8, "<=")]
+    if points.shape[1]>5:
+        prominence=float(np.median(points[:,5]))
+        tonal_support=float(np.mean(points[:,5]>=3.))
+        metrics.update(median_spectral_prominence_db=prominence,tonal_support_fraction=tonal_support)
+        checks.extend([(prominence>=4.,'weak_tonal_concentration',prominence,4.,'>='),
+                       (tonal_support>=.6,'insufficient_tonal_support',tonal_support,.6,'>=')])
     reasons = [dict(reason=name, measured=float(value), threshold=float(limit), comparison=op)
                for passed, name, value, limit, op in checks if not passed]
     return metrics, reasons
@@ -140,11 +229,18 @@ class Associations:
         self.decisions = []
         self.decision_counts = Counter()
         self.trace_limit = settings.max_diagnostic_traces
+        self.refits = 0
+        self.refit_limit = settings.max_joint_refits
 
     def charge(self):
         self.count += 1
         if self.count > self.limit:
             raise DiscoveryError("association_budget_exceeded", f"Association work exceeded {self.limit} pairs")
+
+    def refit(self):
+        self.refits += 1
+        if self.refits > self.refit_limit:
+            raise DiscoveryError("joint_refit_budget_exceeded",f"Joint refits exceeded {self.refit_limit}")
 
     def record(self, kind, left, right, **evidence):
         self.decision_counts[kind] += 1
@@ -161,82 +257,245 @@ def combine(a, b):
 
 
 def deduplicate(ridges, settings, work):
-    result = []
-    for ridge in sorted(ridges, key=key):
-        for i, previous in enumerate(result):
-            if previous.points[-1, 0] < ridge.points[0, 0]:
-                continue
-            # Tracks measured in the same chunk can be near-unison components.
-            if {x.split(":")[0] for x in ridge.origins} & {x.split(":")[0] for x in previous.origins}:
-                continue
-            if abs(np.median(ridge.points[:, 1]) - np.median(previous.points[:, 1])) > .2 * np.median(ridge.points[:, 1]):
-                continue
+    """Reconcile reused peaks via a sparse active observation index.
+
+    Four identical measured peaks are necessary, so unrelated overlapping tracks
+    need not be compared. Conflicting shared-time observations remain alternatives.
+    """
+    result=[];ends=[];index=defaultdict(set);membership={};live=set()
+    def peaks(points):
+        return {(round(float(t),7),round(float(f),6)) for t,f in points[:,:2]}
+    def register(i):
+        membership[i]=peaks(result[i].points)
+        for peak in membership[i]:index[peak].add(i)
+        live.add(i);heapq.heappush(ends,(float(result[i].points[-1,0]),i))
+    def unregister(i):
+        for peak in membership.pop(i,()):
+            index[peak].discard(i)
+            if not index[peak]:del index[peak]
+        live.discard(i)
+    for ridge in sorted(ridges,key=key):
+        first=float(ridge.points[0,0])
+        while ends and ends[0][0]<first:
+            end,i=heapq.heappop(ends)
+            if i in live and end==result[i].points[-1,0]:unregister(i)
+        candidates=Counter(i for peak in peaks(ridge.points) for i in index.get(peak,()))
+        combined=False
+        for i in sorted(i for i,count in candidates.items() if count>=4):
+            previous=result[i]
             work.charge()
-            shared = aligned(ridge.points, previous.points, settings)
-            if shared is None or len(shared[0]) < 8:
-                continue
-            residual = float(np.quantile(np.abs(shared[1] - shared[2]), .95))
-            tolerance = .6 / settings.window_s
-            # Whole overlap agreement prevents reconciling paths that branch.
-            if residual <= tolerance:
-                work.record("duplicate_chunk_measurement", ridge, previous, residual_q95_hz=residual, threshold_hz=tolerance)
-                result[i] = combine(previous, ridge)
-                break
-        else:
-            result.append(ridge)
-    return sorted(result, key=key)
+            common,li,ri=np.intersect1d(ridge.points[:,0],previous.points[:,0],return_indices=True)
+            differences=np.abs(ridge.points[li,1]-previous.points[ri,1])
+            if ridge.points.shape[1]>7 and previous.points.shape[1]>7:
+                limits=.6*np.maximum(1/ridge.points[li,7],1/previous.points[ri,7])
+            else:limits=np.full(len(common),.6/settings.window_s)
+            if np.sum(differences<=1e-6)<4 or np.any(differences>limits):continue
+            work.record('duplicate_measurement',ridge,previous,residual_max_hz=float(np.max(differences)),
+                        threshold_hz=float(np.max(limits)),shared_samples=len(common))
+            unregister(i);result[i]=combine(previous,ridge);register(i)
+            combined=True
+            break
+        if not combined:
+            result.append(ridge);register(len(result)-1)
+    return sorted(result,key=key)
 
 
 def stitch(ridges, settings, work):
+    """Score sparse continuations, then reconsider compatible chain links twice.
+
+    Edges are proposals until the joined observations pass continuity. Joint
+    fits are cached by member set; an unchanged rejected fit is never retried.
+    Adjacent observations can be a continuation, not only large missing gaps.
+    """
     ridges = sorted(ridges, key=key)
-    incoming, outgoing = [[] for _ in ridges], [[] for _ in ridges]
-    for i, left in enumerate(ridges):
-        a = left.points
-        for j in range(i + 1, len(ridges)):
-            right, b = ridges[j], ridges[j].points
-            gap = b[0, 0] - a[-1, 0]
-            if b[0, 0] > a[-1, 0] + settings.max_fragment_gap_s:
-                break
-            if gap <= settings.hop_s * 1.1:
+    starts = [r.points[0,0] for r in ridges]
+    edges = []
+    def reversed_points(p):
+        q=p[::-1].copy();q[:,0]=p[-1,0]-q[:,0];return q
+    def link_score(left,right):
+        a,b=left.points,right.points
+        gap=float(b[0,0]-a[-1,0])
+        if not 0 < gap <= settings.max_fragment_gap_s:
+            return None
+        observed_support=support(np.concatenate((a,b)),settings)[1]
+        predicted,tolerance=forecast(a,b[0,0],settings)
+        rev=reversed_points(b)
+        backward,back_tolerance=forecast(rev,rev[-1,0]+gap,settings)
+        forward_error=abs(b[0,1]-predicted)/tolerance
+        backward_error=abs(a[-1,1]-backward)/back_tolerance
+        gap_fraction=gap/(observed_support+gap)
+        cost=float(np.sqrt((forward_error**2+backward_error**2)/2)+gap_fraction+(1. if gap_fraction>1-settings.min_support else 0.))
+        if max(forward_error,backward_error)>3. or cost>2.:
+            return None
+        return cost
+    for i,left in enumerate(ridges):
+        a=left.points
+        first=bisect_right(starts,float(a[-1,0]))
+        last=bisect_right(starts,float(a[-1,0]+settings.max_fragment_gap_s))
+        left_sigma=uncertainty(a,settings)
+        for j in range(first,last):
+            b=ridges[j].points
+            gap=b[0,0]-a[-1,0]
+            # Cheap frequency/time neighbourhood before scoring/model work.
+            if abs(b[0,1]-a[-1,1])>max(8.,.08*a[-1,1])*gap+3*left_sigma:
                 continue
-            if abs(b[0, 1] - a[-1, 1]) > .3 * a[-1, 1]:
-                continue
+            predicted,tolerance=forecast(a,b[0,0],settings)
+            if abs(b[0,1]-predicted)>3*tolerance:continue
             work.charge()
-            if len(a) < 4 or len(b) < 4:
+            score=link_score(left,ridges[j])
+            if score is not None:
+                edges.append((score,i,j))
+    edges.sort()
+    by_out,by_in={},{}
+    for score,i,j in edges:
+        by_out.setdefault(i,[]).append((i,j))
+        by_in.setdefault(j,[]).append((i,j))
+    model_cache={}
+    chain_cache=OrderedDict()
+    cache_bytes=0
+    cache_limit=32*1024**2
+    def chain(ids):
+        nonlocal cache_bytes
+        if len(ids)==1:return ridges[ids[0]]
+        if ids in chain_cache:
+            chain_cache.move_to_end(ids)
+            return chain_cache[ids]
+        joined=ridges[ids[0]]
+        for member in ids[1:]:joined=combine(joined,ridges[member])
+        size=joined.points.nbytes+1024
+        if size<=cache_limit:
+            while cache_bytes+size>cache_limit:
+                _,removed=chain_cache.popitem(last=False)
+                cache_bytes-=removed.points.nbytes+1024
+            chain_cache[ids]=joined
+            cache_bytes+=size
+            work.decision_counts['peak_stitch_cache_bytes']=max(work.decision_counts['peak_stitch_cache_bytes'],cache_bytes)
+        return joined
+    score_cache={}
+    def score_ids(a,b):
+        cache_key=(a,b)
+        if cache_key not in score_cache:
+            work.charge()
+            score_cache[cache_key]=link_score(chain(a),chain(b))
+        return score_cache[cache_key]
+    previous=set()
+    contexts={i:((i,),(i,)) for i in range(len(ridges))}
+    # Each sweep starts from the original fragments. Thus a selected edge can
+    # be retracted, rather than becoming irreversible evidence for the next.
+    for attempt in range(2):
+        ranked=[]
+        for initial,i,j in edges:
+            score=score_ids(contexts[i][0],contexts[j][1])
+            if score is not None:ranked.append((score,i,j))
+        ranked.sort()
+        costs={(i,j):score for score,i,j in ranked}
+        owners={i:(i,) for i in range(len(ridges))}
+        chosen=set()
+        for score,i,j in ranked:
+            left_id,right_id=owners[i],owners[j]
+            if score>1. or left_id==right_id or left_id[-1]!=i or right_id[0]!=j:
                 continue
-            tail, head = a[a[:, 0] >= a[-1, 0] - 4], b[b[:, 0] <= b[0, 0] + 4]
-            if len(tail) < 3 or len(head) < 3:
+            competitors=[]
+            for oi,oj in set(by_out.get(i,[])+by_in.get(j,[]))-{(i,j)}:
+                a_id,b_id=owners[oi],owners[oj]
+                if a_id!=b_id and a_id[-1]==oi and b_id[0]==oj and (oi,oj) in costs:
+                    competitors.append(costs[oi,oj])
+            if competitors and min(competitors)-score<.1:
+                if attempt==1:
+                    work.record('ambiguous_continuation',ridges[i],ridges[j],score=score,alternative_score=float(min(competitors)))
                 continue
-            sa = float(np.polyfit(tail[:, 0] - tail[-1, 0], tail[:, 1], 1)[0])
-            sb = float(np.polyfit(head[:, 0] - head[0, 0], head[:, 1], 1)[0])
-            sigma = uncertainty(a, settings) + uncertainty(b, settings)
-            tolerance = 2 * sigma + .25 * min(abs(sa), abs(sb)) * gap
-            error = max(abs(b[0, 1] - a[-1, 1] - sa * gap), abs(b[0, 1] - a[-1, 1] - sb * gap))
-            # Both observed legs must move in the same direction. A turn in an
-            # unobserved gap is deliberately unresolved.
-            support = sum(y - x for x, y in intervals(np.r_[a[:, 0], b[:, 0]], settings.hop_s))
-            if (sa * sb <= 0 or min(abs(sa), abs(sb)) < .1 or
-                max(abs(sa), abs(sb)) > 3 * min(abs(sa), abs(sb)) or
-                gap > .35 * support or error > tolerance):
+            joined_id=left_id+right_id
+            if len(joined_id)>settings.max_stitch_fragments:
+                work.record('stitch_fragment_limit',ridges[i],ridges[j],limit=settings.max_stitch_fragments)
                 continue
-            outgoing[i].append(j)
-            incoming[j].append(i)
-            work.record("continuation_candidate", left, right, gap_s=float(gap), prediction_error_hz=float(error), threshold_hz=float(tolerance))
-    following = {i: js[0] for i, js in enumerate(outgoing) if len(js) == 1 and len(incoming[js[0]]) == 1}
-    for i, js in enumerate(outgoing):
-        for j in js:
-            work.record("stitch" if following.get(i) == j else "ambiguous_continuation", ridges[i], ridges[j])
-    consumed, result = set(), []
-    for i, ridge in enumerate(ridges):
-        if i in consumed:
-            continue
-        current, joined = i, ridge
-        while current in following:
-            current = following[current]
-            joined = combine(joined, ridges[current])
-            consumed.add(current)
-        result.append(joined)
-    return result
+            if joined_id not in model_cache:
+                work.charge()
+                work.refit()
+                joined=chain(joined_id)
+                metrics,reasons=motion(joined.points,settings)
+                rejected=[r for r in reasons if r['reason'] in ('discontinuous_motion','wandering_or_modulation','repeated_modulation','incoherent_frequency_shape')]
+                if metrics['span_s']>=settings.min_duration_s and metrics['moving_fraction']<.2:
+                    rejected.append(dict(reason='stationary_switch',measured=metrics['moving_fraction'],threshold=.2))
+                if metrics['span_s']>=settings.brief_min_observed_s and metrics['support_fraction']<settings.min_support:
+                    rejected.append(dict(reason='missing_support',measured=metrics['support_fraction'],threshold=settings.min_support))
+                model_cache[joined_id]=not rejected
+            if not model_cache[joined_id]:continue
+            for member in joined_id:owners[member]=joined_id
+            chosen.add((i,j))
+        for i,j in previous-chosen:
+            work.record('stitch_retracted',ridges[i],ridges[j],reason='later_context_changed_link_selection')
+        next_contexts={}
+        for ids in set(owners.values()):
+            for position,member in enumerate(ids):
+                next_contexts[member]=(ids[:position+1],ids[position:])
+        if attempt and chosen==previous:break
+        previous=chosen;contexts=next_contexts
+    for i,j in sorted(chosen):
+        work.record('stitch',ridges[i],ridges[j],score=float(costs[i,j]),gap_s=float(ridges[j].points[0,0]-ridges[i].points[-1,0]))
+    work.decision_counts['stitch_candidate_pairs']+=len(edges)
+    work.decision_counts['stitch_score_evaluations']+=len(score_cache)
+    work.decision_counts['stitch_joint_refits']+=len(model_cache)
+    work.decision_counts['stitch_sweeps']+=attempt+1
+    return sorted([chain(ids) for ids in set(owners.values())],key=key)
+
+
+def recurrent_context(points, context, settings, work):
+    """Find repeated, time-regular frequency/envelope shapes in actual context.
+
+    This is a modulation diagnostic, not source identification. At least three
+    non-overlapping occurrences are needed; a single turn is insufficient.
+    """
+    t=points[:,0];duration=float(t[-1]-t[0])
+    if duration<=0 or points.shape[1]<4:return None
+    sigma=uncertainty(points,settings)
+    excursion=float(np.ptp(points[:,1]))
+    if excursion<4*sigma:return None
+    def vector(p):
+        grid=np.linspace(p[0,0],p[-1,0],16)
+        right=np.clip(np.searchsorted(p[:,0],grid),0,len(p)-1);left=np.maximum(0,right-1)
+        valid=(np.abs(p[right,0]-grid)<1e-7)|(p[right,0]-p[left,0]<=settings.max_gap_s)
+        if np.sum(valid)<12:return None
+        return np.interp(grid,p[:,0],p[:,1]),np.interp(grid,p[:,0],p[:,3])
+    target=vector(points)
+    if target is None:return None
+    freq,amp=target
+    matches=[]
+    for ridge in context:
+        q=ridge.points
+        if len(q)<8 or q.shape[1]<4:continue
+        if not(q[-1,0]<t[0] or q[0,0]>t[-1]):continue
+        qduration=float(q[-1,0]-q[0,0])
+        if not .75*duration<=qduration<=1.33*duration:continue
+        if abs(np.median(q[:,1])-np.median(points[:,1]))>max(2*sigma,.15*excursion):continue
+        if not .75*excursion<=np.ptp(q[:,1])<=1.33*excursion:continue
+        work.charge()
+        result=vector(q)
+        if result is None:continue
+        qf,qa=result
+        for mirrored in (False,True):
+            f,a=(qf[::-1],qa[::-1]) if mirrored else (qf,qa)
+            if np.std(f)==0 or np.corrcoef(freq,f)[0,1]<.9:continue
+            if np.quantile(abs(freq-f),.9)>2*(sigma+uncertainty(q,settings)):continue
+            constant=max(np.std(amp),np.std(a))<1.5 and abs(np.median(amp)-np.median(a))<3.
+            envelope=min(np.std(amp),np.std(a))>=1. and np.corrcoef(amp,a)[0,1]>=.8
+            if not(constant or envelope):continue
+            matches.append((float(q[0,0]),float(q[-1,0]),mirrored,list(ridge.origins)))
+            break
+    # Collapse alternative associations/profiles of the same occurrence.
+    occurrences=[(float(t[0]),float(t[-1]),False,[])]
+    for item in sorted(matches):
+        if not any(max(a,item[0])<min(b,item[1]) for a,b,_,_ in occurrences):occurrences.append(item)
+    occurrences.sort()
+    if len(occurrences)<3:return None
+    index=next(i for i,o in enumerate(occurrences) if o[0]==float(t[0]) and o[1]==float(t[-1]))
+    for start in range(max(0,index-2),min(index+1,len(occurrences)-2)):
+        chosen=occurrences[start:start+3]
+        gaps=np.diff([o[0] for o in chosen])
+        regularity=float(np.std(gaps)/max(np.mean(gaps),settings.hop_s))
+        if regularity<=.15:
+            return dict(occurrences=len(occurrences),spacing_s=float(np.mean(gaps)),spacing_cv=regularity,
+                        intervals_s=[[o[0],o[1]] for o in chosen],scope='recurrent frequency modulation; physical source unresolved')
+    return None
 
 
 def family(scales, tolerance=.006):
@@ -259,18 +518,29 @@ def related(a, b, settings):
     if shared is None or len(shared[0]) < 8:
         return None
     t, f, g = shared
-    support = len(t) * settings.hop_s
-    if support < .6 * min(len(a), len(b)) * settings.hop_s:
-        return None
+    cells_a,observed_a,_=support(a,settings)
+    cells_b,observed_b,_=support(b,settings)
+    i=j=0;shared_duration=0.
+    while i<len(cells_a) and j<len(cells_b):
+        shared_duration+=max(0.,min(cells_a[i][1],cells_b[j][1])-max(cells_a[i][0],cells_b[j][0]))
+        if cells_a[i][1]<cells_b[j][1]:i+=1
+        else:j+=1
+    if shared_duration<.6*min(observed_a,observed_b):return None
     scale = float(np.exp(np.median(np.log(g / f))))
     sigma = uncertainty(b, settings) + scale * uncertainty(a, settings)
     error = float(np.quantile(np.abs(g - scale * f), .9))
     # Uncertainty cannot license an arbitrary ratio fit to unresolved motion.
     excursion = min(float(np.ptp(f)) * scale, float(np.ptp(g)))
-    if excursion < max(6 * sigma, .03 * np.median(g)) or error > min(2 * sigma, .004 * np.median(g)):
+    resolved = excursion >= max(6*sigma,.03*np.median(g))
+    threshold = min(2*sigma,.15*excursion)
+    if excursion < max(3*sigma,.015*np.median(g)) or error > threshold:
         return None
-    corr = float(np.corrcoef(f, g)[0, 1]) if np.std(f) > 0 and np.std(g) > 0 else 0.0
-    if not np.isfinite(corr) or corr < .96:
+    var_f,var_g=float(np.var(f)),float(np.var(g))
+    corr=float(np.corrcoef(f,g)[0,1]) if var_f>0 and var_g>0 else 0.
+    sigma_f,sigma_g=uncertainty(a,settings),uncertainty(b,settings)
+    reliability=max(0.,1-sigma_f**2/max(var_f,1e-12))*max(0.,1-sigma_g**2/max(var_g,1e-12))
+    correlation_limit=max(.75,.96*np.sqrt(reliability))
+    if not np.isfinite(corr) or corr<correlation_limit:
         return None
     harmonic = family([1, scale])
     envelope = None
@@ -283,9 +553,9 @@ def related(a, b, settings):
     # Contradictory measured envelopes block even a convenient integer ratio.
     if envelope is not None and np.isfinite(envelope) and envelope < -.25:
         return None
-    return dict(scale=scale, residual_q90_hz=error, threshold_hz=float(min(2 * sigma, .004 * np.median(g))),
-                frequency_correlation=corr, envelope_correlation=envelope,
-                shared_observations=int(len(t)), integer_orders=harmonic)
+    return dict(scale=scale, residual_q90_hz=error, threshold_hz=float(threshold), evidence_strength="resolved_motion" if resolved else "partial_motion",
+                frequency_correlation=corr, correlation_limit=float(correlation_limit), envelope_correlation=envelope,
+                shared_observations=int(len(t)), shared_observed_s=float(shared_duration), integer_orders=harmonic)
 
 
 def reconcile(ridges, settings, work):
@@ -307,8 +577,17 @@ def reconcile(ridges, settings, work):
             evidence = related(a.points, b.points, settings)
             if evidence:
                 edges[i, j] = evidence
+    fit_cache = {}
     def fit(indices):
+        key = tuple(indices)
+        if key in fit_cache:
+            return fit_cache[key]
+        result = fit_uncached(indices)
+        fit_cache[key] = result
+        return result
+    def fit_uncached(indices):
         work.charge()
+        work.refit()
         if len(indices) > settings.max_episode_components:
             return None
         positions = {x:i for i,x in enumerate(indices)}
@@ -349,8 +628,7 @@ def reconcile(ridges, settings, work):
     fitted = {frozenset(g):dict(scales=[1.],checked_overlap_pairs=0,worst_residual_fraction_of_limit=None,
                                       min_resolved_motion_witnesses=0) for g in groups}
     ordered = sorted(edges.items(),key=lambda item:(item[1]["residual_q90_hz"]/item[1]["threshold_hz"],item[0]))
-    changed = True
-    while changed:
+    for attempt in range(2):
         changed = False
         for (i,j),evidence in ordered:
             left, right = owners[i], owners[j]
@@ -366,6 +644,9 @@ def reconcile(ridges, settings, work):
             groups.remove(right)
             fitted[frozenset(left)] = scales
             changed = True
+        if not changed:
+            break
+    work.decision_counts["episode_joint_refits"] += len(fit_cache)
     for (i,j),evidence in ordered:
         if owners[i] is not owners[j]:
             work.record("unresolved_episode_relation",ridges[i],ridges[j],
