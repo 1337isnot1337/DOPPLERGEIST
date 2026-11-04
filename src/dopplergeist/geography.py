@@ -48,6 +48,14 @@ BKG_SOURCES_URL = "https://sgx.geodatenzentrum.de/web_public/gdz/datenquellen/da
 _MAX_BOUNDARY_BYTES = 8 * 1024 * 1024
 
 
+class EmptySearchArea(ValueError):
+    """A selected country area has no land or no eligible coarse receivers."""
+
+    def __init__(self, reason_code, message):
+        super().__init__(message)
+        self.reason_code = reason_code
+
+
 def profile_for_search(search=None):
     """Resolve one supported profile, rejecting contradictory declarations."""
     if search is None:
@@ -133,6 +141,73 @@ class ReceiverMask:
         import shapely
         x, y = self._to_native.transform(lon, lat)
         return shapely.intersects_xy(self._geometry, x, y)
+
+    def preflight_grid(self, bounds_wsen, spacing_m, crs, *, max_points=65536):
+        """Reject empty selections before flight acquisition, with bounded work.
+
+        True means an actual coarse-grid receiver was found. None means the
+        bounded check was inconclusive; it must not be called an empty area.
+        Small grids are examined completely. Large grids probe near interior
+        points of the actual clipped land components, without enumerating the
+        national grid. Every probe uses the production grid/mask predicate.
+        """
+        from pyproj import Transformer
+        from shapely.geometry import box
+        from .tiled_search import _grid_extent, _tile_coordinates
+
+        if type(max_points) is not int or max_points < 1:
+            raise ValueError("Receiver preflight point limit must be a positive integer")
+        if not math.isfinite(spacing_m) or spacing_m <= 0:
+            raise ValueError("Receiver grid spacing must be finite and positive")
+        west, south, east, north = bounds_wsen
+        left, bottom, right, top = self._to_native.transform_bounds(*bounds_wsen, densify_pts=101)
+        # Within the DE profile (5.5--15.5 E, 47--55.2 N), UTM 32N northing
+        # along a latitude edge is smallest nearest the 9 E central meridian.
+        # Include that interior extremum explicitly; other edge extrema are
+        # at corners. Do not rely on densification happening to sample 9 E.
+        meridian = max(west, min(east, 9.0))
+        _, northings = self._to_native.transform([meridian, meridian], [south, north])
+        bottom, top = min(bottom, *northings), max(top, *northings)
+        # Ten metres is a numerical allowance for this fixed projection and
+        # region, not a general reprojection error bound. Only the exclusion
+        # shortcut uses this expansion; actual grid membership remains exact.
+        envelope = box(left - 10.0, bottom - 10.0, right + 10.0, top + 10.0)
+        if not self._geometry.intersects(envelope):
+            raise EmptySearchArea("empty_search_area",
+                "The selected rectangle contains no German land in the BKG receiver boundary. "
+                "Choose an area that includes a supported receiver location.")
+
+        xmin, ymin, xmax, ymax = _grid_extent(bounds_wsen, spacing_m, crs)
+        total = (xmax - xmin + 1) * (ymax - ymin + 1)
+        if total <= max_points:
+            points = _tile_coordinates((xmin, ymin, xmax + 1, ymax + 1), spacing_m,
+                                       bounds_wsen, crs, self)
+            if len(points):
+                return True
+            raise EmptySearchArea("empty_search_grid",
+                "The selected rectangle contains no German receiver points on the configured "
+                f"{spacing_m:g} m coarse grid. Choose a wider area containing German land, "
+                "or ask the operator to use a smaller coarse-grid spacing.")
+
+        overlap = self._geometry.intersection(envelope)
+        native_to_grid = Transformer.from_crs("EPSG:25832", crs, always_xy=True)
+        parts = (overlap, *getattr(overlap, "geoms", ()))
+        checked = 0
+        for part in parts:
+            if part.is_empty:
+                continue
+            interior = part.representative_point()
+            x, y = native_to_grid.transform(interior.x, interior.y)
+            ix, iy = math.floor(x / spacing_m), math.floor(y / spacing_m)
+            cells = (max(xmin, ix - 1), max(ymin, iy - 1),
+                     min(xmax + 1, ix + 2), min(ymax + 1, iy + 2))
+            count = max(0, cells[2] - cells[0]) * max(0, cells[3] - cells[1])
+            if checked + count > max_points:
+                break
+            checked += count
+            if count and len(_tile_coordinates(cells, spacing_m, bounds_wsen, crs, self)):
+                return True
+        return None
 
     def boundary_limited(self, lon, lat, radius_m):
         """Conservatively flag a local sensitivity search that meets the mask.

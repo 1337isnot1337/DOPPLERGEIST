@@ -9,6 +9,7 @@ from pathlib import Path
 import time
 
 from .contracts import utc_timestamp, validate_candidate, validate_event, validate_request
+from .geography import EmptySearchArea
 from .jobs import write_json
 
 
@@ -153,6 +154,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
             request, recording, events, output, config, report_search_progress)
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic matching/data components are not installed: {exc}")
+    except EmptySearchArea as exc:
+        state["coverage"]["limitations"].append(str(exc))
+        return finish("needs_input", exc.reason_code, str(exc), required_fields=["search.bounds_wsen"])
     except MissingData as exc:
         state["coverage"]["limitations"].append(str(exc))
         return finish("inconclusive", "data_unavailable", str(exc))
@@ -258,6 +262,15 @@ def _search(request, recording, events, output, config, search_progress):
     profile = profile_for_search(request["search"])
     receiver_mask = receiver_mask_for_search(request["search"],
         cache_root=config.get("cache_root", output / "cache"), offline=config.get("offline", True))
+    budget = None
+    if receiver_mask is not None:
+        budget = SearchBudget(**config.get("search_budget", {}))
+        if receiver_mask.preflight_grid(request["search"].get("bounds_wsen", profile.bounds_wsen),
+                                        budget.spacing_m, profile.crs) is not True:
+            raise MissingData("The bounded receiver-grid check could not establish a German receiver "
+                "point in this selection. No flight data were acquired. Choose a smaller area, "
+                "or ask the operator to inspect the search area and coarse-grid spacing; "
+                "this does not establish that the receiver area is empty.")
     if ground.get("rasters") or "constant_m" in ground:
         # Explicit offline/test terrain override; normal provider acquisition stays
         # in the data owner's adapter. Never infer flight coverage from this model.
@@ -286,7 +299,7 @@ def _search(request, recording, events, output, config, search_progress):
         scoring["legacy_first_batch"] = True
     geographic_options = {"receiver_mask": receiver_mask} if receiver_mask is not None else {}
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
-                             bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
+                             bounds=bounds, budget=budget or SearchBudget(**config.get("search_budget", {})),
                              scoring=scoring, filters=filters, input_hashes=hashes, crs=profile.crs,
                              workers=config.get("search_workers"),
                              search_progress=search_progress, **geographic_options)

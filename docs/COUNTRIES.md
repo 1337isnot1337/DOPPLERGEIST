@@ -70,6 +70,14 @@ proposal never reaches terrain sampling or acoustic scoring. A valid seed remain
 available when optimization proposes an invalid location. A refinement whose
 explored radius meets the country boundary is marked boundary-limited.
 
+Before automatic flight acquisition, a bounded geographic check establishes at
+least one eligible coarse-grid receiver. Foreign-only selections and small land
+selections containing no coarse-grid point return `needs_input` with a specific
+area or grid-resolution explanation. An inconclusive bounded check stops with an
+explicit limitation; it does not report an empty area or a completed flight search.
+The full-country check uses land-component probes rather than enumerating the
+national grid.
+
 Aircraft are not country-masked. Automatic acquisition retains full historical
 trajectories, and tile queries include the existing audible-range border margin.
 Archive absence or incomplete trajectory/model support remains visible.
@@ -88,7 +96,7 @@ python scripts/check_country_profiles.py --cache-root /tmp/dopplergeist-geograph
 ```
 
 The check uses the actual pinned BKG geometry, named geographic points, country
-boundary grids and worker serialization. It generates no audio or flight tracks.
+boundary grids, empty-area checks and worker serialization. It generates no audio or flight tracks.
 These are software/geography checks, not an acoustic localization benchmark.
 
 ## Boundary license and source

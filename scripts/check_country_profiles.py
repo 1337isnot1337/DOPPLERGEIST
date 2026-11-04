@@ -208,6 +208,59 @@ def check_border_grid(mask, validated):
     print("PASS real border-grid clipping and UTM 32N coordinate agreement: " + "; ".join(summaries))
 
 
+def check_empty_areas(mask, validated):
+    from dopplergeist.geography import EmptySearchArea, profile_for_search
+    from dopplergeist.tiled_search import _grid_extent, _tile_coordinates
+
+    profile = profile_for_search(validated["DE country"]["search"])
+    foreign = (
+        ("Zurich", [8.53, 47.37, 8.55, 47.39]),
+        ("Prague", [14.43, 50.07, 14.45, 50.08]),
+        ("Schaffhausen", [8.63, 47.69, 8.64, 47.70]),
+    )
+    for name, bounds in foreign:
+        try:
+            mask.preflight_grid(bounds, 2000.0, profile.crs)
+        except EmptySearchArea as error:
+            require(error.reason_code == "empty_search_area",
+                    f"{name}: foreign rectangle did not identify an empty country area")
+        else:
+            raise CheckFailure(f"{name}: foreign rectangle passed the receiver preflight")
+
+    # This real Berlin location is on German land, but the sub-metre rectangle
+    # contains no point of the actual 2 km search grid. Check the grid directly
+    # before requiring the distinct coarse-resolution explanation.
+    small_berlin = [13.404999, 52.519999, 13.405001, 52.520001]
+    require(bool(mask.contains(13.4050, 52.5200)), "Berlin land control changed")
+    xmin, ymin, xmax, ymax = _grid_extent(small_berlin, 2000.0, profile.crs)
+    require(len(_tile_coordinates((xmin, ymin, xmax + 1, ymax + 1), 2000.0,
+                                  small_berlin, profile.crs, mask)) == 0,
+            "The Berlin small-area control unexpectedly contains a coarse grid point")
+    try:
+        mask.preflight_grid(small_berlin, 2000.0, profile.crs)
+    except EmptySearchArea as error:
+        require(error.reason_code == "empty_search_grid",
+                "A land selection without coarse receivers must identify the grid limitation")
+    else:
+        raise CheckFailure("A land selection without coarse receivers passed preflight")
+
+    available = (
+        ("Berlin", [13.3, 52.45, 13.5, 52.6], 2000.0),
+        ("Helgoland", [7.87, 54.17, 7.90, 54.19], 250.0),
+        ("Sylt", [8.28, 54.85, 8.31, 54.87], 250.0),
+        ("Buesingen", validated["Germany subset"]["search"]["bounds_wsen"], 1000.0),
+    )
+    for name, bounds, spacing in available:
+        require(mask.preflight_grid(bounds, spacing, profile.crs) is True,
+                f"{name}: real eligible receiver grid was not established")
+    require(mask.preflight_grid(profile.bounds_wsen, 2000.0, profile.crs, max_points=9) is True,
+            "The national preflight must find a receiver within nine grid probes")
+    require(mask.preflight_grid(profile.bounds_wsen, 2000.0, profile.crs, max_points=1) is None,
+            "An exhausted preflight limit must remain undecided, not claim an empty area")
+    print("PASS empty-area preflight: three foreign rectangles rejected; Berlin land/grid "
+          "distinguished; mainland, islands and exclave retained; national check bounded to nine points")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cache-root", required=True, type=Path, help="Existing DOPPLERGEIST data cache")
@@ -217,6 +270,7 @@ def main(argv=None):
         validated = check_contracts()
         mask = check_mask(args.cache_root, args.online, validated)
         check_border_grid(mask, validated)
+        check_empty_areas(mask, validated)
     except (CheckFailure, ImportError, OSError, ValueError, RuntimeError) as error:
         print(f"FAIL country verification: {error}", file=sys.stderr)
         return 1

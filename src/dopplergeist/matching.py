@@ -834,7 +834,11 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
         spatial_boundary = any(min(value-lo, hi-value) <= radius_m * 0.02
                                for value, (lo, hi) in zip(parameters[:2], bounds[:2]))
         if receiver_mask is not None:
-            spatial_boundary |= bool(receiver_mask.boundary_limited(lon, lat, radius_m))
+            # Powell explores a square about the seed. Its diagonal reaches
+            # sqrt(2) times the per-axis radius; checking only the winning point
+            # can miss a country edge that truncated another part of that square.
+            spatial_boundary |= bool(receiver_mask.boundary_limited(
+                candidate["lon"], candidate["lat"], np.sqrt(2.0) * radius_m))
         clock_boundary = bool(not fixed_clock and min(dt-lower, upper-dt) <= (upper-lower)*0.02)
         profiles.append(dict(score, lat=lat, lon=lon, elev_m=elevation,
             recording_start_time_s=float(start + dt), altitude_offset_m=float(offset),
