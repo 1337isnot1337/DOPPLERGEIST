@@ -50,14 +50,47 @@ The output also contains unknown model evaluations: 50 unsupported CPA work
 evaluations, 87 unclassified candidate evaluations and 515 unknown clock trials.
 Completed tiles therefore do not imply complete physical-model assessment.
 
-**Bounds defect:** five Rochester and five east-Texas final rows, including each
-rank-one result, are outside their requested latitude/longitude search boxes.
-The saved coarse and fine tiled rankings for Rochester were within bounds; the
-final refinement/profiling stage allowed points outside. The results are retained
-unaltered and the figure draws the requested box. They must not be represented as
-an exhaustive or strictly bounded ranking until that behavior is corrected. The
-initial Denton run also lacked terrain at one edge; a fresh rerun with both DEM
+**Historical bounds defect:** five Rochester and five east-Texas final rows,
+including each rank-one result, are outside their requested latitude/longitude
+search boxes. These runs used commit `611dca2`, whose finalist refinement could
+leave the requested box. Commit [`ae7721b` (#270)](https://github.com/1337isnot1337/DOPPLERGEIST/commit/ae7721b)
+fixed this by constraining continuous refinement to the geographic bounds; that
+fix is present in current `main`. The saved results remain unaltered and are not
+recomputed here. No result in these three runs lies within 1 km of its publisher
+site, so the bounds fix does not explain or resolve the large location errors.
+The initial Denton run also lacked terrain at one edge; a fresh run with both DEM
 tiles produced the row in the table.
+
+## Post-hoc diagnosis of the three large misses
+
+This section inspects only artifacts from the completed real-recording runs
+above; it does not rerun discovery or localization and does not feed site
+coordinates back into a search.
+
+- **Rochester:** six proposal groups were discovered, but the leading location
+  hypothesis matches only group 6; five groups are unmatched. Its two reported
+  ridge IDs are harmonics within that one group, not two independent flyovers.
+  The finite-search assessment is incomplete, with 515 unknown clock trials and
+  87 unclassified score candidates. One matched flyover cannot locate the
+  recorder, so the `search_incomplete` status is appropriate.
+- **Fort Worth:** the leading hypothesis matches three of five proposal groups;
+  groups 3 and 4 are unmatched. Groups 1 and 2 both map to the same archived
+  aircraft segment, so the three matched groups do not establish three
+  independent flyovers. The source-frequency drift fit reaches its allowed bound
+  for both of those groups, which is why the result is
+  `source_drift_unresolved` even though the finite grid assessment completed.
+- **East Texas:** six proposal groups were discovered, but the leading
+  hypothesis matches only groups 4 and 5; four are unmatched. The saved search
+  has 999,703 unknown clock trials and 31,333 unclassified score candidates, so
+  the assessment is incomplete. Its `search_incomplete` status is appropriate.
+
+Across all three, event groups are acoustic proposals rather than verified
+aircraft identities. The ±20-second recording-start windows were assumptions
+based on filenames, and the archive does not establish complete local receiver
+coverage. These limitations leave plausible tracks and clock/location tradeoffs
+unresolved. The displayed leaders are diagnostic rankings, not supported fixes;
+increasing the refinement budget or removing the bounds would not repair the
+missing independent acoustic evidence.
 
 ## Reproduction
 
