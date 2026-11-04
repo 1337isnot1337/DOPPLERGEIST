@@ -83,6 +83,8 @@ To check progress after the job ID is printed:
 .venv/bin/dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
+The progress percentage is stage-based and can remain unchanged during long tile subdivisions. Recent search-file activity is a liveness clue, not proof that the queue is shrinking or that a location was found.
+
 The default country profile is `US` (contiguous United States); use `--country DE` for Germany or `--country ES` for Spain. Spain uses a broad geographic envelope, so add independently justified `--bounds WEST SOUTH EAST NORTH` for a regional search. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
 
 **Data requirements:** Initial online acquisition may take hours and tens of gigabytes of disk space, depending on the recording time and search region. Downloads and caches are reusable; the application does not enforce an automatic disk-space cap.
