@@ -607,7 +607,9 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                 "Finite ledger contains records without a stage")
         require(not has_bounds or db.execute("SELECT count(*) FROM bounds WHERE stage NOT IN (SELECT name FROM stages)").fetchone()[0] == 0,
                 "Finite ledger contains bounds without a stage")
-        for identity, score in db.execute("SELECT mode_id,MAX(score) FROM records GROUP BY mode_id"):
+        # Checksums cover stage records; an unchecked secondary mode_index can
+        # still omit alternatives while quick_check reports success.
+        for identity, score in db.execute("SELECT mode_id,MAX(score) FROM records NOT INDEXED GROUP BY mode_id"):
             evaluated += 1
             if identity in by_id:
                 originals[identity] = score

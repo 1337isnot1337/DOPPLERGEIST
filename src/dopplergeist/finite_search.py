@@ -280,13 +280,22 @@ class RetentionLedger:
                     total[key] += value
             db.execute("CREATE TEMP TABLE retained_ids(id TEXT PRIMARY KEY)")
             db.executemany("INSERT INTO retained_ids VALUES(?)", [(i,) for i in ids])
-            distinct = "SELECT mode_id,MAX(score) AS score FROM records GROUP BY mode_id"
-            discarded, bound = db.execute(f"SELECT count(*),max(score) FROM ({distinct}) WHERE mode_id NOT IN (SELECT id FROM retained_ids)").fetchone()
-            evaluated = db.execute(f"SELECT count(*) FROM ({distinct})").fetchone()[0]
-            original = {mode_id: score for mode_id, score in db.execute(
-                f"SELECT mode_id,score FROM ({distinct}) WHERE mode_id IN (SELECT id FROM retained_ids)")}
+            # Stage checksums validate records, not the secondary mode_index.
+            # Read the table so index damage cannot hide a competing mode.
+            distinct = "SELECT mode_id,MAX(score) AS score FROM records NOT INDEXED GROUP BY mode_id"
+            # Group once instead of sorting the national ledger three times.
+            # Only retained modes stay in Python; SQLite can spill to disk.
+            retained_ids = set(ids)
+            discarded, bound, evaluated, original = 0, None, 0, {}
+            for mode_id, score in db.execute(distinct):
+                evaluated += 1
+                if mode_id in retained_ids:
+                    original[mode_id] = score
+                else:
+                    discarded += 1
+                    bound = score if bound is None else max(bound, score)
             bounded_count, bounded_rejections, bounded_max = db.execute(
-                "SELECT count(*),coalesce(sum(upper_score IS NULL),0),max(upper_score) FROM bounds").fetchone()
+                "SELECT count(*),coalesce(sum(upper_score IS NULL),0),max(upper_score) FROM bounds NOT INDEXED").fetchone()
             discarded += bounded_count - bounded_rejections
             if bounded_max is not None:
                 bound = bounded_max if bound is None else max(bound, bounded_max)
