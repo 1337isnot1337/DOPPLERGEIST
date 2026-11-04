@@ -92,7 +92,7 @@ def _spectrum(data, sr, start, settings, *, fixed_bands=False):
     f, t, power = signal.spectrogram(data, fs=sr, window="hann", nperseg=n,
                                     noverlap=n - hop, nfft=n, scaling="density")
     if fixed_bands:
-        edges = (0.,400.,1600.,6400.,25600.)
+        edges = (0.,40.,1600.,6400.,25600.)
         upper = next(edge for edge in edges[1:] if edge>=settings.max_frequency_hz)
         keep = f<=min(upper,sr*.48)
     else:
@@ -140,7 +140,7 @@ def _paths(spec, settings):
         # A new frequency band receives its own bounded allocation; it cannot
         # consume the previously scanned band's peak budget.
         selected=[]
-        for low,high in zip((0.,400.,1600.,6400.),(400.,1600.,6400.,25600.)):
+        for low,high in zip((0.,40.,1600.,6400.),(40.,1600.,6400.,25600.)):
             candidates=np.flatnonzero((spec.frequency[peaks]>=low)&(spec.frequency[peaks]<high))
             order=candidates[np.argsort(info["peak_heights"][candidates],kind='stable')[-settings.max_peaks_per_frame:]]
             selected.extend(order.tolist())
@@ -158,7 +158,7 @@ def _paths(spec, settings):
         if settings.window_s>settings.short_window_s:
             raw=np.array([],dtype=int);raw_info={'prominences':np.array([])}
         extras=[]
-        for low,high in zip((0.,400.,1600.,6400.),(400.,1600.,6400.,25600.)):
+        for low,high in zip((0.,40.,1600.,6400.),(40.,1600.,6400.,25600.)):
             candidates=np.flatnonzero((spec.frequency[raw]>=low)&(spec.frequency[raw]<high)&(spec.contrast[raw,column]>=settings.provisional_contrast))
             order=candidates[np.argsort(raw_info['prominences'][candidates],kind='stable')[-3*settings.max_provisional_peaks_per_band:]]
             eligible=[int(raw[i]) for i in order if local_prominence(raw[i])>=settings.provisional_tonal_db and raw[i] not in peaks]
@@ -301,14 +301,14 @@ def _coverage(recording, settings):
                                        float((np.floor(settings.max_frequency_hz * settings.window_s)-1) / settings.window_s)],
                 edge_policy="outermost retained bins support interpolation but cannot be peak centers",
                 minimum_complete_window_s=settings.window_s,
-                method="chunked fixed-band normalization with bounded adaptive short-window analysis", nyquist_guard_fraction=.45,
-                normalization_bands_hz=[[0.,400.],[400.,1600.],[1600.,6400.],[6400.,25600.]],
+                method="chunked fixed-band normalization with bounded short-window analysis", nyquist_guard_fraction=.45,
+                normalization_bands_hz=[[0.,40.],[40.,1600.],[1600.,6400.],[6400.,25600.]],
                 peak_budget_per_band=settings.max_peaks_per_frame,
                 additional_short_tonal_peak_budget_per_band=settings.max_provisional_peaks_per_band,
-                adaptive_short_profile=dict(window_s=settings.short_window_s,hop_s=settings.short_hop_s,
+                short_profile=dict(window_s=settings.short_window_s,hop_s=settings.short_hop_s,
                                            frequency_resolution_hz=1/settings.short_window_s,
                                            minimum_frequency_hz=max(settings.min_frequency_hz,2/settings.short_window_s)),
-                profile_selection="unresolved, resolved-excursion tonal tracks; effective profiles listed per chunk")
+                profile_selection="two resolutions; short primary peak rate matched per second; effective profiles listed per chunk")
 
 
 def _code_identity():
@@ -390,6 +390,12 @@ def _discover(recording, settings, report, detailed):
     for chunk_index, (start, data) in enumerate(recording.iter_chunks(settings.chunk_s, settings.overlap_s)):
         local=[];raw_count=0;profiles=[]
         passes=[settings]
+        if settings.window_s>settings.short_window_s:
+            # Keep the primary candidate rate per second bounded as hops shrink.
+            short_peaks=min(settings.max_peaks_per_frame,max(4,round(settings.max_peaks_per_frame*settings.short_hop_s/settings.hop_s)))
+            passes.append(replace(settings,window_s=settings.short_window_s,hop_s=settings.short_hop_s,
+                                  max_peaks_per_frame=short_peaks,
+                                  min_frequency_hz=max(settings.min_frequency_hz,2/settings.short_window_s)))
         for profile_index,profile in enumerate(passes):
             spec=_spectrum(data,sr,start,profile,fixed_bands=True)
             found=[]
@@ -408,11 +414,6 @@ def _discover(recording, settings, report, detailed):
                         found.append(Ridge(points,(origin,)))
                 found=deduplicate(found,profile,work)
                 found=stitch(found,profile,work)
-                if profile_index==0 and profile.window_s>settings.short_window_s:
-                    unresolved=any(len(r.points)>=4 and np.median(r.points[:,4])>=2/profile.window_s
-                        and np.median(r.points[:,5])>=settings.brief_tonal_db
-                        and np.ptp(r.points[:,1])>=4*np.median(r.points[:,4]) for r in found)
-                    if unresolved:passes.append(replace(settings,window_s=settings.short_window_s,hop_s=settings.short_hop_s,min_frequency_hz=max(settings.min_frequency_hz,2/settings.short_window_s)))
             profiles.append(dict(window_s=profile.window_s,hop_s=profile.hop_s,frequency_range_hz=[profile.min_frequency_hz,profile.max_frequency_hz],provisional_tracks=len(found)))
             for ridge in found:
                 p=ridge.points;_,_,independent=support(p,profile)
@@ -446,7 +447,7 @@ def _discover(recording, settings, report, detailed):
             continue
         metrics, reasons = motion(ridge.points, settings)
         metrics_by_id[identifier("", ridge.points)] = metrics
-        if reasons and not (all(r['reason'] in ('unresolved_frequency_motion','insufficient_distributed_motion') for r in reasons)
+        if reasons and not (all(r['reason'] in ('unresolved_frequency_motion','insufficient_distributed_motion','motion_concentrated_or_unresolved') for r in reasons)
                             and len(ridge.points)>=8 and metrics['frequency_excursion_hz']>=3*metrics['frequency_uncertainty_hz'] and metrics['moving_fraction']>=.1):
             reject(reasons, metrics, ridge.origins)
         else:

@@ -114,3 +114,22 @@ def test_real_pcm_budget_failure_is_not_a_negative_result(tmp_path):
     assert artifact['status'] == 'failed'
     assert artifact['failure']['code'] == 'spectral_budget_exceeded'
     assert artifact['events'] == []
+
+
+def test_deduplication_preserves_the_valid_low_frequency_alternative():
+    data = json.loads((FIXTURES / 'real_episode_conflicts.json').read_text())['reference']
+    good, conflicting = np.array(data['good']), np.array(data['conflicting'])
+    settings = DiscoverySettings()
+    assert not motion(good, settings)[1]
+    work = Associations(settings)
+    result = deduplicate([Ridge(good, ('good',)), Ridge(conflicting, ('conflicting',))], settings, work)
+    assert identifier('', good) in {identifier('', r.points) for r in result}
+    assert len(result) == 2
+    assert work.decision_counts['duplicate_unresolved_interleaving'] == 1
+
+
+def test_observed_pitch_step_is_not_distributed_motion():
+    data = json.loads((FIXTURES / 'real_episode_conflicts.json').read_text())['step']
+    metrics, reasons = motion(np.array(data['points']), DiscoverySettings())
+    assert metrics['resolved_regional_motion_fraction'] < 2/3
+    assert 'motion_concentrated_or_unresolved' in {r['reason'] for r in reasons}

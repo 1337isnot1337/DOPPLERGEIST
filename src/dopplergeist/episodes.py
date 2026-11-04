@@ -167,6 +167,28 @@ def shape_consistency(points,settings):
     return float(np.quantile(np.abs(f-fit)/sigma,.9)),direction
 
 
+def distributed_motion(points,settings,excursion):
+    """Resolved changes across four elapsed-time regions, not frame jitter.
+
+    A step between two stationary tones moves only one of three regional
+    transitions. At least two must exceed independent-window uncertainty.
+    Missing observations do not acquire support by spanning a region.
+    """
+    t=points[:,0];edges=np.linspace(t[0],t[-1]+1e-8,5);regions=[]
+    for first,last in zip(edges,edges[1:]):
+        p=points[(t>=first)&(t<last)]
+        if len(p)<2:
+            regions.append(None);continue
+        _,observed,independent=support(p,settings)
+        if observed<.35*(last-first):regions.append(None);continue
+        sigma=uncertainty(p,settings)/sqrt(max(1.,independent))
+        regions.append((float(np.median(p[:,1])),sigma))
+    resolved=0
+    for a,b in zip(regions,regions[1:]):
+        if a is not None and b is not None and abs(a[0]-b[0])>=max(1.5*sqrt(a[1]**2+b[1]**2),.1*excursion):resolved+=1
+    return resolved/3
+
+
 def motion(points, settings):
     """Evidence and explicit rejection thresholds, independent of duration gate."""
     t, f, w = points[:, :3].T
@@ -217,10 +239,13 @@ def motion(points, settings):
                    frequency_uncertainty_hz=sigma, moving_fraction=moving_fraction,
                    prediction_error_q95=discontinuity, sustained_turns=int(turns),
                    variation_ratio=float(variation_ratio), median_contrast=float(np.median(w)), direction=direction)
+    distributed=distributed_motion(points,settings,excursion)
+    metrics["resolved_regional_motion_fraction"]=distributed
     shape_residual,shape_direction=shape_consistency(points,settings)
     metrics.update(shape_residual_q90=shape_residual,shape_direction=shape_direction)
     checks = [(excursion >= required, "unresolved_frequency_motion", excursion, required, ">="),
               (moving_fraction >= .35, "insufficient_distributed_motion", moving_fraction, .35, ">="),
+              (distributed>=2/3,"motion_concentrated_or_unresolved",distributed,2/3,">="),
               (discontinuity <= 1, "discontinuous_motion", discontinuity, 1, "<="),
               (shape_residual<=2.,"incoherent_frequency_shape",shape_residual,2.,"<="),
               (turns <= 1, "repeated_modulation", turns, 1, "<="),
@@ -270,6 +295,28 @@ def combine(a, b):
     return Ridge(points[np.sort(keep)], tuple(sorted(set(a.origins + b.origins))))
 
 
+def consistent_interleaving(a,b,settings):
+    """Shared peaks cannot license contradictory measurements inside gaps."""
+    for first,second in ((a,b),(b,a)):
+        ix=np.searchsorted(second[:,0],first[:,0])
+        inside=(ix>0)&(ix<len(second))
+        rows=np.flatnonzero(inside)
+        if not len(rows):continue
+        right=ix[rows];left=right-1
+        exact=np.abs(second[right,0]-first[rows,0])<1e-7
+        rows=rows[~exact];right=right[~exact];left=left[~exact]
+        if not len(rows):continue
+        gaps=second[right,0]-second[left,0]
+        if np.any(gaps>settings.max_gap_s):return False
+        predicted=np.interp(first[rows,0],second[:,0],second[:,1])
+        sigma_a=first[rows,4] if first.shape[1]>4 else 1/settings.window_s
+        sigma_l=second[left,4] if second.shape[1]>4 else 1/settings.window_s
+        sigma_r=second[right,4] if second.shape[1]>4 else 1/settings.window_s
+        tolerance=3*np.sqrt(sigma_a**2+sigma_l**2+sigma_r**2)
+        if np.any(np.abs(first[rows,1]-predicted)>tolerance):return False
+    return True
+
+
 def deduplicate(ridges, settings, work):
     """Reconcile reused peaks via a sparse active observation index.
 
@@ -304,6 +351,9 @@ def deduplicate(ridges, settings, work):
                 limits=.6*np.maximum(1/ridge.points[li,7],1/previous.points[ri,7])
             else:limits=np.full(len(common),.6/settings.window_s)
             if np.sum(differences<=1e-6)<4 or np.any(differences>limits):continue
+            if not consistent_interleaving(ridge.points,previous.points,settings):
+                work.record('duplicate_unresolved_interleaving',ridge,previous,reason='conflicting_or_unsupported_gap_observations')
+                continue
             work.record('duplicate_measurement',ridge,previous,residual_max_hz=float(np.max(differences)),
                         threshold_hz=float(np.max(limits)),shared_samples=len(common))
             unregister(i);result[i]=combine(previous,ridge);register(i)
