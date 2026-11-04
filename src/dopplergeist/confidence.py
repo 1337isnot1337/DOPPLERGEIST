@@ -179,11 +179,16 @@ def _candidate_evidence_summary(events, candidate, evidence):
                    if name in fit},
             })
     all_groups = {event.get("harmonic_group_id", event["event_id"]) for event in events}
+    matched_group_count = len(group_flights)
+    total_group_count = len(all_groups)
     return {
         "matched_event_ids": sorted(matched_events),
         "unmatched_event_ids": sorted(set(lookup) - matched_events),
         "matched_group_ids": sorted(group_flights),
         "unmatched_group_ids": sorted(all_groups - set(group_flights)),
+        "matched_group_count": matched_group_count,
+        "total_group_count": total_group_count,
+        "matched_group_fraction": matched_group_count / total_group_count,
         "distinct_flight_segments": len(flights_groups),
         "flight_segments_with_multiple_groups": [
             {"flight_id": flight_id, "group_ids": sorted(group_ids)}
