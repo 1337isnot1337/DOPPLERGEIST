@@ -97,34 +97,48 @@ def aligned(a, b, settings):
     return times, np.interp(times, a[:, 0], a[:, 1]), np.interp(times, b[:, 0], b[:, 1])
 
 
-def forecast(points, time, settings, next_sigma=None):
-    """Local prediction and uncertainty in Hz, using observed elapsed seconds.
+def prediction_model(points, settings):
+    """Sufficient local evidence for repeated endpoint predictions (Hz, seconds)."""
+    tail=points[-8:];last=tail[-1]
+    resolution=1/float(last[7]) if len(last)>7 else 1/settings.window_s
+    measured_sigma=float(last[4]) if len(last)>4 else resolution
+    if len(tail)==1:
+        return float(last[0]),float(last[1]),measured_sigma,0.,0.,0.,max(8.,float(last[1])*.08)
+    rates=[(float(b[1])-float(a[1]))/(float(b[0])-float(a[0])) for a,b in zip(tail,tail[1:])]
+    rate=median(rates)
+    dispersion=1.4826*median(abs(v-rate) for v in rates)
+    scatter=1.4826*median(abs(float(p[1])-float(last[1])-rate*(float(p[0])-float(last[0]))) for p in tail)
+    quality=max(1.,min(12.,float(last[2])))
+    sigma=measured_sigma*sqrt(1+settings.min_contrast/quality)
+    span=max(float(last[6]) if len(last)>6 else settings.hop_s,float(last[0]-tail[0][0]))
+    rate_uncertainty=sqrt(dispersion**2+2*sigma**2/span**2)
+    return float(last[0]),float(last[1]),sigma,rate,scatter,rate_uncertainty,measured_sigma
 
-    Short/noisy histories carry slope uncertainty. Median rate dispersion and
-    observed prediction scatter allow ordinary curvature without a fixed-Hz
-    displacement gate. The same predictor is used by linking and continuity.
+
+def predict(model,time,next_sigma=None):
+    last_time,frequency,sigma,rate,scatter,rate_uncertainty,measurement=model
+    dt=float(time-last_time)
+    if next_sigma is None:next_sigma=measurement if rate_uncertainty else sigma
+    tolerance=measurement*dt if not rate_uncertainty else 3*sqrt(sigma**2+float(next_sigma)**2+scatter**2+(dt*rate_uncertainty)**2)
+    return frequency+rate*dt,float(tolerance)
+
+
+def forecast(points, time, settings, next_sigma=None):
+    """History/measurement uncertainty grows with actual elapsed seconds.
+
+    Linking, continuity and fragment scoring share this predictor. Short or
+    noisy histories carry slope uncertainty; no unit-time displacement is used.
     """
-    tail = points[-8:]
-    last = tail[-1]
-    dt = float(time - last[0])
-    resolution = 1/float(last[7]) if len(last)>7 else 1/settings.window_s
-    measured_sigma = float(last[4]) if len(last)>4 else resolution
-    if next_sigma is None:next_sigma=measured_sigma
-    if len(tail) == 1:
-        return float(last[1]), max(8., float(last[1]) * .08) * dt
-    rates = [(float(b[1]) - float(a[1])) / (float(b[0]) - float(a[0]))
-             for a,b in zip(tail,tail[1:])]
-    rate = median(rates)
-    dispersion = 1.4826 * median(abs(v-rate) for v in rates)
-    scatter = 1.4826 * median(abs(float(p[1])-float(last[1])-rate*(float(p[0])-float(last[0]))) for p in tail)
-    # Contrast is a salience diagnostic, not calibrated SNR. Its bounded factor
-    # expresses weaker measurement information without granting arbitrary jumps.
-    quality = max(1., min(12., float(last[2])))
-    sigma = measured_sigma * sqrt(1 + settings.min_contrast / quality)
-    span = max(float(last[6]) if len(last)>6 else settings.hop_s, float(last[0]-tail[0][0]))
-    rate_uncertainty = sqrt(dispersion**2 + 2*sigma**2/span**2)
-    tolerance = 3*sqrt(sigma**2 + float(next_sigma)**2 + scatter**2 + (dt*rate_uncertainty)**2)
-    return float(last[1]+rate*dt), float(tolerance)
+    return predict(prediction_model(points,settings),time,next_sigma)
+
+
+def overlap_duration(a,b):
+    i=j=0;total=0.
+    while i<len(a) and j<len(b):
+        total+=max(0.,min(a[i][1],b[j][1])-max(a[i][0],b[j][0]))
+        if a[i][1]<b[j][1]:i+=1
+        else:j+=1
+    return total
 
 
 def shape_consistency(points,settings):
@@ -312,39 +326,56 @@ def stitch(ridges, settings, work):
     edges = []
     def reversed_points(p):
         q=p[::-1].copy();q[:,0]=p[-1,0]-q[:,0];return q
+    feature_cache={}
+    def features(ridge):
+        ids=ridge.origins
+        if ids not in feature_cache:
+            points=ridge.points;rev=reversed_points(points)
+            cells,observed,_=support(points,settings)
+            feature_cache[ids]=(prediction_model(points,settings),prediction_model(rev,settings),cells,observed)
+        return feature_cache[ids]
     def link_score(left,right):
         a,b=left.points,right.points
         gap=float(b[0,0]-a[-1,0])
-        if not 0 < gap <= settings.max_fragment_gap_s:
-            return None
-        observed_support=support(np.concatenate((a,b)),settings)[1]
-        predicted,tolerance=forecast(a,b[0,0],settings)
-        rev=reversed_points(b)
-        backward,back_tolerance=forecast(rev,rev[-1,0]+gap,settings)
+        if not 0<gap<=settings.max_fragment_gap_s:return None
+        forward,_,cells_a,observed_a=features(left)
+        _,backward,cells_b,observed_b=features(right)
+        predicted,tolerance=predict(forward,b[0,0])
+        back,back_tolerance=predict(backward,backward[0]+gap)
         forward_error=abs(b[0,1]-predicted)/tolerance
-        backward_error=abs(a[-1,1]-backward)/back_tolerance
+        backward_error=abs(a[-1,1]-back)/back_tolerance
+        if max(forward_error,backward_error)>3.:return None
+        observed_support=observed_a+observed_b-overlap_duration(cells_a,cells_b)
         gap_fraction=gap/(observed_support+gap)
         cost=float(np.sqrt((forward_error**2+backward_error**2)/2)+gap_fraction+(1. if gap_fraction>1-settings.min_support else 0.))
-        if max(forward_error,backward_error)>3. or cost>2.:
-            return None
-        return cost
+        return cost if cost<=2. else None
+    # Keep at most eight scored continuations per endpoint. The runner-up is
+    # retained for ambiguity checks; dense neighbourhoods do not trigger all
+    # possible joint refits. Pruned links remain unexplored alternatives.
+    neighbours=8
     for i,left in enumerate(ridges):
         a=left.points
         first=bisect_right(starts,float(a[-1,0]))
         last=bisect_right(starts,float(a[-1,0]+settings.max_fragment_gap_s))
-        left_sigma=uncertainty(a,settings)
+        forward=features(left)[0];left_sigma=uncertainty(a,settings)
+        nearby=[]
         for j in range(first,last):
-            b=ridges[j].points
-            gap=b[0,0]-a[-1,0]
-            # Cheap frequency/time neighbourhood before scoring/model work.
-            if abs(b[0,1]-a[-1,1])>max(8.,.08*a[-1,1])*gap+3*left_sigma:
-                continue
-            predicted,tolerance=forecast(a,b[0,0],settings)
+            b=ridges[j].points;gap=b[0,0]-a[-1,0]
+            if abs(b[0,1]-a[-1,1])>max(8.,.08*a[-1,1])*gap+3*left_sigma:continue
+            predicted,tolerance=predict(forward,b[0,0])
             if abs(b[0,1]-predicted)>3*tolerance:continue
+            nearby.append((abs(b[0,1]-predicted)/tolerance,j))
+        nearby.sort()
+        work.decision_counts['stitch_cheap_neighbours']+=len(nearby)
+        work.decision_counts['stitch_neighbours_pruned']+=max(0,len(nearby)-2*neighbours)
+        scored=[]
+        for _,j in nearby[:2*neighbours]:
             work.charge()
             score=link_score(left,ridges[j])
-            if score is not None:
-                edges.append((score,i,j))
+            if score is not None:scored.append((score,i,j))
+        scored.sort()
+        work.decision_counts['stitch_neighbours_pruned']+=max(0,len(scored)-neighbours)
+        edges.extend(scored[:neighbours])
     edges.sort()
     by_out,by_in={},{}
     for score,i,j in edges:
@@ -520,11 +551,7 @@ def related(a, b, settings):
     t, f, g = shared
     cells_a,observed_a,_=support(a,settings)
     cells_b,observed_b,_=support(b,settings)
-    i=j=0;shared_duration=0.
-    while i<len(cells_a) and j<len(cells_b):
-        shared_duration+=max(0.,min(cells_a[i][1],cells_b[j][1])-max(cells_a[i][0],cells_b[j][0]))
-        if cells_a[i][1]<cells_b[j][1]:i+=1
-        else:j+=1
+    shared_duration=overlap_duration(cells_a,cells_b)
     if shared_duration<.6*min(observed_a,observed_b):return None
     scale = float(np.exp(np.median(np.log(g / f))))
     sigma = uncertainty(b, settings) + scale * uncertainty(a, settings)

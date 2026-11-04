@@ -1,0 +1,881 @@
+{
+  "source_sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f",
+  "source": "benchmarks/acoustic-episodes-349/observations.jsonl.gz baseline whole-reference",
+  "processing": "Unchanged measured ridge observations. No interpolated or generated samples.",
+  "events": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 293.5,
+      "end_s": 308.5,
+      "band_hz": [
+        1088.75,
+        1250.5527948997915
+      ],
+      "ridge": [
+        {
+          "time_s": 294.5,
+          "frequency_hz": 1249.5527948997915,
+          "weight": 2.8836545944213867
+        },
+        {
+          "time_s": 295.0,
+          "frequency_hz": 1243.0439227074385,
+          "weight": 3.377051830291748
+        },
+        {
+          "time_s": 295.5,
+          "frequency_hz": 1243.030383657664,
+          "weight": 3.323399305343628
+        },
+        {
+          "time_s": 296.0,
+          "frequency_hz": 1239.25,
+          "weight": 2.732621431350708
+        },
+        {
+          "time_s": 296.5,
+          "frequency_hz": 1233.929027043283,
+          "weight": 3.1207833290100098
+        },
+        {
+          "time_s": 297.0,
+          "frequency_hz": 1225.48556952551,
+          "weight": 2.7613463401794434
+        },
+        {
+          "time_s": 297.5,
+          "frequency_hz": 1206.0920062214136,
+          "weight": 3.157616376876831
+        },
+        {
+          "time_s": 298.0,
+          "frequency_hz": 1206.0445290990174,
+          "weight": 3.056533098220825
+        },
+        {
+          "time_s": 299.0,
+          "frequency_hz": 1177.1909945309162,
+          "weight": 2.67842960357666
+        },
+        {
+          "time_s": 299.5,
+          "frequency_hz": 1167.9938250589184,
+          "weight": 3.604642152786255
+        },
+        {
+          "time_s": 300.0,
+          "frequency_hz": 1159.6896205246449,
+          "weight": 2.568542242050171
+        },
+        {
+          "time_s": 300.5,
+          "frequency_hz": 1150.25,
+          "weight": 3.6237659454345703
+        },
+        {
+          "time_s": 301.0,
+          "frequency_hz": 1150.3350829482079,
+          "weight": 3.422393798828125
+        },
+        {
+          "time_s": 301.5,
+          "frequency_hz": 1140.8911248072982,
+          "weight": 3.004530429840088
+        },
+        {
+          "time_s": 302.0,
+          "frequency_hz": 1141.391986347735,
+          "weight": 2.677314519882202
+        },
+        {
+          "time_s": 303.0,
+          "frequency_hz": 1117.525025229901,
+          "weight": 2.611937999725342
+        },
+        {
+          "time_s": 303.5,
+          "frequency_hz": 1117.25,
+          "weight": 2.94563627243042
+        },
+        {
+          "time_s": 304.0,
+          "frequency_hz": 1116.5732110366225,
+          "weight": 2.829970598220825
+        },
+        {
+          "time_s": 305.0,
+          "frequency_hz": 1104.75,
+          "weight": 2.6506025791168213
+        },
+        {
+          "time_s": 305.5,
+          "frequency_hz": 1098.2348009049892,
+          "weight": 3.038299560546875
+        },
+        {
+          "time_s": 306.5,
+          "frequency_hz": 1093.495553293731,
+          "weight": 2.8553383350372314
+        },
+        {
+          "time_s": 307.0,
+          "frequency_hz": 1089.9522133022547,
+          "weight": 2.9661288261413574
+        },
+        {
+          "time_s": 307.5,
+          "frequency_hz": 1089.75,
+          "weight": 3.0478036403656006
+        }
+      ],
+      "quality": {
+        "median_contrast": 2.9661288261413574,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8518518518518519,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.0,
+        "frequency_drop_hz": 153.0917094051838
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "harmonic_group_id": "harmonics-0002",
+      "start_s": 314.0,
+      "end_s": 333.5,
+      "band_hz": [
+        485.17168018221855,
+        604.9835524260998
+      ],
+      "ridge": [
+        {
+          "time_s": 315.0,
+          "frequency_hz": 603.9835524260998,
+          "weight": 2.767655611038208
+        },
+        {
+          "time_s": 315.5,
+          "frequency_hz": 603.4477422311902,
+          "weight": 3.0676724910736084
+        },
+        {
+          "time_s": 316.5,
+          "frequency_hz": 591.9698572792113,
+          "weight": 2.684891700744629
+        },
+        {
+          "time_s": 317.5,
+          "frequency_hz": 596.6233924254775,
+          "weight": 2.5340840816497803
+        },
+        {
+          "time_s": 318.5,
+          "frequency_hz": 566.4548052586615,
+          "weight": 2.7333998680114746
+        },
+        {
+          "time_s": 319.5,
+          "frequency_hz": 553.734418913722,
+          "weight": 2.980614185333252
+        },
+        {
+          "time_s": 320.0,
+          "frequency_hz": 554.018680434674,
+          "weight": 3.392207384109497
+        },
+        {
+          "time_s": 320.5,
+          "frequency_hz": 554.5335666164756,
+          "weight": 3.094407081604004
+        },
+        {
+          "time_s": 321.0,
+          "frequency_hz": 541.572707504034,
+          "weight": 3.3618128299713135
+        },
+        {
+          "time_s": 321.5,
+          "frequency_hz": 540.5842869728804,
+          "weight": 3.5221145153045654
+        },
+        {
+          "time_s": 322.0,
+          "frequency_hz": 538.25,
+          "weight": 3.2923219203948975
+        },
+        {
+          "time_s": 322.5,
+          "frequency_hz": 538.6821402162313,
+          "weight": 3.0821073055267334
+        },
+        {
+          "time_s": 324.0,
+          "frequency_hz": 525.9571931660175,
+          "weight": 2.880650520324707
+        },
+        {
+          "time_s": 324.5,
+          "frequency_hz": 520.1980766057968,
+          "weight": 2.6778995990753174
+        },
+        {
+          "time_s": 325.0,
+          "frequency_hz": 520.405311986804,
+          "weight": 2.6460201740264893
+        },
+        {
+          "time_s": 325.5,
+          "frequency_hz": 515.7383732944727,
+          "weight": 2.899914264678955
+        },
+        {
+          "time_s": 326.5,
+          "frequency_hz": 507.2387876659632,
+          "weight": 3.1335678100585938
+        },
+        {
+          "time_s": 327.0,
+          "frequency_hz": 507.08413898199797,
+          "weight": 3.322808265686035
+        },
+        {
+          "time_s": 327.5,
+          "frequency_hz": 506.5985030680895,
+          "weight": 3.287827968597412
+        },
+        {
+          "time_s": 328.5,
+          "frequency_hz": 497.75,
+          "weight": 2.700561285018921
+        },
+        {
+          "time_s": 329.0,
+          "frequency_hz": 497.6080066114664,
+          "weight": 3.3900444507598877
+        },
+        {
+          "time_s": 329.5,
+          "frequency_hz": 497.48501950502396,
+          "weight": 2.6044421195983887
+        },
+        {
+          "time_s": 330.0,
+          "frequency_hz": 492.54061963036656,
+          "weight": 2.551316738128662
+        },
+        {
+          "time_s": 331.5,
+          "frequency_hz": 489.2153640985489,
+          "weight": 2.65084171295166
+        },
+        {
+          "time_s": 332.0,
+          "frequency_hz": 489.44550263881683,
+          "weight": 2.632739305496216
+        },
+        {
+          "time_s": 332.5,
+          "frequency_hz": 486.17168018221855,
+          "weight": 2.8265111446380615
+        }
+      ],
+      "quality": {
+        "median_contrast": 2.890282392501831,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7222222222222222,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 110.705133959651
+      }
+    },
+    {
+      "event_id": "event-0004",
+      "harmonic_group_id": "harmonics-0004",
+      "start_s": 676.0,
+      "end_s": 690.0,
+      "band_hz": [
+        629.75,
+        775.3431728929281
+      ],
+      "ridge": [
+        {
+          "time_s": 677.0,
+          "frequency_hz": 773.5762932151556,
+          "weight": 2.9228429794311523
+        },
+        {
+          "time_s": 677.5,
+          "frequency_hz": 774.3431728929281,
+          "weight": 2.5815229415893555
+        },
+        {
+          "time_s": 678.0,
+          "frequency_hz": 768.3868842050433,
+          "weight": 2.9826643466949463
+        },
+        {
+          "time_s": 678.5,
+          "frequency_hz": 768.3453568220139,
+          "weight": 2.5657947063446045
+        },
+        {
+          "time_s": 679.5,
+          "frequency_hz": 756.3889494538307,
+          "weight": 2.863313913345337
+        },
+        {
+          "time_s": 680.0,
+          "frequency_hz": 755.75,
+          "weight": 3.0325772762298584
+        },
+        {
+          "time_s": 680.5,
+          "frequency_hz": 749.4099823832512,
+          "weight": 3.5032966136932373
+        },
+        {
+          "time_s": 681.0,
+          "frequency_hz": 743.489660596475,
+          "weight": 3.0767810344696045
+        },
+        {
+          "time_s": 681.5,
+          "frequency_hz": 737.9883080059662,
+          "weight": 2.662588119506836
+        },
+        {
+          "time_s": 682.0,
+          "frequency_hz": 732.6544808745384,
+          "weight": 2.9796881675720215
+        },
+        {
+          "time_s": 682.5,
+          "frequency_hz": 727.2483908981085,
+          "weight": 3.1774380207061768
+        },
+        {
+          "time_s": 683.0,
+          "frequency_hz": 718.7908559590578,
+          "weight": 3.1176750659942627
+        },
+        {
+          "time_s": 684.0,
+          "frequency_hz": 707.3819523453712,
+          "weight": 2.896304130554199
+        },
+        {
+          "time_s": 684.5,
+          "frequency_hz": 700.0463762506843,
+          "weight": 2.784013271331787
+        },
+        {
+          "time_s": 685.0,
+          "frequency_hz": 697.3136134445667,
+          "weight": 3.5438575744628906
+        },
+        {
+          "time_s": 686.0,
+          "frequency_hz": 674.7820336818695,
+          "weight": 2.659085750579834
+        },
+        {
+          "time_s": 687.0,
+          "frequency_hz": 661.8903144672513,
+          "weight": 3.463827610015869
+        },
+        {
+          "time_s": 687.5,
+          "frequency_hz": 653.716902166605,
+          "weight": 2.9530868530273438
+        },
+        {
+          "time_s": 688.0,
+          "frequency_hz": 644.0848577097058,
+          "weight": 2.6942925453186035
+        },
+        {
+          "time_s": 688.5,
+          "frequency_hz": 640.3173435777426,
+          "weight": 2.568971633911133
+        },
+        {
+          "time_s": 689.0,
+          "frequency_hz": 630.75,
+          "weight": 2.791571617126465
+        }
+      ],
+      "quality": {
+        "median_contrast": 2.9228429794311523,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.84,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.0,
+        "frequency_drop_hz": 133.25894963741302
+      }
+    },
+    {
+      "event_id": "event-0009",
+      "harmonic_group_id": "harmonics-0009",
+      "start_s": 1265.5,
+      "end_s": 1282.0,
+      "band_hz": [
+        380.60513257980347,
+        483.4235589951277
+      ],
+      "ridge": [
+        {
+          "time_s": 1266.5,
+          "frequency_hz": 482.4235589951277,
+          "weight": 2.5478127002716064
+        },
+        {
+          "time_s": 1267.0,
+          "frequency_hz": 478.614562779665,
+          "weight": 2.582883834838867
+        },
+        {
+          "time_s": 1267.5,
+          "frequency_hz": 477.0997201651335,
+          "weight": 3.2380950450897217
+        },
+        {
+          "time_s": 1268.0,
+          "frequency_hz": 476.57992438971996,
+          "weight": 2.654400587081909
+        },
+        {
+          "time_s": 1268.5,
+          "frequency_hz": 474.5442565828562,
+          "weight": 2.7529613971710205
+        },
+        {
+          "time_s": 1269.0,
+          "frequency_hz": 474.0878268778324,
+          "weight": 3.038318157196045
+        },
+        {
+          "time_s": 1269.5,
+          "frequency_hz": 473.03553600236773,
+          "weight": 2.999685287475586
+        },
+        {
+          "time_s": 1270.0,
+          "frequency_hz": 467.4761784039438,
+          "weight": 2.5242974758148193
+        },
+        {
+          "time_s": 1270.5,
+          "frequency_hz": 467.6297838240862,
+          "weight": 2.8251020908355713
+        },
+        {
+          "time_s": 1272.0,
+          "frequency_hz": 456.8755616918206,
+          "weight": 2.5870845317840576
+        },
+        {
+          "time_s": 1273.5,
+          "frequency_hz": 441.29323050379753,
+          "weight": 3.1675682067871094
+        },
+        {
+          "time_s": 1274.0,
+          "frequency_hz": 440.75,
+          "weight": 3.9872090816497803
+        },
+        {
+          "time_s": 1274.5,
+          "frequency_hz": 439.411817997694,
+          "weight": 3.5082857608795166
+        },
+        {
+          "time_s": 1275.0,
+          "frequency_hz": 431.9607896655798,
+          "weight": 2.6579227447509766
+        },
+        {
+          "time_s": 1275.5,
+          "frequency_hz": 427.2254467457533,
+          "weight": 2.5960144996643066
+        },
+        {
+          "time_s": 1276.0,
+          "frequency_hz": 421.56587068736553,
+          "weight": 3.033911943435669
+        },
+        {
+          "time_s": 1276.5,
+          "frequency_hz": 419.01117612607777,
+          "weight": 2.593330144882202
+        },
+        {
+          "time_s": 1278.5,
+          "frequency_hz": 399.41031754016876,
+          "weight": 3.1745285987854004
+        },
+        {
+          "time_s": 1279.0,
+          "frequency_hz": 398.70299266278744,
+          "weight": 4.300936222076416
+        },
+        {
+          "time_s": 1279.5,
+          "frequency_hz": 395.75,
+          "weight": 2.9251656532287598
+        },
+        {
+          "time_s": 1280.0,
+          "frequency_hz": 391.25634630024433,
+          "weight": 2.9076006412506104
+        },
+        {
+          "time_s": 1280.5,
+          "frequency_hz": 386.4344758167863,
+          "weight": 3.108361005783081
+        },
+        {
+          "time_s": 1281.0,
+          "frequency_hz": 381.60513257980347,
+          "weight": 2.9243805408477783
+        }
+      ],
+      "quality": {
+        "median_contrast": 2.9243805408477783,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7666666666666667,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 92.1800869628787
+      }
+    },
+    {
+      "event_id": "event-0014",
+      "harmonic_group_id": "harmonics-0014",
+      "start_s": 3101.0,
+      "end_s": 3119.0,
+      "band_hz": [
+        136.49185846932232,
+        153.16504840552807
+      ],
+      "ridge": [
+        {
+          "time_s": 3102.0,
+          "frequency_hz": 151.85296373069286,
+          "weight": 2.54520320892334
+        },
+        {
+          "time_s": 3102.5,
+          "frequency_hz": 151.64524261653423,
+          "weight": 3.141657590866089
+        },
+        {
+          "time_s": 3103.0,
+          "frequency_hz": 151.2031766474247,
+          "weight": 3.09250807762146
+        },
+        {
+          "time_s": 3103.5,
+          "frequency_hz": 150.98340506479144,
+          "weight": 3.4758031368255615
+        },
+        {
+          "time_s": 3104.0,
+          "frequency_hz": 150.88584423065186,
+          "weight": 2.7853901386260986
+        },
+        {
+          "time_s": 3105.5,
+          "frequency_hz": 152.0593454428017,
+          "weight": 3.078043222427368
+        },
+        {
+          "time_s": 3106.0,
+          "frequency_hz": 152.16504840552807,
+          "weight": 3.4525485038757324
+        },
+        {
+          "time_s": 3106.5,
+          "frequency_hz": 152.01610556989908,
+          "weight": 3.4625980854034424
+        },
+        {
+          "time_s": 3107.0,
+          "frequency_hz": 150.18070098757744,
+          "weight": 2.5308070182800293
+        },
+        {
+          "time_s": 3107.5,
+          "frequency_hz": 150.40263088792562,
+          "weight": 3.603729248046875
+        },
+        {
+          "time_s": 3108.0,
+          "frequency_hz": 150.67751224339008,
+          "weight": 3.282611846923828
+        },
+        {
+          "time_s": 3108.5,
+          "frequency_hz": 149.70697642862797,
+          "weight": 3.1276028156280518
+        },
+        {
+          "time_s": 3109.0,
+          "frequency_hz": 149.45708502829075,
+          "weight": 3.5033822059631348
+        },
+        {
+          "time_s": 3109.5,
+          "frequency_hz": 148.98173796758056,
+          "weight": 2.684113025665283
+        },
+        {
+          "time_s": 3110.5,
+          "frequency_hz": 146.21313726902008,
+          "weight": 2.6308212280273438
+        },
+        {
+          "time_s": 3111.0,
+          "frequency_hz": 145.77427496016026,
+          "weight": 2.776970148086548
+        },
+        {
+          "time_s": 3111.5,
+          "frequency_hz": 144.52194635942578,
+          "weight": 2.533850908279419
+        },
+        {
+          "time_s": 3112.0,
+          "frequency_hz": 143.8243625164032,
+          "weight": 3.0918760299682617
+        },
+        {
+          "time_s": 3112.5,
+          "frequency_hz": 144.08135540038347,
+          "weight": 3.034050464630127
+        },
+        {
+          "time_s": 3114.0,
+          "frequency_hz": 141.46270276233554,
+          "weight": 2.5416533946990967
+        },
+        {
+          "time_s": 3115.0,
+          "frequency_hz": 140.75,
+          "weight": 3.0100629329681396
+        },
+        {
+          "time_s": 3115.5,
+          "frequency_hz": 139.9336118772626,
+          "weight": 3.072042942047119
+        },
+        {
+          "time_s": 3116.0,
+          "frequency_hz": 138.68729329109192,
+          "weight": 3.030195713043213
+        },
+        {
+          "time_s": 3116.5,
+          "frequency_hz": 138.29920913279057,
+          "weight": 3.086364984512329
+        },
+        {
+          "time_s": 3118.0,
+          "frequency_hz": 137.49185846932232,
+          "weight": 2.686933994293213
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.072042942047119,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7575757575757576,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 12.930958420038223
+      }
+    },
+    {
+      "event_id": "event-0016",
+      "harmonic_group_id": "harmonics-0016",
+      "start_s": 3454.0,
+      "end_s": 3469.5,
+      "band_hz": [
+        246.36041747033596,
+        272.75
+      ],
+      "ridge": [
+        {
+          "time_s": 3455.0,
+          "frequency_hz": 270.89089449495077,
+          "weight": 3.4600160121917725
+        },
+        {
+          "time_s": 3455.5,
+          "frequency_hz": 271.25,
+          "weight": 4.1595587730407715
+        },
+        {
+          "time_s": 3456.0,
+          "frequency_hz": 271.5903660058975,
+          "weight": 4.470447063446045
+        },
+        {
+          "time_s": 3456.5,
+          "frequency_hz": 271.75,
+          "weight": 4.1672749519348145
+        },
+        {
+          "time_s": 3457.0,
+          "frequency_hz": 270.4916419945657,
+          "weight": 3.289979934692383
+        },
+        {
+          "time_s": 3457.5,
+          "frequency_hz": 267.75,
+          "weight": 3.808903217315674
+        },
+        {
+          "time_s": 3458.0,
+          "frequency_hz": 266.9296472892165,
+          "weight": 3.4827189445495605
+        },
+        {
+          "time_s": 3458.5,
+          "frequency_hz": 266.01551869791,
+          "weight": 3.307476043701172
+        },
+        {
+          "time_s": 3459.0,
+          "frequency_hz": 262.15207217633724,
+          "weight": 3.4358506202697754
+        },
+        {
+          "time_s": 3459.5,
+          "frequency_hz": 259.1449458152056,
+          "weight": 3.611837387084961
+        },
+        {
+          "time_s": 3460.0,
+          "frequency_hz": 257.75,
+          "weight": 3.6455044746398926
+        },
+        {
+          "time_s": 3460.5,
+          "frequency_hz": 255.49846611183602,
+          "weight": 3.877957344055176
+        },
+        {
+          "time_s": 3461.0,
+          "frequency_hz": 250.79918810725212,
+          "weight": 4.439952373504639
+        },
+        {
+          "time_s": 3461.5,
+          "frequency_hz": 249.43312953412533,
+          "weight": 4.424993991851807
+        },
+        {
+          "time_s": 3462.0,
+          "frequency_hz": 248.8700234591961,
+          "weight": 5.286348342895508
+        },
+        {
+          "time_s": 3462.5,
+          "frequency_hz": 248.75512512028217,
+          "weight": 5.350037097930908
+        },
+        {
+          "time_s": 3463.0,
+          "frequency_hz": 248.5545177794993,
+          "weight": 5.434058666229248
+        },
+        {
+          "time_s": 3463.5,
+          "frequency_hz": 248.21616806089878,
+          "weight": 5.051805019378662
+        },
+        {
+          "time_s": 3464.0,
+          "frequency_hz": 247.70776779949665,
+          "weight": 5.097074031829834
+        },
+        {
+          "time_s": 3464.5,
+          "frequency_hz": 247.62136151641607,
+          "weight": 4.9194254875183105
+        },
+        {
+          "time_s": 3465.0,
+          "frequency_hz": 247.55364229157567,
+          "weight": 4.81913423538208
+        },
+        {
+          "time_s": 3465.5,
+          "frequency_hz": 247.47403636015952,
+          "weight": 4.077238082885742
+        },
+        {
+          "time_s": 3466.0,
+          "frequency_hz": 247.5596014969051,
+          "weight": 3.688488245010376
+        },
+        {
+          "time_s": 3466.5,
+          "frequency_hz": 247.50700982054695,
+          "weight": 3.2292683124542236
+        },
+        {
+          "time_s": 3467.0,
+          "frequency_hz": 247.36041747033596,
+          "weight": 2.8466360569000244
+        },
+        {
+          "time_s": 3467.5,
+          "frequency_hz": 248.17934288084507,
+          "weight": 2.9323248863220215
+        },
+        {
+          "time_s": 3468.0,
+          "frequency_hz": 248.2105831950903,
+          "weight": 3.1692380905151367
+        },
+        {
+          "time_s": 3468.5,
+          "frequency_hz": 247.97968226484954,
+          "weight": 3.46069598197937
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.843430280685425,
+        "harmonic_count": 1.0,
+        "support_fraction": 1.0,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 0.5,
+        "frequency_drop_hz": 23.340670430101454
+      }
+    }
+  ]
+}
