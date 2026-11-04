@@ -241,6 +241,11 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         return result("invalid_evidence", "Matching diagnostics must be a mapping.", "failed")
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
+    if (not candidates or coverage is None or coverage["search_complete"] is not True
+            or coverage["data_status"] != "available" or coverage.get("missing_data")):
+        possible_overlap = _possible_harmonic_overlap(events)
+        if possible_overlap is not None:
+            diagnostics["possible_event_harmonic_overlap"] = possible_overlap
     if candidates:
         candidate_summary = _candidate_evidence_summary(events, candidates[0], evidence)
         diagnostics["candidate_evidence_summary"] = candidate_summary
