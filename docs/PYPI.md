@@ -50,4 +50,4 @@ PyPI does not allow replacement of an uploaded distribution file. If a release i
 - `ffmpeg` and `ffprobe` are system dependencies. The PyPI wheel does not contain them.
 - Optional native C accelerators use platform-specific wheels. The source archive supports builds with a suitable compiler.
 - Distribution files include the browser application's assets and the PolyForm Noncommercial and MIT-legacy notices.
-- PyPI publication does not grant commercial-use rights. See [commercial licensing](../COMMERCIAL-LICENSING.md).
+- PyPI publication does not grant commercial-use rights. See [commercial licensing](COMMERCIAL-LICENSING.md).

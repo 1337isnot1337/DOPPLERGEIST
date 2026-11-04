@@ -2,7 +2,7 @@
 <h1 align="center">DOPPLERGEIST</h1>
 <p align="center">Aircraft Doppler Audio Geolocation</p>
 <p align="center">
-  <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
+  <img src="docs/assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 
 <h3 align="center">Example: automatic MP3 analysis</h3>
 
-![Automatic MP3 flyover and ranked aircraft search](assets/livermore-automatic-mp3.png)
+![Automatic MP3 flyover and ranked aircraft search](docs/assets/livermore-automatic-mp3.png)
 
 <sub>Automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
@@ -151,7 +151,7 @@ In a constrained real-MP3 demonstration, the highest-ranked location was **476 m
 
 ### Is DOPPLERGEIST free and open source?
 
-DOPPLERGEIST is **source-available, not OSI-approved open source**. It is licensed under [PolyForm Noncommercial 1.0.0](LICENSE), which permits use, modification, and distribution for permitted noncommercial purposes, subject to its terms. Commercial use outside those permissions requires separate authorization; see [Commercial licensing](COMMERCIAL-LICENSING.md).
+DOPPLERGEIST is **source-available, not OSI-approved open source**. It is licensed under [PolyForm Noncommercial 1.0.0](LICENSE), which permits use, modification, and distribution for permitted noncommercial purposes, subject to its terms. Commercial use outside those permissions requires separate authorization; see [Commercial licensing](docs/COMMERCIAL-LICENSING.md).
 
 ## Validation and results
 
@@ -186,13 +186,13 @@ Optional native backends, reuse of acoustic calculations, and checkpointed searc
 
 ## License
 
-DOPPLERGEIST is distributed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)** (`PolyForm-Noncommercial-1.0.0`). It is **source-available, not OSI-approved open-source software**. Noncommercial uses, modification, and distribution are permitted subject to the license. Commercial use not otherwise permitted requires authorization from the relevant rights holders. See [Commercial licensing](COMMERCIAL-LICENSING.md).
+DOPPLERGEIST is distributed under the **[PolyForm Noncommercial License 1.0.0](LICENSE)** (`PolyForm-Noncommercial-1.0.0`). It is **source-available, not OSI-approved open-source software**. Noncommercial uses, modification, and distribution are permitted subject to the license. Commercial use not otherwise permitted requires authorization from the relevant rights holders. See [Commercial licensing](docs/COMMERCIAL-LICENSING.md).
 
 Recordings, aircraft archives, terrain datasets, and other third-party materials retain their own licenses, rights, and attribution requirements.
 
 ## Contributing and development
 
-Contributions, reproducible test recordings with appropriate permissions, documentation improvements, and independently verifiable evaluations are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), the [issue tracker](https://github.com/1337isnot1337/DOPPLERGEIST/issues), and the [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
+Contributions, reproducible test recordings with appropriate permissions, documentation improvements, and independently verifiable evaluations are welcome. See [CONTRIBUTING.md](.github/CONTRIBUTING.md), the [issue tracker](https://github.com/1337isnot1337/DOPPLERGEIST/issues), and the [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
 
 Created by **Cinna Davis** with extensive AI-assisted development. Thanks to @henriklied, @EirikAskheim, @kleindotc, and other contributors. Follow updates on [X](https://x.com/1337isnot1337) or [LinkedIn](https://www.linkedin.com/in/cinna-davis/).
 
