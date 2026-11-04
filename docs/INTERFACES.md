@@ -140,6 +140,13 @@ hashes, configuration, time/altitude assumptions, searched/missing coverage and
 runtime. The service must independently enforce output-directory containment when
 serving files, including symlink handling. Do not embed huge spectra in job JSON.
 
+The optional read-only `GET /api/jobs/JOB_ID/guidance` endpoint derives next steps
+from the saved result and matching decision artifacts. It has its own additive
+envelope; it does not extend or rewrite `JobResult`. Recommendations include
+artifact-relative evidence pointers and an explicit unmeasured-benefit label.
+See [evidence-based next steps](INCONCLUSIVE_GUIDANCE.md) for the representation,
+replay commands and unresolved verification requirements.
+
 ## Compatibility and ownership
 
 The existing `dopplergeist run CONFIG --output DIR` and `measure` commands keep

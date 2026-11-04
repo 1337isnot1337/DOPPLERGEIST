@@ -66,6 +66,9 @@ class Handler(BaseHTTPRequestHandler):
             job_id = parts[2]
             if self.command == "GET" and len(parts) == 3:
                 return self._reply(manager.get(job_id))
+            if self.command == "GET" and parts[3:] == ["guidance"]:
+                from .guidance import explain_job
+                return self._reply(explain_job(manager.directory(job_id)))
             if self.command == "POST" and parts[3:] == ["cancel"]:
                 return self._reply(manager.cancel(job_id))
             if self.command == "POST" and parts[3:] == ["resume"]:
