@@ -193,6 +193,17 @@ DOPPLERGEIST code is licensed under the [MIT License](LICENSE). External
 recordings, flight and terrain data, and other third-party materials retain
 their own rights and terms.
 
+## Star History
+
+<p align="center">
+  <a href="https://www.star-history.com/#1337isnot1337/DOPPLERGEIST&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=1337isnot1337/DOPPLERGEIST&type=Date&theme=dark" />
+      <img alt="DOPPLERGEIST Star History" src="https://api.star-history.com/svg?repos=1337isnot1337/DOPPLERGEIST&type=Date" width="650" />
+    </picture>
+  </a>
+</p>
+
 ## Notes
 
 Vibecoded with love by Cinna Davis, Henrik Lied, and YOU if you contribute to this repo... which you should do!
