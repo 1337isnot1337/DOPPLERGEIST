@@ -40,9 +40,10 @@ The checkout is pinned to the triggering commit.
 | `@sha256:<registry-digest>` | The exact published image content recorded in the workflow summary. |
 
 An older rerun still publishes its commit tag, but cannot move `main` back when
-the branch has already advanced. Builds are serialized with pending runs queued;
-the queue does not promise source-commit order. A branch can also advance during
-a push, so `main` is a publication reference, not a live branch-head guarantee.
+the branch has already advanced. Publications run one at a time. GitHub keeps
+one pending run; a newer trigger can replace it while the running publication
+finishes. A replaced run publishes no image for its commit. A branch can also
+advance during a push, so `main` is a publication reference, not a live branch-head guarantee.
 There is no `latest` or release-version tag. Existing release bundles contain
 research evidence and must not be represented as software images.
 

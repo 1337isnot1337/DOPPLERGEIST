@@ -7,11 +7,10 @@ on:
 
 permissions: {}
 
-# Keep publications serialized without replacing a pending publication.
+# Finish the running publication; newer triggers can replace the pending run.
 concurrency:
   group: publish-container-${{ github.repository }}
   cancel-in-progress: false
-  queue: max
 
 jobs:
   publish:
