@@ -54,7 +54,7 @@ def guidance(result, decision=None):
                 ["result.json#/reason_code", "decision.json#/diagnostics/possible_harmonic_overlap",
                  "decision.json#/diagnostics/independent_event_groups"])
         elif type(count) is int and count >= 0:
-            add("more_events", f"The leading hypothesis has {count} matched acoustic group(s), below the decision's event requirement.",
+            add("more_events", f"The leading hypothesis uses {count} distinct flight segment(s), below the independent-flyover requirement.",
                 "If available, try more of the original recording containing a separate flyover. Another usable event is not guaranteed.",
                 ["result.json#/reason_code", "decision.json#/diagnostics/independent_event_groups"])
 

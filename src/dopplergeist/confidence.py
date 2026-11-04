@@ -242,8 +242,15 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
     if candidates:
-        diagnostics["candidate_evidence_summary"] = _candidate_evidence_summary(
-            events, candidates[0], evidence)
+        candidate_summary = _candidate_evidence_summary(events, candidates[0], evidence)
+        diagnostics["candidate_evidence_summary"] = candidate_summary
+        diagnostics["matched_event_group_count"] = candidate_summary["matched_group_count"]
+        # Several acoustic groups can be assigned to the same recorded flight
+        # segment. They may improve its fit, but they do not establish separate
+        # flyovers for the independent-event confidence gate.
+        diagnostics["independent_event_groups"] = (
+            candidate_summary["distinct_flight_segments"]
+            if not candidate_summary["groups_associated_with_multiple_flights"] else None)
     if coverage is None:
         return result("coverage_unknown", "Search completion and flight-data coverage are not established.")
     if coverage["data_status"] == "unavailable":
@@ -262,9 +269,11 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     for event, flight in zip(matched, best["flight_ids"]):
         key = event.get("harmonic_group_id", event["event_id"])
         if key in groups and groups[key][1] != flight:
+            diagnostics["independent_event_groups"] = None
             return result("inconsistent_harmonic_association", "Harmonics of one event map to different flight segments.")
         groups[key] = (event, flight)
-    diagnostics["independent_event_groups"] = len(groups)
+    diagnostics["matched_event_group_count"] = len(groups)
+    diagnostics["independent_event_groups"] = len({flight_id for _, flight_id in groups.values()})
     sensitivity = evidence.get("sensitivity", {})
     window = evidence.get("recording_start_window_s")
 
@@ -284,7 +293,8 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     tested_clock = settings.get("clock_bounds_s") if isinstance(settings, dict) else None
     known_clock = (interval(window) and interval(tested_clock) and
                    tested_clock[0] <= window[0] and tested_clock[1] >= window[1])
-    diagnostics["known_clock_single_event"] = bool(len(groups) == 1 and known_clock)
+    diagnostics["known_clock_single_event"] = bool(
+        len(groups) == 1 and diagnostics["independent_event_groups"] == 1 and known_clock)
     diagnostics["harmonic_overlap_screen"] = (
         "Uncalibrated aligned-sample heuristic; no flag does not establish independence.")
     possible_overlap = _possible_harmonic_overlap(matched)
@@ -294,9 +304,10 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         diagnostics["possible_harmonic_overlap"] = possible_overlap
         return result("insufficient_independent_events",
                       "Overlapping matched ridges may describe one flyover; independent events are not established.")
-    if len(groups) < policy.min_independent_events and not (len(groups) == 1 and
+    if diagnostics["independent_event_groups"] < policy.min_independent_events and not (len(groups) == 1 and
             policy.min_independent_events == 2 and known_clock):
-        return result("insufficient_independent_events", "Too few independent flyovers constrain location; harmonics count once.")
+        return result("insufficient_independent_events",
+                      "Too few independent flyovers constrain location; harmonics and acoustic groups sharing a flight segment count once.")
     unmatched = set(lookup) - set(best["event_ids"])
     supported = evidence.get("supported_event_ids")
     if supported is not None:

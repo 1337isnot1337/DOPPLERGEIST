@@ -53,7 +53,11 @@ window as `recording_start_window_s`; W3 profiles expose the tested span in
 `sensitivity.settings.clock_bounds_s`.
 
 Matched flyovers use one locked recording clock; harmonics count once and must
-map to the same flight. The explicit subset score may leave proposals unmatched
+map to the same flight. The minimum independent-flyover gate counts distinct
+matched flight segments: multiple acoustic groups assigned to one segment may
+contribute to its fit, but count once toward independent support. A one-flyover
+known-clock exception applies only to one matched harmonic group and one segment.
+The explicit subset score may leave proposals unmatched
 when `unmatched_event_ids` exactly enumerates the original discovered-minus-matched
 IDs. Entire harmonic groups must be retained. These omitted proposals remain
 unconfirmed sounds, not labelled aircraft misses or silently deleted evidence.
