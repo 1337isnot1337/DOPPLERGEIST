@@ -177,8 +177,14 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
 
     def report_search_progress(fraction=0.0):
         fraction = min(1.0, max(0.0, float(fraction)))
+        if fraction <= 0.8:
+            message = f"Coarse search area: {fraction / 0.8:.1%} processed; coverage not assessed."
+        elif fraction < 1.0:
+            message = f"Finalist refinement: {(fraction - 0.8) / 0.2:.1%} complete; coverage not assessed."
+        else:
+            message = "Search scoring complete; coverage not assessed."
         progress("search", 0.55 + 0.29 * fraction,
-                 message="Data coverage is not yet assessed.", **running_state)
+                 message=message, **running_state)
 
     try:
         from .data_access import DataUnavailable
