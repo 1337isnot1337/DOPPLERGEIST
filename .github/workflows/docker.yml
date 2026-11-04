@@ -1,7 +1,8 @@
-name: Docker build and local service
+name: Docker build, local service and GHCR
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -10,16 +11,39 @@ permissions:
 
 concurrency:
   group: docker-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   docker:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    outputs:
+      publish: ${{ steps.metadata.outputs.publish }}
+      image_tags: ${{ steps.metadata.outputs.tags }}
+      image_revision: ${{ steps.metadata.outputs.revision }}
+      image_id: ${{ steps.export.outputs.image_id }}
+      image_artifact_id: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check publication event and tag rules
+        run: python -m unittest discover -s tests -p test_container_publish_metadata.py
+      - name: Derive image metadata and publication eligibility
+        id: metadata
+        run: python scripts/container_publish_metadata.py
       - name: Build runtime image
-        run: docker build --tag dopplergeist:ci .
+        env:
+          IMAGE_SOURCE: ${{ github.server_url }}/${{ github.repository }}
+          IMAGE_REVISION: ${{ steps.metadata.outputs.revision }}
+          IMAGE_VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          docker build --platform linux/amd64 --tag dopplergeist:ci \
+            --label "org.opencontainers.image.title=DOPPLERGEIST" \
+            --label "org.opencontainers.image.source=$IMAGE_SOURCE" \
+            --label "org.opencontainers.image.revision=$IMAGE_REVISION" \
+            --label "org.opencontainers.image.version=$IMAGE_VERSION" \
+            --label "org.opencontainers.image.licenses=PolyForm-Noncommercial-1.0.0" .
       - name: Check installed runtime, native modules and licenses
         run: |
           docker run --rm --entrypoint python dopplergeist:ci -m pip check
@@ -101,3 +125,99 @@ jobs:
             --mount type=volume,src=dopplergeist-ci-jobs,dst=/data/jobs \
             --mount type=volume,src=dopplergeist-ci-cache,dst=/home/dopplergeist/.cache/dopplergeist \
             dopplergeist:ci -c 'from pathlib import Path; roots = [Path("/data/jobs"), Path.home()/".cache"/"dopplergeist"]; assert all((root/"container-write-check").read_text() == "persistent" for root in roots)'
+      - name: Export the validated image
+        id: export
+        if: steps.metadata.outputs.publish == 'true'
+        run: |
+          image_id=$(docker image inspect --format '{{.Id}}' dopplergeist:ci)
+          echo "image_id=$image_id" >> "$GITHUB_OUTPUT"
+          docker save --output "$RUNNER_TEMP/dopplergeist-image.tar" dopplergeist:ci
+      - name: Transfer the validated image to the publish job
+        id: upload
+        if: steps.metadata.outputs.publish == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: docker-image-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dopplergeist-image.tar
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  publish:
+    needs: docker
+    if: >-
+      github.repository == '1337isnot1337/DOPPLERGEIST'
+      && needs.docker.outputs.publish == 'true'
+      && ((github.event_name == 'push'
+           && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')))
+          || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      packages: write
+    steps:
+      - name: Download this run's validated image
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          artifact-ids: ${{ needs.docker.outputs.image_artifact_id }}
+          path: ${{ runner.temp }}
+      - name: Load and identify the validated image
+        env:
+          EXPECTED_IMAGE_ID: ${{ needs.docker.outputs.image_id }}
+        run: |
+          docker load --input "$RUNNER_TEMP/dopplergeist-image.tar"
+          test "$(docker image inspect --format '{{.Id}}' dopplergeist:ci)" = "$EXPECTED_IMAGE_ID"
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the validated image
+        env:
+          IMAGE_TAGS: ${{ needs.docker.outputs.image_tags }}
+          IMAGE_REVISION: ${{ needs.docker.outputs.image_revision }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+
+          tags = json.loads(os.environ["IMAGE_TAGS"])
+          if not tags:
+              raise ValueError("No approved image tags to publish")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write("## Published Docker image\n\n")
+              for tag in tags:
+                  subprocess.run(["docker", "tag", "dopplergeist:ci", tag], check=True)
+                  if tag.endswith(":main"):
+                      try:
+                          remote = subprocess.run(
+                              ["git", "ls-remote", "--exit-code",
+                               "https://github.com/1337isnot1337/DOPPLERGEIST.git",
+                               "refs/heads/main"],
+                              check=True, capture_output=True, text=True, timeout=30)
+                          fields = remote.stdout.split()
+                          if (len(fields) != 2 or fields[1] != "refs/heads/main"
+                                  or not re.fullmatch(r"[0-9a-f]{40}", fields[0])):
+                              raise ValueError("Unexpected public main-ref response")
+                      except (OSError, subprocess.SubprocessError, ValueError) as error:
+                          summary.write(f"- Did not push `{tag}`: current public main could not be verified.\n")
+                          raise RuntimeError("Could not verify current public main; :main was not pushed") from error
+                      if fields[0] != os.environ["IMAGE_REVISION"]:
+                          message = (f"Skipped `{tag}`: built revision `{os.environ['IMAGE_REVISION']}` "
+                                     f"differs from current main `{fields[0]}`.")
+                          print(message)
+                          summary.write(f"- {message}\n")
+                          continue
+                  subprocess.run(["docker", "push", tag], check=True)
+                  summary.write(f"- Published `{tag}`\n")
+                  digests = json.loads(subprocess.run(
+                      ["docker", "image", "inspect", "--format", "{{json .RepoDigests}}", tag],
+                      check=True, capture_output=True, text=True).stdout)
+                  for digest in digests or []:
+                      summary.write(f"  - Registry digest: `{digest}`\n")
+              summary.write("\nAll published tags refer to the image validated by this workflow run.\n")
+          PY
