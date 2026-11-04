@@ -144,7 +144,11 @@ def main():
         print(json.dumps(result[-1],indent=2))
     elif args.command=="serve":
         from .service import serve
-        serve(args.jobs,config,port=args.port,max_runtime_s=args.max_runtime,max_upload_bytes=args.max_upload_mb*1024*1024)
+        try:
+            serve(args.jobs,config,port=args.port,max_runtime_s=args.max_runtime,
+                  max_upload_bytes=args.max_upload_mb*1024*1024)
+        except (OSError, ValueError, OverflowError) as exc:
+            parser.error(f"Could not start local service: {exc}")
     elif args.command=="analyze":
         from .jobs import JobManager
         from .contracts import validate_request
