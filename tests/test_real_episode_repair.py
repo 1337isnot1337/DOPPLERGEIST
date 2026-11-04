@@ -148,3 +148,19 @@ def test_corrupted_real_audio_container_is_an_intake_failure(tmp_path):
     with pytest.raises(AudioIntakeError) as caught:
         intake_recording(corrupt, tmp_path/'intake')
     assert caught.value.code == 'invalid_media'
+
+
+def test_prediction_cache_preserves_every_recorded_raw_path():
+    import gzip
+    from dopplergeist.episode_discovery import _paths
+    data = json.loads((FIXTURES/'real_discovery_normalization.json').read_text())
+    samples = np.frombuffer(base64.b64decode(data['excerpts'][0]['pcm_f32le_base64']), dtype='<f4')
+    with gzip.open(FIXTURES/'real_uncached_paths.json.gz','rt') as stream:
+        recorded = json.load(stream)
+    assert data['source_sha256'] == recorded['source_sha256']
+    for profile in recorded['profiles']:
+        settings = DiscoverySettings(**{k: profile[k] for k in ('window_s','hop_s','max_peaks_per_frame')})
+        actual = _paths(_spectrum(samples,4000,0.,settings,fixed_bands=True),settings)
+        assert len(actual) == len(profile['paths'])
+        for path, expected in zip(actual,profile['paths']):
+            np.testing.assert_array_equal(path,expected)

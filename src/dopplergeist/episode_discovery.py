@@ -21,7 +21,7 @@ from scipy import optimize, signal
 from .audio import Spectrum
 from .contracts import validate_event
 from .episodes import (Associations, DiscoveryError, Ridge, deduplicate,
-                       identifier, intervals, motion, reconcile, stitch, forecast, support, uncertainty, recurrent_context)
+                       identifier, intervals, motion, reconcile, stitch, support, uncertainty, recurrent_context, prediction_model, predict)
 
 _HARMONIC_RATIOS = sorted({a / b for a in range(2, 9) for b in range(1, a) if a / b >= 1.2})
 _NORMALIZATION_FUNCTIONS = (np.median, np.abs, np.maximum, np.clip, np.isfinite)
@@ -134,6 +134,7 @@ def _spectrum(data, sr, start, settings, *, fixed_bands=False):
 def _paths(spec, settings):
     """Link local spectral maxima with bounded motion and short missing spans."""
     active, completed = [], []
+    prediction_cache = {}
     for column, time in enumerate(spec.time):
         peaks, info = signal.find_peaks(spec.contrast[:, column], height=settings.min_contrast,
                                        prominence=1.5, distance=2)
@@ -187,13 +188,21 @@ def _paths(spec, settings):
             else:
                 completed.append(path)
         active = live
+        # Histories only append observations. A missing frame cannot change the
+        # sufficient prediction model; retain entries only for live paths.
+        prediction_cache={id(path):prediction_cache[id(path)] for path in active if id(path) in prediction_cache}
         used = set()
         if active and len(peaks):
             last = np.array([path[-1] for path in active])
             dt = time - last[:, 0]
             delta = frequencies[None, :] - last[:, 1, None]
             speed = delta / dt[:, None]
-            predictions = [forecast(path, time, settings, next_sigma=0.) for path in active]
+            predictions=[]
+            for path in active:
+                token=id(path)
+                if token not in prediction_cache or prediction_cache[token][0]!=path[-1][0]:
+                    prediction_cache[token]=(path[-1][0],prediction_model(path,settings))
+                predictions.append(predict(prediction_cache[token][1],time,next_sigma=0.))
             means = np.array([p[0] for p in predictions])
             tolerance = np.sqrt(np.array([p[1] for p in predictions])[:,None]**2+9*sigma[None,:]**2)
             allowed = np.abs(delta) <= np.maximum(np.maximum(8,last[:,1,None]*.08)*dt[:,None],3/settings.window_s)
