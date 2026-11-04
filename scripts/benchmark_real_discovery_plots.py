@@ -52,15 +52,10 @@ def main():
     if not events:
         parser.error("The real recording contains no event diagnostics to compare")
     group_ids = list(dict.fromkeys(event["harmonic_group_id"] for event in events))
-    if diagnostics.get("schema_version", 1) >= 2:
-        measured = {e["event_id"]: np.array([[p["time_s"],p["frequency_hz"],p.get("weight",1.)] for p in e["ridge"]]) for e in events}
-        groups = {e["proposal_id"]:[measured[c] for c in e["child_ridge_ids"]] for e in diagnostics["episodes"]}
-        events = [dict(e,harmonic_group_id=e["proposal_id"]) for e in diagnostics["episodes"]]
-    else:
-        if len(group_ids) != len(diagnostics["harmonic_ridges"]):
-            parser.error("Discovery groups and measured harmonic ridges do not agree")
-        groups = {name: [np.asarray(points) for points in rows]
-                  for name, rows in zip(group_ids, diagnostics["harmonic_ridges"])}
+    if len(group_ids) != len(diagnostics["harmonic_ridges"]):
+        parser.error("Discovery groups and measured harmonic ridges do not agree")
+    groups = {name: [np.asarray(points) for points in rows]
+              for name, rows in zip(group_ids, diagnostics["harmonic_ridges"])}
     implementations = {"baseline": _module(args.baseline.resolve()), "current": discovery}
     args.output.mkdir(parents=True, exist_ok=False)
     samples = {name: [] for name in implementations}

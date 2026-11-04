@@ -29,6 +29,16 @@ def test_analyze_rejects_time_source_without_start_utc(tmp_path):
     assert not jobs.exists()
 
 
+def test_discover_refuses_existing_output_directory(tmp_path):
+    marker = tmp_path / "preserve.txt"
+    marker.write_text("existing output")
+    run = _run_cli("discover", Path(__file__), "--output", tmp_path)
+
+    assert run.returncode == 2
+    assert "Could not complete discovery" in run.stderr
+    assert marker.read_text() == "existing output"
+
+
 def test_analyze_reports_job_store_initialization_error_without_traceback():
     existing_file = Path(__file__)
     run = _run_cli("analyze", existing_file, "--jobs", existing_file)
@@ -36,6 +46,16 @@ def test_analyze_reports_job_store_initialization_error_without_traceback():
     assert run.returncode == 2
     assert "Could not open job store" in run.stderr
     assert "Traceback" not in run.stderr
+
+
+def test_analyze_exits_nonzero_for_failed_job(tmp_path):
+    # The invalid configuration fails before audio intake; only a real path is needed.
+    config = tmp_path / "operator.json"
+    config.write_text('{"search_workers": 0}')
+    run = _run_cli("analyze", Path(__file__), "--jobs", tmp_path / "jobs", "--config", config)
+
+    assert run.returncode == 1
+    assert '"status": "failed"' in run.stdout
 
 
 def test_serve_reports_job_store_initialization_error_without_traceback():

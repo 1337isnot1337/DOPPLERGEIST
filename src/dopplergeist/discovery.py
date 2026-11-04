@@ -7,19 +7,12 @@ from dataclasses import asdict, dataclass
 import json
 from pathlib import Path
 from statistics import median
-import hashlib
-from importlib.metadata import version
-import subprocess
-import time
-from collections import Counter
 
 import numpy as np
-from scipy import optimize, signal
+from scipy import ndimage, optimize, signal
 
 from .audio import Spectrum
 from .contracts import validate_event
-from .episodes import (Associations, DiscoveryError, Ridge, deduplicate,
-                       identifier, intervals, motion, reconcile, stitch)
 
 _HARMONIC_RATIOS = sorted({a / b for a in range(2, 9) for b in range(1, a) if a / b >= 1.2})
 _NORMALIZATION_FUNCTIONS = (np.median, np.abs, np.maximum, np.clip, np.isfinite)
@@ -41,28 +34,11 @@ class DiscoverySettings:
     max_gap_s: float = 2.0
     max_fragment_gap_s: float = 20.0
     max_peaks_per_frame: int = 60
-    provisional_min_points: int = 4
-    brief_min_observed_s: float = 3.0
-    brief_min_contrast: float = 4.5
-    max_candidates: int = 4096
-    max_measurements: int = 500000
-    max_associations: int = 200000
-    max_diagnostic_traces: int = 100
-    max_spectral_cells: int = 8000000
-    max_episode_components: int = 32
 
     def __post_init__(self):
         values = asdict(self)
         if any(not np.isfinite(value) or value <= 0 for value in values.values()):
             raise ValueError("Discovery settings must be finite and positive")
-        for name in ("max_peaks_per_frame", "provisional_min_points", "max_candidates", "max_measurements",
-                     "max_associations", "max_diagnostic_traces", "max_spectral_cells", "max_episode_components"):
-            if type(values[name]) is not int:
-                raise ValueError(f"{name} must be an integer")
-        if self.provisional_min_points < 4 or self.chunk_s > 180 or self.window_s > 8 or self.max_frequency_hz > 14400:
-            raise ValueError("Require >=4 provisional points, chunk <=180 s, window <=8 s and upper frequency <=14400 Hz")
-        if self.min_frequency_hz < 2 / self.window_s:
-            raise ValueError("Lower frequency needs at least two cycles per spectral window")
         if self.overlap_s >= self.chunk_s or self.overlap_s < self.min_duration_s + self.window_s:
             raise ValueError("Overlap must cover an event acceptance window and be shorter than a chunk")
         if not self.hop_s <= self.window_s < self.chunk_s or self.min_support > 1:
@@ -75,9 +51,6 @@ def _spectrum(data, sr, start, settings):
     n, hop = round(sr * settings.window_s), round(sr * settings.hop_s)
     if len(data) < n:
         return None
-    cells = (n // 2 + 1) * (1 + (len(data) - n) // hop)
-    if cells > settings.max_spectral_cells:
-        raise DiscoveryError("spectral_budget_exceeded", f"Spectrum needs {cells} cells; limit {settings.max_spectral_cells}")
     f, t, power = signal.spectrogram(data, fs=sr, window="hann", nperseg=n,
                                     noverlap=n - hop, nfft=n, scaling="density")
     keep = (f >= settings.min_frequency_hz) & (f <= min(settings.max_frequency_hz, sr * 0.48))
@@ -136,38 +109,55 @@ def _paths(spec, settings):
             slopes = []
             for path in active:
                 tail = path[-8:]
-                if len(tail) >= 2:
+                if len(tail) >= 3:
                     slopes.append(float(median(
                         (right[1] - left[1]) / (right[0] - left[0])
                         for left, right in zip(tail, tail[1:])
                     )))
                 else:
                     slopes.append(0.0)
-            allowed = np.abs(speed) <= np.maximum(8, last[:, 1, None] * 0.08)
+            allowed = (speed >= -np.maximum(8, last[:, 1, None] * 0.08)) & (speed <= np.maximum(1.0, last[:, 1, None] * 0.008))
             predicted_delta = np.asarray(slopes)[:, None] * dt[:, None]
-            tolerance = 3 / settings.window_s + np.maximum(.5, np.abs(slopes)[:, None] * .5) * dt[:, None]
-            newborn = np.array([len(path) == 1 for path in active])
-            tolerance[newborn] = np.maximum(8, last[newborn, 1, None] * .08) * dt[newborn, None]
-            costs = np.abs(delta - predicted_delta) / tolerance
-            allowed &= costs <= 1
+            costs = np.abs(delta - predicted_delta) / np.maximum(1.0, last[:, 1, None] * 0.01)
             costs = np.where(allowed, costs, 1e6)
             rows, cols = optimize.linear_sum_assignment(costs)
             for row, col in zip(rows, cols):
                 if costs[row, col] < 1e6:
-                    active[row].append((float(time), float(frequencies[col]), float(weights[col]), float(spec.db[peaks[col], column])))
+                    active[row].append((float(time), float(frequencies[col]), float(weights[col])))
                     used.add(col)
-        active.extend([(float(time), float(frequency), float(weight), float(spec.db[peaks[j], column]))]
+        active.extend([(float(time), float(frequency), float(weight))]
                       for j, (frequency, weight) in enumerate(zip(frequencies, weights)) if j not in used)
     return completed + active
 
 
 def _usable(path, settings):
-    metrics, rejected = motion(np.asarray(path), settings)
-    return not rejected and metrics["observed_duration_s"] >= settings.min_duration_s and metrics["support_fraction"] >= settings.min_support
+    points = np.asarray(path)
+    t, f, weight = points.T
+    duration = t[-1] - t[0]
+    if duration < settings.min_duration_s:
+        return False
+    support = len(t) / (duration / settings.hop_s + 1)
+    edge = max(3, len(t) // 6)
+    drop = np.median(f[:edge]) - np.median(f[-edge:])
+    if support < settings.min_support:
+        return False
+    if drop < max(settings.min_drop_hz, np.median(f) * settings.min_fractional_drop):
+        return False
+    # Reject stationary tracks and random wandering. Local frequency jitter is
+    # permitted; no compulsory straight-flight geometry or speed bound is used.
+    smooth = ndimage.median_filter(f, size=5, mode="nearest")
+    monotone = np.mean(np.diff(smooth) <= 0.5)
+    slopes = -np.diff(smooth) / np.diff(t)
+    moving_fraction = np.mean(slopes > max(0.05, drop / duration * 0.2))
+    # A path can otherwise jump between two stationary tones and manufacture
+    # an apparent Doppler drop. Require distributed, resolved frequency motion.
+    jump = np.max(np.abs(np.diff(smooth)))
+    return bool(monotone >= 0.75 and moving_fraction >= 0.35
+                and jump <= max(2 / settings.window_s, drop * 0.25)
+                and np.median(np.abs(f - smooth)) <= max(1, np.median(f) * 0.01))
 
 
 def _overlap(a, b):
-    """Legacy fixed-grid alignment, retained for existing optional adapters."""
     first, last = max(a[0, 0], b[0, 0]), min(a[-1, 0], b[-1, 0])
     if last <= first:
         return None
@@ -184,7 +174,6 @@ def _overlap(a, b):
 
 
 def _merge_duplicates(paths):
-    """Legacy adapter compatibility; canonical discovery uses deduplicate()."""
     merged = []
     for path in sorted(paths, key=lambda p: p[0][0]):
         current = np.asarray(path)
@@ -205,245 +194,159 @@ def _merge_duplicates(paths):
     return merged
 
 
+def _harmonic_groups(paths):
+    groups = []
+    for path in sorted(paths, key=lambda p: np.median(p[:, 1])):
+        for group in groups:
+            base = group[0]
+            shared = _overlap(base, path)
+            if shared is None:
+                continue
+            t, f, g = shared
+            if len(t) * 0.5 < 0.6 * min(np.ptp(base[:, 0]), np.ptp(path[:, 0])):
+                continue
+            ratio = g / f
+            # Rational ratios also cover a missing fundamental (e.g. 2f, 3f).
+            harmonic = min(_HARMONIC_RATIOS, key=lambda value: abs(value - np.median(ratio)))
+            if np.quantile(np.abs(ratio - harmonic) / harmonic, 0.9) < 0.008:
+                group.append(path)
+                break
+        else:
+            groups.append([path])
+    return sorted(groups, key=lambda group: group[0][0, 0])
+
 
 def _stitch_fragments(paths, settings, diagnostics=None):
-    work = Associations(settings)
-    ridges = [Ridge(np.asarray(p), (identifier("raw:", np.asarray(p)),)) for p in paths]
-    result = stitch(ridges, settings, work)
+    """Join only reciprocal-unique, locally compatible tonal continuations.
+
+    Missing samples remain missing. A stitch is an acoustic hypothesis, not a
+    flight identity or an independent event. Competing continuations stay split.
+    """
+    paths = sorted(paths, key=lambda path: path[0, 0])
+    incoming = [[] for _ in paths]
+    outgoing = [[] for _ in paths]
+    for i, left in enumerate(paths):
+        tail = left[left[:, 0] >= left[-1, 0] - 6]
+        rate_left = -np.polyfit(tail[:, 0] - tail[0, 0], tail[:, 1], 1)[0]
+        for j in range(i + 1, len(paths)):
+            right = paths[j]
+            gap = right[0, 0] - left[-1, 0]
+            if gap <= 0 or gap > settings.max_fragment_gap_s:
+                continue
+            if gap / (right[-1, 0] - left[0, 0]) > 0.35:
+                continue
+            head = right[right[:, 0] <= right[0, 0] + 6]
+            rate_right = -np.polyfit(head[:, 0] - head[0, 0], head[:, 1], 1)[0]
+            drop = left[-1, 1] - right[0, 1]
+            rate = drop / gap
+            tolerance = max(2 / settings.window_s, 0.015 * left[-1, 1])
+            if min(rate_left, rate_right) <= 0.05 or drop < -tolerance or drop > left[-1, 1] * 0.3:
+                continue
+            if not 0.4 * min(rate_left, rate_right) - tolerance / gap <= rate <= 2.5 * max(rate_left, rate_right) + tolerance / gap:
+                continue
+            outgoing[i].append(j)
+            incoming[j].append(i)
+    following = {i: targets[0] for i, targets in enumerate(outgoing)
+                 if len(targets) == 1 and len(incoming[targets[0]]) == 1}
     if diagnostics is not None:
-        diagnostics.extend(work.decisions)
-    return [r.points for r in result]
+        for i, targets in enumerate(outgoing):
+            for j in targets:
+                accepted = following.get(i) == j
+                diagnostics.append({"from_start_s": float(paths[i][0, 0]), "from_end_s": float(paths[i][-1, 0]),
+                    "to_start_s": float(paths[j][0, 0]), "to_end_s": float(paths[j][-1, 0]),
+                    "gap_s": float(paths[j][0, 0] - paths[i][-1, 0]), "accepted": accepted,
+                    "reason": "reciprocal_unique_continuation" if accepted else "ambiguous_continuation"})
+    consumed, result = set(), []
+    for first in range(len(paths)):
+        if first in consumed:
+            continue
+        chain, current = [paths[first]], first
+        while current in following:
+            current = following[current]
+            chain.append(paths[current])
+            consumed.add(current)
+        result.append(np.concatenate(chain))
+    return result
 
 
-def required_sample_rate(settings):
-    """Bound decode cost while keeping a 10% Nyquist transition guard."""
-    for rate in (4000, 8000, 16000, 32000):
-        if settings.max_frequency_hz <= .45 * rate:
-            return rate
-    raise DiscoveryError("unsupported_frequency_coverage", "Requested upper frequency exceeds bounded decoder coverage")
+def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False):
+    """Return shared DetectedEvent dictionaries from a disk-backed recording.
 
-
-def _coverage(recording, settings):
-    sr = recording.metadata["sample_rate_hz"]
-    decode = recording.diagnostics.get("decode", {})
-    source_sr = decode.get("source_sample_rate_hz", sr)
-    upper = .45 * min(sr, source_sr)
-    if settings.max_frequency_hz > upper:
-        raise DiscoveryError("unsupported_frequency_coverage",
-                             f"Requested {settings.max_frequency_hz:g} Hz exceeds usable decoded/source coverage {upper:g} Hz; decode at >= {required_sample_rate(settings)} Hz and check source rate")
-    if np.floor(settings.max_frequency_hz * settings.window_s) - np.ceil(settings.min_frequency_hz * settings.window_s) < 2:
-        raise DiscoveryError("unsupported_frequency_coverage", "Frequency range requires at least three spectral bins for a measured peak")
-    # Align frames and chunk boundaries to exactly representable sample hops.
-    if any(abs(value * sr - round(value * sr)) > 1e-7 for value in (settings.window_s, settings.hop_s)):
-        raise DiscoveryError("unsupported_time_grid", "Window and hop must be integer sample counts")
-    step = settings.chunk_s - settings.overlap_s
-    if abs(step / settings.hop_s - round(step / settings.hop_s)) > 1e-7:
-        raise DiscoveryError("unsupported_time_grid", "Chunk step must be an integer number of spectral hops")
-    if round(settings.hop_s * sr) < 1:
-        raise DiscoveryError("unsupported_time_grid", "Hop must span at least one sample")
-    return dict(requested_hz=[settings.min_frequency_hz, settings.max_frequency_hz],
-                analyzed_hz=[float(np.ceil(settings.min_frequency_hz * settings.window_s) / settings.window_s),
-                             float(np.floor(settings.max_frequency_hz * settings.window_s) / settings.window_s)],
-                decoded_sample_rate_hz=sr, source_sample_rate_hz=source_sr, usable_upper_hz=upper,
-                frequency_resolution_hz=1 / settings.window_s, time_hop_s=settings.hop_s,
-                window_s=settings.window_s, exhaustive_outside_analyzed_range=False,
-                ridge_peak_centers_hz=[float((np.ceil(settings.min_frequency_hz * settings.window_s)+1) / settings.window_s),
-                                       float((np.floor(settings.max_frequency_hz * settings.window_s)-1) / settings.window_s)],
-                edge_policy="outermost retained bins support interpolation but cannot be peak centers",
-                minimum_complete_window_s=settings.window_s,
-                method="single higher-rate chunked spectrum; no band boundary", nyquist_guard_fraction=.45)
-
-
-def _code_identity():
-    root = Path(__file__).resolve().parents[2]
-    try:
-        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True, stderr=subprocess.DEVNULL).strip()
-    except (OSError, subprocess.CalledProcessError):
-        commit = None
-    digest = hashlib.sha256()
-    for name in ("discovery.py", "episodes.py", "intake.py"):
-        digest.update((Path(__file__).parent / name).read_bytes())
-    return dict(git_commit=commit, implementation_sha256=digest.hexdigest(),
-                numpy=version("numpy"), scipy=version("scipy"))
-
-
-def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False,
-                    detailed_candidates=False):
-    """Return compatible measured child events; discovery.json v2 owns episodes.
-
-    Grouping is an acoustic hypothesis with unresolved physical multiplicity.
-    Budgets/coverage failures raise DiscoveryError and write status=failed;
-    status=complete with zero episodes is a valid in-band negative result.
+    Fixed defaults scan 40–1600 Hz in overlapping chunks; no event hints, flight
+    data or truth paths are accepted. Each measured ridge gets a record; a
+    shared harmonic_group_id makes those records one independent proposal.
+    Optional diagnostics retain all measured harmonic ridges and chunk counts.
+    Per-event spectrograms are expensive and are rendered only when requested.
     """
     settings = settings or DiscoverySettings()
-    began = time.monotonic()
+    sr = recording.metadata["sample_rate_hz"]
+    if settings.min_frequency_hz >= min(settings.max_frequency_hz, sr * 0.48):
+        raise ValueError("Frequency range is above the decoded Nyquist limit")
+    paths, chunks = [], []
     output = Path(output_dir) if output_dir is not None else None
     if output:
         output.mkdir(parents=True, exist_ok=True)
         if (output / "discovery.json").exists():
             raise FileExistsError("Discovery output exists; use a new output directory")
-    report = dict(schema_version=2, status="running", source_sha256=recording.metadata["source_sha256"],
-                  settings=asdict(settings), code=_code_identity(), events=[], episodes=[], chunks=[],
-                  scope="acoustic episodes; physical motion, aircraft identity and single-source interpretation unconfirmed")
-    try:
-        events, groups = _discover(recording, settings, report, detailed_candidates)
-        report["status"] = "complete"
-    except DiscoveryError as exc:
-        report.update(status="failed", failure=dict(code=exc.code, message=str(exc)))
-        raise
-    except Exception as exc:
-        report.update(status="failed", failure=dict(code="discovery_execution_error", exception_type=type(exc).__name__, message=str(exc)))
-        raise
-    finally:
-        report["runtime_s"] = time.monotonic() - began
-        if output:
-            (output / "discovery.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
+    for start, data in recording.iter_chunks(settings.chunk_s, settings.overlap_s):
+        spec = _spectrum(data, sr, start, settings)
+        if spec is None:
+            chunks.append({"start_s": start, "duration_s": len(data) / sr, "usable_paths": 0})
+            continue
+        found = [path for path in _paths(spec, settings) if _usable(path, settings)]
+        paths.extend(found)
+        chunks.append({"start_s": start, "duration_s": len(data) / sr, "usable_paths": len(found)})
+    paths = _merge_duplicates(paths)
+    fragment_links = []
+    paths = _stitch_fragments(paths, settings, fragment_links)
+    groups = _harmonic_groups(paths)
+    events, event_groups = [], []
+    for index, group in enumerate(groups):
+        orders = {1.0}
+        for harmonic in group[1:]:
+            _, base_f, harmonic_f = _overlap(group[0], harmonic)
+            ratio = np.median(harmonic_f / base_f)
+            orders.add(min(_HARMONIC_RATIOS, key=lambda value: abs(value - ratio)))
+        for harmonic_index, points in enumerate(group):
+            t, f, weight = points.T
+            margin = 2 / settings.window_s
+            smooth = ndimage.median_filter(f, size=5, mode="nearest")
+            frequency_scale = float(max(1 / settings.window_s, 1.4826 * np.median(np.abs(f - smooth))))
+            event_id = f"event-{index + 1:04d}"
+            if harmonic_index:
+                event_id += f"-harmonic-{harmonic_index + 1}"
+            event = {"event_id": event_id, "harmonic_group_id": f"harmonics-{index + 1:04d}",
+                 "start_s": max(0.0, float(t[0] - settings.window_s / 2)),
+                 "end_s": min(recording.metadata["duration_s"], float(t[-1] + settings.window_s / 2)),
+                 "band_hz": [max(0.01, float(f.min() - margin)), float(f.max() + margin)],
+                 "ridge": [{"time_s": float(a), "frequency_hz": float(b), "weight": float(c)} for a, b, c in points],
+                 "quality": {"median_contrast": float(np.median(weight)), "harmonic_count": float(len(orders)),
+                             "support_fraction": min(1.0, len(t) / (np.ptp(t) / settings.hop_s + 1)),
+                             "frequency_resolution_hz": 1 / settings.window_s,
+                             "time_uncertainty_s": settings.window_s / 2,
+                             "frequency_uncertainty_hz": frequency_scale,
+                             "frequency_sigma_hz": frequency_scale,
+                             "fragment_count": float(1 + np.sum(np.diff(t) > settings.max_gap_s)),
+                             "max_observed_gap_s": float(np.max(np.diff(t))),
+                             "frequency_drop_hz": float(np.median(f[:max(3, len(f) // 6)]) - np.median(f[-max(3, len(f) // 6):]))}}
+            events.append(validate_event(event))
+            event_groups.append(group)
     if output:
+        diagnostics = {"source_sha256": recording.metadata["source_sha256"], "settings": asdict(settings),
+                       "events": events, "chunks": chunks, "ridge_count": len(paths),
+                       "fragment_links": fragment_links,
+                       "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
+                       "scope": "automatic acoustic moving-tone proposals; aircraft identity unconfirmed"}
+        (output / "discovery.json").write_text(json.dumps(diagnostics, indent=2, allow_nan=False) + "\n")
         if plot_summary:
             _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
-        for episode, group in zip(report["episodes"], groups):
+        for event, group in zip(events, event_groups):
+            points = np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]])
+            np.savetxt(output / f"{event['event_id']}.csv", points, delimiter=",",
+                       header="time_s,frequency_hz,weight", comments="")
             if plot_event_details:
-                _plot_event(recording, group, episode, settings, output / f"{episode['proposal_id']}.png")
+                _plot_event(recording, group, event, settings, output / f"{event['event_id']}.png")
     return events
-
-
-def _discover(recording, settings, report, detailed):
-    report["coverage"] = _coverage(recording, settings)
-    sr = recording.metadata["sample_rate_hz"]
-    ridges, traces, counts = [], [], Counter()
-    report["counts"] = counts
-    points_retained = 0
-    rejection_ranges = {}
-    def reject(reasons, metrics=None, origins=()):
-        for reason in reasons:
-            counts[reason["reason"]] += 1
-            name, value = reason["reason"], float(reason["measured"])
-            entry = rejection_ranges.setdefault(name, dict(count=0, measured_min=value, measured_max=value,
-                threshold_min=float(reason["threshold"]), threshold_max=float(reason["threshold"]), comparison=reason["comparison"]))
-            entry["count"] += 1
-            entry["measured_min"] = min(entry["measured_min"], value)
-            entry["measured_max"] = max(entry["measured_max"], value)
-            entry["threshold_min"] = min(entry["threshold_min"], float(reason["threshold"]))
-            entry["threshold_max"] = max(entry["threshold_max"], float(reason["threshold"]))
-        if detailed and len(traces) < settings.max_diagnostic_traces:
-            traces.append(dict(origins=list(origins), measurements=metrics, rejections=reasons))
-    for chunk_index, (start, data) in enumerate(recording.iter_chunks(settings.chunk_s, settings.overlap_s)):
-        spec = _spectrum(data, sr, start, settings)
-        raw = _paths(spec, settings) if spec is not None else []
-        found = 0
-        for path in raw:
-            counts["raw_paths"] += 1
-            counts["raw_observations"] += len(path)
-            if len(path) < settings.provisional_min_points:
-                reject([dict(reason="provisional_points", measured=len(path), threshold=settings.provisional_min_points, comparison=">=")])
-                continue
-            points = np.asarray(path)
-            origin = f"chunk-{chunk_index:06d}:" + identifier("ridge-", points, recording.metadata["source_sha256"])
-            ridges.append(Ridge(points, (origin,)))
-            found += 1
-            points_retained += len(points)
-            if len(ridges) > settings.max_candidates or points_retained > settings.max_measurements:
-                raise DiscoveryError("candidate_budget_exceeded", f"Retained {len(ridges)} candidates/{points_retained} observations; limits {settings.max_candidates}/{settings.max_measurements}")
-        report["chunks"].append(dict(start_s=start, duration_s=len(data) / sr, raw_paths=len(raw), provisional_paths=found))
-    counts["provisional_paths"] = len(ridges)
-    counts["provisional_observations"] = points_retained
-    work = Associations(settings)
-    ridges = deduplicate(ridges, settings, work)
-    counts["deduplicated_tracks"] = len(ridges)
-    ridges = stitch(ridges, settings, work)
-    counts["stitched_tracks"] = len(ridges)
-    # Motion before grouping prevents stationary/noisy tracks from licensing
-    # group acceptance, but duration rejection only occurs after reconciliation.
-    moving = []
-    metrics_by_id = {}
-    for ridge in ridges:
-        metrics, reasons = motion(ridge.points, settings)
-        metrics_by_id[identifier("", ridge.points)] = metrics
-        if reasons:
-            reject(reasons, metrics, ridge.origins)
-        else:
-            moving.append(ridge)
-    reconciled = reconcile(moving, settings, work)
-    events, accepted_groups, episodes = [], [], []
-    for members, scales, orders, group_model in reconciled:
-        metrics = [metrics_by_id[identifier("", r.points)] for r in members]
-        cells = intervals(np.concatenate([r.points[:, 0] for r in members]), settings.hop_s)
-        observed = sum(b - a for a, b in cells)
-        span = cells[-1][1] - cells[0][0]
-        support = observed / span
-        long = observed >= settings.min_duration_s and support >= settings.min_support
-        # Brief observations need stronger contrast, resolution and continuity;
-        # harmonic richness alone cannot manufacture a moving event.
-        brief = (observed >= settings.brief_min_observed_s and support >= .85 and
-                 any(m["median_contrast"] >= settings.brief_min_contrast and
-                     m["frequency_excursion_hz"] >= 6 * m["frequency_uncertainty_hz"] and
-                     m["moving_fraction"] >= .6 and m["prediction_error_q95"] <= .75 for m in metrics))
-        if not long and not brief:
-            # Report each failed gate on both alternative paths. A single
-            # duration number would obscure support/contrast failures.
-            best = max(metrics, key=lambda m: min(m["median_contrast"] / settings.brief_min_contrast,
-                       m["frequency_excursion_hz"] / (6 * m["frequency_uncertainty_hz"]),
-                       m["moving_fraction"] / .6, .75 / max(m["prediction_error_q95"], 1e-9)))
-            gates = [("sustained_observed_duration_s", observed, settings.min_duration_s, ">="),
-                     ("sustained_support_fraction", support, settings.min_support, ">="),
-                     ("brief_observed_duration_s", observed, settings.brief_min_observed_s, ">="),
-                     ("brief_support_fraction", support, .85, ">="),
-                     ("brief_contrast", best["median_contrast"], settings.brief_min_contrast, ">="),
-                     ("brief_excursion_sigma", best["frequency_excursion_hz"] / best["frequency_uncertainty_hz"], 6., ">="),
-                     ("brief_moving_fraction", best["moving_fraction"], .6, ">="),
-                     ("brief_prediction_error_q95", best["prediction_error_q95"], .75, "<=")]
-            reject([dict(reason=name, measured=float(value), threshold=float(limit), comparison=op)
-                    for name,value,limit,op in gates if (value < limit if op == ">=" else value > limit)],
-                   dict(observed_duration_s=observed, support_fraction=support, child_metrics=metrics),
-                   tuple(x for r in members for x in r.origins))
-            continue
-        matching_eligible = sum(len(r.points) for r in members) >= 10
-        child_ids = [identifier("ridge-", r.points, recording.metadata["source_sha256"]) for r in members]
-        proposal_id = "episode-" + hashlib.sha256((recording.metadata["source_sha256"] + "|".join(sorted(child_ids))).encode()).hexdigest()[:20]
-        children = []
-        for ridge, scale, child_id, m in zip(members, scales, child_ids, metrics):
-            points = ridge.points
-            t, f, w = points[:, :3].T
-            margin = 2 / settings.window_s
-            quality = {k: float(v) for k, v in m.items() if isinstance(v, (int, float))}
-            quality.update(harmonic_count=float(len(set(orders))) if orders else 0.0,
-                           frequency_resolution_hz=1 / settings.window_s, time_uncertainty_s=settings.window_s / 2,
-                           frequency_sigma_hz=m["frequency_uncertainty_hz"],
-                           fragment_count=float(1 + np.sum(np.diff(t) > settings.max_gap_s)),
-                           max_observed_gap_s=float(np.max(np.diff(t))),
-                           frequency_drop_hz=float(np.median(f[:max(3, len(f)//6)]) - np.median(f[-max(3, len(f)//6):])),
-                           episode_frequency_scale=float(scale), episode_model_version=2.0, matching_eligible=float(matching_eligible))
-            event = validate_event(dict(event_id=child_id, harmonic_group_id=proposal_id,
-                start_s=max(0., float(t[0] - settings.window_s / 2)),
-                end_s=min(recording.metadata["duration_s"], float(t[-1] + settings.window_s / 2)),
-                band_hz=[max(.01, float(f.min() - margin)), float(f.max() + margin)],
-                ridge=[dict(time_s=float(a), frequency_hz=float(b), weight=float(c)) for a,b,c in points[:, :3]], quality=quality))
-            events.append(event)
-            children.append(dict(ridge_id=child_id, raw_track_ids=list(ridge.origins), frequency_scale=float(scale),
-                                 amplitude_db=points[:, 3].tolist() if points.shape[1] > 3 else None,
-                                 observed_intervals_s=intervals(t, settings.hop_s), measurements=m))
-        episode = dict(proposal_id=proposal_id, event_id=proposal_id, child_ridge_ids=child_ids, children=children,
-                       start_s=min(e["start_s"] for e in events[-len(members):]), end_s=max(e["end_s"] for e in events[-len(members):]),
-                       observed_intervals_s=cells, gaps_s=[[cells[i][1], cells[i+1][0]] for i in range(len(cells)-1)],
-                       observed_duration_s=observed, support_fraction=support,
-                       band_hz=[float(min(r.points[:,1].min() for r in members)), float(max(r.points[:,1].max() for r in members))],
-                       matching_eligible=matching_eligible,
-                       matching_limitation=None if matching_eligible else "Fewer than ten observed samples; retained for acoustic review only",
-                       acceptance_path="sustained" if long else "brief_strong_evidence",
-                       confidence="uncalibrated_supported" if long else "uncalibrated_brief_limited",
-                       physical_source_multiplicity="unresolved", physical_motion_confirmed=False,
-                       model="constant frequency scales with pairwise supported common motion", group_evidence=group_model, integer_orders=orders,
-                       limitations=["Common frequency evolution does not establish one physical source or aircraft identity"])
-        episodes.append(episode)
-        accepted_groups.append([r.points[:, :3] for r in members])
-    counts["canonical_proposals"] = len(episodes)
-    counts["measured_child_tracks"] = len(events)
-    report.update(events=events, episodes=episodes, counts=dict(counts), ridge_count=len(events),
-                  rejections=dict(measured_ranges=rejection_ranges, counts={k:v for k,v in counts.items() if k not in ("raw_paths", "raw_observations", "provisional_paths", "provisional_observations", "deduplicated_tracks", "stitched_tracks", "canonical_proposals", "measured_child_tracks")},
-                                  traces=traces, traces_enabled=detailed, trace_limit=settings.max_diagnostic_traces),
-                  association_pairs=work.count, reconciliation_counts=dict(work.decision_counts), reconciliation_decisions=work.decisions,
-                  decisions_truncated=len(work.decisions) == work.trace_limit)
-    return events, accepted_groups
 
 
 def _plot_groups(groups, path, duration, max_gap_s=2.0):
@@ -456,9 +359,9 @@ def _plot_groups(groups, path, duration, max_gap_s=2.0):
             segments = np.split(points, np.flatnonzero(np.diff(points[:, 0]) > max_gap_s) + 1)
             for segment_index, segment in enumerate(segments):
                 ax.plot(segment[:, 0], segment[:, 1], color=f"C{index % 10}", lw=0.8, alpha=0.8,
-                        label=f"Episode {index + 1}" if harmonic == 0 and segment_index == 0 else None)
+                        label=f"Event {index + 1}" if harmonic == 0 and segment_index == 0 else None)
     ax.set(xlim=(0, duration), xlabel="Recording-relative time (s)", ylabel="Measured frequency (Hz)",
-           title="Canonical acoustic episodes (physical source identity unresolved)")
+           title="Automatic whole-recording moving-tone proposals (harmonics grouped)")
     if groups:
         ax.legend(loc="upper right", fontsize="small", ncols=2)
     fig.savefig(path, dpi=130)

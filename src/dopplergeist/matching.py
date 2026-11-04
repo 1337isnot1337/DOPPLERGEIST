@@ -469,8 +469,8 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     for event in detected_events:
         key = event.get("harmonic_group_id") or event["event_id"]
         groups.setdefault(key, []).append(event)
-    settings, measurements = [], []
-    for members in groups.values():
+    settings, measurements, retained_groups = [], [], []
+    for group_id, members in groups.items():
         if any(e.get("quality", {}).get("matching_eligible") == 0 for e in members):
             continue
         reference = min(members, key=lambda e: np.median([p["frequency_hz"] for p in e["ridge"]]))
@@ -524,10 +524,12 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         event["event_ids"] = [e["event_id"] for e in members]
         settings.append(event)
         measurements.append((RidgeTimes(t), f, w, {}))
-    grouped = list(groups.items())
-    for index, (first_id, first_members) in enumerate(grouped):
-        for following in range(index + 1, len(grouped)):
-            second_id, second_members = grouped[following]
+        retained_groups.append((group_id, members))
+    # Match the prepared settings exactly: ineligible episodes have no setting
+    # and must not shift the indices used to attach reused-observation conflicts.
+    for index, (first_id, first_members) in enumerate(retained_groups):
+        for following in range(index + 1, len(retained_groups)):
+            second_id, second_members = retained_groups[following]
             conflict = next((found for first in first_members for second in second_members
                              if (found := reused_ridge_observations(first, second)) is not None), None)
             if conflict is not None:

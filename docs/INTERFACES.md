@@ -80,15 +80,20 @@ They are not guaranteed true geometry; the matcher must account for uncertainty.
 (e.g. `ridge_rmse_hz`). A diagnostic score is not a calibrated probability.
 There is no blanket `confidence` float whose semantics different workers can guess.
 
-Automatic discovery's separate artifact is now `schema_version: 2`; its `episodes`
-catalog references compatible `events` children. See [the artifact contract and
-migration](AUDIO_DISCOVERY.md#outputs-and-compatibility). Modern children carry
-`quality.episode_model_version=2`, positive `episode_frequency_scale`, and numeric
-`matching_eligible`. Matching normalizes these measured scales within each
-canonical group, with legacy rational-ratio behavior for old records. Accepted
-brief episodes with insufficient samples remain acoustic-review evidence. This
-additive numeric quality metadata does not change DetectedEvent's strict keys or
-the upload/result schema version.
+Default discovery retains its existing artifact, which has no explicit
+`schema_version` field. The shared event contract remains version 1. Only the explicit
+`discover --experimental-episodes` path writes `schema_version: 2` with an
+`episodes` catalog that references compatible `events` children. The checkout
+scanner also requires this switch. See [outputs and
+compatibility](AUDIO_DISCOVERY.md#outputs-and-compatibility).
+
+Experimental children carry `quality.episode_model_version=2`, positive
+`quality.episode_frequency_scale`, and numeric `quality.matching_eligible`.
+Matching normalizes these measured scales within each canonical group and retains
+legacy rational-ratio behavior for version-1 events. Brief episodes with
+insufficient samples remain evidence for acoustic review. These numeric quality
+fields preserve DetectedEvent's strict keys and the upload/result schema version.
+Automatic analysis and upload jobs do not select the experimental implementation.
 
 ## Location candidates
 

@@ -19,7 +19,7 @@ def _digest(path):
 
 
 def _audio_identity(request, config):
-    modules = ("intake.py", "discovery.py", "episodes.py", "audio.py", "contracts.py")
+    modules = ("intake.py", "discovery.py", "audio.py", "contracts.py")
     return {"request": request, "source_sha256": _digest(request["audio_path"]),
             "discovery_settings": config.get("discovery", {}),
             "modules": {name: _digest(Path(__file__).parent / name) for name in modules},
@@ -104,15 +104,15 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
 
     try:
         from .intake import AudioIntakeError, intake_recording
-        from .discovery import DiscoveryError, DiscoverySettings, discover_events, required_sample_rate
+        from .discovery import DiscoverySettings, discover_events
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic audio components are not installed: {exc}")
     discovery_options = config.get("discovery", {})
     search_workers = config.get("search_workers")
     if search_workers is not None and (type(search_workers) is not int or search_workers < 1):
         return finish("failed", "invalid_configuration", "search_workers must be a positive integer.")
-    if not isinstance(discovery_options, dict) or discovery_options.keys() - {"chunk_s", "overlap_s", "min_frequency_hz", "max_frequency_hz", "window_s", "hop_s"}:
-        return finish("failed", "invalid_configuration", "Operator discovery settings support chunk/overlap and global spectral coverage/window/hop.")
+    if not isinstance(discovery_options, dict) or discovery_options.keys() - {"chunk_s", "overlap_s"}:
+        return finish("failed", "invalid_configuration", "Operator discovery settings support only chunk_s and overlap_s.")
     try:
         discovery_settings = DiscoverySettings(**discovery_options)
     except (TypeError, ValueError) as exc:
@@ -127,15 +127,12 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     if not resume:
         progress("intake", 0.05)
         try:
-            recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"), sample_rate_hz=required_sample_rate(discovery_settings))
+            recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"))
         except AudioIntakeError as exc:
             return finish("failed", exc.code, str(exc))
         state["recording"] = recording.metadata
         progress("discovery", 0.15, recording=recording.metadata)
-        try:
-            events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
-        except DiscoveryError as exc:
-            return finish("failed", exc.code, str(exc))
+        events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
         _save_audio_checkpoint(output, request, config)
     state["recording"] = recording.metadata
     state["events"] = events
@@ -145,8 +142,6 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
     if not events:
         return finish("inconclusive", "no_supported_events", "No supported moving-tone Doppler events were discovered in the recording.")
-    if not any(e.get("quality", {}).get("matching_eligible", 1) for e in events):
-        return finish("inconclusive", "brief_acoustic_evidence_only", "Brief acoustic episodes were found, with insufficient observed samples for trajectory matching.")
     progress("acquisition", 0.35, **state)
 
     def report_search_progress(fraction=0.0):

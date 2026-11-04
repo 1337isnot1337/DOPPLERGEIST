@@ -95,6 +95,13 @@ or retention evidence, and the file-count rate is not a completed-work rate or
 ETA. Remotely staged work appears after it is imported. Pressing Ctrl-C stops
 the watcher without cancelling the analysis.
 
+Direct `analyze` and `resume --jobs` print the terminal result as JSON and exit
+with status 1 for a failed job or 130 for cancellation. They exit 0 for
+`succeeded`, `needs_input`, or `inconclusive`: a zero exit status means the
+command completed, not that a location was established. Automation must inspect
+the JSON `status`. A server-side resume only requests that the job be queued;
+check the job result separately.
+
 Direct `analyze` accepts up to 100 MiB by default. Set `--max-upload-mb 250`,
 for example, to allow a larger local recording. The `serve` command has its own
 `--max-upload-mb` setting for uploads through the local web interface.
@@ -290,12 +297,9 @@ retained approaches prevent an affirmative confidence decision.
 
 For chunk-boundary checks on real recordings, an operator can set
 `"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
-The operator may also set global `min_frequency_hz`, `max_frequency_hz`,
-`window_s` and `hop_s`. The adapter selects a sufficient decode rate before
-intake and rejects unsupported source coverage explicitly. These configure the
-whole-recording analysis, not individual event windows or bands; they remain
-outside the upload request. Acceptance thresholds keep their defaults. See
-[acoustic discovery](AUDIO_DISCOVERY.md) for coverage, time-grid and work limits. The
+These are the only discovery overrides supported by the product adapter. The
+existing detector validates the overlap and chunk constraints; spectral bands,
+acceptance thresholds and other scientific settings keep their defaults. The
 actual settings and analyzed chunks are saved in `discovery/discovery.json`, and
 the operator configuration hash is retained in provenance. This configuration is
 not an upload-request field. A chunk-size comparison must rerun detection and the

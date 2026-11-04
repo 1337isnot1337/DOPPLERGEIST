@@ -104,8 +104,8 @@ def motion(points, settings):
     # A turn requires a sustained resolved leg; repeated reversals are modulation
     # or unresolved wandering, not a compulsory descending-flight template.
     runs = []
-    for sign, duration, observed in zip(np.sign(slopes), dt, valid):
-        if not observed or abs(sign) == 0:
+    for sign, duration, is_observed in zip(np.sign(slopes), dt, valid):
+        if not is_observed or abs(sign) == 0:
             continue
         if runs and runs[-1][0] == sign:
             runs[-1][1] += min(duration, settings.hop_s)

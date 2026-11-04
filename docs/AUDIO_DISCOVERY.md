@@ -1,176 +1,193 @@
-# Automatic acoustic episode discovery
+# Automatic audio-event discovery
 
-Discovery scans the whole recording without event windows, aircraft IDs, flight
-observations, coordinates or a flight-geometry template. Its unit is a **canonical
-acoustic episode**, containing measured tonal child tracks. Common frequency
-motion does not establish a single physical source, physical source motion, or
-aircraft identity. Simultaneous trajectories can remain separate, and physical
-source multiplicity is explicitly unresolved, including within an episode.
+`discover_events(recording, output_dir=None, settings=None)` consumes the
+`IntakeRecording` from intake and returns shared-contract `DetectedEvent`
+dictionaries. The normal call supplies no time windows, frequency bands, aircraft
+IDs, search locations or truth. It scans all decoded samples with fixed 120 s
+chunks / 60 s overlap, a 2 s Hann spectrum at 0.5 s hops and 40–1600 Hz coverage
+(clamped below decoded Nyquist). Working memory is bounded by chunk size; a disk
+cache holds the complete recording. Inputs under one spectral window return [].
 
-The scanner summary is also schema 2: `events_found` and `canonical_proposals`
-count episodes, while `measured_child_tracks` counts child records.
+Time-whitened spectral contrast suppresses persistent stationary tones. Local
+maxima are linked with bounded motion, short missing spans and local slope
+continuity. Minimum duration/support, resolved downward frequency change,
+distributed motion and jump checks reject noise paths and switching stationary
+tones. Duplicate overlapping chunk ridges merge before grouping harmonics. Both
+integer ratios and rational ratios (e.g. measured 2f and 3f with an absent
+fundamental) count as one independent event. The lowest measured harmonic is the
+representative ridge; no fundamental is invented. Harmonic count denotes distinct
+measured ratios, including fragmented traces of the same harmonic only once.
+Harmonic grouping is optional consolidation: a ridge without a compatible
+partner remains a single-ridge event candidate. The detector does not require a
+second harmonic.
 
-The Python API still returns `list[DetectedEvent]`: one record per measured child
-track, with the canonical episode ID in `harmonic_group_id`. Count distinct group
-IDs to count proposals. `discovery.json` is now **schema_version 2** and is the
-explicit episode catalog. The shared upload/result and DetectedEvent contracts
-remain version 1. See [interfaces](INTERFACES.md#detected-events).
+The output preserves recording-relative ridge samples and weights, measured
+window/band, harmonic-group identity, contrast/support, spectral resolution and
+uncertainty diagnostics. Resolution is not a calibrated error interval; no raw
+quality score is a probability. No compulsory straight-flight speed, slant or
+source-frequency estimate constrains downstream search. These are **acoustic
+moving-tone proposals**, with aircraft identity unconfirmed. Association must
+reject unsupported proposals and count harmonic groups once.
 
-## Processing and acceptance
+In the current real one-hour upload, automatic discovery produced 15 independent
+groups: 14 have one observed ridge and one has three. This is a useful reminder
+that harmonic grouping can consolidate evidence when multiple bands are
+recorded, but a single-ridge candidate must remain eligible for downstream
+assessment. The audio-only discovery result does not confirm aircraft identity
+or recording location.
 
-1. Decode to a mono, disk-backed f32 cache. The automatic adapter selects 4, 8,
-   16 or 32 kHz according to requested global frequency coverage. FFmpeg applies
-   channel averaging and explicit swresample low-pass filtering (filter_size 64,
-   cutoff 0.95). Sample zero remains the first decoded sample after codec skips;
-   resampling can round the final length by a sample. UTC requires separate
-   recording-clock evidence.
-2. Scan overlapping chunks (120/60 seconds by default). The default spectrum is
-   a 2-second Hann window, 0.5-second hop, 40–1600 Hz. Temporal whitening and
-   frequency-wise robust contrast retain the existing measured-peak method.
-   Peaks carry frequency, contrast, and measured spectral amplitude in dB.
-3. Retain provisional paths of at least four observations **before** duration or
-   motion rejection. Reconcile duplicate measurements across chunks and then
-   reciprocal-unique continuations. Distinct peaks in the same chunk are not
-   deleted as near-unison duplicates. A continuation requires compatible endpoint
-   slopes in either direction, forward and backward prediction, uncertainty,
-   observed support and a gap penalty. A turn hidden in a gap is unresolved.
-4. Assess resolved excursion, distributed motion, local prediction residual,
-   sustained turns, and total variation. Differences and slopes use timestamps
-   in seconds; missing intervals do not count as observed motion. Rising,
-   falling and one sustained turning trajectory are eligible. Stationary tones,
-   isolated tone switches, repeated modulation and wandering fail explicit gates.
-5. Fit constant frequency scales between components with substantial shared
-   support, resolved motion, high curve correlation and uncertainty-aware
-   residuals. A bounded integer-family model (orders 1–12, smallest total order)
-   supplies secondary harmonic evidence, including missing fundamentals.
-   Noninteger relationships require correlated measured amplitude envelopes.
-   A ratio match or temporal overlap alone is insufficient.
-6. Reconsider groups jointly. For three or more components each needs two strong
-   motion witnesses; every supported pair must agree with one joint scale fit,
-   including short overlaps that cannot establish motion independently. A weak
-   bridge cannot transitively collect unrelated groups. Sorting observations and
-   associations makes grouping invariant to input order. Unresolved strong links
-   are counted and traced separately; separate proposals do not certify separate
-   physical sources. The model has one scale per child, at most 32 children per
-   episode, and no free time warps or high-order rational search.
-7. Apply episode acceptance using the union of **observed hop-sized cells**, not
-   interval span or spectrogram-window footprints. Sustained acceptance needs
-   at least 12 observed seconds and 65% support. Brief acceptance needs at least
-   3 observed seconds, 85% support, and a child with median contrast >=4.5,
-   excursion >=6 frequency-uncertainty units, distributed motion >=60%, and
-   prediction-error q95 <=0.75. These are uncalibrated engineering criteria,
-   not a blanket reduction of the duration/contrast thresholds.
-
-Gaps are never filled with invented ridge observations. Stitch gaps are at most
-20 seconds and at most 35% of the pair's observed support; aggregate acceptance
-also penalizes missing support. The output distinguishes the observed cells
-from the wider spectral-window timing uncertainty. Very brief accepted episodes
-with fewer than ten total samples are acoustic-review evidence only;
-`quality.matching_eligible=0` prevents the matching adapter from failing on them.
-The application returns `brief_acoustic_evidence_only` if none are matchable.
-Other proposals need not match any flight.
-
-## Coverage and resources
-
-The default coverage remains 40–1600 Hz for compatibility. Higher frequencies
-require decoding the original source at a sufficient rate; changing a scanner
-setting cannot restore frequencies discarded in an old cache. The automatic
-adapter and scanner CLI choose the rate before intake. Direct Python callers
-must use `required_sample_rate(settings)` when invoking `intake_recording`.
-Requested upper coverage must be <=45% of both source and decoded rates. A
-request outside this usable range fails with `unsupported_frequency_coverage`;
-it is not reported as an exhaustive negative. The lower limit requires at least
-two cycles per window. Longer windows improve low-frequency resolution; shorter
-windows improve temporal resolution while increasing frequency uncertainty.
-
-The `coverage` object records requested and analyzed bin ranges, eligible peak
-centers, source/decoded rates, resolution, hop, window, transition guard and edge
-policy. Outermost bins support interpolation and cannot be peak centers. Inputs
-shorter than a complete window have no spectral observations. The high-rate path
-uses a single spectrum per chunk, so there are no overlapping frequency bands
-that could duplicate proposals. Chunk grids must align to whole sample hops;
-chunk provenance is retained through deduplication and stitching.
-
-Default explicit limits: 60 peaks/frame, 4,096 provisional paths, 500,000 retained
-observations, 200,000 association work units, 8,000,000 full-spectrum cells per
-chunk and 100 diagnostic trace entries. Association work includes repeated joint
-fit checks, not only unique pairs. Joint fit matrices have at most 32 columns.
-Exceeding a processing budget raises a typed failure and records the limit;
-it does not silently drop candidates and claim a complete scan. There is no cap
-of two, three or four canonical proposals per recording. Increasing a work limit
-in the Python settings is an explicit resource choice.
-
-The decoded cache uses `4 * rate * seconds` bytes: about 55 MiB/hour at 4 kHz,
-220 MiB/hour at 16 kHz. Working spectra stay chunk-bounded; raising rate increases
-FFT memory and CPU, and reducing the hop increases frame count. Spectrum cells
-are checked before allocation. The [engineering report](ACOUSTIC_EPISODES_REPORT.md)
-records measured RSS, time and output volume, including regressions.
-
-## Outputs and compatibility
-
-`discovery.json` contains:
-
-| Field | Meaning |
-| --- | --- |
-| `status`, `failure` | `complete` with zero proposals is a valid in-band result; `failed` is an execution, coverage or budget failure |
-| `source_sha256`, `code`, `settings`, `runtime_s`, `coverage` | Input identity, git/implementation identity, library versions, effective configuration and runtime |
-| `events` | Compatible measured DetectedEvent children; ridge points are stored once here |
-| `episodes` | Canonical IDs, child IDs, raw track/chunk membership, fitted frequency scales, joint-fit residual/witness diagnostics, integer orders, observed intervals/gaps, confidence category and limitations |
-| `counts` | Separate raw per-chunk paths/observations, provisional/deduplicated/stitched candidates, accepted children and canonical proposals |
-| `ridge_count` | Accepted measured child count, retained for older count consumers |
-| `rejections` | Counts and measured/threshold ranges per rejection reason; optional bounded candidate traces |
-| `reconciliation_counts`, `reconciliation_decisions` | Counted and bounded duplicate, stitch, joint-group and unresolved-relation decisions; truncation is explicit |
-
-IDs hash source identity and ordered measured content, and do not depend on input
-ordering, proposal enumeration or unrelated accepted proposals. They are stable
-for the same measurements and effective configuration, not guaranteed invariant
-to codecs, alternate chunk whitening, or resampling that changes measurements.
-Each child retains original raw-track identifiers and amplitude measurements;
-observed frequency scales replace the old ratio dictionary in the matching
-adapter. Legacy event groups without these scales still use their old adapter.
-Equal aggregate weight per child preserves the existing consumer convention;
-additional components do not become additional independent time constraints.
-
-Confidence is categorical and uncalibrated: `uncalibrated_supported` or
-`uncalibrated_brief_limited`. Frequency uncertainty uses the spectral resolution
-and robust deviation, not a calibrated interval. `frequency_sigma_hz` and
-`frequency_uncertainty_hz` retain the same diagnostic; matching retains its
->=1 Hz loss-scale floor. Every episode says `physical_motion_confirmed=false`
-and `physical_source_multiplicity=unresolved`.
-
-Schema 2 removes the duplicate `harmonic_ridges` array, legacy `fragment_links`
-and automatic per-child CSV files. Read measurements from `events` and decisions
-from the reconciliation fields. The plot benchmark reads both artifact versions.
-Old evidence is preserved; [the starting-version documentation](https://github.com/1337isnot1337/DOPPLERGEIST/blob/451b67f01dcd1dfe44d47c42407f404706a5a9b7/docs/AUDIO_DISCOVERY.md)
-contains historical counts and methodology, including cancelled synthetic work.
-
-## Commands
+With output_dir, discovery saves `discovery.json` (all events, settings, chunk
+counts, original harmonic ridges and input hash), `discovery.png` (overview), and
+per-event CSV plus spectrogram PNG. Each spectrogram image is limited to a chunk's
+span; the full measured ridge remains in JSON/CSV. Existing discovery outputs
+are refused. A reproducible whole-file entry point is:
 
 ```bash
-# Default acoustic-only scan. A fresh output directory is required.
-PYTHONPATH=src .venv/bin/python scripts/discover_audio.py input.mp3 \
-  --output results/discovery --plot-summary
-
-# Global wider coverage; source must actually retain those frequencies.
-PYTHONPATH=src .venv/bin/python scripts/discover_audio.py input.wav \
-  --min-frequency-hz 20 --max-frequency-hz 6000 \
-  --output results/discovery-wide --plot-summary
-
-# Optional higher temporal resolution and bounded rejected-candidate traces.
-PYTHONPATH=src .venv/bin/python scripts/discover_audio.py input.wav \
-  --window-s .5 --hop-s .125 --max-frequency-hz 6000 \
-  --output results/discovery-fast --detailed-candidates --plot-event-details
-
-# Software properties and existing genuine recorded evidence; no audio synthesis.
-PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_episodes.py \
-  tests/test_real_discovery_normalization.py tests/test_real_upload_verification.py \
-  tests/test_contracts.py tests/test_job_resume.py
+dopplergeist discover input.mp3 --output results/new-audio-scan
 ```
 
-Summary plots use canonical episodes. Optional detail plots render one bounded
-spectrogram per episode, with all its child tracks, once. They do not render the
-same group repeatedly for each harmonic. A candidate may fail multiple checks, including both acceptance paths; failed-check
-counts are not rejected-candidate counts. Normal operation records aggregated
-noise rejection rather than writing a file per rejected fragment. Input/decoder
-failures exit unsuccessfully; discovery failures additionally write a failed
-artifact. No command above acquires flight data or estimates a location.
+The installed CLI records the source hash, settings, measured events and chunk
+counts in its output. It does not consume evaluation labels. Run post-hoc
+evaluation in a separate process. Use a new output directory for every run.
+Pass `--plot-summary` for the overview or `--plot-event-details` for individual
+spectrograms; plotting is off by default in the CLI.
+The checkout-only `scripts/discover_audio.py` additionally records its Git state,
+code hash, runtime and peak RSS for research comparisons.
+
+Development evidence before DG-02 controls: full synthetic WAV (1180 s), 2
+proposals spanning both planted passes, 7.24 s / 238044 KiB peak RSS; full public
+reference WAV (3600.1845 s after decode), 8 proposals, 31.05 s / 249528 KiB peak
+RSS. The two prominent known passes are covered, but are fragmented into multiple
+proposals; the documented faint pass is missed. Six proposals do not cover either documented pass center; some appear to be
+fragments of the same pass. Their identities remain unverified. They are not
+labelled aircraft or certified false alarms. No
+complete real event annotation exists to calculate reference precision/recall.
+Earlier v1/v2 diagnostics preserve a missed synthetic event and excess proposals.
+These are development checks, not independent location/nationwide validation.
+
+Known limits: fixed spectral scale and minimum duration can miss steep/short,
+faint, low-frequency or high-frequency events. A single wide ridge can fragment
+across missing spans, and acoustically similar harmonic sources can be grouped
+ambiguously. No algorithm can establish aircraft identity solely from an arbitrary
+matching synthetic chirp. The existing real recording has no independently
+verified UTC clock. This implementation does not establish 100 m localization.
+
+Focused tests: `PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_discovery.py`.
+They cover complete-file seams, harmonic grouping including an absent fundamental,
+simultaneous unrelated events, noise/stationary/upward-sweep rejection, short
+unsupported clips, and crossfading stationary tones. Fixed-setting DG-02 corpus
+results are recorded separately in the audio evidence handoff.
+
+Fixed-code DG-02 control check at discovery commit `4a49646`: all 14 opaque-input
+cases processed, 8 planted events found, 0 misses and 0 false alarms at event
+IoU >= 0.3. Both the development and public deterministic held_out split find
+4/4 events. Noise, stationary, upward electronic sweep and short clips produce
+no event; harmonic, overlapping and MP3 positives are retained. Detection ran
+through the label-free subprocess runner; a later process read truth for scoring.
+No detector/settings changes followed the control run. These controls have no
+eligible location cases and do not establish real-aircraft identity or accuracy.
+
+Additional unchanged-code public-audio check: all 40 complete passage WAVs process
+without errors; 28 have at least one proposal, 12 have none, 102 proposals total.
+The run never supplied their frequency annotations. These counts do not establish
+true aircraft-event recall/precision: fragments and incidental sources remain
+unverified. Every prediction is saved under evidence/audio/w1-20261102/public40-4a49646.
+
+Fragment follow-up: compatible disjoint ridge fragments can join across at most
+20 s when the gap is at most 35% of the combined observed span, both endpoint
+slopes descend, the observed frequency drop/rate is compatible with those slopes,
+and each endpoint has only one compatible continuation. Competing continuations
+remain separate. No frequency samples are invented across missing intervals;
+harmonic comparison excludes unsupported spans. `fragment_count` and
+`max_observed_gap_s` retain missing-support evidence, and `fragment_links` records
+accepted/ambiguous continuations with reasons. This is a tonal continuity
+hypothesis; it does not prove a flight identity.
+
+`quality.frequency_sigma_hz` is the integration consumer's canonical robust-loss
+scale, with `frequency_uncertainty_hz` retained for compatibility. Both currently
+carry the same resolution/robust-deviation diagnostic, with no statistical or
+probability calibration implied by the field name. Matching applies its >=1 Hz
+loss-scale floor. Later tests against the already public DG-02 controls are
+regressions, not newly held-out accuracy evidence.
+
+Sensitivity follow-up lowers the global seed contrast threshold from3.0 to2.5.
+At this setting the full synthetic recording still yields2 groups, with first
+ridge support extended from143–180.5s to119–196s. The reference emits16 proposals,
+including a short1265.5–1282s ridge in the documented faint passage; post-run
+comparison with the archived manual ridge gives median absolute difference
+0.692Hz over23 points (90th percentile2.139Hz). This is acoustic overlap with an
+existing development measurement, not independently known aircraft or location
+truth. Fourteen known synthetic controls retain8 hits/0 misses/0 false alarms.
+The extra unverified reference proposals remain a matching/search cost. Earlier
+3.0-threshold evidence and the faint-pass miss stay preserved; no held-out or
+100m localization claim follows from this development tuning.
+
+Discovery returns all accepted independent groups; it has no global two- or
+three-event maximum. Four- and six-episode generated audio regressions check that
+later events survive and harmonics count once. These audio-only controls test
+retention, not geographic accuracy. The per-frame peak budget remains an explicit
+bounded-analysis setting, and unsupported or missed tones are not a completeness
+guarantee. The contrast 2.5 settings are frozen for the new public-camera batch.
+
+## Experimental acoustic episodes
+
+The installed `discover` command and the checkout script support an explicit
+`--experimental-episodes` switch. This switch selects
+`dopplergeist.episode_discovery` for acoustic reports. Without the switch, both
+commands retain the scanner described above. The automatic analysis and upload
+workflow also retain that scanner.
+
+Run the experimental scanner on a real recording:
+
+```bash
+dopplergeist discover input.mp3 --output results/new-episode-scan \
+  --experimental-episodes --plot-summary
+```
+
+Use a new output directory for each run. For a wider frequency range, run:
+
+```bash
+dopplergeist discover input.mp3 --output results/new-wide-episode-scan \
+  --experimental-episodes --max-frequency-hz 6000 --plot-summary
+```
+
+The experimental settings default to 40–1600 Hz, a 2-second spectral window,
+and a 0.5-second hop. The commands accept `--min-frequency-hz`,
+`--max-frequency-hz`, `--window-s`, `--hop-s`, and `--detailed-candidates` only
+with `--experimental-episodes`. The checkout script accepts the same switch:
+
+```bash
+PYTHONPATH=src python scripts/discover_audio.py input.mp3 \
+  --output results/new-research-episode-scan --experimental-episodes
+```
+
+Experimental intake selects a decoding rate that supports the requested band.
+It explicitly uses the FFmpeg resampler with a 64-tap filter and a 0.95 cutoff.
+The default scanner retains its existing decoding command. Unsupported source
+coverage and analysis limits produce explicit errors.
+
+### Outputs and compatibility
+
+Default discovery retains its existing artifact, which has no explicit
+`schema_version` field. Experimental discovery writes
+`discovery/discovery.json` with `schema_version: 2`, a canonical `episodes`
+catalog, and measured `events` children. Episode records reference their measured
+children. Gaps remain gaps, and an inferred fundamental does not create measured
+ridge samples. Coverage, settings, counts, rejection diagnostics, and code identity
+remain available in the artifact.
+
+The child events retain the shared `DetectedEvent` contract. Numeric quality
+fields include `episode_model_version`, `episode_frequency_scale`, and
+`matching_eligible`. The matching adapter supports these recorded children and
+retains its legacy behavior for version-1 events. Brief episodes without enough
+samples remain evidence for acoustic review. The experimental command does not
+run a location search or enable these episodes in automatic upload jobs.
+
+The [frozen real-recording comparison](ACOUSTIC_EPISODES_REPORT.md) retains every
+input, including zeros and regressions. Its labels `new` and `default` refer to
+the experimental implementation with its original settings. They do not name
+the current product default. Six baseline reference groups had no retained
+measurement within the report's overlap tolerance, including the documented faint
+passage. Runtime also increased on the measured
+comparison. The evidence does not establish improved aircraft recall, source
+identity, or location accuracy.

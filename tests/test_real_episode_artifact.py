@@ -1,6 +1,7 @@
 """Contract checks on complete observed real-media runs, without audio generation."""
 import gzip
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -81,3 +82,41 @@ def test_observed_gaps_and_resource_limits_are_explicit(observations):
                         assert not any(a<point['time_s']<b for a,b in episode['gaps_s'])
             assert data['coverage']['analyzed_hz'][1]<=data['coverage']['usable_upper_hz']
             assert not data['coverage']['exhaustive_outside_analyzed_range']
+
+
+def test_skipping_a_group_preserves_conflicts_on_recorded_ridges(observations):
+    """Exercise consumer eligibility state without generating ridge samples.
+
+    The recorded car case contains two proposals sharing measured observations.
+    Marking an unrelated earlier group ineligible is a software-state check,
+    not a claim that the original detector rejected that recorded group.
+    """
+    import numpy as np
+    from dopplergeist.matching import prepare_events
+
+    row = next(row for row in observations[1] if row['case_id'] == 'demand-tcar')
+    observed = row['wide']['events']
+    baseline, baseline_measurements = prepare_events(observed)
+    skipped = observed[0]['harmonic_group_id']
+    conflicts = [conflict for event in baseline
+                 for conflict in event.get('shared_ridge_observations', [])]
+    assert conflicts
+    assert all(skipped not in conflict['group_ids'] for conflict in conflicts)
+
+    events = deepcopy(observed)
+    for event in events:
+        if event['harmonic_group_id'] == skipped:
+            event['quality']['matching_eligible'] = 0.0
+    before = deepcopy(events)
+    prepared, measurements = prepare_events(events)
+    expected = [(event, measurement)
+                for event, measurement in zip(baseline, baseline_measurements)
+                if event['harmonic_group_id'] != skipped]
+    assert prepared == [event for event, _ in expected]
+    assert events == before
+    assert [event['ridge'] for event in events] == [event['ridge'] for event in observed]
+    assert len(measurements) == len(expected)
+    for actual, (_, previous) in zip(measurements, expected):
+        np.testing.assert_array_equal(actual[0].time, previous[0].time)
+        np.testing.assert_array_equal(actual[1], previous[1])
+        np.testing.assert_array_equal(actual[2], previous[2])

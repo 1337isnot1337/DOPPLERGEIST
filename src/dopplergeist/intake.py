@@ -94,7 +94,8 @@ class IntakeRecording:
                     break
 
 
-def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=4000):
+def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=4000,
+                     resample_filter_size=None):
     """Decode mono f32 into a new cache without holding the whole input in RAM.
 
     ``time_window`` follows the shared RecordingTimeWindow contract and bounds
@@ -102,11 +103,15 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
     that explicit window: tags alone do not provide clock error or edit history.
     A missing window permits acoustic analysis and yields ``needs_input`` for
     historical matching. Existing cache files are never overwritten.
+    ``resample_filter_size`` opts into the explicit swresample filter used by
+    experimental episode discovery; omission preserves the standard decoder.
     """
     from .contracts import validate_recording, validate_request
 
     if type(sample_rate_hz) is not int or not 1000 <= sample_rate_hz <= 192000:
         raise ValueError("sample_rate_hz must be an integer between 1000 and 192000")
+    if resample_filter_size is not None and (type(resample_filter_size) is not int or resample_filter_size <= 0):
+        raise ValueError("resample_filter_size must be a positive integer")
     source = Path(source).resolve()
     request = validate_request({"schema_version": 1, "audio_path": str(source), "time_window": time_window})
     probe = probe_media(source)
@@ -120,8 +125,10 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
         raise FileExistsError("Intake output already exists; use a new output directory")
     channels = int(audio["channels"])
     downmix = "pan=mono|c0=" + "+".join(f"{1 / channels:.17g}*c{i}" for i in range(channels))
+    if resample_filter_size is not None:
+        downmix += f",aresample=resampler=swr:filter_size={resample_filter_size}:cutoff=0.95"
     command = ["ffmpeg", "-nostdin", "-v", "error", "-xerror", "-i", str(source),
-               "-map", "0:a:0", "-vn", "-sn", "-dn", "-af", downmix + ",aresample=resampler=swr:filter_size=64:cutoff=0.95", "-ac", "1", "-ar", str(sample_rate_hz),
+               "-map", "0:a:0", "-vn", "-sn", "-dn", "-af", downmix, "-ac", "1", "-ar", str(sample_rate_hz),
                "-acodec", "pcm_f32le", "-f", "f32le", "pipe:1"]
     temporary = None
     try:
@@ -173,10 +180,12 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
             "decode": {"decoder": "ffmpeg", "sample_format": "f32le", "channel_policy": "arithmetic channel mean",
                        "source_sample_rate_hz": int(audio["sample_rate"]), "source_channels": int(audio["channels"]),
                        "source_codec": audio.get("codec_name", "unknown"), "stream_index": int(audio["index"]),
-                       "audio_time_zero": "first decoded sample after codec skip/discard", "command": command,
-                       "resampling": "ffmpeg swresample, 64-tap low-pass, cutoff 0.95; timestamps start at decoded sample zero",
-                       "usable_frequency_hz": [0.0, .45 * min(sample_rate_hz, int(audio["sample_rate"]))]},
+                       "audio_time_zero": "first decoded sample after codec skip/discard", "command": command},
         }
+        if resample_filter_size is not None:
+            diagnostics["decode"].update(
+                resampling=f"ffmpeg swresample, filter_size {resample_filter_size}, cutoff 0.95; timestamps start at decoded sample zero",
+                usable_frequency_hz=[0.0, .45 * min(sample_rate_hz, int(audio["sample_rate"]))])
         # Exclusive creation also prevents accidental replacement on concurrent intake.
         os.link(temporary, samples_path)
         with metadata_path.open("x") as target:

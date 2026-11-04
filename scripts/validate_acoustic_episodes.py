@@ -2,6 +2,8 @@
 
 No downloads, fabricated signals, source identity labels or localization inputs
 enter discovery. Each case runs in a fresh process for comparable peak RSS.
+Episode discovery requires --experimental-episodes; the default replays the
+standard detector, including when --source-root points to a historical checkout.
 """
 import argparse
 import hashlib
@@ -13,19 +15,23 @@ import sys
 import time
 
 
-def run_case(case, output, upper):
-    from dopplergeist.discovery import DiscoverySettings, discover_events
+def run_case(case, output, upper, experimental=False):
+    if experimental:
+        from dopplergeist.episode_discovery import DiscoverySettings, discover_events
+    else:
+        from dopplergeist.discovery import DiscoverySettings, discover_events
     from dopplergeist.intake import intake_recording
     from dopplergeist.resource_usage import process_peak_rss_kib
     began = time.monotonic()
     settings = DiscoverySettings(max_frequency_hz=upper)
     rate = next(rate for rate in (4000, 8000, 16000, 32000) if upper <= rate * .45)
-    result = dict(case_id=case['id'], source_sha256=case['sha256'])
+    result = dict(case_id=case['id'], source_sha256=case['sha256'], experimental_episodes=experimental)
     try:
         with Path(case['path']).open('rb') as stream:
             if hashlib.file_digest(stream, 'sha256').hexdigest() != case['sha256']:
                 raise ValueError('Real input checksum differs from frozen manifest')
-        recording = intake_recording(case['path'], output / 'intake', sample_rate_hz=rate)
+        intake_options = dict(resample_filter_size=64) if experimental else {}
+        recording = intake_recording(case['path'], output / 'intake', sample_rate_hz=rate, **intake_options)
         events = discover_events(recording, output_dir=output / 'discovery', settings=settings, plot_summary=True)
         groups = sorted({e.get('harmonic_group_id', e['event_id']) for e in events})
         result.update(status='complete', duration_s=recording.metadata['duration_s'],
@@ -47,12 +53,13 @@ def main():
     parser.add_argument('--source-root',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--max-frequency-hz',type=float,default=1600)
+    parser.add_argument('--experimental-episodes',action='store_true',help='replay the experimental episode detector')
     parser.add_argument('--case',help=argparse.SUPPRESS)
     args=parser.parse_args()
     cases=json.loads(args.manifest.read_text())['cases']
     if args.case:
         case=next(c for c in cases if c['id']==args.case)
-        print(json.dumps(run_case(case,args.output,args.max_frequency_hz),allow_nan=False))
+        print(json.dumps(run_case(case,args.output,args.max_frequency_hz,args.experimental_episodes),allow_nan=False))
         return
     args.output.mkdir(parents=True,exist_ok=False)
     env=dict(os.environ,PYTHONPATH=str(args.source_root.resolve()/'src'),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',MPLBACKEND='Agg')
@@ -61,6 +68,8 @@ def main():
         command=[sys.executable,str(Path(__file__).resolve()),'--manifest',str(args.manifest.resolve()),
                  '--source-root',str(args.source_root.resolve()),'--output',str(args.output.resolve()/case['id']),
                  '--max-frequency-hz',str(args.max_frequency_hz),'--case',case['id']]
+        if args.experimental_episodes:
+            command.append('--experimental-episodes')
         process=subprocess.run(command,capture_output=True,text=True,env=env,timeout=600)
         if process.returncode:
             result=dict(case_id=case['id'],status='failed',error=process.stderr[-2000:])
