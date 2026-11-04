@@ -36,6 +36,7 @@ def test_watch_real_job_and_interrupt_only_the_watcher():
     assert watcher.returncode == 130 and stdout == ''
     assert 'search files observed (unverified:' in stderr and 'file-count rate' in stderr
     assert 'newest matching file modified' in stderr
+    assert 'fine support records observed (unverified)' in stderr
     assert 'newest search write ' in stderr
     assert 'unverified file activity' in stderr
     if recent_worker_write:
@@ -82,5 +83,6 @@ def test_watch_labels_real_search_file_counts_unverified():
     result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=15)
 
     assert f'{len(coarse) + len(fine)} search files observed (unverified:' in result.stderr
-    assert f'({len(coarse)} coarse, {len(fine)} fine)' in result.stderr
+    assert f'(unverified: {len(coarse)} coarse, {len(fine)} fine)' in result.stderr
+    assert f', {len(diagnostics)} fine support records observed (unverified)' in result.stderr
     assert 'fine support checkpoints' not in result.stderr
