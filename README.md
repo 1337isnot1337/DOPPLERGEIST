@@ -45,6 +45,10 @@ Installation builds optional acoustic, ridge, and closest-approach (CPA) acceler
 
 Native Windows execution is unverified.
 
+For a container with FFmpeg and the native extensions included, use the
+[Docker setup](docs/DOCKER.md). It includes persistent job and cache volumes and
+publishes the application on a loopback port.
+
 ### Analyze from the command line
 
 ```bash

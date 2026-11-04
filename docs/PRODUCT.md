@@ -49,7 +49,10 @@ tile files, archives the previous search and identities, and processes only
 unfinished work. Input, event, runtime and model checks still reject unsupported
 transitions; the upgrade does not make an inconclusive result conclusive.
 
-The server binds to loopback. It runs one analysis process at a time, accepts up
+The server binds to loopback by default. For Docker bridge networking, use
+`--host 0.0.0.0` and publish the same port on the host's loopback address; see
+[Docker setup](DOCKER.md). The local Host/Origin checks remain enabled.
+It runs one analysis process at a time, accepts up
 to four pending jobs, limits uploads to 100 MiB by default, and limits analysis
 to one hour by default. Set `--max-upload-mb` and `--max-runtime` to change these
 operator limits. Cancellation terminates the analysis process group, including

@@ -110,6 +110,8 @@ def main():
     serve.add_argument("--jobs",default="jobs")
     serve.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     serve.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
+    serve.add_argument("--host",choices=("127.0.0.1", "localhost", "0.0.0.0"),default="127.0.0.1",
+                       help="Bind address; use 0.0.0.0 inside a container with a loopback-published port")
     serve.add_argument("--port",type=listen_port,default=8765)
     serve.add_argument("--max-runtime",type=positive_runtime,default=3600)
     serve.add_argument("--max-upload-mb",type=positive_int,default=100)
@@ -145,7 +147,7 @@ def main():
     elif args.command=="serve":
         from .service import serve
         try:
-            serve(args.jobs,config,port=args.port,max_runtime_s=args.max_runtime,
+            serve(args.jobs,config,host=args.host,port=args.port,max_runtime_s=args.max_runtime,
                   max_upload_bytes=args.max_upload_mb*1024*1024)
         except (OSError, ValueError, OverflowError) as exc:
             parser.error(f"Could not start local service: {exc}")
