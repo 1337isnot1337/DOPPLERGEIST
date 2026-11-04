@@ -140,6 +140,11 @@ Document that limitation even when all archive files were downloaded. A missing
 coverage report must never be interpreted as complete coverage by the decision
 stage. Detailed tile counts and coverage maps belong in a linked artifact.
 
+Automatic jobs omit `coverage` during acquisition and search until a coverage
+assessment is available. Local indexes and initialized terrain providers do not
+establish complete coverage. Interrupted jobs can also omit `coverage` when no
+assessment is available.
+
 `artifacts` maps names to paths relative to that job's output directory, without
 absolute paths or `..` traversal. Suggested names are `report`, `provenance`, and
 event-specific plots/arrays. The provenance artifact should record input/data/code

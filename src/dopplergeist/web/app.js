@@ -43,20 +43,26 @@ function setCountryProfiles(values, defaultCountry = 'US') {
 
 function renderCoverage(coverage, status) {
   $('coverage').replaceChildren();
-  if (!coverage) return;
   const card = node('div', undefined, 'candidate');
   card.append(node('strong', 'Search & data coverage'));
-  const area = coverage.requested_area || {coverage: 'conus'};
-  const profile = countryProfiles.find(item => (!area.country || item.country === area.country)
-    && (!area.coverage || item.coverage === area.coverage));
-  const name = profile?.name || ({US: CONUS_PROFILE.name, DE: 'Germany'})[area.country]
-    || ({conus: CONUS_PROFILE.name, germany: 'Germany'})[area.coverage] || area.country || area.coverage || 'unspecified';
-  const bounds = area.bounds_wsen;
-  const full = bounds && profile && bounds.every((value, index) => value === profile.bounds_wsen[index]);
-  const label = bounds && !full
-    ? `Requested ${name} bounds (west, south, east, north): ${bounds.map(value => typeof value === 'number' ? value.toFixed(6) : value).join(', ')}`
-    : `Requested area: ${name}`;
-  card.append(node('p', label));
+  if (!coverage) {
+    card.append(node('p', 'Search and data coverage are not established.'));
+    $('coverage').append(card);
+    return;
+  }
+  const area = coverage.requested_area;
+  if (area) {
+    const profile = countryProfiles.find(item => (!area.country || item.country === area.country)
+      && (!area.coverage || item.coverage === area.coverage));
+    const name = profile?.name || ({US: CONUS_PROFILE.name, DE: 'Germany'})[area.country]
+      || ({conus: CONUS_PROFILE.name, germany: 'Germany'})[area.coverage] || area.country || area.coverage || 'unspecified';
+    const bounds = area.bounds_wsen;
+    const full = bounds && profile && bounds.every((value, index) => value === profile.bounds_wsen[index]);
+    const label = bounds && !full
+      ? `Requested ${name} bounds (west, south, east, north): ${bounds.map(value => typeof value === 'number' ? value.toFixed(6) : value).join(', ')}`
+      : `Requested area: ${name}`;
+    card.append(node('p', label));
+  }
   if (status === 'queued' || status === 'running') {
     card.append(node('p', status === 'queued'
       ? 'Search queued · data coverage will be assessed after processing starts.'
