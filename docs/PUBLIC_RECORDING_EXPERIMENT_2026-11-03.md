@@ -84,6 +84,43 @@ coordinates back into a search.
   has 999,703 unknown clock trials and 31,333 unclassified score candidates, so
   the assessment is incomplete. Its `search_incomplete` status is appropriate.
 
+### Audit of the saved retention ledgers
+
+These runs predate the fix for a possible corrupt `mode_index` secondary
+index. To check whether that defect affected these exact results, the saved
+Rochester, Fort Worth and East Texas SQLite ledgers were opened immutable and
+read-only. `PRAGMA quick_check` returned `ok` for all three. The regular
+`GROUP BY mode_id` aggregation used `mode_index`; its distinct-mode counts and
+per-mode maximum scores matched exactly with the same aggregation forced to
+scan the `records` table using `NOT INDEXED`:
+
+| Recording | Distinct modes | Indexed/table-scan mismatches |
+| --- | ---: | ---: |
+| Rochester | 724 | 0 |
+| Fort Worth | 4,243 | 0 |
+| East Texas | 2,901 | 0 |
+
+The retention-index corruption found elsewhere therefore was not observed in
+these persisted ledgers and does not explain these rankings. This check does
+not establish that the candidate ranking matches the real aircraft or that the
+incomplete searches assessed every alternative.
+
+The five unique flight segments named by the three leading candidates were
+also looked up in the same cached 8 April 2024 flight index. Current main's
+`Track.validate_motion_support(343.0)` accepted all five, with sample counts
+16, 66, 147, 209 and 335; none triggered the non-subsonic-motion rejection.
+This rules out that specific current model-support failure for those retrieved
+segments. It does not establish that the older run used identical interpolation
+or that any segment is the source of its acoustic proposal; no receiver-position
+fit was evaluated.
+
+The saved unmatched proposals also do not all have obviously weak detector
+heuristics: across individual ridges in those groups, `median_contrast` ranges
+from 3.14 to 5.25 and `support_fraction` from 0.805 to 1.000. These fields are
+not calibrated measures of aircraft identity, so they cannot distinguish real
+flyovers from false proposals. The saved evidence does not justify discarding
+all unmatched groups with a higher detector threshold.
+
 Across all three, event groups are acoustic proposals rather than verified
 aircraft identities. The ±20-second recording-start windows were assumptions
 based on filenames, and the archive does not establish complete local receiver
