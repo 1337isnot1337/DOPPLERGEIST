@@ -9,6 +9,23 @@
 - GitHub CLI (`gh`) with access to this repository when
   downloading the checkpoint assets. Local/offline runs do not require GitHub access.
 
+## Install the CLI without a checkout
+
+For normal use, install the command into an isolated environment with `pipx`:
+
+```bash
+pipx install 'git+https://github.com/1337isnot1337/DOPPLERGEIST.git'
+dopplergeist --version
+dopplergeist --help
+```
+
+Install `pipx` and Git using your operating system's package manager first.
+The audio commands also require `ffmpeg` and `ffprobe` on `PATH`. This installs
+the console command without cloning the project into your working directory.
+The local upload workflow and its recording-time/data requirements are described
+in [PRODUCT.md](PRODUCT.md). For development, pinned environments, and checkpoint
+reproduction, use the checkout-based instructions below.
+
 Nix users can enter the development shell first with `nix develop`. It supplies
 Python 3.12, ffmpeg, GitHub CLI, and native build libraries; install the Python
 dependencies into a virtual environment using the commands below.
