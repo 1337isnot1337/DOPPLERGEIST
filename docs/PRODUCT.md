@@ -163,6 +163,10 @@ decision evidence as well as intake/discovery, with at least one returned
 candidate. A correctly handled missing clock or empty search cannot pass this
 stronger operational check.
 
+For a regional run, pass `--bounds WEST SOUTH EAST NORTH` using independently
+justified WGS84 longitude/latitude bounds. The verifier records these bounds in
+the actual upload request; omitting the option searches the full CONUS area.
+
 ```bash
 python scripts/verify_upload_http.py \
   --audio path/to/real-recording.mp3 \

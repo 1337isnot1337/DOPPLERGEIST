@@ -1295,6 +1295,8 @@ def main(argv=None):
     parser.add_argument("--start-utc")
     parser.add_argument("--end-utc")
     parser.add_argument("--time-source", default="Explicit verification recording-start window")
+    parser.add_argument("--bounds", type=float, nargs=4, metavar=("WEST", "SOUTH", "EAST", "NORTH"),
+                        help="Optional predeclared regional bounds inside the CONUS search area")
     parser.add_argument("--expect-status", choices=sorted(TERMINAL), required=True)
     parser.add_argument("--expect-reason")
     parser.add_argument("--require-full-pipeline", action="store_true",
@@ -1310,7 +1312,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.end_utc and not args.start_utc:
         parser.error("--end-utc requires --start-utc")
-    request = {"schema_version": 1, "search": {"coverage": "conus"}}
+    search = {"coverage": "conus"}
+    if args.bounds is not None:
+        search["bounds_wsen"] = args.bounds
+    request = {"schema_version": 1, "search": search}
     if args.start_utc:
         request["time_window"] = {"start_utc": args.start_utc, "end_utc": args.end_utc or args.start_utc,
                                   "source": "user", "source_detail": args.time_source}
