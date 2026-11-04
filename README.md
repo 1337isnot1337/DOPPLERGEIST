@@ -38,6 +38,17 @@ The integrated application and command-line workflow are available on `main`. Se
 
 ## Quickstart
 
+**PyPI distribution:** Once the first PyPI release is published, install the CLI without cloning the repository:
+
+```bash
+pipx install dopplergeist
+dopplergeist --help
+```
+
+To use the Python package in an existing environment instead, run `python -m pip install dopplergeist`. Install **FFmpeg** separately; `ffmpeg` and `ffprobe` must be available on `PATH`. See [PyPI release status and setup](docs/PYPI.md). The examples below use `.venv/bin/dopplergeist`; users of the `pipx` installation can run `dopplergeist` directly.
+
+**Source checkout (available now):**
+
 Requirements: **Python 3.11+**, **FFmpeg** (`ffmpeg` and `ffprobe` on `PATH`), and Git. These commands target Linux and macOS:
 
 ```bash
