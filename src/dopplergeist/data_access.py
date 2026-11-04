@@ -397,7 +397,7 @@ def _archive_members(paths, max_member_bytes):
         with io.BufferedReader(SplitReader(paths)) as stream:
             with tarfile.open(fileobj=stream, mode="r|*") as archive:
                 for member in archive:
-                    if not member.isfile() or "trace_full_" not in member.name:
+                    if not member.isfile() or "trace_full_" not in member.name or not member.name.endswith(".json"):
                         continue
                     if member.size > max_member_bytes:
                         raise DataUnavailable(f"Oversized trace member: {member.name}")
