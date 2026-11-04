@@ -103,7 +103,7 @@ def main(argv=None):
     start, cpu_start = time.perf_counter(), time.process_time()
     result = automatic._decide(
         search, events, prepared, measurements, indexes, terrain, state,
-        args.output, config, finish, lambda: None, recording=recording)
+        args.output, config, finish, lambda *_args, **_kwargs: None, recording=recording)
     elapsed, cpu = time.perf_counter() - start, time.process_time() - cpu_start
     summary = {
         "wall_seconds": elapsed, "cpu_seconds": cpu,
