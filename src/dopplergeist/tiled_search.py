@@ -588,7 +588,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
             if error.reason == "non_subsonic_motion":
                 try:
                     prepared = _PreparedCPATrack(track, parameters.get("c", 343.0), budget.cpa_step_s,
-                                                motion_observers=observers, max_distance=radius)
+                                                motion_observers=observers, max_distance=radius,
+                                                receive_time_bounds=receive_bounds)
                     if prepared.motion_support is None:
                         raise error
                     track_batches, track_rows = _track_cpa_batches(prepared, observers, point_ids, radius,

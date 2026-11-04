@@ -92,6 +92,25 @@ unresolved. The displayed leaders are diagnostic rankings, not supported fixes;
 increasing the refinement budget or removing the bounds would not repair the
 missing independent acoustic evidence.
 
+### CPA support scope follow-up
+
+Read-only analysis of the saved 2024-04-08 support artifacts found a mismatch
+between CPA time filtering and the non-subsonic-track support proof. The bounded
+search cropped CPA rows to event receive times, while the fallback proof examined
+bad-motion intervals across each complete track. Using the saved run configuration
+and track time ranges with the production receive-window calculation, 45 of 46
+unique Rochester bad-motion intervals and both East Texas intervals have no
+affected CPA sample edge in the query window; one Rochester interval remains
+in-window. Fort Worth had no unsupported CPA track intervals.
+
+The follow-up code change passes the same bounded window into the CPA support
+proof. It skips only intervals whose affected sample edges fall outside the
+actual CPA slice; any interval that can contribute an edge still requires the
+existing spatial exclusion proof. Direct acoustic support checks remain
+time-local. The saved jobs were not rerun or rewritten, and this correction does
+not establish that a location estimate is accurate. Fort Worth remains
+source_drift_unresolved; all three old decisions remain inconclusive.
+
 ## Reproduction
 
 The source records are linked above. The field collector in
