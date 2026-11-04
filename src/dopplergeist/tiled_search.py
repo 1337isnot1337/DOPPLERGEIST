@@ -856,7 +856,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     from contextlib import ExitStack, nullcontext
     from .data_access import CachedTerrain
     from .terrain import Terrain
-    from .parallel_retention import import_retention_stage
+    from .parallel_retention import discard_retention_stage, import_retention_stage
     from .parallel_tiles import TileFailure, initialize_tile_worker, ordered_tile_results, tile_worker_lanes
     xmin, ymin, xmax, ymax = _grid_extent(bounds, budget.spacing_m, crs)
     total = (xmax // budget.tile_cells - xmin // budget.tile_cells + 1) * (ymax // budget.tile_cells - ymin // budget.tile_cells + 1)
@@ -1077,10 +1077,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
             import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
             write_json(checkpoint, {"run_hash": run_hash, "payload_hash": content_hash(payload), "payload": payload},
                        compact=True)
-            try:
-                Path(worker_path).unlink()
-            except OSError:
-                pass
+            discard_retention_stage(worker_path)
         except (DataUnavailable, ValueError, OSError) as error:
             if payload is not None and not isinstance(error, TileFailure):
                 provenance = {key: payload.get(key, []) for key in
@@ -1277,10 +1274,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                     continue
                                 if worker_path is not None:
                                     import_retention_stage(ledger, worker_path, stage, payload["retention_checksum"])
-                                    try:
-                                        Path(worker_path).unlink()
-                                    except OSError:
-                                        pass
+                                    discard_retention_stage(worker_path)
                                     fine_checkpoint(stage, cells, completed_rectangles, floor, payload)
                                 else:
                                     fine_resumed += 1

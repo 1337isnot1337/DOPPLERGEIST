@@ -15,7 +15,7 @@ import time
 from dopplergeist.data_access import FlightIndex, content_hash
 from dopplergeist.finite_search import RetentionLedger
 from dopplergeist.matching import prepare_events
-from dopplergeist.parallel_retention import import_retention_stage
+from dopplergeist.parallel_retention import discard_retention_stage, import_retention_stage
 from dopplergeist.parallel_tiles import initialize_tile_worker, ordered_tile_results, score_tile
 from dopplergeist.tiled_search import SearchBudget
 
@@ -62,7 +62,7 @@ def main():
         for stage, cell in zip(stages, cells):
             payload, path = score_tile(stage, cell)
             import_retention_stage(serial_ledger, path, stage, payload["retention_checksum"])
-            Path(path).unlink()
+            discard_retention_stage(path)
             serial.append(payload)
         serial_s = time.perf_counter() - started
         parallel_ledger = RetentionLedger(temporary / "parallel.sqlite", identity, score_kind)
@@ -71,7 +71,7 @@ def main():
         def finish(stage, cell, future):
             payload, path = future.result()
             import_retention_stage(parallel_ledger, path, stage, payload["retention_checksum"])
-            Path(path).unlink()
+            discard_retention_stage(path)
             return payload
 
         started = time.perf_counter()
