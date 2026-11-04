@@ -61,7 +61,11 @@ function render(value) {
     const card = node('div', undefined, 'candidate');
     card.append(node('strong', 'Search & data coverage'));
     const bounds = coverage.requested_area?.bounds_wsen;
-    card.append(node('p', bounds ? `Requested CONUS subset (west, south, east, north): ${bounds.join(', ')}` : 'Requested area: contiguous United States (CONUS)'));
+    const isFullConus = bounds && bounds[0] === -125 && bounds[1] === 24 && bounds[2] === -66 && bounds[3] === 50;
+    const boundsLabel = bounds
+      ? (isFullConus ? 'Requested area: Contiguous United States (CONUS)' : `Requested CONUS subset (west, south, east, north): ${bounds.map(x => typeof x === 'number' ? x.toFixed(6) : x).join(', ')}`)
+      : 'Requested area: Contiguous United States (CONUS)';
+    card.append(node('p', boundsLabel));
     card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
     for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
     if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
@@ -125,7 +129,10 @@ $('upload-form').addEventListener('submit', async event => {
   const start = $('start').value, end = $('end').value;
   if (end && !start) { $('upload-error').textContent = 'Enter the earliest recording start as well.'; return; }
   if (start && end && end < start) { $('upload-error').textContent = 'The latest start must be at or after the earliest start.'; return; }
-  const request = {schema_version: 1, search: {coverage: 'conus'}};
+  let bounds;
+  try { bounds = readSearchBounds(); }
+  catch (error) { $('upload-error').textContent = error.message; return; }
+  const request = {schema_version: 1, search: {coverage: 'conus', bounds_wsen: bounds}};
   if (start) {
     request.time_window = {start_utc: start + 'Z', end_utc: (end || start) + 'Z', source: 'user'};
     if ($('time-source').value.trim()) request.time_window.source_detail = $('time-source').value.trim();
@@ -161,3 +168,136 @@ api('/api/capabilities').then(value => {
 renderRecent();
 const savedJob = new URLSearchParams(location.search).get('job');
 if (savedJob && /^[0-9a-f]{32}$/.test(savedJob)) selectJob(savedJob);
+
+// The automatic pipeline currently supports CONUS and explicit subsets of it.
+const CONUS_BOUNDS = [-125, 24, -66, 50];
+const BOUND_INPUTS = ['bbox-w', 'bbox-s', 'bbox-e', 'bbox-n'];
+
+function validateSearchBounds(bounds) {
+  if (bounds.length !== 4 || bounds.some(value => !Number.isFinite(value))) {
+    throw new Error('Enter all four search coordinates as finite numbers.');
+  }
+  const [w, s, e, n] = bounds;
+  if (w >= e || s >= n) {
+    throw new Error('West must be less than east and south less than north. Antimeridian crossing is unsupported.');
+  }
+  if (w < CONUS_BOUNDS[0] || s < CONUS_BOUNDS[1] || e > CONUS_BOUNDS[2] || n > CONUS_BOUNDS[3]) {
+    throw new Error('Choose an area within CONUS: west −125°, south 24°, east −66°, north 50°.');
+  }
+  return bounds;
+}
+
+function readSearchBounds() {
+  const values = BOUND_INPUTS.map(id => $(id).value.trim());
+  if (values.some(value => value === '')) throw new Error('Enter all four search coordinates.');
+  return validateSearchBounds(values.map(Number));
+}
+
+function boundsMessage(message = '') {
+  $('bounds-error').textContent = message;
+  $('bounds-error').hidden = !message;
+}
+
+function initMap() {
+  let map, rectangle, preview, drawOrigin, panStart;
+  let selectedBounds = CONUS_BOUNDS.slice();
+
+  function setBounds(bounds, fit = false, updateInputs = true) {
+    selectedBounds = validateSearchBounds(bounds.slice());
+    if (updateInputs) BOUND_INPUTS.forEach((id, index) => { $(id).value = String(selectedBounds[index]); });
+    if (map) {
+      const [w, s, e, n] = selectedBounds;
+      const corners = [[s, w], [n, e]];
+      if (rectangle) rectangle.setBounds(corners);
+      else rectangle = L.rectangle(corners, {
+        color: '#baf078', weight: 2, fillColor: '#baf078', fillOpacity: 0.18, interactive: false
+      }).addTo(map);
+      if (fit) map.fitBounds(corners, {padding: [20, 20]});
+    }
+    boundsMessage();
+  }
+
+  BOUND_INPUTS.forEach(id => {
+    $(id).addEventListener('input', () => {
+      try { setBounds(readSearchBounds(), false, false); }
+      catch (error) { boundsMessage(error.message); }
+    });
+  });
+  $('reset-bounds').addEventListener('click', () => setBounds(CONUS_BOUNDS, true));
+
+  if (typeof L === 'undefined') {
+    $('map-container').hidden = true;
+    $('map-status').textContent = 'The map could not load. Enter search coordinates below.';
+    return;
+  }
+  map = L.map('map', {
+    center: [38.5, -96], zoom: 4,
+    maxBounds: [[20, -130], [54, -61]], maxBoundsViscosity: 1
+  });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, noWrap: true,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).on('tileerror', () => {
+    $('map-status').textContent = 'Map tiles are unavailable. Coordinates and the selection rectangle still work.';
+  }).addTo(map);
+  map.dragging.disable(); // Left-drag draws; right-drag or Shift-drag pans.
+  setBounds(selectedBounds, true);
+
+  const container = map.getContainer();
+  container.addEventListener('contextmenu', event => event.preventDefault());
+  container.addEventListener('mousedown', event => {
+    if (event.button === 2 || (event.button === 0 && event.shiftKey)) {
+      panStart = {x: event.clientX, y: event.clientY};
+      container.style.cursor = 'grabbing';
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  });
+  window.addEventListener('mousemove', event => {
+    if (!panStart) return;
+    map.panBy([panStart.x - event.clientX, panStart.y - event.clientY], {animate: false});
+    panStart = {x: event.clientX, y: event.clientY};
+  });
+
+  function clearDrawing() {
+    if (preview) map.removeLayer(preview);
+    preview = null;
+    drawOrigin = null;
+  }
+  window.addEventListener('mouseup', () => {
+    panStart = null;
+    container.style.cursor = '';
+    // Releasing outside the map cancels an unfinished selection.
+    clearDrawing();
+  });
+  window.addEventListener('blur', () => {
+    panStart = null;
+    container.style.cursor = '';
+    clearDrawing();
+  });
+
+  map.on('mousedown', event => {
+    if (event.originalEvent.button !== 0 || event.originalEvent.shiftKey) return;
+    drawOrigin = event.latlng;
+    preview = L.rectangle([drawOrigin, drawOrigin], {
+      color: '#baf078', weight: 2, dashArray: '4, 4', fillOpacity: 0.25, interactive: false
+    }).addTo(map);
+  });
+  map.on('mousemove', event => {
+    if (preview && drawOrigin) preview.setBounds([drawOrigin, event.latlng]);
+  });
+  map.on('mouseup', event => {
+    if (!drawOrigin || !preview) return;
+    const origin = drawOrigin;
+    clearDrawing();
+    if (origin.equals(event.latlng)) return;
+    const bounds = [Math.min(origin.lng, event.latlng.lng), Math.min(origin.lat, event.latlng.lat),
+      Math.max(origin.lng, event.latlng.lng), Math.max(origin.lat, event.latlng.lat)]
+      .map(value => Number(value.toFixed(6)));
+    try { setBounds(bounds); }
+    catch (error) { boundsMessage('Search area was not changed. ' + error.message); }
+  });
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initMap);
+else initMap();
