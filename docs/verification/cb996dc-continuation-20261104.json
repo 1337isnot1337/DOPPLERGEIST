@@ -1,0 +1,586 @@
+{
+  "scope": "Recorded-input software equivalence and checkpoint continuation. No independent location accuracy or complete-coverage claim.",
+  "original_pull_request": "https://github.com/1337isnot1337/DOPPLERGEIST/pull/260",
+  "producer_revision": "cb996dcb49b9d31a24c10b9b5418c35423f7bbcd",
+  "producer_code_fingerprint": "c66d402b750381303bd0c7d9c828d2294942227176ccb3cb157f0ef6299cbe40",
+  "validated_numerical_consumer_revision": "350c9bfa1a56ce2b46d0418b39779b12cdfa04de",
+  "integration_base_revision": "be56c2fae81fe65159103ddb2bf3ccd59ca3bb67",
+  "target_code_fingerprint": "2e6a9601eaf42be7ca2b440eef55eeafa894ab21f9f90adcbb216c9f08a16d2d",
+  "target_file_hashes": {
+    "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+    "acoustic_screen.py": "a0a479a46d6c48ab973ec539d1457868a7eb6f4b9c361a0426dc7993f84970ec",
+    "audio.py": "7ae1cbd3e682057096f103d34fa5664b11cf4e7a74e25af29736ed6618cc9c6d",
+    "automatic.py": "8de96b1450eb26ab33acac5d36680c743c3d2c537b4b0f7182aae9b6faf245bd",
+    "batch_ridge.py": "d8187c64c3fcfb2d084fbdaa302b78791c68fa6aed33e2d61f95537058ab7f3a",
+    "confidence.py": "6a35edb42bc5321999a179f09f33727122f6de2549924d47f1da99673dcae00d",
+    "contracts.py": "602735eef7de44e6410d79336e33c47d35e2c3d00d531729a4c137995ccd1a70",
+    "data_access.py": "77da0d39e1e95476fdf02e29e9a345914545af7e62227a93b4cb6786edb37a71",
+    "discovery.py": "0a973a1238b7d0c344efa23383ac42a7a8d5b37a2e975b4fad9ac878cee5b2a0",
+    "finite_search.py": "f499ba1f298b5869ac5ae375a2eddb46aabfabcfb9f3fd0d848e362c636c0367",
+    "flight_payload.py": "d74d218529d91db6397c5450a4b57f1f5efd2b3bc942120858dfabe6e69fd4e5",
+    "geometry.py": "85336bd0e3739f890386e9f93965cefb78c4477ae2e8a4fe489353501c5e26a2",
+    "index_compatibility.py": "a9aa315a3cdaf9b01bcac027bb4f7b5074864db8623402bc1afcbee24e6ecc83",
+    "intake.py": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781",
+    "jobs.py": "40517440e0dc380898e0685b8c4bec3320e9cf121626983ee207e42729ad6ebc",
+    "matching.py": "777115ddc2752e27a4a4e69cc25eab727ff819d54398a688bccbf8b10ebdff5a",
+    "native_acoustic.py": "608475fc2254e9a80549ebd0fc337ba2893d938ee8d4834f1573d0022b1b6f7f",
+    "native_cpa.py": "32c02cd43f6a1a67bdaa17ee3cdaef385fd763a4781610aeada9e1d8d714566d",
+    "parallel_retention.py": "2861608faa3490601aec9870647ec2a5f9268ff051548565b6d657cb1e95155f",
+    "parallel_tiles.py": "3605621c3c5fd9b35008fe1680e1bea99f968ec841f69b4a5bc9e3ced3c52108",
+    "provenance.py": "b3dfda5b31f1aec195eef8ef763b08b2734265da06ce41c129daf70acce8c041",
+    "resource_usage.py": "2704ff96bc9ae5a39fa29b3f4cee590e38bc5e59f3ec369e6aa28aab307f5d04",
+    "scoring_inputs.py": "9cbc11678ba5a555acf234945e037662b494591df6a33d21b460e726c62c3588",
+    "search.py": "41b75f9f2d4a951cd2e1cac42b81ca5a7e15620fca4cd44e75767de5a025f9fb",
+    "spectral_grid.py": "67fe613a0ee9505f1d9cfd8db468ee03ccdf8664fe1608d6df3d484ebcaad27c",
+    "spectral_matching.py": "8de9273ea8090ce9e5a639c6d9fb4b88c2455afc02413643935983149fe9d2e6",
+    "terrain.py": "749d6e1d526324fc3015511e9f83fde3663d31a1fc863f069bd18f56601869f8",
+    "tiled_search.py": "592ebec1d077cc9b42c55ea07bccc4097c082e2c455a7a1580711deae2956eed",
+    "tracks.py": "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0",
+    "trial_prefix.py": "cd428883c036d52e9eb6f06cb453fa4cfa63614695ff229db21f3ca5ebfba285"
+  },
+  "backend_environment": {
+    "DOPPLERGEIST_RIDGE_BACKEND": "python",
+    "DOPPLERGEIST_ACOUSTIC_BACKEND": "python",
+    "DOPPLERGEIST_CPA_BACKEND": "python"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "machine": "x86_64",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "pyarrow": "26.0.1"
+    }
+  },
+  "same_full_day_runtime": true,
+  "numerical_thread_environment": {
+    "OPENBLAS_NUM_THREADS": null,
+    "OMP_NUM_THREADS": null,
+    "MKL_NUM_THREADS": null,
+    "NUMEXPR_NUM_THREADS": null,
+    "VECLIB_MAXIMUM_THREADS": null
+  },
+  "regional_replay": {
+    "producer_revision": "cb996dcb49b9d31a24c10b9b5418c35423f7bbcd",
+    "consumer_revision": "06693a457f4f1dde0d194588232d19a459f946e1",
+    "scope": "Complete nonempty regional tile from real MP3 discovery and recorded ADS-B/DEM; 20-second source-informed clock; not the canonical full-day checkpoint/runtime.",
+    "points": 2,
+    "tracks": 317,
+    "groups": 16,
+    "candidates": 1699,
+    "ranked_count": 20,
+    "same_ordered_ranked_rows": true,
+    "same_points": true,
+    "same_tracks": true,
+    "same_events": true,
+    "same_runtime": true,
+    "same_retention": true,
+    "retention": {
+      "stages": {
+        "rows": 1,
+        "sha256": "93c084095e2e9ec2f6a36c6840d6879b0361fbe70b4705a382c289bb6f856b3d"
+      },
+      "records": {
+        "rows": 112,
+        "sha256": "dfe03cfaafdec30c9cec19a5e809bf59a232fa0acd278590008d57d0ca88910e"
+      },
+      "bounds": {
+        "rows": 1617,
+        "sha256": "660201d145a54d34970a129d9dff7cc0a983029452eb6779cc7dbc699075a3a4"
+      }
+    },
+    "retention_checksum": "62a465ba1ef79dab292143b8d7af4c41e0c9ed4e3672bbfd2eaa2d6b2b16e31f",
+    "counts_differences": {
+      "clock_excluded_unsupported_tracks": {
+        "cb996dc": null,
+        "current": []
+      },
+      "minimum_matched_events": {
+        "cb996dc": 2,
+        "current": null
+      }
+    },
+    "all_other_payload_fields_equal": true,
+    "source_checkpoint_preserved": {
+      "search/manifest.json": true,
+      "search/retention.sqlite": true,
+      "search/tile-58_68.json": true,
+      "discovery/discovery.json": true
+    },
+    "options": {
+      "bounds": [
+        -73.545,
+        40.865,
+        -73.505,
+        40.895
+      ],
+      "time_range_s": [
+        1788898746.3333333,
+        1788902290.1845
+      ],
+      "budget": {
+        "spacing_m": 2000,
+        "tile_cells": 16,
+        "max_tracks_per_tile": 2000,
+        "max_track_samples_per_tile": 500000,
+        "max_cpa_rows": 100000,
+        "max_candidates_per_tile": 20000,
+        "top_k": 20,
+        "refine_spacing_m": 500,
+        "refine_finalists": 3,
+        "cpa_step_s": 2.0,
+        "max_tiles": null
+      },
+      "scoring": {
+        "mode": "robust_ridge",
+        "c": 343.0,
+        "time_origin": null,
+        "time_sweep_s": 5,
+        "time_step_s": 0.5,
+        "recording_start_window_s": [
+          1788898640.0,
+          1788898660.0
+        ]
+      },
+      "filters": {
+        "association": "subsets",
+        "max_events": 16
+      },
+      "crs": "EPSG:5070",
+      "coarse_floor_policy": "global_and_per_tile",
+      "execution": "Direct production _tile_coordinates -> _tracks_for_points -> _sample_tile_terrain -> _score for all recorded cells in tile58_68; no candidate/event truncation and no initial score-floor override."
+    },
+    "inputs": [
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/search/manifest.json",
+        "bytes": 139863,
+        "sha256": "cb4510a238c5de5014ff0225a64380aa8ac26e32be6e252bb55364a79a530605"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/search/tile-58_68.json",
+        "bytes": 2018801,
+        "sha256": "50294472363ac7e70d8a1005dfedd7b3110a9506c1889d15915fb6ecac10be4c"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/discovery.json",
+        "bytes": 213364,
+        "sha256": "c640045ef8aedf29a0cf50f6cdef07d53aa3f024d403ee243978c7250314d80c"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/input.mp3",
+        "bytes": 42085293,
+        "sha256": "e1c13dafd8d1634bbf84df843c31771318e15a31ebb86dd165af7ee312ab80a0"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/real-ledger-inputs/reference-region.sqlite",
+        "bytes": 85929984,
+        "sha256": "17ab5d9b860513c86fa850b6c7e7318cf5d507339dfa1921e86611439b214c6a"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/replay_tile.py",
+        "bytes": 4978,
+        "sha256": "cb431588a3502d0b75d8e716ea655b7a33c0b168b53cd3e8cfa4176ac834d2d0"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+        "bytes": 15806993,
+        "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif",
+        "bytes": 2710815,
+        "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0001.csv",
+        "bytes": 1602,
+        "sha256": "db32c8e940b5512873ec18fe405eb06cf363d4567815db3ee2531f9190bf5ab4"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0002.csv",
+        "bytes": 1827,
+        "sha256": "afe993bfe19457324ee47ff8f2cf938214a90aa00fd4a518e1ec54050837e643"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0003.csv",
+        "bytes": 2727,
+        "sha256": "6ca82441bd4346d21827d99ca0910ea51ead05101d5261a44e5f1ad604d35a90"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0004.csv",
+        "bytes": 1677,
+        "sha256": "277d1c95b08dee58b17fd8ada90a38b9a2d7b0f0cc45ea1a6f4217de9dde81ce"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0005.csv",
+        "bytes": 2502,
+        "sha256": "9f74137474bf5daf8ea0a0386e4d8111ec20495082c798a42ba109f8c540049c"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0006.csv",
+        "bytes": 2277,
+        "sha256": "ae5abab11a3c5d546c2efb75a1d045b786a101e238ee4a9609284d6a5d2c7aa5"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0007.csv",
+        "bytes": 3627,
+        "sha256": "3fe3027c1985975537f70927e8f5490d0ab86465441a74888f2dc4ff418cb701"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0008.csv",
+        "bytes": 3327,
+        "sha256": "fb53735e349b179538fa65e86b0db40716159e84c1de43f51dc9ecd380186c51"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0009.csv",
+        "bytes": 1752,
+        "sha256": "a691392e4348390f0f681677699a536d4ff05e775abfcfee6827d5f961935301"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0010.csv",
+        "bytes": 2952,
+        "sha256": "cfb556b2203a4fe8949aad384db33d310d2158cba754ed422aaf054bded88be3"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0011-harmonic-2.csv",
+        "bytes": 4527,
+        "sha256": "9ef47f55d3b7972c1ec4e32cc123e01e91e4317c4154b9b72bbd392130efa89f"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0011-harmonic-3.csv",
+        "bytes": 1752,
+        "sha256": "bad92f16bbb3da88d85c6d23e4b9bfc7c6d917c6be78b034198a5c1140eb17d8"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0011.csv",
+        "bytes": 15027,
+        "sha256": "c2381e2d365fa15f02ed6389f19e3a3c8bda75147181ffed3f4e253f807cd1d4"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0012.csv",
+        "bytes": 4377,
+        "sha256": "cfec0566d225300f0d9a0bf6dc9b92551ebad62610c964afa00753ae57f9c474"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0013.csv",
+        "bytes": 6327,
+        "sha256": "b660a01a291000ad451e30ed44f0fb0cea327571c9a81a7437238d8c1df0c81d"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0014.csv",
+        "bytes": 1827,
+        "sha256": "ce724f76e6169ecc3b43526d300c653d92cc8222e786abaf7a10cfcd9d34d1be"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0015.csv",
+        "bytes": 4752,
+        "sha256": "0ecebac047804687a696c4153e2157baeffc8bfcb18afe04b2a1362788810e47"
+      },
+      {
+        "path": "/workspace/scratch/e20de6666de2/verification-main-ledger/jobs/6f9890441e4b4add8a7eb35890c185a5/discovery/event-0016.csv",
+        "bytes": 2127,
+        "sha256": "ecf83cc2872b207a9005a216a2ef58af453899c334aba4383104afbe64568d28"
+      }
+    ],
+    "outputs": {
+      "cb996dc": {
+        "report.json": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/cb996dc/report.json",
+          "bytes": 7342,
+          "sha256": "d87a38b664773546b7bada3280a5ad93a3a2917bca56986a556ea58774480f1b"
+        },
+        "payload.json": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/cb996dc/payload.json",
+          "bytes": 3108129,
+          "sha256": "14025e0d691cdba59b7d52b7f9d5b201f8106ad21ae39b5fe6f888bbdebdaf1a"
+        },
+        "retention.sqlite": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/cb996dc/retention.sqlite",
+          "bytes": 2654208,
+          "sha256": "fc677b7a95621bef5797be1dc6b3220a7f7c07e8f222129a352c8898cbd553e7"
+        }
+      },
+      "current": {
+        "report.json": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/current/report.json",
+          "bytes": 7328,
+          "sha256": "1df2c1c3f827a461eee32c6480376f0cbb4b4e02ccc601bd9483ae73a28ebc2f"
+        },
+        "payload.json": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/current/payload.json",
+          "bytes": 3108141,
+          "sha256": "797900746ffd868ef6686189d7466d8031d655b3c235fa1e700c065503d5cb0a"
+        },
+        "retention.sqlite": {
+          "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/current/retention.sqlite",
+          "bytes": 2654208,
+          "sha256": "fc677b7a95621bef5797be1dc6b3220a7f7c07e8f222129a352c8898cbd553e7"
+        }
+      }
+    }
+  },
+  "full_day_replay": {
+    "producer_revision": "cb996dcb49b9d31a24c10b9b5418c35423f7bbcd",
+    "consumer_revision": "350c9bfa1a56ce2b46d0418b39779b12cdfa04de",
+    "scope": "Documented real full-day dense point/association-anchor partition; unknown recording clock, source-informed receiver, incomplete regional coverage; no accuracy claim.",
+    "fixture_path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-fixture.json",
+    "fixture_sha256": "d7ad8de1657d524b933454fb22c842c8d14bf4c35bb595f4e481269b6afefdcd",
+    "runtime": {
+      "python": "3.12.14",
+      "machine": "x86_64",
+      "packages": {
+        "numpy": "2.3.5",
+        "scipy": "1.17.0",
+        "pandas": "2.2.3",
+        "pyproj": "3.8.0",
+        "rasterio": "1.5.2",
+        "pyarrow": "26.0.1"
+      }
+    },
+    "points": 1,
+    "tracks": 1354,
+    "groups": 16,
+    "candidates": 16015,
+    "ranked_count": 100,
+    "retention": {
+      "stages": {
+        "rows": 1,
+        "sha256": "973d246388dd4523e770a52ba98edf77a9dcc684e6c463cfebb253a1a651ba02"
+      },
+      "records": {
+        "rows": 499,
+        "sha256": "316ed354465d0548133f84ab118b9d96f00dce8bf6f0df4d44c247df52a2e488"
+      },
+      "bounds": {
+        "rows": 15691,
+        "sha256": "3d72914f96e31f5b3c1954e292a1f295be40c1dedf6ac188bd75048e6469bfc0"
+      }
+    },
+    "retention_checksum": "ca75b434b7776ca1507c9efed4e3e0f7df891a623c0b28b30fe19d0d1b5048e7",
+    "same_ordered_ranked_rows": true,
+    "same_retention": true,
+    "same_points_tracks_events": true,
+    "all_other_payload_fields_equal": true,
+    "counts_differences": {
+      "minimum_matched_events": {
+        "producer": 2,
+        "consumer": null
+      },
+      "clock_excluded_unsupported_tracks": {
+        "producer": null,
+        "consumer": []
+      }
+    },
+    "recording_start_window_s": null,
+    "query_time_s": [
+      1788825600.17,
+      1788911999.6
+    ],
+    "anchor_window_s": [
+      1788864888.7151732,
+      1788865236.7214916
+    ],
+    "producer_outputs": {
+      "report.json": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-cb996dc/report.json",
+        "sha256": "30e1af59679cddd5bdf5515561d8aca779002c7b20479e871a9d0df1cac14eee",
+        "bytes": 24090
+      },
+      "payload.json": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-cb996dc/payload.json",
+        "sha256": "6f16fa437e1b9b67348b6f4979f907a19dcc73dfa414fff8913f52b10f4d4bae",
+        "bytes": 29506029
+      },
+      "retention.sqlite": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-cb996dc/retention.sqlite",
+        "sha256": "e893fc635ea60b15207f208d91c4a34f352b06472b93cbcd1039f40351f8942a",
+        "bytes": 25264128
+      }
+    },
+    "consumer_outputs": {
+      "report.json": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-current318/report.json",
+        "sha256": "2accec444f07f7ea1f951fedf16514927615be415f618ed12563198bfd27d913",
+        "bytes": 24075
+      },
+      "payload.json": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-current318/payload.json",
+        "sha256": "defc23048b7afd29670d512c70e8b1a23337dd9d99193e2a50a2f4476ae44b60",
+        "bytes": 29506041
+      },
+      "retention.sqlite": {
+        "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-current318/retention.sqlite",
+        "sha256": "e893fc635ea60b15207f208d91c4a34f352b06472b93cbcd1039f40351f8942a",
+        "bytes": 25264128
+      }
+    }
+  },
+  "full_day_input_files": [
+    {
+      "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST-pr260-review/evidence/audio/w1-sensitivity-20261102/reference/discovery.json",
+      "sha256": "89281081ba16310e622a90001373bb1d21ad59eed5667842e98957753feab26c",
+      "bytes": 188675
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST-pr260-review/evidence/results/reference-local/report.json",
+      "sha256": "29b01918f2bb20e9f9a3770bfcc229f1bd1b8e8862fe2f66483b988a73cbf090",
+      "bytes": 4311
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/real-ledger-inputs/reference-region.sqlite",
+      "sha256": "17ab5d9b860513c86fa850b6c7e7318cf5d507339dfa1921e86611439b214c6a",
+      "bytes": 85929984
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-fixture.json",
+      "sha256": "d7ad8de1657d524b933454fb22c842c8d14bf4c35bb595f4e481269b6afefdcd",
+      "bytes": 358130
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/verification-pr260-parity/replay_documented_full_day.py",
+      "sha256": "d3d5b45e71098e8c21eb3fe035ac21ef697595841f7238c1886887e8d8cb5d57",
+      "bytes": 4404
+    }
+  ],
+  "full_day_configuration": {
+    "index_input_hash": "229d57dc810fc3f2985bae5c7fc68eb1132912cf8b95fdea2376c739d66e22a2",
+    "query_bounds": [
+      -74.299988,
+      40.100005,
+      -72.700011,
+      41.599964
+    ],
+    "query_time_s": [
+      1788825600.17,
+      1788911999.6
+    ],
+    "budget": {
+      "spacing_m": 2000.0,
+      "tile_cells": 32,
+      "max_tracks_per_tile": 2000,
+      "max_track_samples_per_tile": 500000,
+      "max_cpa_rows": 100000,
+      "max_candidates_per_tile": 20000,
+      "top_k": 100,
+      "refine_spacing_m": 100.0,
+      "refine_finalists": 10,
+      "cpa_step_s": 2.0,
+      "max_tiles": null
+    },
+    "scoring": {
+      "mode": "robust_ridge"
+    },
+    "recording_start_window_s": null,
+    "anchor_window_s": [
+      1788864888.7151732,
+      1788865236.7214916
+    ],
+    "track_query_preparation": {
+      "queried_trajectories": 4694,
+      "queried_trajectory_samples": 713100,
+      "operations": {
+        "query_calls": 1,
+        "decoded_track_yields": 4694,
+        "decoded_sample_yields": 713100
+      }
+    },
+    "counts": {
+      "trajectories": 1354,
+      "trajectory_samples": 357324,
+      "ridge_records": 16,
+      "independent_groups": 16,
+      "ridge_samples": 724,
+      "cpa_rows": 944,
+      "unsupported_cpa_tracks": 62
+    }
+  },
+  "full_day_receipts": [
+    {
+      "label": "documented-full-day-cb996dc",
+      "source": "/workspace/scratch/e20de6666de2/DOPPLERGEIST-cb996dc-review",
+      "started_utc": "2026-11-04T03:10:52.091754+00:00",
+      "wall_cap_s": 180.0,
+      "passed": true,
+      "command": [
+        "/workspace/scratch/e20de6666de2/.venv/bin/python",
+        "/workspace/scratch/e20de6666de2/verification-pr260-parity/replay_documented_full_day.py",
+        "/workspace/scratch/e20de6666de2/DOPPLERGEIST-cb996dc-review",
+        "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-cb996dc"
+      ],
+      "backend_environment": {
+        "DOPPLERGEIST_RIDGE_BACKEND": "python",
+        "DOPPLERGEIST_ACOUSTIC_BACKEND": "python",
+        "DOPPLERGEIST_CPA_BACKEND": "python"
+      },
+      "source_revision": "cb996dcb49b9d31a24c10b9b5418c35423f7bbcd",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_seconds": 69.19827941400035,
+      "partial_artifacts_preserved": true
+    },
+    {
+      "label": "documented-full-day-current318",
+      "source": "/workspace/scratch/e20de6666de2/DOPPLERGEIST-pr260-review",
+      "started_utc": "2026-11-04T03:10:52.086807+00:00",
+      "wall_cap_s": 180.0,
+      "passed": true,
+      "command": [
+        "/workspace/scratch/e20de6666de2/.venv/bin/python",
+        "/workspace/scratch/e20de6666de2/verification-pr260-parity/replay_documented_full_day.py",
+        "/workspace/scratch/e20de6666de2/DOPPLERGEIST-pr260-review",
+        "/workspace/scratch/e20de6666de2/verification-pr260-parity/documented-full-day-current318",
+        "--normalize-min-events"
+      ],
+      "backend_environment": {
+        "DOPPLERGEIST_RIDGE_BACKEND": "python",
+        "DOPPLERGEIST_ACOUSTIC_BACKEND": "python",
+        "DOPPLERGEIST_CPA_BACKEND": "python"
+      },
+      "source_revision": "350c9bfa1a56ce2b46d0418b39779b12cdfa04de",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_seconds": 42.10764088199994,
+      "partial_artifacts_preserved": true
+    }
+  ],
+  "real_legacy_job": {
+    "job": "/workspace/scratch/e20de6666de2/verification-pr260-parity/genuine-cb996dc-job/jobs/c00d7c754bc845ccaca8f8c0a3d60c92",
+    "status": "inconclusive",
+    "reason_code": "search_incomplete",
+    "run_hash": "1305ac416229590a1133166f5ebab5af67432942636a4bf74c3c15da6bc2d91c",
+    "producer_code_fingerprint": "c66d402b750381303bd0c7d9c828d2294942227176ccb3cb157f0ef6299cbe40",
+    "coarse_floor_policy": "per_tile",
+    "nonempty_tiles": [
+      {
+        "name": "tile-58_68.json",
+        "candidates": 1699,
+        "ranked": 20,
+        "retention_checksum": "7a26d507ad4da1ec11e2e5361585eedd35c5ac69853bef3a100171fa158f0150"
+      },
+      {
+        "name": "tile-58_69.json",
+        "candidates": 1681,
+        "ranked": 20,
+        "retention_checksum": "27555384b433d759a2ff8525c043b5c23c1fa6511d5eb4423ebca8579f5491f7"
+      }
+    ]
+  },
+  "continuation_controls": {
+    "command": "DOPPLERGEIST_RIDGE_BACKEND=python DOPPLERGEIST_ACOUSTIC_BACKEND=python DOPPLERGEIST_CPA_BACKEND=python DOPPLERGEIST_REAL_CB996DC_JOB=/path/to/real-stopped-job PYTHONPATH=src python -m pytest -q tests/test_real_cb996dc_checkpoint.py",
+    "result": "10 passed",
+    "source_checkpoints_unchanged": true
+  },
+  "limitations": [
+    "Only this pinned Python consumer family is admitted.",
+    "The geometry changes proposed in #293 require a new compatibility proof and invalidate this target fingerprint.",
+    "The shared-observation changes for #275 invalidate the matching.py/search.py consumer pin and require a new compatibility proof.",
+    "The full-day comparison covers one documented association-anchor partition at a source-informed receiver, not a complete search.",
+    "The historical regional data omit known jets and do not establish complete coverage.",
+    "The replay used Python 3.12.14 and the recorded package versions. Continuation also requires exact producer/consumer runtime identity.",
+    "An earlier full-day two-point attempt exceeded the candidate budget on both revisions; its partial artifacts are preserved.",
+    "Elapsed times on a shared machine are not a performance result."
+  ]
+}

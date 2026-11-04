@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import json
 from importlib.metadata import version
+import math
 from pathlib import Path
 import platform
 import shutil
@@ -43,16 +44,50 @@ THROUGHPUT_SOURCES = {
     "native_acoustic.py": "a048cb3bd2d308c91995c97e587f181fbf6d74d6dd9598ab3ab3fd1cc4a50796",
 }
 
+# cb996dc's combined scheduler/scorer uses ordinary batched arithmetic. Its
+# real broad-clock tile and a regional tile were replayed against this Python
+# consumer, including the complete ranked payload and retention records/bounds.
+CB996DC_CODE_FINGERPRINT = "c66d402b750381303bd0c7d9c828d2294942227176ccb3cb157f0ef6299cbe40"
+CB996DC_TARGET_FINGERPRINT = "2e6a9601eaf42be7ca2b440eef55eeafa894ab21f9f90adcbb216c9f08a16d2d"
+CB996DC_TARGET_FILES = (
+    "__init__.py", "acoustic_screen.py", "audio.py", "automatic.py", "batch_ridge.py",
+    "confidence.py", "contracts.py", "data_access.py", "discovery.py", "finite_search.py",
+    "flight_payload.py", "geometry.py", "index_compatibility.py", "intake.py", "jobs.py",
+    "matching.py", "native_acoustic.py", "native_cpa.py", "parallel_retention.py",
+    "parallel_tiles.py", "provenance.py", "resource_usage.py", "scoring_inputs.py",
+    "search.py", "spectral_grid.py", "spectral_matching.py", "terrain.py", "tiled_search.py",
+    "tracks.py", "trial_prefix.py",
+)
+
+
+def _consumer_fingerprint(code):
+    # Pin orchestration, input interpretation, numerical scoring, retention and
+    # their Python dependencies. CLI/API/UI-only changes do not change this
+    # proof. The adapter cannot hash itself; native execution is gated below.
+    return content_hash({name: code.get(name) for name in CB996DC_TARGET_FILES})
+
+
+def _combined_min_events(configuration):
+    """Preserve the producer's default instead of adopting main's singleton default."""
+    filters = configuration.get("filters", {})
+    if "min_events" in filters:
+        return filters["min_events"]
+    events = configuration["events"]
+    maximum = filters.get("max_events") or len(events)
+    window = configuration["scoring"].get("recording_start_window_s")
+    width = math.inf if window is None else window[1] - window[0]
+    return min(2, maximum) if len(events) > 1 and width > 10.0 else 1
+
 
 def upgrade_legacy_job(directory):
     """Prepare a replacement search before swapping it into a stopped job.
 
     Completed payloads and retention records stay unchanged. The old directory
-    and audio/operator identities remain available for rollback. New work uses
-    staged batching with the saved first-group arithmetic and fallback checks.
+    and audio/operator identities remain available for rollback. Each profile
+    preserves its scoring arithmetic and requires its validated consumer.
     """
     from .automatic import _audio_identity, _digest
-    from . import geometry, matching, native_cpa
+    from . import data_access, geometry, matching, native_cpa
 
     directory = Path(directory)
     search = directory / "search"
@@ -62,8 +97,9 @@ def upgrade_legacy_job(directory):
     old = manifest["configuration"]
     if content_hash(old) != manifest.get("run_hash"):
         return None
+    combined = content_hash(old.get("code", {})) == CB996DC_CODE_FINGERPRINT
     previous_upgrade = None
-    if any(old["code"].get(name) != digest for name, digest in LEGACY_SOURCES.items()):
+    if not combined and any(old["code"].get(name) != digest for name, digest in LEGACY_SOURCES.items()):
         report_path = directory / "checkpoint-upgrade.json"
         if manifest["run_hash"] != BATCHED_REFERENCE_RUN or not report_path.exists():
             return None
@@ -80,16 +116,23 @@ def upgrade_legacy_job(directory):
         raise ValueError("Legacy checkpoint continuation requires the Python acoustic solver")
     if native_cpa.CPA_BACKEND != "python-cpa-v1":
         raise ValueError("Legacy checkpoint continuation requires Python closest-approach processing")
+    if combined and getattr(data_access, "_native_payload_columns", None) is not None:
+        raise ValueError("The cb996dc continuation requires the verified Python flight decoder")
     from .provenance import implementation_files
     package_root = Path(__file__).parent
     code = {p.relative_to(package_root).as_posix(): _digest(p)
             for p in implementation_files(package_root, recursive=False)}
+    if combined and _consumer_fingerprint(code) != CB996DC_TARGET_FINGERPRINT:
+        return None
     if previous_upgrade and any(code.get(name) != digest for name, digest in THROUGHPUT_SOURCES.items()):
         return None
     if (old["scoring"].get("mode") != "robust_ridge" or old.get("coarse_floor_policy") != "per_tile"
             or old["scoring"].get("time_origin") is not None
             or old.get("filters", {}).get("association") != "subsets"):
         raise ValueError("This legacy checkpoint mode has no compatible upgrade")
+    if combined and (old["scoring"].get("legacy_first_batch")
+                     or any(search.glob("fine-tile-*.json"))):
+        raise ValueError("The cb996dc producer has no compatible legacy-batch or fine-checkpoint mode")
     runtime = {"python": platform.python_version(), "machine": platform.machine(),
                "packages": {name: version(name) for name in old["runtime"]["packages"]}}
     if runtime != old["runtime"]:
@@ -112,7 +155,10 @@ def upgrade_legacy_job(directory):
         raise ValueError("Prepared events no longer match the saved search")
     current = deepcopy(old)
     current["code"] = code
-    current["scoring"]["legacy_first_batch"] = True
+    if combined:
+        current.setdefault("filters", {})["min_events"] = _combined_min_events(old)
+    else:
+        current["scoring"]["legacy_first_batch"] = True
     new_hash = content_hash(current)
     suffix = uuid.uuid4().hex[:12]
     staged = directory / f".search-upgrade-{suffix}"
@@ -141,21 +187,29 @@ def upgrade_legacy_job(directory):
     # each payload and retention stage before reuse.
     tiles = len(list(staged.glob("tile-*.json")))
     write_json(staged / "manifest.json", {"run_hash": new_hash, "configuration": current})
-    report = {"version": 2 if previous_upgrade else 1,
+    report = {"version": 3 if combined else (2 if previous_upgrade else 1),
               "created_utc": datetime.now(timezone.utc).isoformat(),
               "old_run_hash": manifest["run_hash"], "new_run_hash": new_hash,
-              "tiles_preserved": tiles, "legacy_first_batch": True,
+              "tiles_preserved": tiles, "legacy_first_batch": not combined,
               "previous_search": str(previous), "identity_backup": str(backup)}
     if previous_upgrade:
         report["compatible_run_hashes"] = sorted([ORIGINAL_REFERENCE_RUN, BATCHED_REFERENCE_RUN])
         report["upgrade_kind"] = "exact_python_throughput_v1"
         report["previous_upgrade_report"] = str(backup / "checkpoint-upgrade.json")
+    if combined:
+        report.update(upgrade_kind="exact_python_cb996dc_v1",
+                      source_code_fingerprint=CB996DC_CODE_FINGERPRINT,
+                      target_code_fingerprint=CB996DC_TARGET_FINGERPRINT)
     write_json(backup / "upgrade.json", report)
     search.rename(previous)
     try:
         staged.rename(search)
         audio["identity"] = identity
-        operator["resume_legacy_first_batch"] = True
+        if combined:
+            operator.pop("resume_legacy_first_batch", None)
+            operator["filters"] = deepcopy(current["filters"])
+        else:
+            operator["resume_legacy_first_batch"] = True
         write_json(directory / "resume.json", audio)
         write_json(directory / "operator.json", operator)
         write_json(directory / "checkpoint-upgrade.json", report)
@@ -181,6 +235,16 @@ def compatible_checkpoint_runs(output, run_hash):
     path = Path(output).parent / "checkpoint-upgrade.json"
     if path.exists():
         report = json.loads(path.read_text())
+        if (report.get("version") == 3 and report.get("new_run_hash") == run_hash
+                and report.get("legacy_first_batch") is False
+                and report.get("upgrade_kind") == "exact_python_cb996dc_v1"
+                and report.get("source_code_fingerprint") == CB996DC_CODE_FINGERPRINT
+                and report.get("target_code_fingerprint") == CB996DC_TARGET_FINGERPRINT):
+            manifest = json.loads((Path(output) / "manifest.json").read_text())
+            configuration = manifest.get("configuration", {})
+            if (manifest.get("run_hash") == run_hash and content_hash(configuration) == run_hash
+                    and _consumer_fingerprint(configuration.get("code", {})) == CB996DC_TARGET_FINGERPRINT):
+                accepted.add(report["old_run_hash"])
         if report.get("new_run_hash") == run_hash and report.get("legacy_first_batch") is True:
             if report.get("version") == 1:
                 accepted.add(report["old_run_hash"])
