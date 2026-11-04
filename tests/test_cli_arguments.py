@@ -24,3 +24,15 @@ def test_serve_rejects_invalid_limits_before_startup(monkeypatch, capsys, tmp_pa
     assert error.value.code == 2
     assert message in capsys.readouterr().err
     assert not jobs.exists()
+
+
+@pytest.mark.parametrize("value", ["0", "-1"])
+def test_analyze_rejects_nonpositive_upload_limit_before_startup(monkeypatch, capsys, tmp_path, value):
+    jobs = tmp_path / "jobs"
+    monkeypatch.setattr(sys, "argv", ["dopplergeist", "analyze", "not-needed.mp3", "--jobs", str(jobs),
+                                    "--max-upload-mb", value])
+    with pytest.raises(SystemExit) as error:
+        main()
+    assert error.value.code == 2
+    assert "Value must be a positive integer" in capsys.readouterr().err
+    assert not jobs.exists()

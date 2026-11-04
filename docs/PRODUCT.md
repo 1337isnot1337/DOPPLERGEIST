@@ -84,6 +84,10 @@ job JSON to standard output. Pieces can have different sizes and costs, so their
 rate is not an ETA; remotely staged work appears after it is imported. Pressing
 Ctrl-C stops the watcher without cancelling the analysis.
 
+Direct `analyze` accepts up to 100 MiB by default. Set `--max-upload-mb 250`,
+for example, to allow a larger local recording. The `serve` command has its own
+`--max-upload-mb` setting for uploads through the local web interface.
+
 `cancel` sends the cancellation request to the local service at
 `http://127.0.0.1:8765`. If `serve` uses a different port, pass its base URL with
 `--server-url`. The service must be running and managing the job directory.

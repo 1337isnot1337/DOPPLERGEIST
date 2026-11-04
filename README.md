@@ -49,6 +49,10 @@ Native Windows execution is unverified.
 
 This scans the complete recording and saves an inspectable job. To permit historical search, add `--start-utc` and `--end-utc` for a defensible recording-start window, `--time-source` describing its evidence, and `--online` for public data acquisition. Missing clock evidence returns `needs_input`. 
 
+The direct `analyze` command accepts recordings up to 100 MiB by default. For a
+larger local file, set `--max-upload-mb` to a suitable limit, for example
+`--max-upload-mb 250`.
+
 Initial data acquisition can take hours and tens of gigabytes; [the workflow guide](docs/PRODUCT.md) covers caching, runtime limits and resuming stopped jobs.
 
 To limit the geographic search when you have independent regional context, add
