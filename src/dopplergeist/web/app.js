@@ -38,10 +38,10 @@ function setCountryProfiles(values, defaultCountry = 'US') {
     || previous.bounds_wsen.some((value, index) => value !== current.bounds_wsen[index]);
   if (areaControl) areaControl.refreshCountry(changed);
   $('supported-areas').textContent = countryProfiles.map(profile => profile.name).join('; ');
-  if (renderedJob) renderCoverage(renderedJob.coverage);
+  if (renderedJob) renderCoverage(renderedJob.coverage, renderedJob.status);
 }
 
-function renderCoverage(coverage) {
+function renderCoverage(coverage, status) {
   $('coverage').replaceChildren();
   if (!coverage) return;
   const card = node('div', undefined, 'candidate');
@@ -57,9 +57,15 @@ function renderCoverage(coverage) {
     ? `Requested ${name} bounds (west, south, east, north): ${bounds.map(value => typeof value === 'number' ? value.toFixed(6) : value).join(', ')}`
     : `Requested area: ${name}`;
   card.append(node('p', label));
-  card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
-  for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
-  if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
+  if (status === 'queued' || status === 'running') {
+    card.append(node('p', status === 'queued'
+      ? 'Search queued · data coverage will be assessed after processing starts.'
+      : 'Search in progress · final data coverage will be reported when processing finishes.'));
+  } else {
+    card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
+    for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
+    if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
+  }
   $('coverage').append(card);
 }
 async function api(path, options) {
@@ -116,7 +122,7 @@ function render(value) {
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
   $('guidance').replaceChildren(); $('guidance').hidden = true;
-  renderCoverage(value.coverage);
+  renderCoverage(value.coverage, value.status);
   $('candidates').replaceChildren();
   if (value.candidates?.length) {
     $('candidates').append(node('h3', value.status === 'succeeded' ? 'Supported location & alternatives' : 'Location hypotheses · result remains inconclusive'));
