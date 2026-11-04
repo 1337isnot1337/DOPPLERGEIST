@@ -164,3 +164,40 @@ def test_prediction_cache_preserves_every_recorded_raw_path():
         assert len(actual) == len(profile['paths'])
         for path, expected in zip(actual,profile['paths']):
             np.testing.assert_array_equal(path,expected)
+
+
+def test_recorded_context_reveals_reversals_outside_legacy_crop():
+    import gzip
+    with gzip.open(FIXTURES/'real_modulated_context.json.gz','rt') as stream:
+        data = json.load(stream)
+    settings = DiscoverySettings()
+    cropped, crop_reasons = motion(np.array(data['legacy_crop']),settings)
+    full, full_reasons = motion(np.array(data['full']),settings)
+    assert not crop_reasons
+    assert cropped['sustained_turns'] == 0
+    assert full['sustained_turns'] == 2
+    assert 'repeated_modulation' in {r['reason'] for r in full_reasons}
+
+
+def test_recorded_late_union_cannot_erase_supported_parent():
+    import gzip
+    from dopplergeist.episode_discovery import _episode_evidence
+    with gzip.open(FIXTURES/'real_group_extension.json.gz','rt') as stream:
+        data=json.load(stream)
+    settings=DiscoverySettings()
+    def accepted(group):
+        members=[Ridge(np.array(points),(str(i),)) for i,points in enumerate(group['points'])]
+        metrics=[motion(r.points,settings)[0] for r in members]
+        evidence=_episode_evidence(members,group['scales'],settings,metrics)
+        return not evidence['rejections'] and (evidence['long'] or evidence['brief'])
+    assert accepted(data['parent'])
+    assert not accepted(data['union'])
+
+
+def test_reconciliation_obeys_group_acceptance_guard():
+    tracks=recorded_short();settings=DiscoverySettings();work=Associations(settings)
+    ordinary=reconcile(tracks,settings,Associations(settings))
+    assert len(ordinary)<len(tracks)  # Actual compatible recorded components.
+    guarded=reconcile(tracks,settings,work,accept_merge=lambda *groups:False)
+    assert len(guarded)==len(tracks)
+    assert work.decision_counts['rejected_episode_extension']>0

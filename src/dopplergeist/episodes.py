@@ -641,7 +641,7 @@ def related(a, b, settings):
                 shared_observations=int(len(t)), shared_observed_s=float(shared_duration), integer_orders=harmonic)
 
 
-def reconcile(ridges, settings, work):
+def reconcile(ridges, settings, work, accept_merge=None):
     """Reconcile strong connections under one group-wide scale model.
 
     Every member of a group of >=3 needs two resolved-motion witnesses. Every
@@ -719,6 +719,13 @@ def reconcile(ridges, settings, work):
                 continue
             scales = fit(sorted(left|right))
             if scales is None:
+                continue
+            if accept_merge is not None and not accept_merge(
+                [ridges[x] for x in sorted(left)],fitted[frozenset(left)],
+                [ridges[x] for x in sorted(right)],fitted[frozenset(right)],
+                [ridges[x] for x in sorted(left|right)],scales):
+                work.record('rejected_episode_extension',ridges[i],ridges[j],
+                            reason='joint_acceptance_would_invalidate_supported_parent',**evidence)
                 continue
             work.record("joint_episode",ridges[i],ridges[j],**evidence)
             left.update(right)
