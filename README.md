@@ -68,7 +68,10 @@ clock window must still be supported by recording metadata or other evidence.
 
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow the reported
-status progress and the count and modification age of coarse/fine search files.
+pipeline/grid estimate and the count and modification age of coarse/fine search
+files. A separate search-write age includes support JSON and retention database
+or WAL writes, so those writes remain visible while a fine payload is pending.
+They do not increase the payload count or its file-count rate.
 These filename-based indicators are unverified filesystem activity, not proof
 that payloads or retention evidence are valid or that the corresponding work
 has completed.

@@ -215,19 +215,34 @@ def main():
                 age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
                 stale_after=max(60.0,args.interval*3)
                 progress_stale=" (stale)" if result_age>stale_after else ""
-                progress_text=(f", pipeline progress field {progress:.3f}{progress_stale}"
+                progress_text=(f", pipeline/grid estimate field {progress:.3f}{progress_stale}"
                                if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
                 search_files=tiles+fine_files
-                latest=max(search_files,key=lambda path:path.stat().st_mtime,default=None)
-                file_age=(f", newest matching file modified {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
-                          if latest else "")
+                # Support diagnostics and retention writes show activity, not
+                # completed payloads. Keep them outside the count and rate.
+                activity_files=(search_files+list((search/"support").glob("*.json"))
+                                +[search/"retention.sqlite", search/"retention.sqlite-wal"])
+                modified={}
+                for path in activity_files:
+                    try:
+                        modified[path]=path.stat().st_mtime
+                    except FileNotFoundError:
+                        # A WAL can disappear during a normal SQLite checkpoint.
+                        continue
+                latest=max((modified[path] for path in search_files if path in modified),default=None)
+                file_age=(f", newest matching file modified {age_text(max(0.0,wall_now-latest))} ago"
+                          if latest is not None else "")
+                activity=max(modified,key=modified.get,default=None)
+                activity_age=(f", newest search write {age_text(max(0.0,wall_now-modified[activity]))} ago "
+                              f"({activity.relative_to(search)}; unverified file activity)"
+                              if activity is not None else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
                       f"{count} search files observed (unverified: {len(tiles)} coarse, "
-                      f"{len(fine_files)} fine){rate}{file_age}, "
+                      f"{len(fine_files)} fine){rate}{file_age}{activity_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
