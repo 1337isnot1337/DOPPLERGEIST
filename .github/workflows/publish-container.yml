@@ -1,0 +1,118 @@
+name: Publish container to GHCR
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# Keep publications serialized without replacing a pending publication.
+concurrency:
+  group: publish-container-${{ github.repository }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  publish:
+    if: >-
+      github.repository == '1337isnot1337/DOPPLERGEIST' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    defaults:
+      run:
+        shell: bash
+    env:
+      LOCAL_IMAGE: dopplergeist:publish
+    steps:
+      - name: Check out the triggering commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set lowercase image name
+        id: image
+        run: printf 'name=ghcr.io/%s\n' "${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - name: Set image tags and labels
+        id: metadata
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ steps.image.outputs.name }}
+          flavor: latest=false
+          tags: |
+            type=raw,value=main
+            type=sha,format=long
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.licenses=PolyForm-Noncommercial-1.0.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build and load the publication image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: "false"
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          load: true
+          push: false
+          provenance: false
+          tags: ${{ env.LOCAL_IMAGE }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache-from: type=gha,scope=ghcr-linux-amd64
+          cache-to: type=gha,mode=max,scope=ghcr-linux-amd64
+      - name: Check the installed image before publication
+        run: |
+          docker run --rm "$LOCAL_IMAGE" --help
+          docker run --rm --entrypoint python "$LOCAL_IMAGE" -m pip check
+          docker run --rm --entrypoint ffmpeg "$LOCAL_IMAGE" -version
+          docker run --rm --entrypoint ffprobe "$LOCAL_IMAGE" -version
+          docker run --rm --interactive --entrypoint python "$LOCAL_IMAGE" - <<'PY'
+          import os
+          from importlib import metadata, resources
+          from dopplergeist import _native_ridge, _native_acoustic, _native_cpa, _native_index
+
+          assert os.getuid() == 10001
+          dist = metadata.distribution("dopplergeist")
+          assert dist.metadata["License-Expression"] == "PolyForm-Noncommercial-1.0.0"
+          installed = [str(path) for path in dist.files]
+          assert any(path.endswith("/licenses/LICENSE") for path in installed)
+          assert any(path.endswith("/licenses/licenses/MIT-legacy.txt") for path in installed)
+          web = resources.files("dopplergeist.web")
+          for name in ("index.html", "app.js", "style.css", "leaflet.js", "leaflet.css", "leaflet-license.txt"):
+              assert web.joinpath(name).read_bytes(), name
+          print("Non-root runtime, native modules, packaged assets and licenses passed; no scientific inputs generated.")
+          PY
+      - name: Log in to GHCR
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push the checked image and record its digest
+        env:
+          IMAGE_NAME: ${{ steps.image.outputs.name }}
+          IMAGE_TAGS: ${{ steps.metadata.outputs.tags }}
+        run: |
+          # An old rerun must not move :main back to an earlier source commit.
+          main_head="$(git ls-remote --exit-code origin refs/heads/main | cut -f1)"
+          printf '## Published container\n\n' >> "$GITHUB_STEP_SUMMARY"
+          while IFS= read -r tag; do
+            [[ -n "$tag" ]] || continue
+            if [[ "$tag" == "$IMAGE_NAME:main" && "$main_head" != "$GITHUB_SHA" ]]; then
+              printf 'Skipped `%s`: main has advanced beyond this run.\n\n' "$tag" >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+            docker image tag "$LOCAL_IMAGE" "$tag"
+            docker image push "$tag"
+            printf -- '- `%s`\n' "$tag" >> "$GITHUB_STEP_SUMMARY"
+          done <<< "$IMAGE_TAGS"
+          printf '\nDigest references (pin one for an exact image):\n\n```text\n' >> "$GITHUB_STEP_SUMMARY"
+          docker image inspect --format '{{join .RepoDigests "\n"}}' "$LOCAL_IMAGE" >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n\nSuccessful authenticated publication does not establish anonymous pull access.\n' >> "$GITHUB_STEP_SUMMARY"
