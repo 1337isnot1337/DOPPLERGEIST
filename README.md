@@ -1,6 +1,7 @@
 <h1 align="center">DOPPLERGEIST</h1>
-<h3 align="center">Aircraft Doppler Audio Geolocation</h3>
-
+<p align="center">
+  Aircraft Doppler Audio Geolocation
+</p>
 <p align="center">
   <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
 </p>
@@ -8,6 +9,8 @@
 DOPPLERGEIST is a Python tool for acoustic geolocation research. It analyzes aircraft Doppler patterns in audio recordings and compares them against historical ADS-B flight trajectories to estimate possible recording locations.
 
 Designed for local experimentation, audio forensics research, and investigation of location information leaked through background sound.
+
+<h3 align="center">Example Results</h3>
 
 ![Automatic MP3 flyover and ranked aircraft search](assets/livermore-automatic-mp3.png)
 
