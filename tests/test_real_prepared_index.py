@@ -85,6 +85,60 @@ def test_prepared_index_copy_preserves_source_and_input_identity(observed_index,
         index.prepare(destination)
 
 
+@pytest.mark.parametrize("bounds,times,nonempty", [
+    ([-79., 35., -78., 36.], [1788899404., 1788900299.], True),
+    ([-180., -90., 180., 90.], [1788899404.72, 1788899405.], True),
+    ([-180., -90., 180., 90.], [0., 1.], False),
+])
+def test_scoped_preparation_preserves_all_query_and_lookup_tracks(
+        observed_index, tmp_path, monkeypatch, bounds, times, nonempty):
+    index, coverage = observed_index
+    prepared = index.prepare(tmp_path / "scoped.sqlite", prepare_scope=(bounds, times))
+    with index.connect() as db:
+        complete_rows = dict(db.execute("SELECT id,payload FROM prepared_tracks"))
+    with prepared.connect() as db:
+        scoped_rows = dict(db.execute("SELECT id,payload FROM prepared_tracks"))
+    assert bool(scoped_rows) is nonempty
+    assert len(scoped_rows) < len(complete_rows)
+    assert all(payload == complete_rows[identifier] for identifier, payload in scoped_rows.items())
+    assert prepared.report["prepared_tracks"]["scope"] == {"bounds": bounds, "time_range_s": times}
+    assert prepared.report["input_hash"] == index.report["input_hash"]
+    assert prepared.coverage_for(coverage["bounds"], coverage["time_range_s"]) == index.coverage_for(
+        coverage["bounds"], coverage["time_range_s"])
+    legacy = FlightIndex(index.path, track_cache_bytes=0)
+    legacy._prepared_tracks = False
+    expected = queried(legacy, coverage)
+    reader = FlightIndex(prepared.path, track_cache_bytes=0)
+    from dopplergeist import flight_payload
+    decode, calls = flight_payload.decode_track, []
+
+    def counted(*args, **kwargs):
+        calls.append(args[0])
+        return decode(*args, **kwargs)
+
+    monkeypatch.setattr(flight_payload, "decode_track", counted)
+    assert [signature(track) for track in queried(reader, coverage)] == [signature(track) for track in expected]
+    assert [signature(track) for track in reader.lookup([track.id for track in expected])] == [
+        signature(track) for track in expected]
+    assert len(calls) == 2 * len(scoped_rows)
+
+
+def test_scoped_build_retains_every_original_segment(observed_index, tmp_path):
+    index, coverage = observed_index
+    source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
+    frame = pd.DataFrame(json.loads(source.read_text()))
+    scoped = FlightIndex.build(tmp_path / "scoped-build.sqlite", [frame], sources=[], coverage=coverage,
+                               prepare_scope=([-79., 35., -78., 36.], coverage["time_range_s"]))
+    for table in ("segments", "spatial"):
+        with index.connect() as db:
+            original = db.execute(f"SELECT * FROM {table} ORDER BY id").fetchall()
+        with scoped.connect() as db:
+            assert db.execute(f"SELECT * FROM {table} ORDER BY id").fetchall() == original
+    assert scoped.report["input_hash"] == index.report["input_hash"]
+    assert scoped.report["rows"] == index.report["rows"]
+    assert 0 < scoped.report["prepared_tracks"]["tracks"] < index.report["prepared_tracks"]["tracks"]
+
+
 def test_prepare_and_build_coordinate_the_destination(observed_index, tmp_path, monkeypatch):
     index, coverage = observed_index
     original_lock, locks = data_access.cache_lock, []
