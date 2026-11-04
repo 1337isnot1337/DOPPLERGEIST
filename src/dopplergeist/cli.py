@@ -224,9 +224,10 @@ def main():
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
                 search_files=tiles+fine_files
-                # Support diagnostics and retention writes show activity, not
-                # completed payloads. Keep them outside the count and rate.
+                # Support diagnostics, worker ledgers and retention writes show
+                # activity, not completed payloads. Keep them outside the count and rate.
                 activity_files=(search_files+list((search/"support").glob("*.json"))
+                                +list((search/".tile-workers").glob("*.sqlite*"))
                                 +[search/"retention.sqlite", search/"retention.sqlite-wal"])
                 modified={}
                 for path in activity_files:
