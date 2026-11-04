@@ -258,7 +258,7 @@ def main():
     elif args.command=="job":
         from .jobs import read_json
         directory=Path(args.jobs)/args.job_id
-        previous_count=previous_time=previous_fine_support_count=None
+        previous_count=previous_time=previous_fine_support_count=previous_split_count=None
         try:
             while True:
                 try:
@@ -271,6 +271,7 @@ def main():
                 tiles=[path for path in search.glob("tile-*.json") if not path.name.endswith(".error.json")]
                 fine_files=[path for path in search.glob("fine-tile-*.json")
                             if not path.name.endswith(".error.json")]
+                split_count=sum(1 for _ in search.glob("split-*.json"))
                 support_files=list((search/"support").glob("*.json"))
                 fine_support_files=[path for path in support_files if path.name.startswith("fine-")]
                 fine_support_count=len(fine_support_files)
@@ -291,6 +292,10 @@ def main():
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
+                split_rate=""
+                if previous_split_count is not None and split_count >= previous_split_count and now > previous_time:
+                    split_rate=(f", coarse split-marker rate "
+                                f"{(split_count-previous_split_count)*60/(now-previous_time):.1f} markers/min")
                 fine_support_rate=""
                 if (previous_fine_support_count is not None
                         and fine_support_count >= previous_fine_support_count and now > previous_time):
@@ -323,13 +328,14 @@ def main():
                               if activity is not None else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}{activity_text}): "
                       f"{count} search files observed (unverified: {len(tiles)} coarse, "
-                      f"{len(fine_files)} fine){rate}{file_age}, "
+                      f"{len(fine_files)} fine, {split_count} coarse split markers){rate}{split_rate}{file_age}, "
                       f"{fine_support_count} fine support records observed (unverified)"
                       f"{fine_support_rate}{fine_support_age}{activity_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
-                previous_count,previous_time,previous_fine_support_count=count,now,fine_support_count
+                previous_count,previous_time,previous_fine_support_count,previous_split_count=(
+                    count,now,fine_support_count,split_count)
                 time.sleep(args.interval)
         except KeyboardInterrupt:
             print("Stopped watching; the job continues.",file=sys.stderr)
