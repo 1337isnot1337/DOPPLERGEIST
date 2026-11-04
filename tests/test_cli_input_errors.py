@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import socket
 import subprocess
 import sys
 
@@ -34,4 +35,25 @@ def test_analyze_reports_job_store_initialization_error_without_traceback():
 
     assert run.returncode == 2
     assert "Could not open job store" in run.stderr
+    assert "Traceback" not in run.stderr
+
+
+def test_serve_reports_job_store_initialization_error_without_traceback():
+    existing_file = Path(__file__)
+    run = _run_cli("serve", "--jobs", existing_file, "--port", "0")
+
+    assert run.returncode == 2
+    assert "Could not start local service" in run.stderr
+    assert "Traceback" not in run.stderr
+
+
+def test_serve_reports_occupied_port_without_traceback(tmp_path):
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", 0))
+        listener.listen()
+        port = listener.getsockname()[1]
+        run = _run_cli("serve", "--jobs", tmp_path / "jobs", "--port", str(port))
+
+    assert run.returncode == 2
+    assert "Could not start local service" in run.stderr
     assert "Traceback" not in run.stderr
