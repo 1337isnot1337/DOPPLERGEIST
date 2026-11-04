@@ -203,7 +203,7 @@ def main():
     elif args.command=="job":
         from .jobs import read_json
         directory=Path(args.jobs)/args.job_id
-        previous_count=previous_time=None
+        previous_count=previous_time=previous_fine_support_count=None
         try:
             while True:
                 try:
@@ -216,6 +216,9 @@ def main():
                 tiles=[path for path in search.glob("tile-*.json") if not path.name.endswith(".error.json")]
                 fine_files=[path for path in search.glob("fine-tile-*.json")
                             if not path.name.endswith(".error.json")]
+                support_files=list((search/"support").glob("*.json"))
+                fine_support_files=[path for path in support_files if path.name.startswith("fine-")]
+                fine_support_count=len(fine_support_files)
                 count=len(tiles)+len(fine_files)
                 wall_now=time.time()
                 progress=value.get("progress")
@@ -229,10 +232,15 @@ def main():
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
+                fine_support_rate=""
+                if (previous_fine_support_count is not None
+                        and fine_support_count >= previous_fine_support_count and now > previous_time):
+                    fine_support_rate=(f", fine support record rate "
+                                       f"{(fine_support_count-previous_fine_support_count)*60/(now-previous_time):.1f} records/min")
                 search_files=tiles+fine_files
                 # Support diagnostics, worker ledgers and retention writes show
                 # activity, not completed payloads. Keep them outside the count and rate.
-                activity_files=(search_files+list((search/"support").glob("*.json"))
+                activity_files=(search_files+support_files
                                 +list((search/".tile-workers").glob("*.sqlite*"))
                                 +[search/"retention.sqlite", search/"retention.sqlite-wal"])
                 modified={}
@@ -245,17 +253,24 @@ def main():
                 latest=max((modified[path] for path in search_files if path in modified),default=None)
                 file_age=(f", newest matching file modified {age_text(max(0.0,wall_now-latest))} ago"
                           if latest is not None else "")
+                latest_fine_support=max((modified[path] for path in fine_support_files if path in modified),
+                                        default=None)
+                fine_support_age=(f", newest fine support record modified "
+                                  f"{age_text(max(0.0,wall_now-latest_fine_support))} ago"
+                                  if latest_fine_support is not None else "")
                 activity=max(modified,key=modified.get,default=None)
                 activity_age=(f", newest search write {age_text(max(0.0,wall_now-modified[activity]))} ago "
                               f"({activity.relative_to(search)}; unverified file activity)"
                               if activity is not None else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
                       f"{count} search files observed (unverified: {len(tiles)} coarse, "
-                      f"{len(fine_files)} fine){rate}{file_age}{activity_age}, "
+                      f"{len(fine_files)} fine){rate}{file_age}, "
+                      f"{fine_support_count} fine support records observed (unverified)"
+                      f"{fine_support_rate}{fine_support_age}{activity_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
-                previous_count,previous_time=count,now
+                previous_count,previous_time,previous_fine_support_count=count,now,fine_support_count
                 time.sleep(args.interval)
         except KeyboardInterrupt:
             print("Stopped watching; the job continues.",file=sys.stderr)
