@@ -10,7 +10,24 @@ import pandas as pd
 import pytest
 
 from dopplergeist import data_access
-from dopplergeist.data_access import DataUnavailable, FlightIndex
+from dopplergeist.data_access import DataUnavailable, FlightCache, FlightIndex
+
+
+def test_real_unsplit_release_reaches_offline_archive_lookup(tmp_path):
+    # Actual metadata from the ADSB.lol 2024-03-29 staging-0 release.
+    tag = "v2024.03.29-planes-readsb-staging-0"
+    name = tag + ".tar"
+    directory = tmp_path / "2024-03-29/staging-0"
+    directory.mkdir(parents=True)
+    release = {"tag_name": tag, "assets": [{
+        "name": name, "size": 1940520960,
+        "browser_download_url": f"https://github.com/adsblol/globe_history_2024/releases/download/{tag}/{name}",
+    }]}
+    (directory / "release.json").write_text(json.dumps(release))
+    # The valid release must reach the missing-file check, not be rejected as
+    # lacking a split archive. No audio, tracks or archive bytes are generated.
+    with pytest.raises(DataUnavailable, match=r"Offline cache miss: .*\.tar$"):
+        FlightCache(tmp_path, offline=True).acquire_day("2024-03-29")
 
 
 @pytest.fixture

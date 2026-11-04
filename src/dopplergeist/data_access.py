@@ -954,9 +954,10 @@ class FlightCache:
             raise DataUnavailable(f"Invalid historical release metadata: {release_path}") from error
         if not isinstance(release, dict) or release.get("tag_name") != tag:
             raise DataUnavailable(f"Historical release metadata does not match requested tag: {tag}")
-        assets = sorted((a for a in release["assets"] if ".tar." in a["name"]), key=lambda a: a["name"])
+        assets = sorted((a for a in release["assets"] if a["name"].endswith(".tar") or ".tar." in a["name"]),
+                        key=lambda a: a["name"])
         if not assets:
-            raise DataUnavailable("Release has no split trace archive")
+            raise DataUnavailable("Release has no trace archive")
         sources = []
         for asset in assets:
             digest = asset.get("digest")
