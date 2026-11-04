@@ -76,3 +76,27 @@ The standalone CLI also processed the entire 819.4 s
 exporting seven proposal groups from nine refined traces. The exact location
 reference remained withheld. This checks actual whole-file script execution,
 not seven aircraft identities, a localization, or total search time.
+
+## Duration-eligible real scene controls
+
+Four complete, approximately three-minute field recordings from
+[TUT Sound Events 2016 development](https://zenodo.org/records/45759) were fixed
+before running either detector: first two sorted files per home/residential
+scene. The original ZIP entries were downloaded and CRC-verified; recordings
+were not cut, padded, repeated or concatenated.
+
+| Source recording | Duration | Ordinary groups | Coherent groups |
+| --- | ---: | ---: | ---: |
+| home/a030 | 181.557 s | 0 | 0 |
+| home/a031 | 180.663 s | 0 | 0 |
+| residential_area/a001 | 183.270 s | 0 | 1 |
+| residential_area/a002 | 184.105 s | 0 | 0 |
+
+The source annotates household sounds, traffic, birds and people. These are
+scene controls, not proof of exhaustive aircraft absence. The proposal in the
+traffic-annotated residential recording spans 170.25–182 s (48 measured points);
+its physical source identity remains unresolved. Thus fit quality alone is not
+an aircraft classifier. No threshold was retuned to remove this outcome.
+[All four results](../benchmarks/coherent-scene-controls-341-20261104.csv) are
+retained. This check addresses duration eligibility, and still does not justify
+normal upload integration or a population false-alarm estimate.
