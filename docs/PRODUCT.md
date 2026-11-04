@@ -300,12 +300,18 @@ does not establish real terrain or altitude-datum accuracy. Its result retains
 that limitation for real recordings.
 Local overrides require prebuilt indexes and retain their actual coverage.
 
-`search_budget.max_tiles` bounds tile work. Reaching a tile, memory, data or wall
-time limit leaves incomplete coverage and cannot produce a supported national
-location. Full search completion does not prove the archive captured every real
-aircraft. Grid finalists undergo jointly constrained position/clock refinement;
-`refine_finalists` (default 5) limits physical sensitivity refinement. Unassessed
-retained approaches prevent an affirmative confidence decision.
+`search_budget.max_tiles` limits the initial root-tile prefix. Recursive
+subdivision can create more work than that root limit, so use
+`search_budget.max_tile_evaluations` to cap newly scored coarse tiles in one
+search invocation. Verified tile checkpoints do not consume that per-invocation
+allowance, allowing a later resume to continue with the same configuration.
+Exhausting the work cap leaves the result partial. Reaching a tile, memory, data
+or wall-time limit leaves incomplete coverage and cannot produce a supported
+national location. Full search completion does not prove the archive captured
+every real aircraft. Grid finalists undergo jointly constrained position/clock
+refinement; `refine_finalists` (default 5) limits physical sensitivity
+refinement. Unassessed retained approaches prevent an affirmative confidence
+decision.
 
 For chunk-boundary checks on real recordings, an operator can set
 `"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
