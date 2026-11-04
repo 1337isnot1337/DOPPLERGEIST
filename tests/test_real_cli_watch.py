@@ -53,3 +53,27 @@ def test_real_upload_prints_job_id_before_final_json(tmp_path):
     assert f"Job {value['job_id']} started." in result.stderr
     assert f"dopplergeist job {value['job_id']}" in result.stderr
     assert (jobs / value['job_id'] / 'result.json').is_file()
+
+
+def test_watch_counts_real_search_checkpoints_not_support_diagnostics():
+    source = os.environ.get('DOPPLERGEIST_REAL_JOB_ROOT')
+    if not source:
+        pytest.skip('set DOPPLERGEIST_REAL_JOB_ROOT to a completed real upload')
+    job = Path(source)
+    value = json.loads((job / 'result.json').read_text())
+    if value['status'] == 'running':
+        pytest.skip('use a completed real upload so its checkpoints stay stable')
+    search = job / 'search'
+    coarse = [path for path in search.glob('tile-*.json') if not path.name.endswith('.error.json')]
+    fine = [path for path in search.glob('fine-tile-*.json') if not path.name.endswith('.error.json')]
+    diagnostics = list((search / 'support').glob('fine-*.json'))
+    if len(fine) == len(diagnostics):
+        pytest.skip('the real upload does not distinguish search payloads from support diagnostics')
+
+    command = [sys.executable, '-m', 'dopplergeist.cli', 'job', job.name,
+               '--jobs', str(job.parent), '--watch', '--interval', '1']
+    result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=15)
+
+    assert f'{len(coarse) + len(fine)} local checkpoint pieces' in result.stderr
+    assert f'({len(coarse)} coarse tiles, {len(fine)} fine search checkpoints)' in result.stderr
+    assert 'fine support checkpoints' not in result.stderr
