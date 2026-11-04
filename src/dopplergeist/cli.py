@@ -105,6 +105,7 @@ def main():
     analyze.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     analyze.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
     analyze.add_argument("--max-runtime",type=positive_runtime,default=3600,help="Wall-time limit in seconds")
+    analyze.add_argument("--max-upload-mb",type=positive_int,default=100,help="Maximum recording size in MiB (default: 100)")
     serve=sub.add_parser("serve",help="Launch the local MP3 upload interface and job API")
     serve.add_argument("--jobs",default="jobs")
     serve.add_argument("--config",help="Operator provider/cache/search configuration JSON")
@@ -150,6 +151,12 @@ def main():
         audio=Path(args.audio)
         if not audio.is_file():
             parser.error(f"Audio file is unavailable or not a regular file: {audio}")
+        try:
+            audio_size=audio.stat().st_size
+        except OSError as exc:
+            parser.error(f"Could not read recording: {exc}")
+        if audio_size > args.max_upload_mb*1024*1024:
+            parser.error(f"Recording exceeds the {args.max_upload_mb} MiB limit; increase --max-upload-mb")
         if args.time_source and not args.start_utc:
             parser.error("--time-source requires --start-utc")
         if args.end_utc and not args.start_utc:
@@ -166,12 +173,16 @@ def main():
         except ValueError as exc:
             parser.error(str(exc))
         try:
-            manager=JobManager(args.jobs,config,max_runtime_s=args.max_runtime)
-        except (OSError, ValueError) as exc:
+            manager=JobManager(args.jobs,config,max_runtime_s=args.max_runtime,
+                               max_upload_bytes=args.max_upload_mb*1024*1024)
+        except (OSError, ValueError, OverflowError) as exc:
             parser.error(f"Could not open job store: {exc}")
         try:
-            with audio.open("rb") as source:
-                queued=manager.submit(request,source,audio.stat().st_size,suffix=audio.suffix)
+            try:
+                with audio.open("rb") as source:
+                    queued=manager.submit(request,source,audio_size,suffix=audio.suffix)
+            except (OSError, ValueError, OverflowError) as exc:
+                parser.error(f"Could not submit recording: {exc}")
             print(f"Job {queued['job_id']} started. Monitor: dopplergeist job {queued['job_id']} "
                   f"--jobs {shlex.quote(str(args.jobs))} --watch",file=sys.stderr,flush=True)
             print(json.dumps(manager.wait(queued["job_id"]),indent=2))
