@@ -99,8 +99,10 @@ def main():
     analyze.add_argument("--start-utc",help="Earliest UTC recording start, including explicit timezone")
     analyze.add_argument("--end-utc",help="Latest UTC recording start; defaults to earliest")
     analyze.add_argument("--time-source",help="How the recording start window was established")
+    analyze.add_argument("--country",type=str.upper,choices=("US", "DE"),
+                         help="Receiver country: US (CONUS, default) or DE (Germany)")
     analyze.add_argument("--bounds",type=float,nargs=4,metavar=("WEST", "SOUTH", "EAST", "NORTH"),
-                         help="Limit the search to a WGS84 rectangle in decimal degrees")
+                         help="Limit the selected country profile to a WGS84 rectangle in decimal degrees")
     analyze.add_argument("--jobs",default="jobs",help="Persistent job directory")
     analyze.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     analyze.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
@@ -154,6 +156,7 @@ def main():
     elif args.command=="analyze":
         from .jobs import JobManager
         from .contracts import validate_request
+        from .geography import profile_for_search
         audio=Path(args.audio)
         if not audio.is_file():
             parser.error(f"Audio file is unavailable or not a regular file: {audio}")
@@ -168,6 +171,9 @@ def main():
         if args.end_utc and not args.start_utc:
             parser.error("--end-utc requires --start-utc")
         request={"schema_version":1,"search":{"coverage":"conus"}}
+        if args.country is not None:
+            profile=profile_for_search({"country":args.country})
+            request["search"]={"country":profile.country,"coverage":profile.coverage}
         if args.bounds is not None:
             request["search"]["bounds_wsen"]=args.bounds
         if args.start_utc:
@@ -224,9 +230,10 @@ def main():
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
                 search_files=tiles+fine_files
-                # Support diagnostics and retention writes show activity, not
-                # completed payloads. Keep them outside the count and rate.
+                # Support diagnostics, worker ledgers and retention writes show
+                # activity, not completed payloads. Keep them outside the count and rate.
                 activity_files=(search_files+list((search/"support").glob("*.json"))
+                                +list((search/".tile-workers").glob("*.sqlite*"))
                                 +[search/"retention.sqlite", search/"retention.sqlite-wal"])
                 modified={}
                 for path in activity_files:

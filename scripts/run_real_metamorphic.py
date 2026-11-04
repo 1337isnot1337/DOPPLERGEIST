@@ -103,10 +103,21 @@ def implementation():
                             "DOPPLERGEIST_RIDGE_BACKEND",
                             "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
                             "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS", "PYTHONHASHSEED"}},
+        "missing_runtime_pins": [],
     }
     for name in ("ffmpeg", "ffprobe"):
         result[name] = subprocess.run([name, "-version"], check=True,
             capture_output=True, text=True, timeout=10).stdout.splitlines()[0]
+    try:
+        result["packages"]["shapely"] = metadata.version("shapely")
+    except metadata.PackageNotFoundError:
+        result["packages"]["shapely"] = None
+        result["geos_version"] = None
+    else:
+        import shapely
+        result["geos_version"] = getattr(shapely, "geos_version_string", None)
+        if not isinstance(result["geos_version"], str) or not result["geos_version"]:
+            result["missing_runtime_pins"].append("geos_version")
     return result
 
 
@@ -173,12 +184,16 @@ def prepare(audio, request, operator, output, *, source_note, scope_note,
         cases.append({"id": case["id"], "encoding": settings,
                       "request": shifted_request(request, settings["leading_silence_s"]),
                       "operator": arm_operator})
+    pinned_implementation = implementation()
+    if pinned_implementation["missing_runtime_pins"]:
+        raise ValueError("Cannot freeze missing runtime pins: "
+                         + ", ".join(pinned_implementation["missing_runtime_pins"]))
     plan = {"schema_version": 1, "prepared_utc": http_verifier.now(),
         "protocol": protocol, "protocol_sha256": http_verifier.sha256(PROTOCOL),
         "source": identity(audio), "source_note": source_note, "scope_note": scope_note,
         "request": request, "operator": operator, "inputs": inputs, "cases": cases,
         "additional_inputs": [str(Path(p).resolve(strict=True)) for p in additional_inputs],
-        "implementation": implementation(),
+        "implementation": pinned_implementation,
         "source_commit": subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
             check=True, capture_output=True, text=True).stdout.strip(),
         "truth_evaluation": {"eligible": False, "evaluated": False,
@@ -360,30 +375,96 @@ def compare_pcm(reference_path, variant_path, settings, protocol):
 
 class MemorySampler:
     """Sample only this runner's descendants, never another worker's jobs."""
+    STOP_TIMEOUT_S = 2.0
+
     def __init__(self):
         self.stop = threading.Event()
         self.peak = 0
         self.samples = 0
-        self.thread = threading.Thread(target=self.sample, daemon=True)
+        self.thread_error = None
+        self.stop_timed_out = False
+        self.skipped_process_reads = 0
+        try:
+            # /proc can be mounted from an outer PID namespace. os.getpid()
+            # then names a different entry in that proc mount.
+            self.proc_root_pid = int(Path("/proc/self").resolve(strict=True).name)
+        except (OSError, RuntimeError, ValueError):
+            self.proc_root_pid = None
+        self.traversal = ("task_children" if self.proc_root_pid is not None
+            and any(Path(f"/proc/{self.proc_root_pid}/task").glob("*/children"))
+            else "ppid_snapshot")
+        self.thread = threading.Thread(target=self.sample_guarded, daemon=True)
+
+    def sample_guarded(self):
+        try:
+            self.sample()
+        except BaseException as exc:
+            # Instrumentation must preserve an HTTP result even if the sampler
+            # fails after observing a positive, incomplete peak.
+            self.thread_error = f"{type(exc).__name__}: {exc}"
+
+    @staticmethod
+    def process_status(pid, *, include_rss):
+        parent, rss = None, None
+        with Path(f"/proc/{pid}/status").open() as status:
+            for line in status:
+                if line.startswith("PPid:"):
+                    parent = int(line.split()[1])
+                    if not include_rss:
+                        break
+                elif include_rss and line.startswith("VmRSS:"):
+                    rss = int(line.split()[1]) * 1024
+                if parent is not None and (rss is not None or not include_rss):
+                    break
+        return parent, rss
+
+    def parent_snapshot(self):
+        # Some proc mounts omit task/*/children. Retain only parent relations
+        # during this scan; read RSS only for the selected descendant tree.
+        children = {}
+        for entry in Path("/proc").iterdir():
+            if self.stop.is_set():
+                break
+            if not entry.name.isdecimal():
+                continue
+            try:
+                parent, _ = self.process_status(int(entry.name), include_rss=False)
+                if parent is not None:
+                    children.setdefault(parent, []).append(int(entry.name))
+            except (OSError, ValueError):
+                self.skipped_process_reads += 1
+        return children
 
     def sample(self):
+        if self.proc_root_pid is None:
+            return
         while not self.stop.is_set():
-            pending, visited, total = [os.getpid()], set(), 0
-            while pending:
-                pid = pending.pop()
+            snapshot = self.parent_snapshot() if self.traversal == "ppid_snapshot" else None
+            pending, visited, total = [(self.proc_root_pid, None)], set(), 0
+            while pending and not self.stop.is_set():
+                pid, expected_parent = pending.pop()
                 if pid in visited:
                     continue
                 visited.add(pid)
                 try:
-                    # The HTTP service can spawn a worker from a non-main thread.
-                    for children in Path(f"/proc/{pid}/task").glob("*/children"):
-                        pending += [int(x) for x in children.read_text().split()]
-                    if pid != os.getpid():
-                        for line in Path(f"/proc/{pid}/status").read_text().splitlines():
-                            if line.startswith("VmRSS:"):
-                                total += int(line.split()[1]) * 1024
+                    if pid != self.proc_root_pid:
+                        parent, rss = self.process_status(pid, include_rss=True)
+                        # A process can disappear, be reparented, or have its PID
+                        # reused after the snapshot. Exclude a changed relation.
+                        if parent != expected_parent:
+                            self.skipped_process_reads += 1
+                            continue
+                        total += rss or 0
+                    if snapshot is not None:
+                        pending += [(child, pid) for child in snapshot.get(pid, [])]
+                    else:
+                        # The service can spawn a worker from any of its threads.
+                        for children in Path(f"/proc/{pid}/task").glob("*/children"):
+                            if self.stop.is_set():
+                                break
+                            pending += [(int(x), pid) for x in children.read_text().split()]
                 except (OSError, ValueError):
-                    pass
+                    self.skipped_process_reads += 1
             self.peak = max(self.peak, total)
             self.samples += 1
             self.stop.wait(0.1)
@@ -394,11 +475,19 @@ class MemorySampler:
 
     def __exit__(self, *_):
         self.stop.set()
-        self.thread.join()
+        self.thread.join(timeout=self.STOP_TIMEOUT_S)
+        self.stop_timed_out = self.thread.is_alive()
 
     def result(self):
         return {"sampled_descendant_peak_rss_mib": self.peak/(1024**2) if self.peak else None,
                 "interval_s": 0.1, "samples": self.samples,
+                "thread_error": self.thread_error, "stop_timed_out": self.stop_timed_out,
+                "partial_measurement": bool(self.thread_error or self.stop_timed_out),
+                "skipped_process_reads": self.skipped_process_reads,
+                "traversal": self.traversal,
+                "unavailable_reason": ("sampler_error" if self.thread_error else
+                    "proc_self_unavailable" if self.proc_root_pid is None
+                    else "no_descendant_rss_observed") if not self.peak else None,
                 "scope": "Sum of local service and worker descendant RSS; sampled lower bound, not unique physical memory"}
 
 
@@ -740,13 +829,16 @@ def run(plan_path, output, *, selected_case=None):
                     "request": case["request"], "operator": case["operator"]})
                 # Failed usability checks do not remove encoded arms or cause
                 # outcome-dependent settings changes. The upload remains fresh.
-                with MemorySampler() as memory:
-                    receipt = http_verifier.verify_http(audio, directory / "http",
-                        request=case["request"], operator=case["operator"], expect_status=None,
-                        job_max_runtime_s=plan["protocol"]["budgets"]["job_max_runtime_s"],
-                        timeout_s=plan["protocol"]["budgets"]["http_timeout_s"],
-                        require_full_pipeline=False)
-                row["memory"] = memory.result()
+                memory = MemorySampler()
+                try:
+                    with memory:
+                        receipt = http_verifier.verify_http(audio, directory / "http",
+                            request=case["request"], operator=case["operator"], expect_status=None,
+                            job_max_runtime_s=plan["protocol"]["budgets"]["job_max_runtime_s"],
+                            timeout_s=plan["protocol"]["budgets"]["http_timeout_s"],
+                            require_full_pipeline=False)
+                finally:
+                    row["memory"] = memory.result()
                 row["observation"] = observe_case(directory, case, receipt)
                 row["state"] = "finished"
                 if receipt.get("interrupted"):

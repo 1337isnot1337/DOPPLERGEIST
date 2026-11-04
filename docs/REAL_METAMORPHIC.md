@@ -16,7 +16,10 @@ artifacts and the persisted terminal result.
 
 The versioned protocol is
 [`verification/metamorphic_protocol_v1.json`](verification/metamorphic_protocol_v1.json).
-It was committed before the development matrix ran. It has nine sequential arms:
+It was committed locally before the development matrix ran. The exact executed
+source tree was published afterward as
+[`3094292`](https://github.com/1337isnot1337/DOPPLERGEIST/commit/309429278978adef11e29d2bdfad296dbfdf34e1).
+This was not a public preregistration. The protocol has nine sequential arms:
 
 | Arm | Change from the baseline |
 | --- | --- |
@@ -94,6 +97,10 @@ dependencies, backend environment and FFmpeg version. Runs refuse changed
 inputs. Use `--frozen-input PATH` for an additional immutable local dependency.
 Every output directory must be new.
 
+New plans also record Shapely and its GEOS runtime version. Package absence is
+recorded explicitly. If Shapely is installed without an identifiable
+GEOS version, preparation refuses the incomplete runtime pin.
+
 The runner preserves encoded inputs, exact transformation commands, actual
 job artifacts and observations for every arm. It continues after an ordinary
 arm failure. It preserves pending arms on interruption or changed inputs.
@@ -141,3 +148,87 @@ short actual recording. They do not replace any full-recording arm:
 DOPPLERGEIST_REAL_METAMORPHIC_AUDIO=/absolute/path/actual-short-recording.mp3 \
   PYTHONPATH=src pytest -q tests/test_real_metamorphic_runner.py
 ```
+
+## Recorded result: 4 November 2026
+
+All nine fresh jobs passed HTTP and persistence verification and completed the
+required pipeline. Each produced 23 diagnostic candidates. Every scientific
+decision remained `inconclusive / search_incomplete`. The fixed comparison
+criteria failed in 35 of 36 pairs, so the runner correctly exited with code 1.
+The 192 kb/s and identical-stereo pair had no comparison flags.
+
+The [measured summary](verification/real_metamorphic_reference_2026-11-04.json)
+records all nine outcomes, all 36 comparison flag sets, source and input hashes,
+configuration, runtime pins and raw-artifact identities. The full run took
+1,192.83 seconds, including encoding and preflight checks. HTTP verification
+accounted for 737.92 seconds.
+
+The table compares each arm's leading diagnostic candidate with the declared
+128 kb/s baseline. These are candidate movements, not accepted-location errors.
+Clock differences are absolute differences after the prescribed mapping for
+leading silence; they do not indicate which fitted clock is later.
+
+| Arm | Groups / ridges | Displacement (m) | Absolute clock difference (s) | HTTP time (s) | Worker high-water RSS (MiB) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Baseline | 15 / 17 | 0.00 | 0.000000 | 81.16 | 409.34 |
+| 64 kb/s | 16 / 18 | 177.95 | 0.474851 | 101.03 | 430.97 |
+| 192 kb/s | 16 / 18 | 3.09 | 0.005837 | 93.50 | 410.20 |
+| 44.1 kHz | 16 / 18 | 1,969.93 | 7.452914 | 102.04 | 452.91 |
+| −6 dB | 15 / 17 | 2.67 | 0.005770 | 80.67 | 431.94 |
+| Identical stereo | 16 / 18 | 1.61 | 0.005285 | 90.59 | 413.76 |
+| 17.25-second leading silence | 13 / 16 | 120.24 | 0.213660 | 90.73 | 465.77 |
+| 60/30-second discovery chunks | 11 / 13 | 31.78 | 0.065637 | 48.30 | 408.05 |
+| 180/60-second discovery chunks | 13 / 15 | 30.88 | 0.053637 | 49.91 | 436.25 |
+
+All nine representations passed the declared usability checks. Duration errors
+and measured residual lags were zero. Gain-corrected PCM NRMSE ranged from
+0.03011 to 0.05248, below the fixed 0.15 limit. Native decoded peaks stayed
+below clipping. These global checks do not prove preservation of every weak
+acoustic cue.
+
+Both chunk variants uploaded bytes identical to the baseline. Only the actual
+discovery chunk settings changed. The resulting group and ridge counts changed
+from 15/17 to 11/13 and 13/15. This is a direct processing-chunk sensitivity
+result for the declared recording and search configuration.
+
+The 44.1 kHz arm lost the baseline's 1,396.5–1,418.5-second proposal in the
+75.49–93.48 Hz band. All 23 baseline candidates used that proposal, associated
+with flight `aa61d2:3`. Its ordinal event ID in the variant belongs to a different
+ridge, so it cannot establish correspondence.
+
+A five-group remnant survives at variant public rank 11 and retained-mode
+rank 8. Its coordinates and mapped clock exactly equal the baseline's unrefined
+parent at public rank 3. It lies 284.63 metres from the refined baseline winner,
+with an absolute clock difference of 0.494912 seconds. The 1.97 km winner movement accompanies
+changed detected groups and associations. It does not demonstrate accidental
+deletion or reordering of an identical hypothesis.
+
+The report retains every `distant_mode_lost` flag. This flag means that strict
+full-association correspondence failed. A changed proposal population can cause
+that failure without proving that the same hypothesis was pruned. Score deltas
+remain incomparable when the mapped associations differ.
+
+No arm produced an accepted location. Consequently, zero accepted-location pairs
+were evaluated; accepted-location invariance did not pass or fail. Independent
+truth errors remain unevaluated. The regional, source-informed inputs and
+incomplete historical coverage leave issue #61's national gate open.
+
+### Memory instrumentation correction
+
+The original descendant-RSS sampler could not traverse this environment's
+`/proc` mount. All nine original aggregate readings remain unavailable. The
+table preserves the worker high-water measurements recorded at search
+completion. They are not certified peaks for the whole job.
+
+The corrected sampler resolves the PID namespace exposed by `/proc/self`.
+When thread `children` files are absent, it selects descendants through the
+same mount's parent-PID relations before reading their RSS. Sampling errors and
+stop timeouts remain explicit. Measurements also survive HTTP verification
+exceptions.
+
+A separate four-second actual upload verified this correction. It measured
+129.74 MiB across 16 samples, stopped normally, and returned
+`needs_input / recording_time_required`. That run validates instrumentation
+only; it is not a tenth scientific arm. No original matrix measurement was
+replaced, and the nine-arm matrix was not rerun. Descendant RSS is a sampled
+sum and can count shared pages more than once.

@@ -9,7 +9,7 @@ description = "Reproducible physics-based aircraft acoustic geolocation"
 license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE", "licenses/MIT-legacy.txt", "src/dopplergeist/web/leaflet-license.txt"]
 requires-python = ">=3.11"
-dependencies = ["numpy", "scipy", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow"]
+dependencies = ["numpy", "scipy", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
 
 [project.optional-dependencies]
 test = ["pytest>=8"]

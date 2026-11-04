@@ -9,6 +9,7 @@ from pathlib import Path
 import time
 
 from .contracts import utc_timestamp, validate_candidate, validate_event, validate_request
+from .geography import EmptySearchArea
 from .jobs import write_json
 
 
@@ -153,6 +154,9 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
             request, recording, events, output, config, report_search_progress)
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic matching/data components are not installed: {exc}")
+    except EmptySearchArea as exc:
+        state["coverage"]["limitations"].append(str(exc))
+        return finish("needs_input", exc.reason_code, str(exc), required_fields=["search.bounds_wsen"])
     except MissingData as exc:
         state["coverage"]["limitations"].append(str(exc))
         return finish("inconclusive", "data_unavailable", str(exc))
@@ -222,7 +226,8 @@ def _latest_emission(hi, duration, events, filters):
 
 
 def _search(request, recording, events, output, config, search_progress):
-    from .data_access import CONUS, FlightIndex, acquire_inputs
+    from .data_access import FlightIndex, acquire_inputs
+    from .geography import profile_for_search, receiver_mask_for_search
     from .matching import prepare_events
     from .terrain import Terrain
     from .tiled_search import SearchBudget, search_national
@@ -254,6 +259,18 @@ def _search(request, recording, events, output, config, search_progress):
         raise MissingData("Recording time window exceeds the configured historical-data acquisition budget. Supply a narrower defensible window.")
     ground = config.get("terrain", {})
     hashes = {"terrain_configuration": ground}
+    profile = profile_for_search(request["search"])
+    receiver_mask = receiver_mask_for_search(request["search"],
+        cache_root=config.get("cache_root", output / "cache"), offline=config.get("offline", True))
+    budget = None
+    if receiver_mask is not None:
+        budget = SearchBudget(**config.get("search_budget", {}))
+        if receiver_mask.preflight_grid(request["search"].get("bounds_wsen", profile.bounds_wsen),
+                                        budget.spacing_m, profile.crs) is not True:
+            raise MissingData("The bounded receiver-grid check could not establish a German receiver "
+                "point in this selection. No flight data were acquired. Choose a smaller area, "
+                "or ask the operator to inspect the search area and coarse-grid spacing; "
+                "this does not establish that the receiver area is empty.")
     if ground.get("rasters") or "constant_m" in ground:
         # Explicit offline/test terrain override; normal provider acquisition stays
         # in the data owner's adapter. Never infer flight coverage from this model.
@@ -262,7 +279,7 @@ def _search(request, recording, events, output, config, search_progress):
         indexes = [FlightIndex(path) for path in config["flight_indexes"]]
         terrain = Terrain(ground.get("rasters", []), ground.get("constant_m"), ground.get("geoid_raster"))
         time_range = (earliest, latest)
-        bounds = request["search"].get("bounds_wsen", CONUS)
+        bounds = request["search"].get("bounds_wsen", profile.bounds_wsen)
         hashes["terrain_rasters"] = {str(path): _digest(path) for path in ground.get("rasters", [])}
     else:
         bundle = acquire_inputs(request, recording.metadata, cache_root=config.get("cache_root", output / "cache"),
@@ -280,13 +297,18 @@ def _search(request, recording, events, output, config, search_progress):
                "recording_start_window_s": [lo, hi]}
     if config.get("resume_legacy_first_batch"):
         scoring["legacy_first_batch"] = True
+    geographic_options = {"receiver_mask": receiver_mask} if receiver_mask is not None else {}
     report = search_national(indexes, terrain, prepared, measurements, time_range_s=time_range, output_dir=output / "search",
-                             bounds=bounds, budget=SearchBudget(**config.get("search_budget", {})),
-                             scoring=scoring, filters=filters, input_hashes=hashes,
+                             bounds=bounds, budget=budget or SearchBudget(**config.get("search_budget", {})),
+                             scoring=scoring, filters=filters, input_hashes=hashes, crs=profile.crs,
                              workers=config.get("search_workers"),
-                             search_progress=search_progress)
-    write_json(output / "data-provenance.json", {"flight_indexes": [index.report for index in indexes],
-               "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes})
+                             search_progress=search_progress, **geographic_options)
+    provenance = {"flight_indexes": [index.report for index in indexes],
+                  "terrain": terrain.provenance() if hasattr(terrain, "provenance") else hashes}
+    if receiver_mask is not None:
+        provenance["search_geography"] = {"country": profile.country, "coverage": profile.coverage,
+            "bounds_wsen": list(bounds), "crs": profile.crs, "receiver_mask": receiver_mask.identity}
+    write_json(output / "data-provenance.json", provenance)
     return report, prepared, measurements, indexes, terrain
 
 
@@ -476,7 +498,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     # The confidence producer supplies this adapter; missing decision machinery
     # can never turn the highest raw score into a supported location.
     from .confidence import decide_location
-    from .data_access import CONUS
+    from .geography import profile_for_search, receiver_mask_for_search
     from .matching import _cache_ridge_fits, profile_candidate, refine_candidate
     # Each finalist and the complete sensitivity profile own an exact-input
     # cache. Profile's internal refinements share its scope; other calls do not.
@@ -486,7 +508,12 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     refined, refinement_failures = [], []
     window = state["recording"]["time_window"]
     start_window = tuple(utc_timestamp(window[key]).timestamp() for key in ("start_utc", "end_utc"))
-    search_bounds = state["coverage"]["requested_area"].get("bounds_wsen", CONUS)
+    search_area = state["coverage"]["requested_area"]
+    profile = profile_for_search(search_area)
+    search_bounds = search_area.get("bounds_wsen", profile.bounds_wsen)
+    receiver_mask = receiver_mask_for_search(search_area,
+        cache_root=config.get("cache_root", output / "cache"), offline=config.get("offline", True))
+    geographic_options = {"receiver_mask": receiver_mask} if receiver_mask is not None else {}
     finite = search.get("finite_search_evidence")
     assessed_ids = set()
     producer_ids = search.get("core_assessed_mode_ids")
@@ -539,7 +566,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0),
-                                         bounds_wsen=search_bounds)
+                                         bounds_wsen=search_bounds, crs=profile.crs, **geographic_options)
             candidate = _comparable_refinement(candidate, row, prepared_events)
             refined.append(candidate)
             refined_keys.add(key)
@@ -556,7 +583,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         try:
             profiled = profile_candidate(leading, track_sets[mode_key(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
-                         c=config.get("sound_speed_mps", 343.0), bounds_wsen=search_bounds)
+                         c=config.get("sound_speed_mps", 343.0), bounds_wsen=search_bounds,
+                         crs=profile.crs, **geographic_options)
             # Full profiling updates this exact hypothesis. Its earlier, limited
             # envelope must not compete with incomplete evidence or score roundoff.
             raw[0] = _comparable_refinement(profiled, leading, prepared_events)

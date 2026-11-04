@@ -33,8 +33,15 @@ returns `needs_input` with `required_fields: ["time_window"]` if a defensible wi
 is still unavailable. Do not fabricate a timestamp. A derived best recording start
 is a result field and must not be mislabeled independent timestamp evidence.
 
-`search.coverage` is `conus` in version 1. Optional `bounds_wsen` further restrict
-the requested search to `[west, south, east, north]` in longitude/latitude degrees.
+`search.country` accepts `US` (CONUS) or `DE` (Germany); lowercase ISO codes are
+normalized. The corresponding `search.coverage` values are `conus` and `germany`.
+Either country or coverage is sufficient, and contradictory values are rejected.
+Legacy `{"coverage":"conus"}` objects keep their serialized shape; the validator
+does not insert a country into old requests. Optional `bounds_wsen` further restrict
+the selected profile to `[west, south, east, north]` in longitude/latitude degrees.
+Bounds must lie inside its declared envelope. Germany's land mask further limits
+receiver points, while neighboring aircraft remain eligible. The capability
+response publishes the supported catalog; see [country profiles](COUNTRIES.md).
 Actual data availability may be smaller and must be reported in provenance and
 the decision. Bounds must increase; antimeridian crossing is not supported here.
 The automatic national acceptance test omits any truth-derived bounding box.

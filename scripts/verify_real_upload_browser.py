@@ -22,7 +22,7 @@ import signal
 import subprocess
 import sys
 import time
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 
 def require(condition, message):
@@ -33,6 +33,58 @@ def require(condition, message):
 def digest(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def search_expectation(area, profiles):
+    """Resolve request semantics against the service's advertised profiles."""
+    require(isinstance(area, dict) and not set(area) - {"country", "coverage", "bounds_wsen"},
+            "Search must use the country/coverage/bounds contract")
+    require("country" in area or "coverage" in area, "Search must specify country or coverage")
+    for field in ("country", "coverage"):
+        require(field not in area or isinstance(area[field], str) and area[field],
+                f"Search {field} must be a nonempty string")
+    country = area.get("country", "").upper()
+    coverage = area.get("coverage")
+    matches = [profile for profile in profiles
+               if (not country or profile["country"] == country)
+               and (coverage is None or profile["coverage"] == coverage)]
+    require(len(matches) == 1, "Requested country/coverage is unsupported or contradictory")
+    profile = matches[0]
+    bounds = area.get("bounds_wsen", profile["bounds_wsen"])
+    require(isinstance(bounds, list) and len(bounds) == 4
+            and all(type(value) in (int, float) and math.isfinite(value) for value in bounds),
+            "Expected four finite numeric search bounds")
+    west, south, east, north = profile["bounds_wsen"]
+    require(west <= bounds[0] < bounds[2] <= east and south <= bounds[1] < bounds[3] <= north,
+            "Search bounds must stay within the requested country profile")
+    return {"country": profile["country"], "coverage": profile["coverage"], "bounds_wsen": list(bounds)}
+
+
+def require_search_matches(area, expected, profiles, label):
+    actual = search_expectation(area, profiles)
+    require(actual == expected, f"{label} search differs from the supplied request: {actual!r} != {expected!r}")
+
+
+def resolve_evidence(reference, documents):
+    """Resolve the guidance contract's artifact-relative JSON pointer."""
+    require(isinstance(reference, str), "Guidance evidence must be a string")
+    artifact, separator, pointer = reference.partition("#")
+    require(separator and artifact in {"result.json", "decision.json"}, "Unknown guidance artifact")
+    require(artifact in documents, f"Missing guidance artifact: {artifact}")
+    pointer = unquote(pointer)
+    require(pointer == "" or pointer.startswith("/"), "Guidance evidence is not a JSON pointer")
+    value = documents[artifact]
+    for encoded in pointer.split("/")[1:] if pointer else []:
+        require(re.search(r"~(?![01])", encoded) is None, "Invalid JSON pointer escape")
+        key = encoded.replace("~1", "/").replace("~0", "~")
+        if isinstance(value, list):
+            require(re.fullmatch(r"0|[1-9][0-9]*", key) is not None and int(key) < len(value),
+                    f"Guidance array reference does not exist: {reference}")
+            value = value[int(key)]
+        else:
+            require(isinstance(value, dict) and key in value, f"Guidance field does not exist: {reference}")
+            value = value[key]
+    return value
 
 
 def stop_service(process):
@@ -58,11 +110,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("audio", nargs="?", type=Path, help="Existing real MP3 recording")
     parser.add_argument("--saved-job", type=Path, help="Copy and inspect a completed real job instead of uploading")
-    parser.add_argument("--request", type=Path, help="Existing request JSON; fill its UTC window and bounds through the UI")
+    parser.add_argument("--request", type=Path, help="Existing request JSON; fill its country, UTC window and bounds through the UI")
     parser.add_argument("--source", type=Path, help="Source directory containing dopplergeist; default checks the installed package")
     parser.add_argument("--browser-executable", type=Path, help="Use an existing Chromium executable")
     parser.add_argument("--expect-status", choices=("needs_input", "failed", "inconclusive", "succeeded", "cancelled"), default="needs_input")
     parser.add_argument("--expect-reason", default="recording_time_required", help="Expected actual reason code; an empty string expects none")
+    parser.add_argument("--expect-guidance-code", action="append", default=[],
+                        help="Require this actual guidance code; repeat for multiple observations")
     parser.add_argument("--output", required=True, type=Path, help="New directory; existing paths are refused")
     parser.add_argument("--timeout", type=float, default=900, help="Overall verification budget in seconds")
     args = parser.parse_args()
@@ -89,10 +143,9 @@ def main():
     if wire is not None and (not isinstance(wire, dict) or wire.get("schema_version") != 1
                              or set(wire) - {"schema_version", "search", "time_window"}
                              or not isinstance(wire.get("time_window") or {}, dict)
-                             or not isinstance(wire.get("search") or {}, dict)
-                             or (wire.get("time_window") or {}).get("source", "user") != "user"
-                             or (wire.get("search") or {}).get("coverage", "conus") != "conus"):
-        parser.error("--request must use the UI's version-one user-time/CONUS contract")
+                             or not isinstance(wire.get("search", {}), dict)
+                             or (wire.get("time_window") or {}).get("source", "user") != "user"):
+        parser.error("--request must use the UI's version-one user-time/country-search contract")
     output.mkdir(parents=True, exist_ok=False)
     jobs = output / "jobs"
     started = time.monotonic()
@@ -170,6 +223,18 @@ def main():
                     job_id = saved_job.name
                     page.goto(origin + "/?job=" + job_id, wait_until="domcontentloaded", timeout=milliseconds(30))
                 else:
+                    capabilities = context.request.get(origin + "/api/capabilities", timeout=milliseconds(30))
+                    require(capabilities.status == 200, "Could not read the service's country profiles")
+                    profiles = capabilities.json().get("countries", [{"country": "US", "coverage": "conus",
+                        "bounds_wsen": [-125, 24, -66, 50]}])
+                    expected_search = search_expectation((wire or {}).get("search", {"coverage": "conus"}), profiles)
+                    summary["requested_search"] = expected_search
+                    country_control = page.locator("#country")
+                    if country_control.count():
+                        country_control.select_option(expected_search["country"], timeout=milliseconds(30))
+                        expect(country_control).to_have_value(expected_search["country"], timeout=milliseconds(10))
+                    else:
+                        require(expected_search["country"] == "US", "The UI has no requested country selector")
                     if wire is not None:
                         window = wire.get("time_window")
                         if window:
@@ -192,6 +257,8 @@ def main():
                     response = uploaded.value
                     require(response.status == 202, f"UI upload returned HTTP {response.status}")
                     summary["submitted_request"] = json.loads(response.request.headers["x-dopplergeist-request"])
+                    require_search_matches(summary["submitted_request"].get("search"), expected_search, profiles,
+                                           "Submitted UI")
                     # Large uploads can evict response bodies from Chrome's inspector cache.
                     # Read the rendered identifier, then fetch results directly.
                     job_label = page.locator("#job-id")
@@ -214,6 +281,9 @@ def main():
                 summary.update(status=final.get("status"), reason_code=final.get("reason_code"),
                                event_count=len(final.get("events", [])))
                 require(final.get("job_id") == job_id, "API returned a different job")
+                if saved_job is None:
+                    require_search_matches(final.get("coverage", {}).get("requested_area"), expected_search, profiles,
+                                           "Terminal API")
                 require(final.get("status") == args.expect_status, f"Expected {args.expect_status}")
                 require(final.get("reason_code") == (args.expect_reason or None), f"Expected reason {args.expect_reason!r}")
                 if saved_job is not None:
@@ -221,6 +291,65 @@ def main():
                 if args.expect_reason == "recording_time_required":
                     require("time_window" in final.get("required_fields", []), "API omitted required time_window")
                     require(not final.get("candidates"), "Undated result contains location candidates")
+                evidence_bytes = {name: (job_directory / name).read_bytes()
+                                  for name in ("result.json", "decision.json") if (job_directory / name).is_file()}
+                documents = {name: json.loads(content) for name, content in evidence_bytes.items()}
+                reply = context.request.get(origin + f"/api/jobs/{job_id}/guidance", timeout=milliseconds(30))
+                require(reply.status == 200, f"Guidance API returned HTTP {reply.status}")
+                advice = reply.json()
+                require(advice.get("schema_version") == 1 and advice.get("job_id") == job_id
+                        and advice.get("status") == final["status"]
+                        and advice.get("reason_code") == final.get("reason_code")
+                        and advice.get("ranked") is False and isinstance(advice.get("items"), list),
+                        "Guidance API does not describe the saved result")
+                references = []
+                for item in advice["items"]:
+                    require(isinstance(item, dict) and item.get("benefit") == "unmeasured"
+                            and all(isinstance(item.get(key), str) and item[key]
+                                    for key in ("code", "observation", "suggestion"))
+                            and isinstance(item.get("evidence"), list) and item["evidence"],
+                            "Guidance item lacks its observation, conditional suggestion, or evidence")
+                    for reference in item["evidence"]:
+                        resolve_evidence(reference, documents)
+                        references.append(reference)
+                for artifact in sorted({reference.split("#", 1)[0] for reference in references}):
+                    reply = context.request.get(origin + f"/api/jobs/{job_id}/artifacts/{artifact}", timeout=milliseconds(30))
+                    require(reply.status == 200 and reply.body() == evidence_bytes[artifact],
+                            "Guidance artifact download differs from the saved bytes")
+                codes = [item["code"] for item in advice["items"]]
+                require(set(args.expect_guidance_code).issubset(codes), "Required guidance code was not produced")
+                summary["guidance"] = {"codes": codes, "ranked": advice["ranked"],
+                                       "resolved_evidence": sorted(set(references)), "viewports_verified": []}
+
+                def check_guidance(viewport):
+                    panel = page.locator("#guidance")
+                    cards = panel.locator(":scope > .candidate")
+                    expect(cards).to_have_count(len(advice["items"]), timeout=milliseconds(30))
+                    if advice["items"]:
+                        expect(panel).to_be_visible(timeout=milliseconds(10))
+                        expect(panel.locator(":scope > .help")).to_have_text(
+                            "These suggestions are not ranked. Their benefit has not been measured.", timeout=milliseconds(10))
+                    else:
+                        expect(panel).to_be_hidden(timeout=milliseconds(10))
+                    for index, item in enumerate(advice["items"]):
+                        card = cards.nth(index)
+                        expect(card).to_be_visible(timeout=milliseconds(10))
+                        expect(card.locator(":scope > p")).to_have_text(
+                            [item["observation"], item["suggestion"]], timeout=milliseconds(10))
+                        details = card.locator("details")
+                        if details.get_attribute("open") is None:
+                            details.locator("summary").click(timeout=milliseconds(10))
+                        links = details.locator("a")
+                        expect(links).to_have_text(item["evidence"], timeout=milliseconds(10))
+                        for link_index, reference in enumerate(item["evidence"]):
+                            link = links.nth(link_index)
+                            expect(link).to_be_visible(timeout=milliseconds(10))
+                            expect(link).to_have_attribute("href", f"/api/jobs/{job_id}/artifacts/" + reference.split("#", 1)[0])
+                    reply = context.request.get(origin + f"/api/jobs/{job_id}/guidance", timeout=milliseconds(30))
+                    require(reply.status == 200 and reply.json() == advice, "Guidance changed during browser readback")
+                    require(all((job_directory / name).read_bytes() == content for name, content in evidence_bytes.items()),
+                            "Guidance readback changed the saved evidence")
+                    summary["guidance"]["viewports_verified"].append(viewport)
 
                 def check_display():
                     expect(page.locator("#status")).to_have_text(args.expect_status.replace("_", " "), timeout=milliseconds(30))
@@ -250,6 +379,10 @@ def main():
                     expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
 
                 check_display()
+                check_guidance("desktop")
+                if advice["items"]:
+                    page.locator("#guidance").screenshot(path=str(output / "guidance-desktop.png"), timeout=milliseconds(10))
+                    screenshots.append("guidance-desktop.png")
                 summary["displayed_event_count"] = page.locator("#events .event").count()
                 summary["displayed_candidate_count"] = page.locator("#candidates .candidate").count()
                 summary["required_message"] = page.locator("#required").inner_text()
@@ -304,19 +437,34 @@ def main():
                 require(page.url == saved_url, "Saved job URL changed")
                 page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
                 check_display()
+                check_guidance("desktop_reload")
                 expect(original_link).to_have_count(1, timeout=milliseconds(30))
                 check_diagnostics()
                 expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
                 require(api_result() == final, "Terminal API result changed after reload")
                 summary["saved_job_reload_verified"] = True
+                page.set_viewport_size({"width": 390, "height": 844})
+                page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
+                check_display()
+                check_guidance("mobile")
+                require(api_result() == final, "Mobile readback changed the terminal API result")
+                if advice["items"]:
+                    page.locator("#guidance").screenshot(path=str(output / "guidance-mobile.png"), timeout=milliseconds(10))
+                    screenshots.append("guidance-mobile.png")
+                page.locator("#status").scroll_into_view_if_needed(timeout=milliseconds(10))
+                page.screenshot(path=str(output / "result-mobile.png"), timeout=milliseconds(10))
+                screenshots.append("result-mobile.png")
+                summary["guidance"]["saved_evidence_unchanged"] = True
                 request = json.loads((job_directory / "request.json").read_text())
                 if saved_job is None and wire is None:
                     require(not request.get("time_window"), "Browser unexpectedly supplied a recording time")
                 if saved_job is None:
                     submitted = summary["submitted_request"]
+                    require_search_matches(request.get("search"), expected_search, profiles, "Persisted")
                     require(request.get("search") == submitted["search"]
                             and request.get("time_window") == submitted.get("time_window"),
                             "Persisted request differs from the UI submission")
+                    summary["search_request_verified"] = True
                 else:
                     require(digest(saved_job / "result.json") == summary["saved_result_sha256"],
                             "Original saved result changed")

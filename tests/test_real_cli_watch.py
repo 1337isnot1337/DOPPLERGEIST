@@ -17,6 +17,8 @@ def test_watch_real_job_and_interrupt_only_the_watcher():
     job = Path(source)
     if json.loads((job / 'result.json').read_text())['status'] != 'running':
         pytest.skip('the real upload is not currently running')
+    worker_files = list((job / 'search' / '.tile-workers').glob('*.sqlite*'))
+    recent_worker_write = any(time.time() - path.stat().st_mtime < 30 for path in worker_files)
     base = [sys.executable, '-m', 'dopplergeist.cli', 'job', job.name, '--jobs', str(job.parent)]
     once = subprocess.run(base, check=True, capture_output=True, text=True)
     assert json.loads(once.stdout)['job_id'] == job.name
@@ -36,6 +38,8 @@ def test_watch_real_job_and_interrupt_only_the_watcher():
     assert 'newest matching file modified' in stderr
     assert 'newest search write ' in stderr
     assert 'unverified file activity' in stderr
+    if recent_worker_write:
+        assert '.tile-workers/' in stderr
     assert 'Stopped watching; the job continues.' in stderr
     assert json.loads((job / 'result.json').read_text())['status'] == 'running'
 

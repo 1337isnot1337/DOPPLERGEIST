@@ -736,7 +736,7 @@ def _geographic_refinement_frame(candidate, radius_m, bounds_wsen):
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
                      crs="EPSG:5070", c=343.0, recording_start_window_s=None,
-                     bounds_wsen=None):
+                     bounds_wsen=None, receiver_mask=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
     A vertical offset changes the observer-to-track relative height; it is a
@@ -747,14 +747,17 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
     return _refine_candidate(candidate, tracks, events, measurements, terrain,
         radius_m=radius_m, clock_radius_s=clock_radius_s,
         altitude_offsets_m=altitude_offsets_m, crs=crs, c=c,
-        recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen)
+        recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen,
+        receiver_mask=receiver_mask)
 
 
 def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                       clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
                       crs="EPSG:5070", c=343.0, recording_start_window_s=None,
-                      bounds_wsen=None, *, _transformers=None):
+                      bounds_wsen=None, receiver_mask=None, *, _transformers=None):
     """Share coordinate operations only within one declared sensitivity profile."""
+    if receiver_mask is not None and not receiver_mask.contains(candidate["lon"], candidate["lat"]):
+        raise ValueError("Refinement seed lies outside the receiver-country mask")
     if _transformers is None:
         forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
         inverse = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
@@ -798,6 +801,10 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
                 # Clip only roundoff at the closed geographic boundary.
                 lon = float(np.clip(lon0 + parameters[0]/lon_scale, west, east))
                 lat = float(np.clip(lat0 + parameters[1]/lat_scale, south, north))
+            # A country boundary restricts receiver locations, including every
+            # sensitivity scenario. Never sample or score a foreign receiver.
+            if receiver_mask is not None and not receiver_mask.contains(lon, lat):
+                return {"score": -np.inf}, lat, lon, np.nan
             elevation = float(np.asarray(terrain.sample(lat, lon)))
             score = score_ridges(selected, events, measurements, ecef(lat, lon, elevation + offset),
                                   start + dt, c)
@@ -809,13 +816,29 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
             return -value if np.isfinite(value) else 1e6
         result = minimize(objective, initial, method="Powell", bounds=bounds,
                           options={"xtol": 0.01, "ftol": 1e-7, "maxiter": 60})
-        parameters = result.x if objective(result.x) < objective(initial) else initial
-        score, lat, lon, elevation = evaluate(parameters)
+        if receiver_mask is None:
+            parameters = result.x if objective(result.x) < objective(initial) else initial
+            score, lat, lon, elevation = evaluate(parameters)
+        else:
+            # A finite optimization penalty must not make an inadmissible
+            # border proposal preferable to a valid, low-scoring incumbent.
+            initial_fit, optimized_fit = evaluate(initial), evaluate(result.x)
+            improves = (np.isfinite(optimized_fit[0]["score"])
+                        and (not np.isfinite(initial_fit[0]["score"])
+                             or optimized_fit[0]["score"] > initial_fit[0]["score"]))
+            parameters = result.x if improves else initial
+            score, lat, lon, elevation = optimized_fit if improves else initial_fit
         if not np.isfinite(score["score"]):
             continue
         dt = lower if fixed_clock else parameters[2]
         spatial_boundary = any(min(value-lo, hi-value) <= radius_m * 0.02
                                for value, (lo, hi) in zip(parameters[:2], bounds[:2]))
+        if receiver_mask is not None:
+            # Powell explores a square about the seed. Its diagonal reaches
+            # sqrt(2) times the per-axis radius; checking only the winning point
+            # can miss a country edge that truncated another part of that square.
+            spatial_boundary |= bool(receiver_mask.boundary_limited(
+                candidate["lon"], candidate["lat"], np.sqrt(2.0) * radius_m))
         clock_boundary = bool(not fixed_clock and min(dt-lower, upper-dt) <= (upper-lower)*0.02)
         profiles.append(dict(score, lat=lat, lon=lon, elev_m=elevation,
             recording_start_time_s=float(start + dt), altitude_offset_m=float(offset),
@@ -844,7 +867,7 @@ _CANONICAL_REFINE_CANDIDATE = refine_candidate
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                       recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
-                      c=343.0, crs="EPSG:5070", bounds_wsen=None):
+                      c=343.0, crs="EPSG:5070", bounds_wsen=None, receiver_mask=None):
     """Run declared perturbations, retaining failures and boundary limitations.
 
     These finite engineering scenarios are not a calibrated confidence region.
@@ -857,6 +880,8 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
     kwargs = dict(radius_m=radius_m, clock_radius_s=clock_radius_s,
                   altitude_offsets_m=(0.0,), crs=crs, c=c,
                   recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen)
+    if receiver_mask is not None:
+        kwargs["receiver_mask"] = receiver_mask
     transformers = None
 
     def refine(*args, **options):

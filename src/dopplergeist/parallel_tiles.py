@@ -111,7 +111,7 @@ _worker = None
 
 def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, measurements,
                            bounds, time_range, budget, parameters, filters, start_window,
-                           crs, ledger_directory, run_hash, score_kind, terrain_kind="cached"):
+                           crs, ledger_directory, run_hash, score_kind, terrain_kind="cached", receiver_mask=None):
     """Initialize read-only indexes and reusable terrain state inside one worker."""
     global _worker
     if terrain_kind == "cached":
@@ -135,6 +135,7 @@ def initialize_tile_worker(index_paths, terrain_root, terrain_options, events, m
         "filters": filters, "start_window": start_window, "crs": crs,
         "ledger_directory": Path(ledger_directory), "run_hash": run_hash,
         "score_kind": score_kind,
+        "receiver_mask": receiver_mask,
     }
     _worker["ledger_directory"].mkdir(parents=True, exist_ok=True)
 
@@ -160,7 +161,7 @@ def score_tile(stage, cells, score_floor=None):
 
     try:
         radius = max(event["slant_range_m"][1] for event in state["events"])
-        points = _tile_coordinates(cells, budget.spacing_m, state["bounds"], state["crs"])
+        points = _tile_coordinates(cells, budget.spacing_m, state["bounds"], state["crs"], state.get("receiver_mask"))
         tracks = []
         anchor = _tile_anchor_window(stage.removeprefix("coarse:"), state["start_window"],
                                     state["parameters"], state["filters"], state["events"])
@@ -237,7 +238,7 @@ def score_fine_tile(stage, cells, spacing, exclusions, score_floor=None):
                 "terrain_failures": getattr(terrain, "failures", [])[failures_before:]}
 
     try:
-        points = tile_points(cells, spacing, state["bounds"], terrain, state["crs"])
+        points = tile_points(cells, spacing, state["bounds"], terrain, state["crs"], state.get("receiver_mask"))
         keep = np.ones(len(points), dtype=bool)
         for left, bottom, right, top in exclusions:
             keep &= ~((points.x >= left * spacing) & (points.x < right * spacing)

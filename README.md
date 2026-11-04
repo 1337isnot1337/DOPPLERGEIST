@@ -1,6 +1,7 @@
 <h1 align="center">DOPPLERGEIST</h1>
-<h3 align="center">Aircraft Doppler Audio Geolocation</h3>
-
+<p align="center">
+  Aircraft Doppler Audio Geolocation
+</p>
 <p align="center">
   <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
 </p>
@@ -9,13 +10,25 @@ DOPPLERGEIST is a Python tool for acoustic geolocation research. It analyzes air
 
 Designed for local experimentation, audio forensics research, and investigation of location information leaked through background sound.
 
+<h3 align="center">Example Results</h3>
+
 ![Automatic MP3 flyover and ranked aircraft search](assets/livermore-automatic-mp3.png)
 
 <sub>From a real MP3, DOPPLERGEIST automatically detected a flyover and searched tracks from 466 aircraft. Its top candidate landed **476 m from an inferred reference**, using a city-sized search area and an approximately 10-second time window; [see the full results and limitations](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
-**This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision pipeline are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
+**This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision method are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
 
 [Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
+
+## Is Colsto's airplane Doppler geolocation code available?
+
+Colsto did not publicly release the code or tools used in his [aircraft Doppler geolocation demonstration](https://www.youtube.com/watch?v=UytYrhYLOKI).
+
+**DOPPLERGEIST is an independent Python implementation** inspired by that technique. It does not contain Colsto's original code and is not affiliated with him.
+
+If you're looking for a tool to analyze airplane Doppler signatures in audio recordings and compare them against historical ADS-B flight tracks, DOPPLERGEIST provides an experimental implementation.
+
+See the [Quickstart](#quickstart) to get started.
 
 ## Current status
 
@@ -24,7 +37,7 @@ Designed for local experimentation, audio forensics research, and investigation 
 | Configured localization | Event measurement, flight ranking and physical refinement | `dopplergeist run` and `dopplergeist measure` on `main` |
 | Automatic acoustic discovery | Whole-recording decoding, frequency-track discovery and harmonic grouping without supplied event windows or bands | `scripts/discover_audio.py`; produces event proposals and diagnostics |
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
-| Geographic search | Parallel, resumable tiles, joint matching across independent flyovers and disk-backed accounting of candidates discarded by ranking limits | [Search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) on `main` |
+| Geographic search | US/CONUS and Germany profiles, parallel resumable tiles, joint matching across independent flyovers and disk-backed candidate accounting | [Country profiles](docs/COUNTRIES.md), [search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) |
 | Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on `main` | `dopplergeist analyze`, `dopplergeist serve` and `dopplergeist job`; see [Local upload workflow](docs/PRODUCT.md) |
 | Independent location validation | Real-audio discovery, browser upload and measured-session experiments; no accepted blind real localization | [Real-data verification](#real-data-verification-2026-11-03); [acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
 
@@ -68,6 +81,13 @@ To limit the geographic search when you have independent regional context, add
 `--bounds WEST SOUTH EAST NORTH` in decimal degrees, for example
 `--bounds -98.98 30.29 -98.73 30.47`. The bounds are a search prior, and the
 clock window must still be supported by recording metadata or other evidence.
+
+The default country profile is `US` (CONUS). Add `--country DE` for Germany,
+or select Germany in the upload interface. Bounds then restrict that country's
+profile. Germany uses a pinned BKG land boundary for receiver locations and
+keeps nearby aircraft across borders eligible. Its first online search also
+caches the boundary; offline use requires that cached input. Country support
+does not establish localization accuracy. See [country profiles](docs/COUNTRIES.md).
 
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow the reported
@@ -118,6 +138,40 @@ Open `http://127.0.0.1:8765` and upload a recording. Supply a defensible UTC win
 4. **Compare locations.** Search candidate receiver positions, reconcile independent flyovers, and retain competing explanations rather than forcing an answer.
 
 For more detail please see [Methodology](docs/METHODOLOGY.md).
+
+## Frequently asked questions
+
+### Can I geolocate an MP3 recording?
+
+DOPPLERGEIST supports MP3 recordings and can automatically search audio for candidate aircraft Doppler signatures. It compares acoustic measurements with historical flight trajectories to investigate possible recording locations.
+
+### Do I need to know when the audio was recorded?
+
+Yes, for historical flight matching. DOPPLERGEIST needs a defensible recording start time or bounded UTC time window. Without it, acoustic analysis can still run, but the geographic search returns `needs_input` rather than guessing a location.
+
+### Can DOPPLERGEIST run offline?
+
+Partially. Automatic audio event discovery works locally without downloading flight data. Geographic matching requires historical aircraft and terrain data, which can be downloaded with `--online` or supplied through a configured offline data source.
+
+Initial data acquisition may require hours and tens of gigabytes of storage.
+
+### How accurate is DOPPLERGEIST?
+
+DOPPLERGEIST is experimental software.
+
+In one real-MP3 experiment, the highest-ranked candidate was approximately 476 meters from the reference location under a constrained regional search. 
+
+Independent blind geolocation accuracy on real recordings has not yet been established. The software may return inconclusive results when the evidence is insufficient.
+
+### Can I upload an audio file through a browser?
+
+Yes. DOPPLERGEIST includes a locally hosted browser interface. After installation, run `dopplergeist serve` to start the application, then open the local address it provides.
+
+### Is DOPPLERGEIST free and open source?
+
+DOPPLERGEIST is free to use for permitted noncommercial purposes and is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+The license permits noncommercial use, modification, and redistribution subject to its terms. Commercial use requires separate authorization.
 
 ## Search and scientific limits
 

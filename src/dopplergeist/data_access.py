@@ -161,9 +161,9 @@ _CANONICAL_TRACK = Track
 _PREPARED_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
 
 
-@lru_cache(maxsize=16)
-def _prepared_track_identity(data_access_digest=None):
-    """Use prepared velocities only with identical normalization and NumPy."""
+@lru_cache(maxsize=1)
+def _prepared_track_components():
+    """Hash immutable runtime inputs once when checking compatible builders."""
     from . import flight_payload
     try:
         import numpy._core._multiarray_umath as numpy_core
@@ -173,12 +173,21 @@ def _prepared_track_identity(data_access_digest=None):
              Path(__file__).with_name("geometry.py"), Path(flight_payload.__file__),
              Path(numpy_core.__file__))
     sources = [sha256(path) for path in files]
+    return {"sources": sources, "numpy": np.__version__, "pandas": pd.__version__,
+            "python": sys.version, "cpu": getattr(numpy_core, "__cpu_features__", {})}
+
+
+@lru_cache(maxsize=16)
+def _prepared_track_identity(data_access_digest=None, geometry_digest=None):
+    """Use prepared velocities only with identical normalization and NumPy."""
+    components = dict(_prepared_track_components())
+    sources = list(components["sources"])
     if data_access_digest is not None:
         sources[0] = data_access_digest
-    return content_hash({"sources": sources,
-                         "numpy": np.__version__,
-                         "pandas": pd.__version__, "python": sys.version,
-                         "cpu": getattr(numpy_core, "__cpu_features__", {})})
+    if geometry_digest is not None:
+        sources[2] = geometry_digest
+    components["sources"] = sources
+    return content_hash(components)
 
 
 @lru_cache(maxsize=1)
@@ -583,11 +592,14 @@ class FlightIndex:
             builder = prepared.get("builder")
             identity = _prepared_track_identity()
             if builder != identity:
-                from .index_compatibility import PREPARED_DATA_ACCESS_EQUIVALENCE
+                from .index_compatibility import PREPARED_DATA_ACCESS_EQUIVALENCE, PREPARED_GEOMETRY_EQUIVALENCE
                 current = sha256(Path(__file__))
-                previous = PREPARED_DATA_ACCESS_EQUIVALENCE.get(current, ())
-                if (_prepared_track_identity(current) != identity
-                        or all(_prepared_track_identity(source) != builder for source in previous)):
+                geometry = sha256(Path(__file__).with_name("geometry.py"))
+                access_sources = (current, *PREPARED_DATA_ACCESS_EQUIVALENCE.get(current, ()))
+                geometry_sources = (geometry, *PREPARED_GEOMETRY_EQUIVALENCE.get(geometry, ()))
+                if (_prepared_track_identity(current, geometry) != identity
+                        or all(_prepared_track_identity(access, geom) != builder
+                               for access in access_sources for geom in geometry_sources)):
                     return False
             columns = [(row[1], row[2].upper(), row[5]) for row in
                        db.execute("PRAGMA table_info(prepared_tracks)")]
@@ -1200,6 +1212,7 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     daily all-type archives once and reuses their disk indexes on later jobs.
     """
     from .contracts import utc_timestamp, validate_request, validate_recording
+    from .geography import profile_for_search
     request, recording = validate_request(request), validate_recording(recording)
     window = request.get("time_window") or recording.get("time_window")
     if window is None:
@@ -1221,7 +1234,8 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         raise ValueError("Required emission interval must be ordered")
     times = (first, last)
     root = Path(cache_root)
-    bounds = tuple(request["search"].get("bounds_wsen", CONUS))
+    profile = profile_for_search(request["search"])
+    bounds = tuple(request["search"].get("bounds_wsen", profile.bounds_wsen))
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
     else:

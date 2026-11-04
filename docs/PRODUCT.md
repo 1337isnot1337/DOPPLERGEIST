@@ -9,7 +9,8 @@ scope and limitations.
 
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
-**sample zero**, and declared CONUS search coverage. Event windows, frequency
+**sample zero**, and a declared country profile (US/CONUS by default, or Germany).
+An optional rectangle narrows that profile. Event windows, frequency
 bands, flight IDs and ground-truth coordinates are not upload inputs.
 
 Launch the local interface after installing the project:
@@ -78,6 +79,12 @@ dopplergeist resume JOB_ID --jobs jobs
 dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765
 dopplergeist job JOB_ID --jobs jobs --watch
 ```
+
+Use `analyze --country DE` or the upload form's country selector for Germany.
+The API equivalent is `"search":{"country":"DE"}`; normalized requests record
+`"coverage":"germany"`. The same country, CRS and receiver mask apply to coarse
+search, parallel workers, fine grids and continuous refinement. See
+[country profiles](COUNTRIES.md) for boundary acquisition, offline use and limits.
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
 the upload is queued. `job --watch` reports the status-file progress field, the
@@ -167,6 +174,69 @@ Use `--expect-status succeeded` when testing that acceptance requirement, then
 evaluate location error against an independent reference after the run. The
 verifier reports operational verification and `supported_decision` separately.
 It counts independent harmonic groups separately from their ridge records.
+
+### Verify runtime limits, cancellation and restart
+
+`--timeout-s` bounds the entire verification. `--job-max-runtime-s` separately
+bounds the actual worker. It defaults to `--timeout-s` for existing callers.
+Allow time for service startup, upload, terminal readback and shutdown when testing
+a worker limit. A verifier timeout does not count as an observed `work_limit`.
+
+```bash
+python scripts/verify_upload_http.py \
+  --audio path/to/real-recording.mp3 --operator-config operator.json \
+  --start-utc "$RECORDING_START_UTC_MIN" --end-utc "$RECORDING_START_UTC_MAX" \
+  --expect-status inconclusive --expect-reason work_limit \
+  --job-max-runtime-s 30 --timeout-s 180 --verify-restart \
+  --output results/new-real-runtime-control
+```
+
+Use a recording and budget that actually reach the intended limit. A different
+terminal outcome fails the declared expectation and remains in the output.
+For an API cancellation control, use `--cancel-at-stage discovery` with
+`--expect-status cancelled`. The verifier waits for that actual running stage
+before it sends the cancellation request. It fails if the job finishes first.
+The cancellation response and terminal result must both confirm `cancelled`,
+even when a Python caller uses `expect_status=None`.
+
+`--verify-restart` stops the verifier's service, starts a new service over its
+completed job, and reads the result and original audio through HTTP again.
+It checks unchanged saved result bytes and original audio. A cancellation control
+also repeats cancellation after restart and requires the terminal result to stay
+unchanged. These operations affect only the new verification directory.
+
+To exercise unavailable data, supply a new empty cache with `offline: true` and
+a recording-start window. Preserve the actual `data_unavailable` outcome;
+do not replace it with a successful result. These terminal controls do not satisfy
+`--require-full-pipeline` or establish a supported location.
+
+Python callers can pass `expect_status=None` to observe any terminal outcome.
+All input, artifact and stage checks still apply, including
+`require_full_pipeline=True` when requested. The CLI requires `--expect-status`.
+The optional Python arguments are `job_max_runtime_s=None`,
+`cancel_at_stage=None` and `verify_restart=False`.
+
+### Verify guidance in the browser
+
+The browser verifier checks actual guidance at desktop and mobile widths. It
+compares each observation, suggestion and evidence link with the API response.
+Every evidence pointer must resolve in the saved result or decision artifact.
+Downloaded evidence must match the saved bytes, which must remain unchanged.
+
+```bash
+python scripts/verify_real_upload_browser.py \
+  --saved-job path/to/completed-real-job --source src \
+  --expect-status inconclusive --expect-reason no_supported_events \
+  --expect-guidance-code no_events \
+  --output results/new-real-guidance-readback
+```
+
+Repeat `--expect-guidance-code` to require several observations. Use `work_limit`
+for a completed runtime-limit case and `data_access_limit` for an unavailable-data
+case with a recorded acquisition limit. The saved job is copied before readback.
+No job is resumed and no result is manufactured. The check preserves the saved
+status, candidates and scores. Issue #63 still requires real positive and negative
+counterfactual controls before it can claim measured guidance benefit.
 
 ## Provider and search configuration
 
