@@ -71,8 +71,9 @@ noisy traces. The final adapter adds one development clip and no held-out clip.
 All background clips are 10 s, while aircraft clips are 60 s. With a 1 s FFT
 and 0.25 s hop, 10 s supplies at most 37 frames, below the 40-point gate. The
 ordinary backend also requires 12 s. Thus the background zeros are structurally
-guaranteed and provide **no false-alarm evidence**. Background rejection remains
-unvalidated. These small, source-defined aircraft strata do not establish
+guaranteed and provide **no false-alarm evidence**. The duration-eligible scene
+and forest supplements below are separate checks. These small, source-defined
+aircraft strata do not establish
 improved general recall and do not justify changing normal upload defaults. See the
 [AeroSonicDB source and sampling report](../benchmarks/aerosonic-scanner-survey-20261103.md).
 
@@ -112,3 +113,24 @@ an aircraft classifier. No threshold was retuned to remove this outcome.
 [All four results](../benchmarks/coherent-scene-controls-341-20261104.csv) are
 retained. This check addresses duration eligibility, and still does not justify
 normal upload integration or a population false-alarm estimate.
+
+## Duration-eligible Risoux controls
+
+A separately predeclared supplement used twelve complete Risoux forest originals,
+three each labelled `plane=0` with only silence, biophony, wind or rain. It excluded
+all 140 previously selected Risoux recordings. The application was pinned to
+`cff7d164`; the reference and scientific defaults remained unchanged.
+
+All 24 ordinary/coherent arms completed without error or timeout. Every coherent
+input had 236 actual spectral frames, sufficient for the 40-point rule to be
+possible. Both methods reported zero groups on all twelve recordings. Three
+reference-refined traces reached the adapter with 38, 26 and 23 inliers; all
+failed the unchanged 40-point requirement, and two also exceeded 1% residual.
+
+The [complete fixed-cohort report and actual trace/filter outputs](../benchmarks/coherent-risoux-controls-343-20261104/README.md)
+preserve all cases, the frozen protocol/driver, source identities and resource
+measurements. These are proposal counts on publisher-labelled forest controls,
+not proof of aircraft absence or a population false-positive rate. The result
+does not remove the reference's speed/distance limits, establish improved recall,
+or justify changing normal upload defaults. The earlier AeroSonic and TUT rows
+remain unchanged.

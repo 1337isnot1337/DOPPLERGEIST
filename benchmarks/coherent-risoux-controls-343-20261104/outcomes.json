@@ -1,0 +1,1812 @@
+{
+  "state": "finished",
+  "app_source": "cff7d1646932cb9c99fd5fd3c18e2c36d869ad41",
+  "reference_source": "ed84e0f066d60833f7e9683c286a1f4838e28639",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "numba": "0.68.1",
+    "llvmlite": "0.50.0",
+    "llvm": "22.1.0",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "limits_s": {
+    "ordinary": 120.0,
+    "coherent": 300.0
+  },
+  "batch_limit_s": 5400.0,
+  "cpu": 0,
+  "cases": [
+    {
+      "case_id": "74925ef6c3b4f695f88c",
+      "stratum": "silence",
+      "source_sha256": "52fdbd616cd7c46cbf01eb5be80d9191dada9c7892e6b2a5fc3552a52b16fadb",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.9335728000005474,
+        "cpu_user_s": 0.906792,
+        "cpu_system_s": 0.149859,
+        "process_peak_rss_mib": 163.82421875,
+        "waited_child_peak_rss_mib": 154.00390625,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 35
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/74925ef6c3b4f695f88c/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.1686912539989862
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 13.79547148599886,
+        "cpu_user_s": 12.54645,
+        "cpu_system_s": 1.289281,
+        "process_peak_rss_mib": 321.72265625,
+        "waited_child_peak_rss_mib": 321.72265625,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 4,
+          "coherent_measured_trace": 4,
+          "coherent_trace_for": 4,
+          "coherent_fit_result": 2,
+          "coherent_fit_consumed": 2,
+          "coherent_after_refinement": 4
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/74925ef6c3b4f695f88c/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 14.471370813998874
+      }
+    },
+    {
+      "case_id": "1bbaf638c25c317d8d45",
+      "stratum": "silence",
+      "source_sha256": "1d8fc8b7766c9a119e2c0ef99848c245e68d9403694a42bc7c684b9a9600ebf6",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.9573356009987037,
+        "cpu_user_s": 0.9559449999999999,
+        "cpu_system_s": 0.10455,
+        "process_peak_rss_mib": 164.10546875,
+        "waited_child_peak_rss_mib": 154.29296875,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 74
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/1bbaf638c25c317d8d45/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.1699052999993
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 1,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 7.962232334999499,
+        "cpu_user_s": 7.152644,
+        "cpu_system_s": 0.8486619999999999,
+        "process_peak_rss_mib": 271.80078125,
+        "waited_child_peak_rss_mib": 271.80078125,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 8,
+          "coherent_measured_trace": 8,
+          "coherent_trace_for": 8,
+          "coherent_fit_result": 5,
+          "coherent_fit_consumed": 5,
+          "coherent_after_refinement": 8
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/1bbaf638c25c317d8d45/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 8.39311033299964
+      }
+    },
+    {
+      "case_id": "c7cd61c921b0eade38e3",
+      "stratum": "silence",
+      "source_sha256": "a304c2cacff0bc7da0af636335c2061e92d89d9ef3ff43bfd2d0caa35dc9e30b",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.8828648060007254,
+        "cpu_user_s": 0.784686,
+        "cpu_system_s": 0.179763,
+        "process_peak_rss_mib": 164.13671875,
+        "waited_child_peak_rss_mib": 154.203125,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 29
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/c7cd61c921b0eade38e3/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.1180625169999985
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.684217751000688,
+        "cpu_user_s": 5.890356,
+        "cpu_system_s": 0.8398429999999999,
+        "process_peak_rss_mib": 271.05078125,
+        "waited_child_peak_rss_mib": 271.05078125,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 5,
+          "coherent_measured_trace": 5,
+          "coherent_trace_for": 5,
+          "coherent_fit_result": 2,
+          "coherent_fit_consumed": 2,
+          "coherent_after_refinement": 5
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/c7cd61c921b0eade38e3/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.087186423001185
+      }
+    },
+    {
+      "case_id": "01d9470c825c7d5faf40",
+      "stratum": "biophony",
+      "source_sha256": "97a6c28da9f0ab74350d17e48aec4edc8b0b6c814d8c089e595c130e2f202cf3",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.9092554640010349,
+        "cpu_user_s": 0.8409179999999999,
+        "cpu_system_s": 0.14787699999999998,
+        "process_peak_rss_mib": 165.015625,
+        "waited_child_peak_rss_mib": 155.1953125,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 140
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/01d9470c825c7d5faf40/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.1179241689987975
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 7.036613924999983,
+        "cpu_user_s": 6.347611000000001,
+        "cpu_system_s": 0.7261,
+        "process_peak_rss_mib": 270.23828125,
+        "waited_child_peak_rss_mib": 270.23828125,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 6,
+          "coherent_measured_trace": 6,
+          "coherent_trace_for": 6,
+          "coherent_fit_result": 4,
+          "coherent_fit_consumed": 4,
+          "coherent_after_refinement": 6
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/01d9470c825c7d5faf40/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.338619247999304
+      }
+    },
+    {
+      "case_id": "cc87217a241e5c50fded",
+      "stratum": "biophony",
+      "source_sha256": "99ee105342693c8a65ac20b0d9ae2b3b04598ff988dd6300dad89b7bd2b91e3f",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.9089424699996016,
+        "cpu_user_s": 0.80976,
+        "cpu_system_s": 0.175838,
+        "process_peak_rss_mib": 163.58984375,
+        "waited_child_peak_rss_mib": 153.76171875,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 51
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/cc87217a241e5c50fded/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.1173394409997854
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.836179799000092,
+        "cpu_user_s": 6.110837999999999,
+        "cpu_system_s": 0.782844,
+        "process_peak_rss_mib": 271.0546875,
+        "waited_child_peak_rss_mib": 271.0546875,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 3,
+          "coherent_measured_trace": 3,
+          "coherent_trace_for": 3,
+          "coherent_fit_result": 3,
+          "coherent_fit_consumed": 3,
+          "coherent_after_refinement": 3
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/cc87217a241e5c50fded/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.134892395000861
+      }
+    },
+    {
+      "case_id": "7740c3071e69de10ade5",
+      "stratum": "biophony",
+      "source_sha256": "997d135aead77e67a85930dd4721f0adcffee7e02f958e246f1e2e0bf6632bb8",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.7799723929983884,
+        "cpu_user_s": 0.728993,
+        "cpu_system_s": 0.12770099999999998,
+        "process_peak_rss_mib": 165.30078125,
+        "waited_child_peak_rss_mib": 155.4765625,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 76
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/7740c3071e69de10ade5/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 0.9669871139994939
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.84531351700025,
+        "cpu_user_s": 6.195035,
+        "cpu_system_s": 0.6884999999999999,
+        "process_peak_rss_mib": 270.234375,
+        "waited_child_peak_rss_mib": 270.234375,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 4,
+          "coherent_measured_trace": 4,
+          "coherent_trace_for": 4,
+          "coherent_fit_result": 3,
+          "coherent_fit_consumed": 3,
+          "coherent_after_refinement": 4
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/7740c3071e69de10ade5/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.187617891000627
+      }
+    },
+    {
+      "case_id": "519448ec9038a5d3644e",
+      "stratum": "wind",
+      "source_sha256": "8a92c4b061ce92363d8012a763632da0d3b5752b9e8126131f043346c4d6c3cd",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.7810857570002554,
+        "cpu_user_s": 0.764123,
+        "cpu_system_s": 0.09514,
+        "process_peak_rss_mib": 165.1953125,
+        "waited_child_peak_rss_mib": 155.2578125,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 10
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/519448ec9038a5d3644e/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 0.9667386569999508
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 1,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 7.4497860969986505,
+        "cpu_user_s": 6.720371,
+        "cpu_system_s": 0.764771,
+        "process_peak_rss_mib": 270.34375,
+        "waited_child_peak_rss_mib": 270.34375,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 6,
+          "coherent_measured_trace": 6,
+          "coherent_trace_for": 6,
+          "coherent_fit_result": 4,
+          "coherent_fit_consumed": 4,
+          "coherent_after_refinement": 6
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/519448ec9038a5d3644e/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.7865317550003965
+      }
+    },
+    {
+      "case_id": "ce7896cfb46f47ce25f2",
+      "stratum": "wind",
+      "source_sha256": "b11a8f6025cadae983aa5a8b77a44e916299a7eb7cf90c5f07e11c55c9a23d21",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.8297094400004426,
+        "cpu_user_s": 0.769767,
+        "cpu_system_s": 0.134604,
+        "process_peak_rss_mib": 163.3203125,
+        "waited_child_peak_rss_mib": 153.515625,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 115
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/ce7896cfb46f47ce25f2/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.0167860999990808
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.687021960999118,
+        "cpu_user_s": 6.026988,
+        "cpu_system_s": 0.7055929999999999,
+        "process_peak_rss_mib": 271.171875,
+        "waited_child_peak_rss_mib": 271.171875,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 2,
+          "coherent_measured_trace": 2,
+          "coherent_trace_for": 2,
+          "coherent_fit_result": 1,
+          "coherent_fit_consumed": 1,
+          "coherent_after_refinement": 2
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/ce7896cfb46f47ce25f2/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 6.986903199000153
+      }
+    },
+    {
+      "case_id": "5620954e95fedd0918be",
+      "stratum": "wind",
+      "source_sha256": "39327d0ecc2bbca338a87798b40b4afe28c7e8edf9ecb0f47bd352bbf8eacca8",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.749557287999778,
+        "cpu_user_s": 0.696664,
+        "cpu_system_s": 0.124859,
+        "process_peak_rss_mib": 165.0390625,
+        "waited_child_peak_rss_mib": 155.23046875,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 10
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/5620954e95fedd0918be/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 0.9166084919997957
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.524197957000069,
+        "cpu_user_s": 5.873786000000001,
+        "cpu_system_s": 0.6900499999999999,
+        "process_peak_rss_mib": 271.3515625,
+        "waited_child_peak_rss_mib": 271.3515625,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 6,
+          "coherent_measured_trace": 6,
+          "coherent_trace_for": 6,
+          "coherent_fit_result": 3,
+          "coherent_fit_consumed": 3,
+          "coherent_after_refinement": 6
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/5620954e95fedd0918be/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 6.836775781001052
+      }
+    },
+    {
+      "case_id": "27b3c02225e42592a505",
+      "stratum": "rain",
+      "source_sha256": "b9acab3915dd4fa64c6c8d72a7e40f06a1cdd54d4a50e958e61d3422faf795d6",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.83890799800065,
+        "cpu_user_s": 0.814481,
+        "cpu_system_s": 0.10800399999999999,
+        "process_peak_rss_mib": 163.18359375,
+        "waited_child_peak_rss_mib": 153.375,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 23
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/27b3c02225e42592a505/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.0676347619992157
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 1,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 7.84158577099879,
+        "cpu_user_s": 7.071845,
+        "cpu_system_s": 0.820993,
+        "process_peak_rss_mib": 271.74609375,
+        "waited_child_peak_rss_mib": 271.74609375,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 7,
+          "coherent_measured_trace": 7,
+          "coherent_trace_for": 7,
+          "coherent_fit_result": 7,
+          "coherent_fit_consumed": 7,
+          "coherent_after_refinement": 7
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/27b3c02225e42592a505/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 8.140852808999625
+      }
+    },
+    {
+      "case_id": "c7d28acf53f73064d96e",
+      "stratum": "rain",
+      "source_sha256": "4d21ea666e82823f6f8e513da01444f4a232086cbb8398319238eae8d1f90d14",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.920170737999797,
+        "cpu_user_s": 0.855965,
+        "cpu_system_s": 0.147356,
+        "process_peak_rss_mib": 163.328125,
+        "waited_child_peak_rss_mib": 153.515625,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 6
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/c7d28acf53f73064d96e/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.168271275000734
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.571077708998928,
+        "cpu_user_s": 5.910140999999999,
+        "cpu_system_s": 0.709271,
+        "process_peak_rss_mib": 270.265625,
+        "waited_child_peak_rss_mib": 270.265625,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 4,
+          "coherent_measured_trace": 4,
+          "coherent_trace_for": 4,
+          "coherent_fit_result": 2,
+          "coherent_fit_consumed": 2,
+          "coherent_after_refinement": 4
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/c7d28acf53f73064d96e/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 6.887948335999681
+      }
+    },
+    {
+      "case_id": "e047f38ef04a4994ff0c",
+      "stratum": "rain",
+      "source_sha256": "0fd081bca75988367f075b2bf2ba26f5b81aeb90d14e521fe82508e0dd578f18",
+      "ordinary": {
+        "state": "completed",
+        "method": "ordinary",
+        "cpu_affinity": [
+          0
+        ],
+        "decoded": {
+          "samples": 239979,
+          "sample_rate_hz": 4000,
+          "duration_s": 59.99475
+        },
+        "settings": {
+          "chunk_s": 120.0,
+          "overlap_s": 60.0,
+          "min_frequency_hz": 40.0,
+          "max_frequency_hz": 1600.0,
+          "window_s": 2.0,
+          "hop_s": 0.5,
+          "min_contrast": 2.5,
+          "min_duration_s": 12.0,
+          "min_support": 0.65,
+          "min_drop_hz": 4.0,
+          "min_fractional_drop": 0.03,
+          "max_gap_s": 2.0,
+          "max_fragment_gap_s": 20.0,
+          "max_peaks_per_frame": 60
+        },
+        "spectra": [
+          {
+            "start_s": 0.0,
+            "decoded_samples": 239979,
+            "frames": 116,
+            "time_span_s": 57.5
+          }
+        ],
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 0.8122408889994404,
+        "cpu_user_s": 0.7384209999999999,
+        "cpu_system_s": 0.154013,
+        "process_peak_rss_mib": 164.11328125,
+        "waited_child_peak_rss_mib": 154.29296875,
+        "observation_counts": {
+          "ordinary_spectrum": 1,
+          "ordinary_measured_path": 16
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/e047f38ef04a4994ff0c/ordinary",
+        "process_returncode": 0,
+        "supervisor_wall_s": 1.0175051419992087
+      },
+      "coherent": {
+        "state": "completed",
+        "method": "coherent",
+        "cpu_affinity": [
+          0
+        ],
+        "settings": {
+          "sr": 4000,
+          "win_s": 1.0,
+          "hop_s": 0.25,
+          "fmin": 30.0,
+          "fmax": 1000.0,
+          "line_s": 20.0,
+          "log_step": 0.002,
+          "speeds": [
+            20.0,
+            25.9,
+            33.6,
+            43.6,
+            56.6,
+            73.4,
+            95.1,
+            123.4,
+            160.0
+          ],
+          "taus": [
+            2.5,
+            3.55,
+            5.05,
+            7.19,
+            10.22,
+            14.53,
+            20.65,
+            29.36,
+            41.75,
+            59.36,
+            84.4,
+            120.0
+          ],
+          "span_tau": 1.5,
+          "threshold": 8.0,
+          "min_contrast": 0.5,
+          "chunk_s": 1800.0,
+          "margin_s": 150.0,
+          "c": 343.0,
+          "refine": true,
+          "max_candidates": 400
+        },
+        "decoded": [
+          {
+            "samples": 239978,
+            "sample_rate_hz": 4000,
+            "duration_s": 59.9945,
+            "decode_start_s": 0.0,
+            "decode_duration_s": 59.994558,
+            "coherent_frame_capacity": 236
+          }
+        ],
+        "spectra": [
+          {
+            "frames": 236,
+            "first_time_s": 0.5,
+            "last_time_s": 59.25,
+            "hop_s": 0.25
+          }
+        ],
+        "raw_refined_traces": 0,
+        "adapter_quality_passes": 0,
+        "duration_eligible": true,
+        "ridges": 0,
+        "groups": 0,
+        "measured_samples": 0,
+        "wall_s": 6.693837954999253,
+        "cpu_user_s": 6.007954999999999,
+        "cpu_system_s": 0.731495,
+        "process_peak_rss_mib": 271.7265625,
+        "waited_child_peak_rss_mib": 271.7265625,
+        "observation_counts": {
+          "coherent_decode": 1,
+          "coherent_spectrum": 1,
+          "coherent_candidates": 1,
+          "coherent_before_refinement": 7,
+          "coherent_measured_trace": 7,
+          "coherent_trace_for": 7,
+          "coherent_fit_result": 3,
+          "coherent_fit_consumed": 3,
+          "coherent_after_refinement": 7
+        },
+        "output": "/workspace/scratch/e20de6666de2/risoux-negative-control-343/execution-v1/e047f38ef04a4994ff0c/coherent",
+        "process_returncode": 0,
+        "supervisor_wall_s": 7.03655548200004
+      }
+    }
+  ],
+  "wall_s": 108.41940571600026
+}
