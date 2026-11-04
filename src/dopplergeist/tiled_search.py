@@ -356,7 +356,7 @@ def _association_clock_window(start_window, sweep_s):
     return center, tolerance
 
 
-def _latest_event_receive_time(events, parameters, filters, start_window):
+def _event_receive_time_bounds(events, parameters, filters, start_window):
     """Conservatively bound matchable CPA arrivals for the shared-clock path.
 
     None means that this optional exclusion is not justified. Silence filters
@@ -372,22 +372,26 @@ def _latest_event_receive_time(events, parameters, filters, start_window):
         if not math.isfinite(c) or c <= 0 or not math.isfinite(offset) or offset < 0:
             return None
         center, clock_tolerance = _association_clock_window(start_window, parameters.get("time_sweep_s", 5.0))
+        lower = math.nextafter(center - clock_tolerance, -math.inf)
         upper = math.nextafter(center + clock_tolerance, math.inf)
-        latest = []
+        earliest, latest = [], []
         for event in events:
             cpa = float(event["cpa_receive_s"])
             event_tolerance = float(event.get("quality", {}).get("cpa_tolerance_s", 0))
             if not math.isfinite(cpa) or not math.isfinite(event_tolerance) or event_tolerance < 0:
                 return None
             margin = math.nextafter(event_tolerance + offset / 2, math.inf)
+            first = math.nextafter(math.nextafter(lower - margin, -math.inf) + cpa, -math.inf)
             bound = math.nextafter(math.nextafter(upper + margin, math.inf) + cpa, math.inf)
             # Association calculates receive_time - cpa before comparing clock
             # intervals. Extra ULPs cover that inverse floating-point rounding.
             bound += 4 * max(math.ulp(bound), math.ulp(center), math.ulp(cpa))
-            if not math.isfinite(bound):
+            first -= 4 * max(math.ulp(first), math.ulp(center), math.ulp(cpa))
+            if not math.isfinite(bound) or not math.isfinite(first):
                 return None
+            earliest.append(first)
             latest.append(bound)
-        return max(latest) if latest else None
+        return (min(earliest), max(latest)) if latest else None
     except (KeyError, TypeError, ValueError, OverflowError):
         return None
 
@@ -525,7 +529,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     point_ids = points.point_id.to_numpy(dtype=int)
     cpa_batches, count = [], 0
     unsupported, clock_excluded = [], []
-    latest_receive = _latest_event_receive_time(events, parameters, filters, start_window)
+    receive_bounds = _event_receive_time_bounds(events, parameters, filters, start_window)
     # Bound materialized CPA rows before pairing; one track at a time keeps the
     # national traffic count out of the CPA tensor/list allocation.
     for track in tracks:
@@ -551,12 +555,25 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                     track_batches.append(np.array(rows, dtype=_CPA_DTYPE))
                 del rows
         except AcousticSupportError as error:
-            if latest_receive is not None and track.time[0] > latest_receive:
+            if receive_bounds is not None and track.time[0] > receive_bounds[1]:
                 clock_excluded.append({"track_id": track.id, "reason": error.reason,
                                        "reported_intervals": _support_error(error),
                                        "earliest_emission_s": float(track.time[0]),
-                                       "latest_event_receive_s": latest_receive})
+                                       "latest_event_receive_s": receive_bounds[1]})
                 continue
+            if receive_bounds is not None:
+                c = float(parameters.get("c", 343.0))
+                delay = math.nextafter(radius / c, math.inf)
+                last_receive = math.nextafter(float(track.time[-1]) + delay, math.inf)
+                last_receive += 4 * max(math.ulp(last_receive), math.ulp(float(track.time[-1])), math.ulp(delay))
+                if math.isfinite(last_receive) and last_receive < receive_bounds[0]:
+                    clock_excluded.append({"track_id": track.id, "reason": error.reason,
+                                           "reported_intervals": _support_error(error),
+                                           "exclusion_kind": "before_events",
+                                           "latest_emission_s": float(track.time[-1]),
+                                           "latest_possible_receive_s": last_receive,
+                                           "earliest_event_receive_s": receive_bounds[0]})
+                    continue
             # The typed failure does not identify an exact bad interval. Keep
             # the entire track/stage as explicitly unassessed, and retain rows
             # from other tracks. Never repair or clip the source payload here.
