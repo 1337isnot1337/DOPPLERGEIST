@@ -115,6 +115,42 @@ async function artifacts(id) {
     }
   }
 }
+function coordinateCopyControl(lat, lon) {
+  const control = node('div', undefined, 'coordinate-copy');
+  const button = node('button', 'Copy coordinates', 'secondary');
+  const status = node('span', '', 'help');
+  const coordinates = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+  let resetTimer = null;
+
+  button.type = 'button';
+  button.setAttribute('aria-label', `Copy coordinates ${coordinates}`);
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  status.setAttribute('aria-atomic', 'true');
+
+  button.addEventListener('click', async () => {
+    clearTimeout(resetTimer);
+    status.textContent = '';
+    button.disabled = true;
+    try {
+      if (!navigator.clipboard
+          || typeof navigator.clipboard.writeText !== 'function') {
+        throw new Error('Clipboard unavailable');
+      }
+      await navigator.clipboard.writeText(coordinates);
+      status.textContent = 'Copied!';
+      resetTimer = setTimeout(() => { status.textContent = ''; }, 2500);
+    } catch (_) {
+      status.textContent = 'Copy failed. Select and copy the coordinates above.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  control.append(button, status);
+  return control;
+}
+
 function render(value) {
   renderedJob = value;
   $('empty').hidden = true; $('job').hidden = false;
@@ -157,6 +193,9 @@ function render(value) {
       const map = node('a', 'View coordinate on OpenStreetMap');
       map.href = `https://www.openstreetmap.org/?mlat=${candidate.lat}&mlon=${candidate.lon}#map=14/${candidate.lat}/${candidate.lon}`;
       map.target = '_blank'; map.rel = 'noopener noreferrer'; card.append(map);
+      if (Number.isFinite(candidate.lat) && Number.isFinite(candidate.lon)) {
+        card.append(coordinateCopyControl(candidate.lat, candidate.lon));
+      }
       if (i < 5) $('candidates').append(card);
       else {
         if (!additional) { additional = node('details'); additional.append(node('summary', `${value.candidates.length - 5} additional hypotheses`)); $('candidates').append(additional); }
