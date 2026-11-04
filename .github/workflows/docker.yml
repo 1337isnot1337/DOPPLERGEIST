@@ -75,7 +75,7 @@ jobs:
                   with urlopen(base + "/api/capabilities", timeout=2) as response:
                       capabilities = json.load(response)
                   break
-              except (URLError, TimeoutError):
+              except (URLError, TimeoutError, ConnectionError):
                   if attempt == 29:
                       raise
                   time.sleep(1)
