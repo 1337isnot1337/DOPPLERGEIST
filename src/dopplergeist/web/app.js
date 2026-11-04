@@ -263,7 +263,10 @@ function selectJob(id) {
   history.replaceState(null, '', `/?job=${encodeURIComponent(id)}`);
   remember(id); poll(id);
 }
-$('audio').addEventListener('change', () => { $('file-label').textContent = $('audio').files[0]?.name || 'Your original file is preserved with the job.'; });
+const defaultFileLabel = $('file-label').textContent;
+$('audio').addEventListener('change', () => {
+  $('file-label').textContent = $('audio').files[0]?.name || defaultFileLabel;
+});
 $('upload-form').addEventListener('submit', async event => {
   event.preventDefault(); $('upload-error').textContent = '';
   const file = $('audio').files[0];
