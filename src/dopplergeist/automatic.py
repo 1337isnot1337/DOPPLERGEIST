@@ -169,9 +169,28 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("failed", "data_unavailable", str(exc))
     state["coverage"] = _coverage(request, search, config)
     provenance["search_run_hash"] = search.get("run_hash")
-    progress("refinement", 0.85, **state)
+    progress("refinement", 0.85, message="Preparing finalist refinements.", **state)
+
+    last_decision_report = 0.0
+    last_decision_fraction = -1.0
+
+    def report_decision_progress(fraction, message):
+        nonlocal last_decision_report, last_decision_fraction
+        fraction = min(1.0, max(0.0, float(fraction)))
+        now = time.monotonic()
+        if (fraction < 1.0 and last_decision_report
+                and now - last_decision_report < 2.0
+                and fraction - last_decision_fraction < 0.002):
+            return
+        if fraction >= 1.0:
+            progress("decision", 0.95, message=message, **state)
+        else:
+            progress("refinement", 0.85 + 0.099 * fraction, message=message, **state)
+        last_decision_report = now
+        last_decision_fraction = fraction
+
     return _decide(search, events, prepared_events, measurements, indexes, terrain, state, output, config, finish,
-                   lambda: progress("decision", 0.95, **state), recording=recording)
+                   report_decision_progress, recording=recording)
 
 
 class MissingData(ValueError):
@@ -548,6 +567,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
     refined_keys = set()
     seen, track_sets = set(), {}
     best_refined_score = -math.inf
+    finalist_limit = max(0, int(config.get("refine_finalists", 5)))
+    finalist_total = min(finalist_limit, len({mode_key(row) for row in raw}))
     for row in raw:
         key = mode_key(row)
         if key in seen:
@@ -555,6 +576,26 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         seen.add(key)
         if len(seen) > config.get("refine_finalists", 5):
             break
+        finalist_index = len(seen)
+
+        def report_finalist_progress(fraction, **fields):
+            if finalist_total <= 0:
+                return
+            fraction = min(1.0, max(0.0, float(fraction)))
+            overall = 0.4 * ((finalist_index - 1 + fraction) / finalist_total)
+            iteration = fields.get("optimizer_iteration")
+            evaluations = fields.get("optimizer_evaluations")
+            activity = f"Finalist {finalist_index}/{finalist_total}"
+            altitude_profile = fields.get("altitude_profile")
+            altitude_profiles = fields.get("altitude_profiles")
+            if altitude_profile is not None and altitude_profiles is not None:
+                activity += f", altitude profile {altitude_profile}/{altitude_profiles}"
+            if iteration is not None:
+                activity += f", optimizer iteration {iteration}/60"
+            if evaluations is not None:
+                activity += f", {evaluations} score evaluations"
+            decision_progress(overall, activity)
+
         try:
             max_range = float(config.get("max_distance_m", 20000.0))
             margin = max_range / 60000.0 + 0.3
@@ -570,7 +611,8 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
             candidate = refine_candidate(row, tracks, prepared_events, measurements, terrain,
                                          radius_m=config.get("refine_radius_m", 500.0),
                                          recording_start_window_s=start_window, c=config.get("sound_speed_mps", 343.0),
-                                         bounds_wsen=search_bounds, crs=profile.crs, **geographic_options)
+                                         bounds_wsen=search_bounds, crs=profile.crs,
+                                         progress_callback=report_finalist_progress, **geographic_options)
             candidate = _comparable_refinement(candidate, row, prepared_events)
             refined.append(candidate)
             refined_keys.add(key)
@@ -579,16 +621,37 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
                 track_sets = {mode_key(candidate): tracks}
         except (ValueError, KeyError) as exc:
             refinement_failures.append(str(exc))
+        report_finalist_progress(1.0)
     raw.extend(refined)
     order = lambda row: (row["score"], bool(row.get("sensitivity", {}).get("complete")), len(row.get("sensitivity", {}).get("sources", [])))
     raw.sort(key=order, reverse=True)
     if raw and mode_key(raw[0]) in track_sets:
         leading = raw[0]
         try:
+            def report_sensitivity_progress(fraction, **fields):
+                fraction = min(1.0, max(0.0, float(fraction)))
+                overall = 0.4 + 0.6 * fraction
+                scenario = fields.get("scenario")
+                iteration = fields.get("optimizer_iteration")
+                evaluations = fields.get("optimizer_evaluations")
+                activity = "Sensitivity profile"
+                if scenario:
+                    activity += f" {scenario}"
+                altitude_profile = fields.get("altitude_profile")
+                altitude_profiles = fields.get("altitude_profiles")
+                if altitude_profile is not None and altitude_profiles is not None:
+                    activity += f", altitude profile {altitude_profile}/{altitude_profiles}"
+                if iteration is not None:
+                    activity += f", optimizer iteration {iteration}/60"
+                if evaluations is not None:
+                    activity += f", {evaluations} score evaluations"
+                decision_progress(overall, activity)
+
             profiled = profile_candidate(leading, track_sets[mode_key(leading)], prepared_events, measurements, terrain,
                          radius_m=config.get("refine_radius_m", 500.0), recording_start_window_s=start_window,
                          c=config.get("sound_speed_mps", 343.0), bounds_wsen=search_bounds,
-                         crs=profile.crs, **geographic_options)
+                         crs=profile.crs, progress_callback=report_sensitivity_progress,
+                         **geographic_options)
             # Full profiling updates this exact hypothesis. Its earlier, limited
             # envelope must not compete with incomplete evidence or score roundoff.
             raw[0] = _comparable_refinement(profiled, leading, prepared_events)
@@ -636,7 +699,7 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         diagnostics["assessed_mode_ids"] = sorted(assessed_ids)
         diagnostics["candidate_mode_ids"] = [row.get("mode_id") for row in rows]
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})
-    decision_progress()
+    decision_progress(1.0, "Refinement complete; applying inconclusive and uncertainty gates.")
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)
     decision.setdefault("candidates", candidates)
     if config.get("spectral_comparison") is not None:

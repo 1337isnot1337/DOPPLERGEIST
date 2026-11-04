@@ -11,6 +11,7 @@ from functools import wraps
 import hashlib
 from itertools import chain
 import os
+import time
 
 import numpy as np
 from pyproj import Geod, Transformer
@@ -749,7 +750,7 @@ def _geographic_refinement_frame(candidate, radius_m, bounds_wsen):
 def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                      clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
                      crs="EPSG:5070", c=343.0, recording_start_window_s=None,
-                     bounds_wsen=None, receiver_mask=None):
+                     bounds_wsen=None, receiver_mask=None, progress_callback=None):
     """Jointly refine position/shared clock and profile vertical-datum sensitivity.
 
     A vertical offset changes the observer-to-track relative height; it is a
@@ -761,13 +762,14 @@ def refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=
         radius_m=radius_m, clock_radius_s=clock_radius_s,
         altitude_offsets_m=altitude_offsets_m, crs=crs, c=c,
         recording_start_window_s=recording_start_window_s, bounds_wsen=bounds_wsen,
-        receiver_mask=receiver_mask)
+        receiver_mask=receiver_mask, progress_callback=progress_callback)
 
 
 def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m=500.0,
                       clock_radius_s=5.0, altitude_offsets_m=(-150.0, 0.0, 150.0),
                       crs="EPSG:5070", c=343.0, recording_start_window_s=None,
-                      bounds_wsen=None, receiver_mask=None, *, _transformers=None):
+                      bounds_wsen=None, receiver_mask=None, *, _transformers=None,
+                      progress_callback=None):
     """Share coordinate operations only within one declared sensitivity profile."""
     if receiver_mask is not None and not receiver_mask.contains(candidate["lon"], candidate["lat"]):
         raise ValueError("Refinement seed lies outside the receiver-country mask")
@@ -805,7 +807,22 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
     if not fixed_clock:
         bounds.append((lower, upper))
     profiles = []
-    for offset in altitude_offsets_m:
+    altitude_profile_total = len(altitude_offsets_m)
+    max_iterations = 60
+    for offset_index, offset in enumerate(altitude_offsets_m):
+        optimizer_iterations = 0
+        objective_evaluations = 0
+        last_objective_report = 0.0
+
+        def report_optimizer_progress(fraction):
+            if progress_callback is not None:
+                progress_callback(fraction, altitude_profile=offset_index + 1,
+                                 altitude_profiles=altitude_profile_total,
+                                 optimizer_iteration=optimizer_iterations,
+                                 optimizer_evaluations=objective_evaluations)
+
+        report_optimizer_progress(offset_index / altitude_profile_total)
+
         def evaluate(parameters):
             dt = lower if fixed_clock else parameters[2]
             if bounds_wsen is None:
@@ -825,10 +842,29 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
                 score = association_score(score, events)
             return score, lat, lon, elevation
         def objective(parameters):
+            nonlocal objective_evaluations, last_objective_report
+            if progress_callback is not None:
+                objective_evaluations += 1
             value = evaluate(parameters)[0]["score"]
+            now = time.monotonic()
+            if (progress_callback is not None and
+                    (objective_evaluations == 1 or objective_evaluations % 8 == 0
+                     or now - last_objective_report >= 1.0)):
+                local = (offset_index + min(0.99, optimizer_iterations / max_iterations)) / altitude_profile_total
+                report_optimizer_progress(local)
+                last_objective_report = now
             return -value if np.isfinite(value) else 1e6
+
+        def optimizer_callback(_parameters):
+            nonlocal optimizer_iterations
+            optimizer_iterations += 1
+            local = (offset_index + min(0.99, optimizer_iterations / max_iterations)) / altitude_profile_total
+            report_optimizer_progress(local)
+
+        options = {"xtol": 0.01, "ftol": 1e-7, "maxiter": max_iterations}
         result = minimize(objective, initial, method="Powell", bounds=bounds,
-                          options={"xtol": 0.01, "ftol": 1e-7, "maxiter": 60})
+                          callback=optimizer_callback if progress_callback is not None else None,
+                          options=options)
         if receiver_mask is None:
             parameters = result.x if objective(result.x) < objective(initial) else initial
             score, lat, lon, elevation = evaluate(parameters)
@@ -842,6 +878,7 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
             parameters = result.x if improves else initial
             score, lat, lon, elevation = optimized_fit if improves else initial_fit
         if not np.isfinite(score["score"]):
+            report_optimizer_progress((offset_index + 1) / altitude_profile_total)
             continue
         dt = lower if fixed_clock else parameters[2]
         spatial_boundary = any(min(value-lo, hi-value) <= radius_m * 0.02
@@ -858,6 +895,7 @@ def _refine_candidate(candidate, tracks, events, measurements, terrain, radius_m
             boundary_limited=spatial_boundary or clock_boundary,
             position_boundary_limited=spatial_boundary, clock_boundary_limited=clock_boundary,
             optimizer_success=bool(result.success)))
+        report_optimizer_progress((offset_index + 1) / altitude_profile_total)
     nominal = next((p for p in profiles if p["altitude_offset_m"] == 0), None)
     if nominal is None:
         raise ValueError("No complete trajectory support for local refinement")
@@ -880,7 +918,8 @@ _CANONICAL_REFINE_CANDIDATE = refine_candidate
 def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                       recording_start_window_s=None, radius_m=500.0, clock_radius_s=5.0,
                       altitude_uncertainty_m=150.0, sound_speed_uncertainty_mps=5.0,
-                      c=343.0, crs="EPSG:5070", bounds_wsen=None, receiver_mask=None):
+                      c=343.0, crs="EPSG:5070", bounds_wsen=None, receiver_mask=None,
+                      progress_callback=None):
     """Run declared perturbations, retaining failures and boundary limitations.
 
     These finite engineering scenarios are not a calibrated confidence region.
@@ -901,15 +940,22 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
         nonlocal transformers
         # Custom refiners keep the original dispatch and receive no private
         # arguments. The standard path owns exactly one pair for this profile.
+        progress = options.pop("progress_callback", None)
         current_refiner = refine_candidate
         if current_refiner is not _CANONICAL_REFINE_CANDIDATE:
             return current_refiner(*args, **options)
         if transformers is None:
             transformers = (Transformer.from_crs("EPSG:4326", crs, always_xy=True),
                             Transformer.from_crs(crs, "EPSG:4326", always_xy=True))
-        return _refine_candidate(*args, _transformers=transformers, **options)
+        return _refine_candidate(*args, _transformers=transformers,
+                                 progress_callback=progress, **options)
 
-    nominal = refine(candidate, tracks, events, measurements, terrain, **kwargs)
+    if progress_callback is None:
+        nominal = refine(candidate, tracks, events, measurements, terrain, **kwargs)
+    else:
+        nominal = refine(candidate, tracks, events, measurements, terrain, **kwargs,
+                         progress_callback=lambda fraction, **fields: progress_callback(
+                             0.15 * fraction, scenario="nominal", **fields))
     scenarios = [("nominal", "nominal", events, measurements, {})]
     for sign in (-1, 1):
         scenarios.append(("altitude", f"height_{sign:+d}", events, measurements,
@@ -956,7 +1002,8 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
     center = ecef(nominal["lat"], nominal["lon"], 0)
     radius = 0.0
     boundary = False
-    for source, label, scenario_events, scenario_measurements, overrides in scenarios:
+    scenario_total = len(scenarios) - 1
+    for scenario_index, (source, label, scenario_events, scenario_measurements, overrides) in enumerate(scenarios):
         try:
             options = dict(kwargs, **overrides)
             flight_bias = options.pop("track_altitude_bias", None)
@@ -966,8 +1013,19 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                 scenario_tracks = dict(tracks)
                 if bias:
                     scenario_tracks[identity] = _altitude_bias(tracks[identity], bias)
-            row = nominal if source == "nominal" else refine(
-                candidate, scenario_tracks, scenario_events, scenario_measurements, terrain, **options)
+            if source == "nominal":
+                row = nominal
+            elif progress_callback is None:
+                row = refine(candidate, scenario_tracks, scenario_events,
+                             scenario_measurements, terrain, **options)
+            else:
+                scenario_base = 0.15 + 0.85 * (scenario_index - 1) / scenario_total
+                scenario_span = 0.85 / scenario_total
+                row = refine(candidate, scenario_tracks, scenario_events,
+                             scenario_measurements, terrain, **options,
+                             progress_callback=lambda fraction, _base=scenario_base,
+                             _span=scenario_span, _label=label, **fields: progress_callback(
+                                 _base + _span * fraction, scenario=_label, **fields))
             # Height scenarios return a nominal plus the perturbed-height fit;
             # retain the latter rather than silently measuring the nominal twice.
             variants = row["sensitivity"]["profiles"] if source == "altitude" else [row]
@@ -986,6 +1044,11 @@ def profile_candidate(candidate, tracks, events, measurements, terrain, *,
                 failures.append({"source": source, "scenario": label, "reason": "Missing altitude scenario support"})
         except ValueError as exc:
             failures.append({"source": source, "scenario": label, "reason": str(exc)})
+        if progress_callback is not None:
+            completed = max(0, scenario_index)
+            fraction = 0.15 + 0.85 * completed / scenario_total
+            progress_callback(fraction, scenario=label,
+                              scenarios_completed=completed, scenarios_total=scenario_total)
     sensitivity = {"radius_m": radius, "kind": "sensitivity", "method": "declared_perturbation_profiles",
         "sources": sorted({s[0] for s in scenarios if s[0] != "nominal"}),
         "complete": not failures and all(p["optimizer_success"] for p in profiles),
