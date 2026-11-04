@@ -164,6 +164,7 @@ def _candidate_evidence_summary(events, candidate, evidence):
     matched_events = set(candidate["event_ids"])
     group_flights = {}
     flights_groups = {}
+    drift_limited_groups = set()
     fit_summaries = []
     for event_id, flight_id in zip(candidate["event_ids"], candidate["flight_ids"]):
         event = lookup[event_id]
@@ -172,8 +173,12 @@ def _candidate_evidence_summary(events, candidate, evidence):
         flights_groups.setdefault(flight_id, set()).add(group_id)
         fit = evidence.get(event_id)
         if isinstance(fit, dict):
+            if fit.get("drift_at_bound") is True:
+                drift_limited_groups.add(group_id)
             fit_summaries.append({
                 "event_id": event_id,
+                "harmonic_group_id": group_id,
+                "flight_id": flight_id,
                 **{name: fit[name] for name in
                    ("rmse_hz", "outlier_fraction", "support_fraction", "drift_at_bound")
                    if name in fit},
@@ -198,6 +203,8 @@ def _candidate_evidence_summary(events, candidate, evidence):
             {"group_id": group_id, "flight_ids": sorted(flight_ids)}
             for group_id, flight_ids in sorted(group_flights.items()) if len(flight_ids) > 1
         ],
+        "drift_limited_group_ids": sorted(drift_limited_groups),
+        "drift_limited_group_count": len(drift_limited_groups),
         "event_fits": fit_summaries,
     }
 
