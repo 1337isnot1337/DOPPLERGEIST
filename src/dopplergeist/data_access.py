@@ -506,7 +506,7 @@ class FlightIndex:
     Concurrent queries use separate SQLite connections and return independent
     tracks, even when they reuse the same verified snapshot.
     """
-    def __init__(self, path, *, track_cache_bytes=32 * 1024 * 1024):
+    def __init__(self, path, *, track_cache_bytes=128 * 1024 * 1024):
         if type(track_cache_bytes) is not int or track_cache_bytes < 0:
             raise ValueError("Track cache size must be a nonnegative integer")
         self.path = Path(path)
