@@ -170,7 +170,7 @@ def validate_request(value):
         request["time_window"] = window
     search = _record(request.get("search", {"coverage": "conus"}), ("coverage",), ("bounds_wsen",))
     if search["coverage"] != "conus":
-        raise ValueError("Version one supports declared CONUS coverage only")
+        raise ValueError("Version one supports CONUS coverage; supply bounds_wsen for a CONUS subset")
     if "bounds_wsen" in search:
         bounds = search["bounds_wsen"]
         if not isinstance(bounds, list) or len(bounds) != 4:
@@ -179,6 +179,8 @@ def validate_request(value):
             _number(number, "bounds_wsen", -180 if i % 2 == 0 else -90, 180 if i % 2 == 0 else 90)
         if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
             raise ValueError("Bounds must be increasing; antimeridian crossing is unsupported")
+        if not (-125 <= bounds[0] < bounds[2] <= -66 and 24 <= bounds[1] < bounds[3] <= 50):
+            raise ValueError("bounds_wsen must stay within CONUS: west -125, south 24, east -66, north 50")
     request["search"] = search
     return request
 
