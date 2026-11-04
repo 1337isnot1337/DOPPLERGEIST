@@ -146,8 +146,8 @@ _CANONICAL_TRACK = Track
 _PREPARED_ERROR_POLICY = {"divide": "warn", "over": "warn", "under": "ignore", "invalid": "warn"}
 
 
-@lru_cache(maxsize=1)
-def _prepared_track_identity():
+@lru_cache(maxsize=4)
+def _prepared_track_identity(data_access_digest=None):
     """Use prepared velocities only with identical normalization and NumPy."""
     from . import flight_payload
     try:
@@ -157,7 +157,10 @@ def _prepared_track_identity():
     files = (Path(__file__), Path(__file__).with_name("tracks.py"),
              Path(__file__).with_name("geometry.py"), Path(flight_payload.__file__),
              Path(numpy_core.__file__))
-    return content_hash({"sources": [sha256(path) for path in files],
+    sources = [sha256(path) for path in files]
+    if data_access_digest is not None:
+        sources[0] = data_access_digest
+    return content_hash({"sources": sources,
                          "numpy": np.__version__,
                          "pandas": pd.__version__, "python": sys.version,
                          "cpu": getattr(numpy_core, "__cpu_features__", {})})
@@ -536,9 +539,17 @@ class FlightIndex:
             if report is None:
                 report = json.loads(db.execute("SELECT value FROM metadata").fetchone()[0])
             prepared = report.get("prepared_tracks") if isinstance(report, dict) else None
-            if (not isinstance(prepared, dict) or prepared.get("version") != 1
-                    or prepared.get("builder") != _prepared_track_identity()):
+            if not isinstance(prepared, dict) or prepared.get("version") != 1:
                 return False
+            builder = prepared.get("builder")
+            identity = _prepared_track_identity()
+            if builder != identity:
+                from .index_compatibility import PREPARED_DATA_ACCESS_EQUIVALENCE
+                current = sha256(Path(__file__))
+                previous = PREPARED_DATA_ACCESS_EQUIVALENCE.get(current, ())
+                if (_prepared_track_identity(current) != identity
+                        or all(_prepared_track_identity(source) != builder for source in previous)):
+                    return False
             columns = [(row[1], row[2].upper(), row[5]) for row in
                        db.execute("PRAGMA table_info(prepared_tracks)")]
             return columns == [("id", "INTEGER", 1), ("source_hash", "TEXT", 0),

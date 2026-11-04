@@ -28,6 +28,10 @@ global segment remains in the index, and queries outside that warm scope use the
 verified original payload. This reduces first-use cache construction without
 changing source coverage or filtering aircraft. `FlightIndex.prepare` also accepts
 `prepare_scope=(bounds_wsen, time_range_s)` for an explicitly scoped index copy.
+Prepared indexes from the source versions immediately before and after the
+cache-size change remain usable when the exact source and all other builder
+identities match. Unknown source versions continue to use the verified original
+payload instead of trusting incompatible prepared data.
 
 Decoded tracks also have a bounded 128 MiB serialized cache per index per worker,
 with at most 2,048 entries. `FlightIndex(track_cache_bytes=...)` accepts a smaller
