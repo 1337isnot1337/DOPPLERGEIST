@@ -21,9 +21,18 @@ Alternatively, add the reference checkout's `src` to `PYTHONPATH`. The script
 processes the entire original recording with the reference template bank. It
 captures actual measured ridge samples, skips unused straight-pass profile-range
 calculations, and exports the existing detected-event schema. It reuses the
-reference's 40-point and 1% relative-fit-residual requirements without its hard
-aircraft/close type gate. Slow and nearby proposals remain eligible. Duplicate
-and harmonic ridges are grouped; their count is not an independent aircraft count.
+reference's 40-point and 1% relative-fit-residual requirements. It removes the
+later aircraft/close classification cutoffs at 30 m/s and 150 m. Duplicate and
+harmonic ridges are grouped; their count is not an independent aircraft count.
+
+The reference template bank and refinement limits remain unchanged. In
+[`_refine_all`](https://github.com/digitalis-p/doppler-locate/blob/ed84e0f/src/dopploc/detect.py),
+accepted fits require `6 < speed < 290` m/s and `35 < slant distance < 30000` m.
+The fitted center must stay within `max(10 seconds, half-window / 2)` of the
+template center, and the fit residual must not exceed `1.5 × harmonic order` Hz.
+Tracing and fitting can also fail. Broad downstream matching priors cannot
+recover a ridge rejected by these upstream limits. This experimental script
+does not remove every speed or distance restriction requested in issue #341.
 
 These are acoustic proposals. They can include ground traffic, and short curves
 can fit several unrelated archived flights. Neither a low residual nor ADS-B
@@ -44,6 +53,9 @@ and first two background-labeled clips per publisher location for development,
 then the next two per class/location as a held-out set. No labels, flight IDs or
 locations enter the detector. The complete case outcomes are in the
 [24-row table](../benchmarks/coherent-proposals-341-20261104.csv).
+The table was committed at revision `69b11cf4`, before the supported-overlap correction.
+That correction can change harmonic grouping, but not accepted traces or
+whether a clip has proposals. The recorded rows remain unchanged.
 
 | Partition and publisher label | Clips | Ordinary discovery | Coherent adapter | Union |
 | --- | ---: | ---: | ---: | ---: |
