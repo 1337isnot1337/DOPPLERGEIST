@@ -198,12 +198,14 @@ def _to_geographic(crs):
     return _cached_to_geographic(crs)
 
 
-def _tile_coordinates(cells, spacing, bounds, crs):
+def _tile_coordinates(cells, spacing, bounds, crs, receiver_mask=None):
     x0, y0, x1, y1 = cells
     x, y = np.meshgrid(np.arange(x0, x1, dtype=np.int64), np.arange(y0, y1, dtype=np.int64))
     x, y = x.ravel() * spacing, y.ravel() * spacing
     lon, lat = _to_geographic(crs).transform(x, y)
     keep = (lon >= bounds[0]) & (lon <= bounds[2]) & (lat >= bounds[1]) & (lat <= bounds[3])
+    if receiver_mask is not None:
+        keep &= receiver_mask.contains(lon, lat)
     x, y, lat, lon = (a[keep] for a in (x, y, lat, lon))
     return pd.DataFrame({"point_id": np.arange(len(x)), "x": x, "y": y, "lat": lat, "lon": lon})
 
@@ -235,14 +237,15 @@ def _tile_dem_keys(cells, spacing, bounds, crs, catalog):
     return tuple(keys)
 
 
-def tile_points(cells, spacing, bounds, terrain, crs):
-    return _sample_tile_terrain(_tile_coordinates(cells, spacing, bounds, crs), terrain)
+def tile_points(cells, spacing, bounds, terrain, crs, receiver_mask=None):
+    return _sample_tile_terrain(_tile_coordinates(cells, spacing, bounds, crs, receiver_mask), terrain)
 
 
 def _expanded_bounds(cells, spacing, radius, crs):
     x0, y0, x1, y1 = cells
     # Padding includes sound range, spline excursions between gap-limited track
-    # samples and CONUS projection distortion. Full payloads remain unmodified.
+    # samples and supported projection distortion. Full payloads remain unmodified;
+    # receiver-country masks must never clip this aircraft query envelope.
     margin = 1.6 * radius + 15000
     box = (x0 * spacing - margin, y0 * spacing - margin, x1 * spacing + margin, y1 * spacing + margin)
     return _to_geographic(crs).transform_bounds(*box, densify_pts=101)
@@ -851,7 +854,7 @@ def _record_support(output, stage, counts, summary):
 
 def search_national(indexes, terrain, events, measurements, *, time_range_s, output_dir,
                     bounds=CONUS, budget=None, scoring=None, filters=None, crs="EPSG:5070", input_hashes=None,
-                    workers=None, search_progress=None):
+                    workers=None, search_progress=None, receiver_mask=None):
     """Bounded outer driver using existing physical CPA/locked-event scoring.
 
     `events, measurements` come from `matching.prepare_events`. `time_range_s`
@@ -963,6 +966,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                 "budget": asdict(budget), "scoring": scoring or {}, "filters": filters, "crs": crs, "code": modules,
                 "coarse_floor_policy": floor_policy,
                 "runtime": runtime_identity}
+    if receiver_mask is not None:
+        identity["receiver_mask"] = receiver_mask.identity
+        runtime_identity["packages"]["shapely"] = version("shapely")
     run_hash = content_hash(identity)
     if manifest.exists() and json.loads(manifest.read_text())["run_hash"] != run_hash:
         raise DataUnavailable("Checkpoint configuration/input/implementation mismatch; use a new output directory")
@@ -1096,6 +1102,8 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
         initargs = ([index.path for index in indexes], terrain_root, terrain_options, events, measurements,
                     bounds, time_range_s, budget, parameters, filters, start_window, crs,
                     output / ".tile-workers", run_hash, score_kind, terrain_kind)
+        if receiver_mask is not None:
+            initargs += (receiver_mask,)
         context = tile_worker_lanes(workers, initialize_tile_worker, initargs, dem_keys)
     else:
         context = nullcontext(None)
@@ -1156,7 +1164,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                             resumed += 1
                         restore_terrain(payload)
                     else:
-                        points = _tile_coordinates(cells, budget.spacing_m, bounds, crs)
+                        points = _tile_coordinates(cells, budget.spacing_m, bounds, crs, receiver_mask)
                         tracks = []
                         anchor = _tile_anchor_window(tile_id, start_window, parameters, filters, events)
                         query_time = _partition_query_time_range(time_range_s, events, parameters, filters, anchor)
@@ -1333,7 +1341,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                 payload = fine_checkpoint(stage, cells, completed_rectangles, floor)
                                 if payload is None:
                                     failures_before = len(getattr(terrain, "failures", ()))
-                                    points = tile_points(cells, fine, bounds, terrain, crs)
+                                    points = tile_points(cells, fine, bounds, terrain, crs, receiver_mask)
                                     keep = np.ones(len(points), dtype=bool)
                                     for left, bottom, right, top in completed_rectangles:
                                         keep &= ~((points.x >= left * fine) & (points.x < right * fine)
@@ -1381,7 +1389,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     coverage = [i.coverage_for(bounds, time_range_s) for i in indexes]
     # Aircraft outside the receiver rectangle can still be audible inside it.
     # Use a conservative geographic envelope for scope accounting as well as
-    # expanded per-tile queries; cropped CONUS inputs have visible border gaps.
+    # expanded per-tile queries; country-cropped inputs have visible border gaps.
     angular = (1.6 * radius + 15000) / 110000
     lon_margin = angular / max(0.1, math.cos(math.radians(max(abs(bounds[1]), abs(bounds[3])))))
     flight_bounds = [max(-180, bounds[0] - lon_margin), max(-90, bounds[1] - angular),
@@ -1441,6 +1449,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
               "elapsed_s": time.monotonic() - began, "process_peak_rss_mib": process_peak_rss_kib() / 1024,
               "bounded_concurrency": workers if parallel else 1, "max_grid_points_per_tile": budget.tile_cells ** 2,
               "scoring_time_is_locked": True, "ground_truth_used_by_search": False, "scope": list(bounds)}
+    if receiver_mask is not None:
+        report["receiver_mask"] = receiver_mask.identity
+        report["crs"] = crs
     write_json(output / "search-report.json", report)
     report_search_progress(1.0, force=True)
     return report

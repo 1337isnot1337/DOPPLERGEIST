@@ -3,6 +3,65 @@ const $ = id => document.getElementById(id);
 const terminal = new Set(['needs_input', 'succeeded', 'inconclusive', 'failed', 'cancelled']);
 let activeJob = null, renderedJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
 const node = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
+// Older services and unavailable capability responses expose only legacy CONUS.
+const CONUS_PROFILE = {country: 'US', coverage: 'conus', name: 'Contiguous United States (CONUS)', bounds_wsen: [-125, 24, -66, 50]};
+let countryProfiles = [CONUS_PROFILE], areaControl = null, countrySelectionSupported = false;
+const BOUND_INPUTS = ['bbox-w', 'bbox-s', 'bbox-e', 'bbox-n'];
+
+function selectedProfile() {
+  const profile = countryProfiles.find(item => item.country === $('country').value);
+  if (!profile) throw new Error('Choose a country supported by this service.');
+  return profile;
+}
+
+function setCountryProfiles(values, defaultCountry = 'US') {
+  const profiles = values === undefined ? [CONUS_PROFILE] : values;
+  const countries = new Set();
+  if (!Array.isArray(profiles) || !profiles.length || profiles.some(profile => {
+    if (!profile || !/^[A-Z]{2}$/.test(profile.country) || typeof profile.coverage !== 'string' || !profile.coverage
+        || typeof profile.name !== 'string' || !profile.name.trim() || countries.has(profile.country)) return true;
+    countries.add(profile.country);
+    const b = profile.bounds_wsen;
+    return !Array.isArray(b) || b.length !== 4 || b.some(value => !Number.isFinite(value))
+      || !(-180 <= b[0] && b[0] < b[2] && b[2] <= 180 && -90 <= b[1] && b[1] < b[3] && b[3] <= 90);
+  })) throw new Error('The service returned an invalid country catalog.');
+  const previous = countryProfiles.find(profile => profile.country === $('country').value);
+  countryProfiles = profiles.map(profile => ({...profile, bounds_wsen: profile.bounds_wsen.slice()}));
+  countrySelectionSupported = values !== undefined;
+  $('country').replaceChildren(...countryProfiles.map(profile => {
+    const option = node('option', profile.name); option.value = profile.country; return option;
+  }));
+  $('country').value = countries.has(previous?.country) ? previous.country
+    : (countries.has(defaultCountry) ? defaultCountry : countryProfiles[0].country);
+  const current = selectedProfile();
+  const changed = !previous || previous.country !== current.country
+    || previous.bounds_wsen.some((value, index) => value !== current.bounds_wsen[index]);
+  if (areaControl) areaControl.refreshCountry(changed);
+  $('supported-areas').textContent = countryProfiles.map(profile => profile.name).join('; ');
+  if (renderedJob) renderCoverage(renderedJob.coverage);
+}
+
+function renderCoverage(coverage) {
+  $('coverage').replaceChildren();
+  if (!coverage) return;
+  const card = node('div', undefined, 'candidate');
+  card.append(node('strong', 'Search & data coverage'));
+  const area = coverage.requested_area || {coverage: 'conus'};
+  const profile = countryProfiles.find(item => (!area.country || item.country === area.country)
+    && (!area.coverage || item.coverage === area.coverage));
+  const name = profile?.name || ({US: CONUS_PROFILE.name, DE: 'Germany'})[area.country]
+    || ({conus: CONUS_PROFILE.name, germany: 'Germany'})[area.coverage] || area.country || area.coverage || 'unspecified';
+  const bounds = area.bounds_wsen;
+  const full = bounds && profile && bounds.every((value, index) => value === profile.bounds_wsen[index]);
+  const label = bounds && !full
+    ? `Requested ${name} bounds (west, south, east, north): ${bounds.map(value => typeof value === 'number' ? value.toFixed(6) : value).join(', ')}`
+    : `Requested area: ${name}`;
+  card.append(node('p', label));
+  card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
+  for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
+  if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
+  $('coverage').append(card);
+}
 async function api(path, options) {
   const response = await fetch(path, options);
   const value = await response.json();
@@ -57,22 +116,7 @@ function render(value) {
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
   $('guidance').replaceChildren(); $('guidance').hidden = true;
-  $('coverage').replaceChildren();
-  if (value.coverage) {
-    const coverage = value.coverage;
-    const card = node('div', undefined, 'candidate');
-    card.append(node('strong', 'Search & data coverage'));
-    const bounds = coverage.requested_area?.bounds_wsen;
-    const isFullConus = bounds && bounds[0] === -125 && bounds[1] === 24 && bounds[2] === -66 && bounds[3] === 50;
-    const boundsLabel = bounds
-      ? (isFullConus ? 'Requested area: Contiguous United States (CONUS)' : `Requested CONUS subset (west, south, east, north): ${bounds.map(x => typeof x === 'number' ? x.toFixed(6) : x).join(', ')}`)
-      : 'Requested area: Contiguous United States (CONUS)';
-    card.append(node('p', boundsLabel));
-    card.append(node('p', `Search ${coverage.search_complete ? 'complete' : 'incomplete'} · Data ${coverage.data_status}`));
-    for (const limitation of coverage.limitations || []) card.append(node('p', limitation));
-    if (coverage.missing_data?.length) card.append(node('p', `Missing: ${coverage.missing_data.join('; ')}`));
-    $('coverage').append(card);
-  }
+  renderCoverage(value.coverage);
   $('candidates').replaceChildren();
   if (value.candidates?.length) {
     $('candidates').append(node('h3', value.status === 'succeeded' ? 'Supported location & alternatives' : 'Location hypotheses · result remains inconclusive'));
@@ -168,7 +212,9 @@ $('upload-form').addEventListener('submit', async event => {
   let bounds;
   try { bounds = readSearchBounds(); }
   catch (error) { $('upload-error').textContent = error.message; return; }
-  const request = {schema_version: 1, search: {coverage: 'conus', bounds_wsen: bounds}};
+  const profile = selectedProfile();
+  const request = {schema_version: 1, search: {coverage: profile.coverage, bounds_wsen: bounds}};
+  if (countrySelectionSupported) request.search.country = profile.country;
   if (start) {
     request.time_window = {start_utc: start + 'Z', end_utc: (end || start) + 'Z', source: 'user'};
     if ($('time-source').value.trim()) request.time_window.source_detail = $('time-source').value.trim();
@@ -191,6 +237,7 @@ $('resume').addEventListener('click', async () => {
   catch (error) { $('connection').textContent = error.message; }
 });
 api('/api/capabilities').then(value => {
+  setCountryProfiles(value.countries, value.default_country);
   maxBytes = value.max_upload_bytes;
   $('limits').textContent = `Up to ${(maxBytes / 1024 / 1024).toFixed(0)} MB per file. Analysis budget: ${(value.max_runtime_s / 60).toFixed(0)} minutes per job.`;
   if (value.provider_configured === false) {
@@ -200,14 +247,13 @@ api('/api/capabilities').then(value => {
     $('data-setup').textContent = 'Public flight and terrain data may be downloaded to the local cache. Archives and indexes can require tens of gigabytes or more and hours.';
     $('data-setup').hidden = false;
   }
-}).catch(error => { $('upload-error').textContent = error.message; });
+}).catch(error => {
+  setCountryProfiles(undefined);
+  $('upload-error').textContent = `Could not read service settings: ${error.message}. Only CONUS is available.`;
+});
 renderRecent();
 const savedJob = new URLSearchParams(location.search).get('job');
 if (savedJob && /^[0-9a-f]{32}$/.test(savedJob)) selectJob(savedJob);
-
-// The automatic pipeline currently supports CONUS and explicit subsets of it.
-const CONUS_BOUNDS = [-125, 24, -66, 50];
-const BOUND_INPUTS = ['bbox-w', 'bbox-s', 'bbox-e', 'bbox-n'];
 
 function validateSearchBounds(bounds) {
   if (bounds.length !== 4 || bounds.some(value => !Number.isFinite(value))) {
@@ -217,8 +263,10 @@ function validateSearchBounds(bounds) {
   if (w >= e || s >= n) {
     throw new Error('West must be less than east and south less than north. Antimeridian crossing is unsupported.');
   }
-  if (w < CONUS_BOUNDS[0] || s < CONUS_BOUNDS[1] || e > CONUS_BOUNDS[2] || n > CONUS_BOUNDS[3]) {
-    throw new Error('Choose an area within CONUS: west −125°, south 24°, east −66°, north 50°.');
+  const profile = selectedProfile();
+  const [west, south, east, north] = profile.bounds_wsen;
+  if (w < west || s < south || e > east || n > north) {
+    throw new Error(`Choose an area within ${profile.name}: west ${west}°, south ${south}°, east ${east}°, north ${north}°.`);
   }
   return bounds;
 }
@@ -236,7 +284,7 @@ function boundsMessage(message = '') {
 
 function initMap() {
   let map, rectangle, preview, drawOrigin, panStart;
-  let selectedBounds = CONUS_BOUNDS.slice();
+  let selectedBounds = selectedProfile().bounds_wsen.slice();
 
   function setBounds(bounds, fit = false, updateInputs = true) {
     selectedBounds = validateSearchBounds(bounds.slice());
@@ -253,23 +301,49 @@ function initMap() {
     boundsMessage();
   }
 
+  function refreshCountry(reset = true) {
+    const profile = selectedProfile();
+    const [w, s, e, n] = profile.bounds_wsen;
+    BOUND_INPUTS.forEach((id, index) => {
+      $(id).min = String(index % 2 === 0 ? w : s);
+      $(id).max = String(index % 2 === 0 ? e : n);
+    });
+    $('country-help').textContent = `Choose the full ${profile.name} area or a smaller rectangle.`
+      + (profile.country === 'DE' ? ' Only locations within Germany are searched; nearby aircraft across its borders remain eligible.' : '');
+    if (profile.country === 'DE') {
+      const source = node('a', '© BKG 2026'); source.href = 'https://www.bkg.bund.de';
+      const license = node('a', 'dl-de/by-2-0'); license.href = 'https://www.govdata.de/dl-de/by-2-0';
+      for (const link of [source, license]) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+      $('country-help').append(' Boundary data: ', source, ', ', license, '.');
+    }
+    if (map) {
+      const dx = Math.max(1, (e - w) * 0.1), dy = Math.max(1, (n - s) * 0.15);
+      map.setMaxBounds([[Math.max(-90, s - dy), Math.max(-180, w - dx)],
+        [Math.min(90, n + dy), Math.min(180, e + dx)]]);
+    }
+    if (reset) {
+      panStart = null;
+      clearDrawing();
+      setBounds(profile.bounds_wsen, true);
+    }
+  }
+  areaControl = {refreshCountry};
+  $('country').addEventListener('change', () => refreshCountry(true));
   BOUND_INPUTS.forEach(id => {
     $(id).addEventListener('input', () => {
       try { setBounds(readSearchBounds(), false, false); }
       catch (error) { boundsMessage(error.message); }
     });
   });
-  $('reset-bounds').addEventListener('click', () => setBounds(CONUS_BOUNDS, true));
+  $('reset-bounds').addEventListener('click', () => setBounds(selectedProfile().bounds_wsen, true));
+  refreshCountry(true);
 
   if (typeof L === 'undefined') {
     $('map-container').hidden = true;
     $('map-status').textContent = 'The map could not load. Enter search coordinates below.';
     return;
   }
-  map = L.map('map', {
-    center: [38.5, -96], zoom: 4,
-    maxBounds: [[20, -130], [54, -61]], maxBoundsViscosity: 1
-  });
+  map = L.map('map', {maxBoundsViscosity: 1});
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18, noWrap: true,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -277,7 +351,7 @@ function initMap() {
     $('map-status').textContent = 'Map tiles are unavailable. Coordinates and the selection rectangle still work.';
   }).addTo(map);
   map.dragging.disable(); // Left-drag draws; right-drag or Shift-drag pans.
-  setBounds(selectedBounds, true);
+  refreshCountry(true);
 
   const container = map.getContainer();
   container.addEventListener('contextmenu', event => event.preventDefault());

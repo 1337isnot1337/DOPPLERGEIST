@@ -37,7 +37,7 @@ See the [Quickstart](#quickstart) to get started.
 | Configured localization | Event measurement, flight ranking and physical refinement | `dopplergeist run` and `dopplergeist measure` on `main` |
 | Automatic acoustic discovery | Whole-recording decoding, frequency-track discovery and harmonic grouping without supplied event windows or bands | `scripts/discover_audio.py`; produces event proposals and diagnostics |
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
-| Geographic search | Parallel, resumable tiles, joint matching across independent flyovers and disk-backed accounting of candidates discarded by ranking limits | [Search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) on `main` |
+| Geographic search | US/CONUS and Germany profiles, parallel resumable tiles, joint matching across independent flyovers and disk-backed candidate accounting | [Country profiles](docs/COUNTRIES.md), [search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) |
 | Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on `main` | `dopplergeist analyze`, `dopplergeist serve` and `dopplergeist job`; see [Local upload workflow](docs/PRODUCT.md) |
 | Independent location validation | Real-audio discovery, browser upload and measured-session experiments; no accepted blind real localization | [Real-data verification](#real-data-verification-2026-11-03); [acceptance #13](https://github.com/1337isnot1337/DOPPLERGEIST/issues/13) and [field recordings #53](https://github.com/1337isnot1337/DOPPLERGEIST/issues/53) remain open |
 
@@ -81,6 +81,13 @@ To limit the geographic search when you have independent regional context, add
 `--bounds WEST SOUTH EAST NORTH` in decimal degrees, for example
 `--bounds -98.98 30.29 -98.73 30.47`. The bounds are a search prior, and the
 clock window must still be supported by recording metadata or other evidence.
+
+The default country profile is `US` (CONUS). Add `--country DE` for Germany,
+or select Germany in the upload interface. Bounds then restrict that country's
+profile. Germany uses a pinned BKG land boundary for receiver locations and
+keeps nearby aircraft across borders eligible. Its first online search also
+caches the boundary; offline use requires that cached input. Country support
+does not establish localization accuracy. See [country profiles](docs/COUNTRIES.md).
 
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow the reported

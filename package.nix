@@ -24,6 +24,7 @@ python314.pkgs.buildPythonApplication {
     matplotlib
     requests
     pyarrow
+    shapely
   ];
 
   nativeBuildInputs = [
