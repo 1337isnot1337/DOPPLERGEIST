@@ -92,14 +92,14 @@ does not establish localization accuracy. See [country profiles](docs/COUNTRIES.
 The command prints a job ID when queued. In another terminal, run
 `.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow the reported
 pipeline/grid estimate and the count and modification age of coarse/fine search
-files. It separately counts fine support records: the search writes one after a
-fine tile's scoring call returns and its retained scores are imported. These
-records show tile-level scoring completion, but are not validated search
-checkpoints and do not mean the full search has finished. A separate search-write
-age includes support JSON and retention database or WAL writes, so activity stays
-visible while a checkpoint payload is pending. The file-based counts and ages do
-not validate payloads or retention evidence; use the terminal job result to tell
-whether the full search succeeded, failed or remained inconclusive.
+files. It separately counts fine support files. These diagnostics are conditional:
+a tile can contribute no file or more than one, and a resumed checkpoint can
+rewrite them. Their count, observed rate and modification age show filesystem
+activity; they do not establish newly scored tiles, valid checkpoints or complete
+hypothesis coverage. A separate search-write age includes support JSON and
+retention database or WAL writes, so activity stays visible while a checkpoint
+payload is pending. Use the terminal job result to tell whether the full search
+succeeded, failed or remained inconclusive.
 Stop a running service-managed job with `.venv/bin/dopplergeist cancel JOB_ID`;
 pass `--server-url` when the service uses a non-default port.
 For a directly managed `analyze` or `resume --jobs` job, request cooperative

@@ -83,5 +83,6 @@ def test_watch_labels_real_search_file_counts_unverified():
     result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=15)
 
     assert f'{len(coarse) + len(fine)} search files observed (unverified:' in result.stderr
-    assert f'({len(coarse)} coarse, {len(fine)} fine)' in result.stderr
+    assert f'(unverified: {len(coarse)} coarse, {len(fine)} fine)' in result.stderr
+    assert f', {len(diagnostics)} fine support records observed (unverified)' in result.stderr
     assert 'fine support checkpoints' not in result.stderr
