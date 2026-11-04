@@ -1,4 +1,5 @@
-# DOPPLERGEIST — Source-Available Aircraft Doppler Audio Geolocation
+<h1 align="center">DOPPLERGEIST</h1>
+<h3 align="center">Aircraft Doppler Audio Geolocation</h3>
 
 <p align="center">
   <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
