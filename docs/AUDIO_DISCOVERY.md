@@ -191,3 +191,71 @@ measurement within the report's overlap tolerance, including the documented fain
 passage. Runtime also increased on the measured
 comparison. The evidence does not establish improved aircraft recall, source
 identity, or location accuracy.
+
+### Reversible-link repair (draft follow-up to #356)
+
+The repaired opt-in scanner retains `schema_version:2` and adds
+`algorithm_revision:reversible-episodes-2` and
+`boundary_semantics:observed_hop_cells`. Existing measured child events and
+canonical episode membership remain compatible. Numeric quality scores remain
+uncalibrated. See the [causal repair report and fixed real-input comparison](ACOUSTIC_EPISODES_REPAIR.md).
+
+The default experimental scan evaluates2-second/.5-second and
+.5-second/.125-second spectral profiles. The shorter profile receives15 primary
+peaks per normalization band per frame under default settings, plus up to12
+reserved raw-tonal candidates; the longer profile receives60 primary peaks.
+This bounds primary candidate rate per elapsed second as temporal resolution
+increases. Explicitly selecting a.5-second window uses one profile.
+The lower bound of the short profile also respects its two-cycle requirement.
+Decoded samples remain disk-backed and each profile is evaluated within a chunk.
+
+Normalization tiles are0–40,40–1600,1600–6400 and6400–25600Hz, limited by actual
+decode/source Nyquist and requested output coverage. A tile's normalization uses
+its available full tile even when a request cuts through it. The40–1600Hz tile
+therefore stays stable when the requested upper limit widens. Each requested
+tile gets its own bounded peak allocation. Source frequencies removed by intake
+cannot be recovered by a scanner setting. The existing45% sample-rate guard and
+explicit unsupported-coverage errors remain active.
+
+`coverage`, `settings`, and each `chunks[].profiles` entry expose effective
+frequency ranges, window/hop, primary and additional tonal peak budgets.
+`cpu_time_s` complements wall `runtime_s`. Counts distinguish raw measurements,
+provisional paths, measured children and canonical proposals. Association
+statistics distinguish cheap neighbourhood checks, pruned contenders, scored
+links, joint refits and retractions. Detailed traces remain opt-in and bounded.
+
+Canonical support is the union of measured hop cells across children and
+profiles. Overlapping profiles do not add observed seconds or independent
+windows twice. `start_s`/`end_s` bound those cells, without spectral-window padding;
+window-related temporal uncertainty remains in child quality. Children additionally
+retain per-point amplitude, frequency uncertainty, spectral prominence, hop and
+window widths. `unresolved_grouping_alternatives` identifies retracted memberships.
+A failed joint episode may return its individually supported children; it cannot
+silently discard all acoustic evidence because downstream fitting is unsuitable.
+
+Fragment association performs two bounded reconsideration sweeps. It is an
+approximate sparse search, with16 detailed contenders and8 retained links per
+fragment,64 fragments per chain, a32MiB chain-array cache, and configurable
+candidate/measurement/association/refit bounds. Dense noisy inputs can exhaust
+those bounds; a failure artifact remains distinct from a completed zero-proposal
+scan. Short events require independent-window, support, resolved motion,
+continuity and salience evidence. Regional motion rejects stationary sections
+joined by one pitch step; automatically selected surrounding context can reject
+regular repeated brief patterns. Smooth mechanical ramps and irregular modulation
+can remain unresolved acoustic proposals. These outputs are not an aircraft
+classifier or proof of one physically moving emitter.
+
+Counts now distinguish `spectral_measurements` (one peak measurement instance
+per chunk/profile before directional linking) from `raw_observations` (both
+directional path sweeps). Overlapping chunks still reuse audio; neither count
+is a number of independent physical events. `counts_semantics` records this
+meaning. Canonical counts remain separate from measured child counts.
+
+Reconciliation protects a subgroup that already passes episode evidence gates:
+a later union must pass those same gates before replacing it. Provisional groups
+can still accumulate evidence. `protected_group_extensions` retains at most20
+failed-union explanations separately from early noise traces. Failed-acceptance
+diagnostics report the actual pooled episode motion and the contrast-or-tonal
+salience decision ratio, with measured values and thresholds. These ratios are
+not probabilities. The historical frozen repaired comparison predates these
+reporting-only fields and retains its original artifacts unchanged.

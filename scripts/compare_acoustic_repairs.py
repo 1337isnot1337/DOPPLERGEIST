@@ -79,6 +79,18 @@ def match(references,predictions):
                 matched_points=sum(e['matched_points'] for e in selected))
 
 
+def retained_measurements(old,new):
+    by_time=defaultdict(list)
+    for event in new.get('events',[]):
+        for point in event['ridge']:by_time[round(point['time_s'],6)].append(point['frequency_hz'])
+    retained=total=0
+    for event in old.get('events',[]):
+        for point in event['ridge']:
+            total+=1;f=point['frequency_hz']
+            retained+=any(abs(g-f)<=max(1.,.006*f) for g in by_time.get(round(point['time_s'],6),[]))
+    return retained,total
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--manifest',type=Path,required=True)
@@ -86,6 +98,7 @@ def main():
     parser.add_argument('--before',type=Path,required=True)
     parser.add_argument('--repaired',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--wide',type=Path,help='optional separate wider-coverage arm; missing cases remain unattempted')
     args=parser.parse_args();args.output.mkdir(exist_ok=False,parents=True)
     cases=json.loads(args.manifest.read_text())['cases']
     roots=dict(legacy=args.legacy,before=args.before,repaired=args.repaired)
@@ -104,6 +117,7 @@ def main():
                 row=dict(case_id=cid,context=case['context'],arm=name,reference_proposals=len(references),
                          proposals=len(proposals),children=len(data[name].get('events',[])),
                          observed_seconds=sum(b-a for a,b in cells),**{k:v for k,v in scored.items() if k not in ('matches','missed_references')})
+                row['raw_points_retained'],row['raw_points_total']=retained_measurements(data['legacy'],data[name])
                 run=runs[name][cid]
                 for key in ('status','runtime_s','peak_rss_kib','output_bytes','error'):row[key]=run.get(key)
                 row['cpu_time_s']=data[name].get('cpu_time_s')
@@ -114,6 +128,31 @@ def main():
     with (args.output/'comparison.csv').open('w',newline='') as stream:
         writer=csv.DictWriter(stream,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
     (args.output/'matches.json').write_text(json.dumps(details,indent=2)+'\n')
+    if args.wide:
+        wide_runs={r['case_id']:r for r in map(json.loads,(args.wide/'results.jsonl').read_text().splitlines())}
+        wide_rows=[];coverage_rows=[]
+        with gzip.open(args.output/'wide-observations.jsonl.gz','wt') as stream:
+            for case in cases:
+                cid=case['id']
+                if cid not in wide_runs:continue
+                run=wide_runs[cid];file=args.wide/cid/'discovery/discovery.json'
+                wide=json.loads(file.read_text()) if file.exists() else dict(events=[],status='failed')
+                legacy=json.loads((args.legacy/cid/'discovery/discovery.json').read_text())
+                narrow=json.loads((args.repaired/cid/'discovery/discovery.json').read_text())
+                proposals=catalog(wide);scored=match(catalog(legacy),proposals)
+                row=dict(case_id=cid,context=case['context'],proposals=len(proposals),children=len(wide.get('events',[])),
+                         **{k:v for k,v in scored.items() if k not in ('matches','missed_references')})
+                for key in ('status','runtime_s','peak_rss_kib','output_bytes','error'):row[key]=run.get(key)
+                row['cpu_time_s']=wide.get('cpu_time_s');wide_rows.append(row)
+                coverage=match(catalog(narrow),proposals)
+                retained,total=retained_measurements(narrow,wide)
+                coverage_rows.append(dict(case_id=cid,raw_points_retained=retained,raw_points_total=total,narrow_proposals=len(catalog(narrow)),wide_proposals=len(proposals),
+                    **{k:v for k,v in coverage.items() if k not in ('matches','missed_references')},
+                    missed_narrow_proposals=json.dumps(coverage['missed_references'])))
+                stream.write(json.dumps(dict(case_id=cid,wide=wide),separators=(',',':'))+'\n')
+        for filename,output_rows in [('wide.csv',wide_rows),('coverage-comparison.csv',coverage_rows)]:
+            with (args.output/filename).open('w',newline='') as stream:
+                writer=csv.DictWriter(stream,fieldnames=list(output_rows[0]));writer.writeheader();writer.writerows(output_rows)
 
 
 if __name__=='__main__':main()

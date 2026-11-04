@@ -207,3 +207,42 @@ def test_reconciliation_obeys_group_acceptance_guard():
     guarded=reconcile(tracks,settings,work,accept_merge=lambda *groups:False)
     assert len(guarded)==len(tracks)
     assert work.decision_counts['rejected_episode_extension']>0
+
+
+def test_final_real_recording_catalog_preserves_contract_and_bounds():
+    import gzip
+    from dopplergeist.contracts import validate_event
+    root=Path(__file__).parents[1]/'benchmarks'
+    manifest=json.loads((root/'acoustic-episodes-349/manifest.json').read_text())
+    expected={c['id']:c['sha256'] for c in manifest['cases']}
+    package=root/'acoustic-episode-repair-20261104'
+    with gzip.open(package/'observations.jsonl.gz','rt') as stream:
+        rows=[json.loads(line) for line in stream]
+    assert {r['case_id'] for r in rows}==set(expected)
+    with gzip.open(package/'wide-observations.jsonl.gz','rt') as stream:
+        wider=[json.loads(line) for line in stream]
+    assert len(wider)==31
+    identities=set()
+    for cid,data in [(r['case_id'],r['repaired']) for r in rows]+[(r['case_id'],r['wide']) for r in wider]:
+        assert data['status']=='complete'
+        assert data['source_sha256']==expected[cid]
+        identities.add(data['code']['implementation_sha256'])
+        events={e['event_id']:validate_event(e) for e in data['events']}
+        members=[rid for episode in data['episodes'] for rid in episode['child_ridge_ids']]
+        assert len(members)==len(set(members))==len(events)
+        assert set(members)==set(events)
+        assert data['counts']['canonical_proposals']==len(data['episodes'])
+        assert data['counts']['measured_child_tracks']==len(events)
+        assert data['association_pairs']<=data['settings']['max_associations']
+        assert data['joint_refits']<=data['settings']['max_joint_refits']
+        assert len(data['protected_group_extensions'])<=20
+        for episode in data['episodes']:
+            assert episode['physical_motion_confirmed'] is False
+            assert episode['physical_source_multiplicity']=='unresolved'
+            cells=episode['observed_intervals_s']
+            assert sum(b-a for a,b in cells)==pytest.approx(episode['observed_duration_s'])
+            assert episode['gaps_s']==[[a[1],b[0]] for a,b in zip(cells,cells[1:])]
+            for child in episode['children']:
+                n=len(events[child['ridge_id']]['ridge'])
+                assert len(child['frequency_uncertainties_hz'])==len(child['observation_hops_s'])==len(child['observation_windows_s'])==n
+    assert len(identities)==1
