@@ -13,6 +13,8 @@ obtains ADSB.lol release metadata, resumes split archive parts using checked HTT
 ranges, checks provider size/SHA-256, and streams gzip readsb traces into an index.
 All aircraft types remain eligible. The archive is downloaded once per day/provider;
 later uploads reuse the derived index without opening/downloading the archive.
+Both older single `.tar` assets and newer split `.tar.aa`/`.tar.ab` assets are read
+through the same streaming archive reader.
 
 New daily archive indexes prepare traces and compute flight-segment geometry in
 separate processes, using the available CPU cores minus one for the SQLite writer
