@@ -3,6 +3,11 @@
 # Listed source revisions have been checked against recorded observations;
 # unlisted edits disable the prepared-track fast path.
 PREPARED_DATA_ACCESS_EQUIVALENCE = {
+    # Archive intake now excludes partial .readsb_tmp members; prepared-track
+    # decoding and normalization are unchanged from the prior source.
+    "92ea0983dc869a815fc872ad1be56441421f7764db98d2b2a676ab5fe0c469d5": (
+        "690caf2155bcc17905a5d71ea3b3d4111485451cc734b827c9c4ac5f2997d22b",
+    ),
     # Acquisition progress callbacks report counters and do not change recorded
     # observation decoding, normalization, or prepared track construction.
     "6f1927a9daa638748207abb0479031baa01f6aee1fcedcfbf74280111cb0b47d": (
