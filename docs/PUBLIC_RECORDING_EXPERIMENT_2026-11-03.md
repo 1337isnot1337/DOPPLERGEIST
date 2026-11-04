@@ -114,6 +114,13 @@ segments. It does not establish that the older run used identical interpolation
 or that any segment is the source of its acoustic proposal; no receiver-position
 fit was evaluated.
 
+The saved unmatched proposals also do not all have obviously weak detector
+heuristics: across individual ridges in those groups, `median_contrast` ranges
+from 3.14 to 5.25 and `support_fraction` from 0.805 to 1.000. These fields are
+not calibrated measures of aircraft identity, so they cannot distinguish real
+flyovers from false proposals. The saved evidence does not justify discarding
+all unmatched groups with a higher detector threshold.
+
 Across all three, event groups are acoustic proposals rather than verified
 aircraft identities. The ±20-second recording-start windows were assumptions
 based on filenames, and the archive does not establish complete local receiver
