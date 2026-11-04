@@ -35,7 +35,6 @@ nav a[aria-current="page"] { color: var(--mint); text-decoration: underline; tex
 .hero-copy p { color: var(--muted); max-width: 470px; font-size: 19px; }
 .hero-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 26px; margin-top: 24px; font-size: 15px; }
 .hero-links > a:last-child { text-decoration-color: var(--line); }
-.hero-footnote { font-size: 14px; color: var(--muted); margin-top: 18px; }
 .section { padding-top: 104px; }
 .section-intro { margin-bottom: 32px; }
 .section-intro p { color: var(--muted); max-width: 690px; margin-top: 20px; }
@@ -76,7 +75,6 @@ pre { margin-block: 28px; padding: 28px; overflow-x: auto; background: var(--sur
 .next-page > a { font-family: "Geist Serif", Georgia, serif; font-size: 25px; text-decoration: none; }
 /* The illustration shares the site's palette and retains a useful static state. */
 .doppler-demo { margin-top: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); overflow: hidden; }
-.demo-heading { display: flex; align-items: center; justify-content: space-between; padding: 19px 26px; gap: 16px; border-bottom: 1px solid var(--line); }
 .demo-phase { color: var(--mint); font-size: 13px; }
 .doppler-scene { display: block; width: 100%; height: auto; }
 .doppler-scene text { fill: var(--muted); font: 14px "Geist", Arial, sans-serif; letter-spacing: .02em; }
@@ -90,13 +88,21 @@ pre { margin-block: 28px; padding: 28px; overflow-x: auto; background: var(--sur
 .pitch-curve { stroke: url(#curve-color); stroke-width: 3; fill: none; }
 .chart-cursor { stroke: var(--mint); stroke-opacity: .45; }
 .pitch-dot { fill: var(--mint); stroke: var(--surface); stroke-width: 3; }
-.demo-controls { display: flex; align-items: center; gap: 26px; padding: 24px 26px 12px; }
+.demo-controls { padding: 24px 26px; }
+.demo-transport { display: grid; grid-template-columns: auto minmax(0, 1fr) 190px; align-items: center; gap: 28px; }
+.pitch-readout { display: grid; gap: 3px; text-align: right; font-variant-numeric: tabular-nums; }
+.pitch-readout output { font-size: 16px; }
+.demo-parameters { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line); }
+.demo-parameters label { min-width: 0; }
+.demo-parameters label > span { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--muted); }
+.demo-parameters output { color: var(--text); font-variant-numeric: tabular-nums; }
+[data-receiver] { cursor: ns-resize; touch-action: none; }
+.receiver-hit { fill: transparent; }
+[data-receiver]:hover .receiver-halo { stroke-opacity: 1; }
 .play-button, .viewer-close { border: 1px solid var(--line); border-radius: 4px; padding: 10px 18px; color: var(--text); background: var(--bg); font-size: 14px; min-width: 128px; min-height: 44px; }
 .play-button:hover, .viewer-close:hover { border-color: var(--mint); }
-.timeline-label { flex: 1; color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 18px; }
+.timeline-label { min-width: 0; color: var(--muted); font-size: 12px; display: grid; gap: 4px; }
 input[type="range"] { width: 100%; min-width: 60px; accent-color: var(--mint); cursor: ew-resize; min-height: 32px; }
-.demo-controls output { min-width: 145px; font-size: 14px; font-variant-numeric: tabular-nums; text-align: right; }
-.demo-note { margin: 18px 26px 22px; font-size: 12px; color: var(--muted); }
 .physics-detail { border-bottom: 1px solid var(--line); padding-block: 24px; font-size: 16px; }
 .physics-detail summary { cursor: pointer; color: var(--lilac); }
 .physics-detail > div { max-width: 760px; color: var(--muted); padding-top: 18px; }
@@ -123,7 +129,6 @@ body:has(.figure-viewer[open]) { overflow: hidden; }
   .method-summary { margin-top: 72px; padding-top: 42px; }
   .method-steps { gap: 24px; }
   .location-section { gap: 32px; grid-template-columns: 1fr 1fr; }
-  .timeline-label { font-size: 0; gap: 0; }
   footer { align-items: start; }
   footer nav { flex-wrap: wrap; justify-content: flex-end; gap: 12px 20px; }
 }
@@ -154,16 +159,17 @@ body:has(.figure-viewer[open]) { overflow: hidden; }
   pre { padding: 18px; font-size: 14px; }
   .page-jumps { gap: 12px 24px; font-size: 13px; margin-top: 28px; }
   .doppler-demo { margin-top: 28px; }
-  .demo-heading { padding: 14px 16px; flex-wrap: wrap; gap: 6px; }
-  .demo-heading .eyebrow { font-size: 10px; }
   .demo-phase { font-size: 12px; }
   .doppler-scene { min-height: 210px; }
   .doppler-scene text { font-size: 30px; }
-  .demo-controls { flex-wrap: wrap; gap: 8px 18px; padding: 12px 16px 0; }
-  .timeline-label { order: 3; flex-basis: 100%; }
-  .demo-controls output { margin-left: auto; min-width: 0; font-size: 12px; }
+  .demo-controls { padding: 16px; }
+  .demo-transport { grid-template-columns: auto 1fr; gap: 16px; }
+  .pitch-readout { grid-column: 2; grid-row: 1; }
+  .pitch-readout output { font-size: 14px; }
+  .demo-parameters { grid-template-columns: 1fr; gap: 16px; margin-top: 16px; padding-top: 16px; }
+  .receiver-hit { r: 66px; }
+  .timeline-label { grid-column: 1 / -1; grid-row: 2; }
   .play-button { min-width: 116px; padding-inline: 12px; }
-  .demo-note { margin: 14px 16px 18px; font-size: 11px; }
   .figure-viewer { padding: 12px; }
   .viewer-toolbar { gap: 12px; }
   .viewer-close { min-width: auto; }
