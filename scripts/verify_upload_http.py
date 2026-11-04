@@ -343,7 +343,9 @@ def valid_clock_exclusion(item, configuration):
                 or not isinstance(window, list) or len(window) != 2):
             return False
         with localcontext() as ctx:
-            ctx.prec = 80
+            # Enough digits to add arbitrary finite binary64 inputs without
+            # losing a very small operand next to a very large one.
+            ctx.prec = 1100
             lo, hi = map(number, window)
             sweep, offset = number(scoring.get("time_sweep_s", 5.0)), number(filters.get("offset_tolerance_s", 5.0))
             c = number(scoring.get("c", 343.0))
