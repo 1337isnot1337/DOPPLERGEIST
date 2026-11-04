@@ -454,8 +454,8 @@ def association_score(result, events):
 def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     """Adapt contract ridge points to existing search inputs without truth hints.
 
-    Keep every ridge in a harmonic group as evidence for one pass. Rational
-    harmonic ratios are normalized to its lowest observed band; no fundamental
+    Keep every ridge in a canonical group as evidence for one proposal. Measured
+    episode scales (legacy rational ratios) normalize to its lowest observed band; no fundamental
     needs to be present. Groups with inconsistent ratios must be fixed by discovery.
     Separate paths that reuse measured peaks remain separate hypotheses, with
     an explicit conflict preventing their joint independent-support score.
@@ -469,8 +469,10 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     for event in detected_events:
         key = event.get("harmonic_group_id") or event["event_id"]
         groups.setdefault(key, []).append(event)
-    settings, measurements = [], []
-    for members in groups.values():
+    settings, measurements, retained_groups = [], [], []
+    for group_id, members in groups.items():
+        if any(e.get("quality", {}).get("matching_eligible") == 0 for e in members):
+            continue
         reference = min(members, key=lambda e: np.median([p["frequency_hz"] for p in e["ridge"]]))
         reference_time = np.array([p["time_s"] for p in reference["ridge"]])
         reference_frequency = np.array([p["frequency_hz"] for p in reference["ridge"]])
@@ -480,7 +482,16 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
             f = np.array([p["frequency_hz"] for p in member["ridge"]], dtype=float)
             w = np.array([p.get("weight", 1.0) for p in member["ridge"]], dtype=float)
             harmonic = 1.0
-            if member is not reference:
+            modern_scale = member.get("quality", {}).get("episode_frequency_scale")
+            reference_scale = reference.get("quality", {}).get("episode_frequency_scale")
+            if modern_scale is not None and reference_scale is not None:
+                if not np.isfinite(modern_scale) or not np.isfinite(reference_scale) or min(modern_scale, reference_scale) <= 0:
+                    raise ValueError("Episode frequency scales must be finite and positive")
+                harmonic = modern_scale / reference_scale
+                # Discovery established the joint scale model. Requiring every
+                # child to re-match one base would discard partial support that
+                # was reconciled through other measured members.
+            elif member is not reference:
                 base = np.column_stack((reference_time, reference_frequency))
                 shared = _overlap(base, np.column_stack((t, f)))
                 if shared is None or len(shared[0]) * 0.5 < 0.6 * min(np.ptp(reference_time), np.ptp(t)):
@@ -513,10 +524,12 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         event["event_ids"] = [e["event_id"] for e in members]
         settings.append(event)
         measurements.append((RidgeTimes(t), f, w, {}))
-    grouped = list(groups.items())
-    for index, (first_id, first_members) in enumerate(grouped):
-        for following in range(index + 1, len(grouped)):
-            second_id, second_members = grouped[following]
+        retained_groups.append((group_id, members))
+    # Match the prepared settings exactly: ineligible episodes have no setting
+    # and must not shift the indices used to attach reused-observation conflicts.
+    for index, (first_id, first_members) in enumerate(retained_groups):
+        for following in range(index + 1, len(retained_groups)):
+            second_id, second_members = retained_groups[following]
             conflict = next((found for first in first_members for second in second_members
                              if (found := reused_ridge_observations(first, second)) is not None), None)
             if conflict is not None:

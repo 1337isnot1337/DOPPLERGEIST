@@ -128,3 +128,66 @@ later events survive and harmonics count once. These audio-only controls test
 retention, not geographic accuracy. The per-frame peak budget remains an explicit
 bounded-analysis setting, and unsupported or missed tones are not a completeness
 guarantee. The contrast 2.5 settings are frozen for the new public-camera batch.
+
+## Experimental acoustic episodes
+
+The installed `discover` command and the checkout script support an explicit
+`--experimental-episodes` switch. This switch selects
+`dopplergeist.episode_discovery` for acoustic reports. Without the switch, both
+commands retain the scanner described above. The automatic analysis and upload
+workflow also retain that scanner.
+
+Run the experimental scanner on a real recording:
+
+```bash
+dopplergeist discover input.mp3 --output results/new-episode-scan \
+  --experimental-episodes --plot-summary
+```
+
+Use a new output directory for each run. For a wider frequency range, run:
+
+```bash
+dopplergeist discover input.mp3 --output results/new-wide-episode-scan \
+  --experimental-episodes --max-frequency-hz 6000 --plot-summary
+```
+
+The experimental settings default to 40–1600 Hz, a 2-second spectral window,
+and a 0.5-second hop. The commands accept `--min-frequency-hz`,
+`--max-frequency-hz`, `--window-s`, `--hop-s`, and `--detailed-candidates` only
+with `--experimental-episodes`. The checkout script accepts the same switch:
+
+```bash
+PYTHONPATH=src python scripts/discover_audio.py input.mp3 \
+  --output results/new-research-episode-scan --experimental-episodes
+```
+
+Experimental intake selects a decoding rate that supports the requested band.
+It explicitly uses the FFmpeg resampler with a 64-tap filter and a 0.95 cutoff.
+The default scanner retains its existing decoding command. Unsupported source
+coverage and analysis limits produce explicit errors.
+
+### Outputs and compatibility
+
+Default discovery retains its existing artifact, which has no explicit
+`schema_version` field. Experimental discovery writes
+`discovery/discovery.json` with `schema_version: 2`, a canonical `episodes`
+catalog, and measured `events` children. Episode records reference their measured
+children. Gaps remain gaps, and an inferred fundamental does not create measured
+ridge samples. Coverage, settings, counts, rejection diagnostics, and code identity
+remain available in the artifact.
+
+The child events retain the shared `DetectedEvent` contract. Numeric quality
+fields include `episode_model_version`, `episode_frequency_scale`, and
+`matching_eligible`. The matching adapter supports these recorded children and
+retains its legacy behavior for version-1 events. Brief episodes without enough
+samples remain evidence for acoustic review. The experimental command does not
+run a location search or enable these episodes in automatic upload jobs.
+
+The [frozen real-recording comparison](ACOUSTIC_EPISODES_REPORT.md) retains every
+input, including zeros and regressions. Its labels `new` and `default` refer to
+the experimental implementation with its original settings. They do not name
+the current product default. Six baseline reference groups had no retained
+measurement within the report's overlap tolerance, including the documented faint
+passage. Runtime also increased on the measured
+comparison. The evidence does not establish improved aircraft recall, source
+identity, or location accuracy.

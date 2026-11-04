@@ -107,6 +107,14 @@ def main():
     discover.add_argument("--output",required=True,help="New directory for the scan and diagnostics")
     discover.add_argument("--plot-summary",action="store_true",help="Render a recording-level ridge overview")
     discover.add_argument("--plot-event-details",action="store_true",help="Render a spectrogram for each proposal")
+    discover.add_argument("--experimental-episodes",action="store_true",
+                          help="Use experimental acoustic episode reporting; not used by automatic location jobs")
+    discover.add_argument("--min-frequency-hz",type=float,help="Experimental lower frequency bound (default: 40)")
+    discover.add_argument("--max-frequency-hz",type=float,help="Experimental upper frequency bound (default: 1600)")
+    discover.add_argument("--window-s",type=float,help="Experimental spectral window in seconds (default: 2)")
+    discover.add_argument("--hop-s",type=float,help="Experimental spectral hop in seconds (default: 0.5)")
+    discover.add_argument("--detailed-candidates",action="store_true",
+                          help="Save bounded rejected-candidate measurements; requires --experimental-episodes")
     analyze=sub.add_parser("analyze",help="Automatically locate aircraft audio, or explain insufficient evidence")
     analyze.add_argument("audio")
     analyze.add_argument("--start-utc",help="Earliest UTC recording start, including explicit timezone")
@@ -160,18 +168,35 @@ def main():
         result=measure(args.audio,{"start_s":args.start,"end_s":args.end,"band_hz":args.band},args.output)
         print(json.dumps(result[-1],indent=2))
     elif args.command=="discover":
-        from .discovery import discover_events
         from .intake import intake_recording
+        overrides={name:getattr(args,name) for name in
+                   ("min_frequency_hz","max_frequency_hz","window_s","hop_s")
+                   if getattr(args,name) is not None}
+        if not args.experimental_episodes and (overrides or args.detailed_candidates):
+            parser.error("Frequency, window, hop and detailed-candidate options require --experimental-episodes")
         output=Path(args.output)
         try:
+            intake_options={}
+            discovery_options={}
+            if args.experimental_episodes:
+                from .episode_discovery import DiscoverySettings, discover_events, required_sample_rate
+                settings=DiscoverySettings(**overrides)
+                intake_options={"sample_rate_hz":required_sample_rate(settings),"resample_filter_size":64}
+                discovery_options={"settings":settings,"detailed_candidates":args.detailed_candidates}
+            else:
+                from .discovery import discover_events
             output.mkdir(parents=True,exist_ok=False)
-            recording=intake_recording(args.audio,output/"intake")
+            recording=intake_recording(args.audio,output/"intake",**intake_options)
             events=discover_events(recording,output_dir=output/"discovery",
-                                   plot_summary=args.plot_summary,plot_event_details=args.plot_event_details)
+                                   plot_summary=args.plot_summary,plot_event_details=args.plot_event_details,
+                                   **discovery_options)
             summary={"recording":recording.metadata,"time_status":recording.time_status,
                      "events_found":len(events),
                      "groups_found":len({event.get("harmonic_group_id") or event["event_id"] for event in events}),
                      "scope":"Acoustic proposals only; aircraft identity and location are not established"}
+            if args.experimental_episodes:
+                summary.update(experimental_episodes=True,discovery_schema_version=2,
+                               canonical_proposals=summary["groups_found"],measured_child_tracks=len(events))
             (output/"summary.json").write_text(json.dumps(summary,indent=2,allow_nan=False)+"\n")
         except (OSError, ValueError) as exc:
             parser.error(f"Could not complete discovery: {exc}")

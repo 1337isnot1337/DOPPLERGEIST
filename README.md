@@ -122,6 +122,11 @@ Automatic discovery scans an entire recording for moving acoustic frequency patt
 
 Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`. See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
 
+The [experimental acoustic-episode scanner](docs/AUDIO_DISCOVERY.md#experimental-acoustic-episodes)
+requires `--experimental-episodes`. It produces acoustic reports and does not change
+the default scanner or upload workflow. Its recorded comparison includes missed
+baseline signals and higher runtime.
+
 ### Run the local upload application
 
 Start the browser application:
