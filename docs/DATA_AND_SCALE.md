@@ -20,6 +20,13 @@ separate processes, using the available CPU cores minus one for the SQLite write
 source order. SQLite writes and finalization still run in the writer process; a
 stopped partial index must be rebuilt.
 
+For a fresh automatic regional upload, only segments touching its receiver bounds
+and emission-time interval get the optional numeric decoding cache. Every original
+global segment remains in the index, and queries outside that warm scope use the
+verified original payload. This reduces first-use cache construction without
+changing source coverage or filtering aircraft. `FlightIndex.prepare` also accepts
+`prepare_scope=(bounds_wsen, time_range_s)` for an explicitly scoped index copy.
+
 The on-disk SQLite index has spatial and time indexes, source hashes, explicit
 source scope, per-payload checksums and altitude/classification labels. Disk staging supports
 arbitrary input order. Query predicates select whole gap-split segments; they

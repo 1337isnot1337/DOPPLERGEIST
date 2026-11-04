@@ -618,8 +618,8 @@ class FlightIndex:
         return track
 
     @staticmethod
-    def _prepare_tracks(db):
-        """Store constructor inputs beside the original observations, once."""
+    def _prepare_tracks(db, scope=None):
+        """Warm optional constructor inputs without removing observations."""
         from .flight_payload import encode_track
         db.execute("DROP TABLE IF EXISTS prepared_tracks")
         db.execute("CREATE TABLE prepared_tracks(id INTEGER PRIMARY KEY, source_hash TEXT, payload BLOB, payload_hash TEXT)")
@@ -629,8 +629,16 @@ class FlightIndex:
                 or _payload_frame is not _CANONICAL_PAYLOAD_FRAME
                 or Track is not _CANONICAL_TRACK or np.geterr() != _PREPARED_ERROR_POLICY):
             return {"version": 1, "builder": None, "tracks": count, "bytes": size}
-        for identifier, name, payload, expected in db.execute(
-                "SELECT id,name,payload,payload_hash FROM segments ORDER BY id"):
+        query = "SELECT s.id,s.name,s.payload,s.payload_hash FROM segments s"
+        parameters = ()
+        if scope is not None:
+            bounds, times = scope
+            west, south, east, north = bounds
+            start, end = times
+            query += (" JOIN spatial r ON s.id=r.id WHERE r.west<=? AND r.east>=?"
+                      " AND r.south<=? AND r.north>=? AND s.start<=? AND s.end>=?")
+            parameters = (east, west, north, south, end, start)
+        for identifier, name, payload, expected in db.execute(query + " ORDER BY s.id", parameters):
             if hashlib.sha256(payload).hexdigest() != expected:
                 raise DataUnavailable(f"Corrupt flight payload: {name}")
             # Use the precise values the old reader gets AFTER the index's
@@ -644,14 +652,19 @@ class FlightIndex:
                        (identifier, expected, packed, hashlib.sha256(packed).hexdigest()))
             count += 1
             size += len(packed)
-        return {"version": 1, "builder": _prepared_track_identity(), "tracks": count, "bytes": size}
+        report = {"version": 1, "builder": _prepared_track_identity(), "tracks": count, "bytes": size}
+        if scope is not None:
+            report["scope"] = {"bounds": list(bounds), "time_range_s": list(times)}
+        return report
 
-    def prepare(self, destination):
+    def prepare(self, destination, *, prepare_scope=None):
         """Create a new index copy with faster verified track decoding.
 
         The source stays read-only and the destination must not exist. Coverage,
         original payloads, spatial bounds and scientific input identity stay
         unchanged. Old readers ignore the optional numeric representation.
+        Optional ``prepare_scope=(bounds_wsen, time_range_s)`` limits warming;
+        queries outside it still decode the complete original observations.
         """
         from uuid import uuid4
         destination = Path(destination)
@@ -672,7 +685,7 @@ class FlightIndex:
                         raise DataUnavailable("Flight index version mismatch")
                 except (sqlite3.DatabaseError, TypeError, KeyError, json.JSONDecodeError) as error:
                     raise DataUnavailable("Invalid source flight index metadata") from error
-                report["prepared_tracks"] = self._prepare_tracks(db)
+                report["prepared_tracks"] = self._prepare_tracks(db, prepare_scope)
                 db.execute("UPDATE metadata SET value=?", (json.dumps(report),))
                 db.commit()
                 db.close()
@@ -685,7 +698,7 @@ class FlightIndex:
 
     @classmethod
     def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
-              prepared=False):
+              prepared=False, prepare_scope=None):
         """Disk staging permits arbitrary source order without whole-table RAM.
 
         Explicit source coverage is required: cropped or prop-only historical
@@ -750,7 +763,7 @@ class FlightIndex:
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
                               segments=segments, altitude_basis_counts=dict(altitude), jets_excluded=False,
                               unknown_types_retained=True, geometry_clipped=False, continuous_geometry_bounds=True)
-                report["prepared_tracks"] = cls._prepare_tracks(db)
+                report["prepared_tracks"] = cls._prepare_tracks(db, prepare_scope)
                 db.execute("INSERT INTO metadata VALUES(?)", (json.dumps(report),))
                 db.commit()
                 db.execute("VACUUM")
@@ -901,7 +914,7 @@ class FlightCache:
         self.root, self.offline = Path(root), offline
         self.session = session or requests.Session()
 
-    def acquire_day(self, day, *, provider="staging-0"):
+    def acquire_day(self, day, *, provider="staging-0", prepare_scope=None):
         from . import tracks as normalizer
         day = date.fromisoformat(day)
         tag = f"v{day:%Y.%m.%d}-planes-readsb-{provider}"
@@ -970,7 +983,8 @@ class FlightCache:
             # ICAO T also covers helicopter turboshafts; keep the family label broad.
             class_map[code] = {"J": "jet", "T": "turbine", "P": "piston"}.get(description[-1:], "unclassified")
         return FlightIndex.build(index, archive_staging([s["path"] for s in sources], class_map), sources=sources + [type_source],
-                                 coverage=coverage, class_map=class_map, prepared=True)
+                                 coverage=coverage, class_map=class_map, prepared=True,
+                                 prepare_scope=prepare_scope)
 
 
 class CachedTerrain:
@@ -1156,6 +1170,7 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         raise ValueError("Required emission interval must be ordered")
     times = (first, last)
     root = Path(cache_root)
+    bounds = tuple(request["search"].get("bounds_wsen", CONUS))
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
     else:
@@ -1164,9 +1179,8 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         indexes = []
         day = first
         while day <= last:
-            indexes.append(cache.acquire_day(day.isoformat()))
+            indexes.append(cache.acquire_day(day.isoformat(), prepare_scope=(bounds, times)))
             day += timedelta(days=1)
-    bounds = tuple(request["search"].get("bounds_wsen", CONUS))
     options = dict(terrain_options or {})
     terrain = CachedTerrain(root / "terrain", offline=offline, **options)
     coverage = {"requested_area": request["search"], "sources": [i.coverage_for(bounds, times) for i in indexes],
