@@ -256,8 +256,12 @@ def main():
                 age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
                 stale_after=max(60.0,args.interval*3)
                 progress_stale=" (stale)" if result_age>stale_after else ""
-                progress_text=(f", pipeline/grid estimate field {progress:.3f}{progress_stale}"
+                progress_text=(f", overall progress {progress:.1%}{progress_stale}"
                                if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
+                refinement_message=value.get("message")
+                activity_text=(f", {refinement_message}"
+                               if value.get("stage") in {"refinement", "decision"}
+                               and isinstance(refinement_message,str) else "")
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
@@ -292,7 +296,7 @@ def main():
                 activity_age=(f", newest search write {age_text(max(0.0,wall_now-modified[activity]))} ago "
                               f"({activity.relative_to(search)}; unverified file activity)"
                               if activity is not None else "")
-                print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
+                print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}{activity_text}): "
                       f"{count} search files observed (unverified: {len(tiles)} coarse, "
                       f"{len(fine_files)} fine){rate}{file_age}, "
                       f"{fine_support_count} fine support records observed (unverified)"
