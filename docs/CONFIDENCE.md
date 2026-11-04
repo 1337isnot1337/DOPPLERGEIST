@@ -58,6 +58,13 @@ inferred from the fitted candidate. W5 supplies the validated original request
 window as `recording_start_window_s`; W3 profiles expose the tested span in
 `sensitivity.settings.clock_bounds_s`.
 
+When a candidate clock falls inside the supplied window, diagnostics also report
+`recording_start_window_fit`: the window width, fit offset from the midpoint,
+and distance to the nearest edge, all in seconds. These are geometric
+descriptions of the optimizer result, not a clock-error estimate or calibration.
+They do not change the score, ranking, or decision; the caller remains responsible
+for supplying a defensible clock window.
+
 Matched flyovers use one locked recording clock; harmonics count once and must
 map to the same flight. The minimum independent-flyover gate counts distinct
 matched flight segments: multiple acoustic groups assigned to one segment may
