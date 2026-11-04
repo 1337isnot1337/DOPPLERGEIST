@@ -48,6 +48,7 @@ def test_actual_s50_s51_have_different_longitude_widths():
     higher_latitude = RASTERS[-51, -74]
     assert lower_latitude["width"] == 1200
     assert higher_latitude["width"] == 800
-    # Absolute tile origin would incorrectly classify S50 as the wider band.
-    lon = lower_latitude["bounds_wsen"][0] + lower_latitude["pixel_width_degrees"] / 10
+    # Absolute tile origin would incorrectly classify S50 as the wider band,
+    # moving this observed eastern strip into W073 instead of W074.
+    lon = lower_latitude["bounds_wsen"][2] - lower_latitude["pixel_width_degrees"] / 10
     assert _glo90_tile_degrees([-49.5], [lon]).tolist() == [[-50, -74]]
