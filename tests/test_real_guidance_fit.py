@@ -23,9 +23,9 @@ def recorded_case():
     return candidate, {"policy": asdict(DecisionPolicy()), "candidate_evidence_summary": summary}
 
 
-def check_evidence_pointers(items, diagnostics):
+def check_evidence_pointers(items, diagnostics, reason):
     saved_decision = {"diagnostics": diagnostics}
-    saved_result = {"reason_code": None}
+    saved_result = {"reason_code": reason}
     for item in items:
         for reference in item["evidence"]:
             name, pointer = reference.split("#", 1)
@@ -52,7 +52,7 @@ def test_real_recorded_bad_fit_and_drift_have_measured_guidance():
         assert items[0]["code"] == expected
         assert any(pointer.endswith(field) for pointer in items[0]["evidence"])
         assert items[0]["benefit"] == "unmeasured"
-        check_evidence_pointers(items, diagnostics)
+        check_evidence_pointers(items, diagnostics, reason)
         # A decision from an earlier candidate state cannot justify this guidance.
         stale = dict(decision, candidates=[dict(candidate, score=candidate["score"] - 1)])
         assert guidance(result, stale) == []
