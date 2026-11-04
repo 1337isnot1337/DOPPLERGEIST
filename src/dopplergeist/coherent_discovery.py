@@ -1,7 +1,8 @@
-"""Adapt measured coherent traces without aircraft-type or geometry rejection.
+"""Adapt already-refined coherent traces without an aircraft/close kind filter.
 
 Experimental audio proposals only. Straight-pass fit quality does not identify
 an aircraft; the historical-track matcher and decision stage remain necessary.
+The upstream detector's template and refinement limits still apply.
 """
 import numpy as np
 
@@ -31,8 +32,8 @@ def events_from_coherent_traces(traces):
             raise ValueError("Coherent traces require ordered finite measured ridge samples")
         paths.append(points)
 
-    # Reference traces have a 0.25 s hop. Use elapsed overlap rather than a
-    # frame count tied to the ordinary discovery backend's 0.5 s hop.
+    # _overlap uses a 0.5 s comparison grid even for 0.25 s source traces.
+    # Match prepare_events: count supported samples, not gaps between endpoints.
     groups = []
     for path in sorted(_merge_duplicates(paths), key=lambda p: np.median(p[:, 1])):
         for group in groups:
@@ -40,7 +41,7 @@ def events_from_coherent_traces(traces):
             if shared is None:
                 continue
             t, base, frequency = shared
-            if np.ptp(t) < .6 * min(np.ptp(group[0][:, 0]), np.ptp(path[:, 0])):
+            if len(t) * .5 < .6 * min(np.ptp(group[0][:, 0]), np.ptp(path[:, 0])):
                 continue
             ratio = frequency / base
             harmonic = min(_HARMONIC_RATIOS, key=lambda h: abs(h - np.median(ratio)))
