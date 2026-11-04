@@ -12,6 +12,20 @@ from pyproj import Transformer
 _PIXEL_CACHE_MAX_ENTRIES = 1024
 
 
+def _glo90_tile_degrees(lat, lon):
+    """Select the published COG footprint, including latitude-dependent widths."""
+    # GLO-90 removes its southern/eastern overlap pixels. Latitude footprints
+    # are south-exclusive/north-inclusive, shifted north by half a 3" pixel.
+    north = np.ceil(np.asarray(lat) - 1 / 2400).astype(int) - 1
+    # Use the selected tile's latitude band, not the point latitude: the N49
+    # footprint extends slightly north of 50 degrees; S50 has 1200 columns.
+    # https://copernicus-dem-90m.s3.amazonaws.com/readme.html
+    band = np.searchsorted([50, 60, 70, 80, 85], np.abs(north + .5))
+    width = np.asarray([1200, 800, 600, 400, 240, 120])[band]
+    east = np.floor(np.asarray(lon) + .5 / width).astype(int)
+    return np.column_stack((north, east))
+
+
 @lru_cache(maxsize=32)
 def _raster_transformer(crs):
     """Reuse a raster's unchanged coordinate operation across refinement calls."""
@@ -168,7 +182,7 @@ class CopernicusTerrain:
         lat,lon=np.broadcast_arrays(lat,lon)
         shape=lat.shape
         lat,lon=lat.ravel(),lon.ravel()
-        degrees=np.column_stack((np.floor(lat).astype(int),np.floor(lon).astype(int)))
+        degrees=_glo90_tile_degrees(lat,lon)
         tiles,inverse=np.unique(degrees,axis=0,return_inverse=True)
         height=np.zeros(len(lat))
         for index,(north,east) in enumerate(tiles):

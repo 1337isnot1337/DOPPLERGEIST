@@ -3,6 +3,18 @@
 # The cache-size-only change and this exact compatibility check do not change
 # decoded observations or normalization. Any source edit disables this mapping.
 PREPARED_DATA_ACCESS_EQUIVALENCE = {
+    # Only GLO-90 terrain tile selection changed; prepared aircraft
+    # observation decoding and normalization remain byte-for-byte unchanged.
+    "690caf2155bcc17905a5d71ea3b3d4111485451cc734b827c9c4ac5f2997d22b": (
+        "23aa4ac1781cb5be921f5243f421886d2f2e549a4ded6dcc1986ade651883f7e",
+        "d88c4be6668b92c9a1a31b5cd0b4dbdcb3d7cf73c5891ae414f44deca6088644",
+        "77da0d39e1e95476fdf02e29e9a345914545af7e62227a93b4cb6786edb37a71",
+        "ddd77e9734fff6a70cc9195bd1305002f9f78e39ea601f27e0f596dcb336033a",
+        "275e38a37f82993b609b6b78c113d35c4da269083ceb3afcb1d94ada48bdc0d4",
+        "dad02d09d89ad9d267cd8d0424b8e018d0399a28d6b43903b5a55867290b3957",
+        "d664caf4b496599d29a81360c4a9d9736a3248c157e71d885463b349aad6dd36",
+        "ce78ad66f2d478e1f7ea158ea04c0d3b25021339e34f090652740fe55e46e5ec",
+    ),
     # Country selection changes only acquisition bounds and optional row warming;
     # prepared observation decoding and normalization are unchanged.
     "23aa4ac1781cb5be921f5243f421886d2f2e549a4ded6dcc1986ade651883f7e": (

@@ -27,6 +27,7 @@ import pandas as pd
 import requests
 
 from .geometry import Track
+from .terrain import _glo90_tile_degrees
 from .tracks import _segment_velocity, adsblol_frame
 
 try:
@@ -1103,9 +1104,7 @@ class CachedTerrain:
         lat, lon = np.broadcast_arrays(lat, lon)
         shape = lat.shape
         lat, lon = lat.ravel(), lon.ravel()
-        # Published COG tiles omit the original bottom/right overlap pixels.
-        # Their outer edges are shifted north/west by half a GLO90 pixel.
-        degrees = np.column_stack((np.floor(lat - 1 / 2400).astype(int), np.floor(lon + 1 / 2400).astype(int)))
+        degrees = _glo90_tile_degrees(lat, lon)
         self.last_sample_files = {"tileList.txt", self.geoid_path.name}
         self.last_sample_ocean_tiles = set()
         tiles, inverse = np.unique(degrees, axis=0, return_inverse=True)

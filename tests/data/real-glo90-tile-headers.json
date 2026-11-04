@@ -1,0 +1,249 @@
+{
+  "observed_at_utc": "2026-11-04T04:56:29.325184+00:00",
+  "source": "Copernicus GLO-90 public COG headers; no audio or aircraft observations generated",
+  "provider_documentation": "https://copernicus-dem-90m.s3.amazonaws.com/readme.html",
+  "rasters": [
+    {
+      "tile": "Copernicus_DSM_COG_30_N49_00_E013_00_DEM",
+      "north": 49,
+      "east": 13,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N49_00_E013_00_DEM/Copernicus_DSM_COG_30_N49_00_E013_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "5c5790813af1bd3c54003e0faa38a38ba9386e25a26102b11ff36dc543fd169c",
+      "etag": "\"ee52cdebadd4624381873c2865459da8\"",
+      "content_range": "bytes 0-65535/5153362",
+      "width": 1200,
+      "height": 1200,
+      "pixel_width_degrees": 0.0008333333333333334,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        12.999583333333334,
+        49.000416666666666,
+        13.999583333333334,
+        50.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N50_00_E013_00_DEM",
+      "north": 50,
+      "east": 13,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N50_00_E013_00_DEM/Copernicus_DSM_COG_30_N50_00_E013_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "83636050be93cc898245dcbd7b3d5cfa7c7dc06cddfa38d35949f15220949ad9",
+      "etag": "\"dd9167e306f6531f04cf5a77f0f8c629\"",
+      "content_range": "bytes 0-65535/3595889",
+      "width": 800,
+      "height": 1200,
+      "pixel_width_degrees": 0.00125,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        12.999375,
+        50.000416666666666,
+        13.999375,
+        51.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N50_00_E014_00_DEM",
+      "north": 50,
+      "east": 14,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N50_00_E014_00_DEM/Copernicus_DSM_COG_30_N50_00_E014_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "9a7ff28f5c3a14860ca8ef89c3c0d0a5c31d889a02e3b125a93d4d296f567173",
+      "etag": "\"e50eea055605ed38d0cda9cb5e1d8fe4\"",
+      "content_range": "bytes 0-65535/3611521",
+      "width": 800,
+      "height": 1200,
+      "pixel_width_degrees": 0.00125,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        13.999375,
+        50.000416666666666,
+        14.999375,
+        51.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N52_00_E013_00_DEM",
+      "north": 52,
+      "east": 13,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N52_00_E013_00_DEM/Copernicus_DSM_COG_30_N52_00_E013_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "681ef4a864309c7f0834a9a346c7c6708278bab74e2a9b81f96c79989468a3dc",
+      "etag": "\"bea950b0ffeca9d513a48e3218a0fdc0\"",
+      "content_range": "bytes 0-65535/3765647",
+      "width": 800,
+      "height": 1200,
+      "pixel_width_degrees": 0.00125,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        12.999375,
+        52.000416666666666,
+        13.999375,
+        53.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N52_00_E014_00_DEM",
+      "north": 52,
+      "east": 14,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N52_00_E014_00_DEM/Copernicus_DSM_COG_30_N52_00_E014_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "b779b77855312618deca3a66a7726b4571f1f1897a0d02289696c12a818d5cf3",
+      "etag": "\"a8f72a6f5fc92f5f8623873df4eed2e4\"",
+      "content_range": "bytes 0-65535/3836633",
+      "width": 800,
+      "height": 1200,
+      "pixel_width_degrees": 0.00125,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        13.999375,
+        52.000416666666666,
+        14.999375,
+        53.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_S50_00_W074_00_DEM",
+      "north": -50,
+      "east": -74,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_S50_00_W074_00_DEM/Copernicus_DSM_COG_30_S50_00_W074_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "e1896286b65f4e76d83f32f18d330b61fd936c7dc4607fe6fdcd7cbd3e352e04",
+      "etag": "\"5166e3b85e123c49a66f8cf4865941ac\"",
+      "content_range": "bytes 0-65535/4916223",
+      "width": 1200,
+      "height": 1200,
+      "pixel_width_degrees": 0.0008333333333333334,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        -74.00041666666667,
+        -49.999583333333334,
+        -73.00041666666667,
+        -48.999583333333334
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_S51_00_W074_00_DEM",
+      "north": -51,
+      "east": -74,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_S51_00_W074_00_DEM/Copernicus_DSM_COG_30_S51_00_W074_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "c90c4d0404cdd6cc8c6fe63d11c166d3bac83cbeb699dda60c0cccd60bd568ea",
+      "etag": "\"b1176f92575ce727e8159abbababc698\"",
+      "content_range": "bytes 0-65535/3419738",
+      "width": 800,
+      "height": 1200,
+      "pixel_width_degrees": 0.00125,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        -74.000625,
+        -50.999583333333334,
+        -73.000625,
+        -49.999583333333334
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N60_00_E010_00_DEM",
+      "north": 60,
+      "east": 10,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N60_00_E010_00_DEM/Copernicus_DSM_COG_30_N60_00_E010_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "8c47e384e21eb39ba8e5fee0d602c9c5d41562730ef5639249e630f10efbc19d",
+      "etag": "\"914cad0f21f0b548ccf62559c069a66a\"",
+      "content_range": "bytes 0-65535/2700509",
+      "width": 600,
+      "height": 1200,
+      "pixel_width_degrees": 0.0016666666666666668,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        9.999166666666667,
+        60.000416666666666,
+        10.999166666666667,
+        61.000416666666666
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_N70_00_E025_00_DEM",
+      "north": 70,
+      "east": 25,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_N70_00_E025_00_DEM/Copernicus_DSM_COG_30_N70_00_E025_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "dd1e6ce1cc0779de3eb8a4f604855717f8188ec7a63f628d3c31c53f9d18e3e7",
+      "etag": "\"14e6b658aa0cd2b9107cdd3610716073\"",
+      "content_range": "bytes 0-65535/1364487",
+      "width": 400,
+      "height": 1200,
+      "pixel_width_degrees": 0.0025,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        24.99875,
+        70.00041666666667,
+        25.99875,
+        71.00041666666667
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_S81_00_E000_00_DEM",
+      "north": -81,
+      "east": 0,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_S81_00_E000_00_DEM/Copernicus_DSM_COG_30_S81_00_E000_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "372ba3af6746f959c76981515cceb3c4bda01eca922cfadf460d351267a763c0",
+      "etag": "\"599c4c4b981f8d07deb56fde790bb3c0\"",
+      "content_range": "bytes 0-65535/824047",
+      "width": 240,
+      "height": 1200,
+      "pixel_width_degrees": 0.004166666666666667,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        -0.0020833333333333333,
+        -80.99958333333333,
+        0.9979166666666667,
+        -79.99958333333333
+      ]
+    },
+    {
+      "tile": "Copernicus_DSM_COG_30_S86_00_E000_00_DEM",
+      "north": -86,
+      "east": 0,
+      "url": "https://copernicus-dem-90m.s3.amazonaws.com/Copernicus_DSM_COG_30_S86_00_E000_00_DEM/Copernicus_DSM_COG_30_S86_00_E000_00_DEM.tif",
+      "prefix_bytes": 65536,
+      "prefix_sha256": "80d7dc487d24b2ef362b83fca1cc3982ebfed76bc8b12e23ca205c9711d8cf35",
+      "etag": "\"045cfbc6115d9888a99344c79d2a4e50\"",
+      "content_range": "bytes 0-65535/457390",
+      "width": 120,
+      "height": 1200,
+      "pixel_width_degrees": 0.008333333333333333,
+      "pixel_height_degrees": 0.0008333333333333334,
+      "raster_type": 2,
+      "geographic_crs": 4326,
+      "bounds_wsen": [
+        -0.004166666666666667,
+        -85.99958333333333,
+        0.9958333333333333,
+        -84.99958333333333
+      ]
+    }
+  ]
+}
