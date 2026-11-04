@@ -92,8 +92,10 @@ count/rate of matching coarse and fine search filenames, the newest matching
 file modification age, and the job status-file age on standard error. These are
 unverified filesystem indicators: the watcher does not validate payload hashes
 or retention evidence, and the file-count rate is not a completed-work rate or
-ETA. Remotely staged work appears after it is imported. Pressing Ctrl-C stops
-the watcher without cancelling the analysis.
+ETA. Coarse split-marker counts and rates show recorded subdivisions, not the number of
+pending leaves or evidence that the search is converging. Remotely staged work
+appears after it is imported. Pressing Ctrl-C stops the watcher without
+cancelling the analysis.
 
 Direct `analyze` and `resume --jobs` print the terminal result as JSON and exit
 with status 1 for a failed job or 130 for cancellation. They exit 0 for
