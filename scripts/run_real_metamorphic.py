@@ -795,6 +795,12 @@ def run(plan_path, output, *, selected_case=None):
     try:
         canonical, reference = make_canonical(plan["source"]["path"], output, plan["protocol"])
         write_json(output / "canonical.json", identity(canonical))
+        baseline_input = None
+        if selected_case and selected_case.startswith("chunks_"):
+            baseline = next(case for case in plan["cases"] if case["id"] == "baseline")
+            baseline_dir = output / "baseline-encoding"
+            baseline_dir.mkdir()
+            baseline_input = identity(encode(canonical, baseline_dir, baseline["encoding"], plan["protocol"]))
         for case, row in zip(plan["cases"], state["cases"]):
             if selected_case and case["id"] != selected_case:
                 row["state"] = "not_selected"
@@ -819,8 +825,11 @@ def run(plan_path, output, *, selected_case=None):
                             and (native["channels"] != 2 or native["identical_channel_max_difference"] == 0.0))}
                 except Exception as exc:
                     row["usability"] = {"passed": False, "error": f"{type(exc).__name__}: {exc}"}
-                baseline_input = state["cases"][0].get("encoded_input")
-                if case["id"].startswith("chunks_") and baseline_input:
+                if case["id"] == "baseline":
+                    baseline_input = row["encoded_input"]
+                if case["id"].startswith("chunks_"):
+                    if baseline_input is None:
+                        raise ValueError("Chunk input cannot be verified without the baseline encoding")
                     same_input = row["encoded_input"]["sha256"] == baseline_input["sha256"]
                     row["usability"]["chunk_input_matches_baseline"] = same_input
                     row["usability"]["passed"] = bool(row["usability"]["passed"] and same_input)
