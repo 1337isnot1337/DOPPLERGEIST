@@ -457,10 +457,13 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     Keep every ridge in a harmonic group as evidence for one pass. Rational
     harmonic ratios are normalized to its lowest observed band; no fundamental
     needs to be present. Groups with inconsistent ratios must be fixed by discovery.
+    Separate paths that reuse measured peaks remain separate hypotheses, with
+    an explicit conflict preventing their joint independent-support score.
     Timing uncertainty spans the observed window, because a curved track need
     not have its geometric CPA at a fitted straight-pass center.
     """
     from .discovery import _HARMONIC_RATIOS, _overlap
+    from .ridge_overlap import reused_ridge_observations
 
     groups = {}
     for event in detected_events:
@@ -510,6 +513,16 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         event["event_ids"] = [e["event_id"] for e in members]
         settings.append(event)
         measurements.append((RidgeTimes(t), f, w, {}))
+    grouped = list(groups.items())
+    for index, (first_id, first_members) in enumerate(grouped):
+        for following in range(index + 1, len(grouped)):
+            second_id, second_members = grouped[following]
+            conflict = next((found for first in first_members for second in second_members
+                             if (found := reused_ridge_observations(first, second)) is not None), None)
+            if conflict is not None:
+                conflict = dict(conflict, group_ids=[first_id, second_id])
+                for setting in (settings[index], settings[following]):
+                    setting.setdefault("shared_ridge_observations", []).append(conflict)
     order = np.argsort([e["cpa_receive_s"] for e in settings])
     return [settings[i] for i in order], [measurements[i] for i in order]
 

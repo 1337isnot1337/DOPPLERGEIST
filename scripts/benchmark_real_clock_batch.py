@@ -50,7 +50,7 @@ def main():
             result = score_candidate(candidates[index], point, tracks, events, measurements, mode="robust_ridge")
             score = result["score"]
             rows.append({"candidate_index": index, "group_count": len(candidates[index]["event_indices"]),
-                         "score": float(score) if math.isfinite(score) else None,
+                         "score": float(score) if score is not None and math.isfinite(score) else None,
                          "recording_start_time_s": result.get("recording_start_time_s"),
                          "scoring_assessment": result["scoring_assessment"]})
         return rows
