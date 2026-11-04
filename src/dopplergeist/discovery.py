@@ -196,6 +196,8 @@ def _coverage(recording, settings):
     if settings.max_frequency_hz > upper:
         raise DiscoveryError("unsupported_frequency_coverage",
                              f"Requested {settings.max_frequency_hz:g} Hz exceeds usable decoded/source coverage {upper:g} Hz; decode at >= {required_sample_rate(settings)} Hz and check source rate")
+    if np.floor(settings.max_frequency_hz * settings.window_s) - np.ceil(settings.min_frequency_hz * settings.window_s) < 2:
+        raise DiscoveryError("unsupported_frequency_coverage", "Frequency range requires at least three spectral bins for a measured peak")
     # Align frames and chunk boundaries to exactly representable sample hops.
     if any(abs(value * sr - round(value * sr)) > 1e-7 for value in (settings.window_s, settings.hop_s)):
         raise DiscoveryError("unsupported_time_grid", "Window and hop must be integer sample counts")
@@ -328,7 +330,7 @@ def _discover(recording, settings, report, detailed):
             moving.append(ridge)
     reconciled = reconcile(moving, settings, work)
     events, accepted_groups, episodes = [], [], []
-    for members, scales, orders in reconciled:
+    for members, scales, orders, group_model in reconciled:
         metrics = [metrics_by_id[identifier("", r.points)] for r in members]
         cells = intervals(np.concatenate([r.points[:, 0] for r in members]), settings.hop_s)
         observed = sum(b - a for a, b in cells)
@@ -383,7 +385,7 @@ def _discover(recording, settings, report, detailed):
                        acceptance_path="sustained" if long else "brief_strong_evidence",
                        confidence="uncalibrated_supported" if long else "uncalibrated_brief_limited",
                        physical_source_multiplicity="unresolved", physical_motion_confirmed=False,
-                       model="constant frequency scales with pairwise supported common motion", integer_orders=orders,
+                       model="constant frequency scales with pairwise supported common motion", group_evidence=group_model, integer_orders=orders,
                        limitations=["Common frequency evolution does not establish one physical source or aircraft identity"])
         episodes.append(episode)
         accepted_groups.append([r.points[:, :3] for r in members])

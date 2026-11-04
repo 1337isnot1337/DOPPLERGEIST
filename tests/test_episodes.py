@@ -46,8 +46,10 @@ def test_deterministic_complete_link_grouping_and_noninteger_scales():
     for permutation in itertools.permutations(paths):
         groups=reconcile(permutation,s,Associations(s))
         assert len(groups)==1
-        members,scales,orders=groups[0]
+        members,scales,orders,model=groups[0]
         assert orders is None
+        assert model["checked_overlap_pairs"]==3
+        assert model["worst_residual_fraction_of_limit"]<=1
         assert scales==pytest.approx([1,2,3.14159])
         identities.append([identifier('',r.points) for r in members])
     assert all(x==identities[0] for x in identities)
@@ -209,3 +211,21 @@ def test_repeated_reversals_are_not_a_single_supported_turn():
     p[:,1]=200+2*np.abs((p[:,0]%20)-10)
     _,reasons=motion(p,DiscoverySettings())
     assert any(r['reason'] in {'repeated_modulation','wandering_or_modulation'} for r in reasons)
+
+
+def test_narrow_unanalyzable_band_is_an_explicit_failure(real_recording,tmp_path):
+    settings=DiscoverySettings(min_frequency_hz=100,max_frequency_hz=100.5)
+    with pytest.raises(DiscoveryError,match='three spectral bins'):
+        discover_events(real_recording,settings=settings,output_dir=tmp_path/'narrow')
+
+
+def test_unexpected_execution_error_cannot_leave_a_complete_negative(real_recording,tmp_path,monkeypatch):
+    from dopplergeist import discovery
+    def failure(*args):
+        raise RuntimeError('controlled execution failure')
+    monkeypatch.setattr(discovery,'_paths',failure)
+    with pytest.raises(RuntimeError):
+        discover_events(real_recording,output_dir=tmp_path/'error')
+    report=json.loads((tmp_path/'error/discovery.json').read_text())
+    assert report['status']=='failed'
+    assert report['failure']['code']=='discovery_execution_error'

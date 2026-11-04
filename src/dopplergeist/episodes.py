@@ -326,6 +326,7 @@ def reconcile(ridges, settings, work):
             row[positions[y]], row[positions[x]] = 1., -1.
             matrix.append(row[1:]); values.append(np.log(e["scale"]))
         scales = np.exp(np.r_[0., np.linalg.lstsq(np.asarray(matrix),values,rcond=None)[0]])
+        checked_pairs, worst_residual = 0, 0.0
         for ix,x in enumerate(indices):
             for iy in range(ix+1,len(indices)):
                 y = indices[iy]
@@ -336,12 +337,17 @@ def reconcile(ridges, settings, work):
                 ratio = scales[iy]/scales[ix]
                 error = float(np.quantile(np.abs(shared[2]-ratio*shared[1]),.9))
                 sigma = uncertainty(ridges[y].points,settings)+ratio*uncertainty(ridges[x].points,settings)
+                checked_pairs += 1
+                worst_residual = max(worst_residual,error/(2*sigma))
                 if error > 2*sigma:
                     return None
-        return scales.tolist()
+        return dict(scales=scales.tolist(), checked_overlap_pairs=checked_pairs,
+                    worst_residual_fraction_of_limit=float(worst_residual),
+                    min_resolved_motion_witnesses=min(sum(x==i or y==i for x,y,_ in internal) for i in indices))
     groups = [{i} for i in range(len(ridges))]
     owners = {i:g for g in groups for i in g}
-    fitted = {frozenset(g):[1.] for g in groups}
+    fitted = {frozenset(g):dict(scales=[1.],checked_overlap_pairs=0,worst_residual_fraction_of_limit=None,
+                                      min_resolved_motion_witnesses=0) for g in groups}
     ordered = sorted(edges.items(),key=lambda item:(item[1]["residual_q90_hz"]/item[1]["threshold_hz"],item[0]))
     changed = True
     while changed:
@@ -367,6 +373,7 @@ def reconcile(ridges, settings, work):
     result = []
     for group in groups:
         indices = sorted(group)
-        scales = fitted[frozenset(group)]
-        result.append(([ridges[x] for x in indices],scales,family(scales)))
+        model = fitted[frozenset(group)]
+        scales = model["scales"]
+        result.append(([ridges[x] for x in indices],scales,family(scales),model))
     return result
