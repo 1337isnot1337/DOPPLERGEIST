@@ -167,8 +167,43 @@ def _usable(path, settings):
 
 
 def _overlap(a, b):
-    """Legacy consumer alignment. New episode logic uses effective settings."""
-    return aligned(a, b, DiscoverySettings())
+    """Legacy fixed-grid alignment, retained for existing optional adapters."""
+    first, last = max(a[0, 0], b[0, 0]), min(a[-1, 0], b[-1, 0])
+    if last <= first:
+        return None
+    t = np.arange(first, last + 0.001, 0.5)
+    supported = np.ones(len(t), dtype=bool)
+    for path in (a, b):
+        following = np.clip(np.searchsorted(path[:, 0], t), 0, len(path) - 1)
+        previous = np.maximum(0, following - 1)
+        supported &= np.minimum(np.abs(t - path[following, 0]), np.abs(t - path[previous, 0])) <= 1.0
+    t = t[supported]
+    if len(t) < 3:
+        return None
+    return t, np.interp(t, a[:, 0], a[:, 1]), np.interp(t, b[:, 0], b[:, 1])
+
+
+def _merge_duplicates(paths):
+    """Legacy adapter compatibility; canonical discovery uses deduplicate()."""
+    merged = []
+    for path in sorted(paths, key=lambda p: p[0][0]):
+        current = np.asarray(path)
+        for i, previous in enumerate(merged):
+            shared = _overlap(current, previous)
+            if shared is None:
+                continue
+            t, f, g = shared
+            if len(t) >= 8 and np.mean(np.abs(f - g) <= max(1.0, np.median(f) * 0.006)) >= 0.85:
+                points = np.concatenate((current, previous))
+                # A time bin observed in both chunks retains its strongest peak.
+                points = points[np.lexsort((-points[:, 2], points[:, 0]))]
+                _, unique = np.unique(points[:, 0], return_index=True)
+                merged[i] = points[np.sort(unique)]
+                break
+        else:
+            merged.append(current)
+    return merged
+
 
 
 def _stitch_fragments(paths, settings, diagnostics=None):
