@@ -6,7 +6,8 @@ The receipt separately preserves the producer's scientific status. An expected
 inconclusive response is never counted as supported localization or accuracy.
 With --require-full-pipeline, verification also requires every pipeline stage
 and at least one returned candidate; an early exit cannot pass that requirement.
-The existing browser verifier is independent and remains unchanged.
+The browser verifier checks rendering separately. Optional runtime, cancellation,
+and restart controls exercise actual terminal behavior without replacing workers.
 """
 from __future__ import annotations
 
@@ -30,6 +31,9 @@ import uuid
 import dopplergeist
 from dopplergeist.contracts import utc_timestamp, validate_recording, validate_request, validate_result
 from dopplergeist.jobs import TERMINAL, write_json
+
+
+CANCELLABLE_STAGES = ("intake", "discovery", "acquisition", "search", "refinement", "decision")
 
 
 def _implementation_files(package):
@@ -178,7 +182,8 @@ def wait_for_service(process, log_path, deadline):
         time.sleep(min(0.05, remaining(deadline)))
 
 
-def poll_job(client, job_id, history_path, *, interval_s):
+def poll_job(client, job_id, history_path, *, interval_s, cancel_at_stage=None, cancellation=None):
+    cancellation = {} if cancellation is None else cancellation
     with history_path.open("x") as history:
         previous = None
         while True:
@@ -191,8 +196,73 @@ def poll_job(client, job_id, history_path, *, interval_s):
                 history.flush()
                 previous = value
             if value["status"] in TERMINAL:
+                if cancel_at_stage is not None and not cancellation:
+                    raise ValueError(f"Job ended before cancellation stage {cancel_at_stage!r} was observed")
                 return value
+            if (cancel_at_stage is not None and not cancellation
+                    and value["status"] == "running" and value.get("stage") == cancel_at_stage):
+                cancellation.update(observed_status=value["status"], observed_stage=value["stage"],
+                                    requested_utc=now())
+                code, reply = client.request("POST", f"/api/jobs/{job_id}/cancel")
+                cancellation["http_status"] = code
+                if code != 200:
+                    raise ValueError(f"Cancellation returned HTTP {code}")
+                validate_result(reply)
+                if reply["job_id"] != job_id:
+                    raise ValueError("Cancellation returned a different job")
+                cancellation["response_status"] = reply["status"]
             time.sleep(min(interval_s, remaining(client.deadline)))
+
+
+def inspect_restart(output, command, environment, final, source_sha256, deadline,
+                    termination, report, *, repeat_cancel=False):
+    """Restart only this verifier's service and read its completed job again."""
+    directory = output / "jobs" / final["job_id"]
+    result_digest = sha256(directory / "result.json")
+    process = None
+    report.update(passed=False, service={"shutdown_signal": None, "forced_kill": False, "returncode": None})
+    try:
+        with (output / "restart-service.log").open("xb") as log:
+            try:
+                termination.interruptible = False
+                process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT,
+                                           env=environment, start_new_session=True)
+                report["service"]["pid"] = process.pid
+                termination.interruptible = True
+                termination.raise_if_interrupted()
+                client = wait_for_service(process, output / "restart-service.log", deadline)
+                report["service"]["port"] = client.port
+                job_path = f"/api/jobs/{final['job_id']}"
+                if client.get(job_path) != final:
+                    raise ValueError("Restart changed the completed API result")
+                if repeat_cancel:
+                    code, cancelled = client.request("POST", job_path + "/cancel")
+                    if code != 200 or cancelled != final:
+                        raise ValueError("Repeated cancellation changed the completed result")
+                    report["terminal_cancel_idempotent"] = True
+                code, _ = client.request("GET", job_path + "/artifacts/input.mp3",
+                                         destination=output / "downloaded-original-after-restart.mp3")
+                if code != 200 or sha256(output / "downloaded-original-after-restart.mp3") != source_sha256:
+                    raise ValueError("Restart changed the original MP3 download")
+                code, _ = client.request("GET", job_path + "/artifacts/result.json",
+                                         destination=output / "downloaded-result-after-restart.json")
+                if code != 200 or sha256(output / "downloaded-result-after-restart.json") != result_digest:
+                    raise ValueError("Restart changed the saved result bytes")
+                if client.get(job_path) != final:
+                    raise ValueError("Terminal API result changed during restart readback")
+                report.update(terminal_readback_verified=True, original_download_verified=True,
+                              saved_result_bytes_verified=True)
+            finally:
+                termination.interruptible = False
+                stop_service(process, report, termination)
+        if report["service"]["returncode"] != 0 or report["service"]["forced_kill"]:
+            raise ValueError("Restarted service did not stop cleanly")
+        if sha256(directory / "result.json") != result_digest or sha256(directory / "input.mp3") != source_sha256:
+            raise ValueError("Restart shutdown changed completed artifacts")
+        report["passed"] = True
+    finally:
+        termination.interruptible = True
+        termination.raise_if_interrupted()
 
 
 def inspect_job(directory, final, wire, operator, original, implementation):
@@ -1029,13 +1099,25 @@ def inspect_pipeline_evidence(directory, final, wire, operator):
 
 def verify_http(audio, output, *, request=None, operator=None, expect_status,
                 expect_reason=None, timeout_s=600.0, poll_interval_s=0.25,
-                require_full_pipeline=False):
-    if expect_status not in TERMINAL:
-        raise ValueError("Declare an expected terminal status before execution")
+                require_full_pipeline=False, job_max_runtime_s=None,
+                cancel_at_stage=None, verify_restart=False):
+    """Verify an actual upload; None observes any terminal status for callers.
+
+    A missing job runtime preserves the original timeout_s worker allowance.
+    Give the client a larger timeout to observe an intentional worker time limit.
+    """
+    if expect_status is not None and expect_status not in TERMINAL:
+        raise ValueError("Expected status must be terminal or None for observation")
     if type(require_full_pipeline) is not bool:
         raise ValueError("require_full_pipeline must be a boolean")
-    for name, value in (("timeout_s", timeout_s), ("poll_interval_s", poll_interval_s)):
-        if not math.isfinite(value) or value <= 0:
+    if type(verify_restart) is not bool:
+        raise ValueError("verify_restart must be a boolean")
+    if cancel_at_stage is not None and cancel_at_stage not in CANCELLABLE_STAGES:
+        raise ValueError("Cancellation stage must be an actual running pipeline stage")
+    job_runtime = timeout_s if job_max_runtime_s is None else job_max_runtime_s
+    for name, value in (("timeout_s", timeout_s), ("poll_interval_s", poll_interval_s),
+                        ("job_max_runtime_s", job_runtime)):
+        if isinstance(value, bool) or not math.isfinite(value) or value <= 0:
             raise ValueError(f"{name} must be finite and positive")
     audio = Path(audio).resolve(strict=True)
     if audio.suffix.lower() != ".mp3" or not audio.is_file():
@@ -1055,7 +1137,9 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
     deadline = began + timeout_s
     receipt = {"schema_version": 1, "scope": "actual_local_http_upload_verification",
         "started_utc": now(), "expected_status": expect_status, "expected_reason": expect_reason,
-        "timeout_s": timeout_s, "source_sha256": sha256(audio), "source_bytes": audio.stat().st_size,
+        "timeout_s": timeout_s, "job_max_runtime_s": job_runtime,
+        "cancel_at_stage": cancel_at_stage, "verify_restart": verify_restart,
+        "source_sha256": sha256(audio), "source_bytes": audio.stat().st_size,
         "request": wire, "implementation_files": implementation, "verifier_sha256": sha256(__file__),
         "python_executable": sys.executable, "python_version": sys.version,
         "verification_passed": False, "http_checks_passed": False, "pipeline_evidence_passed": False,
@@ -1073,7 +1157,7 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
             termination.raise_if_interrupted()
             command = [sys.executable, "-m", "dopplergeist.cli", "serve", "--port", "0",
                        "--jobs", str(output / "jobs"), "--config", str(output / "operator.json"),
-                       "--max-runtime", str(timeout_s)]
+                       "--max-runtime", str(job_runtime)]
             receipt["service"]["command"] = command
             env = dict(os.environ, PYTHONPATH=str(package.parent) + os.pathsep + os.environ.get("PYTHONPATH", ""),
                        MPLBACKEND="Agg")
@@ -1085,7 +1169,10 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
             termination.raise_if_interrupted()
             client = wait_for_service(process, output / "service.log", deadline)
             receipt["service"]["port"] = client.port
-            write_json(output / "capabilities.json", client.get("/api/capabilities"))
+            capabilities = client.get("/api/capabilities")
+            write_json(output / "capabilities.json", capabilities)
+            if capabilities.get("max_runtime_s") != job_runtime:
+                raise ValueError("Service did not retain the requested job runtime")
             with audio.open("rb") as stream:
                 code, queued = client.request("POST", "/api/jobs", body=stream, headers={
                     "Content-Type": "application/octet-stream", "Content-Length": str(audio.stat().st_size),
@@ -1098,11 +1185,20 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
             if uuid.UUID(job_id).hex != job_id:
                 raise ValueError("Service returned an invalid job identifier")
             receipt["job_id"] = job_id
-            final = poll_job(client, job_id, output / "history.jsonl", interval_s=poll_interval_s)
+            cancellation = {}
+            if cancel_at_stage is not None:
+                receipt["cancellation"] = cancellation
+            final = poll_job(client, job_id, output / "history.jsonl", interval_s=poll_interval_s,
+                             cancel_at_stage=cancel_at_stage, cancellation=cancellation)
             write_json(output / "result.json", final)
             receipt.update(status=final["status"], reason_code=final.get("reason_code"),
                            producer_reported_success=final["status"] == "succeeded",
                            candidate_count=len(final.get("candidates", [])), event_count=len(final.get("events", [])))
+            if cancel_at_stage is not None:
+                cancellation["confirmed"] = (cancellation.get("response_status") == "cancelled"
+                                             and final["status"] == "cancelled")
+                if not cancellation["confirmed"]:
+                    raise ValueError("Cancellation was requested, but the job did not finish cancelled")
             listing = client.get(f"/api/jobs/{job_id}/artifacts")
             write_json(output / "artifacts.json", listing)
             if sum(item["path"] == "input.mp3" for item in listing["artifacts"]) != 1:
@@ -1116,8 +1212,18 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
             receipt["checks"] = inspect_job(output / "jobs" / job_id, final, wire, operator, audio, implementation)
             receipt["checks"].update(downloaded_original_verified=True, downloaded_result_verified=True)
             receipt["http_checks_passed"] = True
-            receipt["expectation_matched"] = (final["status"] == expect_status
+            receipt["expectation_matched"] = ((expect_status is None or final["status"] == expect_status)
                 and (expect_reason is None or final.get("reason_code") == expect_reason))
+            if verify_restart:
+                termination.interruptible = False
+                stop_service(process, receipt, termination)
+                termination.interruptible = True
+                termination.raise_if_interrupted()
+                if receipt["service"]["returncode"] != 0 or receipt["service"]["forced_kill"]:
+                    raise ValueError("Initial service did not stop cleanly before readback")
+                receipt["restart_readback"] = {}
+                inspect_restart(output, command, env, final, receipt["source_sha256"], deadline,
+                                termination, receipt["restart_readback"], repeat_cancel=bool(cancellation))
         except Exception as exc:
             receipt["error"] = f"{type(exc).__name__}: {exc}"
             receipt["timed_out"] = isinstance(exc, TimeoutError)
@@ -1156,7 +1262,8 @@ def verify_http(audio, output, *, request=None, operator=None, expect_status,
                         and receipt.get("pipeline_evidence_preserved_after_inspection") and receipt["implementation_unchanged"]
                         and receipt.get("terminal_result_preserved_after_shutdown")
                         and receipt["service"]["returncode"] == 0 and not receipt["service"]["forced_kill"]
-                        and not receipt.get("shutdown_error") and not receipt["interrupted"])
+                        and not receipt.get("shutdown_error") and not receipt["interrupted"]
+                        and (not verify_restart or receipt.get("restart_readback", {}).get("passed")))
                     if require_full_pipeline and not receipt["full_pipeline_requirements_met"]:
                         receipt["requirement_error"] = (
                             "Full pipeline verification requires verified acquisition, search, refinement, "
@@ -1193,6 +1300,12 @@ def main(argv=None):
     parser.add_argument("--require-full-pipeline", action="store_true",
                         help="Fail unless every pipeline stage is verified and at least one candidate is returned")
     parser.add_argument("--timeout-s", type=float, default=600)
+    parser.add_argument("--job-max-runtime-s", type=float,
+                        help="Worker time budget; defaults to --timeout-s. Use a smaller value to verify work_limit")
+    parser.add_argument("--cancel-at-stage", choices=CANCELLABLE_STAGES,
+                        help="Request actual API cancellation after this running stage is observed")
+    parser.add_argument("--verify-restart", action="store_true",
+                        help="Restart this verifier's service and verify unchanged completed artifacts through HTTP")
     parser.add_argument("--poll-interval-s", type=float, default=0.25)
     args = parser.parse_args(argv)
     if args.end_utc and not args.start_utc:
@@ -1206,7 +1319,8 @@ def main(argv=None):
         receipt = verify_http(args.audio, args.output, request=request, operator=operator,
             expect_status=args.expect_status, expect_reason=args.expect_reason,
             timeout_s=args.timeout_s, poll_interval_s=args.poll_interval_s,
-            require_full_pipeline=args.require_full_pipeline)
+            require_full_pipeline=args.require_full_pipeline, job_max_runtime_s=args.job_max_runtime_s,
+            cancel_at_stage=args.cancel_at_stage, verify_restart=args.verify_restart)
     except (OSError, ValueError, TypeError) as exc:
         parser.error(str(exc))
     print(json.dumps({"report": str(args.output.resolve() / "http-verification.json"),
