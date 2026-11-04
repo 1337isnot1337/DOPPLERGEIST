@@ -25,18 +25,22 @@ def test_real_fine_checkpoints_resume_and_reject_corruption(tmp_path, monkeypatc
     raw = json.loads((job / 'discovery/discovery.json').read_text())['events']
     events, measurements = prepare_events(raw, c=343.0, max_distance_m=20000.0)
 
-    def run(output, count):
+    def run(output, count, search_progress=None):
         terrain = Terrain([dem], geoid_path=geoid)
         try:
             return search_national([FlightIndex(index_path)], terrain, events, measurements,
                 time_range_s=config['time_range_s'], output_dir=output, bounds=config['bounds'],
                 budget=SearchBudget(**config['budget']), scoring=config['scoring'], filters=config['filters'],
-                crs=config['crs'], input_hashes=config['additional_input_hashes'], workers=count)
+                crs=config['crs'], input_hashes=config['additional_input_hashes'], workers=count,
+                search_progress=search_progress)
         finally:
             for raster in terrain.rasters + terrain.geoid.rasters:
                 raster.close()
 
-    baseline = run(tmp_path / 'baseline', workers)
+    baseline_progress = []
+    baseline = run(tmp_path / 'baseline', workers, baseline_progress.append)
+    assert all(left <= right for left, right in zip(baseline_progress, baseline_progress[1:]))
+    assert any(0.8 < fraction < 1.0 for fraction in baseline_progress)
     import dopplergeist.tiled_search as tiled
     write = tiled.write_json
     calls = []
