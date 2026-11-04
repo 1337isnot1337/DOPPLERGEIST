@@ -53,6 +53,18 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
         assert any(item["track_id"] == tracks[0].id for item in unknown["unsupported_cpa_tracks"])
         assert _latest_event_receive_time(events, params, {**filters, "silence": {"edge_margin_s": 60}}, window) is None
         assert _latest_event_receive_time(events, params, filters, None) is None
+        if not tested:
+            # Probe the actual track against clock windows on both sides of its
+            # first recorded emission, including the inclusive boundary.
+            boundary_shift = float(tracks[0].time[0] - latest)
+            before = [value + boundary_shift - 0.01 for value in window]
+            after = [value + boundary_shift + 0.01 for value in window]
+            assert tracks[0].time[0] > _latest_event_receive_time(events, params, filters, before)
+            assert tracks[0].time[0] <= _latest_event_receive_time(events, params, filters, after)
+            _, before_counts = _score(points, tracks, events, measurements, budget, params, filters, before)
+            _, after_counts = _score(points, tracks, events, measurements, budget, params, filters, after)
+            assert any(item["track_id"] == tracks[0].id for item in before_counts["clock_excluded_unsupported_tracks"])
+            assert any(item["track_id"] == tracks[0].id for item in after_counts["unsupported_cpa_tracks"])
         tested += len(tracks)
     assert tested == 12
 
