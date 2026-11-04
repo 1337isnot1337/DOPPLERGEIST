@@ -56,7 +56,7 @@ dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
 Open **http://127.0.0.1:8765** and upload a recording. For historical flight matching, supply a supported UTC time window for the **first audio sample**. The interface runs locally; `--online` permits downloading public aircraft and terrain data.
 
  
-![DOPPLERGEIST local browser application with the upload form and analysis panel](assets/browser-ui.jpg)
+![DOPPLERGEIST local browser application with the upload form and analysis panel](docs/assets/browser-ui.jpg)
 
 <sub>Actual local browser interface before an upload. The analysis panel fills after a job runs; see the real MP3 demonstration above for ranked locations.</sub>
 

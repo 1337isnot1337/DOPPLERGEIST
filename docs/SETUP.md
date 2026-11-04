@@ -56,13 +56,13 @@ run under the current real-world-only policy in [AGENTS.md](../AGENTS.md#real-wo
 
 ## Pinned Python 3.14 reproduction
 
-`requirements/py314-linux.lock` records all installed runtime/test dependency
+`docs/reproducibility/py314-linux.lock` records all installed runtime/test dependency
 versions from the fresh Linux Python 3.14 environment. It is a platform/version
 snapshot, not a claim that those same package versions support Python 3.11.
 
 ```bash
 python3.14 -m venv .venv
-.venv/bin/python -m pip install -r requirements/py314-linux.lock
+.venv/bin/python -m pip install -r docs/reproducibility/py314-linux.lock
 .venv/bin/python -m pip install --no-deps -e .
 .venv/bin/dopplergeist --help
 ```
