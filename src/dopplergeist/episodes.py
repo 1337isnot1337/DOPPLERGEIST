@@ -427,6 +427,12 @@ def stitch(ridges, settings, work):
         work.decision_counts['stitch_neighbours_pruned']+=max(0,len(scored)-neighbours)
         edges.extend(scored[:neighbours])
     edges.sort()
+    incoming=Counter();bounded=[]
+    for edge in edges:
+        if incoming[edge[2]]<neighbours:
+            incoming[edge[2]]+=1;bounded.append(edge)
+        else:work.decision_counts['stitch_incoming_pruned']+=1
+    edges=bounded
     by_out,by_in={},{}
     for score,i,j in edges:
         by_out.setdefault(i,[]).append((i,j))
