@@ -30,7 +30,7 @@ Colsto did not release the original tools or source code from his [aircraft Dopp
 | **Automatic acoustic discovery** | Scans an entire recording for moving frequency tracks and groups related harmonics, without manually selecting event windows or frequency bands. |
 | **Historical aircraft data** | Acquires and indexes ADSB.lol flight archives; caches reusable trajectory, terrain, and geoid inputs. |
 | **Location search** | Compares predicted Doppler and sound-arrival patterns across candidate receiver locations, including evidence from multiple independent flyovers. |
-| **Geographic profiles** | Search profiles for the contiguous United States, Germany, and Spain, with optional user-provided regional bounds. |
+| **Geographic profiles** | Search profiles for the contiguous United States, Germany, Spain, and metropolitan France (including Corsica), with optional user-provided regional bounds. |
 | **Local browser application** | Recording uploads, persistent analysis jobs, inspectable results, progress monitoring, and supported resume/cancellation workflows. |
 | **Research and reproducibility** | Configured measurement/replay commands, documented experiments, diagnostic artifacts, and decision rules for unresolved searches. |
 
@@ -85,7 +85,7 @@ To check progress after the job ID is printed:
 
 The progress percentage is stage-based and can remain unchanged during long tile subdivisions. Recent search-file activity is a liveness clue, not proof that the queue is shrinking or that a location was found.
 
-The default country profile is `US` (contiguous United States); use `--country DE` for Germany or `--country ES` for Spain. Spain uses a broad geographic envelope, so add independently justified `--bounds WEST SOUTH EAST NORTH` for a regional search. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
+The default country profile is `US` (contiguous United States); use `--country DE` for Germany, `--country ES` for Spain, or `--country FR` for metropolitan France including Corsica. Spain and France use broad geographic envelopes without country polygons, so add independently justified `--bounds WEST SOUTH EAST NORTH` for a regional search. The France profile excludes overseas territories. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
 
 **Data requirements:** Initial online acquisition may take hours and tens of gigabytes of disk space, depending on the recording time and search region. Downloads and caches are reusable; the application does not enforce an automatic disk-space cap.
 
