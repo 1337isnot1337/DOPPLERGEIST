@@ -135,6 +135,8 @@ Remaining reliability work includes [unsupported trajectory motion and coverage 
 
 ## Experimental results
 
+A [regional end-to-end test of five public field recordings](docs/PUBLIC_RECORDING_EXPERIMENT_2026-11-03.md) produced three rankings; none of the retained candidates was within 1 km of the publisher-reported site. Two recordings produced no candidate. The audio sources, recorder-clock accuracy and exact microphone locations are unconfirmed; these are inconclusive development results, not accuracy benchmarks.
+
 The published project artifacts preserve both successful fits and cases where the system could not justify a location. The following are **historical configured replays**, with their original settings and thresholds:
 
 | Experiment | Reported finding | Important qualification |
