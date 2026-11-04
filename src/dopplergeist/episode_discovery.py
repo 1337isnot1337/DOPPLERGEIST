@@ -341,7 +341,7 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
         if (output / "discovery.json").exists():
             raise FileExistsError("Discovery output exists; use a new output directory")
     report = dict(schema_version=2, status="running", source_sha256=recording.metadata["source_sha256"],
-                  settings=asdict(settings), code=_code_identity(), events=[], episodes=[], chunks=[],
+                  settings=asdict(settings), code=_code_identity(), algorithm_revision="reversible-episodes-2", boundary_semantics="observed_hop_cells", events=[], episodes=[], chunks=[],
                   scope="acoustic episodes; physical motion, aircraft identity and single-source interpretation unconfirmed")
     try:
         events, groups = _discover(recording, settings, report, detailed_candidates)
@@ -414,7 +414,7 @@ def _discover(recording, settings, report, detailed):
                         found.append(Ridge(points,(origin,)))
                 found=deduplicate(found,profile,work)
                 found=stitch(found,profile,work)
-            profiles.append(dict(window_s=profile.window_s,hop_s=profile.hop_s,frequency_range_hz=[profile.min_frequency_hz,profile.max_frequency_hz],provisional_tracks=len(found)))
+            profiles.append(dict(window_s=profile.window_s,hop_s=profile.hop_s,frequency_range_hz=[profile.min_frequency_hz,profile.max_frequency_hz],primary_peaks_per_band=profile.max_peaks_per_frame,additional_tonal_peaks_per_band=profile.max_provisional_peaks_per_band if profile.window_s<=profile.short_window_s else 0,provisional_tracks=len(found)))
             for ridge in found:
                 p=ridge.points;_,_,independent=support(p,profile)
                 interior=p[0,0]>start+settings.max_fragment_gap_s and p[-1,0]<start+len(data)/sr-settings.max_fragment_gap_s
@@ -473,6 +473,14 @@ def _discover(recording, settings, report, detailed):
         _,unique=np.unique(pooled[:,0],return_index=True)
         pooled=pooled[np.sort(unique)]
         episode_motion,episode_motion_rejections=motion(pooled,settings)
+        if len(members)>1:
+            # Interleaving estimates of common motion adds cross-component
+            # measurement jitter to naive total variation. Count this evidence
+            # once: every child already passed its own variation safeguard.
+            episode_motion['pooled_variation_ratio']=episode_motion['variation_ratio']
+            episode_motion['variation_ratio']=max(m['variation_ratio'] for m in metrics)
+            episode_motion['variation_evidence']='maximum child variation; shared evolution checked jointly'
+            episode_motion_rejections=[r for r in episode_motion_rejections if r['reason']!='wandering_or_modulation']
         if episode_motion_rejections:
             if len(members)>1:
                 work.decision_counts['episode_group_retracted']+=1

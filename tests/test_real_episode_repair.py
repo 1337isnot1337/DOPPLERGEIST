@@ -133,3 +133,18 @@ def test_observed_pitch_step_is_not_distributed_motion():
     metrics, reasons = motion(np.array(data['points']), DiscoverySettings())
     assert metrics['resolved_regional_motion_fraction'] < 2/3
     assert 'motion_concentrated_or_unresolved' in {r['reason'] for r in reasons}
+
+
+def test_corrupted_real_audio_container_is_an_intake_failure(tmp_path):
+    import soundfile as sf
+    from dopplergeist.intake import AudioIntakeError, intake_recording
+    data = json.loads((FIXTURES / 'real_discovery_normalization.json').read_text())
+    samples = np.frombuffer(base64.b64decode(data['excerpts'][0]['pcm_f32le_base64']), dtype='<f4')
+    audio = tmp_path/'recorded.wav'
+    sf.write(audio, samples, 4000, subtype='FLOAT')
+    # Damage the container of actual recorded PCM; no test signal is generated.
+    corrupt = tmp_path/'truncated.wav'
+    corrupt.write_bytes(audio.read_bytes()[:20])
+    with pytest.raises(AudioIntakeError) as caught:
+        intake_recording(corrupt, tmp_path/'intake')
+    assert caught.value.code == 'invalid_media'
