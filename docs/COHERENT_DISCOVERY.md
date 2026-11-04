@@ -49,15 +49,19 @@ locations enter the detector. The complete case outcomes are in the
 | --- | ---: | ---: | ---: | ---: |
 | Development aircraft | 6 | 2 | 3 | 3 |
 | Held-out aircraft | 6 | 3 | 3 | 3 |
-| Development background | 6 | 0 | 0 | 0 |
-| Held-out background | 6 | 0 | 0 | 0 |
+| Development background (duration-ineligible) | 6 | 0 | 0 | 0 |
+| Held-out background (duration-ineligible) | 6 | 0 | 0 | 0 |
 
 Counts mean clips with proposals, not confirmed aircraft or independent events.
 The initial unrestricted reference-trace experiment proposed on 5/6 development
 aircraft clips and 1/6 backgrounds; the existing quality rules discard short or
 noisy traces. The final adapter adds one development clip and no held-out clip.
-These small, source-defined strata do not establish improved general recall or
-a false-alarm rate, and do not justify changing normal upload defaults. See the
+All background clips are 10 s, while aircraft clips are 60 s. With a 1 s FFT
+and 0.25 s hop, 10 s supplies at most 37 frames, below the 40-point gate. The
+ordinary backend also requires 12 s. Thus the background zeros are structurally
+guaranteed and provide **no false-alarm evidence**. Background rejection remains
+unvalidated. These small, source-defined aircraft strata do not establish
+improved general recall and do not justify changing normal upload defaults. See the
 [AeroSonicDB source and sampling report](../benchmarks/aerosonic-scanner-survey-20261103.md).
 
 All twelve development replays preserved the reference detector's measured
