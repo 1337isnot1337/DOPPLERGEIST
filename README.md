@@ -202,12 +202,6 @@ modification, and redistribution for noncommercial purposes. Commercial use
 not otherwise authorized requires permission from the relevant rights holders. This is
 source-available software, not OSI-approved open-source software.
 
-**Prior MIT grants remain valid.** Code and versions previously released under
-the MIT License remain available under their previously granted MIT rights.
-The earlier license notice is retained in
-[licenses/MIT-legacy.txt](licenses/MIT-legacy.txt). See
-[Commercial licensing and license history](COMMERCIAL-LICENSING.md).
-
 External recordings, flight and terrain data, and other third-party materials
 retain their own rights and terms.
 
