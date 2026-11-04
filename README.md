@@ -6,33 +6,22 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/releases"><img src="https://img.shields.io/github/v/release/1337isnot1337/DOPPLERGEIST?style=flat-square&color=0088CC" alt="Latest release"></a>
-  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/stargazers"><img src="https://img.shields.io/github/stars/1337isnot1337/DOPPLERGEIST?style=flat-square&logo=github&color=0088CC" alt="GitHub stars"></a>
   <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/v/dopplergeist?style=flat-square&label=PyPI&color=0088CC" alt="PyPI version"></a>
-  <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/dm/dopplergeist?style=flat-square&label=downloads%2Fmonth&color=49B51A" alt="Monthly PyPI downloads"></a>
-  <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/pyversions/dopplergeist?style=flat-square&logo=python&logoColor=white" alt="Supported Python versions"></a>
-  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20NC-7652A3?style=flat-square" alt="PolyForm Noncommercial license"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/stargazers"><img src="https://img.shields.io/github/stars/1337isnot1337/DOPPLERGEIST?style=flat-square&logo=github&color=0088CC" alt="GitHub stars"></a>
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/actions/workflows/python-package.yml"><img src="https://img.shields.io/github/actions/workflow/status/1337isnot1337/DOPPLERGEIST/python-package.yml?branch=main&style=flat-square&label=build" alt="Build status"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20NC-7652A3?style=flat-square" alt="PolyForm Noncommercial license"></a>
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/tree/main/docs"><img src="https://img.shields.io/badge/docs-read-0088CC?style=flat-square" alt="Documentation"></a>
 </p>
 
-**DOPPLERGEIST** is a source-available Python toolkit for aircraft Doppler audio geolocation. It detects acoustic flyover patterns in recordings, matches them against historical ADS-B flight trajectories, and ranks possible recording locations.
-
-The project provides automatic audio discovery, aircraft-data acquisition, geographic search, and a locally hosted browser interface. It is built for acoustic geolocation research, audio forensics, and studying location information carried by background sound.
+**DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and historical ADS-B flight tracks to rank possible recording locations. It includes a Python CLI and a local browser interface.
 
 <h3 align="center">Example: automatic MP3 analysis</h3>
 
 ![Automatic MP3 flyover and ranked aircraft search](assets/livermore-automatic-mp3.png)
 
-<sub>A real MP3 was analyzed without manually supplied event windows, frequency bands, or flight IDs. DOPPLERGEIST selected 466 nearby aircraft from a historical flight archive and ranked 105 candidate locations. The leading candidate was **476 m from an inferred reference** in a city-sized search with an approximately 10-second recording-time window. The reference is not surveyed ground truth, and the run remained inconclusive. [View the full experiment and ranking.](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking)</sub>
+<sub>Automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
-[Capabilities](#capabilities) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [FAQ](#frequently-asked-questions) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
-
-## Is Colsto's airplane Doppler geolocation code available?
-
-Colsto did not release the original tools or source code from his [aircraft Doppler geolocation demonstration](https://www.youtube.com/watch?v=UytYrhYLOKI).
-
-**DOPPLERGEIST is an independent implementation**, inspired by the approach in that video. It contains independently written code and is not affiliated with Colsto. If you want to experiment with aircraft Doppler signatures and historical flight-track matching, you can install and run DOPPLERGEIST locally.
+[Website](https://1337isnot1337.github.io/DOPPLERGEIST/) · [Examples](https://1337isnot1337.github.io/DOPPLERGEIST/examples.html) · [Install](#quickstart) · [How it works](#how-it-works) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
 
 ## Capabilities
 
@@ -49,33 +38,19 @@ The integrated application and command-line workflow are available on `main`. Se
 
 ## Quickstart
 
-**PyPI distribution:** Install the published CLI without cloning the repository:
+Install the [published PyPI package](https://pypi.org/project/dopplergeist/) with `pipx`. It requires Python 3.11+. Install **FFmpeg** separately and make sure that `ffmpeg` and `ffprobe` are on your `PATH`.
 
 ```bash
 pipx install dopplergeist
 dopplergeist --help
 ```
 
-To use the Python package in an existing environment instead, run `python -m pip install dopplergeist`. Install **FFmpeg** separately; `ffmpeg` and `ffprobe` must be available on `PATH`. See the [published PyPI package](https://pypi.org/project/dopplergeist/) and [packaging notes](docs/PYPI.md). The examples below use `.venv/bin/dopplergeist`; users of the `pipx` installation can run `dopplergeist` directly.
-
-**Source checkout (available now):**
-
-Requirements: **Python 3.11+**, **FFmpeg** (`ffmpeg` and `ffprobe` on `PATH`), and Git. These commands target Linux and macOS:
-
-```bash
-git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
-cd DOPPLERGEIST
-python -m venv .venv
-.venv/bin/python -m pip install .
-.venv/bin/dopplergeist --version
-```
-
-A compatible C compiler enables optional native acceleration; Python fallbacks are available. For environment checks and alternative installation methods, see [Setup](docs/SETUP.md), [Performance](docs/PERFORMANCE.md), and [Docker](docs/DOCKER.md).
+To install in an existing Python environment instead, use `python -m pip install dopplergeist`. The commands below work with either installation. See the [PyPI and packaging guide](docs/PYPI.md).
 
 ### Option A: use the browser interface
 
 ```bash
-.venv/bin/dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
+dopplergeist serve --jobs jobs --online --max-runtime 14400 --port 8765
 ```
 
 Open **http://127.0.0.1:8765** and upload a recording. For historical flight matching, supply a supported UTC time window for the **first audio sample**. The interface runs locally; `--online` permits downloading public aircraft and terrain data.
@@ -83,7 +58,7 @@ Open **http://127.0.0.1:8765** and upload a recording. For historical flight mat
 ### Option B: analyze a recording from the CLI
 
 ```bash
-.venv/bin/dopplergeist analyze path/to/recording.mp3 --jobs jobs
+dopplergeist analyze path/to/recording.mp3 --jobs jobs
 ```
 
 This creates a persistent job and runs acoustic analysis. To enable historical matching, provide `--start-utc`, `--end-utc`, and `--time-source` with the evidence for the recording clock, plus `--online` if the required data is not already configured locally. Without a defensible recording time, the job reports `needs_input` rather than assuming a date.
@@ -91,7 +66,7 @@ This creates a persistent job and runs acoustic analysis. To enable historical m
 For a full online regional analysis, allow enough time for both historical-data acquisition and search. The job limit defaults to **one hour**; initial acquisition can take longer. Replace the sample clock window, source description, and Berlin bounds below with independent evidence for your recording, and increase `--max-runtime` if your data and search scope require it:
 
 ```bash
-.venv/bin/dopplergeist analyze path/to/recording.mp3 \
+dopplergeist analyze path/to/recording.mp3 \
   --start-utc "2026-01-01T00:00:00Z" \
   --end-utc "2026-01-01T00:10:00Z" \
   --time-source "replace with the source establishing the first-sample clock" \
@@ -102,7 +77,7 @@ For a full online regional analysis, allow enough time for both historical-data 
 To check progress after the job ID is printed:
 
 ```bash
-.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch
+dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
 The progress percentage is stage-based and can remain unchanged during long tile subdivisions. Recent search-file activity is a liveness clue, not proof that the queue is shrinking or that a location was found.
@@ -114,7 +89,7 @@ The default country profile is `US` (contiguous United States); use `--country D
 ### Option C: discover acoustic events without flight data
 
 ```bash
-.venv/bin/dopplergeist discover \
+dopplergeist discover \
   path/to/recording.mp3 \
   --output results/my-discovery
 ```
@@ -122,6 +97,20 @@ The default country profile is `US` (contiguous United States); use `--country D
 This scans the full recording locally without downloading ADS-B archives. Inspect `results/my-discovery/summary.json` and the saved `discovery/` diagnostics. See [Automatic audio discovery](docs/AUDIO_DISCOVERY.md) for detector details and options.
 
 For configured research workflows, `dopplergeist run` and `dopplergeist measure` remain available; see [Methodology](docs/METHODOLOGY.md).
+
+### Install from source (developers)
+
+To work on the repository, clone the source and install it in a virtual environment. These commands use Linux or macOS paths:
+
+```bash
+git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
+cd DOPPLERGEIST
+python -m venv .venv
+.venv/bin/python -m pip install .
+.venv/bin/dopplergeist --version
+```
+
+A compatible C compiler enables optional native acceleration. Python fallbacks are available. See [Setup](docs/SETUP.md), [Performance](docs/PERFORMANCE.md), and [Docker](docs/DOCKER.md) for more options.
 
 ## How it works
 
@@ -133,6 +122,12 @@ For configured research workflows, `dopplergeist run` and `dopplergeist measure`
 The software records diagnostic evidence and can return an inconclusive result rather than selecting an unsupported coordinate. The underlying models are described in [Methodology](docs/METHODOLOGY.md) and [Confidence and decision rules](docs/CONFIDENCE.md).
 
 ## Frequently asked questions
+
+### Is Colsto's airplane Doppler geolocation code available?
+
+Colsto did not release the original tools or source code from his [aircraft Doppler geolocation demonstration](https://www.youtube.com/watch?v=UytYrhYLOKI).
+
+**DOPPLERGEIST is an independent implementation**, inspired by the approach in that video. It contains independently written code and is not affiliated with Colsto. If you want to experiment with aircraft Doppler signatures and historical flight-track matching, you can install and run DOPPLERGEIST locally.
 
 ### Can I geolocate an MP3 recording?
 
