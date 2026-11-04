@@ -66,3 +66,9 @@ with reference profiles and 172.24 s for the adapter, but the median paired
 ratio was 1.031. These single passes had different system load; there is no
 consistent measured speedup claim. Neither this clip test nor the Michigan
 regression establishes a location.
+
+The standalone CLI also processed the entire 819.4 s
+[XC891053 Kane County recording](https://xeno-canto.org/891053) in 146.09 s,
+exporting seven proposal groups from nine refined traces. The exact location
+reference remained withheld. This checks actual whole-file script execution,
+not seven aircraft identities, a localization, or total search time.

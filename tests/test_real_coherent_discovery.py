@@ -15,6 +15,7 @@ def test_real_slow_traces_survive_without_geometry_or_kind_gates():
     assert sorted(len(event["ridge"]) for event in events) == [58, 66]
     assert all(validate_event(event) == event for event in events)
     assert all(row["proposal"]["v"] < 30 for row in rows[:2])
+    assert all(row["proposal"]["kind"] == "close" for row in rows[:2])
     observed = {(p["time_s"], p["frequency_hz"]) for row in rows for p in row["ridge_points"]}
     assert all((p["time_s"], p["frequency_hz"]) in observed for e in events for p in e["ridge"])
     settings, measurements = prepare_events(events, c=333.3)
