@@ -9,7 +9,8 @@ from test_real_prepared_index import signature
 
 
 @pytest.mark.parametrize("variable", ["DOPPLERGEIST_REAL_PREPARED_BEFORE_CACHE", "DOPPLERGEIST_REAL_PREPARED_AFTER_CACHE",
-                                      "DOPPLERGEIST_REAL_PREPARED_AFTER_COMPAT"])
+                                      "DOPPLERGEIST_REAL_PREPARED_AFTER_COMPAT",
+                                      "DOPPLERGEIST_REAL_PREPARED_BEFORE_DIGEST"])
 def test_prior_prepared_index_is_reused_only_for_pinned_sources(variable, monkeypatch):
     value = os.environ.get(variable)
     if not value:
