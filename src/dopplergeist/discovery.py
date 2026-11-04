@@ -331,6 +331,9 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
                              "frequency_drop_hz": float(np.median(f[:max(3, len(f) // 6)]) - np.median(f[-max(3, len(f) // 6):]))}}
             events.append(validate_event(event))
             event_groups.append(group)
+    from .aircraft_category import annotate_discovered_events
+    annotate_discovered_events(events, recording)
+
     if output:
         diagnostics = {"source_sha256": recording.metadata["source_sha256"], "settings": asdict(settings),
                        "events": events, "chunks": chunks, "ridge_count": len(paths),

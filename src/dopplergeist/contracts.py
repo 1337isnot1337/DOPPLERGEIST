@@ -48,6 +48,25 @@ class RidgePoint(TypedDict):
     weight: NotRequired[float]
 
 
+class AcousticAircraftCategory(TypedDict):
+    """Experimental audio interpretation, not a confirmed aircraft identity.
+
+    Omission from an event means no category annotation was produced.
+    An ``unknown`` label means analysis did not support a category.
+    This annotation must not affect flight filtering or ranking.
+    """
+
+    label: Literal[
+        "jet_like",
+        "fixed_wing_propeller_like",
+        "helicopter_like",
+        "unknown",
+    ]
+    method: str
+    experimental: Literal[True]
+
+
+
 class DetectedEvent(TypedDict):
     event_id: str
     start_s: float
@@ -60,6 +79,7 @@ class DetectedEvent(TypedDict):
     speed_range_mps: NotRequired[list[float]]
     slant_range_m: NotRequired[list[float]]
     quality: NotRequired[dict[str, float]]
+    acoustic_aircraft_category: NotRequired[AcousticAircraftCategory]
 
 
 class LocationUncertainty(TypedDict):
@@ -198,8 +218,30 @@ def validate_request(value):
     return request
 
 
+def validate_acoustic_aircraft_category(value):
+    """Validate an experimental, report-only acoustic category annotation.
+
+    Validation checks representation, not the scientific correctness of a label.
+    No probability, flight identity, or filtering instruction is accepted.
+    """
+    category = _record(value, ("label", "method", "experimental"))
+    _text(category["label"], "acoustic_aircraft_category label")
+    if category["label"] not in (
+        "jet_like",
+        "fixed_wing_propeller_like",
+        "helicopter_like",
+        "unknown",
+    ):
+        raise ValueError("Unsupported acoustic aircraft category")
+    _text(category["method"], "acoustic_aircraft_category method")
+    if category["experimental"] is not True:
+        raise ValueError("Acoustic aircraft category must be experimental")
+    return category
+
+
+
 def validate_event(value):
-    optional = ("harmonic_group_id", "cpa_receive_s", "f0_range_hz", "speed_range_mps", "slant_range_m", "quality")
+    optional = ("harmonic_group_id", "cpa_receive_s", "f0_range_hz", "speed_range_mps", "slant_range_m", "quality", "acoustic_aircraft_category")
     event = _record(value, ("event_id", "start_s", "end_s", "band_hz", "ridge"), optional)
     _text(event["event_id"], "event_id")
     _interval([event["start_s"], event["end_s"]], "event time")
@@ -222,6 +264,14 @@ def validate_event(value):
         if point["time_s"] <= previous:
             raise ValueError("Ridge times must be strictly increasing")
         previous = point["time_s"]
+    if "acoustic_aircraft_category" in event:
+        event["acoustic_aircraft_category"] = (
+            validate_acoustic_aircraft_category(
+                event["acoustic_aircraft_category"]
+            )
+        )
+
+
     quality = event.get("quality", {})
     if not isinstance(quality, dict):
         raise ValueError("quality must be a mapping of diagnostic names to numbers")

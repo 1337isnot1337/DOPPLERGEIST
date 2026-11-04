@@ -78,6 +78,30 @@ They are not guaranteed true geometry; the matcher must account for uncertainty.
 (e.g. `ridge_rmse_hz`). A diagnostic score is not a calibrated probability.
 There is no blanket `confidence` float whose semantics different workers can guess.
 
+### Experimental acoustic aircraft category
+
+Optional `acoustic_aircraft_category` contains:
+
+- `label`: `jet_like`, `fixed_wing_propeller_like`, `helicopter_like`,
+  or `unknown`.
+- `method`: a nonempty identifier describing the analysis method.
+- `experimental`: must be JSON `true`.
+
+Omission means no category annotation was produced. `unknown` means analysis
+was attempted but did not support a category.
+
+This is an acoustic interpretation, not a confirmed aircraft identity or an
+aircraft category obtained from matched-flight metadata. The validator checks
+representation, not classification accuracy. No calibrated probability is
+provided.
+
+The annotation is report-only. It must not affect flight filtering, ranking,
+or independent-event counts. Different harmonics of one flyover must not
+be treated as independent classification evidence.
+
+This contract extension does not implement an audio classifier. Coordinate
+adoption through issue #2 before producers or consumers depend on it.
+
 ## Location candidates
 
 A `LocationCandidate` contains `lat`, `lon`, finite `score`, a descriptive
