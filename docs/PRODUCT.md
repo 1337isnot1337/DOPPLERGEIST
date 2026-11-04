@@ -9,7 +9,8 @@ scope and limitations.
 
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
-**sample zero**, and a declared country profile (US/CONUS by default, or Germany).
+**sample zero**, and a declared country profile (US/CONUS by default, Germany,
+Spain or metropolitan France including Corsica).
 An optional rectangle narrows that profile. Event windows, frequency
 bands, flight IDs and ground-truth coordinates are not upload inputs.
 
@@ -85,6 +86,12 @@ The API equivalent is `"search":{"country":"DE"}`; normalized requests record
 `"coverage":"germany"`. The same country, CRS and receiver mask apply to coarse
 search, parallel workers, fine grids and continuous refinement. See
 [country profiles](COUNTRIES.md) for boundary acquisition, offline use and limits.
+
+For metropolitan France including Corsica, use `analyze --country FR`, the France
+browser option, or `"search":{"country":"FR"}` in the API. Requests normalize to
+`"coverage":"france"` and use `EPSG:2154` (Lambert-93). The profile is a bounding
+envelope without a country polygon; use independently justified `--bounds` for
+a regional search. Overseas territories are outside this profile.
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
 the upload is queued. Search progress is based on completed grid work and is

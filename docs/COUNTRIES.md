@@ -1,21 +1,24 @@
 # Country profiles
 
-The automatic request and upload interface support three receiver regions:
+The automatic request and upload interface support four receiver regions:
 
 | Country | Coverage | Envelope: west, south, east, north | Search CRS | Receiver region |
 | --- | --- | --- | --- | --- |
 | `US` | `conus` | `-125, 24, -66, 50` | `EPSG:5070` | Existing CONUS rectangle |
 | `DE` | `germany` | `5.5, 47, 15.5, 55.2` | `EPSG:32632` | BKG VG250 Germany land polygon inside the envelope |
 | `ES` | `spain` | `-18.2, 27.5, 4.5, 43.9` | `EPSG:6933` | Spain and territories bounding envelope; no country polygon |
+| `FR` | `france` | `-5.5, 41.2, 10, 51.2` | `EPSG:2154` | Metropolitan France including Corsica bounding envelope; no country polygon |
 
 The envelope limits optional rectangular subsets. Germany's envelope includes
 foreign territory; the land polygon removes those receiver locations before
 terrain sampling or scoring. Islands, exclaves and polygon holes are preserved.
 The boundary is generalized geographic data, not a survey of a microphone site.
 Spain uses an outer envelope covering mainland Spain and its island territories.
-It does not apply a Spanish land mask, so a search must provide explicit bounds
-that describe the intended receiver area. Aircraft outside the receiver bounds
-remain eligible when they are within the acoustic search margin. Country support
+France covers mainland France and Corsica, excluding overseas departments and
+territories, with a Lambert-93 metric search grid. These two profiles do not
+apply country land masks: their envelopes include sea and neighboring countries.
+Use explicit bounds that describe the intended receiver area. Aircraft outside
+the receiver bounds remain eligible when they are within the acoustic search margin. Country support
 does not establish localization accuracy.
 
 ## Requests and commands
@@ -26,9 +29,11 @@ dopplergeist analyze recording.mp3 --country DE --jobs jobs --online \
   --time-source 'Evidence establishing the recording-start interval'
 ```
 
-The upload API accepts `"search":{"country":"DE"}` or
-`"search":{"country":"ES"}`. It also accepts the matching coverage names
-`germany` and `spain`. A normalized request records the coverage;
+Use `--country FR` for metropolitan France, including Corsica, or select France
+in the browser's country selector. The upload API accepts
+`"search":{"country":"DE"}`, `"search":{"country":"ES"}` or
+`"search":{"country":"FR"}`. It also accepts the matching coverage names
+`germany`, `spain` and `france`. A normalized request records the coverage;
 an explicitly supplied country is normalized to uppercase. If both are supplied,
 they must agree. `bounds_wsen` and `--bounds` narrow the selected profile. They
 must be an independently justified prior, not the evaluation location.
@@ -102,7 +107,8 @@ python scripts/check_country_profiles.py --cache-root /tmp/dopplergeist-geograph
 ```
 
 The check uses the actual pinned BKG geometry, named geographic points, country
-boundary grids, empty-area checks and worker serialization. It generates no audio or flight tracks.
+boundary grids, mainland France and Corsica grids, empty-area checks and worker
+serialization. It generates no audio or flight tracks.
 These are software/geography checks, not an acoustic localization benchmark.
 
 ## Boundary license and source
