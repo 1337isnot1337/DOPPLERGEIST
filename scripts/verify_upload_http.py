@@ -361,7 +361,7 @@ def valid_clock_exclusion(item, configuration):
                 upper_bounds.append(hi + sweep + offset / 2 + event_tolerance + cpa)
             if item.get("exclusion_kind") == "before_events":
                 radii = [number(event["slant_range_m"][1]) for event in configuration["events"]]
-                if not radii or min(radii) <= 0:
+                if not radii or min(radii) <= 0 or max(radii) >= 1000000:
                     return False
                 first_event = number(item["earliest_event_receive_s"])
                 last_emission = number(item["latest_emission_s"])
@@ -374,7 +374,7 @@ def valid_clock_exclusion(item, configuration):
             saved = number(item["latest_event_receive_s"])
             first = number(item["earliest_emission_s"])
             return bool(upper_bounds and saved >= max(upper_bounds) and first > saved)
-    except (KeyError, TypeError, ValueError, OverflowError):
+    except (KeyError, IndexError, TypeError, ValueError, OverflowError):
         return False
 
 
