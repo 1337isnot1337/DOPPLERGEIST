@@ -28,6 +28,26 @@ def positive_runtime(value):
     return number
 
 
+def positive_int(value):
+    try:
+        number = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("Value must be a positive integer") from error
+    if number <= 0:
+        raise argparse.ArgumentTypeError("Value must be a positive integer")
+    return number
+
+
+def listen_port(value):
+    try:
+        number = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("Port must be between 0 and 65535") from error
+    if not 0 <= number <= 65535:
+        raise argparse.ArgumentTypeError("Port must be between 0 and 65535")
+    return number
+
+
 def job_identifier(value):
     try:
         if uuid.UUID(value).hex != value:
@@ -89,9 +109,9 @@ def main():
     serve.add_argument("--jobs",default="jobs")
     serve.add_argument("--config",help="Operator provider/cache/search configuration JSON")
     serve.add_argument("--online",action="store_true",help="Download public data to the local cache; this can require tens of gigabytes and hours")
-    serve.add_argument("--port",type=int,default=8765)
+    serve.add_argument("--port",type=listen_port,default=8765)
     serve.add_argument("--max-runtime",type=positive_runtime,default=3600)
-    serve.add_argument("--max-upload-mb",type=int,default=100)
+    serve.add_argument("--max-upload-mb",type=positive_int,default=100)
     job=sub.add_parser("job",help="Read a persisted job result without rerunning it")
     job.add_argument("job_id",type=job_identifier)
     job.add_argument("--jobs",default="jobs")
@@ -171,28 +191,28 @@ def main():
                     break
                 search=directory/"search"
                 tiles=[path for path in search.glob("tile-*.json") if not path.name.endswith(".error.json")]
-                fine_supports=[path for path in (search/"support").glob("fine-*.json")
-                               if not path.name.endswith(".error.json")]
-                count=len(tiles)+len(fine_supports)
+                fine_checkpoints=[path for path in search.glob("fine-tile-*.json")
+                                  if not path.name.endswith(".error.json")]
+                count=len(tiles)+len(fine_checkpoints)
                 wall_now=time.time()
                 progress=value.get("progress")
                 result_age=max(0.0,wall_now-(directory/"result.json").stat().st_mtime)
                 age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
                 stale_after=max(60.0,args.interval*3)
                 progress_stale=" (stale)" if result_age>stale_after else ""
-                progress_text=(f", pipeline progress {progress:.1%}{progress_stale}"
+                progress_text=(f", pipeline progress field {progress:.3f}{progress_stale}"
                                if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
                     rate=f", {(count-previous_count)*60/(now-previous_time):.1f} pieces/min since last check"
-                checkpoints=tiles+fine_supports
+                checkpoints=tiles+fine_checkpoints
                 latest=max(checkpoints,key=lambda path:path.stat().st_mtime,default=None)
                 checkpoint_age=(f", newest checkpoint {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
                                 if latest else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
                       f"{count} local checkpoint pieces ({len(tiles)} coarse tiles, "
-                      f"{len(fine_supports)} fine support checkpoints){rate}{checkpoint_age}, "
+                      f"{len(fine_checkpoints)} fine search checkpoints){rate}{checkpoint_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break
