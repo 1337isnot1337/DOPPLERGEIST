@@ -32,7 +32,8 @@ def test_watch_real_job_and_interrupt_only_the_watcher():
             watcher.kill()
             watcher.wait()
     assert watcher.returncode == 130 and stdout == ''
-    assert 'local checkpoint pieces' in stderr and 'pieces/min since last check' in stderr
+    assert 'search files observed (unverified:' in stderr and 'file-count rate' in stderr
+    assert 'newest matching file modified' in stderr
     assert 'Stopped watching; the job continues.' in stderr
     assert json.loads((job / 'result.json').read_text())['status'] == 'running'
 
@@ -55,7 +56,7 @@ def test_real_upload_prints_job_id_before_final_json(tmp_path):
     assert (jobs / value['job_id'] / 'result.json').is_file()
 
 
-def test_watch_counts_real_search_checkpoints_not_support_diagnostics():
+def test_watch_labels_real_search_file_counts_unverified():
     source = os.environ.get('DOPPLERGEIST_REAL_JOB_ROOT')
     if not source:
         pytest.skip('set DOPPLERGEIST_REAL_JOB_ROOT to a completed real upload')
@@ -74,6 +75,6 @@ def test_watch_counts_real_search_checkpoints_not_support_diagnostics():
                '--jobs', str(job.parent), '--watch', '--interval', '1']
     result = subprocess.run(command, check=True, capture_output=True, text=True, timeout=15)
 
-    assert f'{len(coarse) + len(fine)} local checkpoint pieces' in result.stderr
-    assert f'({len(coarse)} coarse tiles, {len(fine)} fine search checkpoints)' in result.stderr
+    assert f'{len(coarse) + len(fine)} search files observed (unverified:' in result.stderr
+    assert f'({len(coarse)} coarse, {len(fine)} fine)' in result.stderr
     assert 'fine support checkpoints' not in result.stderr

@@ -61,8 +61,11 @@ To limit the geographic search when you have independent regional context, add
 clock window must still be supported by recording metadata or other evidence.
 
 The command prints a job ID when queued. In another terminal, run
-`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow reported
-progress, checkpoint rate, and the age of the latest tile and job status update.
+`.venv/bin/dopplergeist job JOB_ID --jobs jobs --watch` to follow the reported
+status progress and the count and modification age of coarse/fine search files.
+These filename-based indicators are unverified filesystem activity, not proof
+that payloads or retention evidence are valid or that the corresponding work
+has completed.
 Stop a running service-managed job with `.venv/bin/dopplergeist cancel JOB_ID`;
 pass `--server-url` when the service uses a non-default port.
 For a directly managed `analyze` or `resume --jobs` job, request cooperative

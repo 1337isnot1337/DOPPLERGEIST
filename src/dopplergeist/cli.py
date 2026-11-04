@@ -202,9 +202,9 @@ def main():
                     break
                 search=directory/"search"
                 tiles=[path for path in search.glob("tile-*.json") if not path.name.endswith(".error.json")]
-                fine_checkpoints=[path for path in search.glob("fine-tile-*.json")
-                                  if not path.name.endswith(".error.json")]
-                count=len(tiles)+len(fine_checkpoints)
+                fine_files=[path for path in search.glob("fine-tile-*.json")
+                            if not path.name.endswith(".error.json")]
+                count=len(tiles)+len(fine_files)
                 wall_now=time.time()
                 progress=value.get("progress")
                 result_age=max(0.0,wall_now-(directory/"result.json").stat().st_mtime)
@@ -216,14 +216,14 @@ def main():
                 now=time.monotonic()
                 rate=""
                 if previous_count is not None and count >= previous_count and now > previous_time:
-                    rate=f", {(count-previous_count)*60/(now-previous_time):.1f} pieces/min since last check"
-                checkpoints=tiles+fine_checkpoints
-                latest=max(checkpoints,key=lambda path:path.stat().st_mtime,default=None)
-                checkpoint_age=(f", newest checkpoint {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
-                                if latest else "")
+                    rate=f", file-count rate {(count-previous_count)*60/(now-previous_time):.1f} files/min"
+                search_files=tiles+fine_files
+                latest=max(search_files,key=lambda path:path.stat().st_mtime,default=None)
+                file_age=(f", newest matching file modified {age_text(max(0.0,wall_now-latest.stat().st_mtime))} ago"
+                          if latest else "")
                 print(f"{value['status']} ({value.get('stage', 'no stage')}{progress_text}): "
-                      f"{count} local checkpoint pieces ({len(tiles)} coarse tiles, "
-                      f"{len(fine_checkpoints)} fine search checkpoints){rate}{checkpoint_age}, "
+                      f"{count} search files observed (unverified: {len(tiles)} coarse, "
+                      f"{len(fine_files)} fine){rate}{file_age}, "
                       f"status updated {age_text(result_age)} ago",file=sys.stderr,flush=True)
                 if value["status"] in {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}:
                     break

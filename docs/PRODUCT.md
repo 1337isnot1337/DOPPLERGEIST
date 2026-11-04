@@ -77,12 +77,13 @@ dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
-the upload is queued. `job --watch` reports overall progress, the number and
-recent rate of local checkpoint pieces, the age of the newest tile checkpoint,
-and the age of the job status file on standard error. It then writes the final
-job JSON to standard output. Pieces can have different sizes and costs, so their
-rate is not an ETA; remotely staged work appears after it is imported. Pressing
-Ctrl-C stops the watcher without cancelling the analysis.
+the upload is queued. `job --watch` reports the status-file progress field, the
+count/rate of matching coarse and fine search filenames, the newest matching
+file modification age, and the job status-file age on standard error. These are
+unverified filesystem indicators: the watcher does not validate payload hashes
+or retention evidence, and the file-count rate is not a completed-work rate or
+ETA. Remotely staged work appears after it is imported. Pressing Ctrl-C stops
+the watcher without cancelling the analysis.
 
 Direct `analyze` accepts up to 100 MiB by default. Set `--max-upload-mb 250`,
 for example, to allow a larger local recording. The `serve` command has its own
