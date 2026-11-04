@@ -454,8 +454,8 @@ def association_score(result, events):
 def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
     """Adapt contract ridge points to existing search inputs without truth hints.
 
-    Keep every ridge in a harmonic group as evidence for one pass. Rational
-    harmonic ratios are normalized to its lowest observed band; no fundamental
+    Keep every ridge in a canonical group as evidence for one proposal. Measured
+    episode scales (legacy rational ratios) normalize to its lowest observed band; no fundamental
     needs to be present. Groups with inconsistent ratios must be fixed by discovery.
     Separate paths that reuse measured peaks remain separate hypotheses, with
     an explicit conflict preventing their joint independent-support score.
@@ -471,6 +471,8 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
         groups.setdefault(key, []).append(event)
     settings, measurements = [], []
     for members in groups.values():
+        if any(e.get("quality", {}).get("matching_eligible") == 0 for e in members):
+            continue
         reference = min(members, key=lambda e: np.median([p["frequency_hz"] for p in e["ridge"]]))
         reference_time = np.array([p["time_s"] for p in reference["ridge"]])
         reference_frequency = np.array([p["frequency_hz"] for p in reference["ridge"]])
@@ -480,7 +482,22 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
             f = np.array([p["frequency_hz"] for p in member["ridge"]], dtype=float)
             w = np.array([p.get("weight", 1.0) for p in member["ridge"]], dtype=float)
             harmonic = 1.0
-            if member is not reference:
+            modern_scale = member.get("quality", {}).get("episode_frequency_scale")
+            reference_scale = reference.get("quality", {}).get("episode_frequency_scale")
+            if modern_scale is not None and reference_scale is not None:
+                if not np.isfinite(modern_scale) or not np.isfinite(reference_scale) or min(modern_scale, reference_scale) <= 0:
+                    raise ValueError("Episode frequency scales must be finite and positive")
+                harmonic = modern_scale / reference_scale
+                if member is not reference:
+                    base = np.column_stack((reference_time, reference_frequency, np.ones(len(reference_time))))
+                    other = np.column_stack((t, f, w))
+                    # Recheck supported scale without requiring the legacy ratio
+                    # dictionary or unavailable spectral envelope in this adapter.
+                    shared = _overlap(base, other)
+                    sigma = _frequency_scale(member) + harmonic * _frequency_scale(reference)
+                    if shared is not None and np.quantile(np.abs(shared[2] - harmonic * shared[1]), .9) > 2 * sigma:
+                        raise ValueError("Episode members disagree with their measured frequency scales")
+            elif member is not reference:
                 base = np.column_stack((reference_time, reference_frequency))
                 shared = _overlap(base, np.column_stack((t, f)))
                 if shared is None or len(shared[0]) * 0.5 < 0.6 * min(np.ptp(reference_time), np.ptp(t)):

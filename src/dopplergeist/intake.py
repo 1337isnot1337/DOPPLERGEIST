@@ -121,7 +121,7 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
     channels = int(audio["channels"])
     downmix = "pan=mono|c0=" + "+".join(f"{1 / channels:.17g}*c{i}" for i in range(channels))
     command = ["ffmpeg", "-nostdin", "-v", "error", "-xerror", "-i", str(source),
-               "-map", "0:a:0", "-vn", "-sn", "-dn", "-af", downmix, "-ac", "1", "-ar", str(sample_rate_hz),
+               "-map", "0:a:0", "-vn", "-sn", "-dn", "-af", downmix + ",aresample=resampler=swr:filter_size=64:cutoff=0.95", "-ac", "1", "-ar", str(sample_rate_hz),
                "-acodec", "pcm_f32le", "-f", "f32le", "pipe:1"]
     temporary = None
     try:
@@ -173,7 +173,9 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
             "decode": {"decoder": "ffmpeg", "sample_format": "f32le", "channel_policy": "arithmetic channel mean",
                        "source_sample_rate_hz": int(audio["sample_rate"]), "source_channels": int(audio["channels"]),
                        "source_codec": audio.get("codec_name", "unknown"), "stream_index": int(audio["index"]),
-                       "audio_time_zero": "first decoded sample after codec skip/discard", "command": command},
+                       "audio_time_zero": "first decoded sample after codec skip/discard", "command": command,
+                       "resampling": "ffmpeg swresample, 64-tap low-pass, cutoff 0.95; timestamps start at decoded sample zero",
+                       "usable_frequency_hz": [0.0, .45 * min(sample_rate_hz, int(audio["sample_rate"]))]},
         }
         # Exclusive creation also prevents accidental replacement on concurrent intake.
         os.link(temporary, samples_path)

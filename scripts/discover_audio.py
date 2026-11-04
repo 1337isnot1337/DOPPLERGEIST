@@ -11,7 +11,7 @@ from pathlib import Path
 import subprocess
 import time
 
-from dopplergeist.discovery import DiscoverySettings, discover_events
+from dopplergeist.discovery import DiscoverySettings, discover_events, required_sample_rate
 from dopplergeist.intake import intake_recording
 from dopplergeist.resource_usage import process_peak_rss_kib
 
@@ -24,14 +24,21 @@ def main():
                         help="render the recording-level ridge overview plot")
     parser.add_argument("--plot-event-details", action="store_true",
                         help="render one spectrogram PNG per discovered event (slower)")
+    parser.add_argument("--min-frequency-hz", type=float, default=40.0)
+    parser.add_argument("--max-frequency-hz", type=float, default=1600.0)
+    parser.add_argument("--window-s", type=float, default=2.0)
+    parser.add_argument("--hop-s", type=float, default=.5)
+    parser.add_argument("--detailed-candidates", action="store_true", help="bounded rejected-candidate measurements")
     args = parser.parse_args()
+    settings = DiscoverySettings(min_frequency_hz=args.min_frequency_hz, max_frequency_hz=args.max_frequency_hz,
+                                 window_s=args.window_s, hop_s=args.hop_s)
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)
     began = time.monotonic()
-    recording = intake_recording(args.audio, output / "intake")
+    recording = intake_recording(args.audio, output / "intake", sample_rate_hz=required_sample_rate(settings))
     events = discover_events(recording, output_dir=output / "discovery",
                              plot_summary=args.plot_summary,
-                             plot_event_details=args.plot_event_details)
+                             plot_event_details=args.plot_event_details, settings=settings, detailed_candidates=args.detailed_candidates)
     root = Path(__file__).resolve().parents[1]
     sources = sorted((root / "src" / "dopplergeist").glob("*.py"))
     code_hash = hashlib.sha256()
@@ -39,7 +46,8 @@ def main():
         code_hash.update(path.name.encode())
         code_hash.update(path.read_bytes())
     result = {"recording": recording.metadata, "time_status": recording.time_status,
-              "settings": asdict(DiscoverySettings()), "events_found": len(events),
+              "settings": asdict(settings), "events_found": len({e["harmonic_group_id"] for e in events}),
+              "measured_child_tracks": len(events),
               "events": [{k: event[k] for k in ("event_id", "start_s", "end_s", "band_hz", "quality")} for event in events],
               "runtime_s": time.monotonic() - began, "peak_rss_kib": process_peak_rss_kib(),
               "code_sha256": code_hash.hexdigest(),

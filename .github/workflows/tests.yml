@@ -35,6 +35,8 @@ jobs:
           python -m pip check
       # The owner requires real recordings for further validation. The historical
       # pytest suite generates synthetic inputs, so this workflow does not run it.
+      - name: Check acoustic episode algebra and recorded evidence
+        run: python -m pytest -q tests/test_episodes.py tests/test_real_discovery_normalization.py tests/test_real_upload_verification.py tests/test_contracts.py
       - name: Compile source without executing experiments
         run: python -m compileall -q src scripts
       - name: Check benchmark instrumentation detection
