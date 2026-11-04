@@ -22,6 +22,7 @@ import signal
 import subprocess
 import sys
 import time
+from urllib.parse import quote
 
 
 def require(condition, message):
@@ -72,6 +73,8 @@ def main():
     saved_job = args.saved_job.resolve() if args.saved_job else None
     audio = (saved_job / "input.mp3") if saved_job else args.audio.resolve()
     output = args.output.resolve()
+    if saved_job is not None and output.is_relative_to(saved_job):
+        parser.error("--output must be outside the saved job directory")
     if os.name != "posix":
         parser.error("This verifier requires POSIX process groups (for example, Ubuntu CI)")
     if not audio.is_file() or audio.suffix.lower() != ".mp3" or audio.stat().st_size == 0:
@@ -266,18 +269,35 @@ def main():
                 downloaded.value.save_as(download_path)
                 require(digest(download_path) == summary["source_sha256"], "Browser artifact download changed original bytes")
                 summary["artifact_download_verified"] = True
-                figures = page.locator("#diagnostics figure.diagnostic")
-                if figures.count():
-                    figure = figures.first
-                    figure.scroll_into_view_if_needed(timeout=milliseconds(10))
-                    page.wait_for_function("""() => {
-                        const image = document.querySelector('#diagnostics figure.diagnostic img');
-                        return image && image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
-                    }""", timeout=milliseconds(30))
-                    image = figure.locator("img").evaluate("image => ({src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight})")
-                    require(image["src"].startswith(f"/api/jobs/{job_id}/artifacts/"), "Evidence image belongs to a different job")
-                    summary["loaded_evidence_image"] = image
-                    figure.screenshot(path=str(output / "evidence.png"), timeout=milliseconds(10))
+                reply = context.request.get(origin + f"/api/jobs/{job_id}/artifacts", timeout=milliseconds(30))
+                require(reply.status == 200, f"Artifact API returned HTTP {reply.status}")
+                expected_images = [f"/api/jobs/{job_id}/artifacts/" + quote(item["path"], safe="/!~*'()")
+                                   for item in reply.json()["artifacts"]
+                                   if item["path"].lower().endswith(".png")
+                                   and re.search(r"event|spectro|discovery|model|location", item["path"], re.I)]
+
+                def check_diagnostics():
+                    figures = page.locator("#diagnostics figure.diagnostic")
+                    expect(figures).to_have_count(len(expected_images), timeout=milliseconds(30))
+                    images = figures.locator("img")
+                    expect(images).to_have_count(len(expected_images), timeout=milliseconds(10))
+                    displayed = images.evaluate_all("images => images.map(image => image.getAttribute('src'))")
+                    require(sorted(displayed) == sorted(expected_images), "Diagnostic images differ from the saved artifacts")
+                    loaded = []
+                    for i in range(len(expected_images)):
+                        figure = figures.nth(i)
+                        figure.scroll_into_view_if_needed(timeout=milliseconds(10))
+                        image = figure.locator("img")
+                        page.wait_for_function("""image => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0""",
+                                               arg=image.element_handle(), timeout=milliseconds(30))
+                        loaded.append(image.evaluate("image => ({src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight})"))
+                    return loaded
+
+                loaded_images = check_diagnostics()
+                summary["verified_diagnostic_images"] = len(loaded_images)
+                if loaded_images:
+                    summary["loaded_evidence_image"] = loaded_images[0]
+                    page.locator("#diagnostics figure.diagnostic").first.screenshot(path=str(output / "evidence.png"), timeout=milliseconds(10))
                     screenshots.append("evidence.png")
 
                 # Reload the real saved URL; the application's startup code must restore the job.
@@ -285,6 +305,7 @@ def main():
                 page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
                 check_display()
                 expect(original_link).to_have_count(1, timeout=milliseconds(30))
+                check_diagnostics()
                 expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
                 require(api_result() == final, "Terminal API result changed after reload")
                 summary["saved_job_reload_verified"] = True
