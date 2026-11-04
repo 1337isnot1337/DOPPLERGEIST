@@ -21,6 +21,12 @@ records the pair and measured discrepancy; it does not relabel events or assert
 that they came from the same aircraft. The heuristic is uncalibrated and may
 cause false inconclusive outcomes. A missing flag does not establish event
 independence, particularly with missing uncertainties or poorly aligned samples.
+The screen examines at most 8,192 event pairs per decision. Finding a possible
+overlap is sufficient to abstain. If the matched-event screen reaches its pair
+budget without a finding, it reports an incomplete assessment and abstains rather
+than treating unchecked pairs as independent. The broader proposal screen reports
+its assessment state in diagnostics; this cap does not limit event discovery or
+change candidate scores and rankings.
 
 ## Default policy and evidence
 

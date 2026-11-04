@@ -13,6 +13,9 @@ from pyproj import Geod
 from .contracts import utc_timestamp, validate_result
 
 
+MAX_HARMONIC_OVERLAP_PAIRS = 8192
+
+
 @dataclass(frozen=True)
 class DecisionPolicy:
     """Predeclared engineering limits, not fitted confidence calibration."""
@@ -41,13 +44,20 @@ def _near_tied(gap, margin):
     return gap <= margin or math.isclose(gap, margin, rel_tol=1e-12, abs_tol=1e-12)
 
 
-def _possible_harmonic_overlap(events):
-    """Flag an uncalibrated ambiguity; do not merge ridges or assert identity."""
+def _screen_harmonic_overlap(events, *, pair_budget=MAX_HARMONIC_OVERLAP_PAIRS):
+    """Bounded uncalibrated screen; do not merge ridges or assert identity."""
     from .discovery import _HARMONIC_RATIOS
     from .ridge_overlap import aligned_ridge_observations, reused_ridge_observations
 
+    total_pairs = len(events) * (len(events) - 1) // 2
+    pairs_examined = 0
+    overlap = None
     for index, first in enumerate(events):
-        for second in events[index + 1:]:
+        for second_index in range(index + 1, len(events)):
+            if pairs_examined >= pair_budget:
+                break
+            second = events[second_index]
+            pairs_examined += 1
             aligned = aligned_ridge_observations(first, second)
             if aligned is None:
                 continue
@@ -56,7 +66,8 @@ def _possible_harmonic_overlap(events):
             # later divergence fails the whole-ridge harmonic check below.
             reused = reused_ridge_observations(first, second, aligned=aligned)
             if reused is not None:
-                return reused
+                overlap = reused
+                break
             low, high = first, second
             times, x, y = aligned
             if np.median(x) > np.median(y):
@@ -77,11 +88,28 @@ def _possible_harmonic_overlap(events):
                 residual = float(np.quantile(np.abs(y - harmonic * x), 0.9))
                 tolerance = 2 * (high_uncertainty + harmonic * low_uncertainty)
             if math.isfinite(residual) and math.isfinite(tolerance) and residual <= tolerance:
-                return {"event_ids": [low["event_id"], high["event_id"]],
-                        "harmonic_ratio": harmonic, "observed_median_ratio": ratio,
-                        "aligned_samples": len(times), "residual_q90_hz": residual,
-                        "heuristic_tolerance_hz": tolerance}
-    return None
+                overlap = {"event_ids": [low["event_id"], high["event_id"]],
+                           "harmonic_ratio": harmonic, "observed_median_ratio": ratio,
+                           "aligned_samples": len(times), "residual_q90_hz": residual,
+                           "heuristic_tolerance_hz": tolerance}
+                break
+        if overlap is not None or pairs_examined >= pair_budget:
+            break
+    exhaustive = pairs_examined == total_pairs
+    return {
+        "overlap": overlap,
+        "assessment": {
+            "exhaustive": exhaustive,
+            "conclusive": overlap is not None or exhaustive,
+            "pairs_examined": pairs_examined,
+            "pair_budget": pair_budget,
+        },
+    }
+
+
+def _possible_harmonic_overlap(events):
+    """Return the legacy overlap flag while keeping its screen bounded."""
+    return _screen_harmonic_overlap(events)["overlap"]
 
 
 def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
@@ -164,6 +192,7 @@ def _candidate_evidence_summary(events, candidate, evidence):
     matched_events = set(candidate["event_ids"])
     group_flights = {}
     flights_groups = {}
+    drift_limited_groups = set()
     fit_summaries = []
     for event_id, flight_id in zip(candidate["event_ids"], candidate["flight_ids"]):
         event = lookup[event_id]
@@ -172,8 +201,12 @@ def _candidate_evidence_summary(events, candidate, evidence):
         flights_groups.setdefault(flight_id, set()).add(group_id)
         fit = evidence.get(event_id)
         if isinstance(fit, dict):
+            if fit.get("drift_at_bound") is True:
+                drift_limited_groups.add(group_id)
             fit_summaries.append({
                 "event_id": event_id,
+                "harmonic_group_id": group_id,
+                "flight_id": flight_id,
                 **{name: fit[name] for name in
                    ("rmse_hz", "outlier_fraction", "support_fraction", "drift_at_bound")
                    if name in fit},
@@ -198,6 +231,8 @@ def _candidate_evidence_summary(events, candidate, evidence):
             {"group_id": group_id, "flight_ids": sorted(flight_ids)}
             for group_id, flight_ids in sorted(group_flights.items()) if len(flight_ids) > 1
         ],
+        "drift_limited_group_ids": sorted(drift_limited_groups),
+        "drift_limited_group_count": len(drift_limited_groups),
         "event_fits": fit_summaries,
     }
 
@@ -241,6 +276,12 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         return result("invalid_evidence", "Matching diagnostics must be a mapping.", "failed")
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
+    if (not candidates or coverage is None or coverage["search_complete"] is not True
+            or coverage["data_status"] != "available" or coverage.get("missing_data")):
+        overlap_screen = _screen_harmonic_overlap(events)
+        diagnostics["possible_event_harmonic_overlap_assessment"] = overlap_screen["assessment"]
+        if overlap_screen["overlap"] is not None:
+            diagnostics["possible_event_harmonic_overlap"] = overlap_screen["overlap"]
     if candidates:
         candidate_summary = _candidate_evidence_summary(events, candidates[0], evidence)
         diagnostics["candidate_evidence_summary"] = candidate_summary
@@ -297,13 +338,18 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         len(groups) == 1 and diagnostics["independent_event_groups"] == 1 and known_clock)
     diagnostics["harmonic_overlap_screen"] = (
         "Uncalibrated aligned-sample heuristic; no flag does not establish independence.")
-    possible_overlap = _possible_harmonic_overlap(matched)
-    if possible_overlap is not None:
+    overlap_screen = _screen_harmonic_overlap(matched)
+    diagnostics["matched_group_overlap_assessment"] = overlap_screen["assessment"]
+    if overlap_screen["overlap"] is not None:
         diagnostics["matched_group_count"] = len(groups)
         diagnostics["independent_event_groups"] = None
-        diagnostics["possible_harmonic_overlap"] = possible_overlap
+        diagnostics["possible_harmonic_overlap"] = overlap_screen["overlap"]
         return result("insufficient_independent_events",
                       "Overlapping matched ridges may describe one flyover; independent events are not established.")
+    if not overlap_screen["assessment"]["conclusive"]:
+        diagnostics["independent_event_groups"] = None
+        return result("insufficient_independent_events",
+                      "The bounded ridge-overlap screen did not assess all matched-group pairs; independent events are not established.")
     if diagnostics["independent_event_groups"] < policy.min_independent_events and not (len(groups) == 1 and
             policy.min_independent_events == 2 and known_clock):
         return result("insufficient_independent_events",
