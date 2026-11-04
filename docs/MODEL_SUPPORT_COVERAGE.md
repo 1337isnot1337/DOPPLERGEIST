@@ -19,7 +19,9 @@ bound includes the configured clock sweep, CPA and association tolerances, and
 outward floating-point rounding. Overlap, missing or invalid clock information,
 fixed-clock mode, other scoring modes, and silence filtering retain the usual
 unsupported/partial behavior. This does not repair the source trajectory or
-establish geographic coverage.
+establish geographic coverage. The HTTP evidence verifier checks the recorded
+inequality against the search clock and stage totals; it does not independently
+reload the original aircraft index to verify the recorded first emission time.
 
 The additive `model_support` report contains these integer work counts:
 

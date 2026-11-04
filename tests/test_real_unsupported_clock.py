@@ -1,4 +1,5 @@
 """Optional regression using an archived real audio/aircraft regional run."""
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,10 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
     budget = SearchBudget(**config["budget"])
     terrain = CachedTerrain(terrain_path, offline=True)
     index = FlightIndex(index_path)
+    spec = importlib.util.spec_from_file_location("verify_upload_http",
+        Path(__file__).parents[1] / "scripts/verify_upload_http.py")
+    verifier = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(verifier)
     support_files = sorted((job / "search/support").glob("coarse-*.json"))
     tested = 0
     for support_path in support_files:
@@ -46,6 +51,11 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
         rows, counts = _score(points, tracks, events, measurements, budget, params, filters, window)
         assert rows == [] and not counts["unsupported_cpa_tracks"]
         assert {item["track_id"] for item in counts["clock_excluded_unsupported_tracks"]} == {t.id for t in tracks}
+        for item in counts["clock_excluded_unsupported_tracks"]:
+            assert verifier.valid_clock_exclusion(item, config)
+            assert not verifier.valid_clock_exclusion({**item, "earliest_emission_s": item["latest_event_receive_s"]}, config)
+            assert not verifier.valid_clock_exclusion({**item, "latest_event_receive_s": item["latest_event_receive_s"] - 1}, config)
+            assert not verifier.valid_clock_exclusion(item, {**config, "filters": {**filters, "silence": {"edge_margin_s": 60}}})
         # A clock that reaches the same unmodified flight must not suppress it.
         shift = float(tracks[0].time[0] - latest + 1.0)
         overlapping = [window[0] + shift, window[1] + shift]
@@ -94,3 +104,37 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
     assert counts["unclassified_candidate_assessments"] == previous_counts["unclassified_candidate_assessments"]
     assert len(previous_counts["unsupported_cpa_tracks"]) == len(counts["clock_excluded_unsupported_tracks"]) > 0
     assert not counts["unsupported_cpa_tracks"]
+
+
+def test_real_clock_exclusion_evidence_rejects_tampering():
+    value = os.environ.get("DOPPLERGEIST_REAL_CLOCK_REPLAY_JOB")
+    if not value:
+        pytest.skip("set the completed real clock-exclusion upload job path")
+    job = Path(value)
+    spec = importlib.util.spec_from_file_location("verify_upload_clock_evidence",
+        Path(__file__).parents[1] / "scripts/verify_upload_http.py")
+    verifier = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(verifier)
+
+    def read(name):
+        return json.loads((job / name).read_text())
+
+    artifact = lambda name: job / name
+    search = read("search/search-report.json")
+    config = read("search/manifest.json")["configuration"]
+    refinement = read("refined-candidates.json")
+    assert search["model_support"]["clock_excluded_unsupported_track_evaluations"] > 0
+    report = verifier.inspect_finite_search(artifact, read, search, config, refinement)
+    assert report["complete"] is True
+    def read_with_damaged_bound(name):
+        data = read(name)
+        if name.startswith("search/support/") and data.get("clock_excluded_unsupported_tracks"):
+            item = data["clock_excluded_unsupported_tracks"][0]
+            item["earliest_emission_s"] = item["latest_event_receive_s"]
+        return data
+    with pytest.raises(ValueError, match="Invalid unsupported-track clock exclusion evidence"):
+        verifier.inspect_finite_search(artifact, read_with_damaged_bound, search, config, refinement)
+    changed = {**search, "model_support": {**search["model_support"],
+        "clock_excluded_unsupported_track_evaluations": search["model_support"]["clock_excluded_unsupported_track_evaluations"] + 1}}
+    with pytest.raises(ValueError, match="Clock-excluded unsupported-track totals"):
+        verifier.inspect_finite_search(artifact, read, changed, config, refinement)
