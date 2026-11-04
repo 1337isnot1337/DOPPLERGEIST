@@ -15,13 +15,13 @@
 
 **DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and historical ADS-B flight tracks to rank possible recording locations. It includes a Python CLI and a local browser interface.
 
+[Website](https://1337isnot1337.github.io/DOPPLERGEIST/) · [Examples](https://1337isnot1337.github.io/DOPPLERGEIST/examples.html) · [Install](#quickstart) · [How it works](#how-it-works) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
+
 <h3 align="center">Example: automatic MP3 analysis</h3>
 
 ![Automatic MP3 flyover and ranked aircraft search](docs/assets/livermore-automatic-mp3.png)
 
 <sub>Automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
-
-[Website](https://1337isnot1337.github.io/DOPPLERGEIST/) · [Examples](https://1337isnot1337.github.io/DOPPLERGEIST/examples.html) · [Install](#quickstart) · [How it works](#how-it-works) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
 
 ## Capabilities
 
@@ -66,9 +66,9 @@ Open **http://127.0.0.1:8765** and upload a recording. For historical flight mat
 dopplergeist analyze path/to/recording.mp3 --jobs jobs
 ```
 
-This creates a persistent job and runs acoustic analysis. To enable historical matching, provide `--start-utc`, `--end-utc`, and `--time-source` with the evidence for the recording clock, plus `--online` if the required data is not already configured locally. Without a defensible recording time, the job reports `needs_input` rather than assuming a date.
+This command creates a job and analyzes the audio. Historical flight matching requires `--start-utc`, `--end-utc`, and an evidence-based `--time-source`. Add `--online` to acquire missing public data. Without a reliable recording time, the job returns `needs_input`.
 
-For a full online regional analysis, allow enough time for both historical-data acquisition and search. The job limit defaults to **one hour**; initial acquisition can take longer. Replace the sample clock window, source description, and Berlin bounds below with independent evidence for your recording, and increase `--max-runtime` if your data and search scope require it:
+A full online regional analysis includes data acquisition and geographic search. The job limit defaults to **one hour**. Initial data acquisition can take longer. The example below uses sample times and Berlin bounds. Replace them with evidence for your recording and adjust `--max-runtime` for the expected workload:
 
 ```bash
 dopplergeist analyze path/to/recording.mp3 \
@@ -87,7 +87,7 @@ dopplergeist job JOB_ID --jobs jobs --watch
 
 The progress percentage is stage-based and can remain unchanged during long tile subdivisions. Recent search-file activity is a liveness clue, not proof that the queue is shrinking or that a location was found.
 
-The default country profile is `US` (contiguous United States); use `--country DE` for Germany, `--country ES` for Spain, or `--country FR` for metropolitan France including Corsica, or `--country IT` for Italy including Sicily and Sardinia. Spain, France and Italy use broad geographic envelopes without country polygons, so add independently justified `--bounds WEST SOUTH EAST NORTH` for a regional search. The France profile excludes overseas territories. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
+The default country profile is `US` (contiguous United States). Other profiles include Germany (`DE`), Spain (`ES`), metropolitan France including Corsica (`FR`), and Italy including Sicily and Sardinia (`IT`). Spain, France, and Italy use broad geographic envelopes without country polygons. For regional searches, set independently justified `--bounds WEST SOUTH EAST NORTH`. The France profile excludes overseas territories. See [country profiles](docs/COUNTRIES.md) and the [browser workflow](docs/PRODUCT.md) for configuration and job management.
 
 **Data requirements:** Initial online acquisition may take hours and tens of gigabytes of disk space, depending on the recording time and search region. Downloads and caches are reusable; the application does not enforce an automatic disk-space cap.
 
