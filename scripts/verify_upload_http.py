@@ -322,6 +322,48 @@ def model_assessment_accounted_for(search):
         and finite["bounded_unknown_envelopes"] == support["bounded_score_candidates"])
 
 
+def valid_clock_exclusion(item, configuration):
+    """Check a recorded time bound, without reloading the source trajectory."""
+    from decimal import Decimal, localcontext
+
+    def number(value):
+        if type(value) not in (int, float) or not math.isfinite(value):
+            raise ValueError("invalid bound number")
+        return Decimal.from_float(float(value))
+
+    try:
+        scoring, filters = configuration["scoring"], configuration["filters"]
+        window = scoring["recording_start_window_s"]
+        if (not isinstance(item, dict) or not isinstance(item["track_id"], str) or not item["track_id"]
+                or not isinstance(item["reason"], str) or not item["reason"]
+                or not isinstance(item["reported_intervals"], dict)
+                or item["reported_intervals"].get("reason") != item["reason"]
+                or scoring.get("mode") != "robust_ridge" or scoring.get("time_origin") is not None
+                or filters.get("association", "subsets") != "subsets" or filters.get("silence")
+                or not isinstance(window, list) or len(window) != 2):
+            return False
+        with localcontext() as ctx:
+            # Enough digits to add arbitrary finite binary64 inputs without
+            # losing a very small operand next to a very large one.
+            ctx.prec = 1100
+            lo, hi = map(number, window)
+            sweep, offset = number(scoring.get("time_sweep_s", 5.0)), number(filters.get("offset_tolerance_s", 5.0))
+            c = number(scoring.get("c", 343.0))
+            if lo > hi or sweep < 0 or offset < 0 or c <= 0:
+                return False
+            bounds = []
+            for event in configuration["events"]:
+                event_tolerance = number(event.get("quality", {}).get("cpa_tolerance_s", 0))
+                if event_tolerance < 0:
+                    return False
+                bounds.append(hi + sweep + offset / 2 + event_tolerance + number(event["cpa_receive_s"]))
+            saved = number(item["latest_event_receive_s"])
+            first = number(item["earliest_emission_s"])
+            return bool(bounds and saved >= max(bounds) and first > saved)
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return False
+
+
 def inspect_finite_search(artifact, read, search, configuration, refinement):
     """Audit recorded retention read-only; physical trials are not recomputed."""
     import sqlite3
@@ -362,7 +404,7 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
     totals, names, originals = {}, {}, {}
     evaluated = discarded = coarse_unknown = 0
     coarse_trials = dict(evaluated_trials=0, rejected_trials=0, unknown_trials=0, unreported_trial_envelopes=0)
-    bounded_count = bounded_rejections = 0
+    bounded_count = bounded_rejections = clock_excluded = 0
     bound = unknown_bound = None
     bound_fields = ("bounded_unknown_envelopes", "bounded_unknown_rejections", "best_unknown_score_upper_bound")
     bound_contract = any(name in finite for name in bound_fields) or "model_assessment_complete" in search
@@ -512,7 +554,7 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                 coarse_unknown += unknown
             if bound_contract and phase in {"coarse", "fine"}:
                 support_path = path.parent / "support" / (name.replace(":", "-") + ".json")
-                details, unsupported = [], []
+                details, unsupported, excluded = [], [], []
                 if support_path.exists():
                     support_record = read("search/support/" + support_path.name)
                     details, unsupported = (support_record.get(key) for key in
@@ -520,6 +562,9 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                     require(support_record.get("stage") == name and isinstance(details, list)
                             and all(isinstance(detail, dict) for detail in details) and isinstance(unsupported, list),
                             "Finite support artifact has invalid stage or candidate evidence")
+                    excluded = support_record.get("clock_excluded_unsupported_tracks", [])
+                    require(isinstance(excluded, list) and all(valid_clock_exclusion(item, configuration) for item in excluded),
+                            "Invalid unsupported-track clock exclusion evidence")
                 certificates = {"bound-" + digest(detail): detail for detail in details
                                 if bounded_finite_clock_assessment(detail, finite["max_event_groups"])}
                 require(stage_bounds == certificates, "Finite bound ledger omits or invents a recorded candidate assessment")
@@ -527,11 +572,13 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                     counts = payload.get("counts", {})
                     require(counts.get("unclassified_candidate_assessments", []) == details
                             and counts.get("unsupported_cpa_tracks", []) == unsupported
+                            and counts.get("clock_excluded_unsupported_tracks", []) == excluded
                             and counts.get("unclassified_score_candidates", 0) == len(details)
                             and counts.get("bounded_score_candidates", 0) == len(stage_bounds)
                             and counts.get("unbounded_score_candidates", 0) == len(details)-len(stage_bounds),
                             "Coarse support counts differ from persisted candidate assessments")
                 support_totals["unsupported_cpa_track_evaluations"] += len(unsupported)
+                clock_excluded += len(excluded)
                 support_totals["unclassified_score_candidates"] += len(details)
                 support_totals["bounded_score_candidates"] += len(stage_bounds)
                 support_totals["unbounded_score_candidates"] += len(details)-len(stage_bounds)
@@ -584,6 +631,8 @@ def inspect_finite_search(artifact, read, search, configuration, refinement):
                 for key, value in support_totals.items()) and unknown == support_totals["unclassified_score_candidates"]
                 and finite.get("unsupported_cpa_track_evaluations") == support_totals["unsupported_cpa_track_evaluations"],
                 "Finite model-support totals differ from persisted candidate assessments")
+        require(support.get("clock_excluded_unsupported_track_evaluations", 0) == clock_excluded,
+                "Clock-excluded unsupported-track totals differ from stage evidence")
         require(all(type(support.get(key)) is int and support[key] >= value
                     for key, value in coarse_trials.items()),
                 "Search model-support totals omit recorded coarse clock trials")
