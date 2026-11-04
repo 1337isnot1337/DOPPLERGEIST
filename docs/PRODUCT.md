@@ -30,6 +30,15 @@ processed stage or tile is repeated. Input, detector and checkpoint integrity
 are checked before reuse; incompatible search checkpoints fail explicitly.
 Stopping before discovery completes cannot resume from that stage.
 
+To back up or move a complete job, stop it, wait for its terminal status and
+worker exit, then copy its entire job directory. If a service owns the store and
+you cannot confirm the worker has exited, stop the service cleanly after its other
+jobs finish before copying. Do not copy a live retention SQLite file with `cp`
+or `rsync`: the database and its journal can change during the copy. SQLite's
+online backup can produce a consistent database snapshot, but it does not also
+freeze the job's independently changing JSON and tile files, so it is not by
+itself a consistent full-job backup.
+
 Saved searches from the November 3 `225bf6b` scorer have a compatible upgrade
 path to the faster staged scorer. Resume retains their completed scores and
 tile files, archives the previous search and identities, and processes only
