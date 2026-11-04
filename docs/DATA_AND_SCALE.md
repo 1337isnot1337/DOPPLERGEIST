@@ -123,6 +123,11 @@ shared-machine replay of two real grid points from a full-day search, one worker
 took 64.93 seconds and two took 38.95 seconds including startup, with identical
 payloads and ledgers. This small sample does not predict nationwide runtime.
 
+Retention-ledger connections wait up to 30 seconds for a transient SQLite
+lock, matching the worker-stage import. Longer contention can still fail a run;
+this does not replace the stopped-job snapshot procedure or save work that has
+not been checkpointed.
+
 Before the spline-hull improvement below, one real full-day grid cell's track
 retry reduced 1,929 queried tracks to 614 within the configured memory limit,
 retaining all 200 tracks with unsupported motion. Complete scoring with the full

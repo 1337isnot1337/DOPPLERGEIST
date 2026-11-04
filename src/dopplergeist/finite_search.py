@@ -148,7 +148,9 @@ class RetentionLedger:
             raise DataUnavailable("Cannot read finite retention ledger") from error
 
     def _open_connection(self):
-        db = sqlite3.connect(self.path)
+        # Match the worker-stage import's bounded wait so a short-lived reader
+        # cannot fail an otherwise valid search at the default five seconds.
+        db = sqlite3.connect(self.path, timeout=30)
         try:
             db.execute("PRAGMA cache_size=-8192")
             db.execute("PRAGMA temp_store=FILE")
