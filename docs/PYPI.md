@@ -1,32 +1,53 @@
-# PyPI publication
+# PyPI package and releases
 
-The PyPI distribution name is `dopplergeist`. The Python package and console command are also named `dopplergeist`. The current distribution version is in `pyproject.toml`; the first planned PyPI release is **0.1.1** (Git tag `v0.1.1`). The existing `v0.1.0` GitHub release predates the PyPI workflow and does not trigger it retroactively.
+DOPPLERGEIST is published on [PyPI](https://pypi.org/project/dopplergeist/) as `dopplergeist`. The first published version is `0.1.1` (November 4, 2026). The Python package and command-line program both use the name `dopplergeist`.
 
-## One-time setup
+## Install
 
-1. Sign in to [PyPI account publishing](https://pypi.org/manage/account/publishing/). Create a **pending GitHub trusted publisher** with these exact fields:
-   - PyPI project: `dopplergeist`
-   - GitHub owner: `1337isnot1337`
-   - Repository: `DOPPLERGEIST`
-   - Workflow filename: `python-package.yml`
-   - GitHub environment: `pypi`
-2. In the GitHub repository, open **Settings → Environments**. Create an environment named `pypi`. Restrict deployment to release tags (for example `v*`) and consider required reviewers. Only the publication job uses this environment or requests OIDC credentials.
-3. From **Actions → Python distribution and PyPI → Run workflow** on `main`, verify that the smoke build, one source archive, and five-platform binary-wheel matrix all pass. Manual runs **do not upload to PyPI**.
+Requirements: **Python 3.11+** and **FFmpeg**. Install `ffmpeg` and `ffprobe` separately and make sure that both commands are on your `PATH`.
 
-PyPI pending publishers do not reserve the project name. The first successful upload creates the project. No API token or long-lived secret is required.
+For a standalone command-line installation, use `pipx`:
 
-## Release
+```bash
+pipx install dopplergeist
+dopplergeist --help
+```
 
-1. Land the intended code, tests, and version bump on `main`; update `pyproject.toml` to a version not previously uploaded to PyPI. This project's release workflow accepts only a GitHub release tag of the form `v<project.version>`.
-2. In [GitHub Releases](https://github.com/1337isnot1337/DOPPLERGEIST/releases), create and publish a release tagged exactly `v0.1.1` (for the initial PyPI release). Point it to the tested commit. Do not republish or move an existing version tag.
-3. The `Python distribution and PyPI` workflow runs the package smoke check, builds 20 platform-specific wheels (CPython 3.11–3.14 on Linux x86_64/aarch64, macOS x86_64/arm64 and Windows amd64), and builds one source archive. It validates names/version and publishes with `pypa/gh-action-pypi-publish` using GitHub OIDC only if all required jobs pass.
-4. Verify the published distribution at [PyPI](https://pypi.org/project/dopplergeist/). In a fresh environment install with `pipx install dopplergeist` or `python -m pip install dopplergeist` and run `dopplergeist --help`.
+To use the package in an existing Python environment instead:
 
-Releases are immutable on PyPI: if an artifact was already uploaded, do not attempt to overwrite it. Bump the version and create a new tag instead. If publication failed *before* any files were uploaded, fix the cause and rerun the failed workflow; no new version is required.
+```bash
+python -m pip install dopplergeist
+dopplergeist --help
+```
+
+The wheel provides the Python package, CLI, and local browser application. It does **not** bundle the FFmpeg executables or aircraft and terrain data. See the [Quickstart](../README.md#quickstart) and [Setup](SETUP.md) guides.
+
+## Maintainer: publish a new release
+
+The project publishes with the [Python distribution and PyPI](../.github/workflows/python-package.yml) GitHub Actions workflow. A GitHub release with a `v<project.version>` tag triggers publication. The upload job authenticates to PyPI through GitHub's trusted-publishing OIDC identity. It does not need a long-lived PyPI API token.
+
+The original trusted-publisher setup uses these identifiers:
+
+- PyPI project: `dopplergeist`
+- GitHub owner/repository: `1337isnot1337/DOPPLERGEIST`
+- Workflow filename: `python-package.yml`
+- GitHub environment: `pypi`
+
+For each new release:
+
+1. Update the version in `pyproject.toml`. Use a version that PyPI does not already have.
+2. Merge the intended code and tests into `main`.
+3. Run the [Python distribution and PyPI](https://github.com/1337isnot1337/DOPPLERGEIST/actions/workflows/python-package.yml) workflow manually on `main`. A manual run builds packages but does **not** publish them.
+4. After the checks pass, create a [GitHub release](https://github.com/1337isnot1337/DOPPLERGEIST/releases) with the matching `v<project.version>` tag.
+5. Make sure that GitHub Actions succeeds. Then verify the new version on [PyPI](https://pypi.org/project/dopplergeist/) and install it in a clean environment.
+
+The workflow builds 20 CPython 3.11–3.14 wheels for supported Linux, macOS, and Windows platforms, plus a source archive. It validates the package names and version before upload.
+
+PyPI does not allow replacement of an uploaded distribution file. If a release is already on PyPI, use a new version and tag. If publication stops before any upload, fix the cause and rerun the failed workflow.
 
 ## Packaging notes
 
-- `ffmpeg` and `ffprobe` are executable system dependencies, not supplied by the PyPI wheel.
-- Optional native C accelerators are built as platform/CPython-specific wheels. The source archive supports building from source where a compatible toolchain and required dependencies are available.
-- The bundled web application assets and PolyForm Noncommercial/MIT-legacy notices must be included in the distributions.
-- PyPI does not grant any additional rights to commercial use. See [commercial licensing](../COMMERCIAL-LICENSING.md).
+- `ffmpeg` and `ffprobe` are system dependencies. The PyPI wheel does not contain them.
+- Optional native C accelerators use platform-specific wheels. The source archive supports builds with a suitable compiler.
+- Distribution files include the browser application's assets and the PolyForm Noncommercial and MIT-legacy notices.
+- PyPI publication does not grant commercial-use rights. See [commercial licensing](../COMMERCIAL-LICENSING.md).
