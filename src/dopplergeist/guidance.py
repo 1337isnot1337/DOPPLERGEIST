@@ -112,6 +112,32 @@ def guidance(result, decision=None):
                 add("competing_hypotheses", observation,
                     "Inspect both alternatives. Whether a narrower recording-start window or more audio separates them has not been assessed.",
                     evidence)
+        if reason == "ambiguous_locations" and "competing_hypothesis" not in diagnostics:
+            # A finite-search envelope can reject the combined spatial extent
+            # without selecting one competing pair. Its radius is not a pair
+            # separation or a calibrated location error.
+            envelope = diagnostics.get("finite_envelope")
+            policy = diagnostics.get("policy")
+            if isinstance(envelope, dict) and isinstance(policy, dict):
+                radius = envelope.get("radius_m")
+                target = policy.get("target_radius_m")
+                indices = envelope.get("included_candidate_indices")
+                if (type(radius) in (int, float) and math.isfinite(radius)
+                        and type(target) in (int, float) and math.isfinite(target)
+                        and radius > target > 0
+                        and isinstance(indices, list) and len(indices) > 1
+                        and all(type(index) is int and 0 <= index < len(result["candidates"])
+                                for index in indices)
+                        and len(set(indices)) == len(indices) and 0 in indices):
+                    evidence = ["result.json#/reason_code",
+                                "decision.json#/diagnostics/finite_envelope/radius_m",
+                                "decision.json#/diagnostics/policy/target_radius_m",
+                                "decision.json#/diagnostics/finite_envelope/included_candidate_indices"]
+                    evidence.extend(f"result.json#/candidates/{index}" for index in indices)
+                    add("competing_hypotheses",
+                        f"The retained hypotheses and their tested sensitivity extend to a reported radius of about {radius:.0f} m. This exceeds the recorded precision target of {target:g} m.",
+                        "Inspect the included alternatives and sensitivity limits. Whether a defensible narrower recording-start window or more of the original recording reduces this envelope has not been assessed.",
+                        evidence)
     return items
 
 
