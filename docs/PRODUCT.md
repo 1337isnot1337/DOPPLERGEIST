@@ -29,6 +29,10 @@ audio discovery is reused, as are valid completed search tiles; a partially
 processed stage or tile is repeated. Input, detector and checkpoint integrity
 are checked before reuse; incompatible search checkpoints fail explicitly.
 Stopping before discovery completes cannot resume from that stage.
+Completed scored fine-grid pieces are also saved and reused when their scoring and
+retention evidence match. Fine-stage checkpoint reuse currently requires the
+same effective search worker count; use a new output directory if that count
+must change after fine checkpoints have been written.
 
 To back up or move a complete job, stop it, wait for its terminal status and
 worker exit, then copy its entire job directory. If a service owns the store and
