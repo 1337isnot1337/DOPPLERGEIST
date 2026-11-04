@@ -20,6 +20,7 @@ import pickle
 import sqlite3
 import sys
 import tarfile
+import time
 from threading import Lock
 
 import numpy as np
@@ -318,23 +319,32 @@ def cached_sha256(path):
         return digest
 
 
-def download(url, path, *, size=None, digest=None, offline=False, session=None):
+def download(url, path, *, size=None, digest=None, offline=False, session=None,
+             progress_callback=None, progress_label=None):
     """Resume only verified byte ranges; atomically publish validated files.
 
     A provider SHA-256 is preferred. Otherwise a locally computed hash receipt
     detects subsequent cache corruption, but does not authenticate the provider.
+    The optional callback reports transfer/validation activity, not source trust.
     """
     path = Path(path)
     receipt = path.with_name(path.name + ".sha256.json")
     path.parent.mkdir(parents=True, exist_ok=True)
     with cache_lock(path.with_name(path.name + ".lock")):
         if path.exists():
+            if progress_callback:
+                progress_callback(phase="validating_cached_input", label=progress_label,
+                                  bytes_done=0, bytes_total=path.stat().st_size)
             actual = sha256(path)
             expected = digest or (json.loads(receipt.read_text())["sha256"] if receipt.exists() else None)
             if size is not None and path.stat().st_size != size:
                 raise DataUnavailable(f"Truncated cache: {path}")
             if expected is None or actual != expected:
                 raise DataUnavailable(f"Unvalidated or corrupt cache: {path}")
+            if progress_callback:
+                cached_size = path.stat().st_size
+                progress_callback(phase="cached_input_ready", label=progress_label,
+                                  bytes_done=cached_size, bytes_total=cached_size)
             return {"url": url, "path": str(path), "sha256": actual, "bytes": path.stat().st_size}
         if offline:
             raise DataUnavailable(f"Offline cache miss: {path}")
@@ -342,16 +352,25 @@ def download(url, path, *, size=None, digest=None, offline=False, session=None):
         offset = temporary.stat().st_size if temporary.exists() else 0
         headers = {"Range": f"bytes={offset}-", "Accept-Encoding": "identity"} if offset else {"Accept-Encoding": "identity"}
         try:
+            if progress_callback:
+                progress_callback(phase="starting_download", label=progress_label,
+                                  bytes_done=offset, bytes_total=size)
             with (session or requests).get(url, headers=headers, stream=True, timeout=(30, 120)) as response:
                 response.raise_for_status()
                 if offset and (response.status_code != 206 or not response.headers.get("Content-Range", "").startswith(f"bytes {offset}-")):
                     raise DataUnavailable("Provider did not honor requested byte range; partial preserved")
-                with temporary.open("ab" if offset else "wb") as stream:
-                    for chunk in response.iter_content(1024 * 1024):
-                        stream.write(chunk)
                 expected_size = size
                 if expected_size is None and response.headers.get("Content-Length"):
                     expected_size = offset + int(response.headers["Content-Length"])
+                downloaded = offset
+                with temporary.open("ab" if offset else "wb") as stream:
+                    for chunk in response.iter_content(1024 * 1024):
+                        if chunk:
+                            stream.write(chunk)
+                            downloaded += len(chunk)
+                            if progress_callback:
+                                progress_callback(phase="downloading", label=progress_label,
+                                                  bytes_done=downloaded, bytes_total=expected_size)
             if expected_size is not None and temporary.stat().st_size != expected_size:
                 raise DataUnavailable(f"Truncated download, rerun to resume: {temporary}")
             actual = sha256(temporary)
@@ -360,6 +379,9 @@ def download(url, path, *, size=None, digest=None, offline=False, session=None):
             temporary.replace(path)
             result = {"url": url, "path": str(path), "sha256": actual, "bytes": path.stat().st_size}
             write_json(receipt, result)
+            if progress_callback:
+                progress_callback(phase="download_ready", label=progress_label,
+                                  bytes_done=result["bytes"], bytes_total=result["bytes"])
             return result
         except requests.RequestException as error:
             raise DataUnavailable(f"Download failed: {url}: {error}") from error
@@ -397,7 +419,7 @@ def _archive_members(paths, max_member_bytes):
         with io.BufferedReader(SplitReader(paths)) as stream:
             with tarfile.open(fileobj=stream, mode="r|*") as archive:
                 for member in archive:
-                    if not member.isfile() or "trace_full_" not in member.name:
+                    if not member.isfile() or "trace_full_" not in member.name or not member.name.endswith(".json"):
                         continue
                     if member.size > max_member_bytes:
                         raise DataUnavailable(f"Oversized trace member: {member.name}")
@@ -479,28 +501,40 @@ def _index_pool(workers, initializer=None, initargs=()):
                 os.environ[name] = value
 
 
-def archive_staging(paths, class_map, workers=None, max_member_bytes=64 * 1024 * 1024):
+def archive_staging(paths, class_map, workers=None, max_member_bytes=64 * 1024 * 1024,
+                    progress_callback=None):
     """Prepare archive rows in parallel, retaining source order and one SQLite writer."""
     if workers is None:
         workers = _index_workers()
     if type(workers) is not int or workers < 1:
         raise ValueError("workers must be a positive integer")
     if workers == 1:
+        batches = 0
         for frame in archive_frames(paths, max_member_bytes):
+            batches += 1
+            if progress_callback:
+                progress_callback(phase="decoding_archive", batches=batches)
             clean, invalid, altitude = _prepare_staging(frame, class_map)
             yield list(_staging_rows(clean)), invalid, altitude
         return
     try:
         with _index_pool(workers, _init_staging_worker, (class_map, max_member_bytes)) as pool:
             pending = deque()
+            batches = 0
             for raw in _archive_members(paths, max_member_bytes):
                 pending.append(pool.submit(_stage_archive_member, raw))
                 if len(pending) >= workers:
                     batch = pending.popleft().result()
+                    batches += 1
+                    if progress_callback:
+                        progress_callback(phase="decoding_archive", batches=batches)
                     if batch is not None:
                         yield batch
             while pending:
                 batch = pending.popleft().result()
+                batches += 1
+                if progress_callback:
+                    progress_callback(phase="decoding_archive", batches=batches)
                 if batch is not None:
                     yield batch
     except (EOFError, OSError, ValueError) as error:
@@ -681,12 +715,13 @@ class FlightIndex:
         return track
 
     @staticmethod
-    def _prepare_tracks(db, scope=None):
+    def _prepare_tracks(db, scope=None, progress_callback=None):
         """Warm optional constructor inputs without removing observations."""
         from .flight_payload import encode_track
         db.execute("DROP TABLE IF EXISTS prepared_tracks")
         db.execute("CREATE TABLE prepared_tracks(id INTEGER PRIMARY KEY, source_hash TEXT, payload BLOB, payload_hash TEXT)")
         count = size = 0
+        last_report = time.monotonic()
         if (_frame_track is not _CANONICAL_FRAME_TRACK
                 or _segment_velocity is not _CANONICAL_SEGMENT_VELOCITY
                 or _payload_frame is not _CANONICAL_PAYLOAD_FRAME
@@ -715,6 +750,10 @@ class FlightIndex:
                        (identifier, expected, packed, hashlib.sha256(packed).hexdigest()))
             count += 1
             size += len(packed)
+            now = time.monotonic()
+            if progress_callback and now - last_report >= 3.0:
+                progress_callback(phase="preparing_tracks", tracks=count, bytes=size)
+                last_report = now
         report = {"version": 1, "builder": _prepared_track_identity(), "tracks": count, "bytes": size}
         if scope is not None:
             report["scope"] = {"bounds": list(bounds), "time_range_s": list(times)}
@@ -761,11 +800,12 @@ class FlightIndex:
 
     @classmethod
     def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
-              prepared=False, prepare_scope=None):
+              prepared=False, prepare_scope=None, progress_callback=None):
         """Disk staging permits arbitrary source order without whole-table RAM.
 
         Explicit source coverage is required: cropped or prop-only historical
         data must never become an apparently complete national all-type index.
+        The optional callback reports build phases and observed counts only.
         """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -779,11 +819,34 @@ class FlightIndex:
                 result = cls(path)
                 if result.report["input_hash"] != content_hash(identity):
                     raise DataUnavailable("Existing flight index has different inputs/configuration")
+                if progress_callback:
+                    progress_callback(phase="flight_index_ready", rows=result.report.get("rows", 0),
+                                      segments=result.report.get("segments", 0), cached=True)
                 return result
             temporary = path.with_suffix(".building")
             temporary.unlink(missing_ok=True)
             db = sqlite3.connect(temporary)
+            activity = {"phase": "creating_flight_index"}
+            last_progress_report = 0.0
+
+            def emit_progress(force=False, **fields):
+                nonlocal last_progress_report
+                if progress_callback is None:
+                    return
+                activity.update(fields)
+                now = time.monotonic()
+                if force or now - last_progress_report >= 3.0:
+                    progress_callback(**activity)
+                    last_progress_report = now
+
+            def sqlite_progress():
+                emit_progress()
+                return 0
+
             try:
+                emit_progress(force=True)
+                if progress_callback:
+                    db.set_progress_handler(sqlite_progress, 1_000_000)
                 db.executescript("""
                     PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF; PRAGMA cache_size=-16384;
                     PRAGMA temp_store=FILE;
@@ -795,6 +858,9 @@ class FlightIndex:
                     CREATE TABLE metadata(value TEXT);
                 """)
                 rows, invalid, altitude = 0, 0, Counter()
+                batches = 0
+                emit_progress(phase="staging_samples", rows=rows, batches=batches,
+                              invalid_rows=invalid, force=True)
                 for frame in frames:
                     if prepared:
                         staged, invalid_count, altitude_counts = frame
@@ -806,9 +872,15 @@ class FlightIndex:
                     altitude.update(altitude_counts)
                     db.executemany("INSERT INTO samples VALUES(?,?,?)", staged)
                     rows += count
+                    batches += 1
+                    emit_progress(phase="staging_samples", rows=rows, batches=batches, invalid_rows=invalid)
+                emit_progress(phase="creating_sample_lookup", rows=rows, batches=batches, force=True)
                 db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
+                flights_processed = 0
+                emit_progress(phase="building_segments", rows=rows, segments=segments,
+                              flights=flights_processed, force=True)
                 namespace = coverage.get("release_tag", "")
                 workers = _index_workers() if prepared else 1
                 if workers > 1:
@@ -817,21 +889,32 @@ class FlightIndex:
                     flights = (_build_flight_segments(flight, records, max_gap_s, namespace)
                                for flight, records in _flight_inputs(db, max_flight_samples))
                 for flight_segments in flights:
+                    flights_processed += 1
                     for name, start, end, payload, payload_hash, bounds in flight_segments:
                         cur = db.execute("INSERT INTO segments(name,start,end,payload,payload_hash) VALUES(?,?,?,?,?)",
                                          (name, start, end, payload, payload_hash))
                         db.execute("INSERT INTO spatial VALUES(?,?,?,?,?)", (cur.lastrowid, *bounds))
                         segments += 1
+                    emit_progress(phase="building_segments", rows=rows, segments=segments,
+                                  flights=flights_processed)
                 db.execute("DROP TABLE samples")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
                               segments=segments, altitude_basis_counts=dict(altitude), jets_excluded=False,
                               unknown_types_retained=True, geometry_clipped=False, continuous_geometry_bounds=True)
-                report["prepared_tracks"] = cls._prepare_tracks(db, prepare_scope)
+                emit_progress(phase="preparing_tracks", rows=rows, segments=segments, force=True)
+                track_progress = None
+                if progress_callback:
+                    def track_progress(**fields):
+                        emit_progress(force=True, **fields)
+                report["prepared_tracks"] = cls._prepare_tracks(
+                    db, prepare_scope, progress_callback=track_progress)
                 db.execute("INSERT INTO metadata VALUES(?)", (json.dumps(report),))
                 db.commit()
+                emit_progress(phase="compacting_flight_index", rows=rows, segments=segments, force=True)
                 db.execute("VACUUM")
                 db.close()
                 temporary.replace(path)
+                emit_progress(phase="flight_index_ready", rows=rows, segments=segments, force=True)
                 return cls(path)
             except BaseException:
                 db.close()
@@ -977,7 +1060,7 @@ class FlightCache:
         self.root, self.offline = Path(root), offline
         self.session = session or requests.Session()
 
-    def acquire_day(self, day, *, provider="staging-0", prepare_scope=None):
+    def acquire_day(self, day, *, provider="staging-0", prepare_scope=None, progress_callback=None):
         from . import tracks as normalizer
         day = date.fromisoformat(day)
         tag = f"v{day:%Y.%m.%d}-planes-readsb-{provider}"
@@ -986,6 +1069,11 @@ class FlightCache:
         normalizer_hash = sha256(normalizer.__file__)
         index = directory / f"all-types-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
         if index.exists():
+            if progress_callback:
+                existing = FlightIndex(index)
+                progress_callback(phase="cached_flight_index", rows=existing.report.get("rows", 0),
+                                  segments=existing.report.get("segments", 0))
+                return existing
             return FlightIndex(index)
         for old_hash in _EQUIVALENT_NORMALIZERS.get(normalizer_hash, ()):
             old_index = directory / f"all-types-v{INDEX_VERSION}-{old_hash[:12]}.sqlite"
@@ -1000,6 +1088,9 @@ class FlightCache:
                         existing.report.get("normalizer_sha256") != old_hash or
                         existing.report.get("coverage", {}).get("release_tag") != tag or not full_day):
                     raise DataUnavailable("Compatible flight index metadata mismatch")
+                if progress_callback:
+                    progress_callback(phase="cached_flight_index", rows=existing.report.get("rows", 0),
+                                      segments=existing.report.get("segments", 0))
                 return existing
         release_path = directory / "release.json"
         if not release_path.exists():
@@ -1022,12 +1113,14 @@ class FlightCache:
         if not assets:
             raise DataUnavailable("Release has no trace archive")
         sources = []
-        for asset in assets:
+        for number, asset in enumerate(assets, 1):
             digest = asset.get("digest")
             if digest and not digest.startswith("sha256:"):
                 raise DataUnavailable("Unsupported archive digest algorithm")
             sources.append(download(asset["browser_download_url"], directory / asset["name"], size=asset["size"],
-                                    digest=digest.split(":", 1)[1] if digest else None, offline=self.offline, session=self.session))
+                                    digest=digest.split(":", 1)[1] if digest else None, offline=self.offline,
+                                    session=self.session, progress_callback=progress_callback,
+                                    progress_label=f"Historical flight archive {number}/{len(assets)}"))
         start = pd.Timestamp(day.isoformat(), tz="UTC").timestamp()
         coverage = {"bounds": [-180, -90, 180, 90], "time_range_s": [start, start + 86400],
                     "all_aircraft": True, "provider": "ADSB.lol", "release_tag": tag,
@@ -1035,7 +1128,8 @@ class FlightCache:
         coverage["normalizer_sha256"] = normalizer_hash
         types_path = self.root / "icao_aircraft_types.js"
         type_source = download("https://raw.githubusercontent.com/wiedehopf/tar1090-db/master/db/icao_aircraft_types.js",
-                               types_path, offline=self.offline, session=self.session)
+                               types_path, offline=self.offline, session=self.session,
+                               progress_callback=progress_callback, progress_label="Aircraft type metadata")
         raw = types_path.read_bytes()
         if raw[:2] == b"\x1f\x8b":
             raw = gzip.decompress(raw)
@@ -1046,9 +1140,11 @@ class FlightCache:
             description = value.get("desc", "") if isinstance(value, dict) else (value[2] if len(value) > 2 else "")
             # ICAO T also covers helicopter turboshafts; keep the family label broad.
             class_map[code] = {"J": "jet", "T": "turbine", "P": "piston"}.get(description[-1:], "unclassified")
-        return FlightIndex.build(index, archive_staging([s["path"] for s in sources], class_map), sources=sources + [type_source],
+        return FlightIndex.build(index, archive_staging([s["path"] for s in sources], class_map,
+                                                        progress_callback=progress_callback),
+                                 sources=sources + [type_source],
                                  coverage=coverage, class_map=class_map, prepared=True,
-                                 prepare_scope=prepare_scope)
+                                 prepare_scope=prepare_scope, progress_callback=progress_callback)
 
 
 class CachedTerrain:
@@ -1203,12 +1299,13 @@ class AcquiredInputs:
 
 def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=False,
                    terrain_options=None, max_sound_range_m=20000.0, earliest_emission_s=None,
-                   latest_emission_s=None):
+                   latest_emission_s=None, progress_callback=None):
     """Contract adapter for orchestration; no hand-prepared Parquet is required.
 
     `index_paths` is an operator-owned explicit offline override, not a user
     search input. Its source scope remains visible. The default obtains complete
     daily all-type archives once and reuses their disk indexes on later jobs.
+    The optional progress callback reports acquisition activity, not coverage.
     """
     from .contracts import utc_timestamp, validate_request, validate_recording
     from .geography import profile_for_search
@@ -1243,7 +1340,8 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         indexes = []
         day = first
         while day <= last:
-            indexes.append(cache.acquire_day(day.isoformat(), prepare_scope=(bounds, times)))
+            indexes.append(cache.acquire_day(day.isoformat(), prepare_scope=(bounds, times),
+                                             progress_callback=progress_callback))
             day += timedelta(days=1)
     options = dict(terrain_options or {})
     terrain = CachedTerrain(root / "terrain", offline=offline, **options)

@@ -36,6 +36,7 @@ def check_contracts():
     request_base = {"schema_version": 1, "audio_path": str(Path(__file__).resolve())}
     conus_subset = [-90.0, 40.0, -87.0, 43.0]
     buesingen_subset = [8.66, 47.68, 8.72, 47.72]
+    madrid_subset = [-4.16, 40.05, -2.97, 40.95]
     cases = (
         ("omitted search", None, {"coverage": "conus"}, "US"),
         ("legacy CONUS", {"coverage": "conus"}, {"coverage": "conus"}, "US"),
@@ -48,6 +49,10 @@ def check_contracts():
          {"country": "DE", "coverage": "germany"}, "DE"),
         ("Germany subset", {"country": "DE", "bounds_wsen": buesingen_subset},
          {"country": "DE", "coverage": "germany", "bounds_wsen": buesingen_subset}, "DE"),
+        ("Spain country", {"country": "es"}, {"country": "ES", "coverage": "spain"}, "ES"),
+        ("Spain coverage", {"coverage": "spain"}, {"coverage": "spain"}, "ES"),
+        ("Spain region", {"country": "ES", "bounds_wsen": madrid_subset},
+         {"country": "ES", "coverage": "spain", "bounds_wsen": madrid_subset}, "ES"),
     )
     validated = {}
     for name, search, expected, country in cases:
@@ -68,6 +73,7 @@ def check_contracts():
     rejected = (
         {"country": "DE", "coverage": "conus"},
         {"country": "US", "coverage": "germany"},
+        {"country": "DE", "coverage": "spain"},
         {"country": "FR"},
         {"coverage": "custom"},
         {"country": None},
@@ -88,8 +94,8 @@ def check_contracts():
             raise CheckFailure(f"Invalid search was accepted: {search!r}")
 
     catalog = public_profiles()
-    require(len(catalog) == 2 and {p["country"] for p in catalog} == {"US", "DE"},
-            "Capabilities must describe exactly the supported US and DE profiles")
+    require(len(catalog) == 3 and {p["country"] for p in catalog} == {"US", "DE", "ES"},
+            "Capabilities must describe exactly the supported US, DE and ES profiles")
     for item in catalog:
         profile = profile_for_search({"country": item["country"]})
         require(item["coverage"] == profile.coverage and item["crs"] == profile.crs
@@ -98,6 +104,8 @@ def check_contracts():
     require(profile_for_search().crs == "EPSG:5070", "Legacy CONUS CRS changed")
     require(profile_for_search({"country": "DE"}).crs == "EPSG:32632",
             "Germany must use its declared UTM 32N search CRS")
+    require(profile_for_search({"country": "ES"}).crs == "EPSG:6933",
+            "Spain must use its declared global equal-area search CRS")
     print(f"PASS requests: {len(cases)} normalization/JSON round-trip cases; "
           f"{len(rejected)} invalid declarations rejected; profile catalog agrees")
     return validated
@@ -130,6 +138,9 @@ def check_mask(cache_root, online, validated):
     require(receiver_mask_for_search(validated["legacy CONUS"]["search"],
                                     cache_root=cache_root, offline=True) is None,
             "The legacy CONUS profile unexpectedly acquired a country polygon")
+    require(receiver_mask_for_search(validated["Spain region"]["search"],
+                                     cache_root=cache_root, offline=True) is None,
+            "The Spain envelope must not load or apply the Germany polygon")
     search = validated["DE country"]["search"]
     mask = receiver_mask_for_search(search, cache_root=cache_root, offline=not online)
     require(mask is not None, "Germany must not fall back to a rectangular mask")
@@ -173,6 +184,31 @@ def check_mask(cache_root, online, validated):
           f"(including two islands and Buesingen); {int((~expected).sum())} foreign locations excluded")
     print("PASS scalar/vector, worker pickle, offline reload and boundary-proximity controls")
     return mask
+
+
+def check_spain_grid(validated):
+    import numpy as np
+    from pyproj import Transformer
+    from dopplergeist.geography import profile_for_search
+    from dopplergeist.tiled_search import _grid_extent, _tile_coordinates
+
+    search = validated["Spain region"]["search"]
+    profile = profile_for_search(search)
+    bounds = search["bounds_wsen"]
+    forward = Transformer.from_crs("EPSG:4326", profile.crs, always_xy=True)
+    xmin, ymin, xmax, ymax = _grid_extent(bounds, 2000.0, profile.crs)
+    receivers = _tile_coordinates((xmin, ymin, xmax + 1, ymax + 1), 2000.0,
+                                  bounds, profile.crs)
+    require(len(receivers) > 0, "The published Madrid search rectangle contains no coarse receivers")
+    projected_x, projected_y = forward.transform(receivers.lon.to_numpy(), receivers.lat.to_numpy())
+    require(np.isfinite(projected_x).all() and np.isfinite(projected_y).all(),
+            "Spain receiver grid contains invalid projected coordinates")
+    west, south, east, north = bounds
+    require(bool(np.all((receivers.lon >= west) & (receivers.lon <= east)
+                        & (receivers.lat >= south) & (receivers.lat <= north))),
+            "Spain receiver grid escaped the explicit Madrid bounds")
+    print(f"PASS Spain grid: {len(receivers)} coarse receivers in the real Madrid regional bounds; "
+          "no country polygon applied")
 
 
 def check_border_grid(mask, validated):
@@ -269,6 +305,7 @@ def main(argv=None):
     try:
         validated = check_contracts()
         mask = check_mask(args.cache_root, args.online, validated)
+        check_spain_grid(validated)
         check_border_grid(mask, validated)
         check_empty_areas(mask, validated)
     except (CheckFailure, ImportError, OSError, ValueError, RuntimeError) as error:

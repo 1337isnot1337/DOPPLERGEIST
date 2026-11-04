@@ -30,7 +30,7 @@ Colsto did not release the original tools or source code from his [aircraft Dopp
 | **Automatic acoustic discovery** | Scans an entire recording for moving frequency tracks and groups related harmonics, without manually selecting event windows or frequency bands. |
 | **Historical aircraft data** | Acquires and indexes ADSB.lol flight archives; caches reusable trajectory, terrain, and geoid inputs. |
 | **Location search** | Compares predicted Doppler and sound-arrival patterns across candidate receiver locations, including evidence from multiple independent flyovers. |
-| **Geographic profiles** | Search profiles for the contiguous United States and Germany, with optional user-provided regional bounds. |
+| **Geographic profiles** | Search profiles for the contiguous United States, Germany, and Spain, with optional user-provided regional bounds. |
 | **Local browser application** | Recording uploads, persistent analysis jobs, inspectable results, progress monitoring, and supported resume/cancellation workflows. |
 | **Research and reproducibility** | Configured measurement/replay commands, documented experiments, diagnostic artifacts, and decision rules for unresolved searches. |
 
@@ -66,13 +66,26 @@ Open **http://127.0.0.1:8765** and upload a recording. For historical flight mat
 
 This creates a persistent job and runs acoustic analysis. To enable historical matching, provide `--start-utc`, `--end-utc`, and `--time-source` with the evidence for the recording clock, plus `--online` if the required data is not already configured locally. Without a defensible recording time, the job reports `needs_input` rather than assuming a date.
 
+For a full online regional analysis, allow enough time for both historical-data acquisition and search. The job limit defaults to **one hour**; initial acquisition can take longer. Replace the sample clock window, source description, and Berlin bounds below with independent evidence for your recording, and increase `--max-runtime` if your data and search scope require it:
+
+```bash
+.venv/bin/dopplergeist analyze path/to/recording.mp3 \
+  --start-utc "2026-01-01T00:00:00Z" \
+  --end-utc "2026-01-01T00:10:00Z" \
+  --time-source "replace with the source establishing the first-sample clock" \
+  --country DE --bounds 13.0 52.0 14.0 53.0 \
+  --online --max-runtime 21600
+```
+
 To check progress after the job ID is printed:
 
 ```bash
 .venv/bin/dopplergeist job JOB_ID --jobs jobs --watch
 ```
 
-The default country profile is `US` (contiguous United States); use `--country DE` for Germany. If you already have independent regional context, `--bounds WEST SOUTH EAST NORTH` can restrict the search. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
+The progress percentage is stage-based and can remain unchanged during long tile subdivisions. Recent search-file activity is a liveness clue, not proof that the queue is shrinking or that a location was found.
+
+The default country profile is `US` (contiguous United States); use `--country DE` for Germany or `--country ES` for Spain. Spain uses a broad geographic envelope, so add independently justified `--bounds WEST SOUTH EAST NORTH` for a regional search. See [country profiles](docs/COUNTRIES.md) and the [local upload workflow](docs/PRODUCT.md) for request options, cancellation, resuming jobs, and upload limits.
 
 **Data requirements:** Initial online acquisition may take hours and tens of gigabytes of disk space, depending on the recording time and search region. Downloads and caches are reusable; the application does not enforce an automatic disk-space cap.
 
