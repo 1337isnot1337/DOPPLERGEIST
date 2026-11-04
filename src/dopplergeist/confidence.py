@@ -158,6 +158,69 @@ def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
     return None, details
 
 
+def summarize_leading_hypothesis(events, candidate, evidence, required_independent_event_groups):
+    """Summarize limits on the retained leader without treating it as a fix."""
+    by_id = {event["event_id"]: event for event in events}
+    event_ids = list(candidate["event_ids"])
+
+    def group_id(event_id):
+        event = by_id.get(event_id)
+        if event is None:
+            return event_id
+        return event.get("harmonic_group_id") or event_id
+
+    matched_groups = sorted({group_id(event_id) for event_id in event_ids})
+    unmatched_ids = sorted(set(by_id) - set(event_ids))
+    unmatched_groups = sorted({group_id(event_id) for event_id in unmatched_ids})
+    drift_ids = [event_id for event_id in event_ids
+                 if isinstance(evidence.get(event_id), dict)
+                 and evidence[event_id].get("drift_at_bound") is True]
+    drift_groups = sorted({group_id(event_id) for event_id in drift_ids})
+    summary = {
+        "matched_event_ids": event_ids,
+        "matched_event_group_ids": matched_groups,
+        "matched_event_group_count": len(matched_groups),
+        "required_independent_event_groups": required_independent_event_groups,
+        "unmatched_event_group_ids": unmatched_groups,
+        "unmatched_event_group_count": len(unmatched_groups),
+        "source_drift_at_bound_event_ids": drift_ids,
+        "source_drift_at_bound_group_ids": drift_groups,
+    }
+
+    window = evidence.get("recording_start_window_s")
+    if (isinstance(window, (list, tuple)) and len(window) == 2
+            and all(type(value) in (int, float) and math.isfinite(value) for value in window)
+            and window[0] <= window[1]):
+        try:
+            fitted = utc_timestamp(candidate["recording_start_utc"]).timestamp()
+        except (KeyError, TypeError, ValueError, OverflowError):
+            pass
+        else:
+            start_gap, end_gap = fitted - window[0], window[1] - fitted
+            nearest = "start" if abs(start_gap) <= abs(end_gap) else "end"
+            summary["recording_start_window_edge"] = {
+                "nearest_edge": nearest,
+                "distance_s": float(min(abs(start_gap), abs(end_gap))),
+                "inside_window": bool(window[0] <= fitted <= window[1]),
+            }
+
+    finite = evidence.get("finite_search_evidence")
+    if isinstance(finite, dict):
+        if type(finite.get("complete")) is bool:
+            summary["finite_search_complete"] = finite["complete"]
+        for name in ("unclassified_score_candidates", "unsupported_cpa_track_evaluations",
+                     "bounded_unknown_envelopes"):
+            value = finite.get(name)
+            if type(value) is int and value >= 0:
+                summary[name] = value
+        upper = finite.get("best_unknown_score_upper_bound")
+        score = candidate.get("score")
+        if (type(upper) in (int, float) and math.isfinite(upper)
+                and type(score) in (int, float) and math.isfinite(score)):
+            summary["unknown_score_upper_bound_can_match_or_beat_leader"] = upper >= score
+    return summary
+
+
 def decide_location(events, candidates, coverage, *, matching_diagnostics=None, policy=None):
     """Return status/reason_code/message/diagnostics without modifying inputs.
 
@@ -171,7 +234,7 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     cannot justify 100 m spatial precision. The orchestrator owns execution errors
     and missing recording-clock needs_input; malformed evidence is failed here.
     """
-    policy = policy or DecisionPolicy()
+    policy = DecisionPolicy() if policy is None else policy
     if not isinstance(policy, DecisionPolicy):
         raise TypeError("policy must be a DecisionPolicy")
     diagnostics = {"policy": asdict(policy), "policy_version": "engineering-v3",
@@ -192,9 +255,12 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         diagnostics["validation_error"] = str(exc)
         return result("invalid_evidence", "The analysis produced malformed evidence.", "failed")
     events, candidates = validated["events"], validated["candidates"]
-    evidence = matching_diagnostics or {}
+    evidence = {} if matching_diagnostics is None else matching_diagnostics
     if not isinstance(evidence, dict):
         return result("invalid_evidence", "Matching diagnostics must be a mapping.", "failed")
+    if events and candidates:
+        diagnostics["leading_hypothesis"] = summarize_leading_hypothesis(
+            events, candidates[0], evidence, policy.min_independent_events)
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
     if coverage is None:

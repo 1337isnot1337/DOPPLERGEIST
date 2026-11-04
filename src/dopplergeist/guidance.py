@@ -99,6 +99,49 @@ def guidance(result, decision=None):
             ["result.json#/reason_code", "result.json#/coverage/search_complete",
              "decision.json#/diagnostics/finite_search"])
 
+    leading = diagnostics.get("leading_hypothesis")
+    if decision.get("status") == "inconclusive" and isinstance(leading, dict):
+        observations = ["The retained leader is a hypothesis, not an accepted location."]
+        if leading.get("_derived_from_refinement") is True:
+            evidence = ["result.json#/reason_code", "result.json#/candidates/0/event_ids",
+                        "result.json#/events", "refined-candidates.json#/matching_diagnostics"]
+        else:
+            evidence = ["result.json#/reason_code", "decision.json#/diagnostics/leading_hypothesis"]
+        matched = leading.get("matched_event_group_count")
+        required = leading.get("required_independent_event_groups")
+        if type(matched) is int and type(required) is int and matched < required:
+            observations.append(
+                f"It uses {matched} independent event group(s), below the policy minimum of {required}.")
+        drift_groups = leading.get("source_drift_at_bound_group_ids")
+        if isinstance(drift_groups, list) and drift_groups:
+            observations.append(
+                f"Source-frequency drift reaches its allowed limit in {len(drift_groups)} matched group(s).")
+        unmatched = leading.get("unmatched_event_group_count")
+        if type(unmatched) is int and unmatched > 0:
+            observations.append(
+                f"{unmatched} other proposal group(s) remain unmatched and unconfirmed.")
+        edge = leading.get("recording_start_window_edge")
+        if isinstance(edge, dict) and type(edge.get("distance_s")) in (int, float):
+            nearest = edge.get("nearest_edge", "nearest")
+            if edge.get("inside_window") is False:
+                observations.append(
+                    f"The fitted start lies {edge['distance_s']:.1f} s outside the {nearest} edge of the supplied clock window.")
+            else:
+                observations.append(
+                    f"The fitted start is {edge['distance_s']:.1f} s from the {nearest} edge of the supplied clock window.")
+        unclassified = leading.get("unclassified_score_candidates")
+        if type(unclassified) is int and unclassified > 0:
+            observations.append(f"{unclassified} candidate-score evaluations remain unclassified.")
+        unsupported = leading.get("unsupported_cpa_track_evaluations")
+        if type(unsupported) is int and unsupported > 0:
+            observations.append(f"{unsupported} CPA track evaluations remain unsupported.")
+        if leading.get("unknown_score_upper_bound_can_match_or_beat_leader") is True:
+            observations.append("Unassessed score bounds can still match or exceed the leader.")
+        if len(observations) > 1:
+            add("leading_hypothesis_limits", " ".join(observations),
+                "Review the matched traces and verify the recording clock before using this ranking. Unmatched proposals are not established aircraft misses; keep the outcome inconclusive while these limits remain.",
+                evidence)
+
     if reason in {"ambiguous_locations", "ambiguous_flight_match"}:
         competitor = diagnostics.get("competing_hypothesis", {})
         if isinstance(competitor, dict):
@@ -153,6 +196,33 @@ def explain_job(job_dir):
         pass
     except (OSError, ValueError):
         limitations.append("The saved decision could not be read; suggestions requiring its diagnostics are omitted.")
+    if (isinstance(decision, dict) and result["status"] == "inconclusive"
+            and decision.get("status") == result["status"]
+            and decision.get("reason_code") == result.get("reason_code")
+            and decision.get("candidates") == result.get("candidates")
+            and result.get("candidates")):
+        try:
+            refinement = json.loads((directory / "refined-candidates.json").read_text())
+            if isinstance(refinement, dict):
+                matching = refinement.get("matching_diagnostics", {})
+                candidate_event_ids = result["candidates"][0]["event_ids"]
+                if (isinstance(matching, dict)
+                        and all(event_id in matching for event_id in candidate_event_ids)):
+                    from .confidence import summarize_leading_hypothesis
+                    diagnostics = decision.get("diagnostics")
+                    if not isinstance(diagnostics, dict):
+                        diagnostics = {}
+                        decision["diagnostics"] = diagnostics
+                    policy = diagnostics.get("policy", {})
+                    required_groups = policy.get("min_independent_events", 2) if isinstance(policy, dict) else 2
+                    if type(required_groups) is not int or required_groups < 2:
+                        required_groups = 2
+                    leading = summarize_leading_hypothesis(
+                        result["events"], result["candidates"][0], matching, required_groups)
+                    leading["_derived_from_refinement"] = True
+                    diagnostics["leading_hypothesis"] = leading
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            pass
     return {"schema_version": 1, "job_id": result["job_id"], "status": result["status"],
             "reason_code": result.get("reason_code"), "ranked": False,
             "items": guidance(result, decision), "limitations": limitations}
