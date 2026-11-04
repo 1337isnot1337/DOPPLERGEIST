@@ -37,6 +37,8 @@ jobs:
       # pytest suite generates synthetic inputs, so this workflow does not run it.
       - name: Compile source without executing experiments
         run: python -m compileall -q src scripts
+      - name: Check benchmark instrumentation detection
+        run: python scripts/check_benchmark_instrumentation.py
       - name: CLI smoke check
         run: dopplergeist --help
       - name: Check installed native validator and packaged browser assets
