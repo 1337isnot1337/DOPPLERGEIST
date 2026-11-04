@@ -93,3 +93,25 @@ def test_actual_recorded_clip_encoding_and_padding_contract(tmp_path):
             assert metrics["identical_channel_max_difference"] == 0
         assert metrics["first_packet"]
         # Transform contracts are not full-pipeline or one-hour matrix evidence.
+
+
+@pytest.mark.parametrize("case_id", ["chunks_60_30", "chunks_180_60"])
+def test_chunk_only_replay_compares_actual_baseline(tmp_path, case_id):
+    audio = os.environ.get("DOPPLERGEIST_REAL_METAMORPHIC_AUDIO")
+    request = os.environ.get("DOPPLERGEIST_REAL_METAMORPHIC_REQUEST")
+    operator = os.environ.get("DOPPLERGEIST_REAL_METAMORPHIC_OPERATOR")
+    if not all((audio, request, operator)):
+        pytest.skip("Set real recording, request and offline operator paths")
+    plan = runner.prepare(audio, json.loads(Path(request).read_text()),
+        json.loads(Path(operator).read_text()), tmp_path / "plan",
+        source_note="Real recorded input for chunk replay control",
+        scope_note="Offline single-arm software check, not a localization test",
+        job_max_runtime_s=15, http_timeout_s=40)
+    output = tmp_path / "run"
+    runner.run(plan, output, selected_case=case_id)
+    state = json.loads((output / "state.json").read_text())
+    row = next(item for item in state["cases"] if item["id"] == case_id)
+    assert state["state"] == "finished" and row["state"] == "finished"
+    assert row["usability"]["chunk_input_matches_baseline"] is True
+    baseline = next((output / "baseline-encoding").glob("*.mp3"))
+    assert runner.identity(baseline)["sha256"] == row["encoded_input"]["sha256"]
