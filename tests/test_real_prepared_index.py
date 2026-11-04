@@ -60,6 +60,24 @@ def queried(index, coverage):
     return list(index.query(coverage["bounds"], coverage["time_range_s"]))
 
 
+def test_real_index_build_reports_acquisition_phases(tmp_path):
+    source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
+    frame = pd.DataFrame(json.loads(source.read_text()))
+    coverage = {"bounds": [-180., -90., 180., 90.],
+                "time_range_s": [float(frame.time_s.min()), float(frame.time_s.max())],
+                "all_aircraft": False, "source_note": "Archived real observations; incomplete excerpt"}
+    updates = []
+
+    index = FlightIndex.build(tmp_path / "progress.sqlite", [frame], sources=[], coverage=coverage,
+                              progress_callback=lambda **fields: updates.append(dict(fields)))
+
+    phases = {update["phase"] for update in updates}
+    assert {"staging_samples", "creating_sample_lookup", "building_segments",
+            "preparing_tracks", "compacting_flight_index", "flight_index_ready"} <= phases
+    assert updates[-1]["rows"] == index.report["rows"]
+    assert updates[-1]["segments"] == index.report["segments"]
+
+
 def test_prepared_query_and_lookup_match_original_bytes(observed_index, monkeypatch):
     index, coverage = observed_index
     legacy = FlightIndex(index.path, track_cache_bytes=0)
