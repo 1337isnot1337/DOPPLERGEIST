@@ -67,9 +67,6 @@ coordinates back into a search.
 - **Rochester:** six proposal groups were discovered, but the leading location
   hypothesis matches only group 6; five groups are unmatched. Its two reported
   ridge IDs are harmonics within that one group, not two independent flyovers.
-  That group's shared fit also reaches the source-drift bound (-3.142 Hz with a
-  3.142 Hz limit), a warning hidden behind the higher-priority
-  `search_incomplete` result.
   The finite-search assessment is incomplete, with 515 unknown clock trials and
   87 unclassified score candidates. One matched flyover cannot locate the
   recorder, so the `search_incomplete` status is appropriate.
@@ -77,15 +74,12 @@ coordinates back into a search.
   groups 3 and 4 are unmatched. Groups 1 and 2 both map to the same archived
   aircraft segment, so the three matched groups do not establish three
   independent flyovers. The source-frequency drift fit reaches its allowed bound
-  for both of those groups (-2.869/2.869 Hz and -2.783/2.783 Hz), which is why
-  the result is `source_drift_unresolved` even though the finite grid assessment
-  completed.
+  for both of those groups, which is why the result is
+  `source_drift_unresolved` even though the finite grid assessment completed.
 - **East Texas:** six proposal groups were discovered, but the leading
   hypothesis matches only groups 4 and 5; four are unmatched. The saved search
   has 999,703 unknown clock trials and 31,333 unclassified score candidates, so
-  the assessment is incomplete. Group 5's source-drift fit also reaches its
-  bound (-6.907 Hz with a 6.907 Hz limit); the `search_incomplete` status masks
-  that additional warning.
+  the assessment is incomplete. Its `search_incomplete` status is appropriate.
 
 ### Audit of the saved retention ledgers
 
