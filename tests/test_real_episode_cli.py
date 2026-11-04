@@ -48,6 +48,9 @@ class RealEpisodeCli(unittest.TestCase):
                         self.assertTrue(summary["experimental_episodes"])
                         self.assertEqual(artifact["schema_version"], 2)
                         self.assertEqual(artifact["status"], "complete")
+                        self.assertEqual(artifact["counts"]["raw_observations"], 2*artifact["counts"]["spectral_measurements"])
+                        self.assertIn("chunk",artifact["counts_semantics"]["spectral_measurements"])
+                        self.assertNotIn("spectral_measurements",artifact["rejections"]["counts"])
                         self.assertEqual(summary["canonical_proposals"], len(artifact["episodes"]))
                         self.assertIn("filter_size=64", " ".join(intake["decode"]["command"]))
                     else:

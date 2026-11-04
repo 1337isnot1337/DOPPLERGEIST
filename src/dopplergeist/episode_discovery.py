@@ -350,7 +350,10 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
             raise FileExistsError("Discovery output exists; use a new output directory")
     report = dict(schema_version=2, status="running", source_sha256=recording.metadata["source_sha256"],
                   settings=asdict(settings), code=_code_identity(), algorithm_revision="reversible-episodes-2", boundary_semantics="observed_hop_cells", events=[], episodes=[], chunks=[],
-                  scope="acoustic episodes; physical motion, aircraft identity and single-source interpretation unconfirmed")
+                  scope="acoustic episodes; physical motion, aircraft identity and single-source interpretation unconfirmed",
+                  counts_semantics=dict(spectral_measurements="Peak measurement instances per chunk/profile, counted once before directional linking; overlapping chunks reuse audio",
+                      raw_observations="Directional path observation instances; includes both association sweeps and chunk/profile reuse",
+                      canonical_proposals="Acoustic episode hypotheses; not a physical emitter or aircraft count"))
     try:
         events, groups = _discover(recording, settings, report, detailed_candidates)
         report["status"] = "complete"
@@ -422,7 +425,7 @@ def _episode_evidence(members,scales,settings,metrics):
 def _discover(recording, settings, report, detailed):
     report["coverage"] = _coverage(recording, settings)
     sr = recording.metadata["sample_rate_hz"]
-    ridges, traces, counts = [], [], Counter()
+    ridges, traces, counts = [], [], Counter(raw_paths=0,raw_observations=0,spectral_measurements=0)
     report["counts"] = counts
     points_retained = 0
     rejection_ranges = {}
@@ -458,6 +461,7 @@ def _discover(recording, settings, report, detailed):
                 for direction,spectrum in [('forward',spec),('backward',reverse)]:
                     for path in _paths(spectrum,profile):
                         counts['raw_paths']+=1;counts['raw_observations']+=len(path);raw_count+=1
+                        if direction=='forward':counts['spectral_measurements']+=len(path)
                         if len(path)<profile.provisional_min_points:
                             reject([dict(reason='provisional_points',measured=len(path),threshold=profile.provisional_min_points,comparison='>=')])
                             continue
@@ -565,21 +569,22 @@ def _discover(recording, settings, report, detailed):
                 continue
             # Report each failed gate on both alternative paths. A single
             # duration number would obscure support/contrast failures.
-            best = max(metrics, key=lambda m: min(m["median_contrast"] / settings.brief_min_contrast,
-                       m["frequency_excursion_hz"] / (6 * m["frequency_uncertainty_hz"]),
-                       m["moving_fraction"] / .6, .75 / max(m["prediction_error_q95"], 1e-9)))
+            salience=max(max(m['median_contrast'] for m in metrics)/settings.brief_min_contrast,
+                         max(m.get('median_spectral_prominence_db',0.) for m in metrics)/settings.brief_tonal_db)
             gates = [("sustained_extent_s", span, settings.min_duration_s, ">="),
                      ("sustained_observed_duration_s", observed, settings.min_duration_s * settings.min_support, ">="),
                      ("sustained_support_fraction", support_fraction, settings.min_support, ">="),
                      ("brief_observed_duration_s", observed, settings.brief_min_observed_s, ">="),
                      ("brief_support_fraction", support_fraction, brief_support, ">="),
                      ("brief_independent_windows", independent, settings.brief_independent_windows, ">="),
-                     ("brief_excursion_sigma", best["frequency_excursion_hz"] / best["frequency_uncertainty_hz"], 6., ">="),
-                     ("brief_moving_fraction", best["moving_fraction"], .6, ">="),
-                     ("brief_prediction_error_q95", best["prediction_error_q95"], .75, "<=")]
+                     ("brief_salience_ratio", salience, 1., ">="),
+                     ("brief_excursion_sigma", episode_motion["frequency_excursion_hz"] / episode_motion["frequency_uncertainty_hz"], 6., ">="),
+                     ("brief_moving_fraction", episode_motion["moving_fraction"], .6, ">="),
+                     ("brief_prediction_error_q95", episode_motion["prediction_error_q95"], .75, "<=")]
             reject([dict(reason=name, measured=float(value), threshold=float(limit), comparison=op)
                     for name,value,limit,op in gates if (value < limit if op == ">=" else value > limit)],
-                   dict(observed_duration_s=observed, support_fraction=support_fraction, child_metrics=metrics),
+                   dict(observed_duration_s=observed, support_fraction=support_fraction, child_metrics=metrics,
+                        episode_motion=episode_motion,brief_salience_ratio=salience),
                    tuple(x for r in members for x in r.origins))
             continue
         if not long:
@@ -640,7 +645,7 @@ def _discover(recording, settings, report, detailed):
     counts["canonical_proposals"] = len(episodes)
     counts["measured_child_tracks"] = len(events)
     report.update(events=events, episodes=episodes, counts=dict(counts), ridge_count=len(events),
-                  rejections=dict(measured_ranges=rejection_ranges, counts={k:v for k,v in counts.items() if k not in ("raw_paths", "raw_observations", "provisional_paths", "provisional_observations", "deduplicated_tracks", "stitched_tracks", "canonical_proposals", "measured_child_tracks")},
+                  rejections=dict(measured_ranges=rejection_ranges, counts={k:v for k,v in counts.items() if k not in ("raw_paths", "raw_observations", "spectral_measurements", "provisional_paths", "provisional_observations", "deduplicated_tracks", "stitched_tracks", "canonical_proposals", "measured_child_tracks")},
                                   traces=traces, traces_enabled=detailed, trace_limit=settings.max_diagnostic_traces),
                   association_pairs=work.count, joint_refits=work.refits, recurrent_context_rejections=context_rejections, protected_group_extensions=protected_extensions, reconciliation_counts=dict(work.decision_counts), reconciliation_decisions=work.decisions,
                   decisions_truncated=len(work.decisions) == work.trace_limit)
