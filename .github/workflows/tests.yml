@@ -87,6 +87,8 @@ jobs:
           assert hashlib.sha256(source.read_bytes()).hexdigest() == original
           print(f"Recorded checkpoint progress passed: 256 receipts, {expected} receiver points; cached refresh reads no input JSON.")
           PY
+      - name: Check metamorphic completion gates against real recorded outcomes
+        run: python -m pytest -q tests/test_real_metamorphic_runner.py::test_recorded_matrix_keeps_coverage_and_completion_separate_from_timing
       - name: CLI smoke check
         run: dopplergeist --help
       - name: Check installed native validator and packaged browser assets
