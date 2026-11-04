@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "protocol_id": "real-recording-metamorphic-v1",
+  "issue": 61,
+  "source_policy": "One complete actual recording; arithmetic channel mean; no generated events or tracks; no truth supplied to search.",
+  "canonical_pcm": {"sample_rate_hz": 48000, "channels": 1, "sample_format": "f32le"},
+  "baseline": {"bitrate_kbps": 128, "sample_rate_hz": 48000, "channels": 1, "gain_db": 0.0, "leading_silence_s": 0.0},
+  "cases": [
+    {"id": "baseline", "changes": {}},
+    {"id": "bitrate_64", "changes": {"bitrate_kbps": 64}},
+    {"id": "bitrate_192", "changes": {"bitrate_kbps": 192}},
+    {"id": "rate_44100", "changes": {"sample_rate_hz": 44100}},
+    {"id": "gain_minus_6db", "changes": {"gain_db": -6.0}},
+    {"id": "identical_stereo", "changes": {"channels": 2}},
+    {"id": "leading_17_25s", "changes": {"leading_silence_s": 17.25}},
+    {"id": "chunks_60_30", "changes": {"discovery": {"chunk_s": 60.0, "overlap_s": 30.0}}},
+    {"id": "chunks_180_60", "changes": {"discovery": {"chunk_s": 180.0, "overlap_s": 60.0}}}
+  ],
+  "budgets": {"job_max_runtime_s": 240.0, "http_timeout_s": 300.0, "encoding_timeout_s": 300.0},
+  "tolerances": {
+    "decoded_duration_error_s": 0.002,
+    "residual_alignment_lag_s": 0.002,
+    "decoded_absolute_peak_exclusive": 1.0,
+    "gain_corrected_pcm_nrmse": 0.15,
+    "mapped_event_edge_s": 1.0,
+    "mapped_clock_s": 1.0,
+    "median_ridge_frequency_hz": 2.0,
+    "normalized_score_per_matched_group": 0.05,
+    "displacement_thresholds_m": [100.0, 500.0, 1000.0],
+    "accepted_jump_m": 1000.0,
+    "distant_mode_m": 1000.0,
+    "event_group_counts": "equal",
+    "associated_flights": "equal after one-to-one event mapping",
+    "score_units": "equal"
+  },
+  "pcm_comparison": {
+    "sample_rate_hz": 4000,
+    "block_samples": 65536,
+    "lag_windows": 12,
+    "lag_window_s": 8.0,
+    "lag_search_radius_s": 0.1,
+    "lag_rule": "Evenly spaced fixed windows; report each measured lag; never shift comparisons by fitted lag.",
+    "gain_rule": "Remove only the declared gain for comparison; no fitted normalization.",
+    "reference": "Decoded canonical mono PCM before MP3 encoding"
+  },
+  "event_correspondence": {
+    "minimum_overlap_fraction_of_shorter_event": 0.5,
+    "maximum_matching_median_frequency_hz": 25.0,
+    "assignment": "Minimum-cost one-to-one assignment, maximizing eligible pairs first; cost is one minus overlap fraction plus median frequency difference divided by 25 Hz.",
+    "ridge_comparison": "Interpolate the second mapped ridge at first-ridge times within their overlap; do not extrapolate.",
+    "groups": "Report unmatched ridges and groups, group splits and group merges; IDs and row order are not correspondence."
+  },
+  "time_mapping": {
+    "padding_request": "Subtract leading_silence_s from BOTH sample-zero UTC window endpoints.",
+    "event_mapping": "Subtract leading_silence_s from audio-relative event and ridge times.",
+    "clock_mapping": "Add leading_silence_s to fitted sample-zero UTC to recover the original recording clock.",
+    "codec_delay": "Use first decoded sample after ffmpeg skip/discard; retain first-packet side data, decoded sample counts and residual lag checks."
+  },
+  "execution": {
+    "order": "Protocol order, sequentially; baseline first.",
+    "fresh_work": "Each arm starts a fresh local HTTP service and job with original upload bytes; no saved intake, discovery, search or decision is reused.",
+    "shared_data": "Only pinned immutable historical indexes and terrain may be shared; require an offline operator.",
+    "failure_policy": "Retain encoding, usability, verification, terminal and incomplete outcomes. Continue other cases after ordinary failures; stop and preserve pending cases on interruption or changed pinned inputs.",
+    "truth_policy": "No eligible independent truth is supplied in this protocol. Truth error is explicitly not evaluated. Pairwise displacement is not accuracy."
+  },
+  "chunk_controls": {
+    "supported": ["operator.discovery.chunk_s", "operator.discovery.overlap_s"],
+    "unsupported": ["HTTP upload chunk size", "decoder block size", "detector spectral window/hop via the upload operator", "search scheduling chunks as an equivalent audio representation"]
+  },
+  "outcome_policy": "Compare all status/reason, coverage, work-completion and uncertainty-provenance transitions. Compare diagnostic candidates separately from accepted locations. Accepted jumps above 1000 m are serious findings. Regional source-informed runs do not satisfy national acceptance."
+}

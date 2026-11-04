@@ -1,0 +1,4544 @@
+{
+  "schema_version": 1,
+  "kind": "compact_summary_of_preserved_real_end_to_end_run",
+  "comparison_clock_delta_semantics": "mapped_clock_delta_s is an absolute difference after the prescribed time mapping; it does not indicate which fitted clock is later.",
+  "issue": "https://github.com/1337isnot1337/DOPPLERGEIST/issues/61",
+  "source_note": "Complete released reference-recording.wav from the actual public reference recording; all representations derive from its arithmetic channel mean. No generated acoustic events or trajectories.",
+  "scope_note": "Whole-hour source-informed regional development control: bounds [-73.545,40.865,-73.505,40.895], recording-start UTC window 2026-09-08T20:17:20Z to 20:17:40Z, incomplete historical flight coverage. This does not establish national acceptance or independent location accuracy.",
+  "predeclaration": "Protocol and runner committed locally before execution. The identical frozen source tree was published remotely after execution. This was not a public preregistration.",
+  "frozen_source": {
+    "executed_local_commit": "863c9f47731904f2bad8ef5239eddc7f340598b0",
+    "durable_archive_commit": "309429278978adef11e29d2bdfad296dbfdf34e1",
+    "durable_archive_url": "https://github.com/1337isnot1337/DOPPLERGEIST/commit/309429278978adef11e29d2bdfad296dbfdf34e1",
+    "numerical_source_commit": "b68719bcd8ab21e586102b6d1f052f876e04b199",
+    "protocol_sha256": "f68559f64aa71303f42bbefb1d3ffe14540b31c3310319592cf3f859ae86c337",
+    "plan_sha256": "b1a438921df56c3d1ac17a840c4d9fc4ff2c1d605dd8d61366343bce57e7887d"
+  },
+  "started_utc": "2026-11-04T03:56:21.535592Z",
+  "finished_utc": "2026-11-04T04:16:14.369643Z",
+  "wall_elapsed_s": 1192.834051,
+  "source": {
+    "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/source/reference-recording.wav",
+    "resolved_path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/source/reference-recording.wav",
+    "bytes": 691235466,
+    "sha256": "262d9c4eba1c80657813c604140ba2afbbaabed2b3aebc833cba7cafdc005e9f"
+  },
+  "request": {
+    "schema_version": 1,
+    "search": {
+      "coverage": "conus",
+      "bounds_wsen": [
+        -73.545,
+        40.865,
+        -73.505,
+        40.895
+      ]
+    },
+    "time_window": {
+      "start_utc": "2026-09-08T20:17:20Z",
+      "end_utc": "2026-09-08T20:17:40Z",
+      "source": "user",
+      "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+    }
+  },
+  "operator": {
+    "flight_indexes": [
+      "/workspace/scratch/e20de6666de2/real-ledger-inputs/reference-region.sqlite"
+    ],
+    "offline": true,
+    "terrain": {
+      "rasters": [
+        "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif"
+      ],
+      "geoid_raster": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif"
+    },
+    "search_budget": {
+      "spacing_m": 2000,
+      "tile_cells": 16,
+      "top_k": 20,
+      "refine_spacing_m": 500,
+      "refine_finalists": 3
+    },
+    "refine_finalists": 3,
+    "search_workers": 1
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+      "resolved_path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif",
+      "bytes": 15806993,
+      "sha256": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif",
+      "resolved_path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif",
+      "bytes": 2710815,
+      "sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+    },
+    {
+      "path": "/workspace/scratch/e20de6666de2/real-ledger-inputs/reference-region.sqlite",
+      "resolved_path": "/workspace/scratch/e20de6666de2/real-ledger-inputs/reference-region.sqlite",
+      "bytes": 85929984,
+      "sha256": "17ab5d9b860513c86fa850b6c7e7318cf5d507339dfa1921e86611439b214c6a"
+    }
+  ],
+  "runtime": {
+    "package_files": {
+      "__init__.py": "01428b7938817c1cfe7eb3cf7e186f35b3fa7bc2d85f14204d07e0aa251d2c88",
+      "_native_acoustic.c": "56dbe6dcfb848da530d0266229d70fe4ec19c76e8f3eceb4585db68b6584462e",
+      "_native_cpa.c": "0c520e9e10ceaa0ec3798f706aff4f524cf14381f0722efb703636e74281fb38",
+      "_native_index.c": "553b901945535699e96e6b040a7958b2359efd25112f3da326aa851a92b75889",
+      "_native_ridge.c": "4cb9ace18d60b47b3959796b4520637ecc45513a7a830006909b4f90e49f94f1",
+      "acoustic_screen.py": "a0a479a46d6c48ab973ec539d1457868a7eb6f4b9c361a0426dc7993f84970ec",
+      "audio.py": "7ae1cbd3e682057096f103d34fa5664b11cf4e7a74e25af29736ed6618cc9c6d",
+      "automatic.py": "8de96b1450eb26ab33acac5d36680c743c3d2c537b4b0f7182aae9b6faf245bd",
+      "batch_ridge.py": "d8187c64c3fcfb2d084fbdaa302b78791c68fa6aed33e2d61f95537058ab7f3a",
+      "checkpoint_resume.py": "2c5a722c11402d5d9fc2a62946693197758583e7834d979f5820156cf3aeb553",
+      "cli.py": "c0fd0f8efa7f71e4333458265fbcd1b591e159771da03d4d3887898170f01489",
+      "confidence.py": "cbaff2a167bf7dddd60da2bc8a0ea3cf14127ee99575347ff130947ea4acdb44",
+      "contracts.py": "602735eef7de44e6410d79336e33c47d35e2c3d00d531729a4c137995ccd1a70",
+      "data_access.py": "77da0d39e1e95476fdf02e29e9a345914545af7e62227a93b4cb6786edb37a71",
+      "discovery.py": "0a973a1238b7d0c344efa23383ac42a7a8d5b37a2e975b4fad9ac878cee5b2a0",
+      "enf.py": "797194fa7c7ead38cc571cb5d88ee4610ddcb7008a63326a0fca35387e3115fd",
+      "evaluation.py": "2186f839677883a3095a5d233921b4323d054f2c9101f7ee0c2773b10b2323fd",
+      "finite_search.py": "f499ba1f298b5869ac5ae375a2eddb46aabfabcfb9f3fd0d848e362c636c0367",
+      "flight_payload.py": "d74d218529d91db6397c5450a4b57f1f5efd2b3bc942120858dfabe6e69fd4e5",
+      "flight_selection.py": "076c49876195ee9f6768e79a0f946ad7204c2d1030da5f7aae6d08207acacf0b",
+      "geometry.py": "aff5eb70f00766a1a3ab890d1ba33f1a4989af9cf1c4b628770a8d2a7767fd13",
+      "guidance.py": "7ee98832fbcdc94b6664b543885107426ca58fc7fbd9da1030365d2e493159fa",
+      "index_compatibility.py": "a9aa315a3cdaf9b01bcac027bb4f7b5074864db8623402bc1afcbee24e6ecc83",
+      "intake.py": "c88f51f8c7edd6abb74fca830a839d0bbce758beb9a582a7791a8a174b603781",
+      "jobs.py": "40517440e0dc380898e0685b8c4bec3320e9cf121626983ee207e42729ad6ebc",
+      "matching.py": "3ffc0ea3024503d41dd82b208719d990f15da330dc906957fea1d77eec0728c6",
+      "native_acoustic.py": "608475fc2254e9a80549ebd0fc337ba2893d938ee8d4834f1573d0022b1b6f7f",
+      "native_cpa.py": "32c02cd43f6a1a67bdaa17ee3cdaef385fd763a4781610aeada9e1d8d714566d",
+      "parallel_retention.py": "2861608faa3490601aec9870647ec2a5f9268ff051548565b6d657cb1e95155f",
+      "parallel_tiles.py": "3605621c3c5fd9b35008fe1680e1bea99f968ec841f69b4a5bc9e3ced3c52108",
+      "pipeline.py": "62c2d268265b3fac3d02d70450dc92043b97999d41f872f82266cca217fa7103",
+      "provenance.py": "b3dfda5b31f1aec195eef8ef763b08b2734265da06ce41c129daf70acce8c041",
+      "resource_usage.py": "2704ff96bc9ae5a39fa29b3f4cee590e38bc5e59f3ec369e6aa28aab307f5d04",
+      "ridge_overlap.py": "635e4dc065035f65df29b0e86b1e8f01015382ec3b0ddd4f97857bff89dfcfd7",
+      "scoring_inputs.py": "9cbc11678ba5a555acf234945e037662b494591df6a33d21b460e726c62c3588",
+      "search.py": "46a6d68bc13bdee906a34d7364194fa0a30357e5b9107bbcbdd3e5b8dd5d9b55",
+      "service.py": "897eb52191ef6579097a9fce7f62d2147c902c6526da4b354aa8594dca67c3c2",
+      "spectral_grid.py": "67fe613a0ee9505f1d9cfd8db468ee03ccdf8664fe1608d6df3d484ebcaad27c",
+      "spectral_matching.py": "8de9273ea8090ce9e5a639c6d9fb4b88c2455afc02413643935983149fe9d2e6",
+      "terrain.py": "749d6e1d526324fc3015511e9f83fde3663d31a1fc863f069bd18f56601869f8",
+      "tiled_search.py": "fd1aaa139fcd28a9abf5b8867483bc20007748a940fffaeca0926ffea63dc86d",
+      "tracks.py": "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0",
+      "trial_prefix.py": "cd428883c036d52e9eb6f06cb453fa4cfa63614695ff229db21f3ca5ebfba285",
+      "web/__init__.py": "3a26943e5bc40f94abe57fa96eb1dddf4709aa838d0b226053b8701e9e6ac400"
+    },
+    "runner_sha256": "25cdbd5a71ec3623819761332da534b10017299f57a89e2b27ae774eea18d3ff",
+    "verifier_sha256": "58f59e9a986b1d574972fe55e3af3fc8e1fca2dc5b9cbcea8d10f83aca8188dc",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "executable": "/workspace/scratch/e20de6666de2/.venv/bin/python",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "pandas": "2.2.3",
+      "pyproj": "3.8.0",
+      "rasterio": "1.5.2",
+      "pyarrow": "26.0.1",
+      "matplotlib": "3.10.8"
+    },
+    "backends": {
+      "ridge": "python-irls-v1",
+      "acoustic": "python-acoustic-v1",
+      "cpa": "python-cpa-v1",
+      "index_payload": "python"
+    },
+    "environment": {
+      "DOPPLERGEIST_ACOUSTIC_BACKEND": "python",
+      "DOPPLERGEIST_CPA_BACKEND": "python",
+      "DOPPLERGEIST_RIDGE_BACKEND": "python",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONHASHSEED": "0"
+    },
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "ffprobe": "ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers"
+  },
+  "budgets": {
+    "job_max_runtime_s": 240.0,
+    "http_timeout_s": 300.0,
+    "encoding_timeout_s": 300.0
+  },
+  "historical_acquisition": {
+    "flight_indexes": [
+      {
+        "index_version": 2,
+        "sources": [
+          {
+            "path": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/adsb/2026-09-08/reference-region.parquet",
+            "sha256": "fa4e2b82849b3ea8c22ffbe50d4f8f00b7bb3727486307feeaab4821562718a0",
+            "bytes": 32823780
+          }
+        ],
+        "coverage": {
+          "bounds": [
+            -74.299988,
+            40.100005,
+            -72.700011,
+            41.599964
+          ],
+          "time_range_s": [
+            1788825600.17,
+            1788911999.6
+          ],
+          "all_aircraft": false,
+          "source_note": "Restored historical reference-region.parquet. The listed bounds and times are observed sample extrema, not established selection coverage. Original geographic selection bounds are unknown. The original ingestion excluded known jets. This index cannot establish complete coverage.",
+          "selection_bounds_known": false,
+          "extent_kind": "observed_sample_extrema_only"
+        },
+        "normalizer_sha256": "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0",
+        "classification_map_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "max_gap_s": 30.0,
+        "max_flight_samples": 250000,
+        "input_hash": "229d57dc810fc3f2985bae5c7fc68eb1132912cf8b95fdea2376c739d66e22a2",
+        "rows": 717735,
+        "invalid_rows": 0,
+        "segments": 4694,
+        "altitude_basis_counts": {
+          "ellipsoidal": 714502,
+          "ellipsoidal_interpolated": 2434,
+          "barometric": 799
+        },
+        "jets_excluded": false,
+        "unknown_types_retained": true,
+        "geometry_clipped": false,
+        "continuous_geometry_bounds": true,
+        "prepared_tracks": {
+          "version": 1,
+          "builder": "177ef474f7c2ebb7a43c7f8c65d6bac8a55bafb5dda42bfa779e88ba60091fe7",
+          "tracks": 4694,
+          "bytes": 40986623
+        }
+      }
+    ],
+    "terrain": {
+      "terrain_configuration": {
+        "rasters": [
+          "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif"
+        ],
+        "geoid_raster": "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/us_nga_egm96_15.tif"
+      },
+      "terrain_rasters": {
+        "/workspace/scratch/e20de6666de2/DOPPLERGEIST/data/terrain/Copernicus_DSM_COG_10_N40_00_W074_00_DEM.tif": "6a0f4273de0bbc0709cc9db4793a89ac40c811388f59f23f644c0304b66ab94d"
+      },
+      "geoid_sha256": "db493027562c9b004d7220fa881f5603adada4e1c5029b933fa7de4547b0e78d"
+    }
+  },
+  "aggregate": {
+    "run_state": "finished",
+    "declared_case_count": 9,
+    "finished_cases": 9,
+    "verified_cases": 9,
+    "complete_stage_cases": 9,
+    "full_pipeline_cases": 9,
+    "pairs_with_observed_differences": 35,
+    "all_complete_usable_and_within_tolerances": false
+  },
+  "usable_cases": 9,
+  "pairwise_comparison_count": 36,
+  "accepted_location_count": 0,
+  "accepted_location_pairs_evaluated": 0,
+  "total_http_elapsed_s": 737.918059241003,
+  "pairs_without_flags": [
+    {
+      "left": "bitrate_192",
+      "right": "identical_stereo"
+    }
+  ],
+  "cases": [
+    {
+      "id": "baseline",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 15,
+      "ridge_count": 17,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.87528050613154,
+        "lon": -73.52481091965666,
+        "score": 4.171610404936489,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0006",
+          "event-0007",
+          "event-0010",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0013",
+          "event-0015"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.630043Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.630043Z",
+        "matched_group_count": 6,
+        "normalized_score": 0.6952684008227482,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 640.002841961748,
+        "mode_id": "mode-b6ce091cd94951be52e9f8ef1d18de68c1c69f84d4b2a74f466d3b3e94ccd389"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "baseline/input.mp3",
+        "bytes": 57603885,
+        "sha256": "c9cb15f40a9d64b18f66a6818d9a4f5743a8ec235a3c96330c0f8257df58ee2d"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.0503479026001506,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.05229577794671059,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 81.15936150400012,
+      "worker_high_water_at_search_completion_mib": 409.3359375,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 15,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 20.44939013900148,
+        "process_peak_rss_mib": 409.3359375,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 499,
+        "bounded_unknown_envelopes": 27567,
+        "bounded_unknown_rejections": 11058,
+        "unclassified_score_candidates": 27567,
+        "unsupported_cpa_track_evaluations": 10,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": null
+    },
+    {
+      "id": "bitrate_64",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 16,
+      "ridge_count": 18,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.87665313366542,
+        "lon": -73.52590021889233,
+        "score": 4.680509583649809,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0006",
+          "event-0007",
+          "event-0010",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0012",
+          "event-0014",
+          "event-0016"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a70a89:17",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:30.104894Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:30.104894Z",
+        "matched_group_count": 7,
+        "normalized_score": 0.668644226235687,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 543.9955684918633,
+        "mode_id": "mode-ef0cb97f93e5b731f4ca56cc1d49c5833222d71a50ca0dae93efe961b8730a09"
+      },
+      "encoding": {
+        "bitrate_kbps": 64,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "bitrate_64/input.mp3",
+        "bytes": 28801965,
+        "sha256": "086be294865d7dc1bb3d78352cef11c76992177a81b54b068e2b6ca328c08510"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.0524758012618207,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.05212140083312988,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 101.0311813820008,
+      "worker_high_water_at_search_completion_mib": 430.97265625,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 16,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 33.04303710899876,
+        "process_peak_rss_mib": 430.97265625,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 584,
+        "bounded_unknown_envelopes": 51753,
+        "bounded_unknown_rejections": 15561,
+        "unclassified_score_candidates": 51753,
+        "unsupported_cpa_track_evaluations": 13,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "associated_flights_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 177.95093223180686,
+          "within_threshold_m": {
+            "100": false,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.474851,
+          "associated_flights_equal": false,
+          "score_units_equal": true,
+          "normalized_score_comparable": false,
+          "normalized_score_delta": null,
+          "uncertainty_provenance_equal": true,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            543.9955684918633
+          ]
+        }
+      }
+    },
+    {
+      "id": "bitrate_192",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 16,
+      "ridge_count": 18,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.875280044930925,
+        "lon": -73.52484755356222,
+        "score": 4.166530401310109,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0006",
+          "event-0007",
+          "event-0010",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0013",
+          "event-0015"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.635880Z",
+        "uncertainty": {
+          "radius_m": 563.0868546383958,
+          "method": "declared_perturbation_profiles",
+          "kind": "sensitivity"
+        },
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.635880Z",
+        "matched_group_count": 6,
+        "normalized_score": 0.6944217335516849,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": false
+        },
+        "uncertainty_radius_m": 563.0868546383958,
+        "mode_id": "mode-b6ce091cd94951be52e9f8ef1d18de68c1c69f84d4b2a74f466d3b3e94ccd389"
+      },
+      "encoding": {
+        "bitrate_kbps": 192,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "bitrate_192/input.mp3",
+        "bytes": 86405805,
+        "sha256": "3882a004a2261a42869b4abfd315e978a0bb1adec07383ab61995dc92566bf8d"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.03010704850065681,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.05335099995136261,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 93.49715825900057,
+      "worker_high_water_at_search_completion_mib": 410.203125,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 16,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 36.6500653639996,
+        "process_peak_rss_mib": 410.203125,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 687,
+        "bounded_unknown_envelopes": 50251,
+        "bounded_unknown_rejections": 25441,
+        "unclassified_score_candidates": 50251,
+        "unsupported_cpa_track_evaluations": 20,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "uncertainty_provenance_changed",
+          "retained_mode_uncertainty_provenance_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 3.088427744321566,
+          "within_threshold_m": {
+            "100": true,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.005837,
+          "associated_flights_equal": true,
+          "score_units_equal": true,
+          "normalized_score_comparable": true,
+          "normalized_score_delta": 0.0008466672710633061,
+          "uncertainty_provenance_equal": false,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            563.0868546383958
+          ]
+        }
+      }
+    },
+    {
+      "id": "rate_44100",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 16,
+      "ridge_count": 18,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.86569445065159,
+        "lon": -73.50514874978012,
+        "score": 3.4650575838780666,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0013",
+          "event-0015"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa340e:37",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:37.082957Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:37.082957Z",
+        "matched_group_count": 6,
+        "normalized_score": 0.5775095973130111,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 515.3238214374177,
+        "mode_id": "mode-2b9a89101336c5c84d7c4b97d71f86f1e7538d6c46723c51aa04d0dd4d0e95b3"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 44100,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "rate_44100/input.mp3",
+        "bytes": 57604014,
+        "sha256": "cd558b15f60abd56cabc2613e70034cf5a2dd43af2e7dfe75822471ffe7e7995"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.050365732834766676,
+        "native_decode_sample_rate_hz": 44100,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843310657596,
+        "native_decode_absolute_peak": 0.05235898494720459,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 102.03540316600083,
+      "worker_high_water_at_search_completion_mib": 452.91015625,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 41,
+        "refinement_points_skipped": 70,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 16,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 29.110733892999633,
+        "process_peak_rss_mib": 452.91015625,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 758,
+        "bounded_unknown_envelopes": 39204,
+        "bounded_unknown_rejections": 24120,
+        "unclassified_score_candidates": 39204,
+        "unsupported_cpa_track_evaluations": 17,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "mapped_event_edges",
+          "associated_flights_changed",
+          "fitted_clock_changed",
+          "diagnostic_candidate_jump",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 1969.9261974464414,
+          "within_threshold_m": {
+            "100": false,
+            "500": false,
+            "1000": false
+          },
+          "mapped_clock_delta_s": 7.452914,
+          "associated_flights_equal": false,
+          "score_units_equal": true,
+          "normalized_score_comparable": false,
+          "normalized_score_delta": null,
+          "uncertainty_provenance_equal": true,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            515.3238214374177
+          ]
+        }
+      }
+    },
+    {
+      "id": "gain_minus_6db",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 15,
+      "ridge_count": 17,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.87528350581192,
+        "lon": -73.5248423926746,
+        "score": 4.166039445321891,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0005",
+          "event-0006",
+          "event-0009",
+          "event-0010",
+          "event-0010-harmonic-2",
+          "event-0010-harmonic-3",
+          "event-0012",
+          "event-0014"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.635813Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.635813Z",
+        "matched_group_count": 6,
+        "normalized_score": 0.6943399075536485,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 591.5384979284173,
+        "mode_id": "mode-81af2214443fc031dc3b3c020dfb10843b401258e4a79c6341100e7e0c284c68"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": -6.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "gain_minus_6db/input.mp3",
+        "bytes": 57603885,
+        "sha256": "1353b9ab3de841d0fdc32b97a56b75032177b2a5841609c2b424b1864fab907b"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.05034018297257145,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.02619009278714657,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 80.66737403099978,
+      "worker_high_water_at_search_completion_mib": 431.9375,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 15,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 27.233806181000546,
+        "process_peak_rss_mib": 431.9375,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 701,
+        "bounded_unknown_envelopes": 30101,
+        "bounded_unknown_rejections": 12752,
+        "unclassified_score_candidates": 30101,
+        "unsupported_cpa_track_evaluations": 15,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "ridge_correspondence_incomplete",
+          "mapped_event_edges",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 2.673805427547985,
+          "within_threshold_m": {
+            "100": true,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.00577,
+          "associated_flights_equal": true,
+          "score_units_equal": true,
+          "normalized_score_comparable": true,
+          "normalized_score_delta": 0.0009284932690997172,
+          "uncertainty_provenance_equal": true,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            591.5384979284173
+          ]
+        }
+      }
+    },
+    {
+      "id": "identical_stereo",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 16,
+      "ridge_count": 18,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.875266232074765,
+        "lon": -73.52481429131309,
+        "score": 4.176459421841993,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0006",
+          "event-0007",
+          "event-0010",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0013",
+          "event-0015"
+        ],
+        "flight_ids": [
+          "ab50b9:11",
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a9bd90:37"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.635328Z",
+        "uncertainty": {
+          "radius_m": 562.6473847366728,
+          "method": "declared_perturbation_profiles",
+          "kind": "sensitivity"
+        },
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.635328Z",
+        "matched_group_count": 6,
+        "normalized_score": 0.6960765703069988,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": false
+        },
+        "uncertainty_radius_m": 562.6473847366728,
+        "mode_id": "mode-b6ce091cd94951be52e9f8ef1d18de68c1c69f84d4b2a74f466d3b3e94ccd389"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 2,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "identical_stereo/input.mp3",
+        "bytes": 57603885,
+        "sha256": "7078a51d1d1bab60774d35ad09ca51c74720f458f5eb7d7cbb18f8f49911d890"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.05046608208096231,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 2,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.0522184856235981,
+        "identical_channel_max_difference": 0.0
+      },
+      "http_elapsed_s": 90.59286679599973,
+      "worker_high_water_at_search_completion_mib": 413.7578125,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 16,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 34.82690319500034,
+        "process_peak_rss_mib": 413.7578125,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 681,
+        "bounded_unknown_envelopes": 50254,
+        "bounded_unknown_rejections": 25241,
+        "unclassified_score_candidates": 50254,
+        "unsupported_cpa_track_evaluations": 20,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "uncertainty_provenance_changed",
+          "retained_mode_uncertainty_provenance_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 1.6104323518264563,
+          "within_threshold_m": {
+            "100": true,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.005285,
+          "associated_flights_equal": true,
+          "score_units_equal": true,
+          "normalized_score_comparable": true,
+          "normalized_score_delta": 0.0008081694842505538,
+          "uncertainty_provenance_equal": false,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            562.6473847366728
+          ]
+        }
+      }
+    },
+    {
+      "id": "leading_17_25s",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 13,
+      "ridge_count": 16,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.87458127610311,
+        "lon": -73.52372180984088,
+        "score": 4.7619907603243,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0001",
+          "event-0004",
+          "event-0006",
+          "event-0010",
+          "event-0011",
+          "event-0011-harmonic-2",
+          "event-0011-harmonic-3",
+          "event-0012",
+          "event-0013"
+        ],
+        "flight_ids": [
+          "a40d8f:1",
+          "a1cecb:5",
+          "ab50b9:11",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "ab29ff:4"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:12.593703Z",
+        "uncertainty": {
+          "radius_m": 524.906058378267,
+          "method": "declared_perturbation_profiles",
+          "kind": "sensitivity"
+        },
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.843703Z",
+        "matched_group_count": 7,
+        "normalized_score": 0.6802843943320429,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": false
+        },
+        "uncertainty_radius_m": 524.906058378267,
+        "mode_id": "mode-204dc32de9a2ac6020398475645d5f1b54fbdb192274c0d897e33de87ec3911c"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 17.25
+      },
+      "discovery": {
+        "chunk_s": 120,
+        "overlap_s": 60
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:02.750000Z",
+        "end_utc": "2026-09-08T20:17:22.750000Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "leading_17_25s/input.mp3",
+        "bytes": 57879981,
+        "sha256": "e0021632abb4d0eb0735151adc6418cc273e0048bfd36016ac0cccfd59076094"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.05035239830008654,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3617.4343125,
+        "native_decode_absolute_peak": 0.05227542668581009,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 90.7256045030008,
+      "worker_high_water_at_search_completion_mib": 465.765625,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 13,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 14.560085004000939,
+        "process_peak_rss_mib": 465.765625,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 434,
+        "bounded_unknown_envelopes": 20943,
+        "bounded_unknown_rejections": 3556,
+        "unclassified_score_candidates": 20943,
+        "unsupported_cpa_track_evaluations": 5,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "mapped_event_edges",
+          "mapped_ridge_frequency",
+          "associated_flights_changed",
+          "uncertainty_provenance_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 120.24078408612776,
+          "within_threshold_m": {
+            "100": false,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.21366,
+          "associated_flights_equal": false,
+          "score_units_equal": true,
+          "normalized_score_comparable": false,
+          "normalized_score_delta": null,
+          "uncertainty_provenance_equal": false,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            524.906058378267
+          ]
+        }
+      }
+    },
+    {
+      "id": "chunks_60_30",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 11,
+      "ridge_count": 13,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.87504318887894,
+        "lon": -73.52460015431907,
+        "score": 2.7873362239345285,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0007",
+          "event-0008",
+          "event-0008-harmonic-2",
+          "event-0008-harmonic-3",
+          "event-0009",
+          "event-0011"
+        ],
+        "flight_ids": [
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a6decf:19"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.695680Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.695680Z",
+        "matched_group_count": 4,
+        "normalized_score": 0.6968340559836321,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 629.8870582331216,
+        "mode_id": "mode-ea04219a25aa39ff5358939baf12d14998b58920aa1aa6ed10c69f2009051829"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 60.0,
+        "overlap_s": 30.0
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "chunks_60_30/input.mp3",
+        "bytes": 57603885,
+        "sha256": "c9cb15f40a9d64b18f66a6818d9a4f5743a8ec235a3c96330c0f8257df58ee2d"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.0503479026001506,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.05229577794671059,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 48.30245543700039,
+      "worker_high_water_at_search_completion_mib": 408.0546875,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 11,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 9.143885532999775,
+        "process_peak_rss_mib": 408.0546875,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 251,
+        "bounded_unknown_envelopes": 11354,
+        "bounded_unknown_rejections": 6940,
+        "unclassified_score_candidates": 11354,
+        "unsupported_cpa_track_evaluations": 7,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "mapped_event_edges",
+          "associated_flights_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 31.783549576707504,
+          "within_threshold_m": {
+            "100": true,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.065637,
+          "associated_flights_equal": false,
+          "score_units_equal": true,
+          "normalized_score_comparable": false,
+          "normalized_score_delta": null,
+          "uncertainty_provenance_equal": true,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            629.8870582331216
+          ]
+        }
+      }
+    },
+    {
+      "id": "chunks_180_60",
+      "state": "finished",
+      "status": "inconclusive",
+      "reason_code": "search_incomplete",
+      "verification_passed": true,
+      "full_pipeline_observed": true,
+      "full_pipeline_requirements_met": true,
+      "stages_verified": [
+        "automatic_provenance",
+        "intake",
+        "discovery",
+        "acquisition",
+        "search",
+        "refinement",
+        "decision"
+      ],
+      "group_count": 13,
+      "ridge_count": 15,
+      "diagnostic_candidate_count": 23,
+      "accepted_location": false,
+      "leading_diagnostic_candidate": {
+        "lat": 40.875028312431475,
+        "lon": -73.5246566868786,
+        "score": 3.3668352632530354,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "event_ids": [
+          "event-0005",
+          "event-0008",
+          "event-0009",
+          "event-0009-harmonic-2",
+          "event-0009-harmonic-3",
+          "event-0012",
+          "event-0013"
+        ],
+        "flight_ids": [
+          "a63e21:2",
+          "aa61d2:3",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "a1dfeb:1",
+          "ace391:3",
+          "a6decf:19"
+        ],
+        "recording_start_utc": "2026-09-08T20:17:29.683680Z",
+        "mapped_recording_start_utc": "2026-09-08T20:17:29.683680Z",
+        "matched_group_count": 5,
+        "normalized_score": 0.673367052650607,
+        "uncertainty_provenance": {
+          "kind": "sensitivity",
+          "method": "declared_perturbation_profiles",
+          "sources": [
+            "altitude",
+            "clock",
+            "frequency",
+            "sound_speed",
+            "source_frequency"
+          ],
+          "complete": true,
+          "boundary_limited": true
+        },
+        "uncertainty_radius_m": 678.9789239751518,
+        "mode_id": "mode-1411b3de338b324b71351c01b1700083ac512eb657fd5e0ed22cf79ebfa68016"
+      },
+      "encoding": {
+        "bitrate_kbps": 128,
+        "sample_rate_hz": 48000,
+        "channels": 1,
+        "gain_db": 0.0,
+        "leading_silence_s": 0.0
+      },
+      "discovery": {
+        "chunk_s": 180.0,
+        "overlap_s": 60.0
+      },
+      "time_window": {
+        "start_utc": "2026-09-08T20:17:20Z",
+        "end_utc": "2026-09-08T20:17:40Z",
+        "source": "user",
+        "source_detail": "Existing source-informed reference development control; not independent timing or localization acceptance."
+      },
+      "encoded_input": {
+        "file": "chunks_180_60/input.mp3",
+        "bytes": 57603885,
+        "sha256": "c9cb15f40a9d64b18f66a6818d9a4f5743a8ec235a3c96330c0f8257df58ee2d"
+      },
+      "usability": {
+        "passed": true,
+        "duration_error_s": 0.0,
+        "maximum_absolute_lag_s": 0.0,
+        "gain_corrected_nrmse": 0.0503479026001506,
+        "native_decode_sample_rate_hz": 48000,
+        "native_decode_channels": 1,
+        "native_decode_duration_s": 3600.1843125,
+        "native_decode_absolute_peak": 0.05229577794671059,
+        "identical_channel_max_difference": null
+      },
+      "http_elapsed_s": 49.906654162999985,
+      "worker_high_water_at_search_completion_mib": 436.25,
+      "sampled_descendant_peak_rss_mib": null,
+      "work": {
+        "status": "partial",
+        "tiles_total": 2,
+        "tiles_completed": 2,
+        "tiles_resumed": 0,
+        "unsearched_tiles": 0,
+        "grid_points_searched": 4,
+        "refinement_points_searched": 40,
+        "refinement_points_skipped": 80,
+        "refinement_stages_resumed": 0,
+        "model_assessment_complete": false,
+        "model_support_complete": false,
+        "data_scope_complete": false,
+        "all_event_groups_considered": true,
+        "event_groups_proposed": 13,
+        "alternative_modes_exhaustively_assessed": false,
+        "elapsed_s": 14.429873888999282,
+        "process_peak_rss_mib": 436.25,
+        "bounded_concurrency": 1
+      },
+      "coverage": {
+        "search_complete": false,
+        "data_status": "partial",
+        "missing_data": [
+          "historical_flight_scope_or_audible_border_region"
+        ]
+      },
+      "finite_search": {
+        "complete": false,
+        "score_kind": "matched_group_support_minus_normalized_residual",
+        "evaluated_modes": 505,
+        "bounded_unknown_envelopes": 16021,
+        "bounded_unknown_rejections": 7693,
+        "unclassified_score_candidates": 16021,
+        "unsupported_cpa_track_evaluations": 7,
+        "discarded_bound_status": "unknown_model_or_trial_support"
+      },
+      "baseline_comparison": {
+        "violations": [
+          "group_count_changed",
+          "ridge_correspondence_incomplete",
+          "mapped_event_edges",
+          "associated_flights_changed",
+          "distant_mode_lost"
+        ],
+        "diagnostic_candidate_comparison": {
+          "displacement_m": 30.87694353770974,
+          "within_threshold_m": {
+            "100": true,
+            "500": true,
+            "1000": true
+          },
+          "mapped_clock_delta_s": 0.053637,
+          "associated_flights_equal": false,
+          "score_units_equal": true,
+          "normalized_score_comparable": false,
+          "normalized_score_delta": null,
+          "uncertainty_provenance_equal": true,
+          "uncertainty_radius_m": [
+            640.002841961748,
+            678.9789239751518
+          ]
+        }
+      }
+    }
+  ],
+  "pairwise": [
+    {
+      "left": "baseline",
+      "right": "bitrate_64",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 1,
+      "ridge_count_delta": 1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [],
+        "unmatched_right": [
+          "event-0012"
+        ],
+        "unmatched_left_groups": [],
+        "unmatched_right_groups": [
+          "harmonics-0012"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 7,
+      "distant_modes_without_full_association_match": 7,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 177.95093223180686,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.474851,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          543.9955684918633
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "bitrate_192",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 1,
+      "ridge_count_delta": 1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [],
+        "unmatched_right": [
+          "event-0016"
+        ],
+        "unmatched_left_groups": [],
+        "unmatched_right_groups": [
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 17,
+      "unmatched_retained_left_count": 6,
+      "unmatched_retained_right_count": 6,
+      "distant_modes_count": 4,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 3.088427744321566,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.005837,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 0.0008466672710633061,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          563.0868546383958
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "uncertainty_provenance_changed",
+        "retained_mode_uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "rate_44100",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 1,
+      "ridge_count_delta": 1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 16,
+        "unmatched_left": [
+          "event-0010"
+        ],
+        "unmatched_right": [
+          "event-0010",
+          "event-0016"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0010"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010",
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 15,
+      "distant_modes_without_full_association_match": 15,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1969.9261974464414,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.452914,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          515.3238214374177
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "gain_minus_6db",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 16,
+        "unmatched_left": [
+          "event-0001"
+        ],
+        "unmatched_right": [
+          "event-0015"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0015"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 17,
+      "unmatched_retained_left_count": 6,
+      "unmatched_retained_right_count": 6,
+      "distant_modes_count": 4,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 2.673805427547985,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.00577,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 0.0009284932690997172,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          591.5384979284173
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "identical_stereo",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 1,
+      "ridge_count_delta": 1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [],
+        "unmatched_right": [
+          "event-0016"
+        ],
+        "unmatched_left_groups": [],
+        "unmatched_right_groups": [
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 17,
+      "unmatched_retained_left_count": 6,
+      "unmatched_retained_right_count": 6,
+      "distant_modes_count": 4,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1.6104323518264563,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.005285,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 0.0008081694842505538,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          562.6473847366728
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "uncertainty_provenance_changed",
+        "retained_mode_uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -2,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0001",
+          "event-0005",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 8,
+      "distant_modes_without_full_association_match": 8,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 120.24078408612776,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.21366,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -4,
+      "ridge_count_delta": -4,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0010",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 4,
+      "distant_modes_without_full_association_match": 4,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 31.783549576707504,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.065637,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "baseline",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -2,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 13,
+        "unmatched_left": [
+          "event-0004",
+          "event-0007",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0011",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0011",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 4,
+      "distant_modes_without_full_association_match": 4,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 30.87694353770974,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.053637,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          640.002841961748,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "bitrate_192",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [
+          "event-0012"
+        ],
+        "unmatched_right": [
+          "event-0016"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0012"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 5,
+      "distant_modes_without_full_association_match": 5,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 176.42168764822333,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.469014,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          563.0868546383958
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "rate_44100",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 16,
+        "unmatched_left": [
+          "event-0010",
+          "event-0012"
+        ],
+        "unmatched_right": [
+          "event-0010",
+          "event-0016"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0010",
+          "harmonics-0012"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010",
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 16,
+      "distant_modes_without_full_association_match": 16,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 2131.0014278580384,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 6.978063,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          515.3238214374177
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "gain_minus_6db",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -1,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 16,
+        "unmatched_left": [
+          "event-0001",
+          "event-0012"
+        ],
+        "unmatched_right": [
+          "event-0015"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0012"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0015"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 5,
+      "distant_modes_without_full_association_match": 5,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 176.3092166596476,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.469081,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          591.5384979284173
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "identical_stereo",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [
+          "event-0012"
+        ],
+        "unmatched_right": [
+          "event-0016"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0012"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0016"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 5,
+      "distant_modes_without_full_association_match": 5,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 179.16527548873552,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.469566,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          562.6473847366728
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0001",
+          "event-0005",
+          "event-0007",
+          "event-0012",
+          "event-0013",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0013",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 9,
+      "distant_modes_without_full_association_match": 9,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 294.3743680862555,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.261191,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -5,
+      "ridge_count_delta": -5,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0007",
+          "event-0012",
+          "event-0013",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0010",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0013",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 5,
+      "distant_modes_without_full_association_match": 5,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 209.69941712846025,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.409214,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_64",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -3,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 13,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0012",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0011",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0012",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0011",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 5,
+      "distant_modes_without_full_association_match": 5,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 208.67581422179455,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.421214,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          543.9955684918633,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_192",
+      "right": "rate_44100",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [
+          "event-0010"
+        ],
+        "unmatched_right": [
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0010"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 13,
+      "distant_modes_without_full_association_match": 13,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1972.4977294054368,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.447077,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          515.3238214374177
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_192",
+      "right": "gain_minus_6db",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -1,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [
+          "event-0001"
+        ],
+        "unmatched_right": [],
+        "unmatched_left_groups": [
+          "harmonics-0001"
+        ],
+        "unmatched_right_groups": [],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 23,
+      "unmatched_retained_left_count": 0,
+      "unmatched_retained_right_count": 0,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 0,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 0.5804868638512307,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 6.7e-05,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 8.182599803641111e-05,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          591.5384979284173
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "uncertainty_provenance_changed",
+        "retained_mode_uncertainty_provenance_changed"
+      ]
+    },
+    {
+      "left": "bitrate_192",
+      "right": "identical_stereo",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 18,
+        "unmatched_left": [],
+        "unmatched_right": [],
+        "unmatched_left_groups": [],
+        "unmatched_right_groups": [],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 23,
+      "unmatched_retained_left_count": 0,
+      "unmatched_retained_right_count": 0,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 0,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 3.1959708464021874,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.000552,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 0.0016548367553138599,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          562.6473847366728
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": []
+    },
+    {
+      "left": "bitrate_192",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0001",
+          "event-0005",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 6,
+      "distant_modes_without_full_association_match": 6,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 122.58231777413928,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.207823,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_192",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -5,
+      "ridge_count_delta": -5,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 12,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 33.56720405193145,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.0598,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "bitrate_192",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -3,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 14,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 32.25443807929025,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.0478,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          563.0868546383958,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "rate_44100",
+      "right": "gain_minus_6db",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -1,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 16,
+        "unmatched_left": [
+          "event-0001",
+          "event-0010"
+        ],
+        "unmatched_right": [
+          "event-0009"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0010"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0009"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 13,
+      "distant_modes_without_full_association_match": 13,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1972.3389175354357,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.447144,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          515.3238214374177,
+          591.5384979284173
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "rate_44100",
+      "right": "identical_stereo",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": 0,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [
+          "event-0010"
+        ],
+        "unmatched_right": [
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0010"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 13,
+      "distant_modes_without_full_association_match": 13,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1969.309446910822,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.447629,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          515.3238214374177,
+          562.6473847366728
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "rate_44100",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 10,
+        "unmatched_left": [
+          "event-0001",
+          "event-0005",
+          "event-0007",
+          "event-0009",
+          "event-0012",
+          "event-0014",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0010",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0009",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0010",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 17,
+      "distant_modes_without_full_association_match": 17,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1850.786591059881,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.239254,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          515.3238214374177,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "rate_44100",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -5,
+      "ridge_count_delta": -5,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0007",
+          "event-0009",
+          "event-0012",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0007",
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0009",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0007",
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 13,
+      "distant_modes_without_full_association_match": 13,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1940.7778114010532,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.387277,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          515.3238214374177,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "rate_44100",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -3,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 13,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0010",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0008",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0010",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0008",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 13,
+      "distant_modes_without_full_association_match": 13,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 1943.9247228712218,
+        "within_threshold_m": {
+          "100": false,
+          "500": false,
+          "1000": false
+        },
+        "mapped_clock_delta_s": 7.399277,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          515.3238214374177,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "fitted_clock_changed",
+        "diagnostic_candidate_jump",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "gain_minus_6db",
+      "right": "identical_stereo",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 1,
+      "ridge_count_delta": 1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 17,
+        "unmatched_left": [],
+        "unmatched_right": [
+          "event-0001"
+        ],
+        "unmatched_left_groups": [],
+        "unmatched_right_groups": [
+          "harmonics-0001"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 23,
+      "unmatched_retained_left_count": 0,
+      "unmatched_retained_right_count": 0,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 0,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 3.048084987013801,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.000485,
+        "associated_flights_equal": true,
+        "score_units_equal": true,
+        "normalized_score_comparable": true,
+        "normalized_score_delta": 0.001736662753350271,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          591.5384979284173,
+          562.6473847366728
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "uncertainty_provenance_changed",
+        "retained_mode_uncertainty_provenance_changed"
+      ]
+    },
+    {
+      "left": "gain_minus_6db",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -2,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0011",
+          "event-0013",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0011",
+          "harmonics-0013",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 6,
+      "distant_modes_without_full_association_match": 6,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 122.49018807645596,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.20789,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          591.5384979284173,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "gain_minus_6db",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -4,
+      "ridge_count_delta": -4,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0003",
+          "event-0005",
+          "event-0006",
+          "event-0011",
+          "event-0013",
+          "event-0014"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0003",
+          "harmonics-0005",
+          "harmonics-0006",
+          "harmonics-0011",
+          "harmonics-0013",
+          "harmonics-0014"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 33.60309883689145,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.059867,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          591.5384979284173,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "gain_minus_6db",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -2,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 13,
+        "unmatched_left": [
+          "event-0003",
+          "event-0005",
+          "event-0013",
+          "event-0014"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0003",
+          "harmonics-0005",
+          "harmonics-0013",
+          "harmonics-0014"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 32.37554428379954,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.047867,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          591.5384979284173,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "identical_stereo",
+      "right": "leading_17_25s",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 11,
+        "unmatched_left": [
+          "event-0001",
+          "event-0005",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015",
+          "event-0016"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015",
+          "harmonics-0016"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 6,
+      "distant_modes_without_full_association_match": 6,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 119.44224244015248,
+        "within_threshold_m": {
+          "100": false,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.208375,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          562.6473847366728,
+          524.906058378267
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "identical_stereo",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -5,
+      "ridge_count_delta": -5,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 12,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0007",
+          "event-0012",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0010"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0012",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0010"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 30.648564045631886,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.060352,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          562.6473847366728,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "identical_stereo",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -3,
+      "ridge_count_delta": -3,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 14,
+        "unmatched_left": [
+          "event-0004",
+          "event-0006",
+          "event-0014",
+          "event-0015"
+        ],
+        "unmatched_right": [
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0004",
+          "harmonics-0006",
+          "harmonics-0014",
+          "harmonics-0015"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 29.573296043587717,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.048352,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          562.6473847366728,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "leading_17_25s",
+      "right": "chunks_60_30",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": -2,
+      "ridge_count_delta": -3,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 9,
+        "unmatched_left": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0004",
+          "event-0010",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0005",
+          "harmonics-0006",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0010",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 6,
+      "distant_modes_without_full_association_match": 6,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 90.0728104195123,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.148023,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          524.906058378267,
+          629.8870582331216
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "leading_17_25s",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 0,
+      "ridge_count_delta": -1,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 10,
+        "unmatched_left": [
+          "event-0001",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0007",
+          "event-0013"
+        ],
+        "unmatched_right": [
+          "event-0001",
+          "event-0004",
+          "event-0010",
+          "event-0011",
+          "event-0013"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0005",
+          "harmonics-0007",
+          "harmonics-0013"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0001",
+          "harmonics-0004",
+          "harmonics-0010",
+          "harmonics-0011",
+          "harmonics-0013"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 6,
+      "distant_modes_without_full_association_match": 6,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 93.1381327059274,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.160023,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": false,
+        "uncertainty_radius_m": [
+          524.906058378267,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "mapped_ridge_frequency",
+        "associated_flights_changed",
+        "uncertainty_provenance_changed",
+        "distant_mode_lost"
+      ]
+    },
+    {
+      "left": "chunks_60_30",
+      "right": "chunks_180_60",
+      "representation_usable": true,
+      "complete_pipelines": true,
+      "status_transition": [
+        "inconclusive",
+        "inconclusive"
+      ],
+      "reason_transition": [
+        "search_incomplete",
+        "search_incomplete"
+      ],
+      "group_count_delta": 2,
+      "ridge_count_delta": 2,
+      "coverage_equal": false,
+      "decision_provenance_equal": true,
+      "event_correspondence": {
+        "matched_count": 12,
+        "unmatched_left": [
+          "event-0011"
+        ],
+        "unmatched_right": [
+          "event-0005",
+          "event-0010",
+          "event-0011"
+        ],
+        "unmatched_left_groups": [
+          "harmonics-0011"
+        ],
+        "unmatched_right_groups": [
+          "harmonics-0005",
+          "harmonics-0010",
+          "harmonics-0011"
+        ],
+        "split_groups": {},
+        "merged_groups": {}
+      },
+      "retained_mode_correspondence_count": 0,
+      "unmatched_retained_left_count": 23,
+      "unmatched_retained_right_count": 23,
+      "distant_modes_count": 2,
+      "distant_modes_without_full_association_match": 2,
+      "diagnostic_candidate_comparison": {
+        "displacement_m": 5.04359288377642,
+        "within_threshold_m": {
+          "100": true,
+          "500": true,
+          "1000": true
+        },
+        "mapped_clock_delta_s": 0.012,
+        "associated_flights_equal": false,
+        "score_units_equal": true,
+        "normalized_score_comparable": false,
+        "normalized_score_delta": null,
+        "uncertainty_provenance_equal": true,
+        "uncertainty_radius_m": [
+          629.8870582331216,
+          678.9789239751518
+        ]
+      },
+      "accepted_location_displacement_m": null,
+      "serious_accepted_jump": false,
+      "violations": [
+        "group_count_changed",
+        "ridge_correspondence_incomplete",
+        "mapped_event_edges",
+        "associated_flights_changed",
+        "distant_mode_lost"
+      ]
+    }
+  ],
+  "chunk_inputs_byte_identical_to_baseline": true,
+  "rate_44100_interpretation": {
+    "missing_baseline_event": {
+      "event_id": "event-0010",
+      "harmonic_group_id": "harmonics-0010",
+      "start_s": 1396.5,
+      "end_s": 1418.5,
+      "band_hz": [
+        75.49194688163698,
+        93.47661251202226
+      ]
+    },
+    "missing_baseline_association_flight_id": "aa61d2:3",
+    "baseline_candidates_using_missing_event": 23,
+    "baseline_parent_public_rank": 3,
+    "baseline_parent_mode_id": "mode-b6ce091cd94951be52e9f8ef1d18de68c1c69f84d4b2a74f466d3b3e94ccd389",
+    "variant_reduced_remnant_public_rank": 11,
+    "variant_reduced_remnant_retained_rank": 8,
+    "variant_reduced_remnant_mode_id": "mode-f9e1ded22129f5cde1442693e6e9ea836d7143c52173f7c3bf6a329002d5423d",
+    "remaining_group_count": 5,
+    "parent_and_remnant_lat_lon": [
+      40.87348267287692,
+      -73.52240429826175
+    ],
+    "parent_and_remnant_mapped_recording_start_utc": "2026-09-08T20:17:30.124955Z",
+    "remnant_distance_from_refined_baseline_winner_m": 284.6319378756171,
+    "remnant_clock_delta_from_refined_baseline_winner_s": 0.494912,
+    "interpretation": "The 1969.926 m diagnostic-winner movement accompanies a changed detected population and different associations. A five-group reduced remnant survives with the exact coordinates and clock of the baseline unrefined parent. This does not demonstrate accidental deletion or reordering of an identical hypothesis."
+  },
+  "truth_evaluation": {
+    "eligible": false,
+    "evaluated": false,
+    "reason": "No independent truth supplied to this protocol"
+  },
+  "national_gate_satisfied": false,
+  "limitations": [
+    "All nine scientific decisions remain inconclusive/search_incomplete. No accepted-location displacement or independent truth error was evaluated.",
+    "This regional, source-informed request and incomplete historical coverage cannot satisfy the issue 61 national gate.",
+    "Passing global PCM/lag/peak checks does not establish preservation of every weak narrow-band acoustic cue.",
+    "distant_mode_lost is a failed strict full-association correspondence. Changed detected groups can trigger it without proving that the same hypothesis was pruned.",
+    "The original aggregate descendant-RSS sampler could not traverse this proc mount. All nine original aggregate readings remain null. Worker high-water values were recorded at search completion and are not certified whole-job peaks.",
+    "The compact file summarizes comparisons. Raw artifacts retain every mapped ridge, candidate, comparison, command and persisted HTTP job. Local raw-artifact paths are execution provenance, not portable download links."
+  ],
+  "post_run_instrumentation": {
+    "correction_commit": "e35c8487d59c127e7274582ffd7ce61747411a72",
+    "control": {
+      "scope": "actual_short_upload_instrumentation_control",
+      "declared_matrix_arm": false,
+      "historical_matrix_rss_values_changed": false,
+      "http_verification_passed": true,
+      "status": "needs_input",
+      "reason": "recording_time_required",
+      "memory": {
+        "sampled_descendant_peak_rss_mib": 129.7421875,
+        "interval_s": 0.1,
+        "samples": 16,
+        "thread_error": null,
+        "stop_timed_out": false,
+        "partial_measurement": false,
+        "skipped_process_reads": 0,
+        "traversal": "ppid_snapshot",
+        "unavailable_reason": null,
+        "scope": "Sum of local service and worker descendant RSS; sampled lower bound, not unique physical memory"
+      },
+      "sampler_stopped": true,
+      "runtime_pins": {
+        "packages": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "pandas": "2.2.3",
+          "pyproj": "3.8.0",
+          "rasterio": "1.5.2",
+          "pyarrow": "26.0.1",
+          "matplotlib": "3.10.8",
+          "shapely": null
+        },
+        "geos_version": null,
+        "missing_runtime_pins": []
+      },
+      "runner_sha256": "af7776ef93c67c47c136021468780c064eacffdc525e5f7b6275e062e85a1d31",
+      "software_error_controls": {
+        "scope": "software instrumentation checks, not scientific arms",
+        "unexpected_thread_error_preserved": true,
+        "bounded_stop_timeout_preserved": true,
+        "missing_proc_unavailable": true,
+        "context_exception_stops_sampler": true,
+        "stop_timeout_elapsed_s": 0.05026156999883824
+      }
+    },
+    "historical_values_changed": false,
+    "scope": "Separate short actual-upload control only; not a declared scientific arm."
+  },
+  "raw_artifact_root": "/workspace/scratch/e20de6666de2",
+  "raw_artifacts": {
+    "verification-issue61-plan/plan.json": {
+      "bytes": 27269,
+      "sha256": "b1a438921df56c3d1ac17a840c4d9fc4ff2c1d605dd8d61366343bce57e7887d"
+    },
+    "verification-issue61-matrix/report.json": {
+      "bytes": 2351784,
+      "sha256": "e21692595e63c32fd82827060ec6cd934c11c2b0918035536bd24b0905ba7777"
+    },
+    "verification-issue61-matrix/state.json": {
+      "bytes": 1758985,
+      "sha256": "339e7088376f4e540a0bf458160f24b4e70cc1e0fdb20ab42fdb0dc22445a667"
+    }
+  },
+  "raw_case_artifacts": "/workspace/scratch/e20de6666de2/verification-issue61-matrix/<case-id>",
+  "reproduction_note": "Use the archived frozen source and the recorded data/configuration/runtime identities for this historical comparison. Prepare a new immutable plan for a changed source, dependency set or request. No historical plan or result was rewritten after the instrumentation correction."
+}
