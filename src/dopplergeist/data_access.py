@@ -1212,6 +1212,7 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
     daily all-type archives once and reuses their disk indexes on later jobs.
     """
     from .contracts import utc_timestamp, validate_request, validate_recording
+    from .geography import profile_for_search
     request, recording = validate_request(request), validate_recording(recording)
     window = request.get("time_window") or recording.get("time_window")
     if window is None:
@@ -1233,7 +1234,8 @@ def acquire_inputs(request, recording, *, cache_root, index_paths=None, offline=
         raise ValueError("Required emission interval must be ordered")
     times = (first, last)
     root = Path(cache_root)
-    bounds = tuple(request["search"].get("bounds_wsen", CONUS))
+    profile = profile_for_search(request["search"])
+    bounds = tuple(request["search"].get("bounds_wsen", profile.bounds_wsen))
     if index_paths:
         indexes = [FlightIndex(path) for path in index_paths]
     else:

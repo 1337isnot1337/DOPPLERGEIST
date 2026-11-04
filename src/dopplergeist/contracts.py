@@ -10,6 +10,8 @@ import math
 from pathlib import PurePosixPath
 from typing import Literal, NotRequired, TypedDict
 
+from .geography import profile_for_search
+
 
 class RecordingTimeWindow(TypedDict):
     start_utc: str
@@ -19,7 +21,8 @@ class RecordingTimeWindow(TypedDict):
 
 
 class SearchArea(TypedDict):
-    coverage: Literal["conus"]
+    country: NotRequired[Literal["US", "DE"]]
+    coverage: NotRequired[Literal["conus", "germany"]]
     bounds_wsen: NotRequired[list[float]]
 
 
@@ -168,9 +171,17 @@ def validate_request(value):
         if "source_detail" in window:
             _text(window["source_detail"], "source_detail")
         request["time_window"] = window
-    search = _record(request.get("search", {"coverage": "conus"}), ("coverage",), ("bounds_wsen",))
-    if search["coverage"] != "conus":
-        raise ValueError("Version one supports CONUS coverage; supply bounds_wsen for a CONUS subset")
+    search = _record(request.get("search", {"coverage": "conus"}), (), ("country", "coverage", "bounds_wsen"))
+    if "country" not in search and "coverage" not in search:
+        raise ValueError("Search must specify country or coverage")
+    for name in ("country", "coverage"):
+        if name in search:
+            _text(search[name], name)
+    profile = profile_for_search(search)
+    search["coverage"] = profile.coverage
+    # Keep old saved CONUS requests identical when no country was supplied.
+    if "country" in search:
+        search["country"] = profile.country
     if "bounds_wsen" in search:
         bounds = search["bounds_wsen"]
         if not isinstance(bounds, list) or len(bounds) != 4:
@@ -179,8 +190,10 @@ def validate_request(value):
             _number(number, "bounds_wsen", -180 if i % 2 == 0 else -90, 180 if i % 2 == 0 else 90)
         if bounds[0] >= bounds[2] or bounds[1] >= bounds[3]:
             raise ValueError("Bounds must be increasing; antimeridian crossing is unsupported")
-        if not (-125 <= bounds[0] < bounds[2] <= -66 and 24 <= bounds[1] < bounds[3] <= 50):
-            raise ValueError("bounds_wsen must stay within CONUS: west -125, south 24, east -66, north 50")
+        west, south, east, north = profile.bounds_wsen
+        if not (west <= bounds[0] < bounds[2] <= east and south <= bounds[1] < bounds[3] <= north):
+            name = "CONUS" if profile.coverage == "conus" else profile.name
+            raise ValueError(f"bounds_wsen must stay within {name}: west {west:g}, south {south:g}, east {east:g}, north {north:g}")
     request["search"] = search
     return request
 

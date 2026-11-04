@@ -9,7 +9,8 @@ scope and limitations.
 
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
-**sample zero**, and declared CONUS search coverage. Event windows, frequency
+**sample zero**, and a declared country profile (US/CONUS by default, or Germany).
+An optional rectangle narrows that profile. Event windows, frequency
 bands, flight IDs and ground-truth coordinates are not upload inputs.
 
 Launch the local interface after installing the project:
@@ -78,6 +79,12 @@ dopplergeist resume JOB_ID --jobs jobs
 dopplergeist resume JOB_ID --server-url http://127.0.0.1:8765
 dopplergeist job JOB_ID --jobs jobs --watch
 ```
+
+Use `analyze --country DE` or the upload form's country selector for Germany.
+The API equivalent is `"search":{"country":"DE"}`; normalized requests record
+`"coverage":"germany"`. The same country, CRS and receiver mask apply to coarse
+search, parallel workers, fine grids and continuous refinement. See
+[country profiles](COUNTRIES.md) for boundary acquisition, offline use and limits.
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
 the upload is queued. `job --watch` reports the status-file progress field, the

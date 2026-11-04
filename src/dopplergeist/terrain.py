@@ -192,7 +192,8 @@ class CopernicusTerrain:
         return height.reshape(shape)
 
 
-def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=None, time_origin=None):
+def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=None, time_origin=None,
+                  receiver_mask=None):
     """Only materialize grid cells near plausible aircraft segments.
 
     Coordinates use one shared CRS and grid origin, so overlapping flight corridors
@@ -224,8 +225,8 @@ def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=No
             lon = np.interp(t, track.time, track.lon)
             x, y = forward.transform(lon, lat)
             anchors = np.unique(np.round(np.column_stack((x, y)) / spacing_m).astype(np.int64), axis=0)
-            # EPSG:5070 grid scale is close to unity over CONUS; 10% padding
-            # plus an anchor gap protects corridor coverage under distortion.
+            # Padding includes an anchor gap and projection distortion over the
+            # supported search regions. It applies to complete aircraft tracks.
             pad = radius * 1.45 + spacing_m
             if clipbox:
                 left,bottom,right,top=clipbox
@@ -256,18 +257,29 @@ def corridor_grid(tracks, events, spacing_m, terrain, crs="EPSG:5070", bounds=No
         west, south, east, north = bounds
         keep = (lon >= west) & (lon <= east) & (lat >= south) & (lat <= north)
         x, y, lon, lat = (a[keep] for a in (x,y,lon,lat))
-    height = terrain.sample(lat,lon)
+    if receiver_mask is not None:
+        keep = receiver_mask.contains(lon, lat)
+        x, y, lon, lat = (a[keep] for a in (x, y, lon, lat))
+    height = terrain.sample(lat,lon) if len(lat) else np.array([])
     import pandas as pd
     return pd.DataFrame({"point_id": np.arange(len(x)), "x":x, "y":y, "lat":lat, "lon":lon, "elev_m":height})
 
 
-def refine_grid(points, coarse_spacing, fine_spacing, terrain, crs="EPSG:5070"):
+def refine_grid(points, coarse_spacing, fine_spacing, terrain, crs="EPSG:5070", *,
+                bounds=None, receiver_mask=None):
     inverse = Transformer.from_crs(crs, "EPSG:4326", always_xy=True)
     radius = int(np.ceil(coarse_spacing / fine_spacing))
     dx, dy = np.meshgrid(np.arange(-radius,radius+1),np.arange(-radius,radius+1))
     offsets = np.column_stack((dx.ravel(),dy.ravel())) * fine_spacing
     coords = np.unique(np.concatenate([np.array([r.x,r.y])+offsets for r in points.itertuples()]),axis=0)
     lon,lat = inverse.transform(coords[:,0],coords[:,1])
+    keep = np.ones(len(coords), dtype=bool)
+    if bounds is not None:
+        west, south, east, north = bounds
+        keep &= (lon >= west) & (lon <= east) & (lat >= south) & (lat <= north)
+    if receiver_mask is not None:
+        keep &= receiver_mask.contains(lon, lat)
+    coords, lon, lat = coords[keep], lon[keep], lat[keep]
     import pandas as pd
     return pd.DataFrame({"point_id":np.arange(len(coords)),"x":coords[:,0],"y":coords[:,1],
-                         "lat":lat,"lon":lon,"elev_m":terrain.sample(lat,lon)})
+                         "lat":lat,"lon":lon,"elev_m":terrain.sample(lat,lon) if len(lat) else np.array([])})

@@ -169,6 +169,33 @@ def run(config_path,output_dir):
         p=Path(path)
         return p if p.is_absolute() else config_path.parent/p
     audio=local(config["audio"])
+    grid=config.get("grid",{})
+    bounds=grid.get("bounds")
+    crs=grid.get("crs","EPSG:5070")
+    profile=receiver_mask=None
+    if "country" in config or "search" in config:
+        from .contracts import validate_request
+        from .geography import profile_for_search,receiver_mask_for_search
+        area=config.get("search",{})
+        if not isinstance(area,dict):
+            raise ValueError("Research search must be a country/coverage object")
+        area=dict(area)
+        if "country" in config:
+            if "country" in area and area["country"]!=config["country"]:
+                raise ValueError("Research country and search.country disagree")
+            area["country"]=config["country"]
+        if bounds is not None:
+            if "bounds_wsen" in area and area["bounds_wsen"]!=bounds:
+                raise ValueError("Research grid.bounds and search.bounds_wsen disagree")
+            area["bounds_wsen"]=bounds
+        area=validate_request({"schema_version":1,"audio_path":str(audio),"search":area})["search"]
+        profile=profile_for_search(area)
+        if "crs" in grid and grid["crs"]!=profile.crs:
+            raise ValueError("Research grid.crs must match the selected country profile")
+        bounds=area.get("bounds_wsen",profile.bounds_wsen)
+        crs=profile.crs
+        receiver_mask=receiver_mask_for_search(area,
+            cache_root=local(config.get("cache_root",output/"cache")),offline=config.get("offline",True))
     measurements=[]
     events=[]
     for i,settings in enumerate(config["events"]):
@@ -191,7 +218,6 @@ def run(config_path,output_dir):
     tracks=[]
     imports=[]
     origin=unix_time(config["recording_start_utc"]) if config.get("recording_start_utc") is not None else None
-    bounds=config.get("grid",{}).get("bounds")
     track_bounds=None
     if bounds:
         # Preserve enough pre/post-event trajectory to model the entire audible
@@ -214,10 +240,8 @@ def run(config_path,output_dir):
     geoid=local(ground["geoid_raster"]) if ground.get("geoid_raster") else None
     terrain=(CopernicusTerrain(local(ground["copernicus_cache"]),geoid) if ground.get("copernicus_cache") else
              Terrain([local(p) for p in ground.get("rasters",[])],ground.get("constant_m"),geoid))
-    grid=config.get("grid",{})
     coarse=grid.get("spacing_m",200)
-    crs=grid.get("crs","EPSG:5070")
-    points=corridor_grid(tracks,events,coarse,terrain,crs,grid.get("bounds"),origin)
+    points=corridor_grid(tracks,events,coarse,terrain,crs,bounds,origin,receiver_mask)
     print(f"Grid: {len(points)} points; {len(tracks)} trajectory segments",flush=True)
     radius=max(event["slant_range_m"][1] for event in events)
     c=config.get("sound_speed_mps",343.0)
@@ -280,7 +304,8 @@ def run(config_path,output_dir):
     fine=grid.get("scoring_spacing_m",100)
     if candidates and fine<coarse:
         ids={candidate["point_id"] for candidate in candidates}
-        points=refine_grid(points[points.point_id.isin(ids)],coarse,fine,terrain,crs)
+        points=refine_grid(points[points.point_id.isin(ids)],coarse,fine,terrain,crs,
+                           bounds=bounds,receiver_mask=receiver_mask)
         candidates,fine_counts=select(points,"scoring-cpa")
     else:
         fine_counts=counts
@@ -320,7 +345,7 @@ def run(config_path,output_dir):
     final_spacing=grid.get("refine_spacing_m",25)
     if chosen and final_spacing<fine:
         seeds=pd.DataFrame(chosen)
-        points2=refine_grid(seeds,fine,final_spacing,terrain,crs)
+        points2=refine_grid(seeds,fine,final_spacing,terrain,crs,bounds=bounds,receiver_mask=receiver_mask)
         candidates2,refined_counts=select(points2,"refinement-cpa")
         ranked2=rank(candidates2,points2,"refinement-scoring")
         ranked=sorted(ranked+ranked2,key=lambda r:r["score"],reverse=True)
@@ -346,6 +371,11 @@ def run(config_path,output_dir):
                 "Legacy brightness/ridge scores do not report exhaustive clock-trial assessment."],
             "elapsed_s":time.monotonic()-began,
             "scoring_time_is_locked":True}
+    if profile is not None:
+        report["search_geography"]={"country":profile.country,"coverage":profile.coverage,
+            "bounds_wsen":list(bounds),"crs":crs}
+        if receiver_mask is not None:
+            report["search_geography"]["receiver_mask"]=receiver_mask.identity
     dump(output/"report.json",report)
     if ranked:
         plot_results(output,ranked,tracks,measurements,c)

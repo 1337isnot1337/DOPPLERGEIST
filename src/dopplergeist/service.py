@@ -6,6 +6,7 @@ from importlib.resources import files
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from .geography import public_profiles
 from .jobs import JobManager
 
 _EXCLUDED_ARTIFACTS = {"operator.json", "cancel", ".control.lock"}
@@ -49,6 +50,7 @@ class Handler(BaseHTTPRequestHandler):
         manager = self.server.manager
         if self.command == "GET" and parts == ["api", "capabilities"]:
             return self._reply({"schema_version": 1, "coverage": "conus", "max_upload_bytes": manager.max_upload_bytes,
+                                "default_country": "US", "countries": public_profiles(),
                                 "max_runtime_s": manager.max_runtime_s, "max_pending": manager.max_pending,
                                 "provider_configured": bool(manager.config.get("cache_root") or manager.config.get("flight_indexes")),
                                 "online_enabled": not bool(manager.config.get("offline", True))})
