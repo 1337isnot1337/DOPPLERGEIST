@@ -1,10 +1,10 @@
 # DOPPLERGEIST
 
-![DOPPLERGEIST — aircraft Doppler audio geolocation](https://raw.githubusercontent.com/1337isnot1337/DOPPLERGEIST/main/assets/dopplergeist-banner.svg)
+![DOPPLERGEIST — aircraft Doppler audio geolocation](https://raw.githubusercontent.com/1337isnot1337/DOPPLERGEIST/main/docs/assets/dopplergeist-banner.svg)
 
 **DOPPLERGEIST** is a Python CLI and local web application for aircraft Doppler audio geolocation. It detects candidate flyover signals in recordings, retrieves historical ADS-B flight tracks, models acoustic propagation, and ranks possible recording locations.
 
-![Automatic MP3 flyover analysis and ranked aircraft search](https://raw.githubusercontent.com/1337isnot1337/DOPPLERGEIST/main/assets/livermore-automatic-mp3.png)
+![Automatic MP3 flyover analysis and ranked aircraft search](https://raw.githubusercontent.com/1337isnot1337/DOPPLERGEIST/main/docs/assets/livermore-automatic-mp3.png)
 
 The illustrated real-recording experiment ranked a location 476 m from an *inferred* reference within a constrained search. The reference was not surveyed ground truth; independent blind geolocation accuracy has not been established. [Read the experiment](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/LIVERMORE_DEMO.md).
 
@@ -61,4 +61,4 @@ dopplergeist analyze recording.mp3 --jobs jobs \
 
 ## License
 
-**PolyForm Noncommercial License 1.0.0.** Noncommercial uses are permitted under the terms of that license; commercial uses that are not otherwise authorized need a separate agreement with the applicable copyright holders. Earlier MIT-licensed releases retain the permissions originally granted for those versions. [Commercial licensing details](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/COMMERCIAL-LICENSING.md).
+**PolyForm Noncommercial License 1.0.0.** Noncommercial uses are permitted under the terms of that license; commercial uses that are not otherwise authorized need a separate agreement with the applicable copyright holders. Earlier MIT-licensed releases retain the permissions originally granted for those versions. [Commercial licensing details](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/COMMERCIAL-LICENSING.md).
