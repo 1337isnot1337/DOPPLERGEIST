@@ -11,7 +11,17 @@
 
 ## Install the CLI without a checkout
 
-For normal use, install the command into an isolated environment with `pipx`:
+After the initial PyPI release has been published, the shortest supported installation is:
+
+```bash
+pipx install dopplergeist
+dopplergeist --version
+dopplergeist --help
+```
+
+Or install the Python distribution into an existing environment with `python -m pip install dopplergeist`. The [PyPI publication guide](PYPI.md) describes the first-release setup and status. FFmpeg and ffprobe must be installed separately.
+
+Until that first PyPI upload, or to install the latest source commit directly, use `pipx` with the GitHub repository:
 
 ```bash
 pipx install 'git+https://github.com/1337isnot1337/DOPPLERGEIST.git'
