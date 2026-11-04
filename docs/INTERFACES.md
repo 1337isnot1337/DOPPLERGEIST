@@ -67,8 +67,10 @@ points. Each point has `time_s`, `frequency_hz` and an optional nonnegative `wei
 lie within its band. Times are relative to the beginning of the decoded recording,
 not to the beginning of an analysis chunk. Chunked discovery must add its offset.
 
-Optional `harmonic_group_id` identifies ridges believed to come from the same
-flyover. Harmonics must not become independent time constraints. Optional
+Optional `harmonic_group_id` is the canonical acoustic proposal key. Related
+measured components contribute once as an episode, with physical source
+multiplicity unresolved; a group does not establish a flyover or source motion.
+Harmonics must not become independent time constraints. Optional
 `cpa_receive_s` is an estimated received CPA time, in audio-relative seconds, and
 may lie outside a truncated observed event. Optional positive increasing ranges
 `f0_range_hz`, `speed_range_mps` and `slant_range_m` are measured proposal bounds.
@@ -77,6 +79,16 @@ They are not guaranteed true geometry; the matcher must account for uncertainty.
 `quality` maps diagnostic names to finite numbers. Name their units where relevant
 (e.g. `ridge_rmse_hz`). A diagnostic score is not a calibrated probability.
 There is no blanket `confidence` float whose semantics different workers can guess.
+
+Automatic discovery's separate artifact is now `schema_version: 2`; its `episodes`
+catalog references compatible `events` children. See [the artifact contract and
+migration](AUDIO_DISCOVERY.md#outputs-and-compatibility). Modern children carry
+`quality.episode_model_version=2`, positive `episode_frequency_scale`, and numeric
+`matching_eligible`. Matching normalizes these measured scales within each
+canonical group, with legacy rational-ratio behavior for old records. Accepted
+brief episodes with insufficient samples remain acoustic-review evidence. This
+additive numeric quality metadata does not change DetectedEvent's strict keys or
+the upload/result schema version.
 
 ## Location candidates
 

@@ -35,7 +35,7 @@ See the [Quickstart](#quickstart) to get started.
 | Area | Available now | Entry point or remaining work |
 | --- | --- | --- |
 | Configured localization | Event measurement, flight ranking and physical refinement | `dopplergeist run` and `dopplergeist measure` on `main` |
-| Automatic acoustic discovery | Whole-recording decoding, frequency-track discovery and harmonic grouping without supplied event windows or bands | `scripts/discover_audio.py`; produces event proposals and diagnostics |
+| Automatic acoustic discovery | Whole-recording decoding and canonical acoustic episodes with measured children, explicit coverage and bounded diagnostics | `scripts/discover_audio.py`; produces event proposals and diagnostics |
 | Historical inputs | Reusable flight indexes, gap-aware trajectory queries and cached terrain/geoid data | [Data acquisition and search APIs](docs/DATA_AND_SCALE.md) on `main` |
 | Geographic search | US/CONUS and Germany profiles, parallel resumable tiles, joint matching across independent flyovers and disk-backed candidate accounting | [Country profiles](docs/COUNTRIES.md), [search](docs/DATA_AND_SCALE.md#search) and [finite-search evidence](docs/FINITE_SEARCH_PRODUCER.md) |
 | Local upload application | CLI/API orchestration, persistent jobs and inspectable browser results on `main` | `dopplergeist analyze`, `dopplergeist serve` and `dopplergeist job`; see [Local upload workflow](docs/PRODUCT.md) |
@@ -118,7 +118,7 @@ Automatic discovery scans an entire recording for moving acoustic frequency patt
   --output results/my-discovery
 ```
 
-Read `results/my-discovery/summary.json` and the diagnostics under `discovery/`. See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
+Read `results/my-discovery/summary.json` and the schema-2 episode catalog under `discovery/`. Proposal counts refer to canonical episodes; measured child tracks are counted separately. Acoustic episodes do not establish aircraft identity or physical source motion. See [Audio discovery](docs/AUDIO_DISCOVERY.md) for settings, evidence and failure modes.
 
 ### Run the local upload application
 

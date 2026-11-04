@@ -290,9 +290,12 @@ retained approaches prevent an affirmative confidence decision.
 
 For chunk-boundary checks on real recordings, an operator can set
 `"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
-These are the only discovery overrides supported by the product adapter. The
-existing detector validates the overlap and chunk constraints; spectral bands,
-acceptance thresholds and other scientific settings keep their defaults. The
+The operator may also set global `min_frequency_hz`, `max_frequency_hz`,
+`window_s` and `hop_s`. The adapter selects a sufficient decode rate before
+intake and rejects unsupported source coverage explicitly. These configure the
+whole-recording analysis, not individual event windows or bands; they remain
+outside the upload request. Acceptance thresholds keep their defaults. See
+[acoustic discovery](AUDIO_DISCOVERY.md) for coverage, time-grid and work limits. The
 actual settings and analyzed chunks are saved in `discovery/discovery.json`, and
 the operator configuration hash is retained in provenance. This configuration is
 not an upload-request field. A chunk-size comparison must rerun detection and the
