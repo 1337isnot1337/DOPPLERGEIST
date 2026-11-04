@@ -87,7 +87,13 @@ search, parallel workers, fine grids and continuous refinement. See
 [country profiles](COUNTRIES.md) for boundary acquisition, offline use and limits.
 
 `analyze` prints the job ID and a monitor command to standard error as soon as
-the upload is queued. `job --watch` reports the status-file progress field, the
+the upload is queued. Search progress is based on completed grid work and is
+persisted after a 2.5 percentage-point increase or at least every 15 seconds
+when another tile completes. A single long-running tile cannot report partial
+work it has not completed. The CLI and upload UI hide the percentage when an
+active job's status has not refreshed for 60 seconds; the job may still be
+processing.
+`job --watch` reports the status-file progress field, the
 count/rate of matching coarse and fine search filenames, the newest matching
 file modification age, and the job status-file age on standard error. These are
 unverified filesystem indicators: the watcher does not validate payload hashes

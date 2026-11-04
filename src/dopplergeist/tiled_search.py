@@ -900,15 +900,20 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                            for _, cells in itertools.islice(
                                grid_tiles(bounds, budget.spacing_m, budget.tile_cells, crs), budget.max_tiles))
     last_progress = 0.0
+    last_progress_report = time.monotonic()
 
     def report_search_progress(fraction, *, force=False):
-        nonlocal last_progress
+        nonlocal last_progress, last_progress_report
         if search_progress is None:
             return
         fraction = min(1.0, max(0.0, float(fraction)))
-        if fraction > last_progress and (force or fraction - last_progress >= 0.025):
+        now = time.monotonic()
+        if fraction > last_progress and (
+            force or fraction - last_progress >= 0.025 or now - last_progress_report >= 15.0
+        ):
             search_progress(fraction)
             last_progress = fraction
+            last_progress_report = now
 
     available = len(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else (os.cpu_count() or 1)
     if workers is None:

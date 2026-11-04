@@ -121,10 +121,21 @@ function render(value) {
   $('job-id').textContent = `JOB ${value.job_id}`;
   $('status').textContent = value.status.replaceAll('_', ' ');
   $('stage').textContent = value.stage || '';
-  $('progress').value = value.progress || (terminal.has(value.status) ? 1 : 0);
+  const progress = $('progress');
+  if (value.progress_stale) {
+    progress.removeAttribute('value');
+    progress.setAttribute('aria-label', 'Progress unavailable because the saved percentage is stale');
+  } else {
+    progress.value = Number.isFinite(value.progress) ? value.progress : (terminal.has(value.status) ? 1 : 0);
+    progress.setAttribute('aria-label', 'Analysis progress');
+  }
   $('cancel').hidden = terminal.has(value.status);
   $('resume').hidden = true;
-  $('message').textContent = value.message || 'Analysis is running. You can return to this job using its saved link.';
+  const staleAge = Number.isFinite(value.progress_age_seconds)
+    ? ` Last progress update was ${Math.floor(value.progress_age_seconds)} seconds ago.` : '';
+  $('message').textContent = value.progress_stale
+    ? `${value.message || 'The saved percentage is stale and hidden.'}${staleAge}`
+    : (value.message || 'Analysis is running. You can return to this job using its saved link.');
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
   $('guidance').replaceChildren(); $('guidance').hidden = true;

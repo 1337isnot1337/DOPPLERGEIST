@@ -256,13 +256,15 @@ def main():
         finally:
             manager.close()
     elif args.command=="job":
-        from .jobs import read_json
+        from .jobs import read_json, status_for_display
         directory=Path(args.jobs)/args.job_id
         previous_count=previous_time=previous_fine_support_count=previous_split_count=None
+        stale_after=60.0
         try:
             while True:
                 try:
-                    value = read_json(directory/"result.json")
+                    value = status_for_display(directory, read_json(directory/"result.json"),
+                                               stale_after_s=stale_after)
                 except (OSError, ValueError) as exc:
                     parser.error(f"Could not read job {args.job_id}: {exc}")
                 if not args.watch:
@@ -280,10 +282,12 @@ def main():
                 progress=value.get("progress")
                 result_age=max(0.0,wall_now-(directory/"result.json").stat().st_mtime)
                 age_text=lambda seconds: f"{seconds:.0f}s" if seconds<60 else f"{seconds/60:.1f}m"
-                stale_after=max(60.0,args.interval*3)
-                progress_stale=" (stale)" if result_age>stale_after else ""
-                progress_text=(f", overall progress {progress:.1%}{progress_stale}"
-                               if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
+                progress_stale=value.get("progress_stale", False)
+                if progress_stale:
+                    progress_text=f", overall progress hidden (last update {age_text(result_age)} ago)"
+                else:
+                    progress_text=(f", overall progress {progress:.1%}"
+                                   if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 stage_message=value.get("message")
                 activity_text=(f", {stage_message}"
                                if value.get("stage") in {"acquisition", "search", "refinement", "decision"}
