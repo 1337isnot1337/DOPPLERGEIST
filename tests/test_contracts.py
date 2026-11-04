@@ -53,6 +53,25 @@ def test_invalid_request_and_truth_fields_rejected(change):
         validate_request(request)
 
 
+def test_spain_request_accepts_real_madrid_region_and_requires_country_consistency():
+    request = {"schema_version": 1, "audio_path": "recording.mp3",
+               "search": {"country": "ES", "coverage": "spain",
+                          "bounds_wsen": [-4.16, 40.05, -2.97, 40.95]}}
+    clean = validate_request(request)
+    assert clean["search"] == request["search"]
+
+    request["search"]["coverage"] = "germany"
+    with pytest.raises(ValueError, match="requires coverage spain"):
+        validate_request(request)
+
+
+def test_spain_request_rejects_bounds_outside_profile_envelope():
+    request = {"schema_version": 1, "audio_path": "recording.mp3",
+               "search": {"country": "ES", "bounds_wsen": [-20.0, 40.0, -3.0, 41.0]}}
+    with pytest.raises(ValueError, match="must stay within Spain"):
+        validate_request(request)
+
+
 def test_untrusted_time_source_and_reversed_window_rejected():
     request = example("analysis-request")
     request["time_window"]["source"] = "file_mtime"

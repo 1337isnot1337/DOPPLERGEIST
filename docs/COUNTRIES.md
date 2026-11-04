@@ -1,17 +1,22 @@
 # Country profiles
 
-The automatic request, CLI and upload interface support two receiver regions:
+The automatic request and upload interface support three receiver regions:
 
 | Country | Coverage | Envelope: west, south, east, north | Search CRS | Receiver region |
 | --- | --- | --- | --- | --- |
 | `US` | `conus` | `-125, 24, -66, 50` | `EPSG:5070` | Existing CONUS rectangle |
 | `DE` | `germany` | `5.5, 47, 15.5, 55.2` | `EPSG:32632` | BKG VG250 Germany land polygon inside the envelope |
+| `ES` | `spain` | `-18.2, 27.5, 4.5, 43.9` | `EPSG:6933` | Spain and territories bounding envelope; no country polygon |
 
 The envelope limits optional rectangular subsets. Germany's envelope includes
 foreign territory; the land polygon removes those receiver locations before
 terrain sampling or scoring. Islands, exclaves and polygon holes are preserved.
 The boundary is generalized geographic data, not a survey of a microphone site.
-Country support does not establish German localization accuracy.
+Spain uses an outer envelope covering mainland Spain and its island territories.
+It does not apply a Spanish land mask, so a search must provide explicit bounds
+that describe the intended receiver area. Aircraft outside the receiver bounds
+remain eligible when they are within the acoustic search margin. Country support
+does not establish localization accuracy.
 
 ## Requests and commands
 
@@ -21,8 +26,9 @@ dopplergeist analyze recording.mp3 --country DE --jobs jobs --online \
   --time-source 'Evidence establishing the recording-start interval'
 ```
 
-The upload API accepts `"search":{"country":"DE"}`. It also accepts
-`"search":{"coverage":"germany"}`. A normalized request records the coverage;
+The upload API accepts `"search":{"country":"DE"}` or
+`"search":{"country":"ES"}`. It also accepts the matching coverage names
+`germany` and `spain`. A normalized request records the coverage;
 an explicitly supplied country is normalized to uppercase. If both are supplied,
 they must agree. `bounds_wsen` and `--bounds` narrow the selected profile. They
 must be an independently justified prior, not the evaluation location.
