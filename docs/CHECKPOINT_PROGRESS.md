@@ -128,7 +128,9 @@ python scripts/report_checkpoint_progress.py \
 ```
 
 The script verifies each recorded payload hash. The recorded point and track
-counters are zero, while reconstructed receiver coverage is nonzero. CPA and
+counters are zero. The installed check reconstructs 53,210 receiver points in
+these 256 tiles, exactly matching the current production grid. The requested
+grid has 19,278 root tiles; this fixture is a partial set of receipts. CPA and
 trial counters are absent and stay unknown. The portable fixture has no canonical
 ledger, so canonical agreement remains unknown. Repeating the command exercises
 the incremental cache without generating recordings, tracks, or fixture data.
