@@ -106,11 +106,17 @@ image without rebuilding it.
 | `vMAJOR.MINOR.PATCH-PRERELEASE` | The matching prerelease tag, such as `v0.2.0-rc.1` |
 | `sha-FULL_COMMIT_ID` | The complete source commit ID for every published image |
 
+Immediately before pushing `main`, the workflow reads the current public Git
+branch. If that branch has moved since the image was built, the run keeps its
+commit tag and skips `main`, with the reason in the workflow summary. An
+unreadable branch ref fails publication without updating `main`. This also
+applies to reruns of older builds.
+
 Version tags use SemVer release/prerelease syntax without `+build` metadata.
 Image labels record the source repository, commit, version and
 `PolyForm-Noncommercial-1.0.0` license. A revision tag identifies the source
-commit. To retain an exact built image, use the registry digest printed by the
-publishing job: `ghcr.io/1337isnot1337/dopplergeist@sha256:DIGEST`.
+commit. To retain an exact built image, use the registry digest recorded in the
+workflow summary: `ghcr.io/1337isnot1337/dopplergeist@sha256:DIGEST`.
 
 Maintainers can publish `main` through **Actions → Docker build, local service
 and GHCR → Run workflow**, selecting `main`. Other manually selected branches

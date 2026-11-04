@@ -1,7 +1,13 @@
 """Publication-policy checks; no audio, trajectories or image builds."""
 import importlib.util
+import json
+import os
 from pathlib import Path
+import subprocess
+import tempfile
+import textwrap
 import unittest
+from unittest import mock
 
 
 SOURCE = Path(__file__).resolve().parents[1] / "scripts/container_publish_metadata.py"
@@ -9,6 +15,13 @@ SPEC = importlib.util.spec_from_file_location("container_publish_metadata", SOUR
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 REVISION = "dcd8cb73114af0a20be869e9e8c3295080b65ab8"
+WORKFLOW = SOURCE.parents[1] / ".github/workflows/docker.yml"
+# Exercise the actual publishing step, with registry/ref commands replaced by
+# software controls. These checks neither build nor publish a container.
+PUBLISH_STEP = WORKFLOW.read_text().split("      - name: Publish the validated image\n", 1)[1]
+PUBLISH_SCRIPT = compile(textwrap.dedent(
+    PUBLISH_STEP.split("          python - <<'PY'\n", 1)[1].split("          PY\n", 1)[0]),
+    str(WORKFLOW), "exec")
 
 
 class ContainerPublishMetadataTests(unittest.TestCase):
@@ -64,6 +77,80 @@ class ContainerPublishMetadataTests(unittest.TestCase):
         for revision in (REVISION[:7], "$(whoami)", REVISION + "\nextra"):
             with self.subTest(revision=revision), self.assertRaises(ValueError):
                 MODULE.metadata(MODULE.REPOSITORY, "push", "refs/heads/main", revision)
+
+
+class ContainerPublishCurrentMainTests(unittest.TestCase):
+    image = "ghcr.io/1337isnot1337/dopplergeist"
+    sha_tag = image + ":sha-" + REVISION
+    main_tag = image + ":main"
+    digest = image + "@sha256:" + "a" * 64
+
+    def run_publication(self, remote, tags=None):
+        calls = []
+
+        def run(arguments, **kwargs):
+            calls.append(arguments)
+            if arguments[0] == "git":
+                self.assertEqual(arguments, ["git", "ls-remote", "--exit-code",
+                    "https://github.com/1337isnot1337/DOPPLERGEIST.git", "refs/heads/main"])
+                self.assertEqual(kwargs, {"check": True, "capture_output": True,
+                                          "text": True, "timeout": 30})
+                if isinstance(remote, Exception):
+                    raise remote
+                return subprocess.CompletedProcess(arguments, 0, stdout=remote)
+            if arguments[:3] == ["docker", "image", "inspect"]:
+                return subprocess.CompletedProcess(arguments, 0, stdout=json.dumps([self.digest]))
+            self.assertIn(arguments[:2], (["docker", "tag"], ["docker", "push"]))
+            return subprocess.CompletedProcess(arguments, 0)
+
+        with tempfile.TemporaryDirectory() as directory:
+            summary = Path(directory) / "summary.md"
+            environment = {"IMAGE_TAGS": json.dumps(tags or [self.sha_tag, self.main_tag]),
+                           "IMAGE_REVISION": REVISION, "GITHUB_STEP_SUMMARY": str(summary)}
+            with mock.patch.dict(os.environ, environment), mock.patch.object(subprocess, "run", run):
+                failure = None
+                try:
+                    exec(PUBLISH_SCRIPT, {})
+                except RuntimeError as error:
+                    failure = error
+            return calls, failure, summary.read_text()
+
+    def test_current_main_pushes_both_tags_with_last_moment_ref_check(self):
+        calls, failure, summary = self.run_publication(REVISION + "\trefs/heads/main\n")
+        self.assertIsNone(failure)
+        pushes = [call[-1] for call in calls if call[:2] == ["docker", "push"]]
+        self.assertEqual(pushes, [self.sha_tag, self.main_tag])
+        main_push = calls.index(["docker", "push", self.main_tag])
+        self.assertEqual(calls[main_push - 1][0], "git")
+        self.assertIn(self.digest, summary)
+
+    def test_stale_main_keeps_sha_and_records_skipped_mutable_tag(self):
+        current = "6eca37d6208d5006551ae7be7b62053e7ace2dd6"
+        calls, failure, summary = self.run_publication(current + "\trefs/heads/main\n")
+        self.assertIsNone(failure)
+        self.assertEqual([call[-1] for call in calls if call[:2] == ["docker", "push"]],
+                         [self.sha_tag])
+        self.assertIn("Skipped `" + self.main_tag + "`", summary)
+        self.assertIn(current, summary)
+        self.assertIn(REVISION, summary)
+
+    def test_unreadable_main_fails_after_sha_without_pushing_main(self):
+        for remote in ("", REVISION + "\trefs/heads/other\n", "invalid\trefs/heads/main\n",
+                       subprocess.CalledProcessError(128, ["git", "ls-remote"]),
+                       subprocess.TimeoutExpired(["git", "ls-remote"], 30)):
+            with self.subTest(remote=remote):
+                calls, failure, summary = self.run_publication(remote)
+                self.assertIsInstance(failure, RuntimeError)
+                self.assertEqual([call[-1] for call in calls if call[:2] == ["docker", "push"]],
+                                 [self.sha_tag])
+                self.assertIn("current public main could not be verified", summary)
+
+    def test_release_publication_does_not_depend_on_main(self):
+        tags = [self.sha_tag, self.image + ":v1.2.3"]
+        calls, failure, summary = self.run_publication("", tags=tags)
+        self.assertIsNone(failure)
+        self.assertFalse(any(call[0] == "git" for call in calls))
+        self.assertEqual([call[-1] for call in calls if call[:2] == ["docker", "push"]], tags)
 
 
 if __name__ == "__main__":

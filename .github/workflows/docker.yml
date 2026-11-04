@@ -20,6 +20,7 @@ jobs:
     outputs:
       publish: ${{ steps.metadata.outputs.publish }}
       image_tags: ${{ steps.metadata.outputs.tags }}
+      image_revision: ${{ steps.metadata.outputs.revision }}
       image_id: ${{ steps.export.outputs.image_id }}
       image_artifact_id: ${{ steps.upload.outputs.artifact-id }}
     steps:
@@ -175,21 +176,48 @@ jobs:
       - name: Publish the validated image
         env:
           IMAGE_TAGS: ${{ needs.docker.outputs.image_tags }}
+          IMAGE_REVISION: ${{ needs.docker.outputs.image_revision }}
         run: |
           python - <<'PY'
           import json
           import os
           from pathlib import Path
+          import re
           import subprocess
 
           tags = json.loads(os.environ["IMAGE_TAGS"])
           if not tags:
               raise ValueError("No approved image tags to publish")
-          for tag in tags:
-              subprocess.run(["docker", "tag", "dopplergeist:ci", tag], check=True)
-              subprocess.run(["docker", "push", tag], check=True)
           with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
               summary.write("## Published Docker image\n\n")
-              summary.writelines(f"- `{tag}`\n" for tag in tags)
-              summary.write("\nAll tags refer to the image validated by this workflow run.\n")
+              for tag in tags:
+                  subprocess.run(["docker", "tag", "dopplergeist:ci", tag], check=True)
+                  if tag.endswith(":main"):
+                      try:
+                          remote = subprocess.run(
+                              ["git", "ls-remote", "--exit-code",
+                               "https://github.com/1337isnot1337/DOPPLERGEIST.git",
+                               "refs/heads/main"],
+                              check=True, capture_output=True, text=True, timeout=30)
+                          fields = remote.stdout.split()
+                          if (len(fields) != 2 or fields[1] != "refs/heads/main"
+                                  or not re.fullmatch(r"[0-9a-f]{40}", fields[0])):
+                              raise ValueError("Unexpected public main-ref response")
+                      except (OSError, subprocess.SubprocessError, ValueError) as error:
+                          summary.write(f"- Did not push `{tag}`: current public main could not be verified.\n")
+                          raise RuntimeError("Could not verify current public main; :main was not pushed") from error
+                      if fields[0] != os.environ["IMAGE_REVISION"]:
+                          message = (f"Skipped `{tag}`: built revision `{os.environ['IMAGE_REVISION']}` "
+                                     f"differs from current main `{fields[0]}`.")
+                          print(message)
+                          summary.write(f"- {message}\n")
+                          continue
+                  subprocess.run(["docker", "push", tag], check=True)
+                  summary.write(f"- Published `{tag}`\n")
+                  digests = json.loads(subprocess.run(
+                      ["docker", "image", "inspect", "--format", "{{json .RepoDigests}}", tag],
+                      check=True, capture_output=True, text=True).stdout)
+                  for digest in digests or []:
+                      summary.write(f"  - Registry digest: `{digest}`\n")
+              summary.write("\nAll published tags refer to the image validated by this workflow run.\n")
           PY
