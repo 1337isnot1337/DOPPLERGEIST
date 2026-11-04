@@ -35,6 +35,36 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def search_expectation(area, profiles):
+    """Resolve request semantics against the service's advertised profiles."""
+    require(isinstance(area, dict) and not set(area) - {"country", "coverage", "bounds_wsen"},
+            "Search must use the country/coverage/bounds contract")
+    require("country" in area or "coverage" in area, "Search must specify country or coverage")
+    for field in ("country", "coverage"):
+        require(field not in area or isinstance(area[field], str) and area[field],
+                f"Search {field} must be a nonempty string")
+    country = area.get("country", "").upper()
+    coverage = area.get("coverage")
+    matches = [profile for profile in profiles
+               if (not country or profile["country"] == country)
+               and (coverage is None or profile["coverage"] == coverage)]
+    require(len(matches) == 1, "Requested country/coverage is unsupported or contradictory")
+    profile = matches[0]
+    bounds = area.get("bounds_wsen", profile["bounds_wsen"])
+    require(isinstance(bounds, list) and len(bounds) == 4
+            and all(type(value) in (int, float) and math.isfinite(value) for value in bounds),
+            "Expected four finite numeric search bounds")
+    west, south, east, north = profile["bounds_wsen"]
+    require(west <= bounds[0] < bounds[2] <= east and south <= bounds[1] < bounds[3] <= north,
+            "Search bounds must stay within the requested country profile")
+    return {"country": profile["country"], "coverage": profile["coverage"], "bounds_wsen": list(bounds)}
+
+
+def require_search_matches(area, expected, profiles, label):
+    actual = search_expectation(area, profiles)
+    require(actual == expected, f"{label} search differs from the supplied request: {actual!r} != {expected!r}")
+
+
 def resolve_evidence(reference, documents):
     """Resolve the guidance contract's artifact-relative JSON pointer."""
     require(isinstance(reference, str), "Guidance evidence must be a string")
@@ -80,7 +110,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("audio", nargs="?", type=Path, help="Existing real MP3 recording")
     parser.add_argument("--saved-job", type=Path, help="Copy and inspect a completed real job instead of uploading")
-    parser.add_argument("--request", type=Path, help="Existing request JSON; fill its UTC window and bounds through the UI")
+    parser.add_argument("--request", type=Path, help="Existing request JSON; fill its country, UTC window and bounds through the UI")
     parser.add_argument("--source", type=Path, help="Source directory containing dopplergeist; default checks the installed package")
     parser.add_argument("--browser-executable", type=Path, help="Use an existing Chromium executable")
     parser.add_argument("--expect-status", choices=("needs_input", "failed", "inconclusive", "succeeded", "cancelled"), default="needs_input")
@@ -113,10 +143,9 @@ def main():
     if wire is not None and (not isinstance(wire, dict) or wire.get("schema_version") != 1
                              or set(wire) - {"schema_version", "search", "time_window"}
                              or not isinstance(wire.get("time_window") or {}, dict)
-                             or not isinstance(wire.get("search") or {}, dict)
-                             or (wire.get("time_window") or {}).get("source", "user") != "user"
-                             or (wire.get("search") or {}).get("coverage", "conus") != "conus"):
-        parser.error("--request must use the UI's version-one user-time/CONUS contract")
+                             or not isinstance(wire.get("search", {}), dict)
+                             or (wire.get("time_window") or {}).get("source", "user") != "user"):
+        parser.error("--request must use the UI's version-one user-time/country-search contract")
     output.mkdir(parents=True, exist_ok=False)
     jobs = output / "jobs"
     started = time.monotonic()
@@ -194,6 +223,18 @@ def main():
                     job_id = saved_job.name
                     page.goto(origin + "/?job=" + job_id, wait_until="domcontentloaded", timeout=milliseconds(30))
                 else:
+                    capabilities = context.request.get(origin + "/api/capabilities", timeout=milliseconds(30))
+                    require(capabilities.status == 200, "Could not read the service's country profiles")
+                    profiles = capabilities.json().get("countries", [{"country": "US", "coverage": "conus",
+                        "bounds_wsen": [-125, 24, -66, 50]}])
+                    expected_search = search_expectation((wire or {}).get("search", {"coverage": "conus"}), profiles)
+                    summary["requested_search"] = expected_search
+                    country_control = page.locator("#country")
+                    if country_control.count():
+                        country_control.select_option(expected_search["country"], timeout=milliseconds(30))
+                        expect(country_control).to_have_value(expected_search["country"], timeout=milliseconds(10))
+                    else:
+                        require(expected_search["country"] == "US", "The UI has no requested country selector")
                     if wire is not None:
                         window = wire.get("time_window")
                         if window:
@@ -216,6 +257,8 @@ def main():
                     response = uploaded.value
                     require(response.status == 202, f"UI upload returned HTTP {response.status}")
                     summary["submitted_request"] = json.loads(response.request.headers["x-dopplergeist-request"])
+                    require_search_matches(summary["submitted_request"].get("search"), expected_search, profiles,
+                                           "Submitted UI")
                     # Large uploads can evict response bodies from Chrome's inspector cache.
                     # Read the rendered identifier, then fetch results directly.
                     job_label = page.locator("#job-id")
@@ -238,6 +281,9 @@ def main():
                 summary.update(status=final.get("status"), reason_code=final.get("reason_code"),
                                event_count=len(final.get("events", [])))
                 require(final.get("job_id") == job_id, "API returned a different job")
+                if saved_job is None:
+                    require_search_matches(final.get("coverage", {}).get("requested_area"), expected_search, profiles,
+                                           "Terminal API")
                 require(final.get("status") == args.expect_status, f"Expected {args.expect_status}")
                 require(final.get("reason_code") == (args.expect_reason or None), f"Expected reason {args.expect_reason!r}")
                 if saved_job is not None:
@@ -414,9 +460,11 @@ def main():
                     require(not request.get("time_window"), "Browser unexpectedly supplied a recording time")
                 if saved_job is None:
                     submitted = summary["submitted_request"]
+                    require_search_matches(request.get("search"), expected_search, profiles, "Persisted")
                     require(request.get("search") == submitted["search"]
                             and request.get("time_window") == submitted.get("time_window"),
                             "Persisted request differs from the UI submission")
+                    summary["search_request_verified"] = True
                 else:
                     require(digest(saved_job / "result.json") == summary["saved_result_sha256"],
                             "Original saved result changed")
