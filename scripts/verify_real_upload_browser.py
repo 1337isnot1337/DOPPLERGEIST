@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Verify the real browser upload and saved needs-input result for a supplied MP3.
+"""Verify a real browser upload or readback of an existing completed real job.
 
 Requires an installed dopplergeist package, Playwright, and its Chromium browser.
 Playwright is an optional verification dependency, not a production dependency.
-Use a real recording without a trustworthy embedded clock. No audio is generated.
+The default expects a real recording without a trustworthy embedded clock.
+Use --expect-status/--expect-reason for other actual backend outcomes. A saved
+job is copied before readback; it is never resumed or presented as a fresh run.
+No synthetic audio or mocked outcomes are used.
 A passing browser check does not establish location accuracy.
 """
 import argparse
@@ -14,6 +17,7 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -51,27 +55,55 @@ def stop_service(process):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("audio", type=Path, help="Existing real MP3 recording")
+    parser.add_argument("audio", nargs="?", type=Path, help="Existing real MP3 recording")
+    parser.add_argument("--saved-job", type=Path, help="Copy and inspect a completed real job instead of uploading")
+    parser.add_argument("--request", type=Path, help="Existing request JSON; fill its UTC window and bounds through the UI")
+    parser.add_argument("--source", type=Path, help="Source directory containing dopplergeist; default checks the installed package")
+    parser.add_argument("--browser-executable", type=Path, help="Use an existing Chromium executable")
+    parser.add_argument("--expect-status", choices=("needs_input", "failed", "inconclusive", "succeeded", "cancelled"), default="needs_input")
+    parser.add_argument("--expect-reason", default="recording_time_required", help="Expected actual reason code; an empty string expects none")
     parser.add_argument("--output", required=True, type=Path, help="New directory; existing paths are refused")
     parser.add_argument("--timeout", type=float, default=900, help="Overall verification budget in seconds")
     args = parser.parse_args()
-    audio, output = args.audio.resolve(), args.output.resolve()
+    if (args.audio is None) == (args.saved_job is None):
+        parser.error("Supply exactly one MP3 or --saved-job")
+    if args.saved_job is not None and args.request is not None:
+        parser.error("A saved job keeps its original request")
+    saved_job = args.saved_job.resolve() if args.saved_job else None
+    audio = (saved_job / "input.mp3") if saved_job else args.audio.resolve()
+    output = args.output.resolve()
     if os.name != "posix":
         parser.error("This verifier requires POSIX process groups (for example, Ubuntu CI)")
     if not audio.is_file() or audio.suffix.lower() != ".mp3" or audio.stat().st_size == 0:
         parser.error("Supply a nonempty existing MP3 file")
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
+    if args.source is not None:
+        args.source = args.source.resolve()
+        if not (args.source / "dopplergeist" / "service.py").is_file():
+            parser.error("--source must contain dopplergeist/service.py")
+    wire = json.loads(args.request.read_text()) if args.request else None
+    if wire is not None and (not isinstance(wire, dict) or wire.get("schema_version") != 1
+                             or set(wire) - {"schema_version", "search", "time_window"}
+                             or not isinstance(wire.get("time_window") or {}, dict)
+                             or not isinstance(wire.get("search") or {}, dict)
+                             or (wire.get("time_window") or {}).get("source", "user") != "user"
+                             or (wire.get("search") or {}).get("coverage", "conus") != "conus"):
+        parser.error("--request must use the UI's version-one user-time/CONUS contract")
     output.mkdir(parents=True, exist_ok=False)
     jobs = output / "jobs"
     started = time.monotonic()
     deadline = started + args.timeout
     errors, screenshots = [], []
-    summary = {"scope": "actual_browser_real_upload", "passed": False,
+    summary = {"scope": "actual_browser_saved_job" if saved_job else "actual_browser_real_upload", "passed": False,
                "started_utc": datetime.now(timezone.utc).isoformat(),
                "audio": str(audio), "source_sha256": digest(audio),
                "page_errors": errors, "screenshots": screenshots,
                "location_accuracy_evaluated": False}
+    if args.source is not None:
+        summary["source_directory"] = str(args.source)
+        summary["implementation_sha256"] = {name: digest(args.source / "dopplergeist" / name)
+                                            for name in ("service.py", "jobs.py", "automatic.py", "web/app.js")}
     process = log = None
     final = job_directory = None
     old_handlers = {}
@@ -90,12 +122,21 @@ def main():
             old_handlers[signum] = signal.signal(signum, interrupted)
         # Lazy import keeps --help usable without the optional browser dependency.
         from playwright.sync_api import expect, sync_playwright
-        command = [sys.executable, "-I", "-m", "dopplergeist.cli", "serve",
+        if saved_job is not None:
+            require(re.fullmatch(r"[0-9a-f]{32}", saved_job.name), "Saved directory must have its real job ID")
+            saved_result = json.loads((saved_job / "result.json").read_text())
+            require(saved_result.get("job_id") == saved_job.name
+                    and saved_result.get("status") in {"needs_input", "failed", "inconclusive", "succeeded", "cancelled"},
+                    "Only completed real jobs can be inspected")
+            shutil.copytree(saved_job, jobs / saved_job.name)
+            summary["saved_result_sha256"] = digest(saved_job / "result.json")
+        command = [sys.executable, *([] if args.source else ["-I"]), "-m", "dopplergeist.cli", "serve",
                    "--port", "0", "--jobs", str(jobs), "--max-runtime", str(args.timeout)]
         summary["service_command"] = command
         log_path = output / "service.log"
         log = log_path.open("xb")
-        process = subprocess.Popen(command, cwd=output, stdout=log, stderr=subprocess.STDOUT,
+        environment = dict(os.environ, PYTHONPATH=str(args.source)) if args.source else None
+        process = subprocess.Popen(command, cwd=output, env=environment, stdout=log, stderr=subprocess.STDOUT,
                                    start_new_session=True)
         startup_deadline = min(deadline, time.monotonic() + 30)
         while True:
@@ -111,7 +152,10 @@ def main():
         with sync_playwright() as playwright:
             browser = page = None
             try:
-                browser = playwright.chromium.launch(headless=True, timeout=milliseconds(30))
+                launch = {"headless": True, "timeout": milliseconds(30)}
+                if args.browser_executable is not None:
+                    launch["executable_path"] = str(args.browser_executable.resolve())
+                browser = playwright.chromium.launch(**launch)
                 context = browser.new_context(viewport={"width": 1440, "height": 1000})
                 context.set_default_timeout(milliseconds(30))
                 page = context.new_page()
@@ -119,18 +163,37 @@ def main():
                 page.goto(origin, wait_until="domcontentloaded", timeout=milliseconds(30))
                 for selector in ("#start", "#end", "#time-source"):
                     expect(page.locator(selector)).to_have_value("", timeout=milliseconds(10))
-                page.locator("#audio").set_input_files(str(audio), timeout=milliseconds(30))
-                with page.expect_response(lambda response: response.url == origin + "/api/jobs"
-                                          and response.request.method == "POST",
-                                          timeout=milliseconds()) as uploaded:
-                    page.locator("#submit").click(timeout=milliseconds(30))
-                response = uploaded.value
-                require(response.status == 202, f"UI upload returned HTTP {response.status}")
-                # Large uploads can evict response bodies from Chrome's inspector cache.
-                # Read the application's rendered identifier, then fetch results directly.
-                job_label = page.locator("#job-id")
-                expect(job_label).to_have_text(re.compile(r"^JOB [0-9a-f]{32}$"), timeout=milliseconds(30))
-                job_id = job_label.inner_text(timeout=milliseconds(10)).strip().removeprefix("JOB ")
+                if saved_job is not None:
+                    job_id = saved_job.name
+                    page.goto(origin + "/?job=" + job_id, wait_until="domcontentloaded", timeout=milliseconds(30))
+                else:
+                    if wire is not None:
+                        window = wire.get("time_window")
+                        if window:
+                            for selector, key in (("#start", "start_utc"), ("#end", "end_utc")):
+                                stamp = datetime.fromisoformat(window[key].replace("Z", "+00:00"))
+                                require(stamp.tzinfo is not None, "Request timestamps must include a timezone")
+                                value = stamp.astimezone(timezone.utc).replace(tzinfo=None).isoformat()
+                                page.locator(selector).fill(value)
+                            page.locator("#time-source").fill(window.get("source_detail", ""))
+                        bounds = (wire.get("search") or {}).get("bounds_wsen")
+                        if bounds is not None:
+                            require(len(bounds) == 4, "Expected four search bounds")
+                            for selector, value in zip(("#bbox-w", "#bbox-s", "#bbox-e", "#bbox-n"), bounds):
+                                page.locator(selector).fill(str(value))
+                    page.locator("#audio").set_input_files(str(audio), timeout=milliseconds(30))
+                    with page.expect_response(lambda response: response.url == origin + "/api/jobs"
+                                              and response.request.method == "POST",
+                                              timeout=milliseconds()) as uploaded:
+                        page.locator("#submit").click(timeout=milliseconds(30))
+                    response = uploaded.value
+                    require(response.status == 202, f"UI upload returned HTTP {response.status}")
+                    summary["submitted_request"] = json.loads(response.request.headers["x-dopplergeist-request"])
+                    # Large uploads can evict response bodies from Chrome's inspector cache.
+                    # Read the rendered identifier, then fetch results directly.
+                    job_label = page.locator("#job-id")
+                    expect(job_label).to_have_text(re.compile(r"^JOB [0-9a-f]{32}$"), timeout=milliseconds(30))
+                    job_id = job_label.inner_text(timeout=milliseconds(10)).strip().removeprefix("JOB ")
                 require(re.fullmatch(r"[0-9a-f]{32}", job_id), "Invalid submitted job identifier")
                 job_directory = jobs / job_id
                 saved_url = origin + "/?job=" + job_id
@@ -148,50 +211,94 @@ def main():
                 summary.update(status=final.get("status"), reason_code=final.get("reason_code"),
                                event_count=len(final.get("events", [])))
                 require(final.get("job_id") == job_id, "API returned a different job")
-                require(final.get("status") == "needs_input", "Expected needs_input")
-                require(final.get("reason_code") == "recording_time_required", "Expected recording_time_required")
-                require("time_window" in final.get("required_fields", []), "API omitted required time_window")
-                require(not final.get("candidates"), "Undated result contains location candidates")
+                require(final.get("status") == args.expect_status, f"Expected {args.expect_status}")
+                require(final.get("reason_code") == (args.expect_reason or None), f"Expected reason {args.expect_reason!r}")
+                if saved_job is not None:
+                    require(final == saved_result, "Saved backend result changed during readback")
+                if args.expect_reason == "recording_time_required":
+                    require("time_window" in final.get("required_fields", []), "API omitted required time_window")
+                    require(not final.get("candidates"), "Undated result contains location candidates")
 
                 def check_display():
-                    expect(page.locator("#status")).to_have_text("needs input", timeout=milliseconds(30))
+                    expect(page.locator("#status")).to_have_text(args.expect_status.replace("_", " "), timeout=milliseconds(30))
                     expect(page.locator("#job-id")).to_have_text("JOB " + job_id, timeout=milliseconds(10))
                     expect(page.locator("#events .event")).to_have_count(len(final.get("events", [])), timeout=milliseconds(30))
-                    expect(page.locator("#required")).to_be_visible(timeout=milliseconds(10))
-                    expect(page.locator("#required")).to_contain_text("time_window", timeout=milliseconds(10))
-                    expect(page.locator("#candidates .candidate")).to_have_count(0, timeout=milliseconds(10))
+                    expect(page.locator("#message")).to_have_text(final["message"], timeout=milliseconds(10))
+                    required = final.get("required_fields", [])
+                    if required:
+                        expect(page.locator("#required")).to_be_visible(timeout=milliseconds(10))
+                        for name in required:
+                            expect(page.locator("#required")).to_contain_text(name, timeout=milliseconds(10))
+                    else:
+                        expect(page.locator("#required")).to_be_hidden(timeout=milliseconds(10))
+                    candidates = final.get("candidates", [])
+                    expect(page.locator("#candidates .candidate")).to_have_count(len(candidates), timeout=milliseconds(10))
+                    additional = page.locator("#candidates details")
+                    if additional.count() and additional.get_attribute("open") is None:
+                        additional.locator("summary").click(timeout=milliseconds(10))
+                    for i, candidate in enumerate(candidates):
+                        card = page.locator("#candidates .candidate").nth(i)
+                        expect(card).to_be_visible(timeout=milliseconds(10))
+                        expect(card).to_contain_text(f"{candidate['lat']:.6f}, {candidate['lon']:.6f}", timeout=milliseconds(10))
+                        expect(card).to_contain_text("not a probability", timeout=milliseconds(10))
+                    if candidates and args.expect_status != "succeeded":
+                        expect(page.locator("#candidates h3")).to_contain_text("result remains inconclusive")
                     expect(page.locator("#upload-error")).to_have_text("", timeout=milliseconds(10))
                     expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
 
                 check_display()
                 summary["displayed_event_count"] = page.locator("#events .event").count()
+                summary["displayed_candidate_count"] = page.locator("#candidates .candidate").count()
                 summary["required_message"] = page.locator("#required").inner_text()
-                page.locator("#required").scroll_into_view_if_needed(timeout=milliseconds(10))
+                page.locator("#status").scroll_into_view_if_needed(timeout=milliseconds(10))
                 page.screenshot(path=str(output / "result.png"), timeout=milliseconds(10))
                 screenshots.append("result.png")
-                figure = page.locator("#diagnostics figure.diagnostic").first
-                figure.wait_for(state="visible", timeout=milliseconds(30))
-                figure.scroll_into_view_if_needed(timeout=milliseconds(10))
-                page.wait_for_function("""() => {
-                    const image = document.querySelector('#diagnostics figure.diagnostic img');
-                    return image && image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
-                }""", timeout=milliseconds(30))
-                image = figure.locator("img").evaluate("image => ({src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight})")
-                require(image["src"].startswith(f"/api/jobs/{job_id}/artifacts/"), "Evidence image belongs to a different job")
-                summary["loaded_evidence_image"] = image
-                figure.screenshot(path=str(output / "evidence.png"), timeout=milliseconds(10))
-                screenshots.append("evidence.png")
+                if final.get("candidates"):
+                    page.locator("#candidates").screenshot(path=str(output / "candidates.png"), timeout=milliseconds(10))
+                    screenshots.append("candidates.png")
+                original_link = page.locator('#artifacts a').filter(has_text=re.compile(r"^input\.mp3$"))
+                expect(original_link).to_have_count(1, timeout=milliseconds(30))
+                page.locator("#downloads > summary").click(timeout=milliseconds(10))
+                expect(original_link).to_be_visible(timeout=milliseconds(10))
+                with page.expect_download(timeout=milliseconds(30)) as downloaded:
+                    original_link.click(timeout=milliseconds(30))
+                download_path = output / "downloaded-original.mp3"
+                downloaded.value.save_as(download_path)
+                require(digest(download_path) == summary["source_sha256"], "Browser artifact download changed original bytes")
+                summary["artifact_download_verified"] = True
+                figures = page.locator("#diagnostics figure.diagnostic")
+                if figures.count():
+                    figure = figures.first
+                    figure.scroll_into_view_if_needed(timeout=milliseconds(10))
+                    page.wait_for_function("""() => {
+                        const image = document.querySelector('#diagnostics figure.diagnostic img');
+                        return image && image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+                    }""", timeout=milliseconds(30))
+                    image = figure.locator("img").evaluate("image => ({src: image.getAttribute('src'), width: image.naturalWidth, height: image.naturalHeight})")
+                    require(image["src"].startswith(f"/api/jobs/{job_id}/artifacts/"), "Evidence image belongs to a different job")
+                    summary["loaded_evidence_image"] = image
+                    figure.screenshot(path=str(output / "evidence.png"), timeout=milliseconds(10))
+                    screenshots.append("evidence.png")
 
                 # Reload the real saved URL; the application's startup code must restore the job.
                 require(page.url == saved_url, "Saved job URL changed")
                 page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
                 check_display()
-                page.locator("#diagnostics figure.diagnostic").first.wait_for(state="visible", timeout=milliseconds(30))
+                expect(original_link).to_have_count(1, timeout=milliseconds(30))
                 expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
                 require(api_result() == final, "Terminal API result changed after reload")
                 summary["saved_job_reload_verified"] = True
                 request = json.loads((job_directory / "request.json").read_text())
-                require(not request.get("time_window"), "Browser unexpectedly supplied a recording time")
+                if saved_job is None and wire is None:
+                    require(not request.get("time_window"), "Browser unexpectedly supplied a recording time")
+                if saved_job is None:
+                    submitted = summary["submitted_request"]
+                    require(request.get("search") == submitted["search"]
+                            and request.get("time_window") == submitted.get("time_window"),
+                            "Persisted request differs from the UI submission")
+                else:
+                    require(digest(saved_job / "result.json") == summary["saved_result_sha256"],
+                            "Original saved result changed")
                 require(digest(job_directory / "input.mp3") == summary["source_sha256"], "Uploaded original bytes changed")
                 summary["original_preserved"] = True
                 require(not errors, "Browser reported uncaught page errors")
