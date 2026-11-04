@@ -8,7 +8,7 @@ import pytest
 
 from dopplergeist.data_access import CachedTerrain, FlightIndex
 from dopplergeist.matching import prepare_events
-from dopplergeist.tiled_search import (SearchBudget, _expanded_bounds, _latest_event_receive_time,
+from dopplergeist.tiled_search import (SearchBudget, _expanded_bounds, _event_receive_time_bounds,
                                        _score, _tracks_for_points, tile_points)
 
 
@@ -46,7 +46,7 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
         points = tile_points(payload["cells"], budget.spacing_m, config["bounds"], terrain, config["crs"])
         tracks = list(index.lookup([item["track_id"] for item in failures]))
         assert tracks
-        latest = _latest_event_receive_time(events, params, filters, window)
+        latest = _event_receive_time_bounds(events, params, filters, window)[1]
         assert latest is not None and all(track.time[0] > latest for track in tracks)
         rows, counts = _score(points, tracks, events, measurements, budget, params, filters, window)
         assert rows == [] and not counts["unsupported_cpa_tracks"]
@@ -61,16 +61,16 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
         overlapping = [window[0] + shift, window[1] + shift]
         _, unknown = _score(points, tracks, events, measurements, budget, params, filters, overlapping)
         assert any(item["track_id"] == tracks[0].id for item in unknown["unsupported_cpa_tracks"])
-        assert _latest_event_receive_time(events, params, {**filters, "silence": {"edge_margin_s": 60}}, window) is None
-        assert _latest_event_receive_time(events, params, filters, None) is None
+        assert _event_receive_time_bounds(events, params, {**filters, "silence": {"edge_margin_s": 60}}, window) is None
+        assert _event_receive_time_bounds(events, params, filters, None) is None
         if not tested:
             # Probe the actual track against clock windows on both sides of its
             # first recorded emission, including the inclusive boundary.
             boundary_shift = float(tracks[0].time[0] - latest)
             before = [value + boundary_shift - 0.01 for value in window]
             after = [value + boundary_shift + 0.01 for value in window]
-            assert tracks[0].time[0] > _latest_event_receive_time(events, params, filters, before)
-            assert tracks[0].time[0] <= _latest_event_receive_time(events, params, filters, after)
+            assert tracks[0].time[0] > _event_receive_time_bounds(events, params, filters, before)[1]
+            assert tracks[0].time[0] <= _event_receive_time_bounds(events, params, filters, after)[1]
             _, before_counts = _score(points, tracks, events, measurements, budget, params, filters, before)
             _, after_counts = _score(points, tracks, events, measurements, budget, params, filters, after)
             assert any(item["track_id"] == tracks[0].id for item in before_counts["clock_excluded_unsupported_tracks"])
@@ -94,7 +94,7 @@ def test_real_clock_excludes_late_unsupported_trajectories(tmp_path, monkeypatch
                                        config["time_range_s"], budget, points, terrain, radius, params["c"])
     import dopplergeist.tiled_search as tiled
     with monkeypatch.context() as patch:
-        patch.setattr(tiled, "_latest_event_receive_time", lambda *args: None)
+        patch.setattr(tiled, "_event_receive_time_bounds", lambda *args: None)
         previous_rows, previous_counts = _score(points, tracks, events, measurements, budget, params, filters, window)
     rows, counts = _score(points, tracks, events, measurements, budget, params, filters, window)
     assert rows and counts["candidates"] > 0

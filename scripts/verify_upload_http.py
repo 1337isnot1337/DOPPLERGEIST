@@ -351,15 +351,29 @@ def valid_clock_exclusion(item, configuration):
             c = number(scoring.get("c", 343.0))
             if lo > hi or sweep < 0 or offset < 0 or c <= 0:
                 return False
-            bounds = []
+            lower_bounds, upper_bounds = [], []
             for event in configuration["events"]:
                 event_tolerance = number(event.get("quality", {}).get("cpa_tolerance_s", 0))
                 if event_tolerance < 0:
                     return False
-                bounds.append(hi + sweep + offset / 2 + event_tolerance + number(event["cpa_receive_s"]))
+                cpa = number(event["cpa_receive_s"])
+                lower_bounds.append(lo - sweep - offset / 2 - event_tolerance + cpa)
+                upper_bounds.append(hi + sweep + offset / 2 + event_tolerance + cpa)
+            if item.get("exclusion_kind") == "before_events":
+                radii = [number(event["slant_range_m"][1]) for event in configuration["events"]]
+                if not radii or min(radii) <= 0:
+                    return False
+                first_event = number(item["earliest_event_receive_s"])
+                last_emission = number(item["latest_emission_s"])
+                last_receive = number(item["latest_possible_receive_s"])
+                return bool(lower_bounds and first_event <= min(lower_bounds)
+                            and last_receive >= last_emission + max(radii) / c
+                            and last_receive < first_event)
+            if "exclusion_kind" in item:
+                return False
             saved = number(item["latest_event_receive_s"])
             first = number(item["earliest_emission_s"])
-            return bool(bounds and saved >= max(bounds) and first > saved)
+            return bool(upper_bounds and saved >= max(upper_bounds) and first > saved)
     except (KeyError, TypeError, ValueError, OverflowError):
         return False
 

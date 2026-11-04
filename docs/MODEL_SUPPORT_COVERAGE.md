@@ -11,7 +11,9 @@ partial. A completed tile does not establish complete evidence.
 
 For robust-ridge subset association with a bounded recording-start window and no
 silence filter, an unsupported trajectory that starts strictly after every
-possible event CPA arrival cannot participate in an association. Those tracks
+possible event CPA arrival cannot participate in an association. Nor can one
+whose latest emission plus the maximum sound-travel delay is strictly before
+every possible event CPA arrival. Those tracks
 are reported separately as `clock_excluded_unsupported_tracks` in stage
 diagnostics and counted in `clock_excluded_unsupported_track_evaluations`; their
 original motion failures and conservative clock bounds remain inspectable. The
@@ -21,7 +23,7 @@ fixed-clock mode, other scoring modes, and silence filtering retain the usual
 unsupported/partial behavior. This does not repair the source trajectory or
 establish geographic coverage. The HTTP evidence verifier checks the recorded
 inequality against the search clock and stage totals; it does not independently
-reload the original aircraft index to verify the recorded first emission time.
+reload the original aircraft index to verify the recorded emission endpoints.
 
 The additive `model_support` report contains these integer work counts:
 
