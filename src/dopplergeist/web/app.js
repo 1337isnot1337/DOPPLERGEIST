@@ -1,7 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const terminal = new Set(['needs_input', 'succeeded', 'inconclusive', 'failed', 'cancelled']);
-let activeJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
+let activeJob = null, renderedJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
 const node = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
 async function api(path, options) {
   const response = await fetch(path, options);
@@ -45,6 +45,7 @@ async function artifacts(id) {
   }
 }
 function render(value) {
+  renderedJob = value;
   $('empty').hidden = true; $('job').hidden = false;
   $('job-id').textContent = `JOB ${value.job_id}`;
   $('status').textContent = value.status.replaceAll('_', ' ');
@@ -55,6 +56,7 @@ function render(value) {
   $('message').textContent = value.message || 'Analysis is running. You can return to this job using its saved link.';
   $('required').hidden = !value.required_fields?.length;
   $('required').textContent = value.required_fields?.length ? `Required input: ${value.required_fields.join(', ')}. Add the evidence to a new analysis; this run is preserved.` : '';
+  $('guidance').replaceChildren(); $('guidance').hidden = true;
   $('coverage').replaceChildren();
   if (value.coverage) {
     const coverage = value.coverage;
@@ -98,8 +100,42 @@ function render(value) {
   $('events').replaceChildren();
   if (value.events?.length) {
     const groups = new Set(value.events.map(event => event.harmonic_group_id || event.event_id)).size;
-    $('events').append(node('h3', `${groups} independent acoustic proposals · ${value.events.length} ridge records`));
+    $('events').append(node('h3', `${groups} acoustic proposal groups · ${value.events.length} ridge records`));
     for (const event of value.events) $('events').append(node('div', `${event.event_id} · ${event.start_s.toFixed(1)}–${event.end_s.toFixed(1)} s · ${event.band_hz.map(x => x.toFixed(0)).join('–')} Hz${event.harmonic_group_id ? ` · group ${event.harmonic_group_id}` : ''}`, 'event'));
+  }
+}
+async function readGuidance(value) {
+  const id = value.job_id;
+  try {
+    const advice = await api(`/api/jobs/${id}/guidance`);
+    if (id !== activeJob || renderedJob !== value || advice.status !== value.status || advice.reason_code !== (value.reason_code || null)) return;
+    if (!advice.items?.length) return;
+    const panel = $('guidance');
+    panel.replaceChildren(node('h3', 'Next steps'));
+    panel.append(node('p', 'These suggestions are not ranked. Their benefit has not been measured.', 'help'));
+    for (const item of advice.items) {
+      const card = node('div', undefined, 'candidate');
+      card.append(node('p', item.observation), node('p', item.suggestion));
+      const detail = node('details'); detail.append(node('summary', 'Evidence behind this suggestion'));
+      const list = node('ul');
+      for (const reference of item.evidence || []) {
+        const li = node('li');
+        const [artifact] = reference.split('#');
+        // Only link the two local artifacts emitted by the guidance producer.
+        if (artifact === 'result.json' || artifact === 'decision.json') {
+          const link = node('a', reference);
+          link.href = `/api/jobs/${id}/artifacts/${artifact}`; link.download = '';
+          li.append(link);
+        } else li.textContent = reference;
+        list.append(li);
+      }
+      detail.append(list); card.append(detail); panel.append(card);
+    }
+    panel.hidden = false;
+  } catch (_) {
+    if (id !== activeJob || renderedJob !== value) return;
+    $('guidance').replaceChildren(node('p', 'Next steps could not be read. The saved result and artifacts remain available.', 'help'));
+    $('guidance').hidden = false;
   }
 }
 async function poll(id) {
@@ -108,7 +144,7 @@ async function poll(id) {
     const value = await api(`/api/jobs/${id}`);
     if (id !== activeJob) return;
     $('connection').textContent = ''; render(value);
-    if (terminal.has(value.status)) await artifacts(id);
+    if (terminal.has(value.status)) await Promise.all([artifacts(id), readGuidance(value)]);
     else timer = setTimeout(() => poll(id), 1000);
   } catch (error) {
     if (id !== activeJob) return;
