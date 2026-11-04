@@ -2,7 +2,9 @@
 
 Country masks restrict receiver locations, never aircraft trajectories.  The US
 profile deliberately retains the historical CONUS rectangle and CRS.  Germany
-uses BKG VG250 land geometry in its native ETRS89 / UTM 32N coordinates.
+uses BKG VG250 land geometry in its native ETRS89 / UTM 32N coordinates.  Spain
+uses an outer geographic envelope and global equal-area projection; the caller's
+declared bounds select the actual receiver search region.
 """
 from copy import deepcopy
 from dataclasses import dataclass
@@ -30,6 +32,8 @@ _PROFILES = {
                         (-125.0, 24.0, -66.0, 50.0), "EPSG:5070"),
     "DE": SearchProfile("DE", "germany", "Germany",
                         (5.5, 47.0, 15.5, 55.2), "EPSG:32632"),
+    "ES": SearchProfile("ES", "spain", "Spain (all territories; bounding envelope)",
+                        (-18.2, 27.5, 4.5, 43.9), "EPSG:6933"),
 }
 _COVERAGE_COUNTRIES = {p.coverage: code for code, p in _PROFILES.items()}
 
@@ -66,10 +70,10 @@ def profile_for_search(search=None):
     coverage = search.get("coverage")
     if "country" in search:
         if not isinstance(country, str) or country.upper() not in _PROFILES:
-            raise ValueError("Supported countries are US (CONUS) and DE (Germany)")
+            raise ValueError("Supported countries are US (CONUS), DE (Germany) and ES (Spain)")
         country = country.upper()
     if "coverage" in search and (not isinstance(coverage, str) or coverage not in _COVERAGE_COUNTRIES):
-        raise ValueError("Supported coverage values are conus (US/CONUS) and germany (DE)")
+        raise ValueError("Supported coverage values are conus (US/CONUS), germany (DE) and spain (ES)")
     if country is None:
         country = _COVERAGE_COUNTRIES.get(coverage, "US")
     profile = _PROFILES[country]
@@ -241,7 +245,7 @@ def receiver_mask_for_search(search, *, cache_root, offline=True):
     Existing cache bytes are checked each time; missing or changed data produce
     an explicit data-unavailable outcome through the acquisition adapter.
     """
-    if profile_for_search(search).country == "US":
+    if profile_for_search(search).country != "DE":
         return None
     from .data_access import DataUnavailable
     path = Path(cache_root) / "geography" / f"de-vg250-{BKG_BOUNDARY_SHA256[:16]}.json"
