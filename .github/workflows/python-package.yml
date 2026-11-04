@@ -205,4 +205,4 @@ jobs:
           print(f"Validated {len(wheels)} wheels and one sdist for {version}")
           PY
       - name: Publish to PyPI using GitHub OIDC
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
