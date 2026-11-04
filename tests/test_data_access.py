@@ -118,6 +118,18 @@ def test_streaming_split_readsb_archive(tmp_path):
         list(archive_frames(paths))
 
 
+def test_archive_ignores_readsb_partial_members(tmp_path):
+    stream = io.BytesIO()
+    with tarfile.open(fileobj=stream, mode="w") as archive:
+        member = tarfile.TarInfo("traces/trace_full_a4414a.json.readsb_tmp")
+        member.size = 0
+        archive.addfile(member, io.BytesIO())
+    path = tmp_path / "archive.tar"
+    path.write_bytes(stream.getvalue())
+
+    assert list(archive_frames([path])) == []
+
+
 def test_terrain_offline_datum_missing_and_corruption(tmp_path):
     import rasterio
     from rasterio.transform import from_origin
