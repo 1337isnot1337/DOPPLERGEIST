@@ -86,6 +86,16 @@ downloads stayed unchanged. Delayed guidance responses did not overwrite a later
 render of the same job. These checks did not publish the source jobs or modify
 their original directories.
 
+The browser verifier now checks guidance on every actual upload or saved-job
+readback. `--expect-guidance-code` can require a specific observation. Additional
+completed real jobs verified `no_events`, `data_access_limit` and `work_limit`
+at desktop and mobile widths, including a reload. The latter two came from fresh
+whole-reference uploads with an empty offline cache or a 30-second worker limit.
+Every cited field resolved, the visible advice matched the API, and saved evidence
+bytes stayed unchanged. Both new uploads also passed HTTP service restart checks.
+The runtime control ended an incomplete regional development search; it supplies
+no national completion, location accuracy or measured-benefit evidence.
+
 Issue [#63](https://github.com/1337isnot1337/DOPPLERGEIST/issues/63) remains open.
 Its acceptance still requires completed real jobs for the remaining reasons and both
 positive and negative controls for narrower clocks or additional independent

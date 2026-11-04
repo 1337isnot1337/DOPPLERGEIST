@@ -22,7 +22,7 @@ import signal
 import subprocess
 import sys
 import time
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 
 def require(condition, message):
@@ -33,6 +33,28 @@ def require(condition, message):
 def digest(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def resolve_evidence(reference, documents):
+    """Resolve the guidance contract's artifact-relative JSON pointer."""
+    require(isinstance(reference, str), "Guidance evidence must be a string")
+    artifact, separator, pointer = reference.partition("#")
+    require(separator and artifact in {"result.json", "decision.json"}, "Unknown guidance artifact")
+    require(artifact in documents, f"Missing guidance artifact: {artifact}")
+    pointer = unquote(pointer)
+    require(pointer == "" or pointer.startswith("/"), "Guidance evidence is not a JSON pointer")
+    value = documents[artifact]
+    for encoded in pointer.split("/")[1:] if pointer else []:
+        require(re.search(r"~(?![01])", encoded) is None, "Invalid JSON pointer escape")
+        key = encoded.replace("~1", "/").replace("~0", "~")
+        if isinstance(value, list):
+            require(re.fullmatch(r"0|[1-9][0-9]*", key) is not None and int(key) < len(value),
+                    f"Guidance array reference does not exist: {reference}")
+            value = value[int(key)]
+        else:
+            require(isinstance(value, dict) and key in value, f"Guidance field does not exist: {reference}")
+            value = value[key]
+    return value
 
 
 def stop_service(process):
@@ -63,6 +85,8 @@ def main():
     parser.add_argument("--browser-executable", type=Path, help="Use an existing Chromium executable")
     parser.add_argument("--expect-status", choices=("needs_input", "failed", "inconclusive", "succeeded", "cancelled"), default="needs_input")
     parser.add_argument("--expect-reason", default="recording_time_required", help="Expected actual reason code; an empty string expects none")
+    parser.add_argument("--expect-guidance-code", action="append", default=[],
+                        help="Require this actual guidance code; repeat for multiple observations")
     parser.add_argument("--output", required=True, type=Path, help="New directory; existing paths are refused")
     parser.add_argument("--timeout", type=float, default=900, help="Overall verification budget in seconds")
     args = parser.parse_args()
@@ -221,6 +245,65 @@ def main():
                 if args.expect_reason == "recording_time_required":
                     require("time_window" in final.get("required_fields", []), "API omitted required time_window")
                     require(not final.get("candidates"), "Undated result contains location candidates")
+                evidence_bytes = {name: (job_directory / name).read_bytes()
+                                  for name in ("result.json", "decision.json") if (job_directory / name).is_file()}
+                documents = {name: json.loads(content) for name, content in evidence_bytes.items()}
+                reply = context.request.get(origin + f"/api/jobs/{job_id}/guidance", timeout=milliseconds(30))
+                require(reply.status == 200, f"Guidance API returned HTTP {reply.status}")
+                advice = reply.json()
+                require(advice.get("schema_version") == 1 and advice.get("job_id") == job_id
+                        and advice.get("status") == final["status"]
+                        and advice.get("reason_code") == final.get("reason_code")
+                        and advice.get("ranked") is False and isinstance(advice.get("items"), list),
+                        "Guidance API does not describe the saved result")
+                references = []
+                for item in advice["items"]:
+                    require(isinstance(item, dict) and item.get("benefit") == "unmeasured"
+                            and all(isinstance(item.get(key), str) and item[key]
+                                    for key in ("code", "observation", "suggestion"))
+                            and isinstance(item.get("evidence"), list) and item["evidence"],
+                            "Guidance item lacks its observation, conditional suggestion, or evidence")
+                    for reference in item["evidence"]:
+                        resolve_evidence(reference, documents)
+                        references.append(reference)
+                for artifact in sorted({reference.split("#", 1)[0] for reference in references}):
+                    reply = context.request.get(origin + f"/api/jobs/{job_id}/artifacts/{artifact}", timeout=milliseconds(30))
+                    require(reply.status == 200 and reply.body() == evidence_bytes[artifact],
+                            "Guidance artifact download differs from the saved bytes")
+                codes = [item["code"] for item in advice["items"]]
+                require(set(args.expect_guidance_code).issubset(codes), "Required guidance code was not produced")
+                summary["guidance"] = {"codes": codes, "ranked": advice["ranked"],
+                                       "resolved_evidence": sorted(set(references)), "viewports_verified": []}
+
+                def check_guidance(viewport):
+                    panel = page.locator("#guidance")
+                    cards = panel.locator(":scope > .candidate")
+                    expect(cards).to_have_count(len(advice["items"]), timeout=milliseconds(30))
+                    if advice["items"]:
+                        expect(panel).to_be_visible(timeout=milliseconds(10))
+                        expect(panel.locator(":scope > .help")).to_have_text(
+                            "These suggestions are not ranked. Their benefit has not been measured.", timeout=milliseconds(10))
+                    else:
+                        expect(panel).to_be_hidden(timeout=milliseconds(10))
+                    for index, item in enumerate(advice["items"]):
+                        card = cards.nth(index)
+                        expect(card).to_be_visible(timeout=milliseconds(10))
+                        expect(card.locator(":scope > p")).to_have_text(
+                            [item["observation"], item["suggestion"]], timeout=milliseconds(10))
+                        details = card.locator("details")
+                        if details.get_attribute("open") is None:
+                            details.locator("summary").click(timeout=milliseconds(10))
+                        links = details.locator("a")
+                        expect(links).to_have_text(item["evidence"], timeout=milliseconds(10))
+                        for link_index, reference in enumerate(item["evidence"]):
+                            link = links.nth(link_index)
+                            expect(link).to_be_visible(timeout=milliseconds(10))
+                            expect(link).to_have_attribute("href", f"/api/jobs/{job_id}/artifacts/" + reference.split("#", 1)[0])
+                    reply = context.request.get(origin + f"/api/jobs/{job_id}/guidance", timeout=milliseconds(30))
+                    require(reply.status == 200 and reply.json() == advice, "Guidance changed during browser readback")
+                    require(all((job_directory / name).read_bytes() == content for name, content in evidence_bytes.items()),
+                            "Guidance readback changed the saved evidence")
+                    summary["guidance"]["viewports_verified"].append(viewport)
 
                 def check_display():
                     expect(page.locator("#status")).to_have_text(args.expect_status.replace("_", " "), timeout=milliseconds(30))
@@ -250,6 +333,10 @@ def main():
                     expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
 
                 check_display()
+                check_guidance("desktop")
+                if advice["items"]:
+                    page.locator("#guidance").screenshot(path=str(output / "guidance-desktop.png"), timeout=milliseconds(10))
+                    screenshots.append("guidance-desktop.png")
                 summary["displayed_event_count"] = page.locator("#events .event").count()
                 summary["displayed_candidate_count"] = page.locator("#candidates .candidate").count()
                 summary["required_message"] = page.locator("#required").inner_text()
@@ -304,11 +391,24 @@ def main():
                 require(page.url == saved_url, "Saved job URL changed")
                 page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
                 check_display()
+                check_guidance("desktop_reload")
                 expect(original_link).to_have_count(1, timeout=milliseconds(30))
                 check_diagnostics()
                 expect(page.locator("#connection")).to_have_text("", timeout=milliseconds(10))
                 require(api_result() == final, "Terminal API result changed after reload")
                 summary["saved_job_reload_verified"] = True
+                page.set_viewport_size({"width": 390, "height": 844})
+                page.reload(wait_until="domcontentloaded", timeout=milliseconds(30))
+                check_display()
+                check_guidance("mobile")
+                require(api_result() == final, "Mobile readback changed the terminal API result")
+                if advice["items"]:
+                    page.locator("#guidance").screenshot(path=str(output / "guidance-mobile.png"), timeout=milliseconds(10))
+                    screenshots.append("guidance-mobile.png")
+                page.locator("#status").scroll_into_view_if_needed(timeout=milliseconds(10))
+                page.screenshot(path=str(output / "result-mobile.png"), timeout=milliseconds(10))
+                screenshots.append("result-mobile.png")
+                summary["guidance"]["saved_evidence_unchanged"] = True
                 request = json.loads((job_directory / "request.json").read_text())
                 if saved_job is None and wire is None:
                     require(not request.get("time_window"), "Browser unexpectedly supplied a recording time")
