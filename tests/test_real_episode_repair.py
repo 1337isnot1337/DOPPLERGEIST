@@ -163,7 +163,13 @@ def test_prediction_cache_preserves_every_recorded_raw_path():
         actual = _paths(_spectrum(samples,4000,0.,settings,fixed_bands=True),settings)
         assert len(actual) == len(profile['paths'])
         for path, expected in zip(actual,profile['paths']):
-            np.testing.assert_array_equal(path,expected)
+            actual_points=np.asarray(path);expected_points=np.asarray(expected)
+            np.testing.assert_array_equal(actual_points[:,[0,6,7]],expected_points[:,[0,6,7]])
+            # FFT/log-power/peak-width rounding differs across numerical stacks.
+            # Preserve path topology and timing exactly; frequency tolerance is
+            # far below the minimum half-Hz spectral bin in this real fixture.
+            np.testing.assert_allclose(actual_points[:,1],expected_points[:,1],rtol=1e-7,atol=1e-4)
+            np.testing.assert_allclose(actual_points[:,[2,3,4,5]],expected_points[:,[2,3,4,5]],rtol=1e-5,atol=1e-4)
 
 
 def test_recorded_context_reveals_reversals_outside_legacy_crop():
