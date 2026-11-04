@@ -257,7 +257,11 @@ class Track:
                     separation = np.maximum(np.maximum(lo - upper, lower - hi), 0)
                     scale = max(1., float(np.max(np.abs(controls))), float(np.max(np.abs(observers))), abs(radius))
                     margin = 1e-6 + 128 * np.finfo(float).eps * scale
-                    if np.all(np.linalg.norm(separation, axis=1) > radius + margin):
+                    with np.errstate(over="ignore", invalid="ignore"):
+                        distances = np.linalg.norm(separation, axis=1)
+                        threshold = radius + margin
+                    if (np.isfinite(margin) and np.isfinite(threshold) and np.isfinite(distances).all()
+                            and np.all(distances > threshold)):
                         return True
             raise
         if not np.isfinite(radius):
