@@ -1,0 +1,103 @@
+name: Docker build and local service
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build runtime image
+        run: docker build --tag dopplergeist:ci .
+      - name: Check installed runtime, native modules and licenses
+        run: |
+          docker run --rm --entrypoint python dopplergeist:ci -m pip check
+          docker run --rm --entrypoint ffmpeg dopplergeist:ci -version
+          docker run --rm --entrypoint ffprobe dopplergeist:ci -version
+          docker run --rm --interactive --entrypoint python dopplergeist:ci - <<'PY'
+          import os
+          from importlib import metadata, resources
+          import soundfile
+          import numpy, scipy, pandas, matplotlib, pyarrow, requests
+          from pyproj import CRS
+          import rasterio
+          from dopplergeist import _native_ridge, _native_acoustic, _native_cpa, _native_index
+
+          assert os.getuid() == 10001
+          assert soundfile.available_formats()
+          assert CRS.from_epsg(5070).is_projected
+          assert rasterio.crs.CRS.from_epsg(5070).is_projected
+          web = resources.files("dopplergeist.web")
+          for name in ("index.html", "app.js", "style.css", "leaflet.js", "leaflet.css", "leaflet-license.txt"):
+              assert web.joinpath(name).read_bytes(), name
+          dist = metadata.distribution("dopplergeist")
+          assert dist.metadata["License-Expression"] == "PolyForm-Noncommercial-1.0.0"
+          installed = [str(path) for path in dist.files]
+          assert any(path.endswith("/licenses/LICENSE") for path in installed)
+          assert any(path.endswith("/licenses/licenses/MIT-legacy.txt") for path in installed)
+          print("Non-root runtime, four native modules, GIS/audio libraries, assets and licenses passed.")
+          PY
+      - name: Check bridge HTTP and persistent volumes
+        run: |
+          cleanup() {
+            docker logs dopplergeist-ci 2>/dev/null || true
+            docker rm --force dopplergeist-ci >/dev/null 2>&1 || true
+            docker volume rm dopplergeist-ci-jobs dopplergeist-ci-cache >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          docker volume create dopplergeist-ci-jobs
+          docker volume create dopplergeist-ci-cache
+          docker run --detach --init --name dopplergeist-ci \
+            --publish 127.0.0.1:8765:8765 \
+            --mount type=volume,src=dopplergeist-ci-jobs,dst=/data/jobs \
+            --mount type=volume,src=dopplergeist-ci-cache,dst=/home/dopplergeist/.cache/dopplergeist \
+            dopplergeist:ci
+          python - <<'PY'
+          import json
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          base = "http://127.0.0.1:8765"
+          for attempt in range(30):
+              try:
+                  with urlopen(base + "/api/capabilities", timeout=2) as response:
+                      capabilities = json.load(response)
+                  break
+              except (URLError, TimeoutError, ConnectionError):
+                  if attempt == 29:
+                      raise
+                  time.sleep(1)
+          assert capabilities["coverage"] == "conus"
+          assert capabilities["online_enabled"] is False
+          for path in ("/", "/app.js", "/style.css", "/leaflet.js", "/leaflet.css", "/leaflet-license.txt"):
+              with urlopen(base + path, timeout=5) as response:
+                  assert response.status == 200 and response.read(), path
+          for headers in ({"Host": "invalid.example:8765"}, {"Origin": "http://invalid.example:8765"}):
+              try:
+                  urlopen(Request(base + "/api/capabilities", headers=headers), timeout=5)
+              except HTTPError as error:
+                  assert error.code == 403
+              else:
+                  raise AssertionError("Host/Origin checks must remain enabled")
+          print("Bridge-published HTTP, packaged assets and existing Host/Origin checks passed.")
+          PY
+          docker exec dopplergeist-ci python -c 'from pathlib import Path; roots = [Path("/data/jobs"), Path.home()/".cache"/"dopplergeist"]; [(root/"container-write-check").write_text("persistent") for root in roots]'
+          docker stop --time 15 dopplergeist-ci
+          docker inspect --format '{{.State.ExitCode}}' dopplergeist-ci | grep -qx 0
+          docker rm dopplergeist-ci
+          docker run --rm --entrypoint python \
+            --mount type=volume,src=dopplergeist-ci-jobs,dst=/data/jobs \
+            --mount type=volume,src=dopplergeist-ci-cache,dst=/home/dopplergeist/.cache/dopplergeist \
+            dopplergeist:ci -c 'from pathlib import Path; roots = [Path("/data/jobs"), Path.home()/".cache"/"dopplergeist"]; assert all((root/"container-write-check").read_text() == "persistent" for root in roots)'

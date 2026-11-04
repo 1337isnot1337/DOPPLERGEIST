@@ -1,0 +1,18 @@
+# Send only package build inputs. Local recordings, jobs, caches and Git stay out.
+**
+!Dockerfile
+!.dockerignore
+!pyproject.toml
+!setup.py
+!MANIFEST.in
+!README.md
+!LICENSE
+!licenses/
+!licenses/**
+!src/
+!src/**
+src/**/__pycache__/
+src/**/*.pyc
+src/**/*.so
+src/**/*.pyd
+src/**/*.egg-info/

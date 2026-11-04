@@ -1,4 +1,4 @@
-"""Loopback upload/job API, sharing the automatic CLI's persistent job manager."""
+"""Local upload/job API, sharing the automatic CLI's persistent job manager."""
 import json
 import mimetypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -15,8 +15,8 @@ class JobServer(ThreadingHTTPServer):
     daemon_threads = True
 
     def __init__(self, address, manager):
-        if address[0] not in {"127.0.0.1", "localhost"}:
-            raise ValueError("This unauthenticated local service binds to loopback only")
+        if address[0] not in {"127.0.0.1", "localhost", "0.0.0.0"}:
+            raise ValueError("Bind host must be 127.0.0.1, localhost or 0.0.0.0")
         self.manager = manager
         super().__init__(address, Handler)
 
@@ -130,11 +130,11 @@ class Handler(BaseHTTPRequestHandler):
     do_POST = _handle
 
 
-def serve(root, config=None, *, port=8765, max_runtime_s=3600, max_upload_bytes=100*1024*1024):
+def serve(root, config=None, *, host="127.0.0.1", port=8765, max_runtime_s=3600, max_upload_bytes=100*1024*1024):
     manager = JobManager(root, config, max_runtime_s=max_runtime_s, max_upload_bytes=max_upload_bytes)
     try:
-        with JobServer(("127.0.0.1", port), manager) as server:
-            print(f"DOPPLERGEIST: http://127.0.0.1:{server.server_port} (jobs: {manager.root})", flush=True)
+        with JobServer((host, port), manager) as server:
+            print(f"DOPPLERGEIST: http://127.0.0.1:{server.server_port} (bind: {host}; jobs: {manager.root})", flush=True)
             try:
                 server.serve_forever()
             except KeyboardInterrupt:
