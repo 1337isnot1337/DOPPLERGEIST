@@ -43,12 +43,16 @@ span; the full measured ridge remains in JSON/CSV. Existing discovery outputs
 are refused. A reproducible whole-file entry point is:
 
 ```bash
-PYTHONPATH=src .venv/bin/python scripts/discover_audio.py input.mp3 --output results/new-audio-scan
+dopplergeist discover input.mp3 --output results/new-audio-scan
 ```
 
-The script records source/code hashes, git state, settings, runtime and peak RSS.
-It does not consume evaluation labels. Run post-hoc evaluation in a separate
-process. Use a new output directory for every run.
+The installed CLI records the source hash, settings, measured events and chunk
+counts in its output. It does not consume evaluation labels. Run post-hoc
+evaluation in a separate process. Use a new output directory for every run.
+Pass `--plot-summary` for the overview or `--plot-event-details` for individual
+spectrograms; plotting is off by default in the CLI.
+The checkout-only `scripts/discover_audio.py` additionally records its Git state,
+code hash, runtime and peak RSS for research comparisons.
 
 Development evidence before DG-02 controls: full synthetic WAV (1180 s), 2
 proposals spanning both planted passes, 7.24 s / 238044 KiB peak RSS; full public

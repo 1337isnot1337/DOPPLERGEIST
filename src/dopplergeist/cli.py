@@ -102,6 +102,11 @@ def main():
     measure.add_argument("--end",type=float,required=True)
     measure.add_argument("--band",type=float,nargs=2,required=True)
     measure.add_argument("--output",required=True)
+    discover=sub.add_parser("discover",help="Scan a complete recording for acoustic event proposals")
+    discover.add_argument("audio")
+    discover.add_argument("--output",required=True,help="New directory for the scan and diagnostics")
+    discover.add_argument("--plot-summary",action="store_true",help="Render a recording-level ridge overview")
+    discover.add_argument("--plot-event-details",action="store_true",help="Render a spectrogram for each proposal")
     analyze=sub.add_parser("analyze",help="Automatically locate aircraft audio, or explain insufficient evidence")
     analyze.add_argument("audio")
     analyze.add_argument("--start-utc",help="Earliest UTC recording start, including explicit timezone")
@@ -154,6 +159,23 @@ def main():
         from .audio import measure
         result=measure(args.audio,{"start_s":args.start,"end_s":args.end,"band_hz":args.band},args.output)
         print(json.dumps(result[-1],indent=2))
+    elif args.command=="discover":
+        from .discovery import discover_events
+        from .intake import intake_recording
+        output=Path(args.output)
+        try:
+            output.mkdir(parents=True,exist_ok=False)
+            recording=intake_recording(args.audio,output/"intake")
+            events=discover_events(recording,output_dir=output/"discovery",
+                                   plot_summary=args.plot_summary,plot_event_details=args.plot_event_details)
+            summary={"recording":recording.metadata,"time_status":recording.time_status,
+                     "events_found":len(events),
+                     "groups_found":len({event.get("harmonic_group_id") or event["event_id"] for event in events}),
+                     "scope":"Acoustic proposals only; aircraft identity and location are not established"}
+            (output/"summary.json").write_text(json.dumps(summary,indent=2,allow_nan=False)+"\n")
+        except (OSError, ValueError) as exc:
+            parser.error(f"Could not complete discovery: {exc}")
+        print(json.dumps(summary,indent=2))
     elif args.command=="serve":
         from .service import serve
         try:
