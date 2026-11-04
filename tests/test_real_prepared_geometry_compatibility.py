@@ -10,13 +10,21 @@ from dopplergeist import data_access, index_compatibility
 from test_real_prepared_index import observed_index, queried, signature
 
 
-def test_pinned_legacy_geometry_and_data_source_preserve_real_tracks(observed_index, monkeypatch):
+@pytest.mark.parametrize("previous_geometry", [
+    pytest.param("aff5eb70f00766a1a3ab890d1ba33f1a4989af9cf1c4b628770a8d2a7767fd13",
+                 id="before-finite-distance-guard"),
+    pytest.param("85336bd0e3739f890386e9f93965cefb78c4477ae2e8a4fe489353501c5e26a2",
+                 id="before-interval-proof"),
+])
+@pytest.mark.parametrize("legacy_access", [False, True], ids=["current-access", "legacy-access"])
+def test_pinned_legacy_geometry_and_data_source_preserve_real_tracks(
+        observed_index, monkeypatch, previous_geometry, legacy_access):
     index, coverage = observed_index
     expected = [signature(track) for track in queried(index, coverage)]
     access = data_access.sha256(Path(data_access.__file__))
     geometry = data_access.sha256(Path(data_access.__file__).with_name("geometry.py"))
-    previous_access = index_compatibility.PREPARED_DATA_ACCESS_EQUIVALENCE[access][0]
-    previous_geometry = index_compatibility.PREPARED_GEOMETRY_EQUIVALENCE[geometry][0]
+    previous_access = index_compatibility.PREPARED_DATA_ACCESS_EQUIVALENCE[access][0] if legacy_access else access
+    assert previous_geometry in index_compatibility.PREPARED_GEOMETRY_EQUIVALENCE[geometry]
     # Relabel only the builder metadata in this disposable index. The aircraft
     # observations and prepared bytes are unchanged recorded observations.
     with sqlite3.connect(index.path) as db:
@@ -31,7 +39,7 @@ def test_pinned_legacy_geometry_and_data_source_preserve_real_tracks(observed_in
         assert not data_access.FlightIndex(index.path)._prepared_tracks
     with monkeypatch.context() as patch:
         patch.setattr(index_compatibility, "PREPARED_DATA_ACCESS_EQUIVALENCE", {})
-        assert not data_access.FlightIndex(index.path)._prepared_tracks
+        assert data_access.FlightIndex(index.path)._prepared_tracks is (not legacy_access)
     with monkeypatch.context() as patch:
         patch.setattr(data_access, "_prepared_track_identity", lambda *args: "different-runtime")
         assert not data_access.FlightIndex(index.path)._prepared_tracks
