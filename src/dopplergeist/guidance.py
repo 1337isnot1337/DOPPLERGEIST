@@ -58,6 +58,52 @@ def guidance(result, decision=None):
                 "If available, try more of the original recording containing a separate flyover. Another usable event is not guaranteed.",
                 ["result.json#/reason_code", "decision.json#/diagnostics/independent_event_groups"])
 
+    # Explain measured fit failures only when the saved decision still matches
+    # this result and identifies the offending event and policy threshold.
+    if reason in {"insufficient_track_support", "inconsistent_event_match", "source_drift_unresolved"}:
+        summary = diagnostics.get("candidate_evidence_summary")
+        policy = diagnostics.get("policy")
+        fits = summary.get("event_fits") if isinstance(summary, dict) else None
+        if isinstance(fits, list) and isinstance(policy, dict):
+            def measured(value):
+                return type(value) in (int, float) and math.isfinite(value)
+
+            for index, fit in enumerate(fits):
+                if not isinstance(fit, dict) or not isinstance(fit.get("event_id"), str) or not fit["event_id"]:
+                    continue
+                event_id = fit["event_id"]
+                base = f"decision.json#/diagnostics/candidate_evidence_summary/event_fits/{index}"
+                refs = ["result.json#/reason_code", base + "/event_id"]
+
+                if reason == "insufficient_track_support":
+                    actual = fit.get("support_fraction")
+                    limit = policy.get("min_support_fraction")
+                    if (measured(actual) and measured(limit) and 0 <= actual < limit <= 1):
+                        add("track_support", f"Event {event_id} has {actual:.1%} observed trajectory support, below the decision policy's {limit:.1%} minimum.",
+                            "Inspect the saved track coverage and this event's original audio. Additional historical track data may help, but its availability and benefit are unmeasured.",
+                            refs + [base + "/support_fraction", "decision.json#/diagnostics/policy/min_support_fraction"])
+                        break
+
+                elif reason == "inconsistent_event_match":
+                    rmse, outliers = fit.get("rmse_hz"), fit.get("outlier_fraction")
+                    rmse_limit, outlier_limit = policy.get("max_event_rmse_hz"), policy.get("max_outlier_fraction")
+                    if measured(rmse) and measured(rmse_limit) and rmse > rmse_limit >= 0:
+                        add("acoustic_fit", f"Event {event_id} has a measured fit RMSE of {rmse:.2f} Hz, above the policy limit of {rmse_limit:.2f} Hz.",
+                            "Inspect the original audio segment and competing flight associations. This failed fit does not establish a location; an improved result has not been measured.",
+                            refs + [base + "/rmse_hz", "decision.json#/diagnostics/policy/max_event_rmse_hz"])
+                        break
+                    if (measured(outliers) and measured(outlier_limit) and 0 <= outlier_limit < outliers <= 1):
+                        add("acoustic_fit", f"Event {event_id} has a measured outlier fraction of {outliers:.1%}, above the policy limit of {outlier_limit:.1%}.",
+                            "Inspect the original audio segment and competing flight associations. This failed fit does not establish a location; an improved result has not been measured.",
+                            refs + [base + "/outlier_fraction", "decision.json#/diagnostics/policy/max_outlier_fraction"])
+                        break
+
+                elif fit.get("drift_at_bound") is True:
+                    add("source_drift", f"Event {event_id} reached the allowed source-frequency drift bound in the fitted model.",
+                        "Inspect the recorded ridge and drift fit before trusting this association. A different model or more audio has not been shown to resolve it.",
+                        refs + [base + "/drift_at_bound"])
+                    break
+
     # Coverage and the primary reason can describe different simultaneous limits.
     # The initial unavailable state, before acquisition, is not an archive gap.
     missing = coverage.get("missing_data", [])
