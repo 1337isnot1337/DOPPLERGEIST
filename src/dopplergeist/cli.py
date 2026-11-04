@@ -77,6 +77,14 @@ def post_job_action(server_url, job_id, action, parser):
         parser.error(f"Job service returned invalid JSON when requesting {action} for {job_id}: {exc}")
 
 
+def print_terminal_result(result):
+    print(json.dumps(result, indent=2))
+    if result.get("status") == "failed":
+        raise SystemExit(1)
+    if result.get("status") == "cancelled":
+        raise SystemExit(130)
+
+
 def main():
     parser=argparse.ArgumentParser(description="Aircraft acoustic geolocation research pipeline")
     try:
@@ -197,7 +205,7 @@ def main():
                 parser.error(f"Could not submit recording: {exc}")
             print(f"Job {queued['job_id']} started. Monitor: dopplergeist job {queued['job_id']} "
                   f"--jobs {shlex.quote(str(args.jobs))} --watch",file=sys.stderr,flush=True)
-            print(json.dumps(manager.wait(queued["job_id"]),indent=2))
+            print_terminal_result(manager.wait(queued["job_id"]))
         finally:
             manager.close()
     elif args.command=="job":
@@ -298,7 +306,7 @@ def main():
             parser.error(f"Could not open job store: {exc}")
         try:
             manager.resume(args.job_id)
-            print(json.dumps(manager.wait(args.job_id),indent=2))
+            print_terminal_result(manager.wait(args.job_id))
         except (KeyError, OSError, OverflowError, ValueError) as exc:
             parser.error(f"Could not resume job {args.job_id}: {exc}")
         finally:

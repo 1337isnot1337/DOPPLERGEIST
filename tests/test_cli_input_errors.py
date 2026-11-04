@@ -38,6 +38,16 @@ def test_analyze_reports_job_store_initialization_error_without_traceback():
     assert "Traceback" not in run.stderr
 
 
+def test_analyze_exits_nonzero_for_failed_job(tmp_path):
+    # The invalid configuration fails before audio intake; only a real path is needed.
+    config = tmp_path / "operator.json"
+    config.write_text('{"search_workers": 0}')
+    run = _run_cli("analyze", Path(__file__), "--jobs", tmp_path / "jobs", "--config", config)
+
+    assert run.returncode == 1
+    assert '"status": "failed"' in run.stdout
+
+
 def test_serve_reports_job_store_initialization_error_without_traceback():
     existing_file = Path(__file__)
     run = _run_cli("serve", "--jobs", existing_file, "--port", "0")
