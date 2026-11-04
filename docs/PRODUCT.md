@@ -95,6 +95,13 @@ or retention evidence, and the file-count rate is not a completed-work rate or
 ETA. Remotely staged work appears after it is imported. Pressing Ctrl-C stops
 the watcher without cancelling the analysis.
 
+Direct `analyze` and `resume --jobs` print the terminal result as JSON and exit
+with status 1 for a failed job or 130 for cancellation. They exit 0 for
+`succeeded`, `needs_input`, or `inconclusive`: a zero exit status means the
+command completed, not that a location was established. Automation must inspect
+the JSON `status`. A server-side resume only requests that the job be queued;
+check the job result separately.
+
 Direct `analyze` accepts up to 100 MiB by default. Set `--max-upload-mb 250`,
 for example, to allow a larger local recording. The `serve` command has its own
 `--max-upload-mb` setting for uploads through the local web interface.
