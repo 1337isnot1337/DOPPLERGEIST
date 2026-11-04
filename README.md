@@ -18,7 +18,7 @@ Designed for local experimentation, audio forensics research, and investigation 
 
 **This is experimental software, still in a very early beta. Contributors welcome.** The local upload application and automatic audio-to-decision method are available on `main`, alongside configured research replays. Independent nationwide accuracy on real recordings has not (YET) been established. I am currently collecting a swath on audio recordings to benchmark this software.
 
-[Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
+[Current status](#current-status) · [Quickstart](#quickstart) · [How it works](#how-it-works) · [FAQ](#frequently-asked-questions) · [Results](#experimental-results) · [Documentation](#documentation-and-references)
 
 ## Is Colsto's airplane Doppler geolocation code available?
 
@@ -171,7 +171,7 @@ Yes. DOPPLERGEIST includes a locally hosted browser interface. After installatio
 
 ### Is DOPPLERGEIST free and open source?
 
-DOPPLERGEIST is free to use for permitted noncommercial purposes and is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+DOPPLERGEIST is free to use for permitted noncommercial purposes and is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE). So not open-source, but source-available.
 
 The license permits noncommercial use, modification, and redistribution subject to its terms. Commercial use requires separate authorization.
 
