@@ -274,6 +274,22 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     evidence = matching_diagnostics or {}
     if not isinstance(evidence, dict):
         return result("invalid_evidence", "Matching diagnostics must be a mapping.", "failed")
+
+    def interval(value):
+        return (isinstance(value, (list, tuple)) and len(value) == 2 and
+                all(not isinstance(v, bool) and isinstance(v, (int, float)) and math.isfinite(v) for v in value)
+                and value[0] <= value[1])
+
+    window = evidence.get("recording_start_window_s")
+    if candidates and interval(window):
+        fitted = utc_timestamp(candidates[0]["recording_start_utc"]).timestamp()
+        if window[0] <= fitted <= window[1]:
+            diagnostics["recording_start_window_s"] = list(window)
+            diagnostics["recording_start_window_fit"] = {
+                "window_width_s": float(window[1] - window[0]),
+                "fit_offset_from_midpoint_s": float(fitted - (window[0] + window[1]) / 2),
+                "fit_distance_to_nearest_edge_s": float(min(fitted - window[0], window[1] - fitted)),
+            }
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
     if (not candidates or coverage is None or coverage["search_complete"] is not True
@@ -316,20 +332,12 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
     diagnostics["matched_event_group_count"] = len(groups)
     diagnostics["independent_event_groups"] = len({flight_id for _, flight_id in groups.values()})
     sensitivity = evidence.get("sensitivity", {})
-    window = evidence.get("recording_start_window_s")
-
-    def interval(value):
-        return (isinstance(value, (list, tuple)) and len(value) == 2 and
-                all(not isinstance(v, bool) and isinstance(v, (int, float)) and math.isfinite(v) for v in value)
-                and value[0] <= value[1])
-
     if window is not None:
         if not interval(window):
             return result("invalid_evidence", "The trusted recording-start window must have two finite ordered endpoints.", "failed")
         fitted = utc_timestamp(best["recording_start_utc"]).timestamp()
         if not window[0] <= fitted <= window[1]:
             return result("recording_clock_mismatch", "The fitted recording start lies outside the trusted recording window.")
-        diagnostics["recording_start_window_s"] = list(window)
     settings = sensitivity.get("settings", {}) if isinstance(sensitivity, dict) else {}
     tested_clock = settings.get("clock_bounds_s") if isinstance(settings, dict) else None
     known_clock = (interval(window) and interval(tested_clock) and
