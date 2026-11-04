@@ -1421,6 +1421,9 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     finite = ledger.evidence(ranked, complete=complete, spacing_m=budget.spacing_m,
                              refine_spacing_m=min(budget.spacing_m, budget.refine_spacing_m), max_event_groups=len(events),
                              expected_stages={"coarse": done, "global": done, "fine": fine_stages, "fine-global": fine_stages})
+    if tile_budget_exhausted:
+        finite["limitations"].append(
+            "The per-invocation coarse tile-evaluation budget was exhausted; unvisited tiles remain.")
     if finite["bounded_unknown_envelopes"] != support["bounded_score_candidates"]:
         model_assessed = complete = False
         finite["complete"] = finite["pruning_accounted_for"] = False
