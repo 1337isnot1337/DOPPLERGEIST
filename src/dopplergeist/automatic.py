@@ -142,11 +142,15 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
     if not events:
         return finish("inconclusive", "no_supported_events", "No supported moving-tone Doppler events were discovered in the recording.")
-    progress("acquisition", 0.35, **state)
+    # Coverage remains unassessed until the search report is available.
+    # Keep the initial state for explicit acquisition failure results.
+    running_state = {key: value for key, value in state.items() if key != "coverage"}
+    progress("acquisition", 0.35, **running_state)
 
     def report_search_progress(fraction=0.0):
         fraction = min(1.0, max(0.0, float(fraction)))
-        progress("search", 0.55 + 0.29 * fraction, **state)
+        progress("search", 0.55 + 0.29 * fraction,
+                 message="Data coverage is not yet assessed.", **running_state)
 
     try:
         from .data_access import DataUnavailable

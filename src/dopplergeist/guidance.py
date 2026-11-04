@@ -79,10 +79,13 @@ def guidance(result, decision=None):
             "Ask the operator to inspect the recorded data-access or configuration limit before repeating the analysis.",
             ["result.json#/reason_code", "result.json#/coverage/data_status", "result.json#/coverage/limitations"])
 
-    if reason == "work_limit" and coverage.get("search_complete") is False:
-        add("work_limit", "The configured wall-time limit ended the analysis before the search completed.",
-            "Ask the operator to allow more time. A compatible saved checkpoint can be resumed; otherwise rerun. Completion is not guaranteed.",
-            ["result.json#/reason_code", "result.json#/coverage/search_complete"])
+    if reason == "work_limit" and coverage.get("search_complete") is not True:
+        evidence = ["result.json#/reason_code"]
+        if coverage.get("search_complete") is False:
+            evidence.append("result.json#/coverage/search_complete")
+        add("work_limit", "The configured wall-time limit ended the analysis before completion.",
+            "Ask the operator to allow more time. If a compatible saved checkpoint exists, resume it. Otherwise, run the analysis again. Completion is not guaranteed.",
+            evidence)
     elif reason == "search_incomplete" and coverage.get("search_complete") is False:
         add("incomplete_assessment", "Search coverage or assessment of competing hypotheses is incomplete.",
             "Ask the operator to inspect unfinished work and unsupported model assessments. More runtime alone may not address these limits.",
