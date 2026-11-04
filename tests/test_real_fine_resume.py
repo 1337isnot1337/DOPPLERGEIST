@@ -80,6 +80,10 @@ def test_real_fine_checkpoints_resume_and_reject_corruption(tmp_path, monkeypatc
         assert more_workers['tiles_resumed'] > 0
         assert more_workers['refinement_failure'] is None
         assert more_workers['ranked'] == baseline['ranked']
+        fresh_more_workers = run(tmp_path / 'fresh-more-workers', 3)
+        assert more_workers['ranked'] == fresh_more_workers['ranked']
+        assert more_workers['model_support'] == fresh_more_workers['model_support']
+        assert more_workers['finite_search_evidence'] == fresh_more_workers['finite_search_evidence']
 
     corrupt = tmp_path / 'corrupt'
     shutil.copytree(output, corrupt)
