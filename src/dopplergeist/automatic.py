@@ -146,6 +146,34 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     # Keep the initial state for explicit acquisition failure results.
     running_state = {key: value for key, value in state.items() if key != "coverage"}
     progress("acquisition", 0.35, **running_state)
+    last_acquisition_report = 0.0
+    last_acquisition_phase = None
+
+    def report_acquisition_progress(**details):
+        nonlocal last_acquisition_report, last_acquisition_phase
+        now = time.monotonic()
+        phase = str(details.get("phase", "working")).replace("_", " ")
+        if phase == last_acquisition_phase and now - last_acquisition_report < 2.0:
+            return
+        label = details.get("label")
+        message = f"{label}: {phase}" if label else phase[:1].upper() + phase[1:]
+        done, total = details.get("bytes_done"), details.get("bytes_total")
+        if isinstance(done, (int, float)) and math.isfinite(done):
+            if isinstance(total, (int, float)) and math.isfinite(total) and total > 0:
+                message += f" ({done / (1024 * 1024):.0f}/{total / (1024 * 1024):.0f} MiB)"
+            else:
+                message += f" ({done / (1024 * 1024):.0f} MiB)"
+        metrics = []
+        for key, metric_label in (("rows", "sample rows"), ("batches", "archive batches"),
+                                  ("segments", "flight segments"), ("flights", "flights"),
+                                  ("tracks", "prepared tracks")):
+            value = details.get(key)
+            if type(value) is int:
+                metrics.append(f"{value:,} {metric_label}")
+        if metrics:
+            message += f" ({', '.join(metrics)})"
+        progress("acquisition", 0.35, message=message, **running_state)
+        last_acquisition_report, last_acquisition_phase = now, phase
 
     def report_search_progress(fraction=0.0):
         fraction = min(1.0, max(0.0, float(fraction)))
@@ -155,7 +183,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     try:
         from .data_access import DataUnavailable
         search, prepared_events, measurements, indexes, terrain = _search(
-            request, recording, events, output, config, report_search_progress)
+            request, recording, events, output, config, report_search_progress,
+            report_acquisition_progress)
     except ImportError as exc:
         return finish("failed", "component_unavailable", f"Automatic matching/data components are not installed: {exc}")
     except EmptySearchArea as exc:
@@ -248,7 +277,7 @@ def _latest_emission(hi, duration, events, filters):
     return max(original, refinement, candidate)
 
 
-def _search(request, recording, events, output, config, search_progress):
+def _search(request, recording, events, output, config, search_progress, acquisition_progress=None):
     from .data_access import FlightIndex, acquire_inputs
     from .geography import profile_for_search, receiver_mask_for_search
     from .matching import prepare_events
@@ -308,7 +337,8 @@ def _search(request, recording, events, output, config, search_progress):
         bundle = acquire_inputs(request, recording.metadata, cache_root=config.get("cache_root", output / "cache"),
                                 index_paths=config.get("flight_indexes"), offline=config.get("offline", True),
                                 terrain_options=ground, max_sound_range_m=max_distance,
-                                earliest_emission_s=earliest, latest_emission_s=latest)
+                                earliest_emission_s=earliest, latest_emission_s=latest,
+                                progress_callback=acquisition_progress)
         indexes, terrain, time_range, bounds = bundle.indexes, bundle.terrain, bundle.time_range_s, bundle.bounds
     if ground.get("geoid_raster"):
         hashes["geoid_sha256"] = _digest(ground["geoid_raster"])
