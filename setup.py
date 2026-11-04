@@ -30,4 +30,11 @@ cpa_extension = Extension(
     libraries=[] if os.name == "nt" else ["m"],
 )
 
-setup(ext_modules=[extension, acoustic_extension, cpa_extension])
+index_extension = Extension(
+    "dopplergeist._native_index",
+    ["src/dopplergeist/_native_index.c"],
+    optional=True,
+    extra_compile_args=["/O2"] if os.name == "nt" else ["-O3"],
+)
+
+setup(ext_modules=[extension, acoustic_extension, cpa_extension, index_extension])

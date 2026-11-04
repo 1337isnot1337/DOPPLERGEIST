@@ -33,6 +33,13 @@ cache-size change remain usable when the exact source and all other builder
 identities match. Unknown source versions continue to use the verified original
 payload instead of trusting incompatible prepared data.
 
+An optional native collector speeds canonical raw-index column extraction;
+unsupported representations and installations without the extension use the
+existing Python path. The exact compatible prepared-index versions remain usable.
+On one real full-day query, 1,060 trajectories decoded with identical fields in
+median 6.31 seconds of CPU before and 5.79 seconds after. This measures the query
+only, not a complete upload or national search.
+
 Decoded tracks also have a bounded 128 MiB serialized cache per index per worker,
 with at most 2,048 entries. `FlightIndex(track_cache_bytes=...)` accepts a smaller
 limit or zero; cached queries still verify source payloads and return independent
