@@ -46,12 +46,15 @@ jobs:
           import json
           from pathlib import Path
           import dopplergeist
-          from dopplergeist import _native_cpa, _native_ridge, automatic, jobs, service
+          from dopplergeist import _native_cpa, _native_index, _native_ridge, automatic, jobs, service
 
           package = Path(dopplergeist.__file__).resolve().parent
           assert "site-packages" in package.parts, package
           assert Path(_native_ridge.__file__).resolve().parent == package
           assert Path(_native_cpa.__file__).resolve().parent == package
+          assert Path(_native_index.__file__).resolve().parent == package
+          observed = json.loads(Path("research/trajectory-motion/frozen/fresh-a6cc10.json").read_text())
+          assert _native_index.payload_columns(observed) is not None, "Native real-column extraction failed"
           assert callable(_native_ridge.fit_irls_batch), "Native batch fitter did not build"
           assert callable(_native_ridge.fit_statistics), "Native fit counters did not build"
           assert callable(_native_cpa.select), "Native CPA reducer did not build"
