@@ -66,6 +66,16 @@ Open **http://127.0.0.1:8765** and upload a recording. For historical flight mat
 
 This creates a persistent job and runs acoustic analysis. To enable historical matching, provide `--start-utc`, `--end-utc`, and `--time-source` with the evidence for the recording clock, plus `--online` if the required data is not already configured locally. Without a defensible recording time, the job reports `needs_input` rather than assuming a date.
 
+For a full online analysis, allow enough time for both historical-data acquisition and search. The job limit defaults to **one hour**; initial acquisition can take longer. Replace the sample clock window and source description below with evidence for your recording, and increase `--max-runtime` if your data and search scope require it:
+
+```bash
+.venv/bin/dopplergeist analyze path/to/recording.mp3 \
+  --start-utc "2026-01-01T00:00:00Z" \
+  --end-utc "2026-01-01T00:10:00Z" \
+  --time-source "replace with the source establishing the first-sample clock" \
+  --online --max-runtime 21600
+```
+
 To check progress after the job ID is printed:
 
 ```bash
