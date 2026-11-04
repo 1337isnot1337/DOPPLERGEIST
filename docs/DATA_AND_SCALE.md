@@ -29,6 +29,15 @@ verified original payload. This reduces first-use cache construction without
 changing source coverage or filtering aircraft. `FlightIndex.prepare` also accepts
 `prepare_scope=(bounds_wsen, time_range_s)` for an explicitly scoped index copy.
 
+Decoded tracks also have a bounded 128 MiB serialized cache per index per worker,
+with at most 2,048 entries. `FlightIndex(track_cache_bytes=...)` accepts a smaller
+limit or zero; cached queries still verify source payloads and return independent
+objects. On a real Kane County tile with 580 tracks and 1,337 associations, six
+alternating warm replays reduced median CPU from 5.486 to 5.212 seconds versus
+32 MiB, preserving the complete payload and retention checksum. This trades up to
+96 MiB more storage per index per worker for less decoding; the measured 5.0%
+reduction is specific to this tile, not an end-to-end or national estimate (#303).
+
 The on-disk SQLite index has spatial and time indexes, source hashes, explicit
 source scope, per-payload checksums and altitude/classification labels. Disk staging supports
 arbitrary input order. Query predicates select whole gap-split segments; they
