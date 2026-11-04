@@ -158,6 +158,45 @@ def _finite_search(evidence, diagnostics, candidates, group_counts, policy):
     return None, details
 
 
+def _candidate_evidence_summary(events, candidate, evidence):
+    """Summarize the ranked hypothesis before later gates can abstain early."""
+    lookup = {event["event_id"]: event for event in events}
+    matched_events = set(candidate["event_ids"])
+    group_flights = {}
+    flights_groups = {}
+    fit_summaries = []
+    for event_id, flight_id in zip(candidate["event_ids"], candidate["flight_ids"]):
+        event = lookup[event_id]
+        group_id = event.get("harmonic_group_id", event_id)
+        group_flights.setdefault(group_id, set()).add(flight_id)
+        flights_groups.setdefault(flight_id, set()).add(group_id)
+        fit = evidence.get(event_id)
+        if isinstance(fit, dict):
+            fit_summaries.append({
+                "event_id": event_id,
+                **{name: fit[name] for name in
+                   ("rmse_hz", "outlier_fraction", "support_fraction", "drift_at_bound")
+                   if name in fit},
+            })
+    all_groups = {event.get("harmonic_group_id", event["event_id"]) for event in events}
+    return {
+        "matched_event_ids": sorted(matched_events),
+        "unmatched_event_ids": sorted(set(lookup) - matched_events),
+        "matched_group_ids": sorted(group_flights),
+        "unmatched_group_ids": sorted(all_groups - set(group_flights)),
+        "distinct_flight_segments": len(flights_groups),
+        "flight_segments_with_multiple_groups": [
+            {"flight_id": flight_id, "group_ids": sorted(group_ids)}
+            for flight_id, group_ids in sorted(flights_groups.items()) if len(group_ids) > 1
+        ],
+        "groups_associated_with_multiple_flights": [
+            {"group_id": group_id, "flight_ids": sorted(flight_ids)}
+            for group_id, flight_ids in sorted(group_flights.items()) if len(flight_ids) > 1
+        ],
+        "event_fits": fit_summaries,
+    }
+
+
 def decide_location(events, candidates, coverage, *, matching_diagnostics=None, policy=None):
     """Return status/reason_code/message/diagnostics without modifying inputs.
 
@@ -197,6 +236,9 @@ def decide_location(events, candidates, coverage, *, matching_diagnostics=None, 
         return result("invalid_evidence", "Matching diagnostics must be a mapping.", "failed")
     if not events:
         return result("no_doppler_events", "No supported Doppler event was discovered in the recording.")
+    if candidates:
+        diagnostics["candidate_evidence_summary"] = _candidate_evidence_summary(
+            events, candidates[0], evidence)
     if coverage is None:
         return result("coverage_unknown", "Search completion and flight-data coverage are not established.")
     if coverage["data_status"] == "unavailable":

@@ -1,0 +1,1091 @@
+{
+  "provenance": {
+    "case": "ESID 430, Fort Worth area",
+    "source_url": "https://zenodo.org/records/21772857",
+    "job_id": "b97a241ab45f46119c814bb020f06880",
+    "source_sha256": "ce9bb9e4daf20b130936eb4a202fba6e3ef0e93e83c4b597040c612df9c601db",
+    "run_source_commit": "611dca2",
+    "source_artifacts": "saved real MP3 discovery, ranked candidate and matching diagnostics; no source audio or site truth copied"
+  },
+  "events": [
+    {
+      "event_id": "event-0001",
+      "harmonic_group_id": "harmonics-0001",
+      "start_s": 61.0,
+      "end_s": 79.5,
+      "band_hz": [
+        137.31109960377216,
+        145.75
+      ],
+      "ridge": [
+        {
+          "time_s": 62.0,
+          "frequency_hz": 144.75,
+          "weight": 3.0957083702087402
+        },
+        {
+          "time_s": 62.5,
+          "frequency_hz": 144.75,
+          "weight": 2.8338913917541504
+        },
+        {
+          "time_s": 63.0,
+          "frequency_hz": 143.79222713410854,
+          "weight": 2.720245838165283
+        },
+        {
+          "time_s": 63.5,
+          "frequency_hz": 144.15484365820885,
+          "weight": 3.3949391841888428
+        },
+        {
+          "time_s": 64.0,
+          "frequency_hz": 144.3594825565815,
+          "weight": 3.8250069618225098
+        },
+        {
+          "time_s": 64.5,
+          "frequency_hz": 144.26177793741226,
+          "weight": 3.291191816329956
+        },
+        {
+          "time_s": 65.0,
+          "frequency_hz": 144.43110842257738,
+          "weight": 3.40948486328125
+        },
+        {
+          "time_s": 65.5,
+          "frequency_hz": 144.053981538862,
+          "weight": 3.8830389976501465
+        },
+        {
+          "time_s": 66.0,
+          "frequency_hz": 142.99913726234809,
+          "weight": 4.0166096687316895
+        },
+        {
+          "time_s": 66.5,
+          "frequency_hz": 142.75,
+          "weight": 4.521486759185791
+        },
+        {
+          "time_s": 67.0,
+          "frequency_hz": 142.88301818072796,
+          "weight": 4.684221267700195
+        },
+        {
+          "time_s": 67.5,
+          "frequency_hz": 142.9795407280326,
+          "weight": 4.361834526062012
+        },
+        {
+          "time_s": 68.0,
+          "frequency_hz": 142.45353427156806,
+          "weight": 4.620380878448486
+        },
+        {
+          "time_s": 68.5,
+          "frequency_hz": 142.39793947339058,
+          "weight": 4.820715427398682
+        },
+        {
+          "time_s": 69.0,
+          "frequency_hz": 141.88723553717136,
+          "weight": 4.523049354553223
+        },
+        {
+          "time_s": 69.5,
+          "frequency_hz": 141.69208645820618,
+          "weight": 4.744446754455566
+        },
+        {
+          "time_s": 70.0,
+          "frequency_hz": 141.52394472807646,
+          "weight": 5.13903284072876
+        },
+        {
+          "time_s": 70.5,
+          "frequency_hz": 141.4142885953188,
+          "weight": 4.993521213531494
+        },
+        {
+          "time_s": 71.0,
+          "frequency_hz": 141.50706502236426,
+          "weight": 4.395995140075684
+        },
+        {
+          "time_s": 71.5,
+          "frequency_hz": 140.8253673017025,
+          "weight": 4.343877792358398
+        },
+        {
+          "time_s": 72.0,
+          "frequency_hz": 140.5963138192892,
+          "weight": 4.819214344024658
+        },
+        {
+          "time_s": 72.5,
+          "frequency_hz": 140.68024395406246,
+          "weight": 4.4526047706604
+        },
+        {
+          "time_s": 73.0,
+          "frequency_hz": 140.54098391905427,
+          "weight": 3.961252450942993
+        },
+        {
+          "time_s": 73.5,
+          "frequency_hz": 140.38628827035427,
+          "weight": 2.780327796936035
+        },
+        {
+          "time_s": 75.0,
+          "frequency_hz": 139.0797087997198,
+          "weight": 3.403329610824585
+        },
+        {
+          "time_s": 75.5,
+          "frequency_hz": 139.22853550314903,
+          "weight": 4.923369407653809
+        },
+        {
+          "time_s": 76.0,
+          "frequency_hz": 139.21737037599087,
+          "weight": 5.355761528015137
+        },
+        {
+          "time_s": 76.5,
+          "frequency_hz": 138.86526599526405,
+          "weight": 4.8786702156066895
+        },
+        {
+          "time_s": 77.0,
+          "frequency_hz": 138.59078282862902,
+          "weight": 4.571017742156982
+        },
+        {
+          "time_s": 77.5,
+          "frequency_hz": 138.53972844779491,
+          "weight": 4.144406318664551
+        },
+        {
+          "time_s": 78.0,
+          "frequency_hz": 138.38324459642172,
+          "weight": 3.79113507270813
+        },
+        {
+          "time_s": 78.5,
+          "frequency_hz": 138.31109960377216,
+          "weight": 3.002842426300049
+        }
+      ],
+      "quality": {
+        "median_contrast": 4.352856159210205,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.9411764705882353,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 5.819754108786583
+      }
+    },
+    {
+      "event_id": "event-0002",
+      "harmonic_group_id": "harmonics-0002",
+      "start_s": 104.5,
+      "end_s": 120.0,
+      "band_hz": [
+        134.1747667491436,
+        141.66548827290535
+      ],
+      "ridge": [
+        {
+          "time_s": 105.5,
+          "frequency_hz": 140.66548827290535,
+          "weight": 3.0008111000061035
+        },
+        {
+          "time_s": 106.0,
+          "frequency_hz": 140.28141759335995,
+          "weight": 3.370669364929199
+        },
+        {
+          "time_s": 106.5,
+          "frequency_hz": 140.12626452744007,
+          "weight": 3.662332773208618
+        },
+        {
+          "time_s": 107.0,
+          "frequency_hz": 140.07360848784447,
+          "weight": 4.137907028198242
+        },
+        {
+          "time_s": 107.5,
+          "frequency_hz": 140.0761882737279,
+          "weight": 3.9975271224975586
+        },
+        {
+          "time_s": 108.0,
+          "frequency_hz": 140.0444039925933,
+          "weight": 3.932838201522827
+        },
+        {
+          "time_s": 108.5,
+          "frequency_hz": 139.89568898826838,
+          "weight": 3.556844472885132
+        },
+        {
+          "time_s": 109.0,
+          "frequency_hz": 139.81479285657406,
+          "weight": 2.9397573471069336
+        },
+        {
+          "time_s": 109.5,
+          "frequency_hz": 139.64328423142433,
+          "weight": 2.6161341667175293
+        },
+        {
+          "time_s": 110.0,
+          "frequency_hz": 139.40479576587677,
+          "weight": 2.804372549057007
+        },
+        {
+          "time_s": 110.5,
+          "frequency_hz": 139.11496714502573,
+          "weight": 3.516599416732788
+        },
+        {
+          "time_s": 111.0,
+          "frequency_hz": 139.02804835140705,
+          "weight": 3.6429367065429688
+        },
+        {
+          "time_s": 111.5,
+          "frequency_hz": 138.6831565797329,
+          "weight": 2.759498357772827
+        },
+        {
+          "time_s": 112.0,
+          "frequency_hz": 138.37953592836857,
+          "weight": 3.325486660003662
+        },
+        {
+          "time_s": 112.5,
+          "frequency_hz": 138.30291764438152,
+          "weight": 3.5684237480163574
+        },
+        {
+          "time_s": 113.0,
+          "frequency_hz": 138.18439650535583,
+          "weight": 2.8178439140319824
+        },
+        {
+          "time_s": 113.5,
+          "frequency_hz": 137.8264718055725,
+          "weight": 2.676525831222534
+        },
+        {
+          "time_s": 114.0,
+          "frequency_hz": 137.9794363155961,
+          "weight": 2.9463608264923096
+        },
+        {
+          "time_s": 115.0,
+          "frequency_hz": 137.75,
+          "weight": 2.5719356536865234
+        },
+        {
+          "time_s": 116.5,
+          "frequency_hz": 136.74208803474903,
+          "weight": 2.5763630867004395
+        },
+        {
+          "time_s": 117.5,
+          "frequency_hz": 135.85969322919846,
+          "weight": 2.624116897583008
+        },
+        {
+          "time_s": 118.0,
+          "frequency_hz": 135.69754692912102,
+          "weight": 3.035425901412964
+        },
+        {
+          "time_s": 118.5,
+          "frequency_hz": 135.5537938065827,
+          "weight": 3.333130359649658
+        },
+        {
+          "time_s": 119.0,
+          "frequency_hz": 135.1747667491436,
+          "weight": 3.3305914402008057
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.180456280708313,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8571428571428571,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 4.578170692548156
+      }
+    },
+    {
+      "event_id": "event-0003",
+      "harmonic_group_id": "harmonics-0003",
+      "start_s": 420.0,
+      "end_s": 442.0,
+      "band_hz": [
+        130.4207421541214,
+        137.75
+      ],
+      "ridge": [
+        {
+          "time_s": 421.0,
+          "frequency_hz": 136.53036283515394,
+          "weight": 4.0227179527282715
+        },
+        {
+          "time_s": 421.5,
+          "frequency_hz": 136.53409091755748,
+          "weight": 3.467031478881836
+        },
+        {
+          "time_s": 422.0,
+          "frequency_hz": 136.60614420473576,
+          "weight": 3.105771064758301
+        },
+        {
+          "time_s": 423.5,
+          "frequency_hz": 136.75,
+          "weight": 3.3042240142822266
+        },
+        {
+          "time_s": 424.0,
+          "frequency_hz": 136.34917306900024,
+          "weight": 3.8379273414611816
+        },
+        {
+          "time_s": 424.5,
+          "frequency_hz": 136.25891175866127,
+          "weight": 3.9455373287200928
+        },
+        {
+          "time_s": 425.0,
+          "frequency_hz": 136.4022072032094,
+          "weight": 4.314925193786621
+        },
+        {
+          "time_s": 425.5,
+          "frequency_hz": 136.49898831930477,
+          "weight": 4.327700614929199
+        },
+        {
+          "time_s": 426.0,
+          "frequency_hz": 136.61852571368217,
+          "weight": 3.911329984664917
+        },
+        {
+          "time_s": 426.5,
+          "frequency_hz": 136.7352410852909,
+          "weight": 3.6557769775390625
+        },
+        {
+          "time_s": 427.0,
+          "frequency_hz": 136.2997641414404,
+          "weight": 3.5117125511169434
+        },
+        {
+          "time_s": 427.5,
+          "frequency_hz": 136.4692841526121,
+          "weight": 3.597402811050415
+        },
+        {
+          "time_s": 428.0,
+          "frequency_hz": 136.25953756272793,
+          "weight": 3.009941816329956
+        },
+        {
+          "time_s": 428.5,
+          "frequency_hz": 136.28528374433517,
+          "weight": 2.9556095600128174
+        },
+        {
+          "time_s": 429.0,
+          "frequency_hz": 136.52868578024209,
+          "weight": 3.036087989807129
+        },
+        {
+          "time_s": 430.5,
+          "frequency_hz": 135.69173546135426,
+          "weight": 2.953660249710083
+        },
+        {
+          "time_s": 431.0,
+          "frequency_hz": 135.70134568214417,
+          "weight": 2.7978663444519043
+        },
+        {
+          "time_s": 432.0,
+          "frequency_hz": 135.03685846179724,
+          "weight": 2.6627087593078613
+        },
+        {
+          "time_s": 432.5,
+          "frequency_hz": 135.15788789093494,
+          "weight": 3.8262834548950195
+        },
+        {
+          "time_s": 433.0,
+          "frequency_hz": 134.99513440625742,
+          "weight": 3.76566481590271
+        },
+        {
+          "time_s": 433.5,
+          "frequency_hz": 134.8114652633667,
+          "weight": 3.049212694168091
+        },
+        {
+          "time_s": 434.0,
+          "frequency_hz": 135.21534273028374,
+          "weight": 3.327597141265869
+        },
+        {
+          "time_s": 434.5,
+          "frequency_hz": 134.89695578068495,
+          "weight": 2.778771162033081
+        },
+        {
+          "time_s": 436.0,
+          "frequency_hz": 133.37488344311714,
+          "weight": 2.852229118347168
+        },
+        {
+          "time_s": 436.5,
+          "frequency_hz": 133.69174514710903,
+          "weight": 3.02043080329895
+        },
+        {
+          "time_s": 437.0,
+          "frequency_hz": 133.4984993195394,
+          "weight": 3.291033983230591
+        },
+        {
+          "time_s": 437.5,
+          "frequency_hz": 133.60325537621975,
+          "weight": 2.726454734802246
+        },
+        {
+          "time_s": 438.0,
+          "frequency_hz": 132.41780991852283,
+          "weight": 3.245201826095581
+        },
+        {
+          "time_s": 438.5,
+          "frequency_hz": 132.3329967111349,
+          "weight": 3.6515953540802
+        },
+        {
+          "time_s": 439.0,
+          "frequency_hz": 131.76198396086693,
+          "weight": 3.1709091663360596
+        },
+        {
+          "time_s": 439.5,
+          "frequency_hz": 131.68237064778805,
+          "weight": 3.137460947036743
+        },
+        {
+          "time_s": 440.5,
+          "frequency_hz": 131.4207421541214,
+          "weight": 3.2371296882629395
+        },
+        {
+          "time_s": 441.0,
+          "frequency_hz": 131.57203237712383,
+          "weight": 3.5883307456970215
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.291033983230591,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8048780487804879,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 4.85172026976943
+      }
+    },
+    {
+      "event_id": "event-0004",
+      "harmonic_group_id": "harmonics-0004",
+      "start_s": 480.0,
+      "end_s": 503.0,
+      "band_hz": [
+        140.43128870427608,
+        148.79677087068558
+      ],
+      "ridge": [
+        {
+          "time_s": 481.0,
+          "frequency_hz": 147.79677087068558,
+          "weight": 3.2932896614074707
+        },
+        {
+          "time_s": 481.5,
+          "frequency_hz": 147.46191385015845,
+          "weight": 2.635782241821289
+        },
+        {
+          "time_s": 482.5,
+          "frequency_hz": 146.82026340067387,
+          "weight": 2.7948343753814697
+        },
+        {
+          "time_s": 483.0,
+          "frequency_hz": 146.79039773344994,
+          "weight": 2.988023519515991
+        },
+        {
+          "time_s": 483.5,
+          "frequency_hz": 146.46631065011024,
+          "weight": 3.398648977279663
+        },
+        {
+          "time_s": 484.0,
+          "frequency_hz": 146.15353952348232,
+          "weight": 4.1817193031311035
+        },
+        {
+          "time_s": 484.5,
+          "frequency_hz": 146.25,
+          "weight": 4.706241607666016
+        },
+        {
+          "time_s": 485.0,
+          "frequency_hz": 146.111609056592,
+          "weight": 4.907811641693115
+        },
+        {
+          "time_s": 485.5,
+          "frequency_hz": 146.01189741678536,
+          "weight": 4.91794490814209
+        },
+        {
+          "time_s": 486.0,
+          "frequency_hz": 146.08663225919008,
+          "weight": 4.324226379394531
+        },
+        {
+          "time_s": 486.5,
+          "frequency_hz": 145.68539801239967,
+          "weight": 3.7515323162078857
+        },
+        {
+          "time_s": 487.0,
+          "frequency_hz": 146.0878255367279,
+          "weight": 3.939530611038208
+        },
+        {
+          "time_s": 487.5,
+          "frequency_hz": 146.1335744857788,
+          "weight": 4.054724216461182
+        },
+        {
+          "time_s": 488.0,
+          "frequency_hz": 146.08817091584206,
+          "weight": 3.931276798248291
+        },
+        {
+          "time_s": 488.5,
+          "frequency_hz": 146.09524891525507,
+          "weight": 3.670558214187622
+        },
+        {
+          "time_s": 489.0,
+          "frequency_hz": 146.15807901322842,
+          "weight": 3.6725924015045166
+        },
+        {
+          "time_s": 489.5,
+          "frequency_hz": 146.34493599832058,
+          "weight": 3.506956100463867
+        },
+        {
+          "time_s": 490.0,
+          "frequency_hz": 146.35001292824745,
+          "weight": 3.0668578147888184
+        },
+        {
+          "time_s": 491.5,
+          "frequency_hz": 145.6660710722208,
+          "weight": 2.743344306945801
+        },
+        {
+          "time_s": 492.5,
+          "frequency_hz": 145.15602883696556,
+          "weight": 3.1539363861083984
+        },
+        {
+          "time_s": 493.0,
+          "frequency_hz": 145.4892415292561,
+          "weight": 3.8340771198272705
+        },
+        {
+          "time_s": 493.5,
+          "frequency_hz": 145.06545462459326,
+          "weight": 3.820465326309204
+        },
+        {
+          "time_s": 494.0,
+          "frequency_hz": 144.93448445945978,
+          "weight": 3.93149995803833
+        },
+        {
+          "time_s": 494.5,
+          "frequency_hz": 144.92245209217072,
+          "weight": 4.109489440917969
+        },
+        {
+          "time_s": 495.0,
+          "frequency_hz": 144.8523813933134,
+          "weight": 3.8746275901794434
+        },
+        {
+          "time_s": 495.5,
+          "frequency_hz": 144.78823412954807,
+          "weight": 2.9629812240600586
+        },
+        {
+          "time_s": 497.0,
+          "frequency_hz": 144.0435234606266,
+          "weight": 2.5359930992126465
+        },
+        {
+          "time_s": 497.5,
+          "frequency_hz": 144.04179659858346,
+          "weight": 3.713972330093384
+        },
+        {
+          "time_s": 498.0,
+          "frequency_hz": 143.9850763604045,
+          "weight": 3.5526480674743652
+        },
+        {
+          "time_s": 498.5,
+          "frequency_hz": 143.4516565874219,
+          "weight": 2.856818437576294
+        },
+        {
+          "time_s": 499.0,
+          "frequency_hz": 143.22357192635536,
+          "weight": 3.025801420211792
+        },
+        {
+          "time_s": 499.5,
+          "frequency_hz": 142.33377277851105,
+          "weight": 2.6350107192993164
+        },
+        {
+          "time_s": 500.0,
+          "frequency_hz": 142.21540699899197,
+          "weight": 3.1208858489990234
+        },
+        {
+          "time_s": 500.5,
+          "frequency_hz": 142.5397018827498,
+          "weight": 2.8631720542907715
+        },
+        {
+          "time_s": 501.0,
+          "frequency_hz": 141.87783405184746,
+          "weight": 2.7298150062561035
+        },
+        {
+          "time_s": 501.5,
+          "frequency_hz": 141.85736410319805,
+          "weight": 3.273280143737793
+        },
+        {
+          "time_s": 502.0,
+          "frequency_hz": 141.43128870427608,
+          "weight": 3.956662178039551
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.5526480674743652,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8604651162790697,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 1.5,
+        "frequency_drop_hz": 4.758710041642189
+      }
+    },
+    {
+      "event_id": "event-0005",
+      "harmonic_group_id": "harmonics-0005",
+      "start_s": 495.5,
+      "end_s": 524.5,
+      "band_hz": [
+        112.82761172950268,
+        125.02299309894443
+      ],
+      "ridge": [
+        {
+          "time_s": 496.5,
+          "frequency_hz": 124.02299309894443,
+          "weight": 2.5419394969940186
+        },
+        {
+          "time_s": 497.0,
+          "frequency_hz": 123.96025963500142,
+          "weight": 2.8325588703155518
+        },
+        {
+          "time_s": 497.5,
+          "frequency_hz": 123.95667563006282,
+          "weight": 3.167677879333496
+        },
+        {
+          "time_s": 498.0,
+          "frequency_hz": 123.83906811475754,
+          "weight": 3.0734872817993164
+        },
+        {
+          "time_s": 498.5,
+          "frequency_hz": 123.73772896826267,
+          "weight": 2.886014461517334
+        },
+        {
+          "time_s": 499.0,
+          "frequency_hz": 123.80326513946056,
+          "weight": 2.8961637020111084
+        },
+        {
+          "time_s": 500.5,
+          "frequency_hz": 121.99453834211454,
+          "weight": 2.792340040206909
+        },
+        {
+          "time_s": 501.0,
+          "frequency_hz": 122.12727949023247,
+          "weight": 2.9775705337524414
+        },
+        {
+          "time_s": 502.0,
+          "frequency_hz": 120.25,
+          "weight": 2.938918352127075
+        },
+        {
+          "time_s": 502.5,
+          "frequency_hz": 120.07997258752584,
+          "weight": 2.6849324703216553
+        },
+        {
+          "time_s": 504.5,
+          "frequency_hz": 119.48917374480516,
+          "weight": 2.810321092605591
+        },
+        {
+          "time_s": 505.5,
+          "frequency_hz": 119.01432420685887,
+          "weight": 2.8880558013916016
+        },
+        {
+          "time_s": 506.0,
+          "frequency_hz": 119.03186955302954,
+          "weight": 3.040782928466797
+        },
+        {
+          "time_s": 506.5,
+          "frequency_hz": 118.78845438361168,
+          "weight": 2.6670210361480713
+        },
+        {
+          "time_s": 507.0,
+          "frequency_hz": 118.51005760766566,
+          "weight": 3.022459030151367
+        },
+        {
+          "time_s": 507.5,
+          "frequency_hz": 118.22614826261997,
+          "weight": 3.0989034175872803
+        },
+        {
+          "time_s": 508.0,
+          "frequency_hz": 117.6367948949337,
+          "weight": 2.798713445663452
+        },
+        {
+          "time_s": 508.5,
+          "frequency_hz": 117.36324335634708,
+          "weight": 3.576453685760498
+        },
+        {
+          "time_s": 509.0,
+          "frequency_hz": 117.3189997524023,
+          "weight": 4.019643306732178
+        },
+        {
+          "time_s": 509.5,
+          "frequency_hz": 117.50469509884715,
+          "weight": 3.5516319274902344
+        },
+        {
+          "time_s": 510.0,
+          "frequency_hz": 117.599055968225,
+          "weight": 2.723992347717285
+        },
+        {
+          "time_s": 510.5,
+          "frequency_hz": 117.11275205761194,
+          "weight": 3.704090118408203
+        },
+        {
+          "time_s": 511.0,
+          "frequency_hz": 117.29509396851063,
+          "weight": 4.224126815795898
+        },
+        {
+          "time_s": 511.5,
+          "frequency_hz": 117.49306559562683,
+          "weight": 4.363500595092773
+        },
+        {
+          "time_s": 512.0,
+          "frequency_hz": 117.31664624810219,
+          "weight": 4.017022132873535
+        },
+        {
+          "time_s": 512.5,
+          "frequency_hz": 117.25064922869205,
+          "weight": 4.063479900360107
+        },
+        {
+          "time_s": 513.0,
+          "frequency_hz": 117.3306147903204,
+          "weight": 3.9493141174316406
+        },
+        {
+          "time_s": 513.5,
+          "frequency_hz": 117.23933075368404,
+          "weight": 3.8233847618103027
+        },
+        {
+          "time_s": 514.0,
+          "frequency_hz": 116.92581053823233,
+          "weight": 4.513357639312744
+        },
+        {
+          "time_s": 514.5,
+          "frequency_hz": 116.78234645724297,
+          "weight": 4.1543402671813965
+        },
+        {
+          "time_s": 515.0,
+          "frequency_hz": 116.6945478618145,
+          "weight": 4.031586647033691
+        },
+        {
+          "time_s": 515.5,
+          "frequency_hz": 116.5845138207078,
+          "weight": 3.9994802474975586
+        },
+        {
+          "time_s": 516.0,
+          "frequency_hz": 116.22253952920437,
+          "weight": 4.214211940765381
+        },
+        {
+          "time_s": 516.5,
+          "frequency_hz": 115.9314324259758,
+          "weight": 4.804105758666992
+        },
+        {
+          "time_s": 517.0,
+          "frequency_hz": 115.86041951179504,
+          "weight": 5.058109760284424
+        },
+        {
+          "time_s": 517.5,
+          "frequency_hz": 115.68081572651863,
+          "weight": 4.978031158447266
+        },
+        {
+          "time_s": 518.0,
+          "frequency_hz": 115.39418976008892,
+          "weight": 4.596391201019287
+        },
+        {
+          "time_s": 518.5,
+          "frequency_hz": 115.1645320057869,
+          "weight": 4.116032123565674
+        },
+        {
+          "time_s": 519.0,
+          "frequency_hz": 115.04937877878547,
+          "weight": 3.9776883125305176
+        },
+        {
+          "time_s": 519.5,
+          "frequency_hz": 114.89532574266195,
+          "weight": 4.5258588790893555
+        },
+        {
+          "time_s": 520.0,
+          "frequency_hz": 114.77961030602455,
+          "weight": 4.48689603805542
+        },
+        {
+          "time_s": 520.5,
+          "frequency_hz": 114.64344710111618,
+          "weight": 4.122493743896484
+        },
+        {
+          "time_s": 521.0,
+          "frequency_hz": 114.35046276450157,
+          "weight": 3.607361316680908
+        },
+        {
+          "time_s": 521.5,
+          "frequency_hz": 114.41789735853672,
+          "weight": 3.7026267051696777
+        },
+        {
+          "time_s": 522.0,
+          "frequency_hz": 114.26614406704903,
+          "weight": 3.5810837745666504
+        },
+        {
+          "time_s": 522.5,
+          "frequency_hz": 114.14396126568317,
+          "weight": 3.5179574489593506
+        },
+        {
+          "time_s": 523.0,
+          "frequency_hz": 114.15247628092766,
+          "weight": 3.347982168197632
+        },
+        {
+          "time_s": 523.5,
+          "frequency_hz": 113.82761172950268,
+          "weight": 2.5620367527008057
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.5942225456237793,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.8727272727272727,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 9.512863211333752
+      }
+    }
+  ],
+  "candidate": {
+    "lat": 32.646033997935675,
+    "lon": -97.3148351998716,
+    "score": 2.1676471848004732,
+    "score_kind": "matched_group_support_minus_normalized_residual",
+    "event_ids": [
+      "event-0001",
+      "event-0002",
+      "event-0005"
+    ],
+    "flight_ids": [
+      "a78f29@v2024.04.08-planes-readsb-staging-0:19",
+      "a78f29@v2024.04.08-planes-readsb-staging-0:19",
+      "a36c7d@v2024.04.08-planes-readsb-staging-0:1"
+    ],
+    "recording_start_utc": "2024-04-08T05:27:17.128214Z"
+  },
+  "coverage": {
+    "search_complete": true,
+    "data_status": "available",
+    "limitations": [
+      "Historical receiver archives may omit aircraft or trajectory samples.",
+      "Some finite acoustic trials lack full trajectory support. Their certified score bounds or rejections are accounted for; the decision still checks whether any bound could compete with the leading location.",
+      "Unsupported CPA track evaluations: 0; unclassified score candidates: 1521; unknown clock trials: 50367; unreported trial envelopes: 0. Counts describe work evaluations, not distinct aircraft.",
+      "Evaluated grids and recorded refinements only; continuous-space uniqueness is not established.",
+      "Unknown association trials remain unknown; their persisted score ceilings join the discarded-alternative bound.",
+      "Unvisited positions and unperformed refinements have no inferred score bound.",
+      "Proposal envelopes, CPA tolerances, grouping, clock bounds and physical model are declared assumptions.",
+      "Clock/frequency/drift are optimized at each fixed receiver/pass-association seed; clock uniqueness is not established."
+    ]
+  },
+  "matching_diagnostics": {
+    "recording_start_window_s": [
+      1712554000.0,
+      1712554040.0
+    ],
+    "clock_locked": true,
+    "unmatched_event_ids": [
+      "event-0003",
+      "event-0004"
+    ],
+    "event-0001": {
+      "score": -1.0431646009394377,
+      "f0_hz": 143.353735669092,
+      "source_drift_hz": -2.8689226328766524,
+      "source_drift_hz_s": -0.17609313762678366,
+      "source_reference_emission_time_s": 1712554046.5608542,
+      "source_span_s": 16.292075157165527,
+      "drift_bound_hz": 2.8689226328766524,
+      "drift_at_bound": true,
+      "rmse_hz": 1.1767917003227941,
+      "support_fraction": 1.0,
+      "sample_count": 32,
+      "independent_sample_count": 32,
+      "outlier_fraction": 0.0
+    },
+    "event-0002": {
+      "score": -0.7681496427482118,
+      "f0_hz": 138.84413718690448,
+      "source_drift_hz": -2.7832292490115895,
+      "source_drift_hz_s": -0.2066376037833059,
+      "source_reference_emission_time_s": 1712554088.3484733,
+      "source_span_s": 13.469132423400879,
+      "drift_bound_hz": 2.7832292490115895,
+      "drift_at_bound": true,
+      "rmse_hz": 0.7548147970608671,
+      "support_fraction": 1.0,
+      "sample_count": 24,
+      "independent_sample_count": 24,
+      "outlier_fraction": 0.0
+    },
+    "event-0005": {
+      "score": -0.6857442019109313,
+      "f0_hz": 162.30772817186005,
+      "source_drift_hz": 0.2933208016681985,
+      "source_drift_hz_s": 0.014893849213878199,
+      "source_reference_emission_time_s": 1712554499.692978,
+      "source_span_s": 19.694089651107788,
+      "drift_bound_hz": 3.24880166824998,
+      "drift_at_bound": false,
+      "rmse_hz": 0.7572582583992797,
+      "support_fraction": 1.0,
+      "sample_count": 48,
+      "independent_sample_count": 48,
+      "outlier_fraction": 0.0
+    }
+  },
+  "expected_status": "inconclusive",
+  "expected_reason_code": "source_drift_unresolved"
+}
