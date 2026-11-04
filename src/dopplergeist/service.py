@@ -8,6 +8,8 @@ from urllib.parse import unquote, urlsplit
 
 from .jobs import JobManager
 
+_EXCLUDED_ARTIFACTS = {"operator.json", "cancel", ".control.lock"}
+
 
 class JobServer(ThreadingHTTPServer):
     daemon_threads = True
@@ -77,14 +79,16 @@ class Handler(BaseHTTPRequestHandler):
                 directory = manager.directory(job_id)
                 artifacts = []
                 for path in sorted(directory.rglob("*")):
-                    if path.is_file() and not path.is_symlink() and path.name not in {"operator.json", "cancel"} and not path.name.endswith(".tmp"):
+                    if path.is_file() and not path.is_symlink() and path.name not in _EXCLUDED_ARTIFACTS and not path.name.endswith(".tmp"):
                         artifacts.append({"path": path.relative_to(directory).as_posix(), "bytes": path.stat().st_size})
                 return self._reply({"artifacts": artifacts})
             if self.command == "GET" and len(parts) > 4 and parts[3] == "artifacts":
                 directory = manager.directory(job_id)
                 relative = Path(*parts[4:])
                 path = (directory / relative).resolve()
-                if path == directory or directory not in path.parents or not path.is_file() or "operator.json" in relative.parts:
+                if (path == directory or directory not in path.parents or not path.is_file()
+                        or any(part in _EXCLUDED_ARTIFACTS for part in relative.parts)
+                        or relative.name.endswith(".tmp")):
                     raise KeyError("Unknown artifact")
                 return self._file(path, download=path.suffix not in {".png", ".svg"})
         if self.command == "GET":

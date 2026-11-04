@@ -58,6 +58,24 @@ def test_upload_readback_cancel_and_original_preservation(tmp_path, monkeypatch)
         restarted.close()
 
 
+def test_internal_control_lock_is_not_a_downloadable_artifact(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        job_id = "0123456789abcdef0123456789abcdef"
+        directory = manager.root / job_id
+        directory.mkdir()
+        result(directory, "needs_input", reason_code="recording_time_required",
+               message="Supply a defensible UTC window.", required_fields=["time_window"])
+        (directory / ".control.lock").touch()
+        (directory / "discovery.json").write_text("{}")
+
+        items = request(url + f"/api/jobs/{job_id}/artifacts")[1]["artifacts"]
+        assert "discovery.json" in [item["path"] for item in items]
+        assert ".control.lock" not in [item["path"] for item in items]
+        with pytest.raises(urllib.error.HTTPError) as error:
+            request(url + f"/api/jobs/{job_id}/artifacts/.control.lock")
+        assert error.value.code == 404
+
+
 def test_terminal_result_survives_restart_and_interrupted_job_is_explicit(tmp_path, monkeypatch):
     monkeypatch.setattr(JobManager, "_run", lambda self, directory: None)
     manager = JobManager(tmp_path)
