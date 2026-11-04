@@ -45,9 +45,9 @@ def main():
     for path in sources:
         code_hash.update(path.name.encode())
         code_hash.update(path.read_bytes())
-    result = {"recording": recording.metadata, "time_status": recording.time_status,
+    result = {"schema_version": 2, "recording": recording.metadata, "time_status": recording.time_status,
               "settings": asdict(settings), "events_found": len({e["harmonic_group_id"] for e in events}),
-              "measured_child_tracks": len(events),
+              "canonical_proposals": len({e["harmonic_group_id"] for e in events}), "measured_child_tracks": len(events),
               "events": [{k: event[k] for k in ("event_id", "start_s", "end_s", "band_hz", "quality")} for event in events],
               "runtime_s": time.monotonic() - began, "peak_rss_kib": process_peak_rss_kib(),
               "code_sha256": code_hash.hexdigest(),

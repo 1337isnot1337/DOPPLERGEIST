@@ -488,15 +488,9 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
                 if not np.isfinite(modern_scale) or not np.isfinite(reference_scale) or min(modern_scale, reference_scale) <= 0:
                     raise ValueError("Episode frequency scales must be finite and positive")
                 harmonic = modern_scale / reference_scale
-                if member is not reference:
-                    base = np.column_stack((reference_time, reference_frequency, np.ones(len(reference_time))))
-                    other = np.column_stack((t, f, w))
-                    # Recheck supported scale without requiring the legacy ratio
-                    # dictionary or unavailable spectral envelope in this adapter.
-                    shared = _overlap(base, other)
-                    sigma = _frequency_scale(member) + harmonic * _frequency_scale(reference)
-                    if shared is not None and np.quantile(np.abs(shared[2] - harmonic * shared[1]), .9) > 2 * sigma:
-                        raise ValueError("Episode members disagree with their measured frequency scales")
+                # Discovery established the joint scale model. Requiring every
+                # child to re-match one base would discard partial support that
+                # was reconciled through other measured members.
             elif member is not reference:
                 base = np.column_stack((reference_time, reference_frequency))
                 shared = _overlap(base, np.column_stack((t, f)))

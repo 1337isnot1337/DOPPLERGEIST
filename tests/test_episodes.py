@@ -39,7 +39,7 @@ def test_cells_count_observations_without_spanning_missing_time():
     assert sum(b-a for a,b in cells)==2.25
 
 
-def test_deterministic_complete_link_grouping_and_noninteger_scales():
+def test_deterministic_joint_grouping_and_noninteger_scales():
     paths=[track(coordinates(scale=scale),str(i)) for i,scale in enumerate([1,2,3.14159])]
     s=DiscoverySettings()
     identities=[]

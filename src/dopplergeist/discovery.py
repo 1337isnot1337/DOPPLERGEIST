@@ -18,7 +18,7 @@ from scipy import optimize, signal
 
 from .audio import Spectrum
 from .contracts import validate_event
-from .episodes import (Associations, DiscoveryError, Ridge, aligned, deduplicate,
+from .episodes import (Associations, DiscoveryError, Ridge, deduplicate,
                        identifier, intervals, motion, reconcile, stitch)
 
 _HARMONIC_RATIOS = sorted({a / b for a in range(2, 9) for b in range(1, a) if a / b >= 1.2})
@@ -379,10 +379,22 @@ def _discover(recording, settings, report, detailed):
                      m["frequency_excursion_hz"] >= 6 * m["frequency_uncertainty_hz"] and
                      m["moving_fraction"] >= .6 and m["prediction_error_q95"] <= .75 for m in metrics))
         if not long and not brief:
-            reject([dict(reason="episode_support_or_brief_evidence", measured=observed,
-                         threshold=settings.min_duration_s, comparison=">= long observed seconds; or strict brief gate")],
-                   dict(observed_duration_s=observed, support_fraction=support, brief_min_observed_s=settings.brief_min_observed_s,
-                        brief_min_support=.85, brief_min_contrast=settings.brief_min_contrast, child_metrics=metrics),
+            # Report each failed gate on both alternative paths. A single
+            # duration number would obscure support/contrast failures.
+            best = max(metrics, key=lambda m: min(m["median_contrast"] / settings.brief_min_contrast,
+                       m["frequency_excursion_hz"] / (6 * m["frequency_uncertainty_hz"]),
+                       m["moving_fraction"] / .6, .75 / max(m["prediction_error_q95"], 1e-9)))
+            gates = [("sustained_observed_duration_s", observed, settings.min_duration_s, ">="),
+                     ("sustained_support_fraction", support, settings.min_support, ">="),
+                     ("brief_observed_duration_s", observed, settings.brief_min_observed_s, ">="),
+                     ("brief_support_fraction", support, .85, ">="),
+                     ("brief_contrast", best["median_contrast"], settings.brief_min_contrast, ">="),
+                     ("brief_excursion_sigma", best["frequency_excursion_hz"] / best["frequency_uncertainty_hz"], 6., ">="),
+                     ("brief_moving_fraction", best["moving_fraction"], .6, ">="),
+                     ("brief_prediction_error_q95", best["prediction_error_q95"], .75, "<=")]
+            reject([dict(reason=name, measured=float(value), threshold=float(limit), comparison=op)
+                    for name,value,limit,op in gates if (value < limit if op == ">=" else value > limit)],
+                   dict(observed_duration_s=observed, support_fraction=support, child_metrics=metrics),
                    tuple(x for r in members for x in r.origins))
             continue
         matching_eligible = sum(len(r.points) for r in members) >= 10

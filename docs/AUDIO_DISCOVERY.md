@@ -7,6 +7,9 @@ motion does not establish a single physical source, physical source motion, or
 aircraft identity. Simultaneous trajectories can remain separate, and physical
 source multiplicity is explicitly unresolved, including within an episode.
 
+The scanner summary is also schema 2: `events_found` and `canonical_proposals`
+count episodes, while `measured_child_tracks` counts child records.
+
 The Python API still returns `list[DetectedEvent]`: one record per measured child
 track, with the canonical episode ID in `harmonic_group_id`. Count distinct group
 IDs to count proposals. `discovery.json` is now **schema_version 2** and is the
@@ -112,7 +115,7 @@ records measured RSS, time and output volume, including regressions.
 | `status`, `failure` | `complete` with zero proposals is a valid in-band result; `failed` is an execution, coverage or budget failure |
 | `source_sha256`, `code`, `settings`, `runtime_s`, `coverage` | Input identity, git/implementation identity, library versions, effective configuration and runtime |
 | `events` | Compatible measured DetectedEvent children; ridge points are stored once here |
-| `episodes` | Canonical IDs, child IDs, raw track/chunk membership, fitted frequency scales, integer orders, observed intervals/gaps, confidence category and limitations |
+| `episodes` | Canonical IDs, child IDs, raw track/chunk membership, fitted frequency scales, joint-fit residual/witness diagnostics, integer orders, observed intervals/gaps, confidence category and limitations |
 | `counts` | Separate raw per-chunk paths/observations, provisional/deduplicated/stitched candidates, accepted children and canonical proposals |
 | `ridge_count` | Accepted measured child count, retained for older count consumers |
 | `rejections` | Counts and measured/threshold ranges per rejection reason; optional bounded candidate traces |
@@ -166,7 +169,8 @@ PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_episodes.py \
 
 Summary plots use canonical episodes. Optional detail plots render one bounded
 spectrogram per episode, with all its child tracks, once. They do not render the
-same group repeatedly for each harmonic. Normal operation records aggregated
+same group repeatedly for each harmonic. A candidate may fail multiple checks, including both acceptance paths; failed-check
+counts are not rejected-candidate counts. Normal operation records aggregated
 noise rejection rather than writing a file per rejected fragment. Input/decoder
 failures exit unsuccessfully; discovery failures additionally write a failed
 artifact. No command above acquires flight data or estimates a location.
