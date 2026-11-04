@@ -5,6 +5,17 @@
   <img src="assets/dopplergeist-banner.svg" alt="DOPPLERGEIST — Acoustic geolocation through Doppler analysis" width="100%">
 </p>
 
+<p align="center">
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/releases"><img src="https://img.shields.io/github/v/release/1337isnot1337/DOPPLERGEIST?style=flat-square&color=0088CC" alt="Latest release"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/stargazers"><img src="https://img.shields.io/github/stars/1337isnot1337/DOPPLERGEIST?style=flat-square&logo=github&color=0088CC" alt="GitHub stars"></a>
+  <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/v/dopplergeist?style=flat-square&label=PyPI&color=0088CC" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/dm/dopplergeist?style=flat-square&label=downloads%2Fmonth&color=49B51A" alt="Monthly PyPI downloads"></a>
+  <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/pyversions/dopplergeist?style=flat-square&logo=python&logoColor=white" alt="Supported Python versions"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20NC-7652A3?style=flat-square" alt="PolyForm Noncommercial license"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/actions/workflows/python-package.yml"><img src="https://img.shields.io/github/actions/workflow/status/1337isnot1337/DOPPLERGEIST/python-package.yml?branch=main&style=flat-square&label=build" alt="Build status"></a>
+  <a href="https://github.com/1337isnot1337/DOPPLERGEIST/tree/main/docs"><img src="https://img.shields.io/badge/docs-read-0088CC?style=flat-square" alt="Documentation"></a>
+</p>
+
 **DOPPLERGEIST** is a source-available Python toolkit for aircraft Doppler audio geolocation. It detects acoustic flyover patterns in recordings, matches them against historical ADS-B flight trajectories, and ranks possible recording locations.
 
 The project provides automatic audio discovery, aircraft-data acquisition, geographic search, and a locally hosted browser interface. It is built for acoustic geolocation research, audio forensics, and studying location information carried by background sound.
@@ -38,14 +49,14 @@ The integrated application and command-line workflow are available on `main`. Se
 
 ## Quickstart
 
-**PyPI distribution:** Once the first PyPI release is published, install the CLI without cloning the repository:
+**PyPI distribution:** Install the published CLI without cloning the repository:
 
 ```bash
 pipx install dopplergeist
 dopplergeist --help
 ```
 
-To use the Python package in an existing environment instead, run `python -m pip install dopplergeist`. Install **FFmpeg** separately; `ffmpeg` and `ffprobe` must be available on `PATH`. See [PyPI release status and setup](docs/PYPI.md). The examples below use `.venv/bin/dopplergeist`; users of the `pipx` installation can run `dopplergeist` directly.
+To use the Python package in an existing environment instead, run `python -m pip install dopplergeist`. Install **FFmpeg** separately; `ffmpeg` and `ffprobe` must be available on `PATH`. See the [published PyPI package](https://pypi.org/project/dopplergeist/) and [packaging notes](docs/PYPI.md). The examples below use `.venv/bin/dopplergeist`; users of the `pipx` installation can run `dopplergeist` directly.
 
 **Source checkout (available now):**
 
