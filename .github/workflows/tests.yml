@@ -80,6 +80,14 @@ jobs:
               metrics = {row["metric"]: row for row in first["receipt_funnel"]["metrics"]}
               assert metrics["grid_points"]["known_sum"] == metrics["tracks"]["known_sum"] == 0
               assert metrics["cpa_rows"]["known_sum"] is None
+              trials = first["trial_classification"]
+              assert trials["status"] == "no_telemetry"
+              assert trials["selected_receipts"] == 256
+              assert trials["receipts_with_all_trial_counters"] == 0
+              assert trials["known_counters"] is None
+              assert trials["reported_trial_visits"] is None
+              assert trials["percent_rejected"] is None
+              assert trials["percent_unknown"] is None
               subprocess.run(command, check=True)
               refreshed = json.loads((root / "progress.json").read_text())
               assert refreshed["read_budget"].get("bytes_read", 0) == 0
