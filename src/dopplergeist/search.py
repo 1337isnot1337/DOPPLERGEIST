@@ -145,8 +145,9 @@ class _PreparedCPATrack:
             self.motion_support["sample_step_s"] = float(step_s)
         self.lower, self.upper = self.position.min(axis=0), self.position.max(axis=0)
         self.tree = None
+        self._tree_sample_range = None
 
-    def raw_rows(self, observers, point_ids, max_distance, chunk_size=512):
+    def raw_rows(self, observers, point_ids, max_distance, chunk_size=512, *, receive_time_bounds=None):
         if self.motion_support is not None:
             support = self.motion_support
             lower, upper = np.asarray(support["observer_box_ecef_m"])
@@ -157,12 +158,28 @@ class _PreparedCPATrack:
                                            emission_intervals_s=support["emission_intervals_s"])
         rows = []
         track, t, pos, c = self.track, self.time, self.position, self.c
+        sample_first, sample_last = 0, len(t)
+        if receive_time_bounds is not None:
+            # Keep the global grid, max-step radius, bounding box and motion
+            # proof unchanged. Four steps retain both projection neighbours
+            # and the preceding raw CPA used by adjacent-row deduplication.
+            padding = 4 * self.step_s
+            lower = receive_time_bounds[0] - max_distance / c - padding
+            upper = receive_time_bounds[1] + padding
+            if math.isfinite(lower) and math.isfinite(upper) and lower <= upper:
+                sample_first = max(0, int(np.searchsorted(t, lower, side="left")) - 1)
+                sample_last = min(len(t), int(np.searchsorted(t, upper, side="right")) + 1)
+                t, pos = t[sample_first:sample_last], pos[sample_first:sample_last]
+        if len(t) < 2:
+            return rows
         near=np.flatnonzero(np.all((observers>=self.lower-max_distance)&
                                   (observers<=self.upper+max_distance),axis=1))
         if not len(near):
             return rows
-        if self.tree is None:
+        sample_range = (sample_first, sample_last)
+        if self.tree is None or self._tree_sample_range != sample_range:
             self.tree = cKDTree(pos)
+            self._tree_sample_range = sample_range
         tree = self.tree
         for base in range(0,len(near),chunk_size):
             chosen=near[base:base+chunk_size]
@@ -185,6 +202,8 @@ class _PreparedCPATrack:
             # Check the endpoint range-rate signs before optimizing the actual
             # spline; an endpoint alone is not evidence of a complete pass.
             for end in (False, True):
+                if (end and sample_last != len(self.time)) or (not end and sample_first != 0):
+                    continue  # A crop boundary is not a trajectory endpoint.
                 if projected is None:
                     edge_indices = ends - 1 if end else starts
                     adjacent = edge_indices - 1 if end else edge_indices + 1

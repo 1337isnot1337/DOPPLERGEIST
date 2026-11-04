@@ -525,11 +525,11 @@ def _clock_children(tile_id, cells, start_window, parameters, filters, events):
     return children
 
 
-def _track_cpa_batches(prepared, observers, point_ids, radius, step_s, chunk_points, max_rows):
+def _track_cpa_batches(prepared, observers, point_ids, radius, step_s, chunk_points, max_rows, receive_bounds=None):
     batches, count = [], 0
     for first in range(0, len(observers), chunk_points):
         rows = _ordered_cpa_rows(prepared.raw_rows(observers[first:first + chunk_points],
-            point_ids[first:first + chunk_points], radius), step_s)
+            point_ids[first:first + chunk_points], radius, receive_time_bounds=receive_bounds), step_s)
         count += len(rows)
         if count > max_rows:
             raise DataUnavailable("Tile CPA-row memory budget exceeded")
@@ -562,7 +562,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                 continue
             prepared = _PreparedCPATrack(track, parameters.get("c", 343.0), budget.cpa_step_s)
             track_batches, track_rows = _track_cpa_batches(prepared, observers, point_ids, radius,
-                budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count)
+                budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count, receive_bounds)
         except AcousticSupportError as error:
             if receive_bounds is not None and track.time[0] > receive_bounds[1]:
                 clock_excluded.append({"track_id": track.id, "reason": error.reason,
@@ -590,7 +590,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
                     if prepared.motion_support is None:
                         raise error
                     track_batches, track_rows = _track_cpa_batches(prepared, observers, point_ids, radius,
-                        budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count)
+                        budget.cpa_step_s, chunk_points, budget.max_cpa_rows-count, receive_bounds)
                 except AcousticSupportError as local_error:
                     error = local_error
                 else:
