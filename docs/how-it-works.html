@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3f2ed">
+<title>How Aircraft Doppler Audio Geolocation Works — DOPPLERGEIST</title>
+<meta name="description" content="How DOPPLERGEIST finds aircraft Doppler shifts in recordings, compares them with historical ADS-B flights and ranks possible microphone locations. Original plots and installation.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html">
+<link rel="stylesheet" href="site.css">
+<link rel="icon" href="site-media/dopplergeist-banner-preview.png" type="image/png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="DOPPLERGEIST">
+<meta property="og:title" content="How Aircraft Doppler Audio Geolocation Works">
+<meta property="og:description" content="From audio spectrogram to historical flight match to microphone location.">
+<meta property="og:url" content="https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html">
+<meta property="og:image" content="https://1337isnot1337.github.io/DOPPLERGEIST/site-media/physical-model.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./" aria-label="DOPPLERGEIST home">DOPPLERGEIST<span class="brand-mark">.</span></a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="how-it-works.html" aria-current="page">How it works</a>
+      <a href="examples.html">Examples</a>
+      <a class="out" href="https://github.com/1337isnot1337/DOPPLERGEIST">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <section class="wrap subhero">
+    <div class="eyebrow">The method / Aircraft Doppler effect</div>
+    <h1>Follow the sound back to its source.</h1>
+    <p>Aircraft change their apparent frequency as they approach and recede. DOPPLERGEIST extracts that curve from a recording, models the flight, and searches for where the microphone could have been.</p>
+  </section>
+  <div class="banner"><img src="site-media/dopplergeist-banner.svg" width="1400" height="289" alt="Project illustration of an aircraft crossing Doppler frequency traces" fetchpriority="high"></div>
+  <div class="wrap banner-note"><span>Audio → Doppler → ADS-B → Geography</span><span>Method</span></div>
+  <section class="wrap section" aria-labelledby="steps-title">
+    <div class="section-rule"><span id="steps-title">Four stages</span><span>The pipeline</span></div>
+
+    <article class="step">
+      <div>
+        <span class="step-label">01 / Audio discovery</span>
+        <h2>Detect the shifting tone.</h2>
+        <p>Scan the recording for moving frequency ridges. Group harmonics that may belong to one flyover, including faint events buried in background sound.</p>
+        <a class="inset-link" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/AUDIO_DISCOVERY.md">Acoustic discovery docs ↗</a>
+      </div>
+      <figure>
+        <div class="media-frame"><img src="site-media/discovery-overview.png" width="1560" height="650" loading="lazy" decoding="async" alt="DOPPLERGEIST discovery plot with multiple sloping candidate acoustic event traces"></div>
+        <figcaption class="figure-caption"><strong>Automatic whole-recording moving-tone proposals</strong><span>Actual pipeline output</span></figcaption>
+      </figure>
+    </article>
+
+    <article class="step">
+      <div>
+        <span class="step-label">02 / Historical flights</span>
+        <h2>Rebuild the sky.</h2>
+        <p>Obtain historical ADS-B aircraft trajectories for the recording's UTC time window. Flight positions, velocities and altitude constrain which aircraft could have produced the sound.</p>
+        <a class="inset-link" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/DATA_AND_SCALE.md">Flight-data architecture ↗</a>
+      </div>
+      <figure>
+        <div class="media-frame"><img src="site-media/livermore-configured.png" width="2610" height="1278" loading="lazy" decoding="async" alt="Measured Livermore aircraft sound and aerial map of the bounded search region"></div>
+        <figcaption class="figure-caption"><strong>Real recording and recorded flight trajectory</strong><span>Livermore example</span></figcaption>
+      </figure>
+    </article>
+
+    <article class="step">
+      <div>
+        <span class="step-label">03 / Sound propagation</span>
+        <h2>Predict the curve.</h2>
+        <p>Simulate Doppler shift and sound-arrival timing at possible receiver positions. Compare the modeled curve to the frequency track actually heard in the audio.</p>
+        <a class="inset-link" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/METHODOLOGY.md">Technical methodology ↗</a>
+      </div>
+      <figure>
+        <div class="media-frame"><img src="site-media/physical-model.png" width="1600" height="640" loading="lazy" decoding="async" alt="Spectrogram with physical Doppler model overlaid on measured frequency ridge"></div>
+        <figcaption class="figure-caption"><strong>Measured frequency / modeled arrival</strong><span>Original matching plot</span></figcaption>
+      </figure>
+    </article>
+
+    <article class="step">
+      <div>
+        <span class="step-label">04 / Location search</span>
+        <h2>Score the map.</h2>
+        <p>Evaluate geographic candidates against the observed and modeled signals. Multiple flyovers can constrain the same microphone position and recording clock.</p>
+        <a class="inset-link" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/CONFIDENCE.md">Search and decision rules ↗</a>
+      </div>
+      <figure>
+        <div class="media-frame"><img src="site-media/location-scores.png" width="1120" height="960" loading="lazy" decoding="async" alt="Geographic candidate grid colored by fit score with the leading location marked with a star"></div>
+        <figcaption class="figure-caption"><strong>Scored candidate microphone positions</strong><span>Search output</span></figcaption>
+      </figure>
+    </article>
+  </section>
+
+  <section class="dark-section" aria-labelledby="run-title">
+    <div class="wrap">
+      <div class="section-rule"><span>Run the software</span><span>Python 3.11+ / FFmpeg</span></div>
+      <div class="section-heading">
+        <h2 id="run-title">Inspect your own recording.</h2>
+        <p>Use the local web interface or the command line. No public upload account is required.</p>
+      </div>
+      <div class="code-panel"><code>git clone https://github.com/1337isnot1337/DOPPLERGEIST.git<br>cd DOPPLERGEIST<br>python -m venv .venv<br>.venv/bin/python -m pip install .<br>.venv/bin/dopplergeist serve --jobs jobs --online --port 8765</code></div>
+      <p style="margin-top:24px;font-size:16px">Then open <code>http://127.0.0.1:8765</code> on your computer. Historical matching requires a justified recording-time window. <a class="inset-link" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/SETUP.md">Complete setup instructions ↗</a></p>
+    </div>
+  </section>
+  <section class="wrap statement" aria-labelledby="more-title">
+    <div><div class="eyebrow">Real recordings / Real plots</div><h2 id="more-title" style="margin-top:20px">See the system working.</h2></div>
+    <div><p>Browse the Livermore experiments, Doppler fits, automatic detection results and location-score maps.</p><a href="examples.html" class="text-link">Open the example gallery ↗</a></div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top"><div class="footer-title">DOPPLERGEIST.</div><nav class="footer-nav" aria-label="Footer navigation"><a href="./">Home</a><a href="how-it-works.html">Method</a><a href="examples.html">Examples</a><a href="https://github.com/1337isnot1337/DOPPLERGEIST">Source code ↗</a><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/COMMERCIAL-LICENSING.md">Commercial licensing ↗</a></nav></div>
+    <div class="footer-bottom"><span>Aircraft Doppler audio geolocation.</span><span>Original project figures / Source available under PolyForm Noncommercial 1.0.0.</span></div>
+  </div>
+</footer>
+</body>
+</html>

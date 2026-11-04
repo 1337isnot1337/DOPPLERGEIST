@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f3f2ed">
+  <title>Real Audio Geolocation Examples &amp; Spectrograms — DOPPLERGEIST</title>
+  <meta name="description" content="Explore actual DOPPLERGEIST results: Livermore audio geolocation maps, aircraft Doppler spectrograms, modeled flyover tracks and ranked microphone locations.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://1337isnot1337.github.io/DOPPLERGEIST/examples.html">
+  <link rel="stylesheet" href="site.css">
+  <link rel="icon" href="site-media/dopplergeist-banner-preview.png" type="image/png">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="DOPPLERGEIST">
+  <meta property="og:title" content="Real DOPPLERGEIST Audio Geolocation Experiments">
+  <meta property="og:description" content="Actual spectrograms, Doppler matches and candidate-location maps from the repository.">
+  <meta property="og:url" content="https://1337isnot1337.github.io/DOPPLERGEIST/examples.html">
+  <meta property="og:image" content="https://1337isnot1337.github.io/DOPPLERGEIST/site-media/livermore-automatic-mp3.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="./" aria-label="DOPPLERGEIST home">DOPPLERGEIST<span class="brand-mark">.</span></a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="how-it-works.html">How it works</a>
+      <a href="examples.html" aria-current="page">Examples</a>
+      <a class="out" href="https://github.com/1337isnot1337/DOPPLERGEIST">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+  <section class="wrap subhero">
+    <div class="eyebrow">Results / Original figures</div>
+    <h1>From recorded audio to possible locations.</h1>
+    <p>Every plot on this page comes from the DOPPLERGEIST repository. Measured flyovers, modeled frequency shifts, and geographic search output.</p>
+  </section>
+  <section class="wrap padded-bottom">
+    <div class="section-rule"><span>01 / Livermore, California</span><span>Real MP3</span></div>
+    <div class="feature-lead" style="margin-top:35px">
+      <h2>Aircraft sound, mapped.</h2>
+      <p>Automatic event detection and a search through 466 nearby historical aircraft. The run retained a ranking of 105 candidate locations.</p>
+    </div>
+    <div class="gallery-grid">
+      <figure class="gallery-wide">
+        <div class="media-frame"><img src="site-media/livermore-automatic-mp3.png" width="2610" height="1278" alt="Automatic MP3 aircraft analysis with descending frequency curve and aerial photo of ranked candidate locations" fetchpriority="high"></div>
+        <figcaption><strong>Automatic MP3 analysis / all-aircraft search</strong><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking">Run details ↗</a></figcaption>
+      </figure>
+      <figure class="gallery-wide">
+        <div class="media-frame"><img src="site-media/livermore-configured.png" width="2610" height="1278" loading="lazy" decoding="async" alt="Real Livermore flyover spectrogram and configured candidate-location search on satellite imagery"></div>
+        <figcaption><strong>Configured real-recording replay / bounded geographic search</strong><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/LIVERMORE_DEMO.md">Case study ↗</a></figcaption>
+      </figure>
+    </div>
+    <p style="max-width:840px;margin:24px 0 0;font-size:15px;color:var(--muted)">In the automatic case, the highest-ranked point was 476 m from an inferred reference location. The run used a constrained region and an approximately 10-second recording-time window.</p>
+  </section>
+
+  <section class="dark-section">
+    <div class="wrap">
+      <div class="section-rule"><span>02 / In the frequency domain</span><span>Measured / Modeled</span></div>
+      <div class="section-heading">
+        <h2>Read the curve.</h2>
+        <p>Color shows spectral energy. The curved tracks reveal changes in observed frequency as the source passes the microphone.</p>
+      </div>
+      <div class="gallery-grid">
+        <figure>
+          <div class="media-frame"><img src="site-media/measured-event.png" width="1500" height="600" loading="lazy" decoding="async" alt="Purple aircraft audio spectrogram with descending measured Doppler ridge and fit"></div>
+          <figcaption style="border-color:#465069;color:#c5cbd2"><strong style="color:white">Measured flyover</strong><a style="color:white" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/evidence/results/reference-local-fast/event-1.png">Source ↗</a></figcaption>
+        </figure>
+        <figure>
+          <div class="media-frame"><img src="site-media/physical-model.png" width="1600" height="640" loading="lazy" decoding="async" alt="Spectrogram with white best physical model frequency track crossing the descending aircraft signal"></div>
+          <figcaption style="border-color:#465069;color:#c5cbd2"><strong style="color:white">Physical model overlay</strong><a style="color:white" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/evidence/results/reference-local-fast/event-1-best-model.png">Source ↗</a></figcaption>
+        </figure>
+        <figure>
+          <div class="media-frame"><img src="site-media/track-overlay.png" width="1600" height="640" loading="lazy" decoding="async" alt="Second acoustic event spectrogram with a pink predicted Doppler curve aligned to the observed slope"></div>
+          <figcaption style="border-color:#465069;color:#c5cbd2"><strong style="color:white">Second event / tracked curve</strong><a style="color:white" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/evidence/matching-worker3-20261102/corrected-overlay-event-2.png">Source ↗</a></figcaption>
+        </figure>
+        <figure>
+          <div class="media-frame"><img src="site-media/discovery-overview.png" width="1560" height="650" loading="lazy" decoding="async" alt="Automatic whole-recording acoustic discovery plot showing multiple candidate moving-tone curves"></div>
+          <figcaption style="border-color:#465069;color:#c5cbd2"><strong style="color:white">Automatic moving-tone discovery</strong><a style="color:white" href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/evidence/audio/w1-20261102/reference-v3/discovery/discovery.png">Source ↗</a></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+  <section class="wrap section">
+    <div class="section-rule"><span>03 / Search and classification</span><span>Candidate geography</span></div>
+    <div class="section-heading">
+      <h2>Find the strongest match.</h2>
+      <p>Observed acoustic structure feeds a scored geographic search. The result is a ranking of possible receiver positions.</p>
+    </div>
+    <div class="gallery-grid">
+      <figure>
+        <div class="media-frame"><img src="site-media/location-scores.png" width="1120" height="960" loading="lazy" decoding="async" alt="Colored scatter grid ranking candidate microphone locations, marked best score in red"></div>
+        <figcaption><strong>Location-score grid / leading candidate marked</strong><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/evidence/results/reference-local-fast/location-scores.png">Source ↗</a></figcaption>
+      </figure>
+      <figure>
+        <div class="media-frame"><img src="site-media/acoustic-families.png" width="1560" height="650" loading="lazy" decoding="async" alt="Acoustic episode figure showing separate descending frequency curves across recorded time"></div>
+        <figcaption><strong>Grouped acoustic episodes</strong><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/benchmarks/acoustic-episodes-349/family-episodes.png">Source ↗</a></figcaption>
+      </figure>
+    </div>
+  </section>
+  <section class="wrap statement" style="border-top:1px solid var(--ink)">
+    <div><div class="eyebrow">Reproduce the work</div><h2 style="margin-top:20px">The figures have source files.</h2></div>
+    <div><p>Experiments, configuration, and supporting plots are maintained in the repository. See the method behind the signal processing and aircraft search.</p><a class="text-link" href="how-it-works.html">Read the method ↗</a></div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top"><div class="footer-title">DOPPLERGEIST.</div><nav class="footer-nav" aria-label="Footer navigation"><a href="./">Home</a><a href="how-it-works.html">Method</a><a href="examples.html">Examples</a><a href="https://github.com/1337isnot1337/DOPPLERGEIST">Source code ↗</a><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/COMMERCIAL-LICENSING.md">Commercial licensing ↗</a></nav></div>
+    <div class="footer-bottom"><span>Aircraft Doppler audio geolocation.</span><span>Original project figures / Source available under PolyForm Noncommercial 1.0.0.</span></div>
+  </div>
+</footer>
+</body>
+</html>
