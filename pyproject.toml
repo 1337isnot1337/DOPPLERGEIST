@@ -24,7 +24,7 @@ classifiers = [
 license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE", "licenses/MIT-legacy.txt", "src/dopplergeist/web/leaflet-license.txt"]
 requires-python = ">=3.11"
-dependencies = ["numpy", "scipy", "numba>=0.68.1", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
+dependencies = ["numpy", "scipy", "numba>=0.62.1,<0.63; sys_platform == 'darwin' and platform_machine == 'x86_64'", "numba>=0.68.1; sys_platform != 'darwin' or platform_machine != 'x86_64'", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
 
 [project.urls]
 Homepage = "https://github.com/1337isnot1337/DOPPLERGEIST"
@@ -50,5 +50,5 @@ testpaths = ["tests"]
 
 [tool.cibuildwheel]
 build = "cp311-* cp312-* cp313-* cp314-*"
-skip = "*-musllinux_*"
-test-command = "dopplergeist --help && python -c \"from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file()\""
+skip = "*-musllinux_* cp314-macosx_x86_64"
+test-command = "dopplergeist --help && python -c \"import dopplergeist.advanced_discovery; from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file()\""

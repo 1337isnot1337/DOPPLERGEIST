@@ -38,7 +38,7 @@ The integrated application and command-line workflow are available on `main`. Se
 
 ## Quickstart
 
-Install the [published PyPI package](https://pypi.org/project/dopplergeist/) with `pipx`. It requires Python 3.11+. Install **FFmpeg** separately and make sure that `ffmpeg` and `ffprobe` are on your `PATH`.
+Install the [published PyPI package](https://pypi.org/project/dopplergeist/) with `pipx`. It requires Python 3.11+; Intel Macs require Python 3.11–3.13. Install **FFmpeg** separately and make sure that `ffmpeg` and `ffprobe` are on your `PATH`.
 
 ```bash
 pipx install dopplergeist

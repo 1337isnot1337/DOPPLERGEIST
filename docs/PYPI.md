@@ -4,7 +4,7 @@ DOPPLERGEIST is published on [PyPI](https://pypi.org/project/dopplergeist/) as `
 
 ## Install
 
-Requirements: **Python 3.11+** and **FFmpeg**. Install `ffmpeg` and `ffprobe` separately and make sure that both commands are on your `PATH`.
+Requirements: **Python 3.11+** and **FFmpeg**. Intel Macs require Python 3.11–3.13; Python 3.14 on Intel macOS is not supported. Install `ffmpeg` and `ffprobe` separately and make sure that both commands are on your `PATH`.
 
 For a standalone command-line installation, use `pipx`:
 
@@ -41,7 +41,7 @@ For each new release:
 4. After the checks pass, create a [GitHub release](https://github.com/1337isnot1337/DOPPLERGEIST/releases) with the matching `v<project.version>` tag.
 5. Make sure that GitHub Actions succeeds. Then verify the new version on [PyPI](https://pypi.org/project/dopplergeist/) and install it in a clean environment.
 
-The workflow builds 20 CPython 3.11–3.14 wheels for supported Linux, macOS, and Windows platforms, plus a source archive. It validates the package names and version before upload.
+The workflow builds 19 CPython 3.11–3.14 wheels for supported Linux, macOS, and Windows platforms, plus a source archive. Intel macOS wheels cover Python 3.11–3.13. It validates the package names and version before upload.
 
 PyPI does not allow replacement of an uploaded distribution file. If a release is already on PyPI, use a new version and tag. If publication stops before any upload, fix the cause and rerun the failed workflow.
 
