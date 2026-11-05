@@ -112,7 +112,7 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     if search_workers is not None and (type(search_workers) is not int or search_workers < 1):
         return finish("failed", "invalid_configuration", "search_workers must be a positive integer.")
     if not isinstance(discovery_options, dict) or discovery_options.keys() - {"chunk_s", "overlap_s"}:
-        return finish("failed", "invalid_configuration", "Operator discovery settings support only chunk_s and overlap_s.")
+        return finish("failed", "invalid_configuration", "Only default discovery settings are supported.")
     try:
         discovery_settings = DiscoverySettings(**discovery_options)
     except (TypeError, ValueError) as exc:
