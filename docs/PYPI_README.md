@@ -10,7 +10,7 @@ The illustrated real-recording experiment ranked a location 476 m from an *infer
 
 ## Install
 
-Requires **Python 3.11+**. Install **FFmpeg** separately so that both `ffmpeg` and `ffprobe` are on your `PATH`.
+Requires **Python 3.11+**. Intel Macs require Python 3.11–3.13; Python 3.14 on Intel macOS is not supported. Install **FFmpeg** separately so that both `ffmpeg` and `ffprobe` are on your `PATH`.
 
 For the CLI:
 

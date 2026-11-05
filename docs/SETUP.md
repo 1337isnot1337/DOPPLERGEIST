@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Python 3.11 or newer. Fresh Linux environments were checked with Python 3.12.15
+- Python 3.11 or newer. Intel Macs require Python 3.11–3.13. Fresh Linux environments were checked with Python 3.12.15
   and 3.14.8 for this checkpoint; CI also exercises the declared Python 3.11 minimum.
 - `ffmpeg` and `ffprobe` on PATH. The MP3 smoke tests use ffmpeg's `libmp3lame`
   encoder. Install the normal ffmpeg package for your operating system.

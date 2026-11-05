@@ -198,7 +198,8 @@ jobs:
           files = list(Path("dist").iterdir())
           wheels = [f for f in files if f.suffix == ".whl"]
           sdists = [f for f in files if f.name.endswith(".tar.gz")]
-          assert len(wheels) == 20, f"Expected 20 platform/version wheels; found {len(wheels)}"
+          assert len(wheels) == 19, f"Expected 19 platform/version wheels; found {len(wheels)}"
+          assert not any("cp314" in f.name and "macosx" in f.name and "x86_64" in f.name for f in wheels), wheels
           assert len(sdists) == 1, f"Expected one source archive; found {len(sdists)}"
           assert all(f.name.startswith(f"dopplergeist-{version}-") for f in wheels), wheels
           assert sdists[0].name == f"dopplergeist-{version}.tar.gz", sdists
