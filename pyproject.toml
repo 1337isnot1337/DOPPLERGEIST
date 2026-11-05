@@ -24,7 +24,7 @@ classifiers = [
 license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE", "licenses/MIT-legacy.txt", "src/dopplergeist/web/leaflet-license.txt"]
 requires-python = ">=3.11"
-dependencies = ["numpy", "scipy", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
+dependencies = ["numpy", "scipy", "numba>=0.68.1", "pandas", "soundfile", "pyproj", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
 
 [project.urls]
 Homepage = "https://github.com/1337isnot1337/DOPPLERGEIST"
@@ -34,7 +34,6 @@ Issues = "https://github.com/1337isnot1337/DOPPLERGEIST/issues"
 Releases = "https://github.com/1337isnot1337/DOPPLERGEIST/releases"
 
 [project.optional-dependencies]
-advanced = ["numba>=0.68.1"]
 test = ["pytest>=8"]
 
 [project.scripts]

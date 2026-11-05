@@ -327,15 +327,8 @@ refinement; `refine_finalists` (default 5) limits physical sensitivity
 refinement. Unassessed retained approaches prevent an affirmative confidence
 decision.
 
-For chunk-boundary checks on real recordings, an operator can set
-`"discovery": {"chunk_s": 120.0, "overlap_s": 60.0}` in this private configuration.
-These are the only discovery overrides supported by the product adapter. The
-existing detector validates the overlap and chunk constraints; spectral bands,
-acceptance thresholds and other scientific settings keep their defaults. The
-actual settings and analyzed chunks are saved in `discovery/discovery.json`, and
-the operator configuration hash is retained in provenance. This configuration is
-not an upload-request field. A chunk-size comparison must rerun detection and the
-pipeline; it cannot reuse final candidates as if discovery had run again.
+Discovery uses fixed detector settings. The settings and measured proposals are
+saved in `discovery/discovery.json`; custom discovery settings are rejected.
 
 An operator can add `"spectral_comparison": {}` to save a separate
 `spectral-comparison.json` artifact after refinement. This optional stage reads

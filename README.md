@@ -99,6 +99,8 @@ dopplergeist discover \
   --output results/my-discovery
 ```
 
+Discovery uses the same detector as automatic analysis. It decodes the recording at two sample rates, groups related measured tracks into acoustic proposals, and retains the individual tracks for subsequent analysis. A proposal alone does not establish aircraft identity.
+
 This scans the full recording locally without downloading ADS-B archives. Inspect `results/my-discovery/summary.json` and the saved `discovery/` diagnostics. See [Automatic audio discovery](docs/AUDIO_DISCOVERY.md) for detector details and options.
 
 For configured research workflows, `dopplergeist run` and `dopplergeist measure` remain available; see [Methodology](docs/METHODOLOGY.md).
