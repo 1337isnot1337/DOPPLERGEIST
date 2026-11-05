@@ -265,7 +265,7 @@ def main():
                                    if isinstance(progress,(int,float)) and math.isfinite(progress) else "")
                 stage_message=value.get("message")
                 activity_text=(f", {stage_message}"
-                               if value.get("stage") in {"acquisition", "search", "refinement", "decision"}
+                               if value.get("stage") in {"intake", "discovery", "acquisition", "search", "refinement", "decision"}
                                and isinstance(stage_message,str) else "")
                 now=time.monotonic()
                 rate=""

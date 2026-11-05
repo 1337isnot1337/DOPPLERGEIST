@@ -350,7 +350,9 @@ def _discover_baseline_events(recording, *, output_dir=None, settings=None, plot
     return events
 
 
-def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False):
+def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False,
+                    progress_callback=None):
+    """Discover acoustic proposals; ``progress_callback(phase=..., **counts)`` reports activity only."""
     from .advanced_discovery import discover
     from .intake import intake_recording
 
@@ -364,10 +366,18 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
         output.mkdir(parents=True, exist_ok=True)
         if (output / "discovery.json").exists():
             raise FileExistsError("Discovery output exists; use a new output directory")
-        auxiliary = intake_recording(recording.source_path, output / "intake_high", sample_rate_hz=24000)
+        def report(phase, **fields):
+            if progress_callback:
+                progress_callback(phase=phase, **fields)
+
+        auxiliary = intake_recording(
+            recording.source_path, output / "intake_high", sample_rate_hz=24000,
+            progress_callback=(lambda **fields: report("decoding_high_rate", **fields)) if progress_callback else None)
         if auxiliary.metadata["source_sha256"] != recording.metadata["source_sha256"]:
             raise ValueError("Audio source changed between intake and discovery")
+        report("tracking_ridges")
         result = discover(recording, output, "ridge_dp_accel_broad_final_v25", aux_recording=auxiliary)
+        report("grouping_proposals")
         tracks = {event["event_id"]: event for event in result["raw_events"]}
         tracks.update({event["event_id"]: event for event in result["verified_tracks"]})
         events, groups = [], []
@@ -390,6 +400,7 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
                 "fragment_links": baseline_diagnostics["fragment_links"],
                 "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
                 "scope": "automatic acoustic proposals; aircraft identity unconfirmed"}, indent=2, allow_nan=False) + "\n")
+            report("writing_plots")
             if plot_summary:
                 _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
             if plot_event_details:

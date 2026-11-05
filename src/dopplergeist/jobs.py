@@ -18,6 +18,9 @@ from .contracts import validate_request, validate_result
 
 TERMINAL = {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}
 PROGRESS_STALE_AFTER_S = 60.0
+# A live worker rewrites its last status at this interval, so only a dead or
+# stopped worker lets result.json age past PROGRESS_STALE_AFTER_S.
+HEARTBEAT_INTERVAL_S = 20.0
 
 
 def write_json(path, value):
@@ -37,8 +40,14 @@ def status_for_display(job_dir, value=None, *, stale_after_s=PROGRESS_STALE_AFTE
     shown = dict(read_json(path) if value is None else value)
     shown["progress_stale"] = False
     if shown.get("status") in {"queued", "running"}:
-        age = max(0.0, time.time() - path.stat().st_mtime)
+        now = time.time()
+        age = max(0.0, now - path.stat().st_mtime)
         shown["progress_age_seconds"] = age
+        try:
+            # request.json is written on submission and rewritten when analysis (re)starts.
+            shown["elapsed_seconds"] = max(0.0, now - (Path(job_dir) / "request.json").stat().st_mtime)
+        except OSError:
+            pass
         shown["progress_stale"] = age > stale_after_s
         if shown["progress_stale"]:
             shown["progress"] = None
@@ -337,6 +346,47 @@ class JobManager:
         self._lockfile.close()
 
 
+class _Heartbeat:
+    """Rewrite the latest running status while this worker process is alive.
+
+    Long steps without their own updates (audio decoding, ridge tracking,
+    index building) must not look like a dead job. The heartbeat rewrites
+    the exact last status, so it never invents progress; it stops before any
+    terminal result is written and dies with the worker process.
+    """
+
+    def __init__(self, directory, lock, latest, interval_s):
+        self.directory, self.lock, self.latest, self.interval_s = Path(directory), lock, latest, interval_s
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._run, name="progress-heartbeat", daemon=True)
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._stop.set()
+        if self._thread.is_alive():
+            self._thread.join()
+
+    def beat(self):
+        """Rewrite the latest status if no update arrived within the interval."""
+        with self.lock:
+            if self._stop.is_set() or "value" not in self.latest or (self.directory / "cancel").exists():
+                return False
+            if time.monotonic() - self.latest["time"] < self.interval_s:
+                return False
+            try:
+                write_json(self.directory / "result.json", self.latest["value"])
+            except (OSError, TypeError, ValueError, RuntimeError):
+                return False
+            self.latest["time"] = time.monotonic()
+            return True
+
+    def _run(self):
+        while not self._stop.wait(min(5.0, self.interval_s)):
+            self.beat()
+
+
 def execute(directory, parent_pid=None, resume=False):
     # On Linux, an abruptly killed server must not leave an orphan analysis or
     # decoder consuming resources and later overwriting an interrupted result.
@@ -354,14 +404,25 @@ def execute(directory, parent_pid=None, resume=False):
     request = read_json(directory / "request.json")
     config = read_json(directory / "operator.json")
 
+    lock = threading.Lock()
+    latest = {}
+
     def progress(stage, fraction, **fields):
         if (directory / "cancel").exists():
             raise InterruptedError("Job cancelled")
-        return result(directory, "running", stage=stage, progress=fraction, **fields)
+        with lock:
+            value = result(directory, "running", stage=stage, progress=fraction, **fields)
+            latest.update(value=value, time=time.monotonic())
+            return value
 
+    heartbeat = _Heartbeat(directory, lock, latest, HEARTBEAT_INTERVAL_S)
     try:
-        progress("intake", 0.02)
-        final = analyze(request, directory, config, progress, resume=resume)
+        try:
+            progress("intake", 0.02, message="Starting analysis.")
+            heartbeat.start()
+            final = analyze(request, directory, config, progress, resume=resume)
+        finally:
+            heartbeat.stop()
         if (directory / "cancel").exists():
             result(directory, "cancelled", message="Cancelled by the user.", **_evidence(read_json(directory / "result.json")))
         else:
