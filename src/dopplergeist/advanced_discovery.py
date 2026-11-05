@@ -123,7 +123,7 @@ def decoded_sample_rate_hz(variant):
     return 4000
 
 def discover(recording, output, variant, aux_recording=None):
-    events = baseline.discover_events(recording, output_dir=output / 'baseline-tracks', plot_summary=False, plot_event_details=False)
+    events = baseline._discover_baseline_events(recording, output_dir=output / 'baseline-tracks', plot_summary=False, plot_event_details=False)
     proposals, decisions = catalog(events, 'coherent_adaptive' if variant.startswith('ridge_dp') else variant)
     diagnostics = []
     if variant.startswith('ridge_dp'):

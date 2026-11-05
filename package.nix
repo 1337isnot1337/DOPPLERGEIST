@@ -17,6 +17,7 @@ python314.pkgs.buildPythonApplication {
   dependencies = with python314.pkgs; [
     numpy
     scipy
+    numba
     pandas
     soundfile
     pyproj
