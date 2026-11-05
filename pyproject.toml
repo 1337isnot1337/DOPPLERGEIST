@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dopplergeist"
-version = "0.1.1"
+version = "0.1.2"
 description = "Aircraft Doppler audio geolocation using historical flight tracks"
 readme = "docs/PYPI_README.md"
 keywords = ["aircraft", "doppler", "acoustic-geolocation", "audio-forensics", "ads-b", "signal-processing"]
