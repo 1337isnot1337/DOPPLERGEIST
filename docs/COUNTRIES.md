@@ -1,6 +1,6 @@
 # Country profiles
 
-The automatic request and upload interface support five receiver regions:
+The automatic request and upload interface support six receiver regions:
 
 | Country | Coverage | Envelope: west, south, east, north | Search CRS | Receiver region |
 | --- | --- | --- | --- | --- |
@@ -9,6 +9,7 @@ The automatic request and upload interface support five receiver regions:
 | `ES` | `spain` | `-18.2, 27.5, 4.5, 43.9` | `EPSG:6933` | Spain and territories bounding envelope; no country polygon |
 | `FR` | `france` | `-5.5, 41.2, 10, 51.2` | `EPSG:2154` | Metropolitan France including Corsica bounding envelope; no country polygon |
 | `IT` | `italy` | `6.6, 35.4, 18.6, 47.1` | `EPSG:7794` | Italy including Sicily, Sardinia and Lampedusa bounding envelope; no country polygon |
+| `NO` | `norway` | `4.0, 57.9, 31.2, 71.2` | `EPSG:3035` | Mainland Norway bounding envelope; no country polygon |
 
 The envelope limits optional rectangular subsets. Germany's envelope includes
 foreign territory; the land polygon removes those receiver locations before
@@ -19,7 +20,11 @@ France covers mainland France and Corsica, excluding overseas departments and
 territories, with a Lambert-93 metric search grid. Italy covers the mainland,
 Sicily, Sardinia and the Pelagie islands with the national RDN2008 / Italy zone
 (E-N) transverse Mercator grid; San Marino, Vatican City and parts of
-neighboring countries and the sea fall inside its envelope. These three profiles do not
+neighboring countries and the sea fall inside its envelope. Mainland Norway uses
+ETRS89 / LAEA Europe: no projected CRS with an EPSG area of use spanning the
+whole mainland has a smaller scale error there (at most 1.5%); UTM 33N, the
+national convention, is 1.1% but its area of use is 12-18 E. Its envelope
+includes large parts of Sweden, Finland and Russia, and the sea. These four profiles do not
 apply country land masks: their envelopes include sea and neighboring countries.
 Use explicit bounds that describe the intended receiver area. Aircraft outside
 the receiver bounds remain eligible when they are within the acoustic search margin. Country support
@@ -33,11 +38,11 @@ dopplergeist analyze recording.mp3 --country DE --jobs jobs --online \
   --time-source 'Evidence establishing the recording-start interval'
 ```
 
-Use `--country FR` for metropolitan France, including Corsica, or `--country IT`
-for Italy, or select the country in the browser's country selector. The upload API accepts
+Use `--country FR` for metropolitan France, including Corsica, `--country IT`
+for Italy, or `--country NO` for mainland Norway, or select the country in the browser's country selector. The upload API accepts
 `"search":{"country":"DE"}`, `"search":{"country":"ES"}` or
-`"search":{"country":"FR"}` or `"search":{"country":"IT"}`. It also accepts
-the matching coverage names `germany`, `spain`, `france` and `italy`. A normalized request records the coverage;
+`"search":{"country":"FR"}`, `"search":{"country":"IT"}` or `"search":{"country":"NO"}`. It also accepts
+the matching coverage names `germany`, `spain`, `france`, `italy` and `norway`. A normalized request records the coverage;
 an explicitly supplied country is normalized to uppercase. If both are supplied,
 they must agree. `bounds_wsen` and `--bounds` narrow the selected profile. They
 must be an independently justified prior, not the evaluation location.

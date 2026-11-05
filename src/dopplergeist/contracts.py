@@ -21,8 +21,8 @@ class RecordingTimeWindow(TypedDict):
 
 
 class SearchArea(TypedDict):
-    country: NotRequired[Literal["US", "DE", "ES", "FR", "IT"]]
-    coverage: NotRequired[Literal["conus", "germany", "spain", "france", "italy"]]
+    country: NotRequired[Literal["US", "DE", "ES", "FR", "IT", "NO"]]
+    coverage: NotRequired[Literal["conus", "germany", "spain", "france", "italy", "norway"]]
     bounds_wsen: NotRequired[list[float]]
 
 

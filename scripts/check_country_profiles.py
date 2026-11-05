@@ -41,6 +41,8 @@ def check_contracts():
     corsica_subset = [9.0, 41.3, 9.3, 41.5]
     milan_subset = [9.05, 45.4, 9.3, 45.55]
     lampedusa_subset = [12.5, 35.48, 12.65, 35.55]
+    oslo_subset = [10.6, 59.85, 10.9, 60.0]
+    tromso_subset = [18.8, 69.6, 19.1, 69.7]
     cases = (
         ("omitted search", None, {"coverage": "conus"}, "US"),
         ("legacy CONUS", {"coverage": "conus"}, {"coverage": "conus"}, "US"),
@@ -71,6 +73,12 @@ def check_contracts():
          {"country": "IT", "coverage": "italy", "bounds_wsen": milan_subset}, "IT"),
         ("Lampedusa region", {"coverage": "italy", "bounds_wsen": lampedusa_subset},
          {"coverage": "italy", "bounds_wsen": lampedusa_subset}, "IT"),
+        ("Norway country", {"country": "no"}, {"country": "NO", "coverage": "norway"}, "NO"),
+        ("Norway coverage", {"coverage": "norway"}, {"coverage": "norway"}, "NO"),
+        ("Norway region", {"country": "NO", "bounds_wsen": oslo_subset},
+         {"country": "NO", "coverage": "norway", "bounds_wsen": oslo_subset}, "NO"),
+        ("Tromso region", {"coverage": "norway", "bounds_wsen": tromso_subset},
+         {"coverage": "norway", "bounds_wsen": tromso_subset}, "NO"),
     )
     validated = {}
     for name, search, expected, country in cases:
@@ -96,6 +104,8 @@ def check_contracts():
         {"country": "IT", "coverage": "france"},
         {"country": "FR", "coverage": "italy"},
         {"country": "IT", "bounds_wsen": madrid_subset},
+        {"country": "NO", "coverage": "italy"},
+        {"country": "NO", "bounds_wsen": madrid_subset},
         {"country": "FR", "coverage": "conus"},
         {"country": "FR", "coverage": "spain"},
         {"country": "DE", "coverage": "france"},
@@ -122,8 +132,8 @@ def check_contracts():
             raise CheckFailure(f"Invalid search was accepted: {search!r}")
 
     catalog = public_profiles()
-    require(len(catalog) == 5 and {p["country"] for p in catalog} == {"US", "DE", "ES", "FR", "IT"},
-            "Capabilities must describe exactly the supported US, DE, ES, FR and IT profiles")
+    require(len(catalog) == 6 and {p["country"] for p in catalog} == {"US", "DE", "ES", "FR", "IT", "NO"},
+            "Capabilities must describe exactly the supported US, DE, ES, FR, IT and NO profiles")
     for item in catalog:
         profile = profile_for_search({"country": item["country"]})
         require(item["coverage"] == profile.coverage and item["crs"] == profile.crs
@@ -138,6 +148,8 @@ def check_contracts():
             "Metropolitan France must use its declared Lambert-93 search CRS")
     require(profile_for_search({"country": "IT"}).crs == "EPSG:7794",
             "Italy must use its declared RDN2008 / Italy zone (E-N) search CRS")
+    require(profile_for_search({"country": "NO"}).crs == "EPSG:3035",
+            "Norway must use its declared ETRS89 LAEA Europe search CRS")
     print(f"PASS requests: {len(cases)} normalization/JSON round-trip cases; "
           f"{len(rejected)} invalid declarations rejected; profile catalog agrees")
     return validated
@@ -296,6 +308,15 @@ def check_italy_grids(cache_root, validated):
                          ("Italy region", "Lampedusa region"), "Italy")
 
 
+def check_norway_grids(cache_root, validated):
+    # Rounded real landmarks at the mainland extremes check the envelope only.
+    check_envelope_grids(cache_root, validated, "Norway country",
+                         (("Lindesnes", 7.05, 57.98), ("Nordkapp", 25.78, 71.17),
+                          ("Grense Jakobselv", 31.15, 69.79), ("Bergen", 5.32, 60.39),
+                          ("Oslo", 10.75, 59.91)),
+                         ("Norway region", "Tromso region"), "Norway")
+
+
 def check_border_grid(mask, validated):
     import numpy as np
     from pyproj import Transformer
@@ -391,6 +412,7 @@ def main(argv=None):
         validated = check_contracts()
         check_france_grids(args.cache_root, validated)
         check_italy_grids(args.cache_root, validated)
+        check_norway_grids(args.cache_root, validated)
         mask = check_mask(args.cache_root, args.online, validated)
         check_spain_grid(validated)
         check_border_grid(mask, validated)
