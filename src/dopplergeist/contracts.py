@@ -21,8 +21,9 @@ class RecordingTimeWindow(TypedDict):
 
 
 class SearchArea(TypedDict):
-    country: NotRequired[Literal["US", "DE", "ES", "FR", "IT"]]
-    coverage: NotRequired[Literal["conus", "germany", "spain", "france", "italy"]]
+    # Any profile from geography.public_profiles(), e.g. "US"/"conus" or "DE"/"germany".
+    country: NotRequired[str]
+    coverage: NotRequired[str]
     bounds_wsen: NotRequired[list[float]]
 
 

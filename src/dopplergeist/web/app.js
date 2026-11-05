@@ -28,8 +28,17 @@ function setCountryProfiles(values, defaultCountry = 'US') {
   const previous = countryProfiles.find(profile => profile.country === $('country').value);
   countryProfiles = profiles.map(profile => ({...profile, bounds_wsen: profile.bounds_wsen.slice()}));
   countrySelectionSupported = values !== undefined;
-  $('country').replaceChildren(...countryProfiles.map(profile => {
-    const option = node('option', profile.name); option.value = profile.country; return option;
+  // Newer services label each profile with a continent; group those options.
+  const groups = new Map();
+  for (const profile of countryProfiles) {
+    const option = node('option', profile.name); option.value = profile.country;
+    const label = typeof profile.continent === 'string' ? profile.continent : '';
+    if (!groups.has(label)) groups.set(label, []);
+    groups.get(label).push(option);
+  }
+  $('country').replaceChildren(...[...groups].flatMap(([label, options]) => {
+    if (!label) return options;
+    const group = document.createElement('optgroup'); group.label = label; group.append(...options); return [group];
   }));
   $('country').value = countries.has(previous?.country) ? previous.country
     : (countries.has(defaultCountry) ? defaultCountry : countryProfiles[0].country);
@@ -37,7 +46,9 @@ function setCountryProfiles(values, defaultCountry = 'US') {
   const changed = !previous || previous.country !== current.country
     || previous.bounds_wsen.some((value, index) => value !== current.bounds_wsen[index]);
   if (areaControl) areaControl.refreshCountry(changed);
-  $('supported-areas').textContent = countryProfiles.map(profile => profile.name).join('; ');
+  $('supported-areas').textContent = countryProfiles.length > 10
+    ? `${countryProfiles.length} countries and territories, grouped by continent in the country selector`
+    : countryProfiles.map(profile => profile.name).join('; ');
   if (renderedJob) renderCoverage(renderedJob.coverage, renderedJob.status);
 }
 

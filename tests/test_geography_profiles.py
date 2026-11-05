@@ -19,3 +19,20 @@ def test_spain_profile_is_available_to_upload_capabilities():
     assert profile["coverage"] == "spain"
     assert profile["name"] == "Spain (all territories; bounding envelope)"
     assert profile["bounds_wsen"] == [-18.2, 27.5, 4.5, 43.9]
+
+
+def test_generated_world_profiles_cover_serbia_and_lebanon(tmp_path):
+    for code, coverage in (("RS", "serbia"), ("LB", "lebanon")):
+        profile = profile_for_search({"country": code.lower()})
+        assert profile.coverage == coverage
+        assert profile.continent in {"Europe", "Asia"}
+        assert profile_for_search({"coverage": coverage}) == profile
+        assert receiver_mask_for_search({"country": code}, cache_root=tmp_path, offline=True) is None
+    assert profile_for_search().country == "US"
+
+
+def test_world_profiles_are_grouped_by_continent_in_capabilities():
+    catalog = public_profiles()
+    assert len(catalog) > 200
+    assert [(p["continent"], p["name"]) for p in catalog] == sorted((p["continent"], p["name"]) for p in catalog)
+    assert {p["continent"] for p in catalog} == {"Africa", "Asia", "Europe", "North America", "Oceania", "South America"}

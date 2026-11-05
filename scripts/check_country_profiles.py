@@ -92,7 +92,9 @@ def check_contracts():
         {"country": "DE", "coverage": "conus"},
         {"country": "US", "coverage": "germany"},
         {"country": "DE", "coverage": "spain"},
-        {"country": "PT"},
+        {"country": "ZZ"},  # Not an assigned ISO 3166-1 code.
+        {"country": "AQ"},  # Antarctica has no receiver profile.
+        {"country": "PT", "coverage": "spain"},
         {"country": "IT", "coverage": "france"},
         {"country": "FR", "coverage": "italy"},
         {"country": "IT", "bounds_wsen": madrid_subset},
@@ -122,8 +124,12 @@ def check_contracts():
             raise CheckFailure(f"Invalid search was accepted: {search!r}")
 
     catalog = public_profiles()
-    require(len(catalog) == 5 and {p["country"] for p in catalog} == {"US", "DE", "ES", "FR", "IT"},
-            "Capabilities must describe exactly the supported US, DE, ES, FR and IT profiles")
+    require({"US", "DE", "ES", "FR", "IT", "RS", "LB"} <= {p["country"] for p in catalog}
+            and len({p["country"] for p in catalog}) == len(catalog) > 200
+            and len({p["coverage"] for p in catalog}) == len(catalog),
+            "Capabilities must list unique hand-written and generated world profiles")
+    require([(p["continent"], p["name"]) for p in catalog] == sorted((p["continent"], p["name"]) for p in catalog)
+            and all(p["continent"] for p in catalog), "Capabilities must be sorted and labelled by continent")
     for item in catalog:
         profile = profile_for_search({"country": item["country"]})
         require(item["coverage"] == profile.coverage and item["crs"] == profile.crs
@@ -296,6 +302,45 @@ def check_italy_grids(cache_root, validated):
                          ("Italy region", "Lampedusa region"), "Italy")
 
 
+def check_world_grids(cache_root):
+    """Every generated profile: request normalization and a round-trip grid at its centre."""
+    import numpy as np
+    from pyproj import CRS, Transformer
+    from dopplergeist.contracts import validate_request
+    from dopplergeist.geography import profile_for_search, receiver_mask_for_search
+    from dopplergeist.tiled_search import _grid_extent, _tile_coordinates
+    from dopplergeist.world_profiles import WORLD_PROFILES
+
+    request_base = {"schema_version": 1, "audio_path": str(Path(__file__).resolve())}
+    for continent, name, code, coverage, bounds, crs, scale_error in WORLD_PROFILES:
+        if profile_for_search({"country": code}).crs != crs:
+            continue  # A hand-written profile takes precedence.
+        west, south, east, north = bounds
+        require(-180 <= west < east <= 180 and -90 < south < north < 90, f"{code}: invalid envelope")
+        require(scale_error <= 0.05, f"{code}: CRS scale error {scale_error:.1%} exceeds 5%")
+        area = CRS(crs).area_of_use
+        require(area is None or (area.west <= west < east <= area.east and area.south <= south < north <= area.north),
+                f"{code}: envelope outside the {crs} area of use")
+        lon, lat = (west + east) / 2, (south + north) / 2
+        half = min(0.1, (east - west) / 2, (north - south) / 2)
+        subset = [round(lon - half, 4), round(lat - half, 4), round(lon + half, 4), round(lat + half, 4)]
+        search = validate_request(dict(request_base, search={"country": code.lower(), "bounds_wsen": subset}))["search"]
+        require(search == {"country": code, "coverage": coverage, "bounds_wsen": subset},
+                f"{code}: unexpected normalized search")
+        require(receiver_mask_for_search(search, cache_root=cache_root, offline=True) is None,
+                f"{code}: envelope profile must not load a country polygon")
+        forward = Transformer.from_crs("EPSG:4326", crs, always_xy=True)
+        xmin, ymin, xmax, ymax = _grid_extent(subset, 250.0, crs)
+        receivers = _tile_coordinates((xmin, ymin, xmax + 1, ymax + 1), 250.0, subset, crs)
+        require(len(receivers) > 0, f"{code}: no 250 m receivers at the envelope centre")
+        x, y = forward.transform(receivers.lon.to_numpy(), receivers.lat.to_numpy())
+        require(np.allclose(x, receivers.x.to_numpy(), rtol=0, atol=1e-5)
+                and np.allclose(y, receivers.y.to_numpy(), rtol=0, atol=1e-5),
+                f"{code}: grid x/y disagree with {crs}")
+    print(f"PASS world profiles: {len(WORLD_PROFILES)} generated envelopes normalize and round-trip "
+          "a 250 m grid; CRS scale error within 5%")
+
+
 def check_border_grid(mask, validated):
     import numpy as np
     from pyproj import Transformer
@@ -391,6 +436,7 @@ def main(argv=None):
         validated = check_contracts()
         check_france_grids(args.cache_root, validated)
         check_italy_grids(args.cache_root, validated)
+        check_world_grids(args.cache_root)
         mask = check_mask(args.cache_root, args.online, validated)
         check_spain_grid(validated)
         check_border_grid(mask, validated)

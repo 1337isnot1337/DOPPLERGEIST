@@ -112,8 +112,9 @@ def main():
     analyze.add_argument("--start-utc",help="Earliest UTC recording start, including explicit timezone")
     analyze.add_argument("--end-utc",help="Latest UTC recording start; defaults to earliest")
     analyze.add_argument("--time-source",help="How the recording start window was established")
-    analyze.add_argument("--country",type=str.upper,choices=("US", "DE", "ES", "FR", "IT"),
-                         help="Receiver country: US (CONUS, default), DE (Germany), ES (Spain), FR (metropolitan France, including Corsica), or IT (Italy, including Sicily and Sardinia)")
+    from .geography import public_profiles
+    analyze.add_argument("--country",type=str.upper,choices=sorted(p["country"] for p in public_profiles()),metavar="CODE",
+                         help="Receiver country as an ISO 3166-1 alpha-2 code: US (CONUS, default), DE (Germany), ES (Spain), FR (metropolitan France, including Corsica), IT (Italy, including Sicily and Sardinia), or any other country listed in docs/COUNTRIES.md")
     analyze.add_argument("--bounds",type=float,nargs=4,metavar=("WEST", "SOUTH", "EAST", "NORTH"),
                          help="Limit the selected country profile to a WGS84 rectangle in decimal degrees")
     analyze.add_argument("--jobs",default="jobs",help="Persistent job directory")

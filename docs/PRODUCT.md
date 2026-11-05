@@ -10,7 +10,8 @@ scope and limitations.
 The automatic product path is separate from the historical research `run` and
 `measure` commands. Uploads supply audio, an optional defensible UTC window for
 **sample zero**, and a declared country profile (US/CONUS by default, Germany,
-Spain, metropolitan France including Corsica, or Italy).
+Spain, metropolitan France including Corsica, Italy, or any other country in
+[COUNTRIES.md](COUNTRIES.md)).
 An optional rectangle narrows that profile. Event windows, frequency
 bands, flight IDs and ground-truth coordinates are not upload inputs.
 
