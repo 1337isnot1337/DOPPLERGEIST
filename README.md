@@ -40,6 +40,11 @@ The integrated application and command-line workflow are available on `main`. Se
 
 Install the [published PyPI package](https://pypi.org/project/dopplergeist/) with `pipx`. It requires Python 3.11+; Intel Macs require Python 3.11–3.13. Install **FFmpeg** separately and make sure that `ffmpeg` and `ffprobe` are on your `PATH`.
 
+The full CLI and browser workflow require Linux or macOS. On native Windows,
+the published wheels support `discover` only; `analyze`, `serve`, and `job`
+depend on POSIX facilities and fail to start. Windows users can run the full
+workflow inside WSL with Linux, Python, and FFmpeg installed there.
+
 ```bash
 pipx install dopplergeist
 dopplergeist --help
