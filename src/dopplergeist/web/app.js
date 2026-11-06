@@ -162,12 +162,35 @@ function coordinateCopyControl(lat, lon) {
   return control;
 }
 
+const STAGES = [
+  ['intake', 'Audio intake'], ['discovery', 'Event discovery'], ['acquisition', 'Flight data'],
+  ['search', 'Location search'], ['refinement', 'Refinement'], ['decision', 'Decision'],
+];
+
+function formatDuration(seconds) {
+  const total = Math.max(0, Math.floor(seconds));
+  const h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+  if (h) return `${h} h ${m} min`;
+  if (m) return `${m} min ${s} s`;
+  return `${s} s`;
+}
+
+function stageLabel(value) {
+  if (terminal.has(value.status)) return value.stage || '';
+  if (value.status === 'queued') return 'Waiting in queue';
+  const index = STAGES.findIndex(([name]) => name === value.stage);
+  const label = index < 0 ? (value.stage || '').replaceAll('_', ' ')
+    : `Step ${index + 1}/${STAGES.length}: ${STAGES[index][1]}`;
+  const elapsed = Number.isFinite(value.elapsed_seconds) ? ` · ${formatDuration(value.elapsed_seconds)} elapsed` : '';
+  return `${label}${elapsed}`;
+}
+
 function render(value) {
   renderedJob = value;
   $('empty').hidden = true; $('job').hidden = false;
   $('job-id').textContent = `JOB ${value.job_id}`;
   $('status').textContent = value.status.replaceAll('_', ' ');
-  $('stage').textContent = value.stage || '';
+  $('stage').textContent = stageLabel(value);
   const progress = $('progress');
   if (value.progress_stale) {
     progress.removeAttribute('value');
@@ -179,7 +202,7 @@ function render(value) {
   $('cancel').hidden = terminal.has(value.status);
   $('resume').hidden = true;
   const staleAge = Number.isFinite(value.progress_age_seconds)
-    ? ` Last progress update was ${Math.floor(value.progress_age_seconds)} seconds ago.` : '';
+    ? ` Last progress update was ${formatDuration(value.progress_age_seconds)} ago; the worker may have stopped.` : '';
   $('message').textContent = value.progress_stale
     ? `${value.message || 'The saved percentage is stale and hidden.'}${staleAge}`
     : (value.message || 'Analysis is running. You can return to this job using its saved link.');

@@ -8,8 +8,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import math
 import subprocess
 import tempfile
+import time
 
 import numpy as np
 
@@ -95,8 +97,17 @@ class IntakeRecording:
                     break
 
 
+def _container_duration_s(probe):
+    """Best-effort container duration for progress display; never a clock."""
+    try:
+        value = float(probe.get("format", {}).get("duration"))
+    except (TypeError, ValueError):
+        return None
+    return value if math.isfinite(value) and value > 0 else None
+
+
 def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=4000,
-                     resample_filter_size=None):
+                     resample_filter_size=None, progress_callback=None):
     """Decode mono f32 into a new cache without holding the whole input in RAM.
 
     ``time_window`` follows the shared RecordingTimeWindow contract and bounds
@@ -106,6 +117,9 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
     historical matching. Existing cache files are never overwritten.
     ``resample_filter_size`` opts into the explicit swresample filter used by
     experimental episode discovery; omission preserves the standard decoder.
+    ``progress_callback(decoded_s=..., duration_s=...)`` is optionally called
+    while decoding; ``duration_s`` is the container estimate or ``None``. It
+    reports activity only and does not affect the decoded samples.
     """
     from .contracts import validate_recording, validate_request
 
@@ -141,6 +155,10 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
             except OSError as exc:
                 raise AudioIntakeError("decoder_unavailable", "ffmpeg could not start; check executable and runtime dependencies") from exc
             count, peak, remainder = 0, 0.0, b""
+            expected_s = _container_duration_s(probe)
+            last_report = time.monotonic()
+            if progress_callback:
+                progress_callback(decoded_s=0.0, duration_s=expected_s)
             try:
                 while block := process.stdout.read(256 * 1024):
                     block = remainder + block
@@ -153,6 +171,9 @@ def intake_recording(source, output_dir, *, time_window=None, sample_rate_hz=400
                     count += len(values)
                     cache.write(block[:usable])
                     remainder = block[usable:]
+                    if progress_callback and time.monotonic() - last_report >= 1.0:
+                        progress_callback(decoded_s=count / sample_rate_hz, duration_s=expected_s)
+                        last_report = time.monotonic()
                 code = process.wait()
                 if code in (126, 127):
                     raise AudioIntakeError("decoder_unavailable", "ffmpeg could not start; check runtime dependencies")

@@ -127,14 +127,26 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
                                          or spectral_options.keys() - spectral_keys):
         return finish("failed", "invalid_configuration", "Spectral comparison accepts only work limits and spectral grid settings.")
     if not resume:
-        progress("intake", 0.05)
+        progress("intake", 0.05, message="Decoding audio.")
         try:
-            recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"))
+            recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"),
+                                         progress_callback=_throttled(lambda **details: progress(
+                                             "intake", *_decode_progress(0.05, 0.14, "Decoding audio", **details))))
         except AudioIntakeError as exc:
             return finish("failed", exc.code, str(exc))
         state["recording"] = recording.metadata
-        progress("discovery", 0.15, recording=recording.metadata)
-        events = [validate_event(event) for event in discover_events(recording, output_dir=output / "discovery", settings=discovery_settings)]
+        progress("discovery", 0.15, message="Discovering acoustic events.", recording=recording.metadata)
+
+        def report_discovery_progress(phase, **details):
+            if phase == "decoding_high_rate":
+                fraction, message = _decode_progress(0.15, 0.24, "Discovery: decoding high-rate copy", **details)
+            else:
+                fraction, message = _DISCOVERY_PHASES.get(phase, (0.25, f"Discovery: {phase.replace('_', ' ')}."))
+            progress("discovery", fraction, message=message, recording=recording.metadata)
+
+        events = [validate_event(event) for event in discover_events(
+            recording, output_dir=output / "discovery", settings=discovery_settings,
+            progress_callback=_throttled(report_discovery_progress))]
         _save_audio_checkpoint(output, request, config)
     state["recording"] = recording.metadata
     state["events"] = events
@@ -150,9 +162,10 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     progress("acquisition", 0.35, **running_state)
     last_acquisition_report = 0.0
     last_acquisition_phase = None
+    acquisition_fraction = 0.35
 
     def report_acquisition_progress(**details):
-        nonlocal last_acquisition_report, last_acquisition_phase
+        nonlocal last_acquisition_report, last_acquisition_phase, acquisition_fraction
         now = time.monotonic()
         phase = str(details.get("phase", "working")).replace("_", " ")
         if phase == last_acquisition_phase and now - last_acquisition_report < 2.0:
@@ -174,7 +187,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
                 metrics.append(f"{value:,} {metric_label}")
         if metrics:
             message += f" ({', '.join(metrics)})"
-        progress("acquisition", 0.35, message=message, **running_state)
+        acquisition_fraction = max(acquisition_fraction, _acquisition_fraction(details))
+        progress("acquisition", acquisition_fraction, message=message, **running_state)
         last_acquisition_report, last_acquisition_phase = now, phase
 
     def report_search_progress(fraction=0.0):
@@ -232,6 +246,60 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
 
 class MissingData(ValueError):
     pass
+
+
+# Display-only progress bands. Fractions never affect scoring or rankings.
+_DISCOVERY_PHASES = {
+    "tracking_ridges": (0.25, "Discovery: tracking Doppler ridges across the recording."),
+    "grouping_proposals": (0.32, "Discovery: grouping harmonics into event proposals."),
+    "writing_plots": (0.33, "Discovery: writing diagnostic plots."),
+}
+# Acquisition spans 0.35-0.55: downloads with known byte totals move within
+# 0.35-0.45; later index-building phases have no row totals and use fixed steps.
+_ACQUISITION_PHASES = {
+    "decoding_archive": 0.45, "cached_flight_index": 0.45, "creating_flight_index": 0.46,
+    "staging_samples": 0.47, "creating_sample_lookup": 0.49, "building_segments": 0.50,
+    "preparing_tracks": 0.52, "compacting_flight_index": 0.53, "flight_index_ready": 0.54,
+}
+
+
+def _clock(seconds):
+    seconds = max(0, int(seconds))
+    hours, rest = divmod(seconds, 3600)
+    return f"{hours}:{rest // 60:02d}:{rest % 60:02d}" if hours else f"{rest // 60}:{rest % 60:02d}"
+
+
+def _decode_progress(low, high, label, decoded_s=0.0, duration_s=None, **_):
+    """Map decoded audio seconds into a display band; unknown durations stay at ``low``."""
+    if isinstance(duration_s, (int, float)) and math.isfinite(duration_s) and duration_s > 0:
+        share = min(1.0, max(0.0, decoded_s / duration_s))
+        return low + (high - low) * share, f"{label}: {_clock(decoded_s)} of {_clock(duration_s)} decoded."
+    return low, f"{label}: {_clock(decoded_s)} decoded."
+
+
+def _acquisition_fraction(details):
+    phase = details.get("phase")
+    if phase in _ACQUISITION_PHASES:
+        return _ACQUISITION_PHASES[phase]
+    done, total = details.get("bytes_done"), details.get("bytes_total")
+    if (isinstance(done, (int, float)) and isinstance(total, (int, float))
+            and math.isfinite(done) and math.isfinite(total) and total > 0):
+        return 0.35 + 0.10 * min(1.0, max(0.0, done / total))
+    return 0.35
+
+
+def _throttled(callback, interval_s=2.0):
+    """Forward phase changes immediately and repeated phases at most every ``interval_s``."""
+    last = {"time": None, "phase": object()}
+
+    def forward(**details):
+        now = time.monotonic()
+        phase = details.get("phase")
+        if phase == last["phase"] and last["time"] is not None and now - last["time"] < interval_s:
+            return
+        last["time"], last["phase"] = now, phase
+        callback(**details)
+    return forward
 
 
 def _earliest_emission(lo, events, max_distance, c, filters):

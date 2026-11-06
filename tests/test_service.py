@@ -44,7 +44,8 @@ def test_upload_readback_cancel_and_original_preservation(tmp_path, monkeypatch)
         code, job = request(url + "/api/jobs", b"encoded audio payload", {"schema_version": 1})
         assert code == 202 and job["status"] == "queued"
         job_id = job["job_id"]
-        assert request(url + f"/api/jobs/{job_id}")[1] == job
+        status = request(url + f"/api/jobs/{job_id}")[1]
+        assert {key: status[key] for key in job} == job
         assert request(url + f"/api/jobs/{job_id}/cancel", b"")[1]["status"] == "cancelled"
         assert request(url + f"/api/jobs/{job_id}/artifacts/input.mp3")[1] == b"encoded audio payload"
         items = request(url + f"/api/jobs/{job_id}/artifacts")[1]["artifacts"]
