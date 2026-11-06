@@ -5,6 +5,7 @@ import hashlib
 from importlib.metadata import version
 import json
 import math
+import os
 from pathlib import Path
 import time
 
@@ -20,10 +21,17 @@ def _digest(path):
 
 def _audio_identity(request, config):
     modules = ("intake.py", "discovery.py", "advanced_discovery.py", "audio.py", "contracts.py")
-    return {"request": request, "source_sha256": _digest(request["audio_path"]),
+    identity = {"request": request, "source_sha256": _digest(request["audio_path"]),
             "discovery_settings": config.get("discovery", {}),
             "modules": {name: _digest(Path(__file__).parent / name) for name in modules},
             "packages": {name: version(name) for name in ("numpy", "scipy", "numba")}}
+    backend = os.environ.get("DOPPLERGEIST_MEDIAN_BACKEND", "cpu")
+    if backend != "cpu":
+        identity["median_backend"] = backend
+        if backend == "cuda":
+            from cupy import __version__ as cupy_version
+            identity["cupy_version"] = cupy_version
+    return identity
 
 
 def _save_audio_checkpoint(output, request, config):

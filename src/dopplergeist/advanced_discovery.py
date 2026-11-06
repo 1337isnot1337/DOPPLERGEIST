@@ -1,11 +1,27 @@
 from collections import defaultdict
 import hashlib
+import os
 import numpy as np
 from scipy.ndimage import median_filter
 from scipy import ndimage, signal, optimize
 from scipy.fft import rfft
 from scipy.interpolate import PchipInterpolator
 from dopplergeist import discovery as baseline
+
+
+def local_median(image):
+    """Frequency-axis background filter, with an explicitly selected CUDA backend."""
+    backend = os.environ.get('DOPPLERGEIST_MEDIAN_BACKEND', 'cpu')
+    if backend == 'cpu':
+        return median_filter(image, size=(31, 1), mode='nearest')
+    if backend != 'cuda':
+        raise ValueError('DOPPLERGEIST_MEDIAN_BACKEND must be cpu or cuda')
+    try:
+        import cupy as cp
+        from cupyx.scipy.ndimage import median_filter as cuda_median_filter
+    except ImportError as exc:
+        raise RuntimeError('CUDA median backend requires a compatible CuPy installation') from exc
+    return cp.asnumpy(cuda_median_filter(cp.asarray(image), size=(31, 1), mode='nearest'))
 
 def canonical(members, event_id, basis):
     return dict(event_id=event_id, start_s=min((e['start_s'] for e in members)), end_s=max((e['end_s'] for e in members)), band_hz=[min((e['band_hz'][0] for e in members)), max((e['band_hz'][1] for e in members))], raw_event_ids=sorted((e['event_id'] for e in members)), grouping_basis=basis, source_identity='unknown', physical_source_multiplicity='unresolved')
@@ -227,7 +243,7 @@ def dp_front(recording, variant):
             f = f[keep]
             db = 10 * np.log10(np.maximum(p[keep], 1e-30))
             t = t + start
-            local = db - median_filter(db, size=(31, 1), mode='nearest')
+            local = db - local_median(db)
             for band, (low, high) in enumerate([(20.0, 1600.0), (1600.0, 8000.0)]):
                 dense = variant.startswith(('ridge_dp_dense', 'ridge_dp_accel'))
                 high_window = 0.5 if 'broad' in variant else 1.0

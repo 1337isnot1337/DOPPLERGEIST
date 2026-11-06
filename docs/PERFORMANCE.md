@@ -1,5 +1,33 @@
 # Measured pipeline performance
 
+## Optional CUDA discovery filter
+
+The default acoustic discovery path uses SciPy on the CPU. On a machine with a
+compatible NVIDIA GPU and driver, an optional CuPy backend accelerates the
+31-bin frequency-axis median filter. Install a CuPy wheel compatible with your
+CUDA driver in the same Python environment as DOPPLERGEIST, then select it:
+
+```sh
+python -m pip install cupy-cuda12x
+DOPPLERGEIST_MEDIAN_BACKEND=cuda dopplergeist discover recording.mp3 --output results/cuda-discovery
+```
+
+Set the variable for `analyze` or `serve` in the same way. This example assumes
+the CUDA 12 CuPy wheel is compatible with the installed driver; consult the
+[CuPy installation guide](https://docs.cupy.dev/en/stable/install.html) for
+other configurations. CPU remains the default; set `DOPPLERGEIST_MEDIAN_BACKEND=cpu`
+to select it explicitly. CUDA errors are reported instead of silently switching
+backends. A CUDA audio checkpoint records the selected backend and CuPy version,
+so resume requires the same selection and version.
+
+On one 28-second real recording, a GTX 1080 Ti and its host produced identical
+discovery JSON and 21 ridges on both backends. A single complete discovery run
+took 5.01 s on CPU and 3.59 s with CUDA. For one 4096 × 221 float32 spectrogram,
+the filter output was exactly equal and median warm filter time over three runs
+was 350 ms on CPU versus 1.9 ms on CUDA including transfers. These measurements
+are specific to that recording and machine; they do not establish a search or
+localization speedup, GPU parity on every device, or localization accuracy.
+
 ## Integrated pipeline acceleration, 2026-11-03
 
 The integrated version reduces dense-search CPU time by **49.66%** and complete regional-upload elapsed time by **15.51%**.
