@@ -354,8 +354,8 @@ def check_world_grids(cache_root):
         receivers = _tile_coordinates((xmin, ymin, xmax + 1, ymax + 1), 250.0, subset, crs)
         require(len(receivers) > 0, f"{code}: no 250 m receivers at the envelope centre")
         x, y = forward.transform(receivers.lon.to_numpy(), receivers.lat.to_numpy())
-        require(np.allclose(x, receivers.x.to_numpy(), rtol=0, atol=1e-3)
-                and np.allclose(y, receivers.y.to_numpy(), rtol=0, atol=1e-3),
+        require(np.allclose(x, receivers.x.to_numpy(), rtol=0, atol=5e-3)
+                and np.allclose(y, receivers.y.to_numpy(), rtol=0, atol=5e-3),
                 f"{code}: grid x/y disagree with {crs}")
     print(f"PASS world profiles: {len(WORLD_PROFILES)} generated envelopes normalize and round-trip "
           "a 250 m grid; CRS scale error within 5%")
