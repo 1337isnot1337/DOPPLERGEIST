@@ -23,6 +23,12 @@ def test_real_boundary_segments_survive_selection(tmp_path):
     source = os.environ.get("DOPPLERGEIST_REAL_ARCHIVE_PART")
     if not source:
         pytest.skip("set DOPPLERGEIST_REAL_ARCHIVE_PART to a local readsb tar part")
+    type_path = os.environ.get("DOPPLERGEIST_TYPE_DATABASE")
+    if not type_path:
+        pytest.skip("set DOPPLERGEIST_TYPE_DATABASE to the ICAO type database")
+    from types import SimpleNamespace
+    from dopplergeist.aircraft_types import load_classes, track_class
+    classes, _ = load_classes(type_path)
     frames = []
     first_member = None
     with Path(source).open("rb") as stream, tarfile.open(fileobj=stream, mode="r|") as archive:
@@ -31,6 +37,13 @@ def test_real_boundary_segments_survive_selection(tmp_path):
                 continue
             raw = archive.extractfile(member).read()
             data = json.loads(gzip.decompress(raw) if raw[:2] == b"\x1f\x8b" else raw)
+            codes = {str(data.get("t", "")).upper()} if data.get("t") else set()
+            codes.update(str(row[8]["t"]).upper() for row in data.get("trace", [])
+                         if len(row) > 8 and isinstance(row[8], dict) and row[8].get("t"))
+            labels = {track_class(SimpleNamespace(typecode=code, aircraft_class="unclassified"), classes)
+                      for code in codes}
+            if len(labels) != 1 or not labels.issubset({"piston", "turbine"}):
+                continue
             frame = adsblol_frame(data)
             if len(frame) > 50:
                 frames.append(frame)
@@ -41,7 +54,7 @@ def test_real_boundary_segments_survive_selection(tmp_path):
     assert len(frames) == 10
     bounds = (-180, -90, 180, 90)
     coverage = {"bounds": list(bounds), "time_range_s": [0, 4102444800],
-                "all_aircraft": True, "release_tag": "real-regression"}
+                "all_aircraft": False, "release_tag": "real-regression"}
     full = FlightIndex.build(tmp_path / "full.sqlite", frames, sources=[], coverage=coverage)
     checked = old_filter_misses = 0
     for frame in frames:
@@ -108,7 +121,12 @@ def test_real_boundary_segments_survive_selection(tmp_path):
         shutil.copyfile(Path(__file__).resolve().parents[1] / "scripts/ingest_adsblol_day.py",
                         project / "scripts/ingest_adsblol_day.py")
         (project / "data/source").mkdir(parents=True)
-        (project / "data/source/icao_aircraft_types.json").write_text("{}")
+        import gzip as gz
+        type_data = Path(type_path).read_bytes()
+        if type_data[:2] == b"\x1f\x8b":
+            type_data = gz.decompress(type_data)
+        text = type_data.decode()
+        (project / "data/source/icao_aircraft_types.json").write_text(text[text.index("{"):text.rindex("}") + 1])
         day = project / "data/adsb/2026-09-08"
         day.mkdir(parents=True)
         name, raw = first_member
@@ -122,7 +140,7 @@ def test_real_boundary_segments_survive_selection(tmp_path):
         (day / "real.tar.ab").write_bytes(blob[len(blob) // 2:])
         for output, extra in (("whole", []), ("wide", ["--time-range", "2026-09-07T23:00:00Z", "2026-09-09T01:00:00Z"])):
             command = [sys.executable, str(project / "scripts/ingest_adsblol_day.py"),
-                       "2026-09-08", "--keep-jets", "--bounds", "-180", "-90", "180", "90",
+                       "2026-09-08", "--bounds", "-180", "-90", "180", "90",
                        "--output", output + ".parquet", *extra]
             env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "src"))
             completed = subprocess.run(command, env=env, capture_output=True, text=True)

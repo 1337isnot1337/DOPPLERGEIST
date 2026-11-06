@@ -10,6 +10,7 @@ from dopplergeist.data_access import _staging_rows
 def test_staging_preserves_real_observation_values():
     source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
     frame = pd.DataFrame(json.loads(source.read_text()))
+    frame = frame.loc[frame.typecode.isin(["C172", "H500"])].copy()
     expected = json.loads(frame.to_json(orient="records", double_precision=15))
     rows = list(_staging_rows(frame))
     assert len(rows) == len(expected) > 0

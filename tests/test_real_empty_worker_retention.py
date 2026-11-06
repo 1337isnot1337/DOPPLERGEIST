@@ -132,6 +132,7 @@ def initialize_recorded_empty_worker(index_path, directory):
 def observed_index(tmp_path):
     source = ROOT / "research/trajectory-motion/frozen/canonical-observations.json"
     frame = pd.DataFrame(json.loads(source.read_text()))
+    frame = frame.loc[frame.typecode.isin(["C172", "H500"])].copy()
     coverage = {"bounds": [-180., -90., 180., 90.],
                 "time_range_s": [float(frame.time_s.min()), float(frame.time_s.max())],
                 "all_aircraft": False, "source_note": "Archived real observations; incomplete excerpt"}

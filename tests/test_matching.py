@@ -87,7 +87,7 @@ def detected(identity="a", harmonic=1):
 def test_adapter_retains_jet_with_misleading_straight_geometry_and_merges_harmonics():
     primary = dict(detected(), quality={"frequency_uncertainty_hz": 1.5})
     events, measurements = prepare_events([primary, detected("harmonic", 2)])
-    table = pd.DataFrame([dict(point_id=0, flight_id="jet", receive_time=42, emission_time=28,
+    table = pd.DataFrame([dict(point_id=0, flight_id="prop", receive_time=42, emission_time=28,
                                speed_mps=155, distance_m=4900)])
     assert len(events) == 1
     assert len(measurements[0][1]) == 200

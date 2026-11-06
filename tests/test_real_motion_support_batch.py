@@ -1,4 +1,4 @@
-"""Motion-support checks on the archived four-aircraft observation audit."""
+"""Motion-support checks on the archived confirmed non-jet observations."""
 from collections import defaultdict
 from copy import deepcopy
 import json
@@ -15,7 +15,8 @@ def observed_tracks(relative=False):
     path = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
     grouped = defaultdict(list)
     for row in json.loads(path.read_text()):
-        grouped[row["flight_id"]].append(row)
+        if row.get("typecode") in ("C172", "H500"):
+            grouped[row["flight_id"]].append(row)
     tracks = []
     for identity, rows in sorted(grouped.items()):
         rows.sort(key=lambda row: row["time_s"])

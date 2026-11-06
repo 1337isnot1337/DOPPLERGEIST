@@ -511,9 +511,14 @@ def _bounded_model_assessment(search, support):
 
 def _coverage(request, search, config):
     limitations = ["Historical receiver archives may omit aircraft or trajectory samples."]
+    if search.get("aircraft_scope") == "confirmed_nonjet":
+        limitations.append("Only aircraft classified as piston or turbine were searched; jets and unknown types were excluded.")
     search_complete = (search.get("tiles_total", 0) > 0 and search.get("tiles_completed") == search.get("tiles_total")
                        and not search.get("tile_failures") and not search.get("refinement_failure")
                        and search.get("all_event_groups_considered") is not False)
+    if search.get("aircraft_classification_incomplete"):
+        search_complete = False
+        limitations.append("No confirmed non-jet tracks were selected; aircraft-type metadata may be missing.")
     if any(name in search for name in ("model_support_complete", "model_support", "model_assessment_complete")):
         support = search.get("model_support")
         count_names = ("unsupported_cpa_track_evaluations", "unclassified_score_candidates",

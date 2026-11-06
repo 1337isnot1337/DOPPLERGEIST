@@ -13,7 +13,7 @@
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/tree/main/docs"><img src="https://img.shields.io/badge/docs-read-0088CC?style=flat-square" alt="Documentation"></a>
 </p>
 
-**DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and historical ADS-B flight tracks to rank possible recording locations. It includes a Python CLI and a local browser interface.
+**DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and historical ADS-B flight tracks to rank possible recording locations. It includes a Python CLI and a local browser interface. Flight searches use only aircraft classified as piston or turbine; jets and unknown or conflicting types are excluded. This narrows coverage, and type metadata can be incomplete or incorrect.
 
 [Website](https://1337isnot1337.github.io/DOPPLERGEIST/) · [Examples](https://1337isnot1337.github.io/DOPPLERGEIST/examples.html) · [Install](#quickstart) · [How it works](#how-it-works) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
 
@@ -21,7 +21,7 @@
 
 ![Automatic MP3 flyover and ranked aircraft search](docs/assets/livermore-automatic-mp3.png)
 
-<sub>Automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
+<sub>Historical example before the current aircraft-type policy: automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
 ## Capabilities
 
@@ -171,7 +171,7 @@ DOPPLERGEIST has been exercised on synthetic fixtures, real aircraft recordings,
 
 | Experiment | Observed result | How to interpret it |
 | --- | --- | --- |
-| **Automatic Livermore MP3, regional all-aircraft archive** | Selected and searched 466 nearby aircraft and returned 105 ranked locations; the first was **476 m from an inferred reference**. | Fully automatic event selection, but a constrained region and approximate 10-second clock window; the reference is not surveyed truth and the result was inconclusive. [Details](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking). |
+| **Historical Livermore MP3, prior all-aircraft policy** | Selected and searched 466 nearby aircraft and returned 105 ranked locations; the first was **476 m from an inferred reference**. | Fully automatic event selection, but a constrained region and approximate 10-second clock window; the reference is not surveyed truth and the result was inconclusive. [Details](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking). |
 | **Configured two-flyover real-audio replay** | Leading location **43.86 m from a public reference**. | Used source-informed events and geographic bounds; the reference is not surveyed, and the model did not accept a location. [Clean replay](docs/verification/CLEAN_REPLAY.md). |
 | **40 real smartphone aircraft recordings** | Automatic discovery produced candidate acoustic groups in **36 of 40** files. | These are acoustic proposals, not verified aircraft detections or geolocation successes. [Discovery results](docs/AUDIO_DISCOVERY.md). |
 | **Five public field recordings** | Three returned rankings, with no retained candidate within 1 km of the publisher-reported sites; two returned no candidate. | Recorder clocks and exact microphone positions were not confirmed, so these are development outcomes rather than a calibrated accuracy benchmark. [Experiment](docs/PUBLIC_RECORDING_EXPERIMENT_2026-11-03.md). |

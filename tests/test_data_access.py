@@ -12,36 +12,36 @@ from dopplergeist.data_access import CachedTerrain, DataUnavailable, FlightCache
 
 
 def samples():
-    return pd.DataFrame({"flight_id": ["jet"] * 6 + ["unknown"] * 3,
+    return pd.DataFrame({"flight_id": ["prop"] * 6 + ["unknown"] * 3,
                          "time_s": [0, 5, 10, 100, 105, 110, 0, 5, 10],
                          "lat": [40.] * 9, "lon": np.linspace(-100.2, -99.8, 9),
-                         "alt_m": [1000.] * 9, "typecode": ["B738"] * 6 + [""] * 3,
+                         "alt_m": [1000.] * 9, "typecode": ["C172"] * 6 + [""] * 3,
                          "altitude_basis": ["ellipsoidal"] * 3 + ["barometric"] * 6})
 
 
-def test_whole_segments_jets_unknown_altitude_and_repeat(tmp_path):
+def test_whole_segments_nonjet_unknown_altitude_and_repeat(tmp_path):
     parquet = tmp_path / "input.parquet"
     frame = samples()
     frame.to_parquet(parquet)
     coverage = {"bounds": [-125, 24, -66, 50], "time_range_s": [0, 200], "all_aircraft": True}
-    index = FlightIndex.from_parquet(tmp_path / "index.sqlite", parquet, coverage=coverage, class_map={"B738": "jet"})
+    index = FlightIndex.from_parquet(tmp_path / "index.sqlite", parquet, coverage=coverage, class_map={"C172": "piston"})
     tracks = list(index.query([-101, 39, -99, 41], [4, 6]))
-    assert [t.id for t in tracks] == ["jet:0", "unknown"]
+    assert [t.id for t in tracks] == ["prop:0", "unknown"]
     assert tracks[0].time.tolist() == [0, 5, 10]  # query does not clip
-    assert tracks[0].typecode == "B738"
-    assert tracks[0].aircraft_class == "jet" and tracks[1].aircraft_class == "unclassified"
+    assert tracks[0].typecode == "C172"
+    assert tracks[0].aircraft_class == "piston" and tracks[1].aircraft_class == "unclassified"
     assert tracks[0].altitude_basis == ["ellipsoidal"] * 3
     assert np.isnan(tracks[0].position(11)).all()  # no gap extrapolation
     later = list(index.query([-101, 39, -99, 41], [104, 106]))
-    assert later[0].id == "jet:1"
+    assert later[0].id == "prop:1"
     assert later[0].altitude_basis == ["barometric"] * 3
     before = index.path.stat().st_mtime_ns
-    replay = FlightIndex.from_parquet(index.path, parquet, coverage=coverage, class_map={"B738": "jet"})
+    replay = FlightIndex.from_parquet(index.path, parquet, coverage=coverage, class_map={"C172": "piston"})
     assert replay.path.stat().st_mtime_ns == before
     assert replay.coverage_for([-101, 39, -99, 41], [0, 200])["scope_complete"]
     assert not replay.coverage_for([-130, 39, -99, 41], [0, 200])["scope_complete"]
     with pytest.raises(DataUnavailable, match="different inputs"):
-        FlightIndex.from_parquet(index.path, parquet, coverage=dict(coverage, all_aircraft=False), class_map={"B738": "jet"})
+        FlightIndex.from_parquet(index.path, parquet, coverage=dict(coverage, all_aircraft=False), class_map={"C172": "piston"})
 
 
 def test_truncated_parquet_and_payload_corruption(tmp_path):
@@ -98,7 +98,7 @@ def test_resumable_download_validates_ranges_and_offline_cache(tmp_path):
 
 
 def test_streaming_split_readsb_archive(tmp_path):
-    trace = {"icao": "a12345", "timestamp": 1000, "t": "B738", "trace": [
+    trace = {"icao": "a12345", "timestamp": 1000, "t": "C172", "trace": [
         [i, 40, -100 + i * .001, 3000, 100, 90, 0, 0, {}, None, 3200, 0] for i in [0, 5, 10]]}
     data = gzip.compress(json.dumps(trace).encode())
     stream = io.BytesIO()
@@ -110,7 +110,7 @@ def test_streaming_split_readsb_archive(tmp_path):
     paths = [tmp_path / "archive.aa", tmp_path / "archive.ab"]
     paths[0].write_bytes(raw[:600]); paths[1].write_bytes(raw[600:])
     frames = list(archive_frames(paths))
-    assert frames[0].typecode.tolist() == ["B738"] * 3
+    assert frames[0].typecode.tolist() == ["C172"] * 3
     assert frames[0].altitude_basis.tolist() == ["ellipsoidal"] * 3
     assert np.allclose(frames[0].alt_m, 3200 * .3048)
     paths[1].write_bytes(b"broken")
@@ -197,7 +197,7 @@ def test_date_acquisition_ingests_all_types_and_reuses_validated_offline_index(t
     start = pd.Timestamp("2026-09-08T00:00:00Z").timestamp()
     stream = io.BytesIO()
     with tarfile.open(fileobj=stream, mode="w") as archive:
-        for identity, code in [("a12345", "B738"), ("b12345", "H500"), ("c12345", "ZZZZ")]:
+        for identity, code in [("a12345", "C172"), ("b12345", "H500"), ("c12345", "ZZZZ")]:
             trace = {"icao": identity, "timestamp": start, "t": code, "trace": [
                 [i, 40, -100+i*.001, 3000, 100, 90, 0, 0, {}, None, 3200, 0] for i in [0, 5, 10]]}
             raw = gzip.compress(json.dumps(trace).encode())
@@ -216,15 +216,15 @@ def test_date_acquisition_ingests_all_types_and_reuses_validated_offline_index(t
             if url == asset["browser_download_url"]:
                 return Response(payload)
             if url.endswith("icao_aircraft_types.js"):
-                return Response(b'let types={"B738":{"desc":"L2J"},"H500":{"desc":"H1T"}};')
+                return Response(b'let types={"C172":{"desc":"L1P"},"H500":{"desc":"H1T"}};')
             raise AssertionError(f"Unexpected network request: {url}")
 
     provider = Provider()
     index = FlightCache(tmp_path, session=provider).acquire_day("2026-09-08")
     tracks = list(index.query([-101, 39, -99, 41], [start, start+10]))
-    assert {t.typecode: t.aircraft_class for t in tracks} == {"B738": "jet", "H500": "turbine", "ZZZZ": "unclassified"}
+    assert {t.typecode: t.aircraft_class for t in tracks} == {"C172": "piston", "H500": "turbine"}
     assert all(t.altitude_basis == ["ellipsoidal"]*3 for t in tracks)
-    assert len(provider.calls) == 3 and index.report["rows"] == 9
+    assert len(provider.calls) == 3 and index.report["rows"] == 6
     repeat = FlightCache(tmp_path, offline=True, session=provider).acquire_day("2026-09-08")
     assert repeat.report == index.report and len(provider.calls) == 3
     assert index.report["coverage"]["release_tag"] == "v2026.09.08-planes-readsb-staging-0"

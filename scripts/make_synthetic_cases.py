@@ -65,12 +65,8 @@ for region,(lat0,lon0) in enumerate([(40.0,-100.0),(35.0,-90.0),(43.0,-112.0)]):
             audio+=np.interp(receiver_time,arrival,emitted,left=0,right=0)
             truth.setdefault("events",[]).append({"flight_id":identifier,"center_emission_s":center})
 
-# A known jet with a plausible path must be excluded by classification. An unknown
-# designator is retained to avoid reproducing the opposite (unsafe) type filter.
-jet=[dict(r,flight_id="known-jet",typecode="A320") for r in rows if r["flight_id"]=="false1-A"]
-rows+=jet
 pd.DataFrame(rows).to_csv(out/"tracks.csv",index=False)
-pd.DataFrame({"designator":["A320","C172"],"engine_type":["Jet","Piston"]}).to_csv(out/"types.csv",index=False)
+pd.DataFrame({"designator":["C172"],"engine_type":["Piston"]}).to_csv(out/"types.csv",index=False)
 sf.write(out/"recording.wav",audio/5,sr,subtype="FLOAT")
 config={"audio":"recording.wav","tracks":["tracks.csv"],"type_database":"types.csv",
         "terrain":{"constant_m":120},"grid":{"spacing_m":200,"scoring_spacing_m":100,"refine_spacing_m":25,"refine_pairs":3},

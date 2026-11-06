@@ -1,5 +1,7 @@
 # Independent multi-flyover development fixtures
 
+> Historical fixture: the aircraft-type selection described below predates the current non-jet-only search policy.
+
 These cases exercise the requirement to use three, four and more independent
 flyovers under one recording clock and location. They are synthetic development
 fixtures, not the real field corpus or sealed holdout requested in issue #53.

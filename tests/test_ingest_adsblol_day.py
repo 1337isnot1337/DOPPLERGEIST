@@ -25,7 +25,7 @@ def test_native_altitude_support_is_normalized_before_row_selection(tmp_path, se
     shutil.copyfile(root / "scripts/ingest_adsblol_day.py", script)
     source = project / "data/source"
     source.mkdir(parents=True)
-    (source / "icao_aircraft_types.json").write_text('{}')
+    (source / "icao_aircraft_types.json").write_text('{"PC12":{"desc":"L1T"}}')
     day = project / "data/adsb/2026-09-22"
     day.mkdir(parents=True)
     trace = {"icao": "opaque-flight", "timestamp": 1790000000, "t": "PC12", "trace": [

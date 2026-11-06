@@ -11,10 +11,10 @@ is required. Acquisition covers that window plus the complete recording and
 sound propagation guard, including adjacent UTC days. `FlightCache.acquire_day`
 obtains ADSB.lol release metadata, resumes split archive parts using checked HTTP
 ranges, checks provider size/SHA-256, and streams gzip readsb traces into an index.
-All aircraft types remain eligible. The archive is downloaded once per day/provider;
+The source archive and existing indexes can contain all aircraft types. New daily indexes retain only confirmed non-jet traces. Before CPA search, only records classified as piston or turbine are selected; known jets and unknown or conflicting types are excluded. Classification uses cached ICAO type metadata when available. This is a narrower search scope, and incomplete or incorrect type metadata can hide relevant non-jet flights. The archive is downloaded once per day/provider;
 later uploads reuse the derived index without opening/downloading the archive.
 Both older single `.tar` assets and newer split `.tar.aa`/`.tar.ab` assets are read
-through the same streaming archive reader.
+through the same streaming archive reader. Existing indexes are filtered before search. Type metadata is discovered in the index's parent cache directories, or can be supplied with `filters.aircraft_type_database`. Tracks with unknown or conflicting type metadata are excluded; without usable classification the search may have no eligible aircraft.
 
 New daily archive indexes prepare traces and compute flight-segment geometry in
 separate processes, using the available CPU cores minus one for the SQLite writer
@@ -23,8 +23,8 @@ source order. SQLite writes and finalization still run in the writer process; a
 stopped partial index must be rebuilt.
 
 For a fresh automatic regional upload, only segments touching its receiver bounds
-and emission-time interval get the optional numeric decoding cache. Every original
-global segment remains in the index, and queries outside that warm scope use the
+and emission-time interval get the optional numeric decoding cache. Every eligible confirmed non-jet
+segment remains in the index, and queries outside that warm scope use the
 verified original payload. This reduces first-use cache construction without
 changing source coverage or filtering aircraft. `FlightIndex.prepare` also accepts
 `prepare_scope=(bounds_wsen, time_range_s)` for an explicitly scoped index copy.

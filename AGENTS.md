@@ -134,8 +134,9 @@ historical; they do not satisfy the current validation requirement.
 - The automatic workflow must not require manual event windows/bands, true flight
   IDs, true coordinates or a truth-derived search box.
 - Keep emission-time sound propagation, consistent altitude datums, track-gap
-  handling and locked multi-event timing. Unknown types and potentially audible
-  jets cannot be unconditionally discarded.
+  handling and locked multi-event timing. Exclude jets and aircraft of unknown
+  type from flight searches and evaluation data; search only confirmed non-jet
+  aircraft, and disclose the resulting coverage limits.
 - Use all supported independent flyovers, including three, four or more, to
   constrain one shared location and recording clock. Do not impose a default
   two- or three-event cap or silently discard later events. Harmonics/fragments

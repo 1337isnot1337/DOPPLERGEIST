@@ -23,17 +23,17 @@ def test_silence_and_locked_offset_filter():
     assert counts["silence_rejected"]==1
 
 
-def test_known_jets_only_are_excluded_and_gaps_are_not_interpolated(tmp_path):
+def test_unknown_types_are_excluded_and_gaps_are_not_interpolated(tmp_path):
     rows=[]
-    for flight,code in [("jet","A320"),("prop","C172"),("unknown","ZZZZ")]:
+    for flight,code in [("prop","C172"),("unknown","ZZZZ")]:
         for t in [0,1,2,100,101,102]:
             rows.append({"flight_id":flight,"time_s":t,"lat":40+t/1000,"lon":-100,
                          "alt_m":1000,"typecode":code})
     p=tmp_path/"tracks.csv";pd.DataFrame(rows).to_csv(p,index=False)
     db=tmp_path/"types.csv"
-    pd.DataFrame({"designator":["A320","C172"],"engine_type":["Jet","Piston"]}).to_csv(db,index=False)
+    pd.DataFrame({"designator":["C172"],"engine_type":["Piston"]}).to_csv(db,index=False)
     tracks,report=load_tracks(p,type_database=db)
-    assert len(tracks)==4
-    assert report["known_jets_excluded"]==["jet"]
-    assert {t.id.split(":")[0] for t in tracks}=={"prop","unknown"}
+    assert len(tracks)==2
+    assert report["unknown_types_excluded"]==["unknown"]
+    assert {t.id.split(":")[0] for t in tracks}=={"prop"}
     assert all(np.isnan(t.position(50)).all() for t in tracks)

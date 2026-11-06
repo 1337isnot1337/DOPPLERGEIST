@@ -184,7 +184,7 @@ files are sufficient. The original source MP4 is not uploaded, at the user's req
 - The high-quality two-event case uses source-informed speed, slant and frequency
   bounds. Ridge extraction within selected bands is not event discovery.
 - The faint event's best matching track is a CRJ9 jet. Removing every jet prevents
-  this case from succeeding. Unknown aircraft types must also be retained.
+  this case from succeeding. Current policy excludes unknown aircraft types along with jets; this can exclude non-jet flights.
 - Its straight-pass fit suggests about 1 km slant, while the matching real track
   passes at about 4.9 km from the public reference. Tight filters derived from a
   straight-flight fit can exclude curved real trajectories.

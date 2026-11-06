@@ -274,8 +274,13 @@ def _track_geometry_digest(track):
 
 
 def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None, c=343.0,
-            overload_observers=None):
+            overload_observers=None, nonjet_classes=None, selection_counts=None):
     tracks, identities, samples = [], {}, 0
+    if nonjet_classes is None:
+        nonjet_classes = {}
+    if selection_counts is None:
+        selection_counts = {"aircraft_tracks_input": 0, "aircraft_known_jets_excluded": 0,
+                            "aircraft_unknown_excluded": 0}
     queried, queried_samples = 0, 0
 
     def distant(track):
@@ -288,6 +293,14 @@ def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None,
 
     for index in indexes:
         for track in index.query(bounds, time_range):
+            if nonjet_classes is not None:
+                from .aircraft_types import track_class
+                label = track_class(track, nonjet_classes)
+                selection_counts["aircraft_tracks_input"] += 1
+                if label not in ("piston", "turbine"):
+                    key = "aircraft_known_jets_excluded" if label == "jet" else "aircraft_unknown_excluded"
+                    selection_counts[key] += 1
+                    continue
             if observers is not None or overload_observers is not None:
                 queried += 1
                 queried_samples += len(track.time)
@@ -332,7 +345,7 @@ def _tracks(indexes, bounds, time_range, budget, *, observers=None, radius=None,
     return tracks
 
 
-def _tracks_for_points(indexes, bounds, time_range, budget, points, terrain, radius, c):
+def _tracks_for_points(indexes, bounds, time_range, budget, points, terrain, radius, c, filters=None):
     """Switch overloaded queries to the conservative sieve without rereading."""
     def overload_observers():
         nonlocal points
@@ -340,8 +353,13 @@ def _tracks_for_points(indexes, bounds, time_range, budget, points, terrain, rad
             points = _sample_tile_terrain(points, terrain)
         return ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
 
+    selection = {"aircraft_tracks_input": 0, "aircraft_known_jets_excluded": 0,
+                 "aircraft_unknown_excluded": 0}
+    classes = (filters or {}).get("_aircraft_type_classes", {})
     tracks = _tracks(indexes, bounds, time_range, budget, radius=radius, c=c,
-                     overload_observers=overload_observers)
+                     overload_observers=overload_observers, nonjet_classes=classes,
+                     selection_counts=selection)
+    points.attrs["aircraft_selection_counts"] = selection
     return tracks, points
 
 
@@ -543,6 +561,16 @@ def _track_cpa_batches(prepared, observers, point_ids, radius, step_s, chunk_poi
 @_cache_ridge_fits
 def _score(points, tracks, events, measurements, budget, parameters, filters, start_window=None, *, ledger=None, stage=None, score_floor=None, anchor_window=None):
     radius = max(e["slant_range_m"][1] for e in events)
+    from .aircraft_types import track_class
+    classes = filters.get("_aircraft_type_classes", {})
+    labels = [track_class(track, classes) for track in tracks]
+    selection = points.attrs.get("aircraft_selection_counts")
+    type_counts = dict(selection) if selection is not None else {
+        "aircraft_tracks_input": len(tracks),
+        "aircraft_known_jets_excluded": sum(label == "jet" for label in labels),
+        "aircraft_unknown_excluded": sum(label not in ("jet", "piston", "turbine") for label in labels),
+    }
+    tracks = [track for track, label in zip(tracks, labels) if label in ("piston", "turbine")]
     observers = ecef(points.lat.to_numpy(), points.lon.to_numpy(), points.elev_m.to_numpy())
     point_ids = points.point_id.to_numpy(dtype=int)
     cpa_batches, count = [], 0
@@ -618,7 +646,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
     if not cpa_batches:
         if ledger is not None:
             ledger.record(stage, [], [], 0)
-        return [], {"cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported,
+        return [], {**type_counts, "cpa_rows": 0, "candidates": 0, "unsupported_cpa_tracks": unsupported,
                     "clock_excluded_unsupported_tracks": clock_excluded,
                     "interval_supported_cpa_tracks": interval_supported}
     if parameters.get("mode") == "robust_ridge":
@@ -811,7 +839,7 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
         elif known:
             rejected += 1
     kept = merge_candidates(ranked, budget.top_k, ledger=ledger, stage=stage, bounds=bounds)
-    return kept, dict(counts, cpa_rows=count, candidates=len(candidates), unclassified_score_candidates=unclassified,
+    return kept, dict(counts, **type_counts, cpa_rows=count, candidates=len(candidates), unclassified_score_candidates=unclassified,
                       retention_score_pruned_candidates=retention_pruned,
                       bounded_score_candidates=len(bounds), unbounded_score_candidates=unclassified-len(bounds),
                       evaluated_rejections=rejected, unsupported_cpa_tracks=unsupported,
@@ -821,6 +849,8 @@ def _score(points, tracks, events, measurements, budget, parameters, filters, st
 
 
 def _record_support(output, stage, counts, summary):
+    for name in ("aircraft_tracks_input", "aircraft_known_jets_excluded", "aircraft_unknown_excluded"):
+        summary[name] = summary.get(name, 0) + counts.get(name, 0)
     summary["unsupported_cpa_track_evaluations"] += len(counts.get("unsupported_cpa_tracks", []))
     clock_excluded = len(counts.get("clock_excluded_unsupported_tracks", []))
     if clock_excluded:
@@ -880,6 +910,25 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     filters.setdefault("association", "subsets" if parameters.get("mode") == "robust_ridge" else "full")
     if filters["association"] not in ("subsets", "full"):
         raise ValueError("association must be 'subsets' or 'full'")
+    if filters.get("aircraft_type", "confirmed_nonjet") != "confirmed_nonjet":
+        raise ValueError("aircraft_type must be confirmed_nonjet")
+    filters["aircraft_type"] = "confirmed_nonjet"
+    type_database = filters.get("aircraft_type_database")
+    if not type_database:
+        for index in indexes:
+            index_path = getattr(index, "path", None)
+            if index_path is None:
+                continue
+            candidates = (parent / "icao_aircraft_types.js" for parent in Path(index_path).parents)
+            type_database = next((str(path) for path in candidates if path.is_file()), None)
+            if type_database:
+                break
+    if type_database:
+        from .aircraft_types import load_classes
+        classes, digest = load_classes(type_database)
+        filters["aircraft_type_database"] = str(type_database)
+        filters["_aircraft_type_classes"] = classes
+        filters["aircraft_type_database_sha256"] = digest
     event_limit = filters.get("max_events")
     if event_limit is None:
         event_limit = len(events)
@@ -1187,10 +1236,11 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                         if len(points):
                             tracks, points = _tracks_for_points(
                                 indexes, _expanded_bounds(cells, budget.spacing_m, radius, crs), query_time,
-                                budget, points, terrain, radius, parameters.get("c", 343.0))
+                                budget, points, terrain, radius, parameters.get("c", 343.0), filters)
                         if tracks and "elev_m" not in points:
                             points = _sample_tile_terrain(points, terrain)
                         sampled = "elev_m" in points
+                        selection_counts = points.attrs.get("aircraft_selection_counts", {})
                         if not tracks:
                             points = pd.DataFrame()
                         if len(points):
@@ -1201,7 +1251,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                                   score_floor=(_retained_score_floor(ranked, budget.top_k)
                                                                if floor_policy == "global_and_per_tile" else None))
                         else:
-                            rows, counts = [], {}
+                            rows, counts = [], selection_counts
                             # Keep all coarse/global stage records, but amortize
                             # durable commits across at most 32 empty tiles.
                             # A crash can leave uncommitted checkpoint files;
@@ -1371,7 +1421,7 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
                                     try:
                                         tracks, points = _tracks_for_points(
                                             indexes, _expanded_bounds(cells, fine, radius, crs), time_range_s,
-                                            budget, points, terrain, radius, parameters.get("c", 343.0))
+                                            budget, points, terrain, radius, parameters.get("c", 343.0), filters)
                                         rows, counts = _score(points, tracks, events, measurements, budget, parameters,
                                                               filters, start_window, ledger=ledger, stage=stage,
                                                               score_floor=floor)
@@ -1422,11 +1472,18 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     model_assessed = not (support["unsupported_cpa_track_evaluations"] or support["unbounded_score_candidates"]
                          or support["unreported_trial_envelopes"])
     model_assessed &= support["bounded_score_candidates"] == support["unclassified_score_candidates"]
+    unclassified_only = (support.get("aircraft_unknown_excluded", 0) > 0 and
+        support.get("aircraft_tracks_input", 0) <= support.get("aircraft_known_jets_excluded", 0)
+        + support.get("aircraft_unknown_excluded", 0))
     complete = (done == total and not failures and not refinement_failure and data_complete
-                and not event_limit_applied and model_assessed and not tile_budget_exhausted)
+                and not event_limit_applied and model_assessed and not tile_budget_exhausted
+                and not unclassified_only)
     finite = ledger.evidence(ranked, complete=complete, spacing_m=budget.spacing_m,
                              refine_spacing_m=min(budget.spacing_m, budget.refine_spacing_m), max_event_groups=len(events),
                              expected_stages={"coarse": done, "global": done, "fine": fine_stages, "fine-global": fine_stages})
+    finite["limitations"].append("Only aircraft classified as piston or turbine were searched; jets and unknown types were excluded.")
+    if unclassified_only:
+        finite["limitations"].append("No confirmed non-jet tracks were selected; aircraft-type metadata may be missing.")
     if tile_budget_exhausted:
         finite["limitations"].append(
             "The per-invocation coarse tile-evaluation budget was exhausted; unvisited tiles remain.")
@@ -1452,10 +1509,12 @@ def search_national(indexes, terrain, events, measurements, *, time_range_s, out
     finite["limitations"].append("Clock/frequency/drift are optimized at each fixed receiver/pass-association seed; clock uniqueness is not established.")
     finite["ledger_artifact"] = "retention.sqlite"
     report = {"run_hash": run_hash, "status": "complete" if complete else "partial", "ranked": ranked,
+              "aircraft_scope": "confirmed_nonjet",
               "coarse_ranked": coarse, "tiles_total": total, "tiles_completed": done, "tiles_resumed": resumed,
               "tile_failures": failures, "unsearched_tiles": total - done, "grid_points_searched": points_searched,
               "data_coverage": coverage, "data_scope_complete": data_complete, "refinement_failure": refinement_failure,
               "model_support_complete": model_complete, "model_support": dict(support, diagnostics_directory="support"),
+              "aircraft_classification_incomplete": bool(unclassified_only),
               "model_assessment_complete": model_assessed,
               "refinement_points_searched": refinement_points_searched, "refinement_points_skipped": refinement_points_skipped,
               "refinement_stages_resumed": fine_resumed,

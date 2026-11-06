@@ -45,8 +45,10 @@ jobs:
         run: python scripts/check_country_profiles.py --online --cache-root "$RUNNER_TEMP/dopplergeist-geography"
       - name: Check terrain seams against observed Copernicus raster footprints
         run: python -m pytest -q tests/test_real_terrain_tile_seams.py
-      - name: Check experimental episode artifacts from recorded media
-        run: python -m pytest -q tests/test_real_episode_artifact.py tests/test_real_episode_motion.py tests/test_real_episode_cli.py
+      # Earlier media and fit fixtures have unverified aircraft types and are
+      # not used for active tests under the confirmed non-jet policy.
+      - name: Check confirmed non-jet flight selection
+        run: python -m pytest -q tests/test_real_nonjet_policy.py
       - name: Check progress reporting against recorded empty-tile checkpoints
         run: |
           python - <<'PY'
@@ -95,10 +97,6 @@ jobs:
           assert hashlib.sha256(source.read_bytes()).hexdigest() == original
           print(f"Recorded checkpoint progress passed: 256 receipts, {expected} receiver points; cached refresh reads no input JSON.")
           PY
-      - name: Check metamorphic completion gates against real recorded outcomes
-        run: python -m pytest -q tests/test_real_metamorphic_runner.py::test_recorded_matrix_keeps_coverage_and_completion_separate_from_timing
-      - name: Check weak-fit guidance against recorded real ridge diagnostics
-        run: python -m pytest -q tests/test_real_guidance_fit.py
       - name: CLI smoke check
         run: dopplergeist --help
       - name: Check installed native validator and packaged browser assets
@@ -122,14 +120,6 @@ jobs:
           assert callable(_native_cpa.select), "Native CPA reducer did not build"
           assert callable(getattr(_native_ridge, "event_fit_reason", None)), "Native evidence validator did not build"
           assert callable(getattr(_native_ridge, "valid_ridge_events", None)), "Native boolean validator did not build"
-          fixture = json.loads(Path("tests/data/real-ridge-batch-arithmetic.json").read_text())
-          fits = fixture["legacy_diagnostics"]
-          assert _native_ridge.event_fit_reason(
-              fits, [fit["score"] for fit in fits], [fit["f0_hz"] for fit in fits],
-              [fixture["event"]] * len(fits)) == 0
-          assert _native_ridge.valid_ridge_events(
-              fits, [fit["score"] for fit in fits], [fit["f0_hz"] for fit in fits],
-              [fixture["event"]] * len(fits)) is True
           web = resources.files("dopplergeist.web")
           for name in ("index.html", "app.js", "style.css"):
               assert web.joinpath(name).is_file(), name

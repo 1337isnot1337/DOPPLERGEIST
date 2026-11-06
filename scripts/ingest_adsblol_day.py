@@ -1,4 +1,4 @@
-"""Stream a split daily tar archive into a CONUS prop/unknown parquet table."""
+"""Stream a split daily tar archive into a confirmed non-jet parquet table."""
 import argparse
 from collections import deque
 from datetime import date, datetime, time, timezone
@@ -42,17 +42,23 @@ class SplitReader(io.RawIOBase):
             self.current.close();self.current=None
 
 
-def _configure(engines,keep_jets,bounds,time_range):
-    _SELECT.update(engines=engines,keep_jets=keep_jets,bounds=bounds,time_range=time_range)
+def _configure(engines,bounds,time_range):
+    _SELECT.update(engines=engines,bounds=bounds,time_range=time_range)
 
 
 def select_trace(raw):
     """Decode one trace member and apply the jet, time and bounds selection.
 
-    Returns ("jet", None), ("outside", None), ("empty", None) or ("kept", frame).
+    Returns ("jet", None), ("unknown", None), ("outside", None), ("empty", None) or ("kept", frame).
     """
     d=json.loads(gzip.decompress(raw) if raw[:2]==b"\x1f\x8b" else raw)
-    if not _SELECT["keep_jets"] and _SELECT["engines"].get(d.get("t",""))=="Jet":return "jet",None
+    codes={str(d.get("t", "")).upper()} if d.get("t") else set()
+    for row in d.get("trace", []):
+        if len(row)>8 and isinstance(row[8],dict) and row[8].get("t"):
+            codes.add(str(row[8]["t"]).upper())
+    kinds={_SELECT["engines"].get(code, "Unknown") for code in codes}
+    if "Jet" in kinds:return "jet",None
+    if len(kinds)!=1 or not kinds.issubset({"Piston", "Turbine"}):return "unknown",None
     time_range=_SELECT["time_range"]
     # A segment can cross a query without a sample inside it. Temporal
     # extents can reject only traces entirely before or after the query.
@@ -92,8 +98,7 @@ def selected_traces(raws,workers):
     if workers<=1:
         yield from map(select_trace,raws)
         return
-    with _index_pool(workers,initializer=_configure,initargs=(_SELECT["engines"],_SELECT["keep_jets"],
-                                                              _SELECT["bounds"],_SELECT["time_range"])) as pool:
+    with _index_pool(workers,initializer=_configure,initargs=(_SELECT["engines"], _SELECT["bounds"], _SELECT["time_range"])) as pool:
         pending=deque()
         for batch in batches(raws,BATCH):
             pending.append(pool.submit(select_batch,batch))
@@ -105,8 +110,7 @@ def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("date")
     parser.add_argument("--bounds",type=float,nargs=4,default=[-125,24,-66,50],metavar=("WEST","SOUTH","EAST","NORTH"))
-    parser.add_argument("--output",default="conus-prop-unknown.parquet")
-    parser.add_argument("--keep-jets",action="store_true",help="Include jet types for the single-event ablation")
+    parser.add_argument("--output",default="conus-confirmed-nonjet.parquet")
     parser.add_argument("--time-range",nargs=2,metavar=("START_UTC","END_UTC"))
     parser.add_argument("--workers",type=int,default=1,
                         help=f"Processes decoding trace members; 0 = all but one core ({_index_workers()} here). Output is identical for any value")
@@ -145,17 +149,17 @@ def main():
     engines={}
     for code,value in types.items():
         classification=value.get("desc","") if isinstance(value,dict) else (value[2] if len(value)>2 else "")
-        engines[code]="Jet" if classification.endswith("J") else "Other/unknown"
+        engines[code.upper()]={"J":"Jet", "T":"Turbine", "P":"Piston"}.get(classification[-1:], "Unknown")
     pd.DataFrame({"designator":list(engines),"engine_type":list(engines.values())}).to_csv(directory/"type-database.csv",index=False)
-    _configure(engines,args.keep_jets,(west,south,east,north),time_range)
+    _configure(engines,(west,south,east,north),time_range)
 
     paths=sorted(directory.glob("*.tar.a?"))
     if len(paths)<2:raise ValueError("Daily archive download is incomplete")
-    stats={"trace_files":0,"known_jets_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
+    stats={"trace_files":0,"known_jets_removed":0,"unknown_types_removed":0,"no_conus_points":0,"retained_aircraft":0,"rows":0,"barometric_rows":0}
     stats["normalization_scope"]="full_native_trace_before_segment_selection"
     stats["selection_max_gap_s"]=30.0
     selection={"bounds":[west,south,east,north],"time_range_s":selected_time,"archive_day_utc":args.date,
-               "all_aircraft":args.keep_jets,"max_gap_s":30.0}
+               "all_aircraft":False,"aircraft_policy":"confirmed_nonjet","max_gap_s":30.0}
     writer=None
     with io.BufferedReader(SplitReader(paths),buffer_size=1024*1024) as stream:
         with tarfile.open(fileobj=stream,mode="r|") as archive:
@@ -163,6 +167,9 @@ def main():
                 stats["trace_files"]+=1
                 if outcome=="jet":
                     stats["known_jets_removed"]+=1
+                    continue
+                if outcome=="unknown":
+                    stats["unknown_types_removed"]+=1
                     continue
                 if outcome=="outside":
                     stats["no_conus_points"]+=1
@@ -180,6 +187,8 @@ def main():
                 if stats["retained_aircraft"]%500==0:print(stats,flush=True)
     if writer:writer.close()
     report_path.write_text(json.dumps(stats,indent=2)+"\n")
+    if writer is None:
+        raise ValueError("No confirmed non-jet traces matched the selection; see the ingestion report")
     print(stats,flush=True)
 
 

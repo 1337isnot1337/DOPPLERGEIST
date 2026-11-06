@@ -30,10 +30,15 @@ def test_real_unsplit_release_reaches_offline_archive_lookup(tmp_path):
         FlightCache(tmp_path, offline=True).acquire_day("2024-03-29")
 
 
+def confirmed_observations(source):
+    frame = pd.DataFrame(json.loads(source.read_text()))
+    return frame.loc[frame.typecode.isin(["C172", "H500"])].copy()
+
+
 @pytest.fixture
 def observed_index(tmp_path):
     source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
-    frame = pd.DataFrame(json.loads(source.read_text()))
+    frame = confirmed_observations(source)
     coverage = {"bounds": [-180., -90., 180., 90.],
                 "time_range_s": [float(frame.time_s.min()), float(frame.time_s.max())],
                 "all_aircraft": False, "source_note": "Archived real observations; incomplete excerpt"}
@@ -62,7 +67,7 @@ def queried(index, coverage):
 
 def test_real_index_build_reports_acquisition_phases(tmp_path):
     source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
-    frame = pd.DataFrame(json.loads(source.read_text()))
+    frame = confirmed_observations(source)
     coverage = {"bounds": [-180., -90., 180., 90.],
                 "time_range_s": [float(frame.time_s.min()), float(frame.time_s.max())],
                 "all_aircraft": False, "source_note": "Archived real observations; incomplete excerpt"}
@@ -161,7 +166,7 @@ def test_scoped_preparation_preserves_all_query_and_lookup_tracks(
 def test_scoped_build_retains_every_original_segment(observed_index, tmp_path):
     index, coverage = observed_index
     source = Path(__file__).resolve().parents[1] / "research/trajectory-motion/frozen/canonical-observations.json"
-    frame = pd.DataFrame(json.loads(source.read_text()))
+    frame = confirmed_observations(source)
     scoped = FlightIndex.build(tmp_path / "scoped-build.sqlite", [frame], sources=[], coverage=coverage,
                                prepare_scope=([-79., 35., -78., 36.], coverage["time_range_s"]))
     for table in ("segments", "spatial"):

@@ -47,6 +47,12 @@ INDEX_VERSION = 2
 # mapping keyed by the current complete source hash: any later normalizer edit
 # falls back to the ordinary conservative mismatch behavior.
 _EQUIVALENT_NORMALIZERS = {
+    # The non-jet policy only changes the legacy CSV importer; trace decoding,
+    # segment velocity and all spatial-bound geometry remain unchanged.
+    "cb66d1a8184ea393c9b906e803c14ee62246625d26dad84b0ffb575b44431b4b": (
+        "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0",
+        "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
+    ),
     "543f483cee756fdb9efdd69c8e8f05b32e290f19187af3523160f19d2eba90e0": (
         "523b9d629083ba2792a1da2cd34d8b89ef57236febcc284f62886ba103ef20ec",
     ),
@@ -66,10 +72,18 @@ def _staging_rows(frame):
 
 def _frame_track(name, frame):
     velocity, inferred = _segment_velocity(frame)
+    codes = {str(value).strip().upper() for value in frame.typecode.to_numpy()
+             if value is not None and str(value).strip() and str(value).lower() != "nan"} if "typecode" in frame else set()
+    labels = {str(value).strip().lower() for value in frame.aircraft_class.to_numpy()
+              if value is not None and str(value).strip() and str(value).lower() != "nan"} if "aircraft_class" in frame else set()
+    code = next(iter(codes)) if len(codes) == 1 else ""
+    label = "jet" if "jet" in labels else next(iter(labels)) if len(labels) == 1 else "unclassified"
+    if len(codes) > 1:
+        label = "jet" if label == "jet" else "unclassified"
     track = Track(name, frame.time_s.to_numpy(), frame.lat.to_numpy(), frame.lon.to_numpy(), frame.alt_m.to_numpy(),
-                  str(frame.typecode.iloc[0] or "") if "typecode" in frame else "", velocity)
+                  code, velocity)
     track.altitude_basis = frame.altitude_basis.tolist() if "altitude_basis" in frame else ["unspecified"] * len(frame)
-    track.aircraft_class = frame.aircraft_class.iloc[0] if "aircraft_class" in frame else "unclassified"
+    track.aircraft_class = label
     track.velocity_inferred_components = inferred
     return track
 
@@ -469,12 +483,36 @@ def _init_staging_worker(class_map, max_member_bytes):
     _STAGING_CLASS_MAP, _STAGING_MEMBER_LIMIT = class_map, max_member_bytes
 
 
+def _archive_confirmed_nonjet(frame):
+    """Keep a complete archive trace only when every type is confirmed non-jet."""
+    if frame.empty:
+        return frame
+    labels = set(frame.aircraft_class.astype(str))
+    if len(labels) == 1 and labels.issubset({"piston", "turbine"}):
+        return frame
+    return frame.iloc[:0]
+
+
+def _archive_nonjet_staging(frame, class_map):
+    # Examine type metadata before discarding invalid positions, so a
+    # conflicting record cannot be hidden by coordinate validation.
+    if "typecode" in frame:
+        raw_labels = set(frame.typecode.map(class_map).fillna("unclassified").astype(str))
+    else:
+        raw_labels = {"unclassified"}
+    clean, invalid, _ = _prepare_staging(frame, class_map)
+    if len(raw_labels) != 1 or not raw_labels.issubset({"piston", "turbine"}):
+        clean = clean.iloc[:0]
+    clean = _archive_confirmed_nonjet(clean)
+    altitude = clean.altitude_basis.value_counts().to_dict() if "altitude_basis" in clean else {"unspecified": len(clean)}
+    return list(_staging_rows(clean)), invalid, altitude
+
+
 def _stage_archive_member(raw):
     frame = _decode_archive_frame(raw, _STAGING_MEMBER_LIMIT)
     if frame.empty:
         return None
-    clean, invalid, altitude = _prepare_staging(frame, _STAGING_CLASS_MAP)
-    return list(_staging_rows(clean)), invalid, altitude
+    return _archive_nonjet_staging(frame, _STAGING_CLASS_MAP)
 
 
 def _index_workers():
@@ -503,7 +541,7 @@ def _index_pool(workers, initializer=None, initargs=()):
 
 def archive_staging(paths, class_map, workers=None, max_member_bytes=64 * 1024 * 1024,
                     progress_callback=None):
-    """Prepare archive rows in parallel, retaining source order and one SQLite writer."""
+    """Prepare confirmed non-jet archive rows with bounded parallelism."""
     if workers is None:
         workers = _index_workers()
     if type(workers) is not int or workers < 1:
@@ -514,8 +552,7 @@ def archive_staging(paths, class_map, workers=None, max_member_bytes=64 * 1024 *
             batches += 1
             if progress_callback:
                 progress_callback(phase="decoding_archive", batches=batches)
-            clean, invalid, altitude = _prepare_staging(frame, class_map)
-            yield list(_staging_rows(clean)), invalid, altitude
+            yield _archive_nonjet_staging(frame, class_map)
         return
     try:
         with _index_pool(workers, _init_staging_worker, (class_map, max_member_bytes)) as pool:
@@ -899,8 +936,9 @@ class FlightIndex:
                                   flights=flights_processed)
                 db.execute("DROP TABLE samples")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
-                              segments=segments, altitude_basis_counts=dict(altitude), jets_excluded=False,
-                              unknown_types_retained=True, geometry_clipped=False, continuous_geometry_bounds=True)
+                              segments=segments, altitude_basis_counts=dict(altitude),
+                              jets_excluded=coverage.get("aircraft_policy") == "confirmed_nonjet",
+                              unknown_types_retained=coverage.get("aircraft_policy") != "confirmed_nonjet", geometry_clipped=False, continuous_geometry_bounds=True)
                 emit_progress(phase="preparing_tracks", rows=rows, segments=segments, force=True)
                 track_progress = None
                 if progress_callback:
@@ -952,6 +990,9 @@ class FlightIndex:
                     raise DataUnavailable("Declared flight coverage exceeds the Parquet selection time")
                 if coverage.get("all_aircraft", False) and selected["all_aircraft"] is not True:
                     raise DataUnavailable("Parquet selection excluded aircraft types")
+                if (coverage.get("aircraft_policy") == "confirmed_nonjet" and not selected["all_aircraft"]
+                        and selected.get("aircraft_policy") != "confirmed_nonjet"):
+                    raise DataUnavailable("Parquet selection does not establish confirmed non-jet scope")
                 if selected["max_gap_s"] != kwargs.get("max_gap_s", 30.0):
                     raise DataUnavailable("Index gap limit differs from the Parquet selection gap")
             source = {"path": str(parquet.resolve()), "sha256": sha256(parquet), "bytes": parquet.stat().st_size}
@@ -1048,7 +1089,8 @@ class FlightIndex:
         source = self.report["coverage"]
         box, times = source["bounds"], source["time_range_s"]
         complete = (box[0] <= bounds[0] <= bounds[2] <= box[2] and box[1] <= bounds[1] <= bounds[3] <= box[3]
-                    and times[0] <= time_range[0] <= time_range[1] <= times[1] and source.get("all_aircraft", False))
+                    and times[0] <= time_range[0] <= time_range[1] <= times[1]
+                    and (source.get("all_aircraft", False) or source.get("aircraft_policy") == "confirmed_nonjet"))
         return {"requested_bounds": list(bounds), "requested_time_range_s": list(time_range),
                 "source": source, "scope_complete": bool(complete), "receiver_completeness_known": False,
                 "input_hash": self.report["input_hash"]}
@@ -1067,16 +1109,18 @@ class FlightCache:
         directory = self.root / day.isoformat() / provider
         directory.mkdir(parents=True, exist_ok=True)
         normalizer_hash = sha256(normalizer.__file__)
-        index = directory / f"all-types-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
+        index = directory / f"nonjet-v{INDEX_VERSION}-{normalizer_hash[:12]}.sqlite"
         if index.exists():
+            existing = FlightIndex(index)
+            if (existing.report.get("coverage", {}).get("aircraft_policy") != "confirmed_nonjet"
+                    or existing.report.get("jets_excluded") is not True):
+                raise DataUnavailable("Cached flight index does not establish confirmed non-jet scope")
             if progress_callback:
-                existing = FlightIndex(index)
                 progress_callback(phase="cached_flight_index", rows=existing.report.get("rows", 0),
                                   segments=existing.report.get("segments", 0))
-                return existing
-            return FlightIndex(index)
+            return existing
         for old_hash in _EQUIVALENT_NORMALIZERS.get(normalizer_hash, ()):
-            old_index = directory / f"all-types-v{INDEX_VERSION}-{old_hash[:12]}.sqlite"
+            old_index = directory / f"nonjet-v{INDEX_VERSION}-{old_hash[:12]}.sqlite"
             if old_index.exists():
                 existing = FlightIndex(old_index)
                 start = pd.Timestamp(day.isoformat(), tz="UTC").timestamp()
@@ -1086,6 +1130,8 @@ class FlightCache:
                     full_day = False
                 if (existing.report.get("index_version") != INDEX_VERSION or
                         existing.report.get("normalizer_sha256") != old_hash or
+                        existing.report.get("coverage", {}).get("aircraft_policy") != "confirmed_nonjet" or
+                        existing.report.get("jets_excluded") is not True or
                         existing.report.get("coverage", {}).get("release_tag") != tag or not full_day):
                     raise DataUnavailable("Compatible flight index metadata mismatch")
                 if progress_callback:
@@ -1123,7 +1169,7 @@ class FlightCache:
                                     progress_label=f"Historical flight archive {number}/{len(assets)}"))
         start = pd.Timestamp(day.isoformat(), tz="UTC").timestamp()
         coverage = {"bounds": [-180, -90, 180, 90], "time_range_s": [start, start + 86400],
-                    "all_aircraft": True, "provider": "ADSB.lol", "release_tag": tag,
+                    "all_aircraft": False, "aircraft_policy": "confirmed_nonjet", "provider": "ADSB.lol", "release_tag": tag,
                     "release_sha256": sha256(release_path), "license": "ODbL", "missing_receiver_data_possible": True}
         coverage["normalizer_sha256"] = normalizer_hash
         types_path = self.root / "icao_aircraft_types.js"

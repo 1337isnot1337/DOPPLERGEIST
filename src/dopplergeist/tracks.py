@@ -135,27 +135,52 @@ def load_tracks(path, max_gap_s=30.0, type_database=None, bounds=None, time_rang
         # ICAO doc8643-style CSV: designator and engine_type (Jet/Turboprop/Piston).
         table = pd.read_csv(type_database).fillna("")
         types = dict(zip(table.designator, table.engine_type.str.lower()))
-    tracks, rejected = [], []
+    from types import SimpleNamespace
+    from .aircraft_types import track_class
+    classes = {}
+    for code, value in types.items():
+        if value in ("jet", "j", "turbofan", "turbojet"):
+            classes[str(code).upper()] = "jet"
+        elif value in ("piston", "p"):
+            classes[str(code).upper()] = "piston"
+        elif value in ("turboprop", "turbine", "turboshaft", "t"):
+            classes[str(code).upper()] = "turbine"
+    tracks, rejected, unknown = [], [], []
     inferred_components={name:0 for name in ("east_mps","north_mps","up_mps")}
     for flight_id, group in df.groupby("flight_id", sort=False):
         group = group.sort_values("time_s").drop_duplicates("time_s")
         group = group.dropna(subset=list(required))
-        code = str(group.typecode.iloc[0]) if "typecode" in group else ""
-        if types.get(code, "") in ("jet", "j", "turbofan", "turbojet"):
+        if group.empty:
+            continue
+        codes = {str(value).strip().upper() for value in group.typecode.dropna() if str(value).strip()} if "typecode" in group else set()
+        labels = {str(value).strip().lower() for value in group.aircraft_class.dropna() if str(value).strip()} if "aircraft_class" in group else set()
+        codes = codes or {""}
+        labels = labels or {"unclassified"}
+        observed = {track_class(SimpleNamespace(typecode=code, aircraft_class=label), classes)
+                    for code in codes for label in labels}
+        if "jet" in observed:
             rejected.append(str(flight_id))
             continue
+        if len(observed) != 1 or not observed.issubset({"piston", "turbine"}):
+            unknown.append(str(flight_id))
+            continue
+        aircraft_class = observed.pop()
+        code = sorted(codes)[0]
         chunks = (group.time_s.diff() > max_gap_s).cumsum()
         for index, (_, chunk) in enumerate(group.groupby(chunks)):
             if len(chunk) < 3:
                 continue
             v,counts = _segment_velocity(chunk)
             for name,count in counts.items():
-                inferred_components[name]+=count
+                inferred_components[name]+=counts
             identifier = str(flight_id) + (f":{index}" if chunks.max() else "")
-            tracks.append(Track(identifier, chunk.time_s.to_numpy(), chunk.lat.to_numpy(),
-                                chunk.lon.to_numpy(), chunk.alt_m.to_numpy(), code, v))
+            track = Track(identifier, chunk.time_s.to_numpy(), chunk.lat.to_numpy(),
+                          chunk.lon.to_numpy(), chunk.alt_m.to_numpy(), code, v)
+            track.aircraft_class = aircraft_class
+            tracks.append(track)
     return tracks, {"rows": len(df), "segments": len(tracks), "known_jets_excluded": rejected,
+                    "unknown_types_excluded": unknown,
                     "altitude_basis_counts":df.altitude_basis.value_counts().to_dict() if "altitude_basis" in df else {},
                     "velocity_inferred_components":inferred_components,
                     "velocity_inference_method":"position_gradient_within_gap_split_segment",
-                    "unknown_types_retained": True}
+                    "unknown_types_retained": False}

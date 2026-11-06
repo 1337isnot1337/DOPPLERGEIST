@@ -170,10 +170,11 @@ def score_tile(stage, cells, score_floor=None):
         if len(points):
             tracks, points = _tracks_for_points(
                 state["indexes"], _expanded_bounds(cells, budget.spacing_m, radius, state["crs"]),
-                query_time, budget, points, terrain, radius, state["parameters"].get("c", 343.0))
+                query_time, budget, points, terrain, radius, state["parameters"].get("c", 343.0), state["filters"])
         if tracks and "elev_m" not in points:
             points = _sample_tile_terrain(points, terrain)
         sampled = "elev_m" in points
+        selection_counts = points.attrs.get("aircraft_selection_counts", {})
         if not tracks:
             points = pd.DataFrame()
         if len(points):
@@ -191,7 +192,7 @@ def score_tile(stage, cells, score_floor=None):
             checksum = ledger.checksum(stage)
             retention = str(path)
         else:
-            rows, counts = [], {}
+            rows, counts = [], selection_counts
             retention = EmptyRetentionStage.for_stage(state["run_hash"], state["score_kind"], stage)
             checksum = retention.checksum
         provenance = observed_terrain() if sampled else {
@@ -251,7 +252,7 @@ def score_fine_tile(stage, cells, spacing, exclusions, score_floor=None):
         tracks, points = _tracks_for_points(
             state["indexes"], _expanded_bounds(cells, spacing, radius, state["crs"]),
             state["time_range"], state["budget"], points, terrain, radius,
-            state["parameters"].get("c", 343.0))
+            state["parameters"].get("c", 343.0), state["filters"])
         with tempfile.NamedTemporaryFile(prefix="fine-retention-", suffix=".sqlite",
                                          dir=state["ledger_directory"], delete=False) as handle:
             path = Path(handle.name)
