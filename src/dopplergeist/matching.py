@@ -19,6 +19,11 @@ from scipy.optimize import minimize
 
 from .geometry import Track, _EMISSION_ITERATION_TOLERANCE_S, ecef
 
+
+class UnreconciledHarmonicGroup(ValueError):
+    """Discovery supplied a group without a usable shared frequency scale."""
+
+
 _ridge_backend_choice = os.environ.get("DOPPLERGEIST_RIDGE_BACKEND", "auto")
 if _ridge_backend_choice not in {"auto", "python"}:
     raise ValueError("DOPPLERGEIST_RIDGE_BACKEND must be 'auto' or 'python'")
@@ -496,11 +501,11 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
                 base = np.column_stack((reference_time, reference_frequency))
                 shared = _overlap(base, np.column_stack((t, f)))
                 if shared is None or len(shared[0]) * 0.5 < 0.6 * min(np.ptp(reference_time), np.ptp(t)):
-                    raise ValueError("Harmonic-group ridges lack sufficient shared observations")
+                    raise UnreconciledHarmonicGroup(f"Harmonic group {group_id}: ridges lack sufficient shared observations")
                 ratio = shared[2] / shared[1]
                 harmonic = min([1.0, *_HARMONIC_RATIOS], key=lambda value: abs(value - np.median(ratio)))
                 if np.quantile(np.abs(ratio - harmonic) / harmonic, 0.9) >= 0.008:
-                    raise ValueError("Harmonic group does not have a consistent supported frequency ratio")
+                    raise UnreconciledHarmonicGroup(f"Harmonic group {group_id}: inconsistent supported frequency ratio")
             times.extend(t)
             frequencies.extend(f / harmonic)
             # Equal aggregate weight per ridge prevents duplicated harmonics
