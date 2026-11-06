@@ -43,6 +43,8 @@ _PROFILES = {
                         (-5.5, 41.2, 10.0, 51.2), "EPSG:2154", "Europe"),
     "IT": SearchProfile("IT", "italy", "Italy (including Sicily and Sardinia; bounding envelope)",
                         (6.6, 35.4, 18.6, 47.1), "EPSG:7794", "Europe"),
+    "NO": SearchProfile("NO", "norway", "Norway (mainland; bounding envelope)",
+                        (4.0, 57.9, 31.2, 71.2), "EPSG:3035", "Europe"),
 }
 for _continent, _name, _code, _coverage, _bounds, _crs, _ in WORLD_PROFILES:
     if _code not in _PROFILES:
