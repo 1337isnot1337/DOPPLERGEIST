@@ -6,6 +6,11 @@ DOPPLERGEIST is published on [PyPI](https://pypi.org/project/dopplergeist/) as `
 
 Requirements: **Python 3.11+** and **FFmpeg**. Intel Macs require Python 3.11–3.13; Python 3.14 on Intel macOS is not supported. Install `ffmpeg` and `ffprobe` separately and make sure that both commands are on your `PATH`.
 
+The full CLI and browser workflow require Linux or macOS. Native Windows wheels
+support `discover` only; `analyze`, `serve`, and `job` depend on POSIX facilities
+and fail to start. Run the full workflow in WSL with Linux, Python, and FFmpeg
+installed there.
+
 For a standalone command-line installation, use `pipx`:
 
 ```bash
@@ -20,7 +25,7 @@ python -m pip install dopplergeist
 dopplergeist --help
 ```
 
-The wheel provides the Python package, CLI, and local browser application. It does **not** bundle the FFmpeg executables or aircraft and terrain data. See the [Quickstart](../README.md#quickstart) and [Setup](SETUP.md) guides.
+The wheel provides the Python package, CLI, and local browser application, subject to the platform limits above. It does **not** bundle the FFmpeg executables or aircraft and terrain data. See the [Quickstart](../README.md#quickstart) and [Setup](SETUP.md) guides.
 
 ## Maintainer: publish a new release
 

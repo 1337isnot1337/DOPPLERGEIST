@@ -2,6 +2,10 @@
 
 ## Requirements
 
+- Linux or macOS for the full CLI and browser workflow. Native Windows wheels
+  support `discover` only; `analyze`, `serve`, and `job` fail to start because
+  they require POSIX facilities. On Windows, use a Linux WSL environment for the
+  full workflow and install Python and FFmpeg inside it.
 - Python 3.11 or newer. Intel Macs require Python 3.11–3.13. Fresh Linux environments were checked with Python 3.12.15
   and 3.14.8 for this checkpoint; CI also exercises the declared Python 3.11 minimum.
 - `ffmpeg` and `ffprobe` on PATH. The MP3 smoke tests use ffmpeg's `libmp3lame`

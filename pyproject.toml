@@ -52,4 +52,4 @@ testpaths = ["tests"]
 [tool.cibuildwheel]
 build = "cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux_* cp314-macosx_x86_64"
-test-command = "dopplergeist --help && python -c \"import dopplergeist.advanced_discovery; from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file()\""
+test-command = "dopplergeist --help && python -c \"import sys, dopplergeist.advanced_discovery; from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file(); sys.platform == 'win32' or __import__('dopplergeist.jobs'); sys.platform == 'win32' or __import__('dopplergeist.tiled_search')\""
