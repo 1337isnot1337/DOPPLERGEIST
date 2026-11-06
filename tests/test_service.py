@@ -140,3 +140,38 @@ def test_analysis_wall_time_budget_is_terminal_and_persistent(tmp_path):
         assert not manager._processes
     finally:
         manager.close()
+
+def test_location_artifacts_are_hidden_while_running(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        job = request(url + "/api/jobs", b"payload", {"schema_version": 1})[1]
+        directory = manager.directory(job["job_id"])
+        (directory / "search").mkdir()
+        (directory / "search" / "candidates.json").write_text("{}")
+        (directory / "refined-candidates.json").write_text("{}")
+        (directory / "public.txt").write_text("available")
+        result(directory, "running", stage="search")
+
+        items = request(url + f"/api/jobs/{job['job_id']}/artifacts")[1]["artifacts"]
+        paths = [item["path"] for item in items]
+        assert "search/candidates.json" not in paths
+        assert "refined-candidates.json" not in paths
+        assert "public.txt" in paths
+        for name in ("search/candidates.json", "refined-candidates.json"):
+            with pytest.raises(urllib.error.HTTPError) as error:
+                request(url + f"/api/jobs/{job['job_id']}/artifacts/" + name)
+            assert error.value.code == 403
+
+
+def test_restricted_result_artifacts_are_denied(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        job_id = "abcdef0123456789abcdef0123456789"
+        directory = manager.root / job_id
+        directory.mkdir()
+        result(directory, "failed", reason_code="restricted_location", message="Restricted.")
+        (directory / "keep.txt").write_text("unavailable")
+        with pytest.raises(urllib.error.HTTPError) as error:
+            request(url + f"/api/jobs/{job_id}/artifacts")
+        assert error.value.code == 403
+        with pytest.raises(urllib.error.HTTPError) as error:
+            request(url + f"/api/jobs/{job_id}/artifacts/keep.txt")
+        assert error.value.code == 403
