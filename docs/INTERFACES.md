@@ -35,9 +35,10 @@ is a result field and must not be mislabeled independent timestamp evidence.
 
 `search.country` accepts `US` (CONUS), `DE` (Germany), `ES` (Spain), `FR`
 (metropolitan France including Corsica) or `IT` (Italy including Sicily and
-Sardinia); lowercase ISO codes are normalized.
+Sardinia), or any other ISO 3166-1 alpha-2 code listed in
+[COUNTRIES.md](COUNTRIES.md); lowercase ISO codes are normalized.
 The corresponding `search.coverage` values are
-`conus`, `germany`, `spain`, `france` and `italy`.
+`conus`, `germany`, `spain`, `france`, `italy` and the generated names listed there.
 Either country or coverage is sufficient, and contradictory values are rejected.
 Legacy `{"coverage":"conus"}` objects keep their serialized shape; the validator
 does not insert a country into old requests. Optional `bounds_wsen` further restrict

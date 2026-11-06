@@ -30,7 +30,7 @@
 | **Automatic acoustic discovery** | Scans an entire recording for moving frequency tracks and groups related harmonics, without manually selecting event windows or frequency bands. |
 | **Historical aircraft data** | Acquires and indexes ADSB.lol flight archives; caches reusable trajectory, terrain, and geoid inputs. |
 | **Location search** | Compares predicted Doppler and sound-arrival patterns across candidate receiver locations, including evidence from multiple independent flyovers. |
-| **Geographic profiles** | Search profiles for the contiguous United States, Germany, Spain, metropolitan France (including Corsica), and Italy (including Sicily and Sardinia), with optional user-provided regional bounds. |
+| **Geographic profiles** | Search profiles for the contiguous United States, Germany, Spain, metropolitan France (including Corsica), and Italy (including Sicily and Sardinia), plus generated bounding envelopes for every other country and territory, grouped by continent ([COUNTRIES.md](docs/COUNTRIES.md)), with optional user-provided regional bounds. |
 | **Local browser application** | Recording uploads, persistent analysis jobs, inspectable results, progress monitoring, and supported resume/cancellation workflows. |
 | **Research and reproducibility** | Configured measurement/replay commands, documented experiments, diagnostic artifacts, and decision rules for unresolved searches. |
 

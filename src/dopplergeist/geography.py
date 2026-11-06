@@ -4,7 +4,9 @@ Country masks restrict receiver locations, never aircraft trajectories.  The US
 profile deliberately retains the historical CONUS rectangle and CRS.  Germany
 uses BKG VG250 land geometry in its native ETRS89 / UTM 32N coordinates. Spain,
 metropolitan France and Italy use outer geographic envelopes; the caller's
-declared bounds select the actual receiver search region.
+declared bounds select the actual receiver search region. Every other country
+and territory with an ISO 3166-1 alpha-2 code uses a generated envelope from
+``world_profiles`` (see scripts/build_world_profiles.py).
 """
 from copy import deepcopy
 from dataclasses import dataclass
@@ -17,6 +19,8 @@ import tempfile
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from .world_profiles import WORLD_PROFILES
+
 
 @dataclass(frozen=True)
 class SearchProfile:
@@ -25,20 +29,27 @@ class SearchProfile:
     name: str
     bounds_wsen: tuple[float, float, float, float]
     crs: str
+    continent: str = ""
 
 
 _PROFILES = {
     "US": SearchProfile("US", "conus", "United States (CONUS)",
-                        (-125.0, 24.0, -66.0, 50.0), "EPSG:5070"),
+                        (-125.0, 24.0, -66.0, 50.0), "EPSG:5070", "North America"),
     "DE": SearchProfile("DE", "germany", "Germany",
-                        (5.5, 47.0, 15.5, 55.2), "EPSG:32632"),
+                        (5.5, 47.0, 15.5, 55.2), "EPSG:32632", "Europe"),
     "ES": SearchProfile("ES", "spain", "Spain (all territories; bounding envelope)",
-                        (-18.2, 27.5, 4.5, 43.9), "EPSG:6933"),
+                        (-18.2, 27.5, 4.5, 43.9), "EPSG:6933", "Europe"),
     "FR": SearchProfile("FR", "france", "France (metropolitan; bounding envelope)",
-                        (-5.5, 41.2, 10.0, 51.2), "EPSG:2154"),
+                        (-5.5, 41.2, 10.0, 51.2), "EPSG:2154", "Europe"),
     "IT": SearchProfile("IT", "italy", "Italy (including Sicily and Sardinia; bounding envelope)",
-                        (6.6, 35.4, 18.6, 47.1), "EPSG:7794"),
+                        (6.6, 35.4, 18.6, 47.1), "EPSG:7794", "Europe"),
+    "NO": SearchProfile("NO", "norway", "Norway (mainland; bounding envelope)",
+                        (4.0, 57.9, 31.2, 71.2), "EPSG:3035", "Europe"),
 }
+for _continent, _name, _code, _coverage, _bounds, _crs, _ in WORLD_PROFILES:
+    if _code not in _PROFILES:
+        _PROFILES[_code] = SearchProfile(_code, _coverage, f"{_name} (bounding envelope)",
+                                         _bounds, _crs, _continent)
 _COVERAGE_COUNTRIES = {p.coverage: code for code, p in _PROFILES.items()}
 
 # WFS metadata advertises the 2025-01-01 product; the returned land object's
@@ -74,10 +85,10 @@ def profile_for_search(search=None):
     coverage = search.get("coverage")
     if "country" in search:
         if not isinstance(country, str) or country.upper() not in _PROFILES:
-            raise ValueError("Supported countries are US (CONUS), DE (Germany), ES (Spain), FR (metropolitan France) and IT (Italy)")
+            raise ValueError("Unsupported country; use an ISO 3166-1 alpha-2 code listed in docs/COUNTRIES.md, e.g. US (CONUS) or DE (Germany)")
         country = country.upper()
     if "coverage" in search and (not isinstance(coverage, str) or coverage not in _COVERAGE_COUNTRIES):
-        raise ValueError("Supported coverage values are conus (US/CONUS), germany (DE), spain (ES), france (FR) and italy (IT)")
+        raise ValueError("Unsupported coverage; use a coverage name listed in docs/COUNTRIES.md, e.g. conus (US/CONUS) or germany (DE)")
     if country is None:
         country = _COVERAGE_COUNTRIES.get(coverage, "US")
     profile = _PROFILES[country]
@@ -87,10 +98,10 @@ def profile_for_search(search=None):
 
 
 def public_profiles():
-    """Return JSON-safe profiles for the CLI/API/browser, with no local paths."""
+    """Return JSON-safe profiles for the CLI/API/browser, sorted by continent."""
     return [{"country": p.country, "coverage": p.coverage, "name": p.name,
-             "bounds_wsen": list(p.bounds_wsen), "crs": p.crs}
-            for p in _PROFILES.values()]
+             "bounds_wsen": list(p.bounds_wsen), "crs": p.crs, "continent": p.continent}
+            for p in sorted(_PROFILES.values(), key=lambda p: (p.continent, p.name))]
 
 
 def _canonical_bytes(record):
