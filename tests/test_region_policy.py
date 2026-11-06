@@ -1,5 +1,6 @@
 import pytest
 
+from dopplergeist.pipeline import _enforce_location_policy
 from dopplergeist.region_policy import ResultRegionPolicy, redact_location_outputs
 
 
@@ -67,3 +68,25 @@ def test_redaction_removes_location_artifacts(tmp_path):
     assert not (tmp_path / "decision.json").exists()
     assert not (tmp_path / "spectral-comparison.json").exists()
     assert (tmp_path / "keep.txt").is_file()
+
+
+
+def test_configured_run_rejects_restricted_candidates_and_redacts_results(tmp_path):
+    (tmp_path / "ranked-grid.json").write_text("[]")
+    (tmp_path / "ranked.json").write_text("[]")
+    (tmp_path / "flight-combinations.json").write_text("[]")
+    (tmp_path / "report.json").write_text("{}")
+    (tmp_path / "location-scores.png").write_bytes(b"image")
+    (tmp_path / "support").mkdir()
+    (tmp_path / "support" / "grid-scoring.json").write_text("{}")
+
+    with pytest.raises(ValueError, match="restricted region"):
+        _enforce_location_policy([{"lat": 50.4501, "lon": 30.5234}], tmp_path)
+
+    for name in ("ranked-grid.json", "ranked.json", "flight-combinations.json",
+                 "report.json", "location-scores.png", "support"):
+        assert not (tmp_path / name).exists()
+
+
+def test_configured_run_allows_ordinary_locations(tmp_path):
+    _enforce_location_policy([{"lat": 41.0082, "lon": 28.9784}], tmp_path)

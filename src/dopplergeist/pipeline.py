@@ -97,6 +97,20 @@ def _score_chunk(chunk):
                        state["measurements"],state["parameters"],state["origin"])
 
 
+def _enforce_location_policy(rows, output_dir):
+    from .region_policy import RegionPolicyUnavailable, ResultRegionPolicy, redact_location_outputs
+
+    try:
+        policy = ResultRegionPolicy()
+        restricted = any(policy.restricted_region(row["lat"], row["lon"]) is not None for row in rows)
+    except RegionPolicyUnavailable:
+        redact_location_outputs(output_dir)
+        raise ValueError("The result could not be checked against the configured regional boundaries.") from None
+    if restricted:
+        redact_location_outputs(output_dir)
+        raise ValueError("The result falls within a restricted region.")
+
+
 def _validated_scoring_chunk(chunk):
     """Reject invalid chunk sizes before scoring or producing artifacts."""
     if type(chunk) is not int or chunk < 1:
@@ -335,6 +349,7 @@ def run(config_path,output_dir):
             "reported_trials":reported,"unknown_candidates":unknown})
         return sorted(ranked,key=lambda row:row["score"],reverse=True)
     ranked=rank(candidates,points,"grid-scoring")
+    _enforce_location_policy(ranked, output)
     dump(output/"ranked-grid.json",ranked)
     # Refine the best location from each flight combination rather than spending
     # every refinement slot on neighbouring points of the winning combination.
@@ -353,6 +368,7 @@ def run(config_path,output_dir):
     best_pairs={}
     for row in ranked:
         best_pairs.setdefault(tuple(row["flight_ids"]),row)
+    _enforce_location_policy(ranked, output)
     dump(output/"ranked.json",ranked)
     dump(output/"flight-combinations.json",list(best_pairs.values()))
     provenance.collect_terrain_inputs(ground,terrain)
