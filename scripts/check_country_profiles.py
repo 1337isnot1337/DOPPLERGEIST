@@ -41,6 +41,8 @@ def check_contracts():
     corsica_subset = [9.0, 41.3, 9.3, 41.5]
     milan_subset = [9.05, 45.4, 9.3, 45.55]
     lampedusa_subset = [12.5, 35.48, 12.65, 35.55]
+    oslo_subset = [10.6, 59.85, 10.9, 60.0]
+    tromso_subset = [18.8, 69.6, 19.1, 69.7]
     cases = (
         ("omitted search", None, {"coverage": "conus"}, "US"),
         ("legacy CONUS", {"coverage": "conus"}, {"coverage": "conus"}, "US"),
@@ -71,6 +73,12 @@ def check_contracts():
          {"country": "IT", "coverage": "italy", "bounds_wsen": milan_subset}, "IT"),
         ("Lampedusa region", {"coverage": "italy", "bounds_wsen": lampedusa_subset},
          {"coverage": "italy", "bounds_wsen": lampedusa_subset}, "IT"),
+        ("Norway country", {"country": "no"}, {"country": "NO", "coverage": "norway"}, "NO"),
+        ("Norway coverage", {"coverage": "norway"}, {"coverage": "norway"}, "NO"),
+        ("Norway region", {"country": "NO", "bounds_wsen": oslo_subset},
+         {"country": "NO", "coverage": "norway", "bounds_wsen": oslo_subset}, "NO"),
+        ("Tromso region", {"coverage": "norway", "bounds_wsen": tromso_subset},
+         {"coverage": "norway", "bounds_wsen": tromso_subset}, "NO"),
     )
     validated = {}
     for name, search, expected, country in cases:
@@ -94,6 +102,8 @@ def check_contracts():
         {"country": "DE", "coverage": "spain"},
         {"country": "ZZ"},  # Not an assigned ISO 3166-1 code.
         {"country": "AQ"},  # Antarctica has no receiver profile.
+        {"country": "NO", "coverage": "france"},
+        {"country": "NO", "bounds_wsen": madrid_subset},
         {"country": "PT", "coverage": "spain"},
         {"country": "IT", "coverage": "france"},
         {"country": "FR", "coverage": "italy"},
@@ -124,7 +134,7 @@ def check_contracts():
             raise CheckFailure(f"Invalid search was accepted: {search!r}")
 
     catalog = public_profiles()
-    require({"US", "DE", "ES", "FR", "IT", "RS", "LB"} <= {p["country"] for p in catalog}
+    require({"US", "DE", "ES", "FR", "IT", "NO", "RS", "LB"} <= {p["country"] for p in catalog}
             and len({p["country"] for p in catalog}) == len(catalog) > 200
             and len({p["coverage"] for p in catalog}) == len(catalog),
             "Capabilities must list unique hand-written and generated world profiles")
@@ -144,6 +154,8 @@ def check_contracts():
             "Metropolitan France must use its declared Lambert-93 search CRS")
     require(profile_for_search({"country": "IT"}).crs == "EPSG:7794",
             "Italy must use its declared RDN2008 / Italy zone (E-N) search CRS")
+    require(profile_for_search({"country": "NO"}).crs == "EPSG:3035",
+            "Norway must use its declared ETRS89 / LAEA Europe search CRS")
     print(f"PASS requests: {len(cases)} normalization/JSON round-trip cases; "
           f"{len(rejected)} invalid declarations rejected; profile catalog agrees")
     return validated
@@ -249,7 +261,7 @@ def check_spain_grid(validated):
           "no country polygon applied")
 
 
-def check_envelope_grids(cache_root, validated, profile_case, places, regions, label):
+def check_envelope_grids(cache_root, validated, profile_case, places, regions, label, tolerance_m=1e-5):
     import numpy as np
     from pyproj import CRS, Transformer
     from dopplergeist.geography import profile_for_search, receiver_mask_for_search
@@ -275,8 +287,8 @@ def check_envelope_grids(cache_root, validated, profile_case, places, regions, l
             require(len(receivers) > 0, f"{name}: no {spacing:g} m receivers inside the selected bounds")
             x, y = forward.transform(receivers.lon.to_numpy(), receivers.lat.to_numpy())
             require(np.isfinite(x).all() and np.isfinite(y).all()
-                    and np.allclose(x, receivers.x.to_numpy(), rtol=0, atol=1e-5)
-                    and np.allclose(y, receivers.y.to_numpy(), rtol=0, atol=1e-5),
+                    and np.allclose(x, receivers.x.to_numpy(), rtol=0, atol=tolerance_m)
+                    and np.allclose(y, receivers.y.to_numpy(), rtol=0, atol=tolerance_m),
                     f"{name}: grid x/y disagree with {profile.crs}")
             w, s, e, n = bounds
             require(bool(np.all((receivers.lon >= w) & (receivers.lon <= e)
@@ -300,6 +312,14 @@ def check_italy_grids(cache_root, validated):
                           ("Otranto", 18.52, 40.14), ("Lampedusa", 12.6, 35.5),
                           ("Cagliari, Sardinia", 9.11, 39.22), ("Palermo, Sicily", 13.36, 38.12)),
                          ("Italy region", "Lampedusa region"), "Italy")
+
+
+def check_norway_grids(cache_root, validated):
+    check_envelope_grids(cache_root, validated, "Norway country",
+                         (("Lindesnes", 7.05, 57.98), ("Nordkapp", 25.78, 71.17),
+                          ("Grense Jakobselv", 31.15, 69.79), ("Bergen", 5.32, 60.39),
+                          ("Oslo", 10.75, 59.91)),
+                         ("Norway region", "Tromso region"), "Norway", tolerance_m=1e-3)
 
 
 def check_world_grids(cache_root):
@@ -436,6 +456,7 @@ def main(argv=None):
         validated = check_contracts()
         check_france_grids(args.cache_root, validated)
         check_italy_grids(args.cache_root, validated)
+        check_norway_grids(args.cache_root, validated)
         check_world_grids(args.cache_root)
         mask = check_mask(args.cache_root, args.online, validated)
         check_spain_grid(validated)
