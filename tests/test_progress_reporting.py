@@ -111,3 +111,18 @@ def test_intake_reports_decoding_progress_on_a_real_recording(tmp_path):
     decoded = [report["decoded_s"] for report in reports]
     assert decoded == sorted(decoded) and decoded[-1] <= recording.metadata["duration_s"]
     assert reports[0]["duration_s"] == pytest.approx(recording.metadata["duration_s"], rel=0.02)
+
+
+def test_elapsed_time_starts_when_worker_starts(tmp_path, monkeypatch):
+    directory = _job(tmp_path)
+    _age(directory / "request.json", 300)
+    observed = {}
+
+    def silent_step(request, output, config, progress, resume=False):
+        progress("discovery", 0.1)
+        observed["elapsed"] = jobs.status_for_display(output)["elapsed_seconds"]
+        return {"status": "inconclusive", "reason_code": "no_supported_events", "message": "none"}
+
+    monkeypatch.setattr(automatic, "analyze", silent_step)
+    jobs.execute(directory)
+    assert observed["elapsed"] < 5
