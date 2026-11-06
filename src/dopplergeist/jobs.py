@@ -403,6 +403,7 @@ def execute(directory, parent_pid=None, resume=False):
     directory = Path(directory)
     request = read_json(directory / "request.json")
     config = read_json(directory / "operator.json")
+    os.utime(directory / "request.json", None)
 
     lock = threading.Lock()
     latest = {}
