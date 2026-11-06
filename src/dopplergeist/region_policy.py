@@ -67,7 +67,7 @@ class ResultRegionPolicy:
 
 def redact_location_outputs(output_dir):
     output = Path(output_dir)
-    for name in ("search", "refined-candidates.json", "decision.json", "spectral-comparison.json"):
+    for name in ("search", "refined-candidates.json", "decision.json", "spectral-comparison.json", "ranked-grid.json", "ranked.json", "flight-combinations.json", "report.json", "location-scores.png", "model-support.json", "support"):
         path = output / name
         if path.is_symlink() or path.is_file():
             path.unlink(missing_ok=True)
