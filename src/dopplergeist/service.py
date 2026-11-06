@@ -7,9 +7,11 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from .geography import public_profiles
-from .jobs import JobManager
+from .jobs import JobManager, TERMINAL
 
 _EXCLUDED_ARTIFACTS = {"operator.json", "cancel", ".control.lock"}
+_SENSITIVE_LOCATION_OUTPUTS = {"search", "refined-candidates.json", "decision.json", "spectral-comparison.json"}
+_RESTRICTED_RESULT_CODES = {"restricted_location", "region_policy_unavailable"}
 
 
 class JobServer(ThreadingHTTPServer):
@@ -80,13 +82,23 @@ class Handler(BaseHTTPRequestHandler):
             if self.command == "POST" and parts[3:] == ["resume"]:
                 return self._reply(manager.resume(job_id), 202)
             if self.command == "GET" and parts[3:] == ["artifacts"]:
+                current = manager.get(job_id)
+                if current.get("reason_code") in _RESTRICTED_RESULT_CODES:
+                    raise PermissionError("Location artifacts are unavailable for this result.")
                 directory = manager.directory(job_id)
                 artifacts = []
                 for path in sorted(directory.rglob("*")):
-                    if path.is_file() and not path.is_symlink() and path.name not in _EXCLUDED_ARTIFACTS and not path.name.endswith(".tmp"):
-                        artifacts.append({"path": path.relative_to(directory).as_posix(), "bytes": path.stat().st_size})
+                    relative = path.relative_to(directory)
+                    if (path.is_file() and not path.is_symlink() and path.name not in _EXCLUDED_ARTIFACTS
+                            and not path.name.endswith(".tmp")
+                            and (current.get("status") in TERMINAL
+                                 or relative.parts[0] not in _SENSITIVE_LOCATION_OUTPUTS)):
+                        artifacts.append({"path": relative.as_posix(), "bytes": path.stat().st_size})
                 return self._reply({"artifacts": artifacts})
             if self.command == "GET" and len(parts) > 4 and parts[3] == "artifacts":
+                current = manager.get(job_id)
+                if current.get("reason_code") in _RESTRICTED_RESULT_CODES:
+                    raise PermissionError("Location artifacts are unavailable for this result.")
                 directory = manager.directory(job_id)
                 relative = Path(*parts[4:])
                 path = (directory / relative).resolve()
@@ -94,6 +106,10 @@ class Handler(BaseHTTPRequestHandler):
                         or any(part in _EXCLUDED_ARTIFACTS for part in relative.parts)
                         or relative.name.endswith(".tmp")):
                     raise KeyError("Unknown artifact")
+                resolved_relative = path.relative_to(directory)
+                if (current.get("status") not in TERMINAL
+                        and resolved_relative.parts[0] in _SENSITIVE_LOCATION_OUTPUTS):
+                    raise PermissionError("Location artifacts are unavailable while analysis is running.")
                 return self._file(path, download=path.suffix not in {".png", ".svg"})
         if self.command == "GET":
             asset = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css",
