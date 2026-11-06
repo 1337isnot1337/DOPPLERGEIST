@@ -736,6 +736,18 @@ def _decide(search, events, prepared_events, measurements, indexes, terrain, sta
         diagnostics["core_assessment_mapping_status"] = "present" if valid_core_mapping else "missing_or_invalid"
         diagnostics["assessed_mode_ids"] = sorted(assessed_ids)
         diagnostics["candidate_mode_ids"] = [row.get("mode_id") for row in rows]
+    from .region_policy import ResultRegionPolicy, RegionPolicyUnavailable, redact_location_outputs
+    try:
+        policy = ResultRegionPolicy()
+        for candidate in candidates:
+            if policy.restricted_region(candidate["lat"], candidate["lon"]) is not None:
+                redact_location_outputs(output)
+                return finish("failed", "restricted_location",
+                              "The result falls within a restricted region.")
+    except RegionPolicyUnavailable:
+        redact_location_outputs(output)
+        return finish("failed", "region_policy_unavailable",
+                      "The result could not be checked against the configured regional boundaries.")
     write_json(output / "refined-candidates.json", {"ranked": rows, "matching_diagnostics": diagnostics})
     decision_progress(1.0, "Refinement complete; applying inconclusive and uncertainty gates.")
     decision = decide_location(events, candidates, state["coverage"], matching_diagnostics=diagnostics)

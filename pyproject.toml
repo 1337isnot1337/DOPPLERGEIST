@@ -44,6 +44,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "dopplergeist.web" = ["*.html", "*.js", "*.css", "leaflet-license.txt"]
+"dopplergeist" = ["data/region_boundaries.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
