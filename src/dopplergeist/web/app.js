@@ -415,6 +415,7 @@ function groupReviewControl(group, jobId) {
   const labels = new Set(group.map(reviewLabel));
   const select = node('select', undefined, 'review-select');
   select.setAttribute('aria-label', 'Review all curves in this harmonic group');
+  select.title = 'Applies to every ridge in this group; per-curve notes are replaced.';
   const prompt = node('option', 'Group review…'); prompt.value = ''; select.append(prompt);
   for (const [value, text] of Object.entries(REVIEW_LABELS)) {
     const option = node('option', text); option.value = value; select.append(option);
