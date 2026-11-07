@@ -170,7 +170,6 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
             recording, output_dir=output / "discovery", settings=discovery_settings,
             plot_event_details=True, event_audio=True,
             progress_callback=_throttled(report_discovery_progress))]
-        _save_audio_checkpoint(output, request, config)
     state["recording"] = recording.metadata
     provenance["discovered_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
     provenance["discovered_ridges"] = len(events)
@@ -181,6 +180,8 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
             return finish("failed", "invalid_configuration",
                           f"Excluded event IDs were not discovered: {', '.join(missing)}")
         events = [event for event in events if event["event_id"] not in set(excluded_event_ids)]
+    if not resume:
+        _save_audio_checkpoint(output, request, config)
     provenance["searched_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
     provenance["searched_ridges"] = len(events)
     state["events"] = events
