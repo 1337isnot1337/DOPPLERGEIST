@@ -24,7 +24,7 @@ classifiers = [
 license = "PolyForm-Noncommercial-1.0.0"
 license-files = ["LICENSE", "licenses/MIT-legacy.txt", "src/dopplergeist/web/leaflet-license.txt"]
 requires-python = ">=3.11"
-dependencies = ["numpy", "scipy", "numba>=0.62.1,<0.63; sys_platform == 'darwin' and platform_machine == 'x86_64'", "numba>=0.68.1; sys_platform != 'darwin' or platform_machine != 'x86_64'", "pandas", "soundfile", "pyproj>=3.7.2", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0"]
+dependencies = ["numpy", "scipy", "numba>=0.62.1,<0.63; sys_platform == 'darwin' and platform_machine == 'x86_64'", "numba>=0.68.1; sys_platform != 'darwin' or platform_machine != 'x86_64'", "pandas", "soundfile", "pyproj>=3.7.2", "rasterio", "matplotlib", "requests", "pyarrow", "shapely>=2.0", "portalocker>=2.8"]
 
 [project.urls]
 Homepage = "https://github.com/1337isnot1337/DOPPLERGEIST"
@@ -52,4 +52,4 @@ testpaths = ["tests"]
 [tool.cibuildwheel]
 build = "cp311-* cp312-* cp313-* cp314-*"
 skip = "*-musllinux_* cp314-macosx_x86_64"
-test-command = "dopplergeist --help && python -c \"import sys, dopplergeist.advanced_discovery; from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file(); sys.platform == 'win32' or __import__('dopplergeist.jobs'); sys.platform == 'win32' or __import__('dopplergeist.tiled_search')\""
+test-command = "dopplergeist --help && python -c \"import sys, dopplergeist.advanced_discovery; from importlib.resources import files; assert files('dopplergeist.web').joinpath('index.html').is_file(); __import__('dopplergeist.jobs'); __import__('dopplergeist.tiled_search')\""

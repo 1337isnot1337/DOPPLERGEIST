@@ -271,11 +271,11 @@ def write_json(path, value, *, compact=False):
 
 @contextmanager
 def cache_lock(path):
-    import fcntl
+    import portalocker
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+        portalocker.lock(lock, portalocker.LOCK_EX)
         yield
 
 
