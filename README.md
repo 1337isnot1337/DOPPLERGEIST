@@ -21,7 +21,7 @@
 
 ![Automatic MP3 flyover and ranked aircraft search](docs/assets/livermore-automatic-mp3.png)
 
-<sub>Historical example before the current aircraft-type policy: automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from an inferred reference** in a constrained geographic search and approximately 10-second clock window. The reference was not surveyed, and the result was inconclusive. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
+<sub>Historical example before the current aircraft-type policy: automatic MP3 analysis selected 466 aircraft and ranked 105 candidate locations. The first candidate was **476 m from reference** in a constrained geographic search and clock window. [Experiment and ranking](docs/LIVERMORE_DEMO.md#all-aircraft-archive-mp3-ranking).</sub>
 
 ## Capabilities
 
