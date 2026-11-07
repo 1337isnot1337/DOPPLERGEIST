@@ -325,8 +325,11 @@ function eventGroups(value) {
 function ridgeChart(event) {
   if (!Array.isArray(event.ridge) || event.ridge.length < 2) return null;
   const width = 340, height = 128, left = 38, right = 8, top = 10, bottom = 22;
-  const t0 = Math.min(event.start_s, event.ridge[0].time_s);
-  const t1 = Math.max(event.end_s, event.ridge[event.ridge.length - 1].time_s);
+  const stride = Math.max(1, Math.ceil(event.ridge.length / 600));
+  const ridge = stride === 1 ? event.ridge
+    : event.ridge.filter((_, index) => index % stride === 0 || index === event.ridge.length - 1);
+  const t0 = Math.min(event.start_s, ridge[0].time_s);
+  const t1 = Math.max(event.end_s, ridge[ridge.length - 1].time_s);
   let f0 = event.band_hz[0], f1 = event.band_hz[1];
   const fpad = Math.max(1, (f1 - f0) * 0.05);
   f0 -= fpad; f1 += fpad;
@@ -341,7 +344,7 @@ function ridgeChart(event) {
   svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
   svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
   const segments = []; let current = [];
-  for (const point of event.ridge) {
+  for (const point of ridge) {
     if (current.length && point.time_s - current[current.length - 1].time_s > 2) {
       segments.push(current); current = [];
     }
