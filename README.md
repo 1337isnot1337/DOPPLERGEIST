@@ -32,7 +32,7 @@
 | **Historical aircraft data** | Acquires and indexes ADSB.lol flight archives; caches reusable trajectory, terrain, and geoid inputs. |
 | **Location search** | Compares predicted Doppler and sound-arrival patterns across candidate receiver locations, including evidence from multiple independent flyovers. |
 | **Geographic profiles** | Search profiles for the contiguous United States, Germany, Spain, metropolitan France (including Corsica), and Italy (including Sicily and Sardinia), plus generated bounding envelopes for every other country and territory, grouped by continent ([COUNTRIES.md](docs/COUNTRIES.md)), with optional user-provided regional bounds. |
-| **Local browser application** | Recording uploads, persistent analysis jobs, inspectable results, progress monitoring, and supported resume/cancellation workflows. |
+| **Local browser application** | Recording uploads, persistent analysis jobs, per-curve spectrogram/audio evidence, false-positive review with user-assisted re-analysis, progress monitoring, and supported resume/cancellation workflows. |
 | **Research and reproducibility** | Configured measurement/replay commands, documented experiments, diagnostic artifacts, and decision rules for unresolved searches. |
 
 The integrated application and command-line workflow are available on `main`. See [how it works](#how-it-works) and [validation and results](#validation-and-results) for the distinction between a ranked hypothesis and an accepted location.

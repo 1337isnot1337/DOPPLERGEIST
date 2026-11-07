@@ -176,3 +176,125 @@ def test_restricted_result_artifacts_are_denied(tmp_path, monkeypatch):
         with pytest.raises(urllib.error.HTTPError) as error:
             request(url + f"/api/jobs/{job_id}/artifacts/keep.txt")
         assert error.value.code == 403
+
+
+def job_with_events(manager, job_id="0123456789abcdef0123456789abcdef"):
+    directory = manager.root / job_id
+    directory.mkdir()
+    event = {
+        "event_id": "event-0001", "start_s": 0.0, "end_s": 10.0,
+        "band_hz": [100.0, 200.0], "harmonic_group_id": "harmonics-0001",
+        "ridge": [{"time_s": 0.0, "frequency_hz": 100.0, "weight": 3.0},
+                  {"time_s": 5.0, "frequency_hz": 150.0, "weight": 3.5},
+                  {"time_s": 10.0, "frequency_hz": 200.0, "weight": 3.0}],
+        "quality": {"median_contrast": 3.2},
+    }
+    before = result(directory, "inconclusive", reason_code="insufficient_evidence",
+                    message="Retained proposals are not a supported location.", events=[event])
+    (directory / "request.json").write_text(json.dumps({
+        "schema_version": 1, "audio_path": str(directory / "input.mp3"),
+    }))
+    (directory / "input.json").write_text(json.dumps({
+        "path": "input.mp3", "bytes": 4, "sha256": "0" * 64,
+    }))
+    (directory / "input.mp3").write_bytes(b"fake")
+    return directory, before
+
+
+def post_json(url, value):
+    request_url = urllib.request.Request(
+        url, data=json.dumps(value).encode(), method="POST",
+        headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(request_url, timeout=5) as response:
+        return response.status, json.loads(response.read())
+
+
+def test_review_labels_are_separate_from_result_and_start_user_assisted_reanalysis(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        directory, before = job_with_events(manager)
+        job_id = directory.name
+        assert request(url + f"/api/jobs/{job_id}/reviews")[1]["labels"] == {}
+
+        status, reviewed = post_json(url + f"/api/jobs/{job_id}/reviews", {
+            "label": "false_positive", "event_ids": ["event-0001"], "note": "steady wind tone"})
+        assert status == 200
+        assert reviewed["labels"]["event-0001"]["label"] == "false_positive"
+        assert reviewed["labels"]["event-0001"]["note"] == "steady wind tone"
+        assert request(url + f"/api/jobs/{job_id}/reviews")[1] == reviewed
+        assert read_json(directory / "result.json") == before
+        artifact_paths = [item["path"] for item in request(url + f"/api/jobs/{job_id}/artifacts")[1]["artifacts"]]
+        assert "event-reviews.json" in artifact_paths
+        (directory / "discovery").mkdir()
+        (directory / "discovery/event-0001-audio.wav").write_bytes(b"RIFF" + b"0" * 40)
+        with urllib.request.urlopen(
+                url + f"/api/jobs/{job_id}/artifacts/discovery/event-0001-audio.wav") as response:
+            assert response.headers.get_content_type().startswith("audio/")
+            assert response.headers.get("Content-Disposition") is None
+
+        reanalysis = urllib.request.Request(url + f"/api/jobs/{job_id}/reanalyze", data=b"", method="POST")
+        with urllib.request.urlopen(reanalysis, timeout=5) as response:
+            assert response.status == 202
+            queued = json.loads(response.read())
+        assert queued["status"] == "queued"
+        assert queued["job_id"] != job_id
+        new_directory = manager.directory(queued["job_id"])
+        new_request = read_json(new_directory / "request.json")
+        assert new_request["excluded_event_ids"] == ["event-0001"]
+        assert new_request["review_source_job_id"] == job_id
+        assert (new_directory / "input.mp3").read_bytes() == b"fake"
+        assert read_json(directory / "result.json") == before
+
+
+def test_review_api_rejects_unknown_labels_events_and_empty_reanalysis(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        job = request(url + "/api/jobs", b"payload", {"schema_version": 1})[1]
+        with pytest.raises(urllib.error.HTTPError) as error:
+            post_json(url + f"/api/jobs/{job['job_id']}/reviews",
+                      {"label": "false_positive", "event_ids": ["event-0001"]})
+        assert error.value.code == 400
+        assert request(url + f"/api/jobs/{job['job_id']}/reviews")[1]["labels"] == {}
+
+        directory, _ = job_with_events(manager)
+        job_id = directory.name
+        for body in (
+            {"label": "false_positive", "event_ids": ["event-9999"]},
+            {"label": "maybe", "event_ids": ["event-0001"]},
+            {"label": "false_positive", "event_ids": []},
+            {"label": "false_positive", "event_ids": ["event-0001"], "extra": True},
+        ):
+            with pytest.raises(urllib.error.HTTPError) as error:
+                post_json(url + f"/api/jobs/{job_id}/reviews", body)
+            assert error.value.code == 400
+
+        post_json(url + f"/api/jobs/{job_id}/reviews", {"label": "confirmed", "event_ids": ["event-0001"]})
+        with pytest.raises(urllib.error.HTTPError) as error:
+            request(url + f"/api/jobs/{job_id}/reanalyze", b"")
+        assert error.value.code == 400
+
+
+def test_review_labels_survive_manager_restart(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        directory, _ = job_with_events(manager)
+        post_json(url + f"/api/jobs/{directory.name}/reviews",
+                  {"label": "false_positive", "event_ids": ["event-0001"]})
+    restarted = JobManager(tmp_path)
+    try:
+        assert read_json(directory / "event-reviews.json")["labels"]["event-0001"]["label"] == "false_positive"
+    finally:
+        restarted.close()
+
+
+def test_reanalysis_carries_forward_prior_exclusions(tmp_path, monkeypatch):
+    with running_server(tmp_path, monkeypatch) as (manager, url):
+        directory, _ = job_with_events(manager)
+        request_value = read_json(directory / "request.json")
+        request_value["excluded_event_ids"] = ["event-0000"]
+        (directory / "request.json").write_text(json.dumps(request_value))
+        post_json(url + f"/api/jobs/{directory.name}/reviews",
+                  {"label": "false_positive", "event_ids": ["event-0001"]})
+        reanalysis = urllib.request.Request(url + f"/api/jobs/{directory.name}/reanalyze",
+                                            data=b"", method="POST")
+        with urllib.request.urlopen(reanalysis, timeout=5) as response:
+            queued = json.loads(response.read())
+        new_request = read_json(manager.directory(queued["job_id"]) / "request.json")
+        assert new_request["excluded_event_ids"] == ["event-0000", "event-0001"]

@@ -6,12 +6,15 @@ from importlib.resources import files
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from .event_reviews import apply_review, read_reviews
 from .geography import public_profiles
 from .jobs import JobManager, TERMINAL
 
 _EXCLUDED_ARTIFACTS = {"operator.json", "cancel", ".control.lock"}
 _SENSITIVE_LOCATION_OUTPUTS = {"search", "refined-candidates.json", "decision.json", "spectral-comparison.json"}
 _RESTRICTED_RESULT_CODES = {"restricted_location", "region_policy_unavailable"}
+_INLINE_SUFFIXES = {".png", ".svg", ".wav", ".mp3", ".flac", ".m4a", ".ogg"}
+_JSON_BODY_LIMIT = 64 * 1024
 
 
 class JobServer(ThreadingHTTPServer):
@@ -46,6 +49,23 @@ class Handler(BaseHTTPRequestHandler):
         if origin and origin not in {"http://" + host for host in allowed}:
             raise PermissionError("Requests must originate from this local interface")
 
+    def _json_body(self):
+        if self.headers.get_content_type() != "application/json":
+            raise ValueError("Send review data as application/json")
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            raise ValueError("Invalid Content-Length") from None
+        if length <= 0 or length > _JSON_BODY_LIMIT:
+            raise ValueError(f"Review body must contain 1..{_JSON_BODY_LIMIT} bytes")
+        try:
+            value = json.loads(self.rfile.read(length))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Invalid review JSON: {exc}") from exc
+        if not isinstance(value, dict):
+            raise ValueError("Review body must be a JSON object")
+        return value
+
     def _route(self):
         self._check_origin()
         parts = [unquote(p) for p in urlsplit(self.path).path.strip("/").split("/")]
@@ -74,6 +94,21 @@ class Handler(BaseHTTPRequestHandler):
                 from .jobs import status_for_display
                 directory = manager.directory(job_id)
                 return self._reply(status_for_display(directory, manager.get(job_id)))
+            if self.command == "GET" and parts[3:] == ["reviews"]:
+                return self._reply(read_reviews(manager.directory(job_id)))
+            if self.command == "POST" and parts[3:] == ["reviews"]:
+                current = manager.get(job_id)
+                known = [event["event_id"] for event in current.get("events", [])]
+                if not known:
+                    raise ValueError("This job has no discovered events to review")
+                body = self._json_body()
+                if body.keys() - {"label", "event_ids", "note"}:
+                    raise ValueError("Review body accepts only label, event_ids and note")
+                return self._reply(apply_review(manager.directory(job_id), known,
+                                                body.get("label"), body.get("event_ids"),
+                                                body.get("note")))
+            if self.command == "POST" and parts[3:] == ["reanalyze"]:
+                return self._reply(manager.reanalyze(job_id), 202)
             if self.command == "GET" and parts[3:] == ["guidance"]:
                 from .guidance import explain_job
                 return self._reply(explain_job(manager.directory(job_id)))
@@ -110,7 +145,7 @@ class Handler(BaseHTTPRequestHandler):
                 if (current.get("status") not in TERMINAL
                         and resolved_relative.parts[0] in _SENSITIVE_LOCATION_OUTPUTS):
                     raise PermissionError("Location artifacts are unavailable while analysis is running.")
-                return self._file(path, download=path.suffix not in {".png", ".svg"})
+                return self._file(path, download=path.suffix.lower() not in _INLINE_SUFFIXES)
         if self.command == "GET":
             asset = {"/": "index.html", "/app.js": "app.js", "/style.css": "style.css",
                      "/leaflet.js": "leaflet.js", "/leaflet.css": "leaflet.css",

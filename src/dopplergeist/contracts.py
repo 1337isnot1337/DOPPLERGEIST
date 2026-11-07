@@ -32,6 +32,10 @@ class AnalysisRequest(TypedDict):
     audio_path: str
     time_window: NotRequired[RecordingTimeWindow | None]
     search: NotRequired[SearchArea]
+    # Optional, explicit post-discovery review exclusion. This never changes an
+    # earlier automatic result; it starts a new, user-assisted analysis.
+    excluded_event_ids: NotRequired[list[str]]
+    review_source_job_id: NotRequired[str]
 
 
 class RecordingMetadata(TypedDict):
@@ -93,6 +97,12 @@ class CoverageReport(TypedDict):
     missing_data: NotRequired[list[str]]
 
 
+class ReviewRecord(TypedDict):
+    user_assisted: Literal[True]
+    excluded_event_ids: list[str]
+    source_job_id: NotRequired[str]
+
+
 class JobResult(TypedDict):
     schema_version: Literal[1]
     job_id: str
@@ -103,6 +113,7 @@ class JobResult(TypedDict):
     coverage: NotRequired[CoverageReport]
     events: NotRequired[list[DetectedEvent]]
     candidates: NotRequired[list[LocationCandidate]]
+    review: NotRequired[ReviewRecord]
     reason_code: NotRequired[str]
     message: NotRequired[str]
     required_fields: NotRequired[list[str]]
@@ -122,6 +133,12 @@ def _record(value, required, optional=()):
 def _text(value, name):
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{name} must be a nonempty string")
+
+
+def _job_id(value, name):
+    if (not isinstance(value, str) or len(value) != 32
+            or any(character not in "0123456789abcdef" for character in value)):
+        raise ValueError(f"{name} must be a lowercase 32-character hexadecimal job ID")
 
 
 def _number(value, name, low=-math.inf, high=math.inf):
@@ -157,10 +174,25 @@ def _utc(value):
 
 
 def validate_request(value):
-    request = _record(value, ("schema_version", "audio_path"), ("time_window", "search"))
+    request = _record(value, ("schema_version", "audio_path"),
+                      ("time_window", "search", "excluded_event_ids", "review_source_job_id"))
     if type(request["schema_version"]) is not int or request["schema_version"] != 1:
         raise ValueError("Unsupported schema_version")
     _text(request["audio_path"], "audio_path")
+    excluded = request.get("excluded_event_ids")
+    if excluded is not None:
+        if not isinstance(excluded, list) or not excluded:
+            raise ValueError("excluded_event_ids must be a nonempty list")
+        for event_id in excluded:
+            _text(event_id, "excluded event ID")
+        if len(set(excluded)) != len(excluded):
+            raise ValueError("excluded_event_ids must not repeat an ID")
+        request["excluded_event_ids"] = sorted(excluded)
+    source_job_id = request.get("review_source_job_id")
+    if source_job_id is not None:
+        _job_id(source_job_id, "review_source_job_id")
+        if excluded is None:
+            raise ValueError("review_source_job_id requires excluded_event_ids")
     window = request.get("time_window")
     if window is not None:
         window = _record(window, ("start_utc", "end_utc", "source"), ("source_detail",))
@@ -276,7 +308,8 @@ def validate_candidate(value):
 
 
 def validate_result(value):
-    optional = ("stage", "progress", "recording", "coverage", "events", "candidates", "reason_code", "message", "required_fields", "artifacts")
+    optional = ("stage", "progress", "recording", "coverage", "events", "candidates", "review",
+                "reason_code", "message", "required_fields", "artifacts")
     result = _record(value, ("schema_version", "job_id", "status"), optional)
     if type(result["schema_version"]) is not int or result["schema_version"] != 1:
         raise ValueError("Unsupported schema_version")
@@ -308,6 +341,20 @@ def validate_result(value):
             raise ValueError(f"{name} must be a list")
         if name in result:
             result[name] = [validator(item) for item in result[name]]
+    if "review" in result:
+        review = _record(result["review"], ("user_assisted", "excluded_event_ids"), ("source_job_id",))
+        if review["user_assisted"] is not True:
+            raise ValueError("A review record must state user_assisted=true")
+        excluded = review["excluded_event_ids"]
+        if not isinstance(excluded, list) or not excluded:
+            raise ValueError("review.excluded_event_ids must be a nonempty list")
+        for event_id in excluded:
+            _text(event_id, "review excluded event ID")
+        if len(set(excluded)) != len(excluded):
+            raise ValueError("review.excluded_event_ids must not repeat an ID")
+        if "source_job_id" in review:
+            _job_id(review["source_job_id"], "review.source_job_id")
+        result["review"] = review
     ids = [event["event_id"] for event in result.get("events", [])]
     if len(set(ids)) != len(ids):
         raise ValueError("Event IDs must be unique")
