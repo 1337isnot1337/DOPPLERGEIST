@@ -5,6 +5,7 @@ aircraft identity. No straight-pass speed/slant fit is required for acceptance.
 """
 from dataclasses import asdict, dataclass, replace
 import json
+import math
 from pathlib import Path
 from statistics import median
 from tempfile import TemporaryDirectory
@@ -351,7 +352,7 @@ def _discover_baseline_events(recording, *, output_dir=None, settings=None, plot
 
 
 def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False,
-                    progress_callback=None):
+                    event_audio=False, progress_callback=None):
     """Discover acoustic proposals; ``progress_callback(phase=..., **counts)`` reports activity only."""
     from .advanced_discovery import discover
     from .intake import intake_recording
@@ -403,17 +404,126 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
             report("writing_plots")
             if plot_summary:
                 _plot_groups(groups, output / "discovery.png", recording.metadata["duration_s"], settings.max_gap_s)
-            if plot_event_details:
-                plot_settings = replace(settings, max_frequency_hz=8000.)
-                for event in events:
-                    points = np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]])
-                    _plot_event(auxiliary, [points], event, plot_settings, output / f"{event['event_id']}.png")
+            _write_event_media(auxiliary, events, output, settings,
+                               plot_event_details=plot_event_details, event_audio=event_audio)
         return events
 
     if output_dir is not None:
         return run(Path(output_dir))
     with TemporaryDirectory(prefix="doppler-discovery-") as temporary:
         return run(Path(temporary))
+
+
+_EVENT_AUDIO_PADDING_S = 1.5
+_EVENT_AUDIO_MAX_S = 60.0
+
+
+def _event_clip_bounds(event, duration_s):
+    """Return an audio-relative interval for a bounded playback excerpt."""
+    duration_s = float(duration_s)
+    wanted_start = max(0.0, event["start_s"] - _EVENT_AUDIO_PADDING_S)
+    wanted_end = min(duration_s, event["end_s"] + _EVENT_AUDIO_PADDING_S)
+    wanted_length = wanted_end - wanted_start
+    length = min(_EVENT_AUDIO_MAX_S, duration_s, wanted_length)
+    center = (wanted_start + wanted_end) / 2
+    start = max(0.0, min(center - length / 2, duration_s - length))
+    end = start + length
+    truncated = wanted_length > length + 1e-9
+    return start, end, truncated
+
+
+def _band_limited(data, sample_rate_hz, band_hz):
+    """Isolate an event's measured band for listening only, not for analysis."""
+    if len(data) < 64:
+        return None
+    nyquist = sample_rate_hz / 2
+    low, high = float(band_hz[0]), float(band_hz[1])
+    center = max(1.0, math.sqrt(max(low, 1.0) * max(high, 1.0)))
+    width = max(high - low, 0.25 * center, 20.0)
+    low = max(20.0, low - 0.1 * width)
+    high = min(nyquist * 0.98, high + 0.1 * width)
+    if not 0 < low < high < nyquist or high - low < 10.0:
+        return None
+    sos = signal.butter(3, [low, high], btype="bandpass", fs=sample_rate_hz, output="sos")
+    return np.asarray(signal.sosfiltfilt(sos, data), dtype=np.float32)
+
+
+def _write_event_audio(recording, event, path, *, band_limited=False):
+    """Write one bounded recording excerpt, optionally band-limited."""
+    sample_rate_hz = int(recording.metadata["sample_rate_hz"])
+    start, end, truncated = _event_clip_bounds(event, recording.metadata["duration_s"])
+    samples = np.memmap(recording.samples_path, dtype="<f4", mode="r")
+    first = max(0, int(round(start * sample_rate_hz)))
+    last = min(len(samples), int(round(end * sample_rate_hz)))
+    data = np.asarray(samples[first:last], dtype=np.float32).copy()
+    if len(data) == 0:
+        raise ValueError("Event excerpt is empty")
+    if band_limited:
+        filtered = _band_limited(data, sample_rate_hz, event["band_hz"])
+        if filtered is None:
+            return None
+        data = filtered
+    fade = min(len(data), max(1, int(round(0.01 * sample_rate_hz))))
+    ramp = np.linspace(0.0, 1.0, fade, dtype=np.float32)
+    data[:fade] *= ramp
+    data[-fade:] *= ramp[::-1]
+    peak = float(np.max(np.abs(data)))
+    if not math.isfinite(peak):
+        raise ValueError("Event excerpt contains a non-finite sample")
+    if band_limited and peak > 0:
+        data = data * (0.95 / peak)
+    elif peak > 1.0:
+        data = data / peak
+    from soundfile import write
+    write(path, data, sample_rate_hz, subtype="PCM_16")
+    return {"path": path.name, "start_s": first / sample_rate_hz,
+            "end_s": last / sample_rate_hz, "truncated": truncated}
+
+
+def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
+    """Write per-event plot, ridge and audio evidence without failing discovery."""
+    media = {"schema_version": 1,
+             "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
+             "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
+             "events": {}}
+    plot_settings = replace(settings, max_frequency_hz=8000.)
+    for event in events:
+        event_id = event["event_id"]
+        entry = {}
+        errors = []
+        points = np.array([[point["time_s"], point["frequency_hz"], point.get("weight", 1.0)]
+                           for point in event["ridge"]])
+        try:
+            np.savetxt(output / f"{event_id}.csv", points, delimiter=",",
+                       header="time_s,frequency_hz,weight", comments="")
+            entry["ridge_csv"] = f"{event_id}.csv"
+        except (OSError, ValueError) as exc:
+            errors.append(f"ridge_csv: {type(exc).__name__}: {exc}")
+        if plot_event_details:
+            try:
+                _plot_event(recording, [points], event, plot_settings, output / f"{event_id}.png")
+                entry["image"] = f"{event_id}.png"
+            except Exception as exc:  # A diagnostic render must not fail analysis.
+                errors.append(f"image: {type(exc).__name__}: {exc}")
+        if event_audio:
+            try:
+                raw = _write_event_audio(recording, event, output / f"{event_id}-audio.wav")
+                audio = {"raw": raw["path"], "start_s": raw["start_s"],
+                         "end_s": raw["end_s"], "truncated": raw["truncated"],
+                         "sample_rate_hz": recording.metadata["sample_rate_hz"]}
+                band = _write_event_audio(recording, event, output / f"{event_id}-band.wav",
+                                          band_limited=True)
+                if band:
+                    audio["band_limited"] = band["path"]
+                entry["audio"] = audio
+            except Exception as exc:
+                errors.append(f"audio: {type(exc).__name__}: {exc}")
+        if errors:
+            entry["errors"] = errors
+        media["events"][event_id] = entry
+    (output / "event-media.json").write_text(
+        json.dumps(media, indent=2, allow_nan=False) + "\n")
+    return media
 
 
 def _plot_groups(groups, path, duration, max_gap_s=2.0):

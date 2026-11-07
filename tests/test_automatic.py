@@ -46,7 +46,9 @@ def submit_and_wait(tmp_path, payload, *, time_window=None, config=None):
         final = manager.wait(queued["job_id"])
         directory = manager.directory(queued["job_id"])
         with urllib.request.urlopen(base + f"/api/jobs/{queued['job_id']}") as response:
-            assert json.load(response) == final
+            shown = json.load(response)
+        display_only = {"progress_stale", "progress_age_seconds", "elapsed_seconds"}
+        assert {key: value for key, value in shown.items() if key not in display_only} == final
         with urllib.request.urlopen(base + f"/api/jobs/{queued['job_id']}/artifacts/input.mp3") as response:
             assert response.read() == payload
         return final, directory
@@ -90,6 +92,10 @@ def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, di
     assert final["status"] == "inconclusive" and final["reason_code"] == "data_unavailable", final
     assert len(final["events"]) >= 1
     assert list((directory / "discovery").glob("event-*.png"))
+    media = json.loads((directory / "discovery/event-media.json").read_text())
+    assert media["events"]
+    assert any("audio" in entry and (directory / "discovery" / entry["audio"]["raw"]).is_file()
+               for entry in media["events"].values())
     assert final["coverage"]["data_status"] == "unavailable"
     from dataclasses import asdict
     from dopplergeist.discovery import DiscoverySettings

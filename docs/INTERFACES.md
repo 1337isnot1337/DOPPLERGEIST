@@ -56,6 +56,17 @@ The automatic national acceptance test omits any truth-derived bounding box.
 The request has no event windows, bands, known flight IDs or ground-truth location.
 Those remain available in the separate research configuration interface.
 
+Optional `excluded_event_ids` is an explicit, nonempty list of automatically
+discovered event IDs to omit **after discovery** in this analysis. Optional
+`review_source_job_id` links the request to the job whose local review produced
+the exclusions and is valid only with `excluded_event_ids`. These fields never
+modify an earlier job. They exist for a user-assisted re-analysis started from
+the browser's curve review; they are not event windows, bands or truth inputs.
+The orchestrator keeps every discovered event in `discovery/discovery.json`,
+validates the excluded IDs against that discovery, and records the exclusion in
+`provenance.json` and the result `review` record. A request without these fields
+is unchanged.
+
 ## Intake metadata
 
 `RecordingMetadata` records the original file's lowercase `source_sha256`, decoded
@@ -154,6 +165,14 @@ must be unique. If events are included, candidate event references must resolve.
 An inconclusive job may retain ranked alternatives for diagnostics; its status
 must prevent the UI from presenting them as an accepted location.
 
+Optional `review` marks a user-assisted analysis:
+`{"user_assisted": true, "excluded_event_ids": [...], "source_job_id": "..."}`.
+It is present only when the request supplied review exclusions. `events` contains
+the proposals actually searched; excluded proposals remain in the discovery
+artifact. `source_job_id` is optional. This record does not change the event
+contract, scores or decision thresholds, but downstream reporting must distinguish
+the result from an unassisted automatic run.
+
 Optional `coverage` has `search_complete` (boolean), `data_status` (`available`,
 `partial`, `unavailable`), and a list of known `limitations`. Optional
 `requested_area` uses the request SearchArea shape; optional `missing_data` lists
@@ -171,7 +190,11 @@ assessment is available.
 
 `artifacts` maps names to paths relative to that job's output directory, without
 absolute paths or `..` traversal. Suggested names are `report`, `provenance`, and
-event-specific plots/arrays. The provenance artifact should record input/data/code
+event-specific plots/arrays. Automatic discovery writes per-event spectrogram
+crops, bounded raw and band-limited audio excerpts, ridge CSVs and
+`discovery/event-media.json`. The band-limited excerpt is a listening aid only and
+must not feed detection or scoring. A media-render error is recorded per event and
+does not fail the analysis. The provenance artifact should record input/data/code
 hashes, configuration, time/altitude assumptions, searched/missing coverage and
 runtime. The service must independently enforce output-directory containment when
 serving files, including symlink handling. Do not embed huge spectra in job JSON.

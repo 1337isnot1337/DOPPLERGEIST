@@ -2,7 +2,22 @@
 const $ = id => document.getElementById(id);
 const terminal = new Set(['needs_input', 'succeeded', 'inconclusive', 'failed', 'cancelled']);
 let activeJob = null, renderedJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
+let artifactJob = null, artifactPaths = new Set(), mediaJob = null, mediaIndex = null;
+let reviews = {schema_version: 1, labels: {}}, evidenceKey = '';
+let hideFalsePositives = false, reanalysisPending = false;
+try { hideFalsePositives = localStorage.getItem('dopplergeist-hide-false') === '1'; } catch (_) { /* optional */ }
 const node = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
+const artifactUrl = (id, path) => `/api/jobs/${id}/artifacts/${path.split('/').map(encodeURIComponent).join('/')}`;
+const REVIEW_LABELS = {confirmed: 'Confirmed curve', false_positive: 'False positive', unreviewed: 'Unreviewed'};
+const reviewLabel = event => reviews.labels?.[event.event_id]?.label || 'unreviewed';
+const reviewNote = event => reviews.labels?.[event.event_id]?.note || '';
+function resetEvidence() {
+  artifactJob = null; artifactPaths = new Set(); mediaJob = null; mediaIndex = null;
+  reviews = {schema_version: 1, labels: {}}; evidenceKey = '';
+}
+function hasArtifact(id, path) {
+  return artifactJob === id && artifactPaths.has(path);
+}
 // Older services and unavailable capability responses expose only legacy CONUS.
 const CONUS_PROFILE = {country: 'US', coverage: 'conus', name: 'Contiguous United States (CONUS)', bounds_wsen: [-125, 24, -66, 50]};
 let countryProfiles = [CONUS_PROFILE], areaControl = null, countrySelectionSupported = false;
@@ -110,20 +125,53 @@ function renderRecent() {
     $('recent-panel').hidden = !$('recent').children.length;
   } catch (_) { /* Optional recent-job links. */ }
 }
-async function artifacts(id) {
-  const response = await api(`/api/jobs/${id}/artifacts`);
-  if (id !== activeJob) return;
-  $('resume').hidden = !['cancelled', 'failed', 'inconclusive'].includes($('status').textContent) || !response.artifacts.some(item => item.path === 'resume.json');
+function renderArtifacts(id, items, status) {
+  artifactJob = id; artifactPaths = new Set(items.map(item => item.path));
+  $('resume').hidden = !['cancelled', 'failed', 'inconclusive'].includes(status)
+    || !artifactPaths.has('resume.json');
   $('artifacts').replaceChildren(); $('diagnostics').replaceChildren();
-  for (const item of response.artifacts) {
-    const href = `/api/jobs/${id}/artifacts/${item.path.split('/').map(encodeURIComponent).join('/')}`;
+  for (const item of items) {
+    const href = artifactUrl(id, item.path);
     const li = node('li'); const a = node('a', item.path); a.href = href; a.download = '';
     li.append(a, node('span', ` · ${(item.bytes / 1024).toFixed(1)} KB`, 'muted')); $('artifacts').append(li);
-    if (/\.png$/i.test(item.path) && /event|spectro|discovery|model|location/i.test(item.path)) {
+    if (/\.png$/i.test(item.path) && !/^discovery\/event-[^/]+\.png$/i.test(item.path)
+        && /event|spectro|discovery|model|location/i.test(item.path)) {
       const figure = node('figure', undefined, 'diagnostic'); const img = node('img');
       img.src = href; img.alt = `Analysis evidence: ${item.path}`; img.loading = 'lazy';
       figure.append(img, node('figcaption', item.path)); $('diagnostics').append(figure);
     }
+  }
+}
+
+async function loadMediaIndex(id) {
+  if (mediaJob === id) return;
+  mediaJob = id; mediaIndex = null;
+  if (!hasArtifact(id, 'discovery/event-media.json')) return;
+  try {
+    const value = await api(artifactUrl(id, 'discovery/event-media.json'));
+    if (mediaJob === id && value && typeof value === 'object') mediaIndex = value;
+  } catch (_) { /* Older or partial jobs may not have a readable media index. */ }
+}
+
+async function refreshEvidence(id, value, force = false) {
+  if (id !== activeJob || !value) return;
+  const key = `${id}:${value.status}:${value.progress ?? ''}:${value.events?.length || 0}:${(value.review?.excluded_event_ids || []).join(',')}`;
+  if (!force && key === evidenceKey) return;
+  evidenceKey = key;
+  try {
+    const [reviewValue, artifactValue] = await Promise.all([
+      api(`/api/jobs/${id}/reviews`),
+      api(`/api/jobs/${id}/artifacts`),
+    ]);
+    if (id !== activeJob) return;
+    reviews = reviewValue;
+    renderArtifacts(id, artifactValue.artifacts, value.status);
+    await loadMediaIndex(id);
+    if (id !== activeJob) return;
+    renderEvents(value);
+  } catch (error) {
+    evidenceKey = '';
+    if (id === activeJob) $('connection').textContent = `Could not read curve evidence: ${error.message}`;
   }
 }
 function coordinateCopyControl(lat, lon) {
@@ -181,7 +229,7 @@ function stageLabel(value) {
   const index = STAGES.findIndex(([name]) => name === value.stage);
   const label = index < 0 ? (value.stage || '').replaceAll('_', ' ')
     : `Step ${index + 1}/${STAGES.length}: ${STAGES[index][1]}`;
-  const elapsed = Number.isFinite(value.elapsed_seconds) ? ` � ${formatDuration(value.elapsed_seconds)} elapsed` : '';
+  const elapsed = Number.isFinite(value.elapsed_seconds) ? ` � ${formatDuration(value.elapsed_seconds)} elapsed` : '';
   return `${label}${elapsed}`;
 }
 
@@ -237,13 +285,304 @@ function render(value) {
       }
     });
   }
-  $('events').replaceChildren();
-  if (value.events?.length) {
-    const groups = new Set(value.events.map(event => event.harmonic_group_id || event.event_id)).size;
-    $('events').append(node('h3', `${groups} acoustic proposal groups · ${value.events.length} ridge records`));
-    for (const event of value.events) $('events').append(node('div', `${event.event_id} · ${event.start_s.toFixed(1)}–${event.end_s.toFixed(1)} s · ${event.band_hz.map(x => x.toFixed(0)).join('–')} Hz${event.harmonic_group_id ? ` · group ${event.harmonic_group_id}` : ''}`, 'event'));
+  const assist = $('review-assist');
+  if (value.review?.user_assisted) {
+    const excluded = value.review.excluded_event_ids?.length || 0;
+    const source = value.review.source_job_id ? ` from job ${value.review.source_job_id.slice(0, 12)}` : '';
+    assist.textContent = `User-assisted re-analysis${source}: ${excluded} curve${excluded === 1 ? '' : 's'} marked false positive ${excluded === 1 ? 'was' : 'were'} excluded before search. This is not an automatic result.`;
+    assist.hidden = false;
+  } else {
+    assist.textContent = ''; assist.hidden = true;
+  }
+  renderEvents(value);
+}
+const svgNode = (tag, attributes = {}) => {
+  const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+  return element;
+};
+
+function formatEventSeconds(value) {
+  return Number.isFinite(value) ? value.toFixed(1) : '—';
+}
+
+function formatQuality(value) {
+  if (!Number.isFinite(value)) return String(value);
+  return Math.abs(value) >= 1000 || (Math.abs(value) < 0.001 && value !== 0)
+    ? value.toExponential(2) : String(Number(value.toPrecision(4)));
+}
+
+function eventGroups(value) {
+  const groups = new Map();
+  for (const event of value.events || []) {
+    const key = event.harmonic_group_id || event.event_id;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(event);
+  }
+  return groups;
+}
+
+function ridgeChart(event) {
+  if (!Array.isArray(event.ridge) || event.ridge.length < 2) return null;
+  const width = 340, height = 128, left = 38, right = 8, top = 10, bottom = 22;
+  const t0 = Math.min(event.start_s, event.ridge[0].time_s);
+  const t1 = Math.max(event.end_s, event.ridge[event.ridge.length - 1].time_s);
+  let f0 = event.band_hz[0], f1 = event.band_hz[1];
+  const fpad = Math.max(1, (f1 - f0) * 0.05);
+  f0 -= fpad; f1 += fpad;
+  const dx = Math.max(1e-9, t1 - t0), df = Math.max(1e-9, f1 - f0);
+  const x = value => left + ((value - t0) / dx) * (width - left - right);
+  const y = value => height - bottom - ((value - f0) / df) * (height - top - bottom);
+  const svg = svgNode('svg', {
+    viewBox: `0 0 ${width} ${height}`, class: 'ridge-chart', role: 'img',
+    'aria-label': `Measured ridge for ${event.event_id}: ${formatEventSeconds(t0)} to ${formatEventSeconds(t1)} seconds, ${Math.round(event.band_hz[0])} to ${Math.round(event.band_hz[1])} hertz`,
+  });
+  svg.append(svgNode('rect', {x: 0, y: 0, width, height, fill: '#0d1517'}));
+  svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
+  svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
+  const segments = []; let current = [];
+  for (const point of event.ridge) {
+    if (current.length && point.time_s - current[current.length - 1].time_s > 2) {
+      segments.push(current); current = [];
+    }
+    current.push(point);
+  }
+  if (current.length) segments.push(current);
+  for (const segment of segments) {
+    if (segment.length < 2) continue;
+    svg.append(svgNode('polyline', {
+      points: segment.map(point => `${x(point.time_s).toFixed(1)},${y(point.frequency_hz).toFixed(1)}`).join(' '),
+      fill: 'none', stroke: '#baf078', 'stroke-width': '1.8',
+      'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+    }));
+  }
+  const label = (attributes, text) => {
+    const element = svgNode('text', {fill: '#a6b8bd', 'font-size': '9', ...attributes});
+    element.textContent = text; svg.append(element);
+  };
+  label({x: left - 4, y: top + 4, 'text-anchor': 'end'}, String(Math.round(f1)));
+  label({x: left - 4, y: height - bottom + 4, 'text-anchor': 'end'}, String(Math.round(f0)));
+  label({x: left, y: height - 6}, `${formatEventSeconds(t0)} s`);
+  label({x: width - right, y: height - 6, 'text-anchor': 'end'}, `${formatEventSeconds(t1)} s`);
+  return svg;
+}
+
+async function submitReview(jobId, eventIds, label, note = '') {
+  try {
+    const saved = await api(`/api/jobs/${jobId}/reviews`, {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({label, event_ids: eventIds, note}),
+    });
+    if (jobId !== activeJob) return;
+    reviews = saved;
+    $('connection').textContent = '';
+    renderEvents(renderedJob, true);
+  } catch (error) {
+    if (jobId !== activeJob) return;
+    $('connection').textContent = `Could not save review labels: ${error.message}`;
+    renderEvents(renderedJob, true);
   }
 }
+
+function reviewControl(event, jobId) {
+  const wrapper = node('div', undefined, 'event-review');
+  const row = node('div', undefined, 'review-row');
+  row.append(node('label', 'Review', 'review-label'));
+  const select = node('select', undefined, 'review-select');
+  select.setAttribute('aria-label', `Review ${event.event_id}`);
+  for (const [value, text] of Object.entries(REVIEW_LABELS)) {
+    const option = node('option', text); option.value = value; select.append(option);
+  }
+  select.value = reviewLabel(event);
+  const note = node('input', undefined, 'review-note');
+  note.type = 'text'; note.maxLength = 1000;
+  note.placeholder = 'Optional review note';
+  note.value = reviewNote(event);
+  let saveTimer = null;
+  const save = (always = false) => {
+    if (!always && select.value === 'unreviewed') return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => submitReview(jobId, [event.event_id], select.value, note.value.trim()), 250);
+  };
+  select.addEventListener('change', () => save(true));
+  note.addEventListener('change', () => save(false));
+  row.append(select);
+  wrapper.append(row, note, node('p', 'Annotations do not change this job\'s scores, candidates or location.', 'help'));
+  return wrapper;
+}
+
+function groupReviewControl(group, jobId) {
+  const labels = new Set(group.map(reviewLabel));
+  const select = node('select', undefined, 'review-select');
+  select.setAttribute('aria-label', 'Review all curves in this harmonic group');
+  const prompt = node('option', 'Group review…'); prompt.value = ''; select.append(prompt);
+  for (const [value, text] of Object.entries(REVIEW_LABELS)) {
+    const option = node('option', text); option.value = value; select.append(option);
+  }
+  select.value = labels.size === 1 ? [...labels][0] : '';
+  select.addEventListener('change', () => {
+    if (select.value) submitReview(jobId, group.map(event => event.event_id), select.value, '');
+  });
+  return select;
+}
+
+async function startReanalysis(count, button) {
+  if (reanalysisPending) return;
+  if (!confirm(`Start a new user-assisted analysis without ${count} curve${count === 1 ? '' : 's'} marked false positive? The current job and its result will not change.`)) return;
+  reanalysisPending = true; button.disabled = true;
+  try {
+    const queued = await api(`/api/jobs/${activeJob}/reanalyze`, {method: 'POST'});
+    selectJob(queued.job_id);
+  } catch (error) {
+    $('connection').textContent = `Could not start re-analysis: ${error.message}`;
+    button.disabled = false;
+  } finally {
+    reanalysisPending = false;
+  }
+}
+
+function eventCard(value, event) {
+  const id = event.event_id;
+  const label = reviewLabel(event);
+  const card = node('article', undefined, `event-card ${label}`);
+  const head = node('div', undefined, 'event-card-head');
+  head.append(node('strong', id), node('span', REVIEW_LABELS[label], `badge ${label}`));
+  card.append(head);
+  card.append(node('p', `${formatEventSeconds(event.start_s)}–${formatEventSeconds(event.end_s)} s · ${Math.round(event.band_hz[0])}–${Math.round(event.band_hz[1])} Hz${event.harmonic_group_id ? ` · ${event.harmonic_group_id}` : ''}`, 'mono'));
+  const chart = ridgeChart(event);
+  if (chart) card.append(chart);
+  const media = mediaJob === value.job_id ? mediaIndex?.events?.[id] || null : null;
+  const imagePath = media?.image ? `discovery/${media.image}` : `discovery/${id}.png`;
+  if (hasArtifact(value.job_id, imagePath)) {
+    const figure = node('figure', undefined, 'event-figure');
+    const link = node('a');
+    link.href = artifactUrl(value.job_id, imagePath);
+    link.target = '_blank'; link.rel = 'noopener noreferrer';
+    const image = node('img');
+    image.src = link.href;
+    image.alt = `Spectrogram crop with the measured ridge for ${id}`;
+    image.loading = 'lazy';
+    link.append(image);
+    figure.append(link, node('figcaption', 'Spectrogram crop with measured ridge. Open full image.', 'help'));
+    card.append(figure);
+  }
+  const audio = media?.audio || null;
+  const rawPath = audio?.raw ? `discovery/${audio.raw}` : `discovery/${id}-audio.wav`;
+  if (hasArtifact(value.job_id, rawPath)) {
+    const box = node('div', undefined, 'event-audio');
+    const bounds = audio
+      ? `${formatEventSeconds(audio.start_s)}–${formatEventSeconds(audio.end_s)} s${audio.truncated ? ' · centered excerpt' : ''}`
+      : 'event excerpt';
+    box.append(node('span', `Raw audio · ${bounds}`, 'help'));
+    const raw = document.createElement('audio');
+    raw.controls = true; raw.preload = 'none';
+    raw.src = artifactUrl(value.job_id, rawPath);
+    raw.setAttribute('aria-label', `Raw recording excerpt for ${id}`);
+    box.append(raw);
+    const bandPath = audio?.band_limited ? `discovery/${audio.band_limited}` : null;
+    if (bandPath && hasArtifact(value.job_id, bandPath)) {
+      box.append(node('span', 'Band-limited excerpt · illustrative, not used for detection or scoring', 'help'));
+      const band = document.createElement('audio');
+      band.controls = true; band.preload = 'none';
+      band.src = artifactUrl(value.job_id, bandPath);
+      band.setAttribute('aria-label', `Band-limited recording excerpt for ${id}`);
+      box.append(band);
+    }
+    card.append(box);
+  }
+  const csvPath = media?.ridge_csv ? `discovery/${media.ridge_csv}` : `discovery/${id}.csv`;
+  if (hasArtifact(value.job_id, csvPath)) {
+    const line = node('p', undefined, 'event-link');
+    const link = node('a', 'Measured ridge CSV');
+    link.href = artifactUrl(value.job_id, csvPath); link.download = '';
+    line.append(link); card.append(line);
+  }
+  const quality = Object.entries(event.quality || {});
+  if (quality.length) {
+    const details = node('details');
+    details.append(node('summary', 'Measured ridge & quality'));
+    const list = node('ul');
+    for (const [key, number] of quality) {
+      list.append(node('li', `${key.replaceAll('_', ' ')}: ${formatQuality(number)}`));
+    }
+    details.append(list); card.append(details);
+  }
+  if (media?.errors?.length) {
+    const details = node('details');
+    details.append(node('summary', 'Media generation notes'));
+    const list = node('ul');
+    for (const error of media.errors) list.append(node('li', error));
+    details.append(list); card.append(details);
+  }
+  card.append(reviewControl(event, value.job_id));
+  return card;
+}
+
+let eventsSignature = '';
+
+function renderEvents(value, force = false) {
+  if (!value) return;
+  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${hideFalsePositives}`;
+  if (!force && signature === eventsSignature) return;
+  eventsSignature = signature;
+  const container = $('events');
+  container.replaceChildren();
+  if (!value.events?.length) return;
+  const groups = eventGroups(value);
+  const all = value.events;
+  const falseCount = all.filter(event => reviewLabel(event) === 'false_positive').length;
+  const confirmedCount = all.filter(event => reviewLabel(event) === 'confirmed').length;
+  const header = node('div', undefined, 'section-row event-section-head');
+  const title = node('div');
+  title.append(node('h3', `${groups.size} acoustic proposal groups · ${all.length} ridge records`));
+  title.append(node('p', `${confirmedCount} confirmed · ${falseCount} false positive · ${all.length - confirmedCount - falseCount} unreviewed. Review labels do not change this job's result.`, 'help'));
+  header.append(title);
+  const actions = node('div', undefined, 'event-actions');
+  const filterLabel = node('label', undefined, 'inline-control');
+  const filter = document.createElement('input');
+  filter.type = 'checkbox'; filter.checked = hideFalsePositives;
+  filter.addEventListener('change', () => {
+    hideFalsePositives = filter.checked;
+    try { localStorage.setItem('dopplergeist-hide-false', hideFalsePositives ? '1' : '0'); } catch (_) { /* optional */ }
+    renderEvents(renderedJob, true);
+  });
+  filterLabel.append(filter, document.createTextNode(' Hide false positives'));
+  actions.append(filterLabel);
+  if (falseCount) {
+    const button = node('button', `Re-analyze without ${falseCount} false positive${falseCount === 1 ? '' : 's'}`, 'secondary');
+    button.type = 'button';
+    button.addEventListener('click', () => startReanalysis(falseCount, button));
+    actions.append(button);
+  }
+  header.append(actions); container.append(header);
+  if (artifactJob === value.job_id && !hasArtifact(value.job_id, 'discovery/event-media.json')) {
+    container.append(node('p', 'This job has no per-curve media index; it was analyzed before images and audio excerpts were generated. The measured ridge chart and data are still available. Re-run the analysis to add media.', 'help'));
+  }
+  for (const [groupId, group] of groups) {
+    const section = node('section', undefined, 'event-group');
+    const groupHead = node('div', undefined, 'event-group-head');
+    const groupTitle = node('div');
+    const start = Math.min(...group.map(event => event.start_s));
+    const end = Math.max(...group.map(event => event.end_s));
+    const low = Math.min(...group.map(event => event.band_hz[0]));
+    const high = Math.max(...group.map(event => event.band_hz[1]));
+    groupTitle.append(node('h4', groupId));
+    groupTitle.append(node('span', `${group.length} ridge${group.length === 1 ? '' : 's'} · ${formatEventSeconds(start)}–${formatEventSeconds(end)} s · ${Math.round(low)}–${Math.round(high)} Hz`, 'help'));
+    groupHead.append(groupTitle);
+    if (group.length > 1) groupHead.append(groupReviewControl(group, value.job_id));
+    section.append(groupHead);
+    const visible = group.filter(event => !hideFalsePositives || reviewLabel(event) !== 'false_positive');
+    if (!visible.length) {
+      section.append(node('p', 'All curves in this group are marked false positive and hidden.', 'help'));
+    } else {
+      const grid = node('div', undefined, 'event-grid');
+      for (const event of visible) grid.append(eventCard(value, event));
+      section.append(grid);
+    }
+    container.append(section);
+  }
+}
+
 async function readGuidance(value) {
   const id = value.job_id;
   try {
@@ -284,8 +623,12 @@ async function poll(id) {
     const value = await api(`/api/jobs/${id}`);
     if (id !== activeJob) return;
     $('connection').textContent = ''; render(value);
-    if (terminal.has(value.status)) await Promise.all([artifacts(id), readGuidance(value)]);
-    else timer = setTimeout(() => poll(id), 1000);
+    if (terminal.has(value.status)) {
+      await Promise.all([refreshEvidence(id, value, true), readGuidance(value)]);
+    } else {
+      if (value.events?.length) void refreshEvidence(id, value);
+      timer = setTimeout(() => poll(id), 1000);
+    }
   } catch (error) {
     if (id !== activeJob) return;
     $('connection').textContent = `Could not read this job: ${error.message}. Start the service with the same jobs directory to reconnect.`;
@@ -294,6 +637,8 @@ async function poll(id) {
 }
 function selectJob(id) {
   activeJob = id;
+  resetEvidence();
+  eventsSignature = '';
   history.replaceState(null, '', `/?job=${encodeURIComponent(id)}`);
   remember(id); poll(id);
 }
@@ -328,7 +673,7 @@ $('upload-form').addEventListener('submit', async event => {
   finally { $('submit').disabled = false; }
 });
 $('cancel').addEventListener('click', async () => {
-  try { const value = await api(`/api/jobs/${activeJob}/cancel`, {method: 'POST'}); render(value); await artifacts(activeJob); }
+  try { const value = await api(`/api/jobs/${activeJob}/cancel`, {method: 'POST'}); render(value); await refreshEvidence(activeJob, value, true); }
   catch (error) { $('connection').textContent = error.message; }
 });
 $('resume').addEventListener('click', async () => {

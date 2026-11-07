@@ -126,3 +126,32 @@ def test_elapsed_time_starts_when_worker_starts(tmp_path, monkeypatch):
     monkeypatch.setattr(automatic, "analyze", silent_step)
     jobs.execute(directory)
     assert observed["elapsed"] < 5
+
+
+def test_intake_progress_wrapper_passes_message_by_keyword(tmp_path, monkeypatch):
+    """Regression for the service progress callback's two-argument signature."""
+    class Recording:
+        time_status = "ok"
+        source_path = None
+        metadata = {"source_sha256": "0" * 64, "duration_s": 10.0, "sample_rate_hz": 4000,
+                    "channels": 1, "source_format": "wav"}
+
+    def fake_intake(source, output, *, time_window=None, progress_callback=None):
+        progress_callback(decoded_s=0.0, duration_s=10.0)
+        return Recording()
+
+    monkeypatch.setattr("dopplergeist.intake.intake_recording", fake_intake)
+    monkeypatch.setattr("dopplergeist.discovery.discover_events", lambda *args, **kwargs: [])
+    monkeypatch.setattr(automatic, "_save_audio_checkpoint", lambda *args, **kwargs: None)
+    source = tmp_path / "source.wav"
+    source.write_bytes(b"orchestration-only")
+    calls = []
+
+    def progress(stage, fraction, **fields):
+        calls.append((stage, fraction, fields))
+
+    value = automatic.analyze({"schema_version": 1, "audio_path": str(source)}, tmp_path / "out",
+                              progress=progress)
+    assert value["status"] == "inconclusive"
+    assert any(stage == "intake" and fields.get("message", "").startswith("Decoding audio:")
+               for stage, fraction, fields in calls)

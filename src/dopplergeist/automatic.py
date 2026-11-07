@@ -89,22 +89,33 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
     write_json(output / "request.json", request)
     write_json(output / "provenance.json", provenance)
     state = {"coverage": {"search_complete": False, "data_status": "unavailable", "limitations": [], "requested_area": request["search"]}}
+    excluded_event_ids = list(request.get("excluded_event_ids", []))
+    if excluded_event_ids:
+        state["review"] = {"user_assisted": True, "excluded_event_ids": sorted(excluded_event_ids)}
+        if request.get("review_source_job_id"):
+            state["review"]["source_job_id"] = request["review_source_job_id"]
+        provenance["event_selection"] = "automatic_whole_recording_with_user_review_exclusions"
+        provenance["excluded_event_ids"] = sorted(excluded_event_ids)
 
     def finish(status, reason_code=None, message=None, **fields):
         provenance["elapsed_s"] = time.monotonic() - began
         provenance["status"] = status
         provenance["coverage"] = fields.get("coverage", state["coverage"])
+        if "review" in state:
+            provenance["review"] = state["review"]
         write_json(output / "provenance.json", provenance)
         artifacts = {"provenance": "provenance.json", "request": "request.json"}
         for name, path in (("intake", "intake/intake.json"), ("recording", "intake/recording.json"),
                            ("discovery", "discovery/discovery.json"), ("discovery_plot", "discovery/discovery.png"),
+                           ("event_media", "discovery/event-media.json"),
                            ("search_report", "search/search-report.json"), ("refinement", "refined-candidates.json"),
                            ("spectral_comparison", "spectral-comparison.json"),
                            ("data_provenance", "data-provenance.json"), ("decision", "decision.json")):
             if (output / path).is_file():
                 artifacts[name] = path
-        for path in sorted((output / "discovery").glob("event-*.png")):
-            artifacts[path.stem] = path.relative_to(output).as_posix()
+        for path in sorted((output / "discovery").glob("*.png")):
+            if path.name != "discovery.png":
+                artifacts[path.stem] = path.relative_to(output).as_posix()
         value = dict(state, status=status, stage="complete", progress=1, artifacts=artifacts, **fields)
         if reason_code:
             value.update(reason_code=reason_code, message=message)
@@ -136,10 +147,13 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
         return finish("failed", "invalid_configuration", "Spectral comparison accepts only work limits and spectral grid settings.")
     if not resume:
         progress("intake", 0.05, message="Decoding audio.")
+        def report_intake_progress(**details):
+            fraction, message = _decode_progress(0.05, 0.14, "Decoding audio", **details)
+            progress("intake", fraction, message=message)
+
         try:
             recording = intake_recording(request["audio_path"], output / "intake", time_window=request.get("time_window"),
-                                         progress_callback=_throttled(lambda **details: progress(
-                                             "intake", *_decode_progress(0.05, 0.14, "Decoding audio", **details))))
+                                         progress_callback=_throttled(report_intake_progress))
         except AudioIntakeError as exc:
             return finish("failed", exc.code, str(exc))
         state["recording"] = recording.metadata
@@ -154,15 +168,27 @@ def analyze(request, output_dir, config=None, progress=lambda *args, **kwargs: N
 
         events = [validate_event(event) for event in discover_events(
             recording, output_dir=output / "discovery", settings=discovery_settings,
+            plot_event_details=True, event_audio=True,
             progress_callback=_throttled(report_discovery_progress))]
         _save_audio_checkpoint(output, request, config)
     state["recording"] = recording.metadata
-    state["events"] = events
     provenance["discovered_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
     provenance["discovered_ridges"] = len(events)
+    if excluded_event_ids:
+        known = {event["event_id"] for event in events}
+        missing = sorted(set(excluded_event_ids) - known)
+        if missing:
+            return finish("failed", "invalid_configuration",
+                          f"Excluded event IDs were not discovered: {', '.join(missing)}")
+        events = [event for event in events if event["event_id"] not in set(excluded_event_ids)]
+    provenance["searched_events"] = len({event.get("harmonic_group_id", event["event_id"]) for event in events})
+    provenance["searched_ridges"] = len(events)
+    state["events"] = events
     if recording.time_status == "needs_input":
         return finish("needs_input", "recording_time_required", "Supply a defensible UTC window for the start of this recording. File creation and upload times are not recording clocks.", required_fields=["time_window"])
     if not events:
+        if excluded_event_ids:
+            return finish("inconclusive", "no_supported_events", "All discovered acoustic proposals were excluded by review.")
         return finish("inconclusive", "no_supported_events", "No supported moving-tone Doppler events were discovered in the recording.")
     # Coverage remains unassessed until the search report is available.
     # Keep the initial state for explicit acquisition failure results.
