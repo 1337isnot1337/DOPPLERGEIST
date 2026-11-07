@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="https://pypi.org/project/dopplergeist/"><img src="https://img.shields.io/pypi/v/dopplergeist?style=flat-square&label=PyPI&color=0088CC" alt="PyPI version"></a>
+  <a href="https://pypistats.org/packages/dopplergeist"><img src="https://img.shields.io/pypi/dw/dopplergeist?style=flat-square&label=downloads&color=0088CC" alt="PyPI downloads per week"></a>
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/stargazers"><img src="https://img.shields.io/github/stars/1337isnot1337/DOPPLERGEIST?style=flat-square&logo=github&color=0088CC" alt="GitHub stars"></a>
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/actions/workflows/python-package.yml"><img src="https://img.shields.io/github/actions/workflow/status/1337isnot1337/DOPPLERGEIST/python-package.yml?branch=main&style=flat-square&label=build" alt="Build status"></a>
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20NC-7652A3?style=flat-square" alt="PolyForm Noncommercial license"></a>
