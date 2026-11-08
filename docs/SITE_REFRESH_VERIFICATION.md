@@ -1,5 +1,37 @@
 # Public website refresh, 2026-11-07
 
+## Follow-up after PR #437
+
+The owner requested merging the first pass and continuing; PR #437 was merged
+at `771897f`. The follow-up adds actual method plots with scroll and keyboard
+stage navigation, compact model settings, an aligned page grid, and a screenshot
+of the real empty upload interface. No audio was submitted to capture that UI.
+Figure qualifications are preserved in visible prose and in the enlarged view.
+
+- Completed homepage Taste build: **GATE: PASS**, zero waivers. The earlier 35
+  findings are historical. A subsequent invocation returned `GATE: OFF` because
+  the successful build had already closed; it was not restarted.
+- All three pages: 18 layouts from 320 to 1440 pixels and 111 recorded interaction
+  observations passed with zero unexpected browser errors.
+- Six axe WCAG A/AA scans passed. All three method stages work by keyboard at
+  1024x768 and 1440x900; reduced motion restores the static layout and all links.
+- Local performance check: zero failures; warnings for the original large
+  Livermore figure and the upload screenshot. A smaller screenshot variant was
+  added afterward. Field Web Vitals and geolocation accuracy were not measured.
+- Remaining nonblocking Taste warnings concern the instructional pinned moment,
+  visual coverage/spacing, original plot palettes, contextual action labels,
+  image resolution and the live pitch readout. Scientific plots keep their data
+  colors; pitch text is a working measurement readout. Responsive sources serve
+  the method plots and upload screenshot.
+- Impeccable's remaining warnings concern the retained Geist family and padding
+  detection: rendered method rows have no left border, and the footer has 30px
+  of top padding. No guide/vendor source was modified. Its MIT notice is retained.
+- Deployment verification is omitted at the owner's explicit request.
+
+Local follow-up screenshots and checks are in
+`/home/cinna/dopplergeist-site-refinement-preview/`. The rest of this document
+records the first pass at `742b89d`, before these follow-up changes.
+
 Scope: the three static GitHub Pages pages and their shared stylesheet/script.
 Base: `a1307b621b28b5c677fa88d5793bb4d8f43726f1`. Scientific code, evidence,
 experiment results and acceptance criteria are outside this change.

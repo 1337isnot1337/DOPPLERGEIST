@@ -11,8 +11,8 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html">
 <link rel="preload" href="site-fonts/GeistSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="site.css?v=4">
-<script src="site.js?v=4" defer></script>
+<link rel="stylesheet" href="site.css?v=5">
+<script src="site.js?v=5" defer></script>
 <link rel="icon" href="site-media/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DOPPLERGEIST">
@@ -31,11 +31,12 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://1337isnot1337.github.io/DOPPLERGEIST/#website","url":"https://1337isnot1337.github.io/DOPPLERGEIST/","name":"DOPPLERGEIST"},{"@type":"WebPage","@id":"https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html#page","url":"https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html","name":"How Aircraft Doppler Audio Geolocation Works — DOPPLERGEIST","description":"How DOPPLERGEIST locates audio: detect Doppler frequency ridges, match historical ADS-B flight paths, model sound propagation and search for the microphone.","isPartOf":{"@id":"https://1337isnot1337.github.io/DOPPLERGEIST/#website"},"primaryImageOfPage":{"@type":"ImageObject","contentUrl":"https://1337isnot1337.github.io/DOPPLERGEIST/site-media/livermore-automatic-mp3.png"}},{"@type":"SoftwareSourceCode","@id":"https://1337isnot1337.github.io/DOPPLERGEIST/#software","name":"DOPPLERGEIST","description":"Audio geolocation software that matches aircraft Doppler signatures to historical ADS-B flight trajectories.","codeRepository":"https://github.com/1337isnot1337/DOPPLERGEIST","programmingLanguage":"Python","runtimePlatform":"Python 3.11 or later","license":"https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE","author":{"@type":"Person","name":"Cinna Davis","url":"https://github.com/1337isnot1337"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"DOPPLERGEIST","item":"https://1337isnot1337.github.io/DOPPLERGEIST/"},{"@type":"ListItem","position":2,"name":"How it works","item":"https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html"}]}]}</script>
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="site-header wrap">
+<header class="site-header nav">
+<a class="skip skip-link" href="#main">Skip to content</a>
+<div class="wrap header-content">
 <a class="brand" href="./" aria-label="DOPPLERGEIST home">DOPPLERGEIST</a>
 <nav aria-label="Main navigation"><a href="./">Overview</a><a href="examples.html">Examples</a><a href="how-it-works.html" aria-current="page">How it works</a><a class="nav-repo" href="https://github.com/1337isnot1337/DOPPLERGEIST">GitHub <span aria-hidden="true">↗</span></a></nav>
-</header>
+</div></header>
 <main id="main">
 
 <section class="page-heading wrap"><h1>A moving source.<br><span>A changing pitch.</span></h1><p>A passing aircraft’s pitch changes with its motion relative to the microphone. DOPPLERGEIST matches that change to recorded flight paths.</p></section>

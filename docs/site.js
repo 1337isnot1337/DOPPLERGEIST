@@ -151,6 +151,44 @@
     updateParameters();
   });
 
+  // The scroll sequence also offers native keyboard navigation. Only the
+  // currently displayed diagram is focusable; static layouts retain every link.
+  const method = document.querySelector('[data-moment="pinned-chapters"]');
+  if (method) {
+    const stages = Array.from(method.querySelectorAll('.mo-pc__step')).map((step, index) => {
+      const heading = step.querySelector('h3');
+      const label = heading.textContent;
+      const figure = Array.from(method.querySelectorAll('.mo-pc__visual')).find(item => item.getAttribute('aria-labelledby') === heading.id);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'method-step';
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        const start = window.scrollY + method.getBoundingClientRect().top;
+        const travel = Math.max(0, method.offsetHeight - window.innerHeight);
+        window.scrollTo({ top: start + travel * (index + 0.5) / stages.length, behavior: 'instant' });
+      });
+      return { step, heading, label, figure, button };
+    });
+    function syncMethod() {
+      const live = method.classList.contains('is-live');
+      stages.forEach(({ step, heading, label, figure, button }) => {
+        const active = step.classList.contains('is-on');
+        if (figure) figure.inert = live && !active;
+        if (live) {
+          if (heading.firstChild !== button) heading.replaceChildren(button);
+          button.setAttribute('aria-pressed', String(active));
+        } else if (heading.firstChild === button) {
+          const hadFocus = document.activeElement === button;
+          heading.textContent = label;
+          if (hadFocus && figure) figure.querySelector('a')?.focus({ preventScroll: true });
+        }
+      });
+    }
+    new MutationObserver(syncMethod).observe(method, { attributes: true, attributeFilter: ['class'], subtree: true });
+    syncMethod();
+  }
+
   if (typeof HTMLDialogElement === 'undefined') return;
   const viewer = document.createElement('dialog');
   viewer.className = 'figure-viewer';
@@ -176,7 +214,8 @@
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
       event.preventDefault();
       const figure = link.closest('figure');
-      viewer.querySelector('#viewer-title').textContent = figure.querySelector('.figure-heading span').textContent;
+      const heading = figure.querySelector('.figure-heading span') || document.getElementById(figure.getAttribute('aria-labelledby'));
+      viewer.querySelector('#viewer-title').textContent = heading ? heading.textContent : 'Research figure';
       const image = viewer.querySelector('img');
       const preview = link.querySelector('img');
       image.width = Number(preview.getAttribute('width'));
@@ -187,7 +226,8 @@
       viewer.setAttribute('aria-busy', 'true');
       image.src = link.href;
       image.alt = preview.alt;
-      viewer.querySelector('.viewer-caption').textContent = figure.querySelector('figcaption').textContent;
+      const description = figure.querySelector('figcaption') || document.getElementById(figure.getAttribute('aria-describedby'));
+      viewer.querySelector('.viewer-caption').textContent = description ? description.textContent : preview.alt;
       viewer.querySelector('.viewer-original').href = link.href;
       viewer.showModal();
     });

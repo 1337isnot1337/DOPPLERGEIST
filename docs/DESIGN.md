@@ -9,11 +9,14 @@ pipeline are outside this visual pass.
 A working instrument with the reading pace of a field report. Preserve the
 existing serif headlines, dark canvas, wave geometry and real experiment figures.
 Place the model beside the introduction so the subject is clear on arrival.
+The second pass aligns the page to a shared grid, pairs the method with actual
+research plots, and shows the real local upload interface in the closing section.
 
 ENERGY 2 / RHYTHM 3 / MOTION 2. An editorial introduction, interactive instrument,
-broad evidence figures and a compact method list provide the rhythm. A short hero
-entrance and controlled flyover playback explain the subject; decorative scroll
-reveals and background animation add no information.
+broad evidence figures and an illustrated method provide the rhythm. The dealt
+`pinned-chapters` moment connects each method stage to its actual plot. On phones,
+under reduced motion and without JavaScript, the stages and their plots remain
+ordinary document rows. Figures retain their full aspect and are never cropped.
 
 ## Decisions
 
@@ -38,8 +41,10 @@ reveals and background animation add no information.
 ## Truth and resilience
 
 Preserve scientific qualifications: rankings are not probabilities, proposals
-are not confirmed aircraft, and inconclusive runs remain inconclusive. Original
-figures, their links and the static model work without JavaScript. Enhancement
+are not confirmed aircraft, and inconclusive runs remain inconclusive. Homepage
+qualifications sit in the surrounding prose and are associated with their
+figures by `aria-describedby`; enlarging a figure includes that same context.
+Original figures, their links and the static model work without JavaScript. Enhancement
 adds playback, scrubbing and image dialogs. Dialogs report image loading and
 failure. Every control has a label, a keyboard path and visible focus.
 
