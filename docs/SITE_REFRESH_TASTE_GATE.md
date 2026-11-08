@@ -1,5 +1,10 @@
 # Taste-skill template gate, 2026-11-07
 
+Historical snapshot: this is the first pass at `742b89d`, merged as PR #437 at
+the owner's request. The follow-up changes the headline, figure context,
+method visuals and page structure. Results below describe the earlier snapshot;
+current checks belong in [SITE_REFRESH_VERIFICATION.md](SITE_REFRESH_VERIFICATION.md).
+
 `GATE: OPEN 35 (rounds used up)`
 
 The gate ran all three allowed refinement rounds: 46, 38 and 35 open findings.
