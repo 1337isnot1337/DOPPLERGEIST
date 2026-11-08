@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-type="software">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#090e21">
+<meta name="page-type" content="software">
+<meta name="site-kind" content="software">
+<meta name="theme-color" content="#121816">
 <title>How Aircraft Doppler Audio Geolocation Works — DOPPLERGEIST</title>
 <meta name="description" content="How DOPPLERGEIST locates audio: detect Doppler frequency ridges, match historical ADS-B flight paths, model sound propagation and search for the microphone.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <link rel="canonical" href="https://1337isnot1337.github.io/DOPPLERGEIST/how-it-works.html">
 <link rel="preload" href="site-fonts/GeistSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="site.css?v=3">
-<script src="site.js?v=3" defer></script>
+<link rel="stylesheet" href="site.css?v=4">
+<script src="site.js?v=4" defer></script>
 <link rel="icon" href="site-media/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DOPPLERGEIST">
@@ -41,7 +43,7 @@
 <svg class="doppler-scene" viewBox="0 0 1080 490" role="img" aria-labelledby="demo-title demo-desc">
 <title id="demo-title">How motion changes the pitch at a microphone</title>
 <desc id="demo-desc">An aircraft moves from left to right, emitting evenly timed sound waves. Waves are closer together ahead and farther apart behind. The received pitch drops as the aircraft passes. The diagram includes sound travel time and illustrates a constant tone and speed; it is not recorded data.</desc>
-<defs><clipPath id="wave-area"><rect width="1080" height="310"/></clipPath><linearGradient id="curve-color"><stop stop-color="#bba6fa"/><stop offset="1" stop-color="#79e2d1"/></linearGradient></defs>
+<defs><clipPath id="wave-area"><rect width="1080" height="310"/></clipPath></defs>
 <g clip-path="url(#wave-area)"><path class="flight-line" d="M40 105H1040"/><g class="wavefronts" data-waves><circle cx="402.86" cy="105" r="42.00"/><circle cx="383.27" cy="105" r="98.00"/><circle cx="363.67" cy="105" r="154.00"/><circle cx="344.08" cy="105" r="210.00"/><circle cx="324.49" cy="105" r="266.00"/><circle cx="304.90" cy="105" r="322.00"/><circle cx="285.31" cy="105" r="378.00"/><circle cx="265.71" cy="105" r="434.00"/><circle cx="246.12" cy="105" r="490.00"/><circle cx="226.53" cy="105" r="546.00"/><circle cx="206.94" cy="105" r="602.00"/><circle cx="187.35" cy="105" r="658.00"/></g>
 <path class="sound-link" data-sound-link d="M417.55 105L540 268.27"/>
 <g class="aircraft" data-plane transform="translate(417.55 105)"><path d="M22 0 0-5-14-23-21-23-14-4-29-7-33-3-23 0-33 3-29 7-14 4-21 23-14 23 0 5Z"/></g>
@@ -55,7 +57,7 @@
 </svg>
 <div class="demo-controls" hidden>
 <div class="demo-transport"><button type="button" class="play-button" data-play>Play flyover</button><label class="timeline-label"><span>Flyover position</span><input data-time type="range" min="0" max="1000" value="321" aria-label="Scrub through the flyover"></label><div class="pitch-readout"><output data-pitch aria-live="off">Higher pitch</output><span class="demo-phase" data-phase>Approaching · higher pitch</span></div></div>
-<div class="demo-parameters"><label><span>Aircraft speed <output data-speed-value for="demo-speed">120 m/s</output></span><input id="demo-speed" data-speed type="range" min="60" max="140" step="5" value="120"></label><label><span>Microphone distance <output data-distance-value for="demo-distance">800 m</output></span><input id="demo-distance" data-distance type="range" min="250" max="850" step="10" value="800"></label></div>
+<div class="demo-parameters"><label for="demo-speed"><span>Aircraft speed <output data-speed-value for="demo-speed">120 m/s</output></span><input id="demo-speed" data-speed type="range" min="60" max="140" step="5" value="120"></label><label for="demo-distance"><span>Microphone distance <output data-distance-value for="demo-distance">800 m</output></span><input id="demo-distance" data-distance type="range" min="250" max="850" step="10" value="800"></label></div>
 </div>
 </div><details class="physics-detail"><summary>The physics behind the curve</summary><div><p>For a steady source tone and a stationary microphone, the received frequency is <code>f = f₀ c / (c + vᵣ)</code>. Here <code>f₀</code> is the source frequency, <code>c</code> is sound speed, and <code>vᵣ</code> is radial velocity at emission, positive when moving away.</p><p>Sound emitted at time <code>τ</code> arrives at <code>t = τ + r(τ) / c</code>. The model solves for that emission time before calculating the pitch. The sound of closest approach arrives after the aircraft has passed.</p><a href="https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/METHODOLOGY.md#physical-model-and-sign-convention">Read the physical model ↗</a></div></details></section>
 <nav class="page-jumps wrap" aria-label="On this page"><a href="#hear">Detect</a><a href="#flight">Match</a><a href="#search">Locate</a><a href="#run">Run locally</a></nav>
@@ -69,7 +71,7 @@
 <figure class="evidence-figure"><div class="figure-heading"><span>The candidate map</span><span aria-hidden="true">↗</span></div><a class="figure-link" href="site-media/location-scores.png" aria-label="View full-size image: Scored microphone positions on a geographic grid, with the highest score marked by a star"><img src="site-media/location-scores.webp" srcset="site-media/location-scores-960.webp 960w, site-media/location-scores.webp 1120w" sizes="(max-width: 700px) calc(100vw - 62px), (max-width: 900px) calc(100vw - 98px), min(1166px, calc(100vw - 146px))" width="1120" height="960" loading="lazy" decoding="async" alt="Scored microphone positions on a geographic grid, with the highest score marked by a star"></a><figcaption>Color encodes fit score, not location probability.</figcaption></figure>
 </section>
 <section class="section wrap setup" aria-labelledby="run"><h2 id="run">Run it locally.</h2><p>Install Python 3.11 or later and FFmpeg, then start the local upload interface.</p>
-<pre><code>git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
+<pre tabindex="0" role="region" aria-label="Local installation commands"><code>git clone https://github.com/1337isnot1337/DOPPLERGEIST.git
 cd DOPPLERGEIST
 python -m venv .venv
 .venv/bin/python -m pip install .

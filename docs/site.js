@@ -155,8 +155,20 @@
   const viewer = document.createElement('dialog');
   viewer.className = 'figure-viewer';
   viewer.setAttribute('aria-labelledby', 'viewer-title');
-  viewer.innerHTML = '<div class="viewer-toolbar"><p id="viewer-title"></p><button type="button" class="viewer-close" autofocus>Close <span aria-hidden="true">×</span></button></div><img alt=""><p class="viewer-caption"></p><a class="viewer-original">Open original image ↗</a>';
+  viewer.innerHTML = '<div class="viewer-toolbar"><p id="viewer-title"></p><button type="button" class="viewer-close" autofocus>Close <span aria-hidden="true">×</span></button></div><p class="viewer-status" role="status" hidden></p><img alt="" width="2610" height="1278"><p class="viewer-caption"></p><a class="viewer-original">Open original image ↗</a>';
   document.body.append(viewer);
+  const fullImage = viewer.querySelector('img');
+  const imageStatus = viewer.querySelector('.viewer-status');
+  fullImage.addEventListener('load', () => {
+    viewer.removeAttribute('aria-busy');
+    imageStatus.hidden = true;
+  });
+  fullImage.addEventListener('error', () => {
+    viewer.removeAttribute('aria-busy');
+    fullImage.hidden = true;
+    imageStatus.hidden = false;
+    imageStatus.textContent = 'The full-size figure could not load. Try opening the original image below.';
+  });
   viewer.querySelector('button').addEventListener('click', () => viewer.close());
   viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
   document.querySelectorAll('.figure-link').forEach(link => {
@@ -166,8 +178,15 @@
       const figure = link.closest('figure');
       viewer.querySelector('#viewer-title').textContent = figure.querySelector('.figure-heading span').textContent;
       const image = viewer.querySelector('img');
+      const preview = link.querySelector('img');
+      image.width = Number(preview.getAttribute('width'));
+      image.height = Number(preview.getAttribute('height'));
+      image.hidden = false;
+      imageStatus.textContent = 'Loading full-size figure…';
+      imageStatus.hidden = false;
+      viewer.setAttribute('aria-busy', 'true');
       image.src = link.href;
-      image.alt = link.querySelector('img').alt;
+      image.alt = preview.alt;
       viewer.querySelector('.viewer-caption').textContent = figure.querySelector('figcaption').textContent;
       viewer.querySelector('.viewer-original').href = link.href;
       viewer.showModal();
