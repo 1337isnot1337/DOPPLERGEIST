@@ -5,6 +5,7 @@ aircraft identity. No straight-pass speed/slant fit is required for acceptance.
 """
 from dataclasses import asdict, dataclass, replace
 import json
+import logging
 import math
 from pathlib import Path
 from statistics import median
@@ -521,8 +522,11 @@ def _write_event_media(recording, events, output, settings, *, plot_event_detail
         if errors:
             entry["errors"] = errors
         media["events"][event_id] = entry
-    (output / "event-media.json").write_text(
-        json.dumps(media, indent=2, allow_nan=False) + "\n")
+    try:
+        (output / "event-media.json").write_text(
+            json.dumps(media, indent=2, allow_nan=False) + "\n")
+    except OSError as exc:
+        logging.getLogger(__name__).warning("Could not write event-media index: %s", exc)
     return media
 
 
