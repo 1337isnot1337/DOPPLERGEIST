@@ -1,7 +1,7 @@
 """Persistent local jobs; each analysis has its own cancellable process group."""
 import argparse
 from contextlib import contextmanager
-import fcntl
+import portalocker
 import hashlib
 import json
 import math
@@ -73,11 +73,11 @@ def _evidence(value):
 def _control_lock(directory):
     """Serialize a local cancel request with the manager's final result."""
     with (directory / ".control.lock").open("a") as lockfile:
-        fcntl.flock(lockfile, fcntl.LOCK_EX)
+        portalocker.lock(lockfile, portalocker.LOCK_EX)
         try:
             yield
         finally:
-            fcntl.flock(lockfile, fcntl.LOCK_UN)
+            portalocker.unlock(lockfile)
 
 
 def request_local_cancel(root, job_id):
@@ -98,13 +98,13 @@ def request_local_cancel(root, job_id):
             return current
         lock_path = root / ".manager.lock"
         try:
-            with lock_path.open("rb") as lockfile:
+            with lock_path.open("a+") as lockfile:
                 try:
-                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                except BlockingIOError:
+                    portalocker.lock(lockfile, portalocker.LOCK_EX | portalocker.LOCK_NB)
+                except portalocker.exceptions.LockException:
                     manager_active = True
                 else:
-                    fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
+                    portalocker.unlock(lockfile)
                     manager_active = False
         except FileNotFoundError:
             manager_active = False
@@ -130,8 +130,8 @@ class JobManager:
             raise ValueError("Job limits must be positive")
         self._lockfile = (self.root / ".manager.lock").open("a")
         try:
-            fcntl.flock(self._lockfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError:
+            portalocker.lock(self._lockfile, portalocker.LOCK_EX | portalocker.LOCK_NB)
+        except portalocker.exceptions.LockException:
             self._lockfile.close()
             raise ValueError("Another job manager is using this directory") from None
         self._mutex = threading.RLock()
@@ -232,7 +232,9 @@ class JobManager:
                         if resume:
                             command.append("--resume")
                         process = subprocess.Popen(command,
-                                                   stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+                                                   stdout=log, stderr=subprocess.STDOUT, env=env,
+                                                   start_new_session=(os.name != "nt"),
+                                                   creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0)
                     self._processes[directory.name] = process
                 deadline = time.monotonic() + self.max_runtime_s
                 while True:
@@ -280,6 +282,13 @@ class JobManager:
     @staticmethod
     def _stop(process):
         if process.poll() is None:
+            if os.name == "nt":
+                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+                if process.poll() is None:
+                    process.kill()
+                process.wait()
+                return
             os.killpg(process.pid, signal.SIGTERM)
             try:
                 process.wait(timeout=3)
