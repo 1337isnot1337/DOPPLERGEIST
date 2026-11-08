@@ -174,3 +174,31 @@ def test_artifact_paths_cannot_leave_job_directory(path):
     result["artifacts"]["report"] = path
     with pytest.raises(ValueError, match="relative"):
         validate_result(result)
+
+
+def test_review_exclusions_are_optional_and_auditable():
+    request = {"schema_version": 1, "audio_path": "clip.mp3",
+               "excluded_event_ids": ["event-2", "event-1"], "review_source_job_id": "a" * 32}
+    clean = validate_request(request)
+    assert clean["excluded_event_ids"] == ["event-1", "event-2"]
+    assert clean["review_source_job_id"] == "a" * 32
+    assert "excluded_event_ids" not in validate_request({"schema_version": 1, "audio_path": "clip.mp3"})
+    for change in ({"excluded_event_ids": []}, {"excluded_event_ids": ["event-1", "event-1"]},
+                   {"excluded_event_ids": ["event-1"], "review_source_job_id": "not-a-job"},
+                   {"review_source_job_id": "a" * 32}):
+        invalid = {"schema_version": 1, "audio_path": "clip.mp3", **change}
+        with pytest.raises(ValueError):
+            validate_request(invalid)
+
+    result = example("job-result")
+    result["review"] = {"user_assisted": True, "excluded_event_ids": ["event-1"],
+                        "source_job_id": "b" * 32}
+    assert validate_result(result)["review"]["user_assisted"] is True
+    for review in ({"user_assisted": False, "excluded_event_ids": ["event-1"]},
+                   {"user_assisted": True, "excluded_event_ids": []},
+                   {"user_assisted": True, "excluded_event_ids": ["event-1"],
+                    "source_job_id": "../other"}):
+        invalid = example("job-result")
+        invalid["review"] = review
+        with pytest.raises(ValueError):
+            validate_result(invalid)

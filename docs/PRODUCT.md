@@ -149,6 +149,39 @@ Missing time is a required-input result. Scores are ranking statistics, not
 probabilities. Sensitivity radii must not be described as calibrated confidence.
 An inconclusive result may retain candidate hypotheses for inspection.
 
+## Curve evidence and local review
+
+Automatic jobs write one media record per discovered ridge in `discovery/`:
+
+- `{event_id}.png`: a spectrogram crop with the measured ridge overlaid;
+- `{event_id}-audio.wav`: a bounded excerpt of the preserved recording, with
+  1.5 s of padding and at most 60 s of audio;
+- `{event_id}-band.wav`: an illustrative band-limited excerpt for listening;
+- `{event_id}.csv`: the measured ridge points;
+- `event-media.json`: an index of the generated media and any per-event render
+  errors.
+
+The raw excerpt is the primary listening evidence. The band-limited excerpt is
+not used for detection, scoring or acceptance. A media-rendering failure is
+recorded in `event-media.json` and does not fail the analysis. Jobs analyzed
+before this feature show the measured ridge chart and data, with a note that
+media generation requires a new analysis.
+
+The browser groups ridges by harmonic group and lets a local reviewer label each
+ridge, or all ridges in a group, as `confirmed` or `false_positive`, with an
+optional note. Labels are stored in `event-reviews.json` in the job directory.
+They are annotations: they never change that job's scores, candidates, status,
+coverage or displayed location. The labels are downloadable with the other job
+artifacts.
+
+**Re-analyze without N false positives** starts a new job from the preserved
+original upload. The new request records `excluded_event_ids` and
+`review_source_job_id`; after discovery, only the explicitly marked event IDs are
+removed before search. The new job reports `review.user_assisted: true` and its
+provenance records the exclusion. The original job and its result remain
+unchanged. A reviewed exclusion is a user-assisted analysis, not an automatic
+result, and must not be presented as independent automatic validation.
+
 ## HTTP surface
 
 - `GET /api/capabilities`: declared coverage, upload/work limits, and whether a flight provider and online acquisition are configured.
@@ -161,7 +194,17 @@ An inconclusive result may retain candidate hypotheses for inspection.
 - `POST /api/jobs/{id}/resume`: explicitly continue a stopped job with a valid completed audio checkpoint.
 - `GET /api/jobs/{id}/artifacts`: relative file paths and byte counts.
 - `GET /api/jobs/{id}/artifacts/{path}`: download one artifact. Private operator
-  configuration is excluded. Paths cannot escape the job directory.
+  configuration is excluded. Paths cannot escape the job directory. PNG, SVG,
+  WAV, MP3, FLAC, M4A and OGG artifacts are served inline; other files download.
+- `GET /api/jobs/{id}/reviews`: saved `confirmed` / `false_positive` labels and
+  optional notes for this job.
+- `POST /api/jobs/{id}/reviews`: JSON body
+  `{"label":"confirmed|false_positive|unreviewed","event_ids":["..."],"note":"optional"}`.
+  The label applies to every listed event. Unknown event IDs or labels are
+  rejected. This changes annotations only, never the result file.
+- `POST /api/jobs/{id}/reanalyze`: start a new user-assisted job that excludes
+  every curve currently marked `false_positive`. Returns the new queued job.
+  Requires at least one false-positive label.
 
 Upload example (header metadata uses actual JSON, not a string-encoded file):
 
@@ -400,6 +443,11 @@ The application is available on `main` and remains experimental. Automatic
 synthetic runs have produced accurate hypotheses and inconclusive decisions;
 those are different outcomes. See the [README](../README.md#experimental-results)
 for the reported results.
+
+Curve review labels are local human annotations, not calibrated probabilities or
+aircraft identities. A user-assisted re-analysis is explicitly marked and is not
+automatic validation. Media excerpts are illustrative diagnostics; listening to
+the band-limited excerpt does not establish that a proposal is an aircraft.
 
 Independent real recordings with established recording time and location,
 reliable global hypothesis discrimination, and calibrated false-localization

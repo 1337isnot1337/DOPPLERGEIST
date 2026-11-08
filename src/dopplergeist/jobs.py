@@ -15,6 +15,7 @@ import time
 import uuid
 
 from .contracts import validate_request, validate_result
+from .event_reviews import false_positive_ids
 
 TERMINAL = {"needs_input", "succeeded", "inconclusive", "failed", "cancelled"}
 PROGRESS_STALE_AFTER_S = 60.0
@@ -64,7 +65,8 @@ def result(job_dir, status, **fields):
 
 
 def _evidence(value):
-    return {key: value[key] for key in ("recording", "events", "candidates", "coverage", "artifacts") if key in value}
+    return {key: value[key] for key in ("recording", "events", "candidates", "coverage", "review", "artifacts")
+            if key in value}
 
 
 @contextmanager
@@ -325,6 +327,31 @@ class JobManager:
             self._threads[job_id] = thread
             thread.start()
             return queued
+
+    def reanalyze(self, job_id):
+        """Start a new user-assisted job excluding this job's false-positive events."""
+        directory = self.directory(job_id)
+        current = self.get(job_id)
+        excluded = false_positive_ids(directory)
+        if not excluded:
+            raise ValueError("Mark at least one discovered curve as a false positive first")
+        known = {event["event_id"] for event in current.get("events", [])}
+        unknown = sorted(set(excluded) - known)
+        if unknown:
+            raise ValueError(f"Saved review labels reference unknown events: {', '.join(unknown)}")
+        try:
+            request = read_json(directory / "request.json")
+            input_info = read_json(directory / "input.json")
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValueError(f"Saved job input is unreadable: {exc}") from exc
+        request.pop("audio_path", None)
+        request["excluded_event_ids"] = sorted(set(excluded) | set(request.get("excluded_event_ids", [])))
+        request["review_source_job_id"] = job_id
+        input_path = directory / Path(str(input_info.get("path", ""))).name
+        if not input_path.is_file():
+            raise ValueError("The preserved original upload is unavailable")
+        with input_path.open("rb") as source:
+            return self.submit(request, source, input_path.stat().st_size, suffix=input_path.suffix)
 
     def wait(self, job_id):
         thread = self._threads.get(job_id)
