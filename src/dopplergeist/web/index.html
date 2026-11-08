@@ -4,7 +4,7 @@
 <body>
 <header><a href="/" class="brand">DOPPLER<span>GEIST</span></a><span class="tag">Aircraft sound → location evidence</span></header>
 <main>
-<section class="intro"><p class="eyebrow">ACOUSTIC GEOLOCATION</p><h1>Find the flights.<br>Test the location.</h1><p>Upload a recording to discover aircraft Doppler curves, search historical flight tracks, and inspect the evidence. Each proposal carries a spectrogram crop and audio excerpts; you can mark false positives and start a separate user-assisted re-analysis without changing the original result. When the evidence cannot support a location, the result is inconclusive.</p><p class="scope">Search coverage: <strong id="supported-areas">contiguous United States (CONUS)</strong>, including smaller selected areas. Location goal: 100–500 m or better preferred; up to 1,000 m acceptable. Localization accuracy remains under evaluation.</p></section>
+<section class="intro"><p class="eyebrow">ACOUSTIC GEOLOCATION</p><h1>Find the flights.<br>Test the location.</h1><p>Upload a recording to discover moving-tone acoustic proposals (possible Doppler curves), search historical flight tracks, and inspect the evidence. Each proposal carries a spectrogram crop and audio excerpts; you can mark false positives and start a separate user-assisted re-analysis without changing the original result. When the evidence cannot support a location, the result is inconclusive.</p><p class="scope">Search coverage: <strong id="supported-areas">contiguous United States (CONUS)</strong>, including smaller selected areas. Location goal: 100–500 m or better preferred; up to 1,000 m acceptable. Localization accuracy remains under evaluation.</p></section>
 <div class="layout">
 <section class="panel" aria-labelledby="upload-heading"><h2 id="upload-heading">New analysis</h2><form id="upload-form">
 <p id="data-setup" class="notice" hidden></p>
@@ -34,4 +34,4 @@
 </div>
 <section id="recent-panel" class="recent" hidden><h2>Recent jobs on this browser</h2><ul id="recent"></ul></section>
 <footer>Scores rank hypotheses; they are not probabilities. An inconclusive result can include alternatives without supporting a precise location.</footer>
-</main></body></html>
+</main><dialog id="lightbox" class="lightbox" aria-label="Full-resolution evidence image"><button id="lightbox-close" type="button" aria-label="Close full-resolution image">×</button><img id="lightbox-image" alt=""></dialog></body></html>

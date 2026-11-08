@@ -93,6 +93,7 @@ def test_moving_tone_mp3_discovers_events_then_reports_missing_data(tmp_path, di
     assert len(final["events"]) >= 1
     assert list((directory / "discovery").glob("event-*.png"))
     media = json.loads((directory / "discovery/event-media.json").read_text())
+    assert media["version"] == 6
     assert media["events"]
     assert any("audio" in entry and (directory / "discovery" / entry["audio"]["raw"]).is_file()
                for entry in media["events"].values())

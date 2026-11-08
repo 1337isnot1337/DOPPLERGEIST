@@ -4,8 +4,10 @@ const terminal = new Set(['needs_input', 'succeeded', 'inconclusive', 'failed', 
 let activeJob = null, renderedJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
 let artifactJob = null, artifactPaths = new Set(), mediaJob = null, mediaIndex = null;
 let reviews = {schema_version: 1, labels: {}}, evidenceKey = '';
-let hideFalsePositives = false, reanalysisPending = false;
+let hideFalsePositives = false, hideFlaggedShapes = false, reanalysisPending = false;
+let collapsedGroups = new Set(), groupsInitializedForJob = null;
 try { hideFalsePositives = localStorage.getItem('dopplergeist-hide-false') === '1'; } catch (_) { /* optional */ }
+try { hideFlaggedShapes = localStorage.getItem('dopplergeist-hide-flagged') === '1'; } catch (_) { /* optional */ }
 const node = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
 const artifactUrl = (id, path) => `/api/jobs/${id}/artifacts/${path.split('/').map(encodeURIComponent).join('/')}`;
 const REVIEW_LABELS = {confirmed: 'Confirmed curve', false_positive: 'False positive', unreviewed: 'Unreviewed'};
@@ -14,9 +16,17 @@ const reviewNote = event => reviews.labels?.[event.event_id]?.note || '';
 function resetEvidence() {
   artifactJob = null; artifactPaths = new Set(); mediaJob = null; mediaIndex = null;
   reviews = {schema_version: 1, labels: {}}; evidenceKey = '';
+  collapsedGroups = new Set(); groupsInitializedForJob = null;
 }
 function hasArtifact(id, path) {
   return artifactJob === id && artifactPaths.has(path);
+}
+function openLightbox(src, alt) {
+  const dialog = $('lightbox'), image = $('lightbox-image');
+  if (!dialog || !image) { window.open(src, '_blank', 'noopener'); return; }
+  image.src = src; image.alt = alt;
+  if (typeof dialog.showModal === 'function') dialog.showModal();
+  else dialog.hidden = false;
 }
 // Older services and unavailable capability responses expose only legacy CONUS.
 const CONUS_PROFILE = {country: 'US', coverage: 'conus', name: 'Contiguous United States (CONUS)', bounds_wsen: [-125, 24, -66, 50]};
@@ -134,7 +144,9 @@ function renderArtifacts(id, items, status) {
     const href = artifactUrl(id, item.path);
     const li = node('li'); const a = node('a', item.path); a.href = href; a.download = '';
     li.append(a, node('span', ` · ${(item.bytes / 1024).toFixed(1)} KB`, 'muted')); $('artifacts').append(li);
-    if (/\.png$/i.test(item.path) && !/^discovery\/event-[^/]+\.png$/i.test(item.path)
+    const perCurveImage = /^discovery\/[^/]+\.png$/i.test(item.path)
+      && item.path !== 'discovery/discovery.png';
+    if (/\.png$/i.test(item.path) && !perCurveImage
         && /event|spectro|discovery|model|location/i.test(item.path)) {
       const figure = node('figure', undefined, 'diagnostic'); const img = node('img');
       img.src = href; img.alt = `Analysis evidence: ${item.path}`; img.loading = 'lazy';
@@ -312,6 +324,48 @@ function formatQuality(value) {
     ? value.toExponential(2) : String(Number(value.toPrecision(4)));
 }
 
+function medianValue(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function ridgeGapInfo(event) {
+  const hop = Number(event.quality?.hop_s);
+  const threshold = Number.isFinite(hop) && hop > 0
+    ? Math.max(0.5, Math.min(1.5, 2 * hop)) : 1.0;
+  let count = 0, maximum = 0;
+  const ridge = event.ridge || [];
+  for (let index = 1; index < ridge.length; index += 1) {
+    const gap = ridge[index].time_s - ridge[index - 1].time_s;
+    if (gap > threshold + 1e-9) {
+      count += 1; maximum = Math.max(maximum, gap);
+    }
+  }
+  return {count, maximum, threshold};
+}
+
+function ridgeShape(event) {
+  const ridge = event.ridge || [];
+  const gaps = ridgeGapInfo(event);
+  if (ridge.length < 8) return {warning: gaps.count ? 'gap' : '', reversals: 0, gaps};
+  const frequencies = ridge.map(point => point.frequency_hz);
+  const smoothed = frequencies.map((_, index) => medianValue(
+    frequencies.slice(Math.max(0, index - 2), Math.min(frequencies.length, index + 3))));
+  const minimumChange = Math.max(0.5, (event.band_hz[1] - event.band_hz[0]) * 0.01);
+  let previousSign = 0, reversals = 0;
+  for (let index = 1; index < smoothed.length; index += 1) {
+    const change = smoothed[index] - smoothed[index - 1];
+    if (Math.abs(change) < minimumChange) continue;
+    const sign = Math.sign(change);
+    if (previousSign && sign !== previousSign) reversals += 1;
+    previousSign = sign;
+  }
+  return {
+    warning: gaps.count ? 'gap' : (reversals ? 'non-monotonic' : ''),
+    reversals, gaps,
+  };
+}
+
 function eventGroups(value) {
   const groups = new Map();
   for (const event of value.events || []) {
@@ -343,14 +397,7 @@ function ridgeChart(event) {
   svg.append(svgNode('rect', {x: 0, y: 0, width, height, fill: '#0d1517'}));
   svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
   svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
-  const segments = []; let current = [];
-  for (const point of ridge) {
-    if (current.length && point.time_s - current[current.length - 1].time_s > 2) {
-      segments.push(current); current = [];
-    }
-    current.push(point);
-  }
-  if (current.length) segments.push(current);
+  const segments = ridgeSegments(event);
   for (const segment of segments) {
     if (segment.length < 2) continue;
     svg.append(svgNode('polyline', {
@@ -367,6 +414,89 @@ function ridgeChart(event) {
   label({x: left - 4, y: height - bottom + 4, 'text-anchor': 'end'}, String(Math.round(f0)));
   label({x: left, y: height - 6}, `${formatEventSeconds(t0)} s`);
   label({x: width - right, y: height - 6, 'text-anchor': 'end'}, `${formatEventSeconds(t1)} s`);
+  return svg;
+}
+
+function ridgeSegments(event) {
+  const segments = []; let current = [];
+  const threshold = ridgeGapInfo(event).threshold;
+  for (const point of event.ridge || []) {
+    if (current.length && point.time_s - current[current.length - 1].time_s > threshold + 1e-9) {
+      segments.push(current); current = [];
+    }
+    current.push(point);
+  }
+  if (current.length) segments.push(current);
+  // Split the original measurements before thinning. Keep both sides of every
+  // real gap, and never interpret skipped display points as missing samples.
+  const stride = Math.max(1, Math.ceil((event.ridge?.length || 0) / 600));
+  return segments.map(segment => segment.filter((_, index) =>
+    index === 0 || index === segment.length - 1 || index % stride === 0));
+}
+
+function groupChart(events, groupId) {
+  const curves = events
+    .filter(event => Array.isArray(event.ridge) && event.ridge.length >= 2)
+    .map(event => ({event, points: event.ridge}));
+  if (!curves.length) return null;
+  const width = 900, height = 260, left = 45, right = 12, top = 16, bottom = 28;
+  let t0 = Infinity, t1 = -Infinity, f0 = Infinity, f1 = -Infinity;
+  for (const {points} of curves) {
+    for (const point of points) {
+      t0 = Math.min(t0, point.time_s); t1 = Math.max(t1, point.time_s);
+      f0 = Math.min(f0, point.frequency_hz); f1 = Math.max(f1, point.frequency_hz);
+    }
+  }
+  const tpad = Math.max(2, (t1 - t0) * 0.03);
+  const fpad = Math.max(1, (f1 - f0) * 0.05);
+  t0 = Math.max(0, t0 - tpad); t1 += tpad; f0 -= fpad; f1 += fpad;
+  if (t1 - t0 < 1) t1 = t0 + 1;
+  if (f1 - f0 < 10) { const center = (f0 + f1) / 2; f0 = center - 5; f1 = center + 5; }
+  const logScale = f1 / Math.max(0.1, f0) > 8;
+  const low = logScale ? Math.max(0.1, f0) : f0;
+  const x = value => left + ((value - t0) / (t1 - t0)) * (width - left - right);
+  const y = value => {
+    const share = logScale
+      ? Math.log(Math.max(low, value) / low) / Math.log(f1 / low)
+      : (value - low) / (f1 - low);
+    return height - bottom - share * (height - top - bottom);
+  };
+  const svg = svgNode('svg', {
+    viewBox: `0 0 ${width} ${height}`, class: 'group-chart', role: 'img',
+    'aria-label': `${groupId}: ${curves.length} compounded measured ridges${logScale ? ', log frequency' : ''}`,
+  });
+  svg.append(svgNode('rect', {x: 0, y: 0, width, height, fill: '#0d1517'}));
+  svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
+  svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
+  curves.forEach(({event, points}, index) => {
+    const color = `hsl(${Math.round(index * 360 / Math.max(1, curves.length))}, 75%, 68%)`;
+    const segments = []; let current = [];
+    const gap = ridgeGapInfo(event).threshold;
+    for (const point of points) {
+      if (current.length && point.time_s - current[current.length - 1].time_s > gap) {
+        segments.push(current); current = [];
+      }
+      current.push(point);
+    }
+    if (current.length) segments.push(current);
+    for (const segment of segments) {
+      if (segment.length < 2) continue;
+      svg.append(svgNode('polyline', {
+        points: segment.map(point => `${x(point.time_s).toFixed(1)},${y(point.frequency_hz).toFixed(1)}`).join(' '),
+        fill: 'none', stroke: color, 'stroke-width': '1.4',
+        'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+      }));
+    }
+  });
+  const label = (attributes, text) => {
+    const element = svgNode('text', {fill: '#a6b8bd', 'font-size': '10', ...attributes});
+    element.textContent = text; svg.append(element);
+  };
+  label({x: left - 5, y: top + 4, 'text-anchor': 'end'}, String(Math.round(f1)));
+  label({x: left - 5, y: height - bottom + 4, 'text-anchor': 'end'}, String(Math.round(low)));
+  label({x: left, y: height - 7}, `${formatEventSeconds(t0)} s`);
+  label({x: width - right, y: height - 7, 'text-anchor': 'end'}, `${formatEventSeconds(t1)} s`);
+  label({x: left + 5, y: top + 10, fill: '#f3f8f5'}, `${curves.length} compounded ridges · each colour is one ridge${logScale ? ' · log frequency' : ''}`);
   return svg;
 }
 
@@ -448,26 +578,52 @@ async function startReanalysis(count, button) {
 function eventCard(value, event) {
   const id = event.event_id;
   const label = reviewLabel(event);
+  const shape = ridgeShape(event);
   const card = node('article', undefined, `event-card ${label}`);
   const head = node('div', undefined, 'event-card-head');
   head.append(node('strong', id), node('span', REVIEW_LABELS[label], `badge ${label}`));
+  if (shape.warning) {
+    head.append(node('span', shape.warning === 'gap' ? 'Gap' : 'Non-monotonic', 'badge warning'));
+  }
   card.append(head);
   card.append(node('p', `${formatEventSeconds(event.start_s)}–${formatEventSeconds(event.end_s)} s · ${Math.round(event.band_hz[0])}–${Math.round(event.band_hz[1])} Hz${event.harmonic_group_id ? ` · ${event.harmonic_group_id}` : ''}`, 'mono'));
+  if (shape.warning === 'gap') {
+    card.append(node('p', `Measured ridge is broken at ${shape.gaps.count} gap${shape.gaps.count === 1 ? '' : 's'} greater than ${shape.gaps.threshold.toFixed(1)} s (max ${shape.gaps.maximum.toFixed(1)} s). The line is not connected across the gap; values after it are a separate fragment.`, 'help shape-warning'));
+  } else if (shape.warning === 'non-monotonic') {
+    card.append(node('p', `Measured ridge reverses direction ${shape.reversals} time${shape.reversals === 1 ? '' : 's'}. A simple straight-pass Doppler curve is monotonic; this is not a confirmed Doppler shape.`, 'help shape-warning'));
+  }
   const chart = ridgeChart(event);
   if (chart) card.append(chart);
   const media = mediaJob === value.job_id ? mediaIndex?.events?.[id] || null : null;
+  const mediaVersion = mediaJob === value.job_id ? mediaIndex?.version : null;
+  const mediaUrl = path => `${artifactUrl(value.job_id, path)}${mediaVersion ? `?v=${encodeURIComponent(mediaVersion)}` : ''}`;
   const imagePath = media?.image ? `discovery/${media.image}` : `discovery/${id}.png`;
   if (hasArtifact(value.job_id, imagePath)) {
     const figure = node('figure', undefined, 'event-figure');
     const link = node('a');
-    link.href = artifactUrl(value.job_id, imagePath);
+    link.href = mediaUrl(imagePath);
     link.target = '_blank'; link.rel = 'noopener noreferrer';
     const image = node('img');
     image.src = link.href;
     image.alt = `Spectrogram crop with the measured ridge for ${id}`;
     image.loading = 'lazy';
     link.append(image);
-    figure.append(link, node('figcaption', 'Spectrogram crop with measured ridge. Open full image.', 'help'));
+    link.addEventListener('click', click => {
+      if (click.ctrlKey || click.metaKey || click.shiftKey || click.altKey) return;
+      click.preventDefault();
+      openLightbox(link.href, image.alt);
+    });
+    const caption = node('figcaption', undefined, 'help');
+    const plot = media?.plot;
+    caption.append(document.createTextNode(plot
+      ? `Spectrogram crop${plot.truncated ? ' · centered excerpt' : ''} · ${(plot.end_s - plot.start_s).toFixed(1)} s · ${plot.window_s} s window · ${plot.hop_s} s hop${plot.columns ? ` · ${plot.columns} columns` : ''}. Click image for full resolution.`
+      : 'Spectrogram crop with measured ridge. Click image for full resolution. '));
+    if (!plot) {
+      const open = node('a', 'Open full size');
+      open.href = link.href; open.target = '_blank'; open.rel = 'noopener noreferrer';
+      caption.append(open);
+    }
+    figure.append(link, caption);
     card.append(figure);
   }
   const audio = media?.audio || null;
@@ -480,7 +636,7 @@ function eventCard(value, event) {
     box.append(node('span', `Raw audio · ${bounds}`, 'help'));
     const raw = document.createElement('audio');
     raw.controls = true; raw.preload = 'none';
-    raw.src = artifactUrl(value.job_id, rawPath);
+    raw.src = mediaUrl(rawPath);
     raw.setAttribute('aria-label', `Raw recording excerpt for ${id}`);
     box.append(raw);
     const bandPath = audio?.band_limited ? `discovery/${audio.band_limited}` : null;
@@ -488,7 +644,7 @@ function eventCard(value, event) {
       box.append(node('span', 'Band-limited excerpt · illustrative, not used for detection or scoring', 'help'));
       const band = document.createElement('audio');
       band.controls = true; band.preload = 'none';
-      band.src = artifactUrl(value.job_id, bandPath);
+      band.src = mediaUrl(bandPath);
       band.setAttribute('aria-label', `Band-limited recording excerpt for ${id}`);
       box.append(band);
     }
@@ -498,7 +654,7 @@ function eventCard(value, event) {
   if (hasArtifact(value.job_id, csvPath)) {
     const line = node('p', undefined, 'event-link');
     const link = node('a', 'Measured ridge CSV');
-    link.href = artifactUrl(value.job_id, csvPath); link.download = '';
+    link.href = mediaUrl(csvPath); link.download = '';
     line.append(link); card.append(line);
   }
   const quality = Object.entries(event.quality || {});
@@ -526,7 +682,7 @@ let eventsSignature = '';
 
 function renderEvents(value, force = false) {
   if (!value) return;
-  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${hideFalsePositives}`;
+  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${mediaIndex ? Object.keys(mediaIndex.groups || {}).length : 0}|${hideFalsePositives}|${hideFlaggedShapes}`;
   if (!force && signature === eventsSignature) return;
   eventsSignature = signature;
   const container = $('events');
@@ -534,12 +690,21 @@ function renderEvents(value, force = false) {
   if (!value.events?.length) return;
   const groups = eventGroups(value);
   const all = value.events;
+  if (groupsInitializedForJob !== value.job_id) {
+    groupsInitializedForJob = value.job_id;
+    collapsedGroups = all.length > 30 ? new Set(groups.keys()) : new Set();
+  }
+  const allCollapsed = [...groups.keys()].every(groupId => collapsedGroups.has(groupId));
   const falseCount = all.filter(event => reviewLabel(event) === 'false_positive').length;
   const confirmedCount = all.filter(event => reviewLabel(event) === 'confirmed').length;
+  const flaggedCount = all.filter(event => ridgeShape(event).warning).length;
   const header = node('div', undefined, 'section-row event-section-head');
   const title = node('div');
   title.append(node('h3', `${groups.size} acoustic proposal groups · ${all.length} ridge records`));
-  title.append(node('p', `${confirmedCount} confirmed · ${falseCount} false positive · ${all.length - confirmedCount - falseCount} unreviewed. Review labels do not change this job's result.`, 'help'));
+  title.append(node('p', `${confirmedCount} confirmed · ${falseCount} false positive · ${all.length - confirmedCount - falseCount} unreviewed · ${flaggedCount} shape/gap warnings. Review labels do not change this job's result.`, 'help'));
+  if (allCollapsed && all.length > 30) {
+    title.append(node('p', 'Large recording: groups start collapsed. Expand a group with its chevron, or use Expand all groups.', 'help'));
+  }
   header.append(title);
   const actions = node('div', undefined, 'event-actions');
   const filterLabel = node('label', undefined, 'inline-control');
@@ -552,6 +717,25 @@ function renderEvents(value, force = false) {
   });
   filterLabel.append(filter, document.createTextNode(' Hide false positives'));
   actions.append(filterLabel);
+  const flaggedLabel = node('label', undefined, 'inline-control');
+  flaggedLabel.title = 'Gaps or non-monotonic direction are review flags, not proof of a false positive.';
+  const flaggedFilter = document.createElement('input');
+  flaggedFilter.type = 'checkbox'; flaggedFilter.checked = hideFlaggedShapes;
+  flaggedFilter.addEventListener('change', () => {
+    hideFlaggedShapes = flaggedFilter.checked;
+    try { localStorage.setItem('dopplergeist-hide-flagged', hideFlaggedShapes ? '1' : '0'); } catch (_) { /* optional */ }
+    renderEvents(renderedJob, true);
+  });
+  flaggedLabel.append(flaggedFilter, document.createTextNode(' Hide flagged shapes'));
+  actions.append(flaggedLabel);
+  const collapseButton = node('button', allCollapsed ? 'Expand all groups' : 'Collapse all groups', 'secondary');
+  collapseButton.type = 'button';
+  collapseButton.addEventListener('click', () => {
+    if (allCollapsed) collapsedGroups.clear();
+    else for (const groupId of groups.keys()) collapsedGroups.add(groupId);
+    renderEvents(renderedJob, true);
+  });
+  actions.append(collapseButton);
   if (falseCount) {
     const button = node('button', `Re-analyze without ${falseCount} false positive${falseCount === 1 ? '' : 's'}`, 'secondary');
     button.type = 'button';
@@ -571,17 +755,65 @@ function renderEvents(value, force = false) {
     const low = Math.min(...group.map(event => event.band_hz[0]));
     const high = Math.max(...group.map(event => event.band_hz[1]));
     groupTitle.append(node('h4', groupId));
-    groupTitle.append(node('span', `${group.length} ridge${group.length === 1 ? '' : 's'} · ${formatEventSeconds(start)}–${formatEventSeconds(end)} s · ${Math.round(low)}–${Math.round(high)} Hz`, 'help'));
-    groupHead.append(groupTitle);
+    const groupFlagged = group.filter(event => ridgeShape(event).warning).length;
+    groupTitle.append(node('span', `${group.length} ridge${group.length === 1 ? '' : 's'} · ${formatEventSeconds(start)}–${formatEventSeconds(end)} s · ${Math.round(low)}–${Math.round(high)} Hz${groupFlagged ? ` · ${groupFlagged} flagged` : ''}`, 'help'));
+    const collapsed = collapsedGroups.has(groupId);
+    const toggle = node('button', collapsed ? '▸' : '▾', 'group-toggle');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    toggle.setAttribute('aria-label', `${collapsed ? 'Expand' : 'Collapse'} group ${groupId}`);
+    toggle.title = collapsed ? 'Expand group' : 'Collapse group';
+    toggle.addEventListener('click', () => {
+      if (collapsed) collapsedGroups.delete(groupId);
+      else collapsedGroups.add(groupId);
+      renderEvents(renderedJob, true);
+    });
+    const groupMain = node('div', undefined, 'event-group-main');
+    groupMain.append(toggle, groupTitle);
+    groupHead.append(groupMain);
     if (group.length > 1) groupHead.append(groupReviewControl(group, value.job_id));
     section.append(groupHead);
-    const visible = group.filter(event => !hideFalsePositives || reviewLabel(event) !== 'false_positive');
-    if (!visible.length) {
-      section.append(node('p', 'All curves in this group are marked false positive and hidden.', 'help'));
-    } else {
-      const grid = node('div', undefined, 'event-grid');
-      for (const event of visible) grid.append(eventCard(value, event));
-      section.append(grid);
+    if (!collapsed) {
+      const groupMedia = mediaJob === value.job_id ? mediaIndex?.groups?.[groupId] : null;
+      const groupImagePath = groupMedia?.image ? `discovery/${groupMedia.image}` : null;
+      if (groupImagePath && hasArtifact(value.job_id, groupImagePath)) {
+        const version = mediaJob === value.job_id ? mediaIndex?.version : null;
+        const source = `${artifactUrl(value.job_id, groupImagePath)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
+        const figure = node('figure', undefined, 'group-figure');
+        const link = node('a');
+        link.href = source; link.target = '_blank'; link.rel = 'noopener noreferrer';
+        const image = node('img');
+        image.src = source;
+        image.alt = `Compounded measured curves for group ${groupId}`;
+        image.loading = 'lazy';
+        link.append(image);
+        link.addEventListener('click', click => {
+          if (click.ctrlKey || click.metaKey || click.shiftKey || click.altKey) return;
+          click.preventDefault();
+          openLightbox(link.href, image.alt);
+        });
+        figure.append(link, node('figcaption', `Compounded group curves · ${group.length} ridge${group.length === 1 ? '' : 's'}${groupFlagged ? ` · ${groupFlagged} flagged` : ''}${groupMedia?.plot?.scale === 'log' ? ' · log frequency' : ''}. Click image for full resolution.`, 'help'));
+        section.append(figure);
+      } else {
+        const chart = groupChart(group, groupId);
+        if (chart) {
+          const figure = node('figure', undefined, 'group-figure');
+          figure.append(chart, node('figcaption', `Compounded group curves · ${group.length} ridge${group.length === 1 ? '' : 's'} (inline fallback; group image not available).`, 'help'));
+          section.append(figure);
+        }
+      }
+      const visible = group.filter(event => {
+        if (hideFalsePositives && reviewLabel(event) === 'false_positive') return false;
+        if (hideFlaggedShapes && ridgeShape(event).warning) return false;
+        return true;
+      });
+      if (!visible.length) {
+        section.append(node('p', 'All curves in this group are hidden by the current filters.', 'help'));
+      } else {
+        const grid = node('div', undefined, 'event-grid');
+        for (const event of visible) grid.append(eventCard(value, event));
+        section.append(grid);
+      }
     }
     container.append(section);
   }
@@ -699,6 +931,13 @@ api('/api/capabilities').then(value => {
   setCountryProfiles(undefined);
   $('upload-error').textContent = `Could not read service settings: ${error.message}. Only CONUS is available.`;
 });
+const lightbox = $('lightbox');
+if (lightbox) {
+  $('lightbox-close').addEventListener('click', () => lightbox.close());
+  lightbox.addEventListener('click', click => {
+    if (click.target === lightbox) lightbox.close();
+  });
+}
 renderRecent();
 const savedJob = new URLSearchParams(location.search).get('job');
 if (savedJob && /^[0-9a-f]{32}$/.test(savedJob)) selectJob(savedJob);

@@ -52,6 +52,9 @@ def test_event_media_writes_plot_ridge_audio_and_index(tmp_path):
         info = sf.info(output / name)
         assert info.samplerate == 24000
         assert info.frames > 0
+    assert media["groups"]["harmonics-0001"]["image"].startswith("group-")
+    assert (output / media["groups"]["harmonics-0001"]["image"]).is_file()
+    assert media["groups"]["harmonics-0001"]["plot"]["ridges"] == 1
     assert json.loads((output / "event-media.json").read_text()) == media
 
 
@@ -120,3 +123,21 @@ def test_discover_events_writes_per_curve_media_for_a_moving_tone(tmp_path):
     assert entries
     assert (output / entries[0]["image"]).is_file()
     assert (output / entries[0]["audio"]["raw"]).is_file()
+
+
+def test_event_plot_uses_the_detector_window_for_high_band_ridges(tmp_path):
+    source = recording(tmp_path, duration_s=10.0)
+    output = tmp_path / "discovery"
+    output.mkdir()
+    high_band = event(band_hz=(1600.0, 2000.0))
+    high_band["quality"] = {"window_s": 0.5, "hop_s": 0.125}
+    media = _write_event_media(source, [high_band], output, DiscoverySettings(),
+                               plot_event_details=True, event_audio=False)
+    assert media["version"] == 7
+    assert media["groups"]["harmonics-0001"]["image"].startswith("group-")
+    plot = media["events"]["event-0001"]["plot"]
+    assert plot["window_s"] == 0.5
+    assert plot["hop_s"] <= 0.05
+    assert plot["gap_s"] == 0.5
+    assert plot["columns"] >= 100
+    assert plot["end_s"] - plot["start_s"] < 30

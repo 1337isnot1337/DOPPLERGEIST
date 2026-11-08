@@ -159,13 +159,40 @@ Automatic jobs write one media record per discovered ridge in `discovery/`:
 - `{event_id}-band.wav`: an illustrative band-limited excerpt for listening;
 - `{event_id}.csv`: the measured ridge points;
 - `event-media.json`: an index of the generated media and any per-event render
-  errors.
+  errors, including one compounded group-curve image per harmonic group.
 
 The raw excerpt is the primary listening evidence. The band-limited excerpt is
 not used for detection, scoring or acceptance. A media-rendering failure is
 recorded in `event-media.json` and does not fail the analysis. Jobs analyzed
 before this feature show the measured ridge chart and data, with a note that
 media generation requires a new analysis.
+
+The spectrogram crop uses the event's own detector window when the discovery
+producer recorded it, so high-band proposals are not replotted with
+the low-band 2 s window. The display is oversampled to at most 400 time columns
+with a 0.05 s minimum hop; this adds visual detail, not detector information.
+The saved plot geometry, window, hop, gap threshold and column count are stored
+in `event-media.json`, and the card caption reports them. Click a crop to open
+the full-resolution image in the browser rather than judging the card thumbnail.
+Large recordings start with their harmonic groups collapsed; each group has a
+chevron and the section has **Collapse all groups** / **Expand all groups**.
+Group review remains available while a group is collapsed, so a whole cluster
+can be marked false positive without expanding every ridge.
+
+Each expanded harmonic group starts with a compounded curve drawing of every
+measured ridge in that group over its full observed duration, before the individual
+event cards. The drawing
+uses a log frequency axis when the group spans more than about 8× in frequency,
+and it breaks each ridge at its measured gaps. Individual cards follow with
+their own spectrogram crops.
+
+Cards also flag measured-ridge discontinuities (gaps greater than the detector
+hop, capped to 0.5–1.5 s) and non-monotonic direction. The line is broken at
+those gaps, and a **Hide flagged shapes** filter is available. These are review
+flags, not automatic rejection: a maneuvering aircraft or a changing source
+frequency can produce a non-monotonic tone, and the flag does not prove the
+proposal is a false positive. A simple straight-pass Doppler curve is
+monotonic, so a reversal is useful evidence for manual review.
 
 The browser groups ridges by harmonic group and lets a local reviewer label each
 ridge, or all ridges in a group, as `confirmed` or `false_positive`, with an
