@@ -516,10 +516,6 @@ def _plot_group_curves(recording, group_id, events, path, settings):
     ends = [float(points[:, 0].max()) for _, points in curves]
     first = max(0.0, min(starts) - 3.0)
     last = min(recording.metadata["duration_s"], max(ends) + 3.0)
-    if last - first > 300.0:
-        center = (first + last) / 2
-        first = max(0.0, center - 150.0)
-        last = min(recording.metadata["duration_s"], first + 300.0)
     if last - first < 1.0:
         last = min(recording.metadata["duration_s"], first + 1.0)
     frequencies = np.concatenate([points[:, 1] for _, points in curves])
@@ -563,7 +559,7 @@ def _plot_group_curves(recording, group_id, events, path, settings):
 
 def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
     """Write per-event plot, ridge and audio evidence without failing discovery."""
-    media = {"schema_version": 1, "version": 6,
+    media = {"schema_version": 1, "version": 7,
              "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
              "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
              "events": {}, "groups": {}}
@@ -644,10 +640,11 @@ def _plot_groups(groups, path, duration, max_gap_s=2.0):
 
 
 _EVENT_PLOT_MAX_S = 80.0
+_EVENT_PLOT_MAX_COLUMNS = 400
 
 
-def _plot_event(recording, group, event, settings, path):
-    from matplotlib import pyplot as plt
+def _event_plot_geometry(recording, event, settings):
+    """Bound display work in sample units without changing detector settings."""
     # Long merged ridges remain complete in JSON/CSV; the image is bounded.
     span = max(0.0, event["end_s"] - event["start_s"])
     margin = max(3.0, min(10.0, span * 0.25))
@@ -661,23 +658,37 @@ def _plot_event(recording, group, event, settings, path):
         last = min(recording.metadata["duration_s"], first + 1.0)
     quality = event.get("quality", {})
     window_s = settings.window_s
-    hop_s = min(settings.hop_s, 0.25)
     try:
         candidate_window = float(quality.get("window_s", window_s))
         candidate_hop = float(quality.get("hop_s", settings.hop_s))
         if 0 < candidate_window < settings.chunk_s and 0 < candidate_hop <= candidate_window:
             window_s = candidate_window
-            hop_s = min(candidate_hop, 0.25)
     except (TypeError, ValueError):
         pass
     # Oversample the plot to at most 400 time columns. This adds no detector
     # information, but it makes the measured window/hop visible and keeps a
     # short crop from collapsing into a handful of wide blocks.
-    display_hop = min(hop_s, max(0.05, (last - first) / 400))
-    display_hop = max(1e-3, min(display_hop, window_s))
-    plot_gap_s = _event_gap_threshold(event, settings)
-    plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=display_hop)
     sr = recording.metadata["sample_rate_hz"]
+    samples = round(last * sr) - round(first * sr)
+    window_samples = round(window_s * sr)
+    hop_samples = max(math.ceil(0.05 * sr), math.ceil((samples - window_samples)
+                       / (_EVENT_PLOT_MAX_COLUMNS - 1)))
+    if hop_samples > window_samples:
+        raise ValueError("The display window is too short for a bounded event crop")
+    return {"start_s": first, "end_s": last, "window_s": window_s,
+            "hop_s": hop_samples / sr, "gap_s": _event_gap_threshold(event, settings),
+            "sample_rate_hz": sr,
+            "truncated": first > event["start_s"] or last < event["end_s"]}
+
+
+def _plot_event(recording, group, event, settings, path):
+    from matplotlib import pyplot as plt
+    geometry = _event_plot_geometry(recording, event, settings)
+    first, last = geometry["start_s"], geometry["end_s"]
+    window_s, display_hop = geometry["window_s"], geometry["hop_s"]
+    plot_gap_s = geometry["gap_s"]
+    plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=display_hop)
+    sr = geometry["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")
     spec = _spectrum(np.array(data[round(first * sr):round(last * sr)]), sr, first, plot_settings)
     if spec is None:
@@ -702,5 +713,4 @@ def _plot_event(recording, group, event, settings, path):
            title=f"{event['event_id']}: measured ridges; acoustic proposal, identity unconfirmed")
     fig.savefig(path, dpi=170)
     plt.close(fig)
-    return {"start_s": first, "end_s": last, "window_s": window_s, "hop_s": display_hop,
-            "gap_s": plot_gap_s, "columns": int(len(spec.time)), "sample_rate_hz": sr}
+    return {**geometry, "columns": int(len(spec.time))}

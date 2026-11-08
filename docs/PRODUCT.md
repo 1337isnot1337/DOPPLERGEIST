@@ -167,8 +167,8 @@ recorded in `event-media.json` and does not fail the analysis. Jobs analyzed
 before this feature show the measured ridge chart and data, with a note that
 media generation requires a new analysis.
 
-The spectrogram crop uses the event's own detector window and hop when the
-discovery producer recorded them, so high-band proposals are not replotted with
+The spectrogram crop uses the event's own detector window when the discovery
+producer recorded it, so high-band proposals are not replotted with
 the low-band 2 s window. The display is oversampled to at most 400 time columns
 with a 0.05 s minimum hop; this adds visual detail, not detector information.
 The saved plot geometry, window, hop, gap threshold and column count are stored
@@ -180,7 +180,8 @@ Group review remains available while a group is collapsed, so a whole cluster
 can be marked false positive without expanding every ridge.
 
 Each expanded harmonic group starts with a compounded curve drawing of every
-measured ridge in that group, before the individual event cards. The drawing
+measured ridge in that group over its full observed duration, before the individual
+event cards. The drawing
 uses a log frequency axis when the group spans more than about 8× in frequency,
 and it breaks each ridge at its measured gaps. Individual cards follow with
 their own spectrogram crops.

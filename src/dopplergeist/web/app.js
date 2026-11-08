@@ -347,7 +347,7 @@ function ridgeGapInfo(event) {
 function ridgeShape(event) {
   const ridge = event.ridge || [];
   const gaps = ridgeGapInfo(event);
-  if (ridge.length < 8) return {warning: '', reversals: 0, gaps};
+  if (ridge.length < 8) return {warning: gaps.count ? 'gap' : '', reversals: 0, gaps};
   const frequencies = ridge.map(point => point.frequency_hz);
   const smoothed = frequencies.map((_, index) => medianValue(
     frequencies.slice(Math.max(0, index - 2), Math.min(frequencies.length, index + 3))));
@@ -397,15 +397,7 @@ function ridgeChart(event) {
   svg.append(svgNode('rect', {x: 0, y: 0, width, height, fill: '#0d1517'}));
   svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
   svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
-  const segments = []; let current = [];
-  const plotGap = ridgeGapInfo(event).threshold;
-  for (const point of ridge) {
-    if (current.length && point.time_s - current[current.length - 1].time_s > plotGap) {
-      segments.push(current); current = [];
-    }
-    current.push(point);
-  }
-  if (current.length) segments.push(current);
+  const segments = ridgeSegments(event);
   for (const segment of segments) {
     if (segment.length < 2) continue;
     svg.append(svgNode('polyline', {
@@ -425,16 +417,36 @@ function ridgeChart(event) {
   return svg;
 }
 
+function ridgeSegments(event) {
+  const segments = []; let current = [];
+  const threshold = ridgeGapInfo(event).threshold;
+  for (const point of event.ridge || []) {
+    if (current.length && point.time_s - current[current.length - 1].time_s > threshold + 1e-9) {
+      segments.push(current); current = [];
+    }
+    current.push(point);
+  }
+  if (current.length) segments.push(current);
+  // Split the original measurements before thinning. Keep both sides of every
+  // real gap, and never interpret skipped display points as missing samples.
+  const stride = Math.max(1, Math.ceil((event.ridge?.length || 0) / 600));
+  return segments.map(segment => segment.filter((_, index) =>
+    index === 0 || index === segment.length - 1 || index % stride === 0));
+}
+
 function groupChart(events, groupId) {
   const curves = events
     .filter(event => Array.isArray(event.ridge) && event.ridge.length >= 2)
     .map(event => ({event, points: event.ridge}));
   if (!curves.length) return null;
   const width = 900, height = 260, left = 45, right = 12, top = 16, bottom = 28;
-  const times = curves.flatMap(({points}) => points.map(point => point.time_s));
-  const frequencies = curves.flatMap(({points}) => points.map(point => point.frequency_hz));
-  let t0 = Math.min(...times), t1 = Math.max(...times);
-  let f0 = Math.min(...frequencies), f1 = Math.max(...frequencies);
+  let t0 = Infinity, t1 = -Infinity, f0 = Infinity, f1 = -Infinity;
+  for (const {points} of curves) {
+    for (const point of points) {
+      t0 = Math.min(t0, point.time_s); t1 = Math.max(t1, point.time_s);
+      f0 = Math.min(f0, point.frequency_hz); f1 = Math.max(f1, point.frequency_hz);
+    }
+  }
   const tpad = Math.max(2, (t1 - t0) * 0.03);
   const fpad = Math.max(1, (f1 - f0) * 0.05);
   t0 = Math.max(0, t0 - tpad); t1 += tpad; f0 -= fpad; f1 += fpad;
@@ -604,7 +616,7 @@ function eventCard(value, event) {
     const caption = node('figcaption', undefined, 'help');
     const plot = media?.plot;
     caption.append(document.createTextNode(plot
-      ? `Spectrogram crop · ${(plot.end_s - plot.start_s).toFixed(1)} s · ${plot.window_s} s window · ${plot.hop_s} s hop${plot.columns ? ` · ${plot.columns} columns` : ''}. Click image for full resolution.`
+      ? `Spectrogram crop${plot.truncated ? ' · centered excerpt' : ''} · ${(plot.end_s - plot.start_s).toFixed(1)} s · ${plot.window_s} s window · ${plot.hop_s} s hop${plot.columns ? ` · ${plot.columns} columns` : ''}. Click image for full resolution.`
       : 'Spectrogram crop with measured ridge. Click image for full resolution. '));
     if (!plot) {
       const open = node('a', 'Open full size');
