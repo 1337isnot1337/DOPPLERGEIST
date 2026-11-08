@@ -192,9 +192,11 @@ assessment is available.
 absolute paths or `..` traversal. Suggested names are `report`, `provenance`, and
 event-specific plots/arrays. Automatic discovery writes per-event spectrogram
 crops, bounded raw and band-limited audio excerpts, ridge CSVs and
-`discovery/event-media.json`. The band-limited excerpt is a listening aid only and
-must not feed detection or scoring. A media-render error is recorded per event and
-does not fail the analysis. The provenance artifact should record input/data/code
+`discovery/event-media.json`. The index carries a media `version` and, when a plot
+was rendered, the crop `start_s`/`end_s`, display `window_s`, `hop_s` and sample
+rate so the image resolution is inspectable. The band-limited excerpt is a
+listening aid only and must not feed detection or scoring. A media-render error is
+recorded per event and does not fail the analysis. The provenance artifact should record input/data/code
 hashes, configuration, time/altitude assumptions, searched/missing coverage and
 runtime. The service must independently enforce output-directory containment when
 serving files, including symlink handling. Do not embed huge spectra in job JSON.

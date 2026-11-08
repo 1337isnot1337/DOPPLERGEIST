@@ -20,6 +20,9 @@
 .inline-control input{width:auto;margin:0}
 .event-group{border-top:1px solid var(--edge);padding:20px 0 6px}
 .event-group-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.event-group-main{display:flex;align-items:flex-start;gap:8px;min-width:0}
+.group-toggle{flex:none;width:25px;height:25px;padding:0;border:1px solid var(--edge);background:#111b1e;color:var(--ink);border-radius:6px;font-size:13px;line-height:1;display:grid;place-items:center}
+.group-toggle:hover{border-color:var(--accent);color:var(--accent)}
 .event-group-head h4{margin:0 0 5px;font-size:14px;letter-spacing:.01em}
 .event-group-head .review-select{max-width:210px}
 .event-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
@@ -49,4 +52,9 @@
 .event-review .help{margin:6px 0 0;font-size:10px}
 .event-card details{margin-top:10px;padding-top:10px}
 .event-card details ul{font-size:10px}
+.event-figure a{cursor:zoom-in}
+.lightbox{position:relative;width:min(96vw,1600px);max-width:96vw;max-height:92vh;padding:0;border:1px solid var(--edge);background:#0b1113;color:var(--ink);border-radius:10px}
+.lightbox::backdrop{background:rgba(0,0,0,.82)}
+.lightbox img{display:block;width:100%;max-height:86vh;object-fit:contain;background:#0b1113}
+.lightbox button{position:absolute;top:8px;right:8px;z-index:1;width:32px;height:32px;padding:0;border:1px solid var(--edge);background:#111b1e;color:var(--ink);border-radius:999px;font-size:18px;line-height:1}
 @media(max-width:760px){.event-grid{grid-template-columns:1fr}.event-group-head .review-select{max-width:none;width:100%}}

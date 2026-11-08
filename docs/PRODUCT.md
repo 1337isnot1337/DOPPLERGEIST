@@ -167,6 +167,16 @@ recorded in `event-media.json` and does not fail the analysis. Jobs analyzed
 before this feature show the measured ridge chart and data, with a note that
 media generation requires a new analysis.
 
+The spectrogram crop uses the event's own detector window and hop when the
+discovery producer recorded them, so high-band proposals are not replotted with
+the low-band 2 s window. The saved plot geometry and display hop are stored in
+`event-media.json`. Click a crop to open the full-resolution image in the
+browser rather than judging the card thumbnail. Large recordings start with
+their harmonic groups collapsed; each group has a chevron and the section has
+**Collapse all groups** / **Expand all groups**. Group review remains available
+while a group is collapsed, so a whole cluster can be marked false positive
+without expanding every ridge.
+
 The browser groups ridges by harmonic group and lets a local reviewer label each
 ridge, or all ridges in a group, as `confirmed` or `false_positive`, with an
 optional note. Labels are stored in `event-reviews.json` in the job directory.

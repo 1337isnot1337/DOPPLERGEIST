@@ -482,11 +482,10 @@ def _write_event_audio(recording, event, path, *, band_limited=False):
 
 def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
     """Write per-event plot, ridge and audio evidence without failing discovery."""
-    media = {"schema_version": 1,
+    media = {"schema_version": 1, "version": 2,
              "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
              "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
              "events": {}}
-    plot_settings = replace(settings, max_frequency_hz=8000.)
     for event in events:
         event_id = event["event_id"]
         entry = {}
@@ -501,7 +500,8 @@ def _write_event_media(recording, events, output, settings, *, plot_event_detail
             errors.append(f"ridge_csv: {type(exc).__name__}: {exc}")
         if plot_event_details:
             try:
-                _plot_event(recording, [points], event, plot_settings, output / f"{event_id}.png")
+                entry["plot"] = _plot_event(recording, [points], event, settings,
+                                            output / f"{event_id}.png")
                 entry["image"] = f"{event_id}.png"
             except Exception as exc:  # A diagnostic render must not fail analysis.
                 errors.append(f"image: {type(exc).__name__}: {exc}")
@@ -545,32 +545,58 @@ def _plot_groups(groups, path, duration, max_gap_s=2.0):
     plt.close(fig)
 
 
+_EVENT_PLOT_MAX_S = 80.0
+
+
 def _plot_event(recording, group, event, settings, path):
     from matplotlib import pyplot as plt
-    # Long merged ridges remain complete in JSON/CSV; image memory is bounded.
-    center = (event["start_s"] + event["end_s"]) / 2
-    first = max(event["start_s"] - 3, center - settings.chunk_s / 2, 0)
-    last = min(event["end_s"] + 3, first + settings.chunk_s, recording.metadata["duration_s"])
+    # Long merged ridges remain complete in JSON/CSV; the image is bounded.
+    span = max(0.0, event["end_s"] - event["start_s"])
+    margin = max(3.0, min(10.0, span * 0.25))
+    first = max(0.0, event["start_s"] - margin)
+    last = min(recording.metadata["duration_s"], event["end_s"] + margin)
+    if last - first > _EVENT_PLOT_MAX_S:
+        center = (first + last) / 2
+        first = max(0.0, center - _EVENT_PLOT_MAX_S / 2)
+        last = min(recording.metadata["duration_s"], first + _EVENT_PLOT_MAX_S)
+    if last - first < 1.0:
+        last = min(recording.metadata["duration_s"], first + 1.0)
+    quality = event.get("quality", {})
+    window_s = settings.window_s
+    hop_s = min(settings.hop_s, 0.25)
+    try:
+        candidate_window = float(quality.get("window_s", window_s))
+        candidate_hop = float(quality.get("hop_s", settings.hop_s))
+        if 0 < candidate_window < settings.chunk_s and 0 < candidate_hop <= candidate_window:
+            window_s = candidate_window
+            hop_s = min(candidate_hop, 0.25)
+    except (TypeError, ValueError):
+        pass
+    plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=hop_s)
     sr = recording.metadata["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")
-    spec = _spectrum(np.array(data[round(first * sr):round(last * sr)]), sr, first, settings)
+    spec = _spectrum(np.array(data[round(first * sr):round(last * sr)]), sr, first, plot_settings)
+    if spec is None:
+        raise ValueError("The event crop is shorter than one display window")
     low = min(points[:, 1].min() for points in group)
     high = max(points[:, 1].max() for points in group)
-    limits = (max(settings.min_frequency_hz, low * 0.9), high * 1.1)
+    limits = (max(plot_settings.min_frequency_hz, low * 0.9), high * 1.1)
     # Only visible cells can affect the image. Keep an extra frequency bin on
     # each side so pcolormesh reconstructs the same boundary-cell coordinates.
     # Whitening still uses the full spectrum and all measured ridges are kept.
     lower = max(0, np.searchsorted(spec.frequency, limits[0]) - 1)
     upper = min(len(spec.frequency), np.searchsorted(spec.frequency, limits[1], side="right") + 1)
     visible = slice(lower, upper)
-    fig, ax = plt.subplots(figsize=(10, 4), layout="constrained")
+    fig, ax = plt.subplots(figsize=(12, 4.5), layout="constrained")
     ax.pcolormesh(spec.time, spec.frequency[visible], spec.contrast[visible], shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
-        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > settings.max_gap_s) + 1):
-            ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=0.9)
+        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > plot_settings.max_gap_s) + 1):
+            ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=1.0)
     ax.set(xlim=(first, last), ylim=limits,
            xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)",
            title=f"{event['event_id']}: measured ridges; acoustic proposal, identity unconfirmed")
-    fig.savefig(path, dpi=130)
+    fig.savefig(path, dpi=160)
     plt.close(fig)
+    return {"start_s": first, "end_s": last, "window_s": window_s, "hop_s": hop_s,
+            "sample_rate_hz": sr}
