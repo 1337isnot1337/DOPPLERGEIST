@@ -4,9 +4,10 @@ const terminal = new Set(['needs_input', 'succeeded', 'inconclusive', 'failed', 
 let activeJob = null, renderedJob = null, timer = null, maxBytes = 100 * 1024 * 1024;
 let artifactJob = null, artifactPaths = new Set(), mediaJob = null, mediaIndex = null;
 let reviews = {schema_version: 1, labels: {}}, evidenceKey = '';
-let hideFalsePositives = false, reanalysisPending = false;
+let hideFalsePositives = false, hideFlaggedShapes = false, reanalysisPending = false;
 let collapsedGroups = new Set(), groupsInitializedForJob = null;
 try { hideFalsePositives = localStorage.getItem('dopplergeist-hide-false') === '1'; } catch (_) { /* optional */ }
+try { hideFlaggedShapes = localStorage.getItem('dopplergeist-hide-flagged') === '1'; } catch (_) { /* optional */ }
 const node = (tag, text, cls) => { const n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; };
 const artifactUrl = (id, path) => `/api/jobs/${id}/artifacts/${path.split('/').map(encodeURIComponent).join('/')}`;
 const REVIEW_LABELS = {confirmed: 'Confirmed curve', false_positive: 'False positive', unreviewed: 'Unreviewed'};
@@ -321,6 +322,48 @@ function formatQuality(value) {
     ? value.toExponential(2) : String(Number(value.toPrecision(4)));
 }
 
+function medianValue(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+function ridgeGapInfo(event) {
+  const hop = Number(event.quality?.hop_s);
+  const threshold = Number.isFinite(hop) && hop > 0
+    ? Math.max(0.5, Math.min(1.5, 2 * hop)) : 1.0;
+  let count = 0, maximum = 0;
+  const ridge = event.ridge || [];
+  for (let index = 1; index < ridge.length; index += 1) {
+    const gap = ridge[index].time_s - ridge[index - 1].time_s;
+    if (gap > threshold + 1e-9) {
+      count += 1; maximum = Math.max(maximum, gap);
+    }
+  }
+  return {count, maximum, threshold};
+}
+
+function ridgeShape(event) {
+  const ridge = event.ridge || [];
+  const gaps = ridgeGapInfo(event);
+  if (ridge.length < 8) return {warning: '', reversals: 0, gaps};
+  const frequencies = ridge.map(point => point.frequency_hz);
+  const smoothed = frequencies.map((_, index) => medianValue(
+    frequencies.slice(Math.max(0, index - 2), Math.min(frequencies.length, index + 3))));
+  const minimumChange = Math.max(0.5, (event.band_hz[1] - event.band_hz[0]) * 0.01);
+  let previousSign = 0, reversals = 0;
+  for (let index = 1; index < smoothed.length; index += 1) {
+    const change = smoothed[index] - smoothed[index - 1];
+    if (Math.abs(change) < minimumChange) continue;
+    const sign = Math.sign(change);
+    if (previousSign && sign !== previousSign) reversals += 1;
+    previousSign = sign;
+  }
+  return {
+    warning: gaps.count ? 'gap' : (reversals ? 'non-monotonic' : ''),
+    reversals, gaps,
+  };
+}
+
 function eventGroups(value) {
   const groups = new Map();
   for (const event of value.events || []) {
@@ -353,8 +396,9 @@ function ridgeChart(event) {
   svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
   svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
   const segments = []; let current = [];
+  const plotGap = ridgeGapInfo(event).threshold;
   for (const point of ridge) {
-    if (current.length && point.time_s - current[current.length - 1].time_s > 2) {
+    if (current.length && point.time_s - current[current.length - 1].time_s > plotGap) {
       segments.push(current); current = [];
     }
     current.push(point);
@@ -457,11 +501,20 @@ async function startReanalysis(count, button) {
 function eventCard(value, event) {
   const id = event.event_id;
   const label = reviewLabel(event);
+  const shape = ridgeShape(event);
   const card = node('article', undefined, `event-card ${label}`);
   const head = node('div', undefined, 'event-card-head');
   head.append(node('strong', id), node('span', REVIEW_LABELS[label], `badge ${label}`));
+  if (shape.warning) {
+    head.append(node('span', shape.warning === 'gap' ? 'Gap' : 'Non-monotonic', 'badge warning'));
+  }
   card.append(head);
   card.append(node('p', `${formatEventSeconds(event.start_s)}–${formatEventSeconds(event.end_s)} s · ${Math.round(event.band_hz[0])}–${Math.round(event.band_hz[1])} Hz${event.harmonic_group_id ? ` · ${event.harmonic_group_id}` : ''}`, 'mono'));
+  if (shape.warning === 'gap') {
+    card.append(node('p', `Measured ridge is broken at ${shape.gaps.count} gap${shape.gaps.count === 1 ? '' : 's'} greater than ${shape.gaps.threshold.toFixed(1)} s (max ${shape.gaps.maximum.toFixed(1)} s). The line is not connected across the gap; values after it are a separate fragment.`, 'help shape-warning'));
+  } else if (shape.warning === 'non-monotonic') {
+    card.append(node('p', `Measured ridge reverses direction ${shape.reversals} time${shape.reversals === 1 ? '' : 's'}. A simple straight-pass Doppler curve is monotonic; this is not a confirmed Doppler shape.`, 'help shape-warning'));
+  }
   const chart = ridgeChart(event);
   if (chart) card.append(chart);
   const media = mediaJob === value.job_id ? mediaIndex?.events?.[id] || null : null;
@@ -552,7 +605,7 @@ let eventsSignature = '';
 
 function renderEvents(value, force = false) {
   if (!value) return;
-  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${hideFalsePositives}`;
+  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${hideFalsePositives}|${hideFlaggedShapes}`;
   if (!force && signature === eventsSignature) return;
   eventsSignature = signature;
   const container = $('events');
@@ -567,10 +620,11 @@ function renderEvents(value, force = false) {
   const allCollapsed = [...groups.keys()].every(groupId => collapsedGroups.has(groupId));
   const falseCount = all.filter(event => reviewLabel(event) === 'false_positive').length;
   const confirmedCount = all.filter(event => reviewLabel(event) === 'confirmed').length;
+  const flaggedCount = all.filter(event => ridgeShape(event).warning).length;
   const header = node('div', undefined, 'section-row event-section-head');
   const title = node('div');
   title.append(node('h3', `${groups.size} acoustic proposal groups · ${all.length} ridge records`));
-  title.append(node('p', `${confirmedCount} confirmed · ${falseCount} false positive · ${all.length - confirmedCount - falseCount} unreviewed. Review labels do not change this job's result.`, 'help'));
+  title.append(node('p', `${confirmedCount} confirmed · ${falseCount} false positive · ${all.length - confirmedCount - falseCount} unreviewed · ${flaggedCount} shape/gap warnings. Review labels do not change this job's result.`, 'help'));
   if (allCollapsed && all.length > 30) {
     title.append(node('p', 'Large recording: groups start collapsed. Expand a group with its chevron, or use Expand all groups.', 'help'));
   }
@@ -586,6 +640,17 @@ function renderEvents(value, force = false) {
   });
   filterLabel.append(filter, document.createTextNode(' Hide false positives'));
   actions.append(filterLabel);
+  const flaggedLabel = node('label', undefined, 'inline-control');
+  flaggedLabel.title = 'Gaps or non-monotonic direction are review flags, not proof of a false positive.';
+  const flaggedFilter = document.createElement('input');
+  flaggedFilter.type = 'checkbox'; flaggedFilter.checked = hideFlaggedShapes;
+  flaggedFilter.addEventListener('change', () => {
+    hideFlaggedShapes = flaggedFilter.checked;
+    try { localStorage.setItem('dopplergeist-hide-flagged', hideFlaggedShapes ? '1' : '0'); } catch (_) { /* optional */ }
+    renderEvents(renderedJob, true);
+  });
+  flaggedLabel.append(flaggedFilter, document.createTextNode(' Hide flagged shapes'));
+  actions.append(flaggedLabel);
   const collapseButton = node('button', allCollapsed ? 'Expand all groups' : 'Collapse all groups', 'secondary');
   collapseButton.type = 'button';
   collapseButton.addEventListener('click', () => {
@@ -613,7 +678,8 @@ function renderEvents(value, force = false) {
     const low = Math.min(...group.map(event => event.band_hz[0]));
     const high = Math.max(...group.map(event => event.band_hz[1]));
     groupTitle.append(node('h4', groupId));
-    groupTitle.append(node('span', `${group.length} ridge${group.length === 1 ? '' : 's'} · ${formatEventSeconds(start)}–${formatEventSeconds(end)} s · ${Math.round(low)}–${Math.round(high)} Hz`, 'help'));
+    const groupFlagged = group.filter(event => ridgeShape(event).warning).length;
+    groupTitle.append(node('span', `${group.length} ridge${group.length === 1 ? '' : 's'} · ${formatEventSeconds(start)}–${formatEventSeconds(end)} s · ${Math.round(low)}–${Math.round(high)} Hz${groupFlagged ? ` · ${groupFlagged} flagged` : ''}`, 'help'));
     const collapsed = collapsedGroups.has(groupId);
     const toggle = node('button', collapsed ? '▸' : '▾', 'group-toggle');
     toggle.type = 'button';
@@ -631,9 +697,13 @@ function renderEvents(value, force = false) {
     if (group.length > 1) groupHead.append(groupReviewControl(group, value.job_id));
     section.append(groupHead);
     if (!collapsed) {
-      const visible = group.filter(event => !hideFalsePositives || reviewLabel(event) !== 'false_positive');
+      const visible = group.filter(event => {
+        if (hideFalsePositives && reviewLabel(event) === 'false_positive') return false;
+        if (hideFlaggedShapes && ridgeShape(event).warning) return false;
+        return true;
+      });
       if (!visible.length) {
-        section.append(node('p', 'All curves in this group are marked false positive and hidden.', 'help'));
+        section.append(node('p', 'All curves in this group are hidden by the current filters.', 'help'));
       } else {
         const grid = node('div', undefined, 'event-grid');
         for (const event of visible) grid.append(eventCard(value, event));

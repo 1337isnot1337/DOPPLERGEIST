@@ -482,7 +482,7 @@ def _write_event_audio(recording, event, path, *, band_limited=False):
 
 def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
     """Write per-event plot, ridge and audio evidence without failing discovery."""
-    media = {"schema_version": 1, "version": 3,
+    media = {"schema_version": 1, "version": 4,
              "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
              "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
              "events": {}}
@@ -577,6 +577,13 @@ def _plot_event(recording, group, event, settings, path):
     # short crop from collapsing into a handful of wide blocks.
     display_hop = min(hop_s, max(0.05, (last - first) / 400))
     display_hop = max(1e-3, min(display_hop, window_s))
+    try:
+        detector_hop = float(quality.get("hop_s", settings.hop_s))
+    except (TypeError, ValueError):
+        detector_hop = settings.hop_s
+    if not math.isfinite(detector_hop) or detector_hop <= 0:
+        detector_hop = settings.hop_s
+    plot_gap_s = max(0.5, min(1.5, 2.0 * detector_hop))
     plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=display_hop)
     sr = recording.metadata["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")
@@ -596,7 +603,7 @@ def _plot_event(recording, group, event, settings, path):
     ax.pcolormesh(spec.time, spec.frequency[visible], spec.contrast[visible], shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
-        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > plot_settings.max_gap_s) + 1):
+        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > plot_gap_s) + 1):
             ax.plot(segment[:, 0], segment[:, 1], color="cyan", lw=1.0)
     ax.set(xlim=(first, last), ylim=limits,
            xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)",
@@ -604,4 +611,4 @@ def _plot_event(recording, group, event, settings, path):
     fig.savefig(path, dpi=170)
     plt.close(fig)
     return {"start_s": first, "end_s": last, "window_s": window_s, "hop_s": display_hop,
-            "columns": int(len(spec.time)), "sample_rate_hz": sr}
+            "gap_s": plot_gap_s, "columns": int(len(spec.time)), "sample_rate_hz": sr}
