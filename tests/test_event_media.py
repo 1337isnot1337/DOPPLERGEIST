@@ -74,6 +74,20 @@ def test_media_generation_failure_is_reported_without_stopping_discovery(tmp_pat
     assert any("audio" in error for error in entry["errors"])
 
 
+def test_media_index_write_failure_does_not_stop_discovery(tmp_path, caplog):
+    source = recording(tmp_path)
+    output = tmp_path / "discovery"
+    output.mkdir()
+    (output / "event-media.json").mkdir()
+
+    media = _write_event_media(source, [event()], output, DiscoverySettings(),
+                               plot_event_details=False, event_audio=False)
+
+    assert media["events"]["event-0001"]["ridge_csv"] == "event-0001.csv"
+    assert (output / "event-0001.csv").is_file()
+    assert "Could not write event-media index" in caplog.text
+
+
 def test_audio_excerpt_is_bounded_around_long_events():
     start, end, truncated = _event_clip_bounds({"start_s": 10.0, "end_s": 90.0}, 100.0)
     assert end - start == pytest.approx(discovery._EVENT_AUDIO_MAX_S)

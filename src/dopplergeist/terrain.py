@@ -191,9 +191,9 @@ class CopernicusTerrain:
                 continue
             path=self.cache/(tag+".tif")
             if not path.exists():
-                import fcntl
+                import portalocker
                 with path.with_suffix(".lock").open("a") as lock:
-                    fcntl.flock(lock,fcntl.LOCK_EX)
+                    portalocker.lock(lock, portalocker.LOCK_EX)
                     if not path.exists():
                         url=f"https://copernicus-dem-90m.s3.amazonaws.com/{tag}/{tag}.tif"
                         r=self.session.get(url,timeout=120);r.raise_for_status()
