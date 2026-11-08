@@ -4,9 +4,11 @@ Only decoded audio is read. Proposals are acoustic evidence, not proof of an
 aircraft identity. No straight-pass speed/slant fit is required for acceptance.
 """
 from dataclasses import asdict, dataclass, replace
+import hashlib
 import json
 import math
 from pathlib import Path
+import re
 from statistics import median
 from tempfile import TemporaryDirectory
 
@@ -480,12 +482,90 @@ def _write_event_audio(recording, event, path, *, band_limited=False):
             "end_s": last / sample_rate_hz, "truncated": truncated}
 
 
+def _event_gap_threshold(event, settings):
+    try:
+        hop = float(event.get("quality", {}).get("hop_s", settings.hop_s))
+    except (TypeError, ValueError):
+        hop = settings.hop_s
+    if not math.isfinite(hop) or hop <= 0:
+        hop = settings.hop_s
+    return max(0.5, min(1.5, 2.0 * hop))
+
+
+def _group_plot_name(group_id):
+    slug = re.sub(r"[^A-Za-z0-9_.-]+", "-", str(group_id)).strip(".-")[:60] or "group"
+    digest = hashlib.sha1(str(group_id).encode("utf-8")).hexdigest()[:8]
+    return f"group-{slug}-{digest}.png"
+
+
+def _plot_group_curves(recording, group_id, events, path, settings):
+    """Draw every measured ridge in one group on a shared time/frequency axis."""
+    from matplotlib import pyplot as plt
+    from matplotlib import cm
+
+    curves = []
+    for event in events:
+        points = np.array([[point["time_s"], point["frequency_hz"]]
+                           for point in event.get("ridge", [])], dtype=float)
+        if len(points) >= 2:
+            curves.append((event, points))
+    if not curves:
+        raise ValueError("The group has no drawable ridge points")
+    starts = [float(points[:, 0].min()) for _, points in curves]
+    ends = [float(points[:, 0].max()) for _, points in curves]
+    first = max(0.0, min(starts) - 3.0)
+    last = min(recording.metadata["duration_s"], max(ends) + 3.0)
+    if last - first > 300.0:
+        center = (first + last) / 2
+        first = max(0.0, center - 150.0)
+        last = min(recording.metadata["duration_s"], first + 300.0)
+    if last - first < 1.0:
+        last = min(recording.metadata["duration_s"], first + 1.0)
+    frequencies = np.concatenate([points[:, 1] for _, points in curves])
+    low, high = float(frequencies.min()), float(frequencies.max())
+    pad = max(1.0, (high - low) * 0.05)
+    low, high = max(1.0, low - pad), high + pad
+    if high - low < 10.0:
+        center = (low + high) / 2
+        low, high = max(1.0, center - 5.0), center + 5.0
+
+    fig, ax = plt.subplots(figsize=(14, 5), layout="constrained")
+    fig.patch.set_facecolor("#0d1517")
+    ax.set_facecolor("#0d1517")
+    colors = cm.turbo(np.linspace(0.08, 0.92, len(curves)))
+    for color, (event, points) in zip(colors, curves):
+        gap = _event_gap_threshold(event, settings)
+        for segment in np.split(points, np.flatnonzero(np.diff(points[:, 0]) > gap) + 1):
+            if len(segment) >= 2:
+                ax.plot(segment[:, 0], segment[:, 1], color=color, lw=1.1, alpha=0.88)
+    scale = "log" if high / low > 8.0 else "linear"
+    if scale == "log":
+        ax.set_yscale("log")
+    ax.set(xlim=(first, last), ylim=(low, high),
+           xlabel="Recording-relative time (s)",
+           ylabel="Frequency (Hz, log scale)" if scale == "log" else "Frequency (Hz)")
+    ax.set_title(f"{group_id}: {len(curves)} measured ridges\n"
+                 "Each colour is one measured ridge; gaps are not connected.",
+                 fontsize=10, color="#f3f8f5")
+    ax.tick_params(colors="#a6b8bd")
+    ax.xaxis.label.set_color("#a6b8bd")
+    ax.yaxis.label.set_color("#a6b8bd")
+    for spine in ax.spines.values():
+        spine.set_color("#334247")
+    ax.grid(True, color="#334247", alpha=0.35, linewidth=0.5)
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
+    return {"start_s": first, "end_s": last, "frequency_hz": [low, high],
+            "scale": scale, "ridges": int(len(curves)),
+            "sample_rate_hz": recording.metadata["sample_rate_hz"]}
+
+
 def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
     """Write per-event plot, ridge and audio evidence without failing discovery."""
-    media = {"schema_version": 1, "version": 4,
+    media = {"schema_version": 1, "version": 6,
              "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
              "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
-             "events": {}}
+             "events": {}, "groups": {}}
     for event in events:
         event_id = event["event_id"]
         entry = {}
@@ -521,6 +601,20 @@ def _write_event_media(recording, events, output, settings, *, plot_event_detail
         if errors:
             entry["errors"] = errors
         media["events"][event_id] = entry
+    if plot_event_details:
+        groups = {}
+        for event in events:
+            group_id = event.get("harmonic_group_id", event["event_id"])
+            groups.setdefault(group_id, []).append(event)
+        for group_id, group in groups.items():
+            entry = {"ridges": len(group)}
+            try:
+                path = output / _group_plot_name(group_id)
+                entry["plot"] = _plot_group_curves(recording, group_id, group, path, settings)
+                entry["image"] = path.name
+            except Exception as exc:  # A diagnostic render must not fail analysis.
+                entry["errors"] = [f"group_image: {type(exc).__name__}: {exc}"]
+            media["groups"][group_id] = entry
     (output / "event-media.json").write_text(
         json.dumps(media, indent=2, allow_nan=False) + "\n")
     return media
@@ -577,13 +671,7 @@ def _plot_event(recording, group, event, settings, path):
     # short crop from collapsing into a handful of wide blocks.
     display_hop = min(hop_s, max(0.05, (last - first) / 400))
     display_hop = max(1e-3, min(display_hop, window_s))
-    try:
-        detector_hop = float(quality.get("hop_s", settings.hop_s))
-    except (TypeError, ValueError):
-        detector_hop = settings.hop_s
-    if not math.isfinite(detector_hop) or detector_hop <= 0:
-        detector_hop = settings.hop_s
-    plot_gap_s = max(0.5, min(1.5, 2.0 * detector_hop))
+    plot_gap_s = _event_gap_threshold(event, settings)
     plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=display_hop)
     sr = recording.metadata["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")

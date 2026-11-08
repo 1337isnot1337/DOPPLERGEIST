@@ -52,6 +52,9 @@ def test_event_media_writes_plot_ridge_audio_and_index(tmp_path):
         info = sf.info(output / name)
         assert info.samplerate == 24000
         assert info.frames > 0
+    assert media["groups"]["harmonics-0001"]["image"].startswith("group-")
+    assert (output / media["groups"]["harmonics-0001"]["image"]).is_file()
+    assert media["groups"]["harmonics-0001"]["plot"]["ridges"] == 1
     assert json.loads((output / "event-media.json").read_text()) == media
 
 
@@ -116,7 +119,8 @@ def test_event_plot_uses_the_detector_window_for_high_band_ridges(tmp_path):
     high_band["quality"] = {"window_s": 0.5, "hop_s": 0.125}
     media = _write_event_media(source, [high_band], output, DiscoverySettings(),
                                plot_event_details=True, event_audio=False)
-    assert media["version"] == 4
+    assert media["version"] == 6
+    assert media["groups"]["harmonics-0001"]["image"].startswith("group-")
     plot = media["events"]["event-0001"]["plot"]
     assert plot["window_s"] == 0.5
     assert plot["hop_s"] <= 0.05

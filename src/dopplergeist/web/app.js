@@ -144,7 +144,9 @@ function renderArtifacts(id, items, status) {
     const href = artifactUrl(id, item.path);
     const li = node('li'); const a = node('a', item.path); a.href = href; a.download = '';
     li.append(a, node('span', ` · ${(item.bytes / 1024).toFixed(1)} KB`, 'muted')); $('artifacts').append(li);
-    if (/\.png$/i.test(item.path) && !/^discovery\/event-[^/]+\.png$/i.test(item.path)
+    const perCurveImage = /^discovery\/[^/]+\.png$/i.test(item.path)
+      && item.path !== 'discovery/discovery.png';
+    if (/\.png$/i.test(item.path) && !perCurveImage
         && /event|spectro|discovery|model|location/i.test(item.path)) {
       const figure = node('figure', undefined, 'diagnostic'); const img = node('img');
       img.src = href; img.alt = `Analysis evidence: ${item.path}`; img.loading = 'lazy';
@@ -423,6 +425,69 @@ function ridgeChart(event) {
   return svg;
 }
 
+function groupChart(events, groupId) {
+  const curves = events
+    .filter(event => Array.isArray(event.ridge) && event.ridge.length >= 2)
+    .map(event => ({event, points: event.ridge}));
+  if (!curves.length) return null;
+  const width = 900, height = 260, left = 45, right = 12, top = 16, bottom = 28;
+  const times = curves.flatMap(({points}) => points.map(point => point.time_s));
+  const frequencies = curves.flatMap(({points}) => points.map(point => point.frequency_hz));
+  let t0 = Math.min(...times), t1 = Math.max(...times);
+  let f0 = Math.min(...frequencies), f1 = Math.max(...frequencies);
+  const tpad = Math.max(2, (t1 - t0) * 0.03);
+  const fpad = Math.max(1, (f1 - f0) * 0.05);
+  t0 = Math.max(0, t0 - tpad); t1 += tpad; f0 -= fpad; f1 += fpad;
+  if (t1 - t0 < 1) t1 = t0 + 1;
+  if (f1 - f0 < 10) { const center = (f0 + f1) / 2; f0 = center - 5; f1 = center + 5; }
+  const logScale = f1 / Math.max(0.1, f0) > 8;
+  const low = logScale ? Math.max(0.1, f0) : f0;
+  const x = value => left + ((value - t0) / (t1 - t0)) * (width - left - right);
+  const y = value => {
+    const share = logScale
+      ? Math.log(Math.max(low, value) / low) / Math.log(f1 / low)
+      : (value - low) / (f1 - low);
+    return height - bottom - share * (height - top - bottom);
+  };
+  const svg = svgNode('svg', {
+    viewBox: `0 0 ${width} ${height}`, class: 'group-chart', role: 'img',
+    'aria-label': `${groupId}: ${curves.length} compounded measured ridges${logScale ? ', log frequency' : ''}`,
+  });
+  svg.append(svgNode('rect', {x: 0, y: 0, width, height, fill: '#0d1517'}));
+  svg.append(svgNode('line', {x1: left, y1: top, x2: left, y2: height - bottom, stroke: '#334247'}));
+  svg.append(svgNode('line', {x1: left, y1: height - bottom, x2: width - right, y2: height - bottom, stroke: '#334247'}));
+  curves.forEach(({event, points}, index) => {
+    const color = `hsl(${Math.round(index * 360 / Math.max(1, curves.length))}, 75%, 68%)`;
+    const segments = []; let current = [];
+    const gap = ridgeGapInfo(event).threshold;
+    for (const point of points) {
+      if (current.length && point.time_s - current[current.length - 1].time_s > gap) {
+        segments.push(current); current = [];
+      }
+      current.push(point);
+    }
+    if (current.length) segments.push(current);
+    for (const segment of segments) {
+      if (segment.length < 2) continue;
+      svg.append(svgNode('polyline', {
+        points: segment.map(point => `${x(point.time_s).toFixed(1)},${y(point.frequency_hz).toFixed(1)}`).join(' '),
+        fill: 'none', stroke: color, 'stroke-width': '1.4',
+        'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+      }));
+    }
+  });
+  const label = (attributes, text) => {
+    const element = svgNode('text', {fill: '#a6b8bd', 'font-size': '10', ...attributes});
+    element.textContent = text; svg.append(element);
+  };
+  label({x: left - 5, y: top + 4, 'text-anchor': 'end'}, String(Math.round(f1)));
+  label({x: left - 5, y: height - bottom + 4, 'text-anchor': 'end'}, String(Math.round(low)));
+  label({x: left, y: height - 7}, `${formatEventSeconds(t0)} s`);
+  label({x: width - right, y: height - 7, 'text-anchor': 'end'}, `${formatEventSeconds(t1)} s`);
+  label({x: left + 5, y: top + 10, fill: '#f3f8f5'}, `${curves.length} compounded ridges · each colour is one ridge${logScale ? ' · log frequency' : ''}`);
+  return svg;
+}
+
 async function submitReview(jobId, eventIds, label, note = '') {
   try {
     const saved = await api(`/api/jobs/${jobId}/reviews`, {
@@ -605,7 +670,7 @@ let eventsSignature = '';
 
 function renderEvents(value, force = false) {
   if (!value) return;
-  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${hideFalsePositives}|${hideFlaggedShapes}`;
+  const signature = `${value.job_id}|${value.events?.length || 0}|${Object.keys(reviews.labels || {}).sort().map(id => `${id}:${reviews.labels[id].label}:${reviews.labels[id].note || ''}`).join(',')}|${artifactJob}|${artifactPaths.size}|${mediaJob}|${mediaIndex ? Object.keys(mediaIndex.events || {}).length : 0}|${mediaIndex ? Object.keys(mediaIndex.groups || {}).length : 0}|${hideFalsePositives}|${hideFlaggedShapes}`;
   if (!force && signature === eventsSignature) return;
   eventsSignature = signature;
   const container = $('events');
@@ -697,6 +762,34 @@ function renderEvents(value, force = false) {
     if (group.length > 1) groupHead.append(groupReviewControl(group, value.job_id));
     section.append(groupHead);
     if (!collapsed) {
+      const groupMedia = mediaJob === value.job_id ? mediaIndex?.groups?.[groupId] : null;
+      const groupImagePath = groupMedia?.image ? `discovery/${groupMedia.image}` : null;
+      if (groupImagePath && hasArtifact(value.job_id, groupImagePath)) {
+        const version = mediaJob === value.job_id ? mediaIndex?.version : null;
+        const source = `${artifactUrl(value.job_id, groupImagePath)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
+        const figure = node('figure', undefined, 'group-figure');
+        const link = node('a');
+        link.href = source; link.target = '_blank'; link.rel = 'noopener noreferrer';
+        const image = node('img');
+        image.src = source;
+        image.alt = `Compounded measured curves for group ${groupId}`;
+        image.loading = 'lazy';
+        link.append(image);
+        link.addEventListener('click', click => {
+          if (click.ctrlKey || click.metaKey || click.shiftKey || click.altKey) return;
+          click.preventDefault();
+          openLightbox(link.href, image.alt);
+        });
+        figure.append(link, node('figcaption', `Compounded group curves · ${group.length} ridge${group.length === 1 ? '' : 's'}${groupFlagged ? ` · ${groupFlagged} flagged` : ''}${groupMedia?.plot?.scale === 'log' ? ' · log frequency' : ''}. Click image for full resolution.`, 'help'));
+        section.append(figure);
+      } else {
+        const chart = groupChart(group, groupId);
+        if (chart) {
+          const figure = node('figure', undefined, 'group-figure');
+          figure.append(chart, node('figcaption', `Compounded group curves · ${group.length} ridge${group.length === 1 ? '' : 's'} (inline fallback; group image not available).`, 'help'));
+          section.append(figure);
+        }
+      }
       const visible = group.filter(event => {
         if (hideFalsePositives && reviewLabel(event) === 'false_positive') return false;
         if (hideFlaggedShapes && ridgeShape(event).warning) return false;
