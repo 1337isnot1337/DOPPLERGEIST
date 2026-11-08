@@ -482,7 +482,7 @@ def _write_event_audio(recording, event, path, *, band_limited=False):
 
 def _write_event_media(recording, events, output, settings, *, plot_event_details, event_audio):
     """Write per-event plot, ridge and audio evidence without failing discovery."""
-    media = {"schema_version": 1, "version": 2,
+    media = {"schema_version": 1, "version": 3,
              "clip": {"padding_s": _EVENT_AUDIO_PADDING_S, "max_duration_s": _EVENT_AUDIO_MAX_S},
              "scope": "illustrative excerpts from the preserved recording; band-limited audio is not used for detection or scoring",
              "events": {}}
@@ -572,7 +572,12 @@ def _plot_event(recording, group, event, settings, path):
             hop_s = min(candidate_hop, 0.25)
     except (TypeError, ValueError):
         pass
-    plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=hop_s)
+    # Oversample the plot to at most 400 time columns. This adds no detector
+    # information, but it makes the measured window/hop visible and keeps a
+    # short crop from collapsing into a handful of wide blocks.
+    display_hop = min(hop_s, max(0.05, (last - first) / 400))
+    display_hop = max(1e-3, min(display_hop, window_s))
+    plot_settings = replace(settings, max_frequency_hz=8000., window_s=window_s, hop_s=display_hop)
     sr = recording.metadata["sample_rate_hz"]
     data = np.memmap(recording.samples_path, dtype="<f4", mode="r")
     spec = _spectrum(np.array(data[round(first * sr):round(last * sr)]), sr, first, plot_settings)
@@ -587,7 +592,7 @@ def _plot_event(recording, group, event, settings, path):
     lower = max(0, np.searchsorted(spec.frequency, limits[0]) - 1)
     upper = min(len(spec.frequency), np.searchsorted(spec.frequency, limits[1], side="right") + 1)
     visible = slice(lower, upper)
-    fig, ax = plt.subplots(figsize=(12, 4.5), layout="constrained")
+    fig, ax = plt.subplots(figsize=(14, 5), layout="constrained")
     ax.pcolormesh(spec.time, spec.frequency[visible], spec.contrast[visible], shading="auto", cmap="magma", vmin=0, vmax=6,
                   rasterized=True)
     for points in group:
@@ -596,7 +601,7 @@ def _plot_event(recording, group, event, settings, path):
     ax.set(xlim=(first, last), ylim=limits,
            xlabel="Recording-relative time (s)", ylabel="Frequency (Hz)",
            title=f"{event['event_id']}: measured ridges; acoustic proposal, identity unconfirmed")
-    fig.savefig(path, dpi=160)
+    fig.savefig(path, dpi=170)
     plt.close(fig)
-    return {"start_s": first, "end_s": last, "window_s": window_s, "hop_s": hop_s,
-            "sample_rate_hz": sr}
+    return {"start_s": first, "end_s": last, "window_s": window_s, "hop_s": display_hop,
+            "columns": int(len(spec.time)), "sample_rate_hz": sr}

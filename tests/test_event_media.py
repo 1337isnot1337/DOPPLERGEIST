@@ -109,15 +109,16 @@ def test_discover_events_writes_per_curve_media_for_a_moving_tone(tmp_path):
 
 
 def test_event_plot_uses_the_detector_window_for_high_band_ridges(tmp_path):
-    source = recording(tmp_path)
+    source = recording(tmp_path, duration_s=10.0)
     output = tmp_path / "discovery"
     output.mkdir()
     high_band = event(band_hz=(1600.0, 2000.0))
     high_band["quality"] = {"window_s": 0.5, "hop_s": 0.125}
     media = _write_event_media(source, [high_band], output, DiscoverySettings(),
                                plot_event_details=True, event_audio=False)
-    assert media["version"] == 2
+    assert media["version"] == 3
     plot = media["events"]["event-0001"]["plot"]
     assert plot["window_s"] == 0.5
-    assert plot["hop_s"] == 0.125
+    assert plot["hop_s"] <= 0.05
+    assert plot["columns"] >= 100
     assert plot["end_s"] - plot["start_s"] < 30

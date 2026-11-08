@@ -486,7 +486,7 @@ function eventCard(value, event) {
     const caption = node('figcaption', undefined, 'help');
     const plot = media?.plot;
     caption.append(document.createTextNode(plot
-      ? `Spectrogram crop · ${(plot.end_s - plot.start_s).toFixed(1)} s · ${plot.hop_s} s hop. Click image for full resolution.`
+      ? `Spectrogram crop · ${(plot.end_s - plot.start_s).toFixed(1)} s · ${plot.window_s} s window · ${plot.hop_s} s hop${plot.columns ? ` · ${plot.columns} columns` : ''}. Click image for full resolution.`
       : 'Spectrogram crop with measured ridge. Click image for full resolution. '));
     if (!plot) {
       const open = node('a', 'Open full size');
