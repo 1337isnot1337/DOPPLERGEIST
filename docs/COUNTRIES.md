@@ -1,6 +1,6 @@
 # Country profiles
 
-The automatic request and upload interface support six hand-written receiver
+The automatic request and upload interface supports six hand-written receiver
 regions and generated envelopes for every other country and territory
 ([below](#all-other-countries-and-territories)):
 
