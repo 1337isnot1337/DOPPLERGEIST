@@ -1,6 +1,6 @@
 # Physical matching
 
-The current target is up to 1,000 m point error acceptable, with 100–500 m or
+The current target is a point error of up to 1,000 m, with 100–500 m or
 better preferred. Benchmark point error and model sensitivity are different
 quantities. A boundary-truncated 500 m profile is not relabelled a valid 1 km
 envelope; it needs a larger declared search budget or remains limited.
