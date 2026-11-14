@@ -113,4 +113,28 @@ number meeting the original coverage criterion and preserves all five baseline
 successes. Otherwise it is declined for promotion. This is a post-baseline
 development comparison, not an unseen-data accuracy result or a threshold fit.
 Use a new predictions/output directory and add `--spectral-mode reassigned` to
-the discovery command. Results are pending.
+the discovery command.
+
+All40 reassigned runs and14,349 reference-point evaluations completed, with no
+failed/timeout case or out-of-audio point. The criterion was met by only **4/40**
+(P06,P20,P21,P23): **P35 was lost and no case gained**. Median union coverage
+fell from55.86% to53.12%. Returned ridge counts fell from1,102 to722, while groups
+changed49->50; neither count establishes better precision or source independence.
+One-shot total wall time was373.19s, versus444.78s in the ordinary run, with a
+warm JIT/cache order and changed outputs; this is not a controlled speedup claim.
+
+The predeclared promotion gate failed. The conditional six-hour background
+controls were therefore **not run**, and no production method, threshold or
+acceptance rule changes. Every case, regression and reference-point outcome is
+retained in `reassignment-*`.
+
+## Actionable consumer failure
+
+A separate post-hoc compatibility probe of the40 saved ordinary results at
+main77694d5 found49 groups:43 unreconciled groups,5 supported groups and one
+generic insufficient-sample failure. The first failure class remains with the
+harmonic-reconciliation owner. The latter is tracked as [issue449](https://github.com/1337isnot1337/DOPPLERGEIST/issues/449):
+P29 contains a valid seven-point discovery ridge, but matching's ten-point
+requirement raises an untyped exception that the automatic path does not handle
+as unsupported evidence. Its actual recorded-data reproducer and repair are
+separate from changing detection thresholds or relabeling benchmark outcomes.
