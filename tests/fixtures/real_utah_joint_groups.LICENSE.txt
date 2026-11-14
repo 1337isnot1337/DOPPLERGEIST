@@ -1,0 +1,22 @@
+Source: Finnegan, R., Moore, J.R., and Geimer, P.R. (2021), Data for
+"Vibration of Natural Rock Arches and Towers Excited by Helicopter-Sourced Infrasound".
+University of Utah Research Data Repository (The Hive).
+https://doi.org/10.7278/S50D-41SW-THMA
+https://hive.utah.edu/records/vz3dr-1n993
+
+License: Creative Commons Attribution-NonCommercial 3.0 Unported.
+https://creativecommons.org/licenses/by-nc/3.0/
+
+This fixture preserves all exported measured ridges from all three complete
+140-minute TwoBridge pressure-microphone channels, with ordinary production
+discovery at main 5dcb54f. Conversion retained every sample at the native 200 Hz,
+using the published 8.744e-5 Pa/count factor, one common linear power-of-two gain
+and float32 quantization. No filtering, resampling, cropping, signals, trajectories
+or recording clocks were generated. GPX positions were not discovery inputs.
+
+All six original groups and their failures are retained. The existing full-group
+joint model accepted two and rejected four; those results are software/model
+controls, not independently verified aircraft identity, clock, location or
+detection-accuracy evidence. These simultaneous channels are not independent
+field sessions or a sealed holdout. Microphone survey and clock uncertainty
+remain unproven. No private data or data-owner outreach was used.

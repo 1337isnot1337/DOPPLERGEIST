@@ -360,6 +360,70 @@ def _discover_baseline_events(recording, *, output_dir=None, settings=None, plot
     return events
 
 
+def _export_group_frequency_scales(events):
+    """Carry successful whole-group scales to the existing preparation contract."""
+    if not events:
+        return events, {}
+    from .advanced_discovery import joint_pass_evidence
+    from .matching import prepare_events, UnreconciledHarmonicGroup, InsufficientRidgeSamples
+
+    groups = {}
+    for index, event in enumerate(events):
+        key = event.get('harmonic_group_id') or event['event_id']
+        groups.setdefault(key, []).append((index, event))
+    exported, evidence = list(events), {}
+    for key, indexed in groups.items():
+        members = [event for _, event in indexed]
+        # Preserve existing producer scales and every already-supported group.
+        if len(members) == 1 or any('episode_frequency_scale' in event.get('quality', {})
+                                    for event in members):
+            continue
+        try:
+            prepare_events(members)
+        except InsufficientRidgeSamples:
+            continue
+        except UnreconciledHarmonicGroup as exc:
+            record = {'applied': False, 'legacy_preparation_reason': str(exc),
+                      'model': 'joint_pass_evidence'}
+        else:
+            continue
+        evidence[key] = record
+        try:
+            model = joint_pass_evidence(members)
+            json.dumps(model, allow_nan=False)
+        except (ValueError, FloatingPointError, TypeError) as exc:
+            record.update(reason='joint_fit_failed', error_type=type(exc).__name__, message=str(exc))
+            continue
+        record['joint_fit'] = model
+        if model.get('compatible') is not True:
+            record['reason'] = 'incompatible_joint_fit'
+            continue
+        try:
+            rows = model['track_residuals']
+            scales = {row['event_id']: float(row['scale_hz']) for row in rows}
+            complete = (len(rows) == len(members) == len(scales)
+                        and set(scales) == {event['event_id'] for event in members})
+            valid = all(math.isfinite(scale) and scale > 0 for scale in scales.values())
+        except (KeyError, TypeError, ValueError):
+            complete = valid = False
+        if not complete or not valid:
+            record['reason'] = 'incomplete_or_invalid_joint_scales'
+            continue
+        reference = min(scales.values())
+        normalized = {name: scale / reference for name, scale in scales.items()}
+        if not all(math.isfinite(scale) and scale > 0 for scale in normalized.values()):
+            record['reason'] = 'invalid_normalized_joint_scales'
+            continue
+        for index, event in indexed:
+            quality = dict(event.get('quality', {}),
+                           episode_frequency_scale=normalized[event['event_id']])
+            exported[index] = validate_event(dict(event, quality=quality))
+        record.update(applied=True, reason='complete_joint_fit',
+                      scale_reference_hz=reference,
+                      scope='Shared acoustic shape only; source identity and physical motion unverified')
+    return exported, evidence
+
+
 def discover_events(recording, *, output_dir=None, settings=None, plot_summary=True, plot_event_details=False,
                     event_audio=False, progress_callback=None):
     """Discover acoustic proposals; ``progress_callback(phase=..., **counts)`` reports activity only."""
@@ -404,6 +468,10 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
                 events.append(validate_event(event))
                 group.append(np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]]))
             groups.append(group)
+        events, frequency_models = _export_group_frequency_scales(events)
+        for proposal in result['events']:
+            if proposal['event_id'] in frequency_models:
+                proposal['frequency_scale_model'] = frequency_models[proposal['event_id']]
         if output_dir is not None:
             baseline_diagnostics = json.loads((output / "baseline-tracks/discovery.json").read_text())
             (output / "discovery.json").write_text(json.dumps({"source_sha256": recording.metadata["source_sha256"],
