@@ -1,0 +1,12 @@
+{
+  "source": "7C019D_2023-05-03_12-49-25_0_1.wav",
+  "source_seconds": 60.0,
+  "events": 30,
+  "groups": 1,
+  "exact_complete_discovery": true,
+  "elapsed_s": {
+    "reference": 8.025651066098362,
+    "optimized": 7.609303014818579
+  },
+  "scope": "One complete real recording; parity check, not a pipeline speed estimate or location result"
+}
