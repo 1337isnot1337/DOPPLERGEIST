@@ -16,6 +16,7 @@ import numpy as np
 import pytest
 
 from dopplergeist import aircraft_category as category
+from dopplergeist.contracts import event_measure_settings, validate_event
 from dopplergeist.discovery import discover_events
 from dopplergeist.intake import intake_recording
 
@@ -86,3 +87,42 @@ def test_command_refuses_existing_output_and_preserves_input(tmp_path):
                                capture_output=True, text=True, timeout=30)
     assert completed.returncode == 2 and "Output already exists" in completed.stderr
     assert source.read_bytes() == before
+
+
+def test_annotation_validation_stays_outside_the_real_event_contract():
+    recorded = json.loads((ROOT / "tests/data/shared-ridges-real.json").read_text())
+    event = recorded["shared"]["events"][0]
+    before = deepcopy(event)
+    settings = event_measure_settings(event)
+    for label in category.CATEGORIES:
+        annotation = {"label": label, "method": category.METHOD, "experimental": True}
+        assert category.validate_annotation(annotation) == annotation
+        assert validate_event(event) == before
+        assert event_measure_settings(event) == settings
+        with pytest.raises(ValueError):
+            validate_event(dict(event, acoustic_aircraft_category=annotation))
+    assert event == before
+
+
+@pytest.mark.parametrize("change", [
+    {"label": "Boeing 737"}, {"label": []}, {"experimental": False},
+    {"experimental": 1}, {"method": " "}, {"method": "method\n"}, {"probability": 0.9},
+])
+def test_invalid_report_annotations_are_rejected(change):
+    with pytest.raises(ValueError):
+        category.validate_annotation({"label": "unknown", "method": category.METHOD,
+                                      "experimental": True, **change})
+
+
+def test_insufficient_audio_and_budget_do_not_invent_model_output(monkeypatch):
+    recognizer = object.__new__(category.AircraftCategoryRecognizer)
+    def forbidden(*args, **kwargs):
+        raise AssertionError("No decoder or classifier may run without a complete allowed window")
+    monkeypatch.setattr(category, "decode_window", forbidden)
+    monkeypatch.setattr(recognizer, "score_window", forbidden)
+    short = recognizer.classify_interval(AUDIO, 0.0, 4.0)
+    limited = recognizer.classify_interval(AUDIO, 0.0, 5.0, max_windows=0)
+    assert short["reason"] == "insufficient_audio" and limited["reason"] == "work_limit"
+    for row in (short, limited):
+        assert row["label"] == "unknown" and row["windows_scored"] == 0
+        assert "mean_model_scores" not in row

@@ -12,9 +12,36 @@ from .contracts import validate_event
 METHOD = "mfcc20-16khz-window-score-mean-v1"
 FEATURE_VERSION = "mfcc20-16khz-5s-hop2.5s-window-v1"
 LABELS = {"background": "unknown", "propeller": "fixed_wing_propeller_like", "turbofan": "jet_like"}
+CATEGORIES = {*LABELS.values(), "helicopter_like"}
 SAMPLE_RATE = 16000
 WINDOW_S = 5.0
 HOP_S = 2.5
+
+
+def validate_annotation(value):
+    """Validate the report-only annotation, outside the shared event contract."""
+    if not isinstance(value, dict) or value.keys() != {"label", "method", "experimental"}:
+        raise ValueError("Annotation requires only label, method and experimental")
+    if not isinstance(value["label"], str) or value["label"] not in CATEGORIES:
+        raise ValueError("Unknown acoustic category")
+    if (not isinstance(value["method"], str) or not value["method"].strip()
+            or any(ord(char) < 32 for char in value["method"])):
+        raise ValueError("Annotation method must be nonempty text")
+    if value["experimental"] is not True:
+        raise ValueError("Category annotations must remain experimental")
+    return dict(value)
+
+
+def window_count(start, end):
+    if (any(type(v) not in (int, float) or not math.isfinite(v) for v in (start, end))
+            or not 0 <= start < end):
+        raise ValueError("Category interval must have finite, positive ordered endpoints")
+    duration = end - start
+    if duration < WINDOW_S:
+        return 0
+    steps = math.floor((duration - WINDOW_S) / HOP_S)
+    final = start + steps * HOP_S
+    return steps + 1 + int(not math.isclose(final, end - WINDOW_S, rel_tol=0, abs_tol=1e-8))
 
 
 def file_digest(path):
@@ -67,6 +94,8 @@ class AircraftCategoryRecognizer:
             raise ValueError("Unexpected category model classes")
         if self.scaler.n_features_in_ != 40:
             raise ValueError("Category scaler must accept 40 features")
+        if self.classifier.n_features_in_ != 40:
+            raise ValueError("Category classifier must accept 40 features")
 
     def score_window(self, audio):
         scores = np.asarray(self.classifier.predict_proba(
@@ -76,6 +105,28 @@ class AircraftCategoryRecognizer:
                 or not np.isclose(scores.sum(), 1.0)):
             raise ValueError("Invalid category model output")
         return scores[0]
+
+    def classify_interval(self, audio_path, start, end, *, max_windows=1024):
+        """The common bounded inference path for diagnostics and evaluation."""
+        if type(max_windows) is not int or max_windows < 0:
+            raise ValueError("Interval window allowance must be a nonnegative integer")
+        annotation = {**validate_annotation({"label": "unknown", "method": METHOD, "experimental": True}),
+                      "windows_scored": 0, "reason": "insufficient_audio"}
+        needed = window_count(start, end)
+        if not needed:
+            return annotation
+        if needed > max_windows:
+            return dict(annotation, reason="work_limit")
+        steps = math.floor((end - start - WINDOW_S) / HOP_S)
+        total = np.zeros(len(self.classes))
+        for index in range(needed):
+            offset = end - WINDOW_S if index > steps else start + index * HOP_S
+            total += self.score_window(decode_window(audio_path, offset))
+        scores = total / needed
+        predicted = self.classes[int(np.argmax(scores))]
+        annotation.update(label=LABELS[predicted], windows_scored=needed, reason="model_output",
+                          mean_model_scores=dict(zip(self.classes, scores.tolist())))
+        return annotation
 
 
 def diagnose(discovery, audio_path, model_path, *, max_windows=1024):
@@ -100,28 +151,10 @@ def diagnose(discovery, audio_path, model_path, *, max_windows=1024):
         start, end = event["start_s"], event["end_s"]
         key = (start, end)
         if key not in cached:
-            annotation = {"label": "unknown", "method": METHOD, "experimental": True,
-                          "windows_scored": 0, "reason": "insufficient_audio"}
-            duration = end - start
-            if duration >= WINDOW_S:
-                steps = math.floor((duration - WINDOW_S) / HOP_S)
-                final = start + steps * HOP_S
-                extra = not math.isclose(final, end - WINDOW_S, rel_tol=0, abs_tol=1e-8)
-                needed = steps + 1 + int(extra)
-                if limited or examined + needed > max_windows:
-                    limited = True
-                    annotation["reason"] = "work_limit"
-                else:
-                    total = np.zeros(len(recognizer.classes))
-                    for index in range(needed):
-                        offset = end - WINDOW_S if index > steps else start + index * HOP_S
-                        total += recognizer.score_window(decode_window(audio_path, offset))
-                    examined += needed
-                    scores = total / needed
-                    predicted = recognizer.classes[int(np.argmax(scores))]
-                    annotation.update(label=LABELS[predicted], windows_scored=needed,
-                                      reason="model_output",
-                                      mean_model_scores=dict(zip(recognizer.classes, scores.tolist())))
+            annotation = recognizer.classify_interval(audio_path, start, end,
+                                max_windows=0 if limited else max_windows - examined)
+            examined += annotation["windows_scored"]
+            limited = limited or annotation["reason"] == "work_limit"
             cached[key] = annotation
         rows.append({"event_id": event["event_id"], "start_s": start, "end_s": end, **cached[key]})
     return {"schema_version": 1, "source_sha256": expected.lower(),
