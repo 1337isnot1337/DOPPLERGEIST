@@ -4,6 +4,14 @@
 
 Intake decodes the original audio at 4 kHz and 24 kHz. Discovery combines ridge tracking and time-frequency sequence analysis, verifies measured tracks, and groups related tracks into proposals. The lower-rate ridge finder remains an internal component of this detector. The two decodes are checked against the same source hash.
 
+Upsampling adds no measured bandwidth. Both discovery paths and independent
+track verification respect the input file's Nyquist frequency. The saved
+`sequence_settings.source_nyquist_hz` and per-profile diagnostic bands show the
+effective limit. A file whose bandwidth falls below the configured analysis band
+can yield no supported events without a processing error. This limit describes
+the file's sampling capacity; microphone response and earlier processing remain
+separate provenance questions.
+
 `discovery/discovery.json` contains the input hash, detector settings, canonical proposal intervals and measured child tracks. Tracks belonging to a proposal share a `harmonic_group_id`; downstream association should count the group once while retaining its measured tracks. Times are relative to the first decoded sample. `--plot-summary` renders a track overview and `--plot-event-details` renders individual track plots. Use a new output directory for each run.
 
 The artifact also retains `sequence_diagnostics` for each analyzed chunk, window

@@ -1,0 +1,16 @@
+Source: AeroSonicDB YPAD-0523 v1.1.2, Blake Downward (2023),
+https://zenodo.org/records/10215080
+Original: 7C293D_2023-04-22_10-14-18_0_1.wav, publisher-labeled piston aircraft.
+License: Creative Commons Attribution-NonCommercial 4.0 International,
+https://creativecommons.org/licenses/by-nc/4.0/
+
+Both WAV fixtures retain the complete original recording, resampled with FFmpeg
+to 1,000 Hz or 32 Hz float PCM, then losslessly gzip compressed. The resampling
+deliberately removes bandwidth; it is not an equivalent full-band representation.
+No signal, noise, event, flight trajectory or recording clock was fabricated.
+
+The JSON fixture preserves the 34-point above-input-band ridge actually exported
+on main c2f205d from the 1,000 Hz recording. It is a software-error negative
+control, not an independent physical tone or verified aircraft observation.
+These fixtures test sample-band provenance and behavior, without location fitting,
+manual event windows/bands, flight IDs, GPS truth or field-accuracy claims.

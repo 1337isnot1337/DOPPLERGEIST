@@ -165,6 +165,7 @@ def discover(recording, output, variant, aux_recording=None):
     if variant in {'ridge_dp_accel_broad_final_v24', 'ridge_dp_accel_broad_final_v25'}:
         final = anchored_catalog(result, aux_recording, 'pass_v25' if variant.endswith('_v25') else 'pass_v24')
         final.update(variant=variant, candidate_catalog=result['events'], sequence_diagnostics=diagnostics, baseline_settings=result['settings'], sequence_settings=dict(chunk_s=120.0, overlap_s=60.0, low_band_hz=[20.0, 1600.0], high_band_hz=[1600.0, 8000.0], low_windows_s=[0.5, 2.0], low_hops_s=[0.125, 0.5], high_window_s=0.5, high_hop_s=0.125, log_bins_per_octave=[144, 576], high_background_sigma_hz=100.0, iteration_limit=32, maximum_fractional_rate_per_s=[0.3, 0.05], sequence_emission_bias=1.5), scope='Acoustic contour/episode proposals. No aircraft identity or physical source-motion verification.')
+        final['sequence_settings']['source_nyquist_hz'] = aux_recording.source_nyquist_hz
         return final
     return result
 
@@ -226,6 +227,9 @@ def best_sequence(image, hop, bins_per_octave=144, bias=1.5):
 def dp_front(recording, variant):
     events = []
     diagnostics = []
+    source_limit = recording.source_nyquist_hz
+    if source_limit <= 20.0:
+        return events, diagnostics
     for chunk, (start, data) in enumerate(recording.iter_chunks(120.0, 60.0)):
         profiles = [(0.5, 0.125), (2.0, 0.5)]
         if variant.startswith(('ridge_dp_dense', 'ridge_dp_accel')):
@@ -239,12 +243,17 @@ def dp_front(recording, variant):
                 f, t, p = reassigned_power(data, recording.metadata['sample_rate_hz'], n, step)
             else:
                 f, t, p = signal.spectrogram(data, fs=recording.metadata['sample_rate_hz'], nperseg=n, noverlap=n - step, window='hann', scaling='density')
-            keep = (f >= 10) & (f <= 8200)
+            keep = (f >= 10) & (f <= min(8200.0, source_limit))
+            if np.count_nonzero(keep) < 2:
+                continue
             f = f[keep]
             db = 10 * np.log10(np.maximum(p[keep], 1e-30))
             t = t + start
             local = db - local_median(db)
             for band, (low, high) in enumerate([(20.0, 1600.0), (1600.0, 8000.0)]):
+                high = min(high, source_limit)
+                if high <= low:
+                    continue
                 dense = variant.startswith(('ridge_dp_dense', 'ridge_dp_accel'))
                 high_window = 0.5 if 'broad' in variant else 1.0
                 if dense and (band == 1 and window != high_window or (band == 0 and window == 1.0)):
@@ -528,7 +537,8 @@ def verify_tracks(recording, events, variant):
     hop = 0.5
     n = round(sr * window)
     f, t, p = signal.spectrogram(x, fs=sr, nperseg=n, noverlap=0, window='hann', scaling='density')
-    keep = (f >= 10) & (f <= 8200)
+    source_limit = recording.source_nyquist_hz
+    keep = (f >= 10) & (f <= min(8200.0, source_limit))
     f = f[keep]
     power = p[keep]
     db = 10 * np.log10(np.maximum(power, 1e-30))
@@ -538,6 +548,9 @@ def verify_tracks(recording, events, variant):
     for event in events:
         path = ridge(event)
         tt, ff, ww = path.T
+        if np.any(ff > source_limit):
+            rejected.append(dict(event_id=event['event_id'], reason='outside_source_band'))
+            continue
         columns = np.flatnonzero((t >= tt[0]) & (t <= tt[-1]))
         if len(columns) < 5:
             rejected.append(dict(event_id=event['event_id'], reason='too_few_independent_windows'))
