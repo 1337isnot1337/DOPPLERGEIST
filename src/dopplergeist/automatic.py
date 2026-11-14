@@ -398,14 +398,14 @@ def _latest_emission(hi, duration, events, filters):
 def _search(request, recording, events, output, config, search_progress, acquisition_progress=None):
     from .data_access import FlightIndex, acquire_inputs
     from .geography import profile_for_search, receiver_mask_for_search
-    from .matching import prepare_events, UnreconciledHarmonicGroup
+    from .matching import prepare_events, UnreconciledHarmonicGroup, InsufficientRidgeSamples
     from .terrain import Terrain
     from .tiled_search import SearchBudget, search_national
     c = float(config.get("sound_speed_mps", 343.0))
     max_distance = float(config.get("max_distance_m", 20000.0))
     try:
         prepared, measurements = prepare_events(events, c=c, max_distance_m=max_distance)
-    except UnreconciledHarmonicGroup as exc:
+    except (UnreconciledHarmonicGroup, InsufficientRidgeSamples) as exc:
         raise UnreconciledDiscovery(
             f"Acoustic proposals could not be reconciled for matching: {exc}. "
             "The saved discovery diagnostics retain all detected ridges; no location search was performed."

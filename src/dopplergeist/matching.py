@@ -24,6 +24,10 @@ class UnreconciledHarmonicGroup(ValueError):
     """Discovery supplied a group without a usable shared frequency scale."""
 
 
+class InsufficientRidgeSamples(ValueError):
+    """Valid discovered observations do not meet matching's sample minimum."""
+
+
 _ridge_backend_choice = os.environ.get("DOPPLERGEIST_RIDGE_BACKEND", "auto")
 if _ridge_backend_choice not in {"auto", "python"}:
     raise ValueError("DOPPLERGEIST_RIDGE_BACKEND must be 'auto' or 'python'")
@@ -513,8 +517,16 @@ def prepare_events(detected_events, c=343.0, max_distance_m=20000.0):
             weights.extend(w / max(np.sum(w), 1e-12))
         order = np.argsort(times, kind="stable")
         t, f, w = (np.asarray(a)[order] for a in (times, frequencies, weights))
-        if len(t) < 10 or not np.all(np.isfinite(np.column_stack((t, f, w)))) or np.any(w < 0):
+        if not np.all(np.isfinite(np.column_stack((t, f, w)))) or np.any(w < 0):
             raise ValueError("Matching requires at least ten finite, nonnegative-weight ridge samples")
+        if len(t) < 10:
+            # Only contract-valid observations are an evidence limitation.
+            # Malformed short inputs retain their ordinary validation failure.
+            from .contracts import validate_event
+            for member in members:
+                validate_event(member)
+            raise InsufficientRidgeSamples(
+                f"Matching group {group_id} has {len(t)} ridge samples; at least ten are required")
         start, end = min(e["start_s"] for e in members), max(e["end_s"] for e in members)
         center = float(reference.get("cpa_receive_s", (start + end) / 2))
         quality = dict(reference.get("quality", {}))
