@@ -1,0 +1,26 @@
+{
+  "windows": 4320,
+  "publisher_labels_by_prediction": {
+    "0": {
+      "unknown": 2366,
+      "fixed_wing_propeller_like": 630,
+      "jet_like": 43,
+      "diagnostic_failed": 0
+    },
+    "1": {
+      "unknown": 34,
+      "fixed_wing_propeller_like": 323,
+      "jet_like": 405,
+      "diagnostic_failed": 0
+    },
+    "ignore": {
+      "unknown": 213,
+      "fixed_wing_propeller_like": 258,
+      "jet_like": 48,
+      "diagnostic_failed": 0
+    }
+  },
+  "model_sha256": "285205ef65d737ad71be2981945034d89c3e8af6c829c673af6b3354c98243bd",
+  "seconds": 140.30660139769316,
+  "scope": "All six original hours. Publisher labels are binary aircraft/background; category accuracy is not measured here."
+}

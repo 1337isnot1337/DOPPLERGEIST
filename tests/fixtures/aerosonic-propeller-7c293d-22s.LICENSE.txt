@@ -1,0 +1,11 @@
+AeroSonicDB (YPAD-0523): Labelled audio dataset for acoustic detection and
+classification of aircraft, version 1.1.2. Creator: Blake Downward (2023).
+Source: https://zenodo.org/records/10215080
+Original filename: 7C293D_2023-04-22_10-14-18_0_1.wav
+License: Creative Commons Attribution-NonCommercial 4.0 International
+https://creativecommons.org/licenses/by-nc/4.0/
+
+Changes: excerpted seconds 22 through 27, converted to mono 16000 Hz and
+losslessly encoded as FLAC. The original source is publisher-labeled piston
+aircraft (class 1). This excerpt is software-test input, not GPS/time truth or
+a classifier/geolocation accuracy benchmark.
