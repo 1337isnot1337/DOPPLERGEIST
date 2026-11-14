@@ -293,13 +293,47 @@ def proposals(root, discoveries, model, output):
     print(json.dumps(summary), flush=True)
 
 
+def identities(root, predictions, output):
+    """Post-hoc identity strata of frozen predictions; never refit or rescore."""
+    output.mkdir(parents=True, exist_ok=False)
+    source = metadata(root)
+    train = [row for row in source if row["train-test"] == "train"]
+    test_rows = {row["filename"]: row for row in source if row["train-test"] == "test"}
+    assert not ({row["filename"] for row in train} & set(test_rows))
+    assert not ({row["session"] for row in train} & {row["session"] for row in test_rows.values()})
+    trained_ids = {row["hex_id"] for row in train if row["class"] == "1"}
+    with predictions.open(newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    assert len(rows) == len(test_rows) == 416
+    assert {row["filename"] for row in rows} == set(test_rows)
+    groups = {"background": [], "aircraft_identity_seen": [], "aircraft_identity_unseen": []}
+    for row in rows:
+        original = test_rows[row["filename"]]
+        group = "background" if original["class"] == "0" else (
+            "aircraft_identity_seen" if original["hex_id"] in trained_ids else "aircraft_identity_unseen")
+        groups[group].append(row)
+    summary = {"scope": "Post-hoc strata of the single frozen official-test prediction set. No new inference or fitting.",
+               "filename_overlap": 0, "session_overlap": 0,
+               "record_counts": {name: len(values) for name, values in groups.items()},
+               "unseen_aircraft_by_subclass": {str(subclass): sum(row["subclass"] == str(subclass)
+                                                              for row in groups["aircraft_identity_unseen"])
+                                                for subclass in (1, 2, 3, 4)},
+               "unseen_aircraft_plus_background": metrics(groups["background"] + groups["aircraft_identity_unseen"]),
+               "limits": ["The official split separates sessions, not all aircraft identities.",
+                          "This stratum was defined after viewing the official-test outcomes.",
+                          "Repeated recordings and adjacent observations are not independent trials."]}
+    (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps(summary), flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "fit", "test", "environment", "discover", "proposals"))
+    parser.add_argument("command", choices=("prepare", "fit", "test", "environment", "discover", "proposals", "identities"))
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--model", type=Path)
     parser.add_argument("--discoveries", type=Path)
+    parser.add_argument("--predictions", type=Path)
     parser.add_argument("--workers", type=int, default=2)
     args = parser.parse_args()
     if args.workers < 1 or args.workers > 4:
@@ -310,6 +344,8 @@ def main():
         parser.error("--model is required")
     if args.command == "proposals" and args.discoveries is None:
         parser.error("--discoveries is required")
+    if args.command == "identities" and args.predictions is None:
+        parser.error("--predictions is required")
     if args.command == "prepare":
         prepare(args.data)
     elif args.command == "fit":
@@ -320,6 +356,8 @@ def main():
         discover(args.data, args.output)
     elif args.command == "proposals":
         proposals(args.data, args.discoveries, args.model, args.output)
+    elif args.command == "identities":
+        identities(args.data, args.predictions, args.output)
     else:
         environment(args.data, args.model, args.output, args.workers)
 

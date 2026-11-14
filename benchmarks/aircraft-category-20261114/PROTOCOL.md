@@ -54,3 +54,12 @@ PYTHONPATH=src python scripts/evaluate_aircraft_category.py environment --data /
 PYTHONPATH=src python scripts/evaluate_aircraft_category.py discover --data /path/to/public-data --output /path/to/new-discoveries
 PYTHONPATH=src python scripts/evaluate_aircraft_category.py proposals --data /path/to/public-data --discoveries /path/to/new-discoveries --model /path/to/new-training/model.joblib --output /path/to/new-proposal-evaluation
 ```
+
+After viewing the official-test predictions, an additional identity-stratified
+analysis was added to distinguish held-out sessions from unseen aircraft. It
+does not change the registered fit, predictions, model, thresholds or population.
+It is explicitly post-hoc and cannot replace the full registered result:
+
+```bash
+PYTHONPATH=src python scripts/evaluate_aircraft_category.py identities --data /path/to/public-data --predictions /path/to/new-test/predictions.csv --output /path/to/new-identity-analysis
+```

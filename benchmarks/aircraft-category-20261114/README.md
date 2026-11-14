@@ -35,6 +35,15 @@ not provide reliable out-of-distribution rejection or helicopter recognition.
 Overall accuracy is dominated by background and does not establish useful
 propeller classification. There are only 25 held-out propeller recordings.
 
+The official split has no repeated file names or sessions, but it does reuse
+aircraft identities: 74 of the 99 aircraft test recordings have an identity
+present in training. A **post-hoc**, explicitly non-registered identity analysis
+of the unchanged predictions is retained in `identity-strata.json`. The unseen
+identity stratum has only six propeller, eighteen turbofan and one rotorcraft
+recordings. When combined with the held-out background recordings, propeller-like
+precision is 4/38 (10.5%). No new fitting or inference was used for this analysis;
+it does not establish broad unseen-aircraft performance.
+
 All source file names, sessions, predictions, scores, failures and unknown outcomes
 are in `official-test-predictions.csv`; `official-test-summary.json` contains the
 full four-column confusion matrix, including the zero-count diagnostic-failure
@@ -73,6 +82,8 @@ publisher's binary labels cannot verify which aircraft category is correct.
 Transition predictions are retained and excluded from that comparison. Adjacent
 windows are correlated; these counts are not independent-trial confidence bounds.
 Complete predictions and aggregate counts are in `continuous-window-*`.
+The supplied mapping does not bind the six files to the official split's session
+IDs, so independence from its training recordings is not established.
 
 Whole-recording automatic discovery and the proposal-level controls are still
 running. Their complete outcomes will be appended before the PR is marked ready.
