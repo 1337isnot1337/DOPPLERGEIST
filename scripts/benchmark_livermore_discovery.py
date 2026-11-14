@@ -107,6 +107,29 @@ def run_case(audio, output, spectral_mode="ordinary"):
             combined /= np.sqrt(np.sum(weights * weights))
             return centres, np.clip(combined, -4.0, 8.0).astype(np.float32)
         advanced_discovery.log_image = harmonic_image
+    elif spectral_mode == "nearest-native-bin":
+        def nearest_image(frequency, image, low, high, bins_per_octave=144):
+            if low != 20.0 or high != 1600.0:
+                return ordinary_image(frequency, image, low, high, bins_per_octave)
+            logf = np.arange(np.log2(low), np.log2(high), 1 / bins_per_octave)
+            centres = 2 ** logf
+            pos = (centres - frequency[0]) / (frequency[1] - frequency[0])
+            nearest = np.clip(np.floor(pos + 0.5).astype(int), 0, len(frequency) - 1)
+            out = image[nearest].astype(np.float64)
+            # Retain production's pooling, normalization and clipping. Only
+            # interpolation between native spectral samples differs.
+            bins = np.floor((np.log2(np.maximum(frequency, 1e-6)) - logf[0]) * bins_per_octave).astype(int)
+            valid = (bins >= 0) & (bins < len(logf))
+            rows = np.flatnonzero(valid)
+            which = bins[valid]
+            starts = np.flatnonzero(np.r_[True, np.diff(which) > 0])
+            if len(starts):
+                maxima = np.maximum.reduceat(image[rows], starts, axis=0)
+                out[which[starts]] = np.maximum(out[which[starts]], maxima)
+            center = np.median(out, axis=1, keepdims=True)
+            scale = 1.4826 * np.median(np.abs(out - center), axis=1, keepdims=True)
+            return centres, np.clip((out - center) / np.maximum(scale, 2.0), -4.0, 8.0).astype(np.float32)
+        advanced_discovery.log_image = nearest_image
     try:
         recording = intake_recording(audio, output / "intake")
         events = discover_events(recording, output_dir=output / "discovery",
@@ -264,7 +287,7 @@ def main():
     parser.add_argument("--audio", type=Path)
     parser.add_argument("--source-ref", default=DETECTOR_REF,
                         help="Explicit production source pin for a newly registered discovery run")
-    parser.add_argument("--spectral-mode", choices=("ordinary", "reassigned", "harmonic-combination"), default="ordinary",
+    parser.add_argument("--spectral-mode", choices=("ordinary", "reassigned", "harmonic-combination", "nearest-native-bin"), default="ordinary",
                         help="Explicit research-only proposal estimator; thresholds remain fixed")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
