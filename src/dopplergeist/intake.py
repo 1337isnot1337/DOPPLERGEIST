@@ -81,6 +81,15 @@ class IntakeRecording:
     def time_status(self):
         return "ready" if self.metadata.get("time_window") is not None else "needs_input"
 
+    @property
+    def source_nyquist_hz(self):
+        """The input file's band limit; decoding at a higher rate adds no band."""
+        rate = self.diagnostics.get("decode", {}).get(
+            "source_sample_rate_hz", self.metadata["sample_rate_hz"])
+        if type(rate) not in (int, float) or not math.isfinite(rate) or rate <= 0:
+            raise ValueError("Source sample rate must be finite and positive")
+        return rate / 2
+
     def iter_chunks(self, chunk_s=120.0, overlap_s=60.0):
         sr = self.metadata["sample_rate_hz"]
         if not np.isfinite(chunk_s) or not np.isfinite(overlap_s) or not 0 <= overlap_s < chunk_s:

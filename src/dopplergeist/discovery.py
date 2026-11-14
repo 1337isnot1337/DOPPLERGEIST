@@ -52,13 +52,18 @@ class DiscoverySettings:
             raise ValueError("Invalid frequency range or peak limit")
 
 
-def _spectrum(data, sr, start, settings):
+def _spectrum(data, sr, start, settings, *, source_nyquist_hz=None):
     n, hop = round(sr * settings.window_s), round(sr * settings.hop_s)
     if len(data) < n:
         return None
     f, t, power = signal.spectrogram(data, fs=sr, window="hann", nperseg=n,
                                     noverlap=n - hop, nfft=n, scaling="density")
-    keep = (f >= settings.min_frequency_hz) & (f <= min(settings.max_frequency_hz, sr * 0.48))
+    upper = min(settings.max_frequency_hz, sr * 0.48)
+    if source_nyquist_hz is not None:
+        upper = min(upper, source_nyquist_hz)
+    keep = (f >= settings.min_frequency_hz) & (f <= upper)
+    if np.count_nonzero(keep) < 2:
+        return None
     f, power = f[keep], power[keep]
     db = 10 * np.log10(power + np.finfo(np.float32).tiny)
     whitened = db - np.median(db, axis=1, keepdims=True)
@@ -294,7 +299,7 @@ def _discover_baseline_events(recording, *, output_dir=None, settings=None, plot
         if (output / "discovery.json").exists():
             raise FileExistsError("Discovery output exists; use a new output directory")
     for start, data in recording.iter_chunks(settings.chunk_s, settings.overlap_s):
-        spec = _spectrum(data, sr, start, settings)
+        spec = _spectrum(data, sr, start, settings, source_nyquist_hz=recording.source_nyquist_hz)
         if spec is None:
             chunks.append({"start_s": start, "duration_s": len(data) / sr, "usable_paths": 0})
             continue
@@ -323,7 +328,8 @@ def _discover_baseline_events(recording, *, output_dir=None, settings=None, plot
             event = {"event_id": event_id, "harmonic_group_id": f"harmonics-{index + 1:04d}",
                  "start_s": max(0.0, float(t[0] - settings.window_s / 2)),
                  "end_s": min(recording.metadata["duration_s"], float(t[-1] + settings.window_s / 2)),
-                 "band_hz": [max(0.01, float(f.min() - margin)), float(f.max() + margin)],
+                 "band_hz": [max(0.01, float(f.min() - margin)),
+                             min(recording.source_nyquist_hz, float(f.max() + margin))],
                  "ridge": [{"time_s": float(a), "frequency_hz": float(b), "weight": float(c)} for a, b, c in points],
                  "quality": {"median_contrast": float(np.median(weight)), "harmonic_count": float(len(orders)),
                              "support_fraction": min(1.0, len(t) / (np.ptp(t) / settings.hop_s + 1)),
@@ -392,7 +398,9 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
                 event = {key: track[key] for key in ("event_id", "start_s", "end_s", "band_hz", "ridge", "quality") if key in track}
                 event["harmonic_group_id"] = proposal["event_id"]
                 frequencies = [point["frequency_hz"] for point in event["ridge"]]
-                event["band_hz"] = [min(event["band_hz"][0], min(frequencies)), max(event["band_hz"][1], max(frequencies))]
+                event["band_hz"] = [min(event["band_hz"][0], min(frequencies)),
+                                    min(recording.source_nyquist_hz,
+                                        max(event["band_hz"][1], max(frequencies)))]
                 events.append(validate_event(event))
                 group.append(np.array([[p["time_s"], p["frequency_hz"], p["weight"]] for p in event["ridge"]]))
             groups.append(group)
