@@ -400,6 +400,7 @@ def discover_events(recording, *, output_dir=None, settings=None, plot_summary=T
             baseline_diagnostics = json.loads((output / "baseline-tracks/discovery.json").read_text())
             (output / "discovery.json").write_text(json.dumps({"source_sha256": recording.metadata["source_sha256"],
                 "settings": asdict(settings), "sequence_settings": result["sequence_settings"],
+                "sequence_diagnostics": result["sequence_diagnostics"],
                 "events": events, "proposals": result["events"], "chunks": baseline_diagnostics["chunks"],
                 "fragment_links": baseline_diagnostics["fragment_links"],
                 "harmonic_ridges": [[points.tolist() for points in group] for group in groups],
