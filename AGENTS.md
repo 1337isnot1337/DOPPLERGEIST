@@ -115,6 +115,8 @@ historical; they do not satisfy the current validation requirement.
 - Use actual audio and historical aircraft observations for empirical evaluation.
   Establish a defensible recording time and independent location reference; report
   uncertainty or missing ground truth honestly.
+- Data acquisition must use public downloads only. Do not request private or
+  request-only data, or contact data owners for access.
 - Prioritize obtaining usable real recordings and making the pipeline work on them.
   Do not substitute another simulated success or detection-only fixture for this.
 - Existing unit tests remain software checks, not real-world validation. Do not

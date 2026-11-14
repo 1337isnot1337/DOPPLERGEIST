@@ -1,0 +1,61 @@
+{
+  "proposals": 1593,
+  "failed_recordings": [],
+  "publisher_states_by_prediction": {
+    "0": {
+      "unknown": 205,
+      "fixed_wing_propeller_like": 98,
+      "jet_like": 22
+    },
+    "1": {
+      "unknown": 71,
+      "fixed_wing_propeller_like": 427,
+      "jet_like": 451
+    },
+    "mixed_or_ignored": {
+      "unknown": 14,
+      "fixed_wing_propeller_like": 207,
+      "jet_like": 98
+    }
+  },
+  "model_sha256": "285205ef65d737ad71be2981945034d89c3e8af6c829c673af6b3354c98243bd",
+  "scope": "Actual full-recording automatic proposals; labels joined afterward. Mixed/ignore intervals are unscored. Aircraft presence labels are not category or identity truth.",
+  "recording_outcomes": [
+    {
+      "recording": "1_AUDIO.wav",
+      "complete": true,
+      "events": 240,
+      "windows_scored": 1422
+    },
+    {
+      "recording": "2_AUDIO.wav",
+      "complete": true,
+      "events": 115,
+      "windows_scored": 935
+    },
+    {
+      "recording": "3_AUDIO.wav",
+      "complete": true,
+      "events": 308,
+      "windows_scored": 2318
+    },
+    {
+      "recording": "4_AUDIO.wav",
+      "complete": true,
+      "events": 264,
+      "windows_scored": 1773
+    },
+    {
+      "recording": "5_AUDIO.wav",
+      "complete": true,
+      "events": 520,
+      "windows_scored": 3017
+    },
+    {
+      "recording": "6_AUDIO.wav",
+      "complete": true,
+      "events": 146,
+      "windows_scored": 858
+    }
+  ]
+}

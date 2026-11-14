@@ -47,6 +47,10 @@ jobs:
         run: python -m pytest -q tests/test_real_curved_dp.py
       - name: Check guidance with recorded ridges and saved job review states
         run: python -m pytest -q tests/test_real_guidance_limits.py
+      - name: Check isolated category diagnostics with licensed real audio
+        run: |
+          python -m pip install 'librosa==0.11.0; python_version < "3.12"' 'librosa==1.0.1; python_version >= "3.12"' scikit-learn==1.9.1 joblib==1.6.0
+          python -m pytest -q tests/test_real_aircraft_category.py
       - name: Check prepared-index compatibility with recorded observations
         run: python -m pytest -q tests/test_real_prepared_geometry_compatibility.py::test_pinned_legacy_geometry_and_data_source_preserve_real_tracks
       - name: Check country profiles against the actual BKG land boundary

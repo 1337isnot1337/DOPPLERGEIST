@@ -1,0 +1,11 @@
+{
+  "recording": "1_AUDIO.wav",
+  "max_windows": 1,
+  "complete": false,
+  "windows_scored": 0,
+  "event_reasons": {
+    "work_limit": 220,
+    "insufficient_audio": 20
+  },
+  "limited_events_all_unknown_without_scores": true
+}
