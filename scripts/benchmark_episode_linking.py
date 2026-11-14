@@ -44,6 +44,8 @@ def main():
         row = {"case_id": case["id"], "baseline_status": "", "optimized_status": "",
                "baseline_wall_s": "", "optimized_wall_s": "", "baseline_cpu_s": "", "optimized_cpu_s": "",
                "baseline_proposals": "", "optimized_proposals": "", "baseline_children": "", "optimized_children": "",
+               "baseline_peak_rss_kib": "", "optimized_peak_rss_kib": "",
+               "baseline_output_bytes": "", "optimized_output_bytes": "",
                "exact_discovery_except_code_and_timing": ""}
         reports = {}
         order = ("baseline", "optimized") if index % 2 == 0 else ("optimized", "baseline")
@@ -71,6 +73,8 @@ def main():
             row[name + "_wall_s"] = result.get("runtime_s", "")
             row[name + "_proposals"] = result.get("proposals", "")
             row[name + "_children"] = result.get("child_tracks", "")
+            row[name + "_peak_rss_kib"] = result.get("peak_rss_kib", "")
+            row[name + "_output_bytes"] = result.get("output_bytes", "")
             artifact = destination / name / "discovery/discovery.json"
             if artifact.exists():
                 report = json.loads(artifact.read_text())

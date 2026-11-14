@@ -10,7 +10,65 @@ The [original report](ACOUSTIC_EPISODES_REPORT.md) and
 follow-up uses separate output directories. PR #356 was merged by another
 controller during repair; this work is a separate **draft, unmerged follow-up**.
 
-## Pins and fixed evaluation
+## November 14 performance repair
+
+The held draft now includes current main through `c2679c9`. The product CLI still
+uses production discovery; the experimental module is selected only by its Python
+research replay runner. The owner's draft/unmerged/no-auto-merge instruction
+remains in force.
+
+Profiling unchanged recorded PCM identified repeated tiny NumPy median calls in
+local spectral prominence as the largest path-linking cost. A cached Numba helper
+computes the same neighborhood, median and subtraction with the original dtype
+rounding. Peak selection, path order, prediction, motion checks, thresholds and
+episode acceptance are unchanged. Recorded spectral peaks are compared bitwise
+against the previous expression for float32 and float64; the saved raw-path
+regression also checks timing, topology and measured values.
+
+A complete paired full-recording replay compared baseline `8e4a2ee` (main
+`fdfc581` plus the held repair) with optimization `829ce90`. All 28 registered cases and
+both arms finished. Complete discovery content was exactly equal in 28/28 pairs
+after omitting only root `code`, `runtime_s` and `cpu_time_s`. This includes all
+observations, groups, rejected-path diagnostics, settings and content IDs.
+
+| Cost across the 28 recordings | Baseline | Optimized |
+| --- | ---: | ---: |
+| Total wall time | 704.502 s | 399.921 s |
+| Total process CPU time | 682.078 s | 377.377 s |
+| Maximum process peak RSS | 227.867 MiB | 326.266 MiB |
+| Hour reference wall time | 282.574 s | 147.380 s |
+| Hour reference proposals / children | 92 / 200 | 92 / 200 |
+
+The aggregate wall ratio is 1.762x (43.2% less time); individual ratios range from
+1.042x to 2.074x. The compiled helper increases process memory, as shown above.
+These are single alternating-order pairs run serially with one BLAS/OpenMP thread,
+a 1,800 s watchdog per arm and the same default 1,600 Hz band. They do not supply
+confidence intervals or a universal speed guarantee. The earlier 663 s / 34 s
+historical comparison used a different environment and is not a controlled
+comparison with these new timings. The helper cache had been populated during
+recorded-PCM checks; cold JIT compilation cost was not measured. Full CSV outcomes, including peak RSS and
+artifact bytes for every arm, are in
+[`linking-performance-20261114.csv`](../benchmarks/acoustic-episode-repair-20261104/linking-performance-20261114.csv).
+
+Inputs were reacquired only through public downloads and matched the original
+source hashes: nine eligible AeroSonicDB recordings, all eighteen DEMAND channel-1
+recordings and the public mixed/unclassified hour as an acoustic stress control.
+Before running, the three publisher-labeled AeroSonicDB turbofan cases
+`case-0002`, `case-0039`, `case-0008` and the DLR A320 case were excluded from the
+new evaluation under the current non-jet policy. The 32-case historical results
+below are preserved with their original denominators. DEMAND SCAFE is actually
+48 kHz, despite the old manifest description; its unchanged channel-1 source hash
+matches the public 48 kHz archive. Only that description was corrected.
+
+Reproduction uses `scripts/benchmark_episode_linking.py --manifest MANIFEST
+--baseline-root BASELINE --optimized-root OPTIMIZED --output NEW_DIRECTORY` with
+the 28 original cases, absolute local public-source paths and the four explicit
+policy exclusions. The helper invokes the research replay runner, not the removed
+product CLI option. This experiment measures implementation parity and cost. It
+does not resolve the historical 19/20 retention limit, confusing-source extras,
+physical source counts, aircraft identity or location acceptance.
+
+## Historical pins and fixed evaluation
 
 At task start PR head was `3447e33ec6760d55f3fc2457c616d559b1a49944`;
 comparison baseline was `451b67f01dcd1dfe44d47c42407f404706a5a9b7`.

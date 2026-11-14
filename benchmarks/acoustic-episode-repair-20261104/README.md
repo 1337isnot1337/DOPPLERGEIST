@@ -1,5 +1,13 @@
 # Real-recording acoustic repair comparison
 
+The November 14 performance follow-up is
+[`linking-performance-20261114.csv`](linking-performance-20261114.csv): all 28
+registered eligible public-source cases, both arms complete, exact discovery
+content parity. It records time, peak RSS, output bytes and proposal/child counts.
+Four known-jet cases were excluded before this new replay; the original 32-case
+results below retain their original denominators. See the
+[measured speed/memory tradeoff and source pins](../../docs/ACOUSTIC_EPISODES_REPAIR.md#november-14-performance-repair).
+
 [Engineering report](../../docs/ACOUSTIC_EPISODES_REPAIR.md),
 [fixed protocol](protocol.md), and
 [original source/rights/hash manifest](../acoustic-episodes-349/manifest.json).

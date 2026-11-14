@@ -106,10 +106,11 @@ They are not guaranteed true geometry; the matcher must account for uncertainty.
 There is no blanket `confidence` float whose semantics different workers can guess.
 
 Default discovery retains its existing artifact, which has no explicit
-`schema_version` field. The shared event contract remains version 1. Only the explicit
-`discover --experimental-episodes` path writes `schema_version: 2` with an
-`episodes` catalog that references compatible `events` children. The checkout
-scanner also requires this switch. See [outputs and
+`schema_version` field. The shared event contract remains version 1. The isolated
+Python research module `episode_discovery` writes `schema_version: 2` with an
+`episodes` catalog that references compatible `events` children. Its research
+replay runner selects it with `--experimental-episodes`; the product `discover`
+CLI rejects that removed option. See [outputs and
 compatibility](AUDIO_DISCOVERY.md#outputs-and-compatibility).
 
 Experimental children carry `quality.episode_model_version=2`, positive
