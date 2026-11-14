@@ -1,0 +1,14 @@
+Recorded-data regression artifact from an actual offline automatic analysis on main fdfc581.
+
+Audio source: Blake Downward and Jon Nordby, AeroSonicDB YPAD-0523 v1.1.2,
+https://zenodo.org/records/10215080 , CC BY-NC 4.0.
+Original source filename: 7C293D_2023-04-22_10-14-18_0_1.wav.
+Publisher label: piston aircraft (class1/subclass1).
+License: https://creativecommons.org/licenses/by-nc/4.0/
+
+The compressed JSON preserves the completed result and measured ridges from job
+b014b84ba3b94466bee1a0c855f67b1c, without audio. Default whole-recording discovery,
+explicit offline operation, no flight IDs/coordinates/manual event bands supplied.
+The full publisher UTC calendar day is a declared software-control input;
+sample-zero offset and drift are unverified. No location search or field accuracy
+claim. Fixture checks explanation only, preserving scores/status/observations.
