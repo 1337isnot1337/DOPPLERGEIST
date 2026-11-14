@@ -15,3 +15,8 @@ Measured ridge lines are broken at gaps above `max(0.5 s, min(1.5 s, 2 × detect
 Discovery uses fixed settings. A track is acoustic evidence, not proof that the source is an aircraft or that the pitch change was caused by physical motion. Missed, fragmented, merged and spurious proposals remain possible. Runtime, memory and disk use depend on recording length and content. Historical results from earlier discovery versions do not establish this detector's general performance or location accuracy.
 
 [Earlier discovery documentation and historical results](archive/AUDIO_DISCOVERY_LEGACY.md) are preserved separately.
+
+The separate `episode_discovery` research module has an ongoing bounded linking
+and reconciliation repair. Its [engineering report](ACOUSTIC_EPISODES_REPAIR.md)
+retains measured results and limitations; [draft PR365](https://github.com/1337isnot1337/DOPPLERGEIST/pull/365)
+remains under the owner's draft/unmerged hold. Current CLI routing is unchanged.
