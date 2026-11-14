@@ -138,3 +138,48 @@ P29 contains a valid seven-point discovery ridge, but matching's ten-point
 requirement raises an untyped exception that the automatic path does not handle
 as unsupported evidence. Its actual recorded-data reproducer and repair are
 separate from changing detection thresholds or relabeling benchmark outcomes.
+
+That insufficient-sample failure was subsequently repaired in merged PR451.
+The ten-sample requirement remains unchanged; valid short ridges now produce an
+explicit inconclusive evidence limit, preserving the43 other unreconciled groups.
+
+## Two additional proposal-image experiments
+
+Two distinct development hypotheses were registered before their outputs in
+[the harmonic-combination protocol](https://github.com/1337isnot1337/DOPPLERGEIST/issues/341#issuecomment-6879398767)
+and [the nearest-native-bin protocol](https://github.com/1337isnot1337/DOPPLERGEIST/issues/341#issuecomment-6879775886).
+Both keep the high band, DP bias, raw spectral measurements, verification,
+grouping, thresholds, complete40-WAV population and original coverage criterion.
+Only the low-band proposal image changes, with no reference labels in discovery:
+
+- `--spectral-mode harmonic-combination` combines normalized images at harmonics
+  1..4 with weights1/sqrt(h), divides bysqrt(sum1/h), and retains[-4,8] clipping.
+- `--spectral-mode nearest-native-bin` samples the nearest measured FFT bin in
+  place of linear amplitude interpolation. Native-bin maxima, median/MAD
+  normalization and clipping remain unchanged. It does not combine harmonics.
+
+All120 full-WAV runs and their evaluations finished without execution failures,
+timeouts, evaluation errors or out-of-audio reference points. The frozen ordinary
+arm at productionc2679c9 exactly matched every saved artifact from the original
+463834f control in all40 cases. The runner revisions were7d79d31 for ordinary and
+harmonic-combination, and9e35197 for nearest-native-bin. The complete outcome
+table is [`proposal-image-comparisons.csv`](proposal-image-comparisons.csv).
+
+| Proposal image | Criterion met | Median union coverage | Lost baseline successes | New successes | Ridges / groups |
+| --- | ---: | ---: | --- | --- | ---: |
+| Ordinary |5/40|55.86%|None|Baseline|1102 /49|
+| Harmonic combination |4/40|48.55%|P20|None|907 /50|
+| Nearest native bin |4/40|56.74%|P35|None|1097 /49|
+
+Both registered promotion gates **failed**: neither added a successful case and
+each lost one. Higher median coverage in the nearest-bin arm does not override
+that failure. Conditional six-hour background controls were **not run**. These
+explicit research flags do not change production discovery. All data remain a
+selected development corpus, with no general recall, false-proposal, independent
+clock or location-accuracy claim.
+
+The CSV retains observed elapsed times for completeness. Ordinary and harmonic
+arms ran concurrently, each serial within its arm; nearest-bin ran later. These
+times are not a controlled method-speed comparison. To reproduce the frozen runs,
+use the stated runner revisions with `--source-ref c2679c939128faa5b9229991616c35cc017084f6`.
+Future registered runs on changed production source must supply their actual pin.
