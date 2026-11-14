@@ -22,6 +22,51 @@ separate processes, using the available CPU cores minus one for the SQLite write
 source order. SQLite writes and finalization still run in the writer process; a
 stopped partial index must be rebuilt.
 
+Native archives now stage each normalized aircraft batch as a compressed SQLite
+blob. Flight/time ordering and duplicate precedence are preserved before the
+unchanged segment builder runs. Repeated source chunks remain supported; a mixed
+aircraft batch is rejected. The arbitrary-order row importer keeps its existing
+path. Per-flight sample and queued-byte limits still apply, and older prepared
+caches from the immediately preceding source remain usable.
+
+The change addresses an actual full-day build that exhausted its explicit free
+disk reserve while writing the uncompressed temporary sample table. A fixed
+first-24-trace check on the provider-verified May 17, 2026 prod-0 archive retained
+19,551 observations and 195 segments. Segment payloads, hashes, spatial bounds,
+counts and prepared payloads were exact across both staging modes and reversed
+input order. The full-day compressed build is separate and still in progress.
+
+| Recorded-source check | Observed output-folder bytes | Final index bytes |
+|---|---:|---:|
+| Forward, row staging | 8,187,904 | 2,396,160 |
+| Forward, compressed staging | 2,396,160 | 2,396,160 |
+| Reverse, row staging | 8,196,096 | 2,396,160 |
+| Reverse, compressed staging | 2,396,160 | 2,396,160 |
+
+Folder sizes were sampled every 20 ms, including the completed index; short
+transient allocations can be missed. These are observed file lengths, not an
+upper disk bound. The small runs took 4.14–4.75 seconds under concurrent import
+load; they do not establish a speedup. Complete local outcomes are retained under
+`~/.local/state/dopplergeist-index-staging-parity-20261114-final/`.
+The first local selection helper failed on an empty native trace before any
+comparison; the corrected helper follows the importer's existing empty-trace
+handling. A prior peak sampler omitted the final-size floor; those raw results
+remain local and are superseded by this complete replay.
+
+Reproduce with the complete, provider-verified split assets in published order
+and the cached ICAO type file:
+
+```sh
+PYTHONPATH=src python scripts/benchmark_real_index_staging.py \
+  --archive /path/to/archive.tar.aa /path/to/archive.tar.ab \
+  --types /path/to/icao_aircraft_types.js --output /path/to/new-parity-run
+```
+
+The selected parity sample explicitly declares incomplete source coverage. It is
+an ingestion check, not a national-search or geolocation result. Two unchanged
+ODbL native traces also exercise ordering, repeated delivery, prepared payloads,
+mixed-batch rejection and budget-failure cleanup in the focused real-data tests.
+
 For a fresh automatic regional upload, only segments touching its receiver bounds
 and emission-time interval get the optional numeric decoding cache. Every eligible confirmed non-jet
 segment remains in the index, and queries outside that warm scope use the
