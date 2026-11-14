@@ -329,7 +329,7 @@ def dp_front(recording, variant):
                         eid = f'dp-{chunk}-{window}-{band}-{iteration}-{len(events)}'
                         events.append(dict(event_id=eid, start_s=max(0.0, float(tt[0] - window / 2)), end_s=min(recording.metadata['duration_s'], float(tt[-1] + window / 2)), band_hz=[float(max(0.01, ff.min() - 2 / window)), float(ff.max() + 2 / window)], ridge=[dict(time_s=float(x), frequency_hz=float(y), weight=float(z)) for x, y, z in a], quality=dict(sequence_score=score, mean_foreground=float(np.mean(ww)), median_local_snr_db=float(np.median(snrs)), moving_vs_flat_db=float(np.mean(flat)), frequency_resolution_hz=1 / window, window_s=window, hop_s=hop, fractional_excursion=excursion, variation_ratio=variation, moving_fraction=moving, support_fraction=support)))
                         accepted += 1
-                diagnostics.append(dict(chunk_start_s=start, window_s=window, band_hz=[low, high], accepted_tracks=accepted, rejections=rejected, last_sequence_score=last_score, iteration_limit=32, budget_reached=iteration == 31))
+                diagnostics.append(dict(chunk_start_s=start, window_s=window, band_hz=[low, high], accepted_tracks=accepted, rejections=rejected, last_sequence_score=last_score, iteration_limit=32, budget_reached=iteration == 31 and last_score >= 25.0))
     return (events, diagnostics)
 
 def reassigned_power(samples, sample_rate, n, step):
