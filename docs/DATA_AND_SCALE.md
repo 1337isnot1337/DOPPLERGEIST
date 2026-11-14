@@ -34,7 +34,19 @@ disk reserve while writing the uncompressed temporary sample table. A fixed
 first-24-trace check on the provider-verified May 17, 2026 prod-0 archive retained
 19,551 observations and 195 segments. Segment payloads, hashes, spatial bounds,
 counts and prepared payloads were exact across both staging modes and reversed
-input order. The full-day compressed build is separate and still in progress.
+input order. The separate full-day compressed build completed with 22,188,848
+observations, zero reported invalid rows, 198,067 segments and 139,196 prepared
+tracks. Its final index is 2,235,756,544 bytes. The observed build interval was
+1,732.56 seconds on two import workers, under the same four-GiB free-space guard.
+The original full-day row-staging attempt stopped at that guard before segment
+building; it is not a completed timing control. Peak full-run disk/RSS was not
+measured. The configured per-flight and queue limits remain unchanged.
+
+The final index passed SQLite's quick check and retained the complete provider
+day/global confirmed-nonjet query scope without clipping geometry. Receiver
+completeness remains unknown. No acoustic matching or geolocation is established
+by this import. Full report and prior failures remain under
+`~/.local/state/dopplergeist-livermore-archive-20261114/`.
 
 | Recorded-source check | Observed output-folder bytes | Final index bytes |
 |---|---:|---:|
