@@ -40,6 +40,9 @@ Runtime at first execution: Python 3.14.6, librosa 1.0.1, scikit-learn 1.9.1,
 NumPy 2.5.4, SciPy 1.18.1, joblib 1.6.0. The training output records these versions,
 parameters, warnings and the model identity. No synthetic data, private sources
 or outreach is allowed. No audio is committed here.
+Python 3.11 isolation/feature checks use librosa 0.11.0 because librosa 1.0.1
+requires Python 3.12 or later; these checks do not establish cross-version model
+equivalence. The registered training/evaluation environment stays unchanged.
 
 Commands, from a checkout with optional classifier dependencies installed:
 
@@ -48,4 +51,6 @@ PYTHONPATH=src python scripts/evaluate_aircraft_category.py prepare --data /path
 PYTHONPATH=src python scripts/evaluate_aircraft_category.py fit --data /path/to/public-data --output /path/to/new-training --workers 2
 PYTHONPATH=src python scripts/evaluate_aircraft_category.py test --data /path/to/public-data --model /path/to/new-training/model.joblib --output /path/to/new-test --workers 2
 PYTHONPATH=src python scripts/evaluate_aircraft_category.py environment --data /path/to/public-data --model /path/to/new-training/model.joblib --output /path/to/new-environment --workers 2
+PYTHONPATH=src python scripts/evaluate_aircraft_category.py discover --data /path/to/public-data --output /path/to/new-discoveries
+PYTHONPATH=src python scripts/evaluate_aircraft_category.py proposals --data /path/to/public-data --discoveries /path/to/new-discoveries --model /path/to/new-training/model.joblib --output /path/to/new-proposal-evaluation
 ```

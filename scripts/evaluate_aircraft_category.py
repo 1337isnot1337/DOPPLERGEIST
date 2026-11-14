@@ -11,8 +11,11 @@ import hashlib
 from importlib.metadata import version
 import inspect
 import json
+import math
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import time
 import warnings
 import zipfile
@@ -21,7 +24,7 @@ import numpy as np
 
 from dopplergeist.aircraft_category import (
     AircraftCategoryRecognizer, FEATURE_VERSION, HOP_S, LABELS, WINDOW_S,
-    decode_window, event_features, file_digest, window_count,
+    decode_window, diagnose, event_features, file_digest, window_count,
 )
 
 
@@ -224,26 +227,99 @@ def environment(root, model, output, workers):
     print(json.dumps(summary), flush=True)
 
 
+def discover(root, output):
+    """Run the unchanged complete-recording detector, without publisher labels."""
+    output.mkdir(parents=True, exist_ok=False)
+    outcomes = []
+    for index in range(1, 7):
+        destination = output / str(index)
+        started = time.monotonic()
+        command = [sys.executable, "-m", "dopplergeist.cli", "discover",
+                   str(root / "environment" / f"{index}_AUDIO.wav"), "--output", str(destination)]
+        row = {"recording": f"{index}_AUDIO.wav", "returncode": "timeout",
+               "seconds": 0.0, "events": "", "groups": ""}
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, timeout=600)
+            row["returncode"] = result.returncode
+            (output / f"{index}.stdout.txt").write_text(result.stdout)
+            (output / f"{index}.stderr.txt").write_text(result.stderr)
+        except subprocess.TimeoutExpired:
+            (output / f"{index}.stderr.txt").write_text("Whole-recording discovery reached the fixed 600-second limit. Partial outputs retained.\n")
+        row["seconds"] = time.monotonic() - started
+        if (destination / "summary.json").exists():
+            summary = json.loads((destination / "summary.json").read_text())
+            row.update(events=summary["events_found"], groups=summary["groups_found"])
+        outcomes.append(row)
+        print(json.dumps(row), flush=True)
+    write_csv(output / "outcomes.csv", outcomes)
+
+
+def proposals(root, discoveries, model, output):
+    """Label joins happen only after automatic detection and bounded inference."""
+    output.mkdir(parents=True, exist_ok=False)
+    with (root / "environment_class_mappings.csv").open(newline="") as stream:
+        labels = list(csv.DictReader(stream))
+    rows, failures = [], []
+    for index in range(1, 7):
+        source = discoveries / str(index) / "discovery.json"
+        try:
+            before = source.read_bytes()
+            saved = json.loads(before)
+            report = diagnose(saved, root / "environment" / f"{index}_AUDIO.wav", model,
+                              max_windows=20000)
+            assert source.read_bytes() == before, "The saved discovery changed"
+            (output / f"{index}.json").write_text(json.dumps(report, indent=2) + "\n")
+            for event in report["events"]:
+                first, last = math.floor(event["start_s"] / 5), math.ceil(event["end_s"] / 5)
+                values = {row[str(index - 1)] for row in labels[max(0, first):min(len(labels), last)]}
+                eligible = 0 <= first < last <= len(labels) and len(values) == 1 and "ignore" not in values
+                rows.append({"recording": f"{index}_AUDIO.wav", "event_id": event["event_id"],
+                             "start_s": event["start_s"], "end_s": event["end_s"],
+                             "predicted_label": event["label"], "reason": event["reason"],
+                             "windows_scored": event["windows_scored"],
+                             "publisher_state": next(iter(values)) if eligible else "mixed_or_ignored",
+                             "annotation_bins": ",".join(sorted(values))})
+        except Exception as error:
+            failures.append({"recording": f"{index}_AUDIO.wav", "error": type(error).__name__ + ": " + str(error)})
+    write_csv(output / "predictions.csv", rows)
+    table = {truth: {prediction: sum(row["publisher_state"] == truth and row["predicted_label"] == prediction
+                                  for row in rows)
+                     for prediction in ("unknown", "fixed_wing_propeller_like", "jet_like")}
+             for truth in ("0", "1", "mixed_or_ignored")}
+    summary = {"proposals": len(rows), "failed_recordings": failures,
+               "publisher_states_by_prediction": table, "model_sha256": file_digest(model),
+               "scope": "Actual full-recording automatic proposals; labels joined afterward. Mixed/ignore intervals are unscored. Aircraft presence labels are not category or identity truth."}
+    (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps(summary), flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "fit", "test", "environment"))
+    parser.add_argument("command", choices=("prepare", "fit", "test", "environment", "discover", "proposals"))
     parser.add_argument("--data", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--model", type=Path)
+    parser.add_argument("--discoveries", type=Path)
     parser.add_argument("--workers", type=int, default=2)
     args = parser.parse_args()
     if args.workers < 1 or args.workers > 4:
         parser.error("Use one to four bounded workers")
     if args.command != "prepare" and args.output is None:
         parser.error("--output is required")
-    if args.command in ("test", "environment") and args.model is None:
+    if args.command in ("test", "environment", "proposals") and args.model is None:
         parser.error("--model is required")
+    if args.command == "proposals" and args.discoveries is None:
+        parser.error("--discoveries is required")
     if args.command == "prepare":
         prepare(args.data)
     elif args.command == "fit":
         fit(args.data, args.output, args.workers)
     elif args.command == "test":
         test(args.data, args.model, args.output, args.workers)
+    elif args.command == "discover":
+        discover(args.data, args.output)
+    elif args.command == "proposals":
+        proposals(args.data, args.discoveries, args.model, args.output)
     else:
         environment(args.data, args.model, args.output, args.workers)
 
