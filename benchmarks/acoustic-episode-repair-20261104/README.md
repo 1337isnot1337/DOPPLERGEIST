@@ -8,6 +8,14 @@ Four known-jet cases were excluded before this new replay; the original 32-case
 results below retain their original denominators. See the
 [measured speed/memory tradeoff and source pins](../../docs/ACOUSTIC_EPISODES_REPAIR.md#november-14-performance-repair).
 
+The subsequent
+[`linking-native-performance-20261114.csv`](linking-native-performance-20261114.csv)
+compares the optional native helper against the frozen Numba implementation on
+the same28 cases:28/28 exact discovery pairs, lower peak RSS in every case,
+325.242 to206.508MiB maximum RSS, and407.591 to397.323s total wall time. The
+[follow-up section](../../docs/ACOUSTIC_EPISODES_REPAIR.md#native-follow-up-and-memory-cost)
+records the source pins, NumPy fallback, per-case limits and single-pair scope.
+
 [Engineering report](../../docs/ACOUSTIC_EPISODES_REPAIR.md),
 [fixed protocol](protocol.md), and
 [original source/rights/hash manifest](../acoustic-episodes-349/manifest.json).

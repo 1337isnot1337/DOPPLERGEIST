@@ -12,7 +12,7 @@ controller during repair; this work is a separate **draft, unmerged follow-up**.
 
 ## November 14 performance repair
 
-The held draft now includes current main through `c2679c9`. The product CLI still
+The held draft integrates main through `7b72bb4`. The product CLI still
 uses production discovery; the experimental module is selected only by its Python
 research replay runner. The owner's draft/unmerged/no-auto-merge instruction
 remains in force.
@@ -67,6 +67,46 @@ policy exclusions. The helper invokes the research replay runner, not the remove
 product CLI option. This experiment measures implementation parity and cost. It
 does not resolve the historical 19/20 retention limit, confusing-source extras,
 physical source counts, aircraft identity or location acceptance.
+
+### Native follow-up and memory cost
+
+The initial Numba helper's increased RSS motivated a separate registered
+implementation comparison. The same operation now uses the existing optional
+`_native_ridge` extension, with the original NumPy expression as fallback when
+the native entrypoint is unavailable. The episode module no longer imports
+Numba for this helper. There is no new dependency or change to production fit
+entrypoints. Strided float32/float64 columns, reverse views, a larger measured
+neighborhood and forced NumPy fallback match the original expression bitwise on
+recorded spectra.
+
+The complete 28-case replay compares frozen Numba head `1b87759` with native
+head `b62db48`. All 56 arms finished, with exact full discovery parity in 28/28 pairs
+after omitting only root source identity and runtime/CPU fields. The four known-jet
+exclusions and all original inputs remain as declared above.
+
+| Cost across the 28 recordings | Numba | Native |
+| --- | ---: | ---: |
+| Total wall time |407.591 s|397.323 s|
+| Total process CPU time |384.455 s|374.452 s|
+| Maximum process peak RSS |325.242 MiB|206.508 MiB|
+| Hour reference wall time |152.988 s|148.786 s|
+| Hour reference proposals / children |92 / 200|92 / 200|
+
+Every case used less peak RSS, with observed savings of 76.258–118.734 MiB. Aggregate
+wall time was 2.5% lower in this single paired run; per-case ratios range from
+0.996x to 1.250x, so a universal time improvement is not claimed. The earlier
+four-second actual-PCM control also preserved 111/71 raw paths and took 0.462 s
+versus 0.458 s over 20 repetitions, with peak RSS of 207.430 versus 109.008 MiB. These
+controls answer the measured JIT memory cost, not field accuracy.
+
+The macro uses the same serial alternating arm order, single-thread settings and
+1,800s per-arm watchdog; the Numba cache was populated beforehand. Native absence
+retains the original NumPy calculation, whose full-recording cost was not measured
+in this follow-up. All 28 paired outcomes, including per-arm memory and output
+volume, are in
+[`linking-native-performance-20261114.csv`](../benchmarks/acoustic-episode-repair-20261104/linking-native-performance-20261114.csv).
+Seventeen selected recorded-data/CLI checks pass on the integrated implementation.
+The owner hold and all acoustic/scientific limitations remain in force.
 
 ## Historical pins and fixed evaluation
 
