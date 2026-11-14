@@ -261,7 +261,7 @@ def proposals(root, discoveries, model, output):
         labels = list(csv.DictReader(stream))
     rows, failures = [], []
     for index in range(1, 7):
-        source = discoveries / str(index) / "discovery.json"
+        source = discoveries / str(index) / "discovery" / "discovery.json"
         try:
             before = source.read_bytes()
             saved = json.loads(before)

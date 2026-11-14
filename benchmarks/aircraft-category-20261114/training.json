@@ -1,0 +1,40 @@
+{
+  "records": 1475,
+  "windows": 14651,
+  "held_out_records_used": 0,
+  "excluded_training_rotorcraft": 4,
+  "classes": [
+    "background",
+    "propeller",
+    "turbofan"
+  ],
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "librosa": "1.0.1",
+    "scikit-learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "parameters": {
+    "C": 1,
+    "class_weight": "balanced",
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": 0.0,
+    "max_iter": 2000,
+    "n_jobs": null,
+    "penalty": "deprecated",
+    "random_state": 20261114,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "fit_warnings": [],
+  "iterations": [
+    49
+  ],
+  "seconds": 417.7959913830273,
+  "model_sha256": "285205ef65d737ad71be2981945034d89c3e8af6c829c673af6b3354c98243bd"
+}

@@ -211,6 +211,25 @@ artifact-relative evidence pointers and an explicit unmeasured-benefit label.
 See [evidence-based next steps](INCONCLUSIVE_GUIDANCE.md) for the representation,
 replay commands and unresolved verification requirements.
 
+## Separate experimental acoustic categories
+
+The explicit `scripts/diagnose_aircraft_category.py` command reads saved discovery
+and matching original audio. Its report remains outside `DetectedEvent` and the
+job-result contract. Normal discovery and localization never import it.
+The base annotation has exactly `label`, a nonempty `method`, and
+`experimental: true`. Labels are `jet_like`, `fixed_wing_propeller_like`,
+`helicopter_like` or `unknown`; the current baseline does not recognize helicopters.
+`aircraft_category.validate_annotation` rejects invalid base annotations.
+
+The separate version-one report binds the source and model, records the feature
+version and global window allowance, and contains event IDs/intervals with their
+annotations, scored-window counts and reasons. Complete model outputs also carry
+uncalibrated mean scores. Insufficient audio and exhausted work remain unknown;
+incomplete reports state `complete: false`. These are acoustic interpretations,
+never identities, probabilities or inputs to flight selection, ranking or event
+independence. See [the diagnostic contract](experimental-aircraft-category.md)
+and its public held-out evaluation for failure rates and replay commands.
+
 ## Compatibility and ownership
 
 The existing `dopplergeist run CONFIG --output DIR` and `measure` commands keep

@@ -63,7 +63,10 @@ test split was not evaluated, and its training recipe/model bundle are not part
 of this repository. Those results are retained as a warning about the measured
 baseline, not as accuracy evidence for this command.
 
-The model/training handoff and held-out event-window evaluation remain required
-before claiming useful classification quality. Real non-jet and background
-inputs can check implementation behavior; they do not establish jet/rotorcraft
-performance. Follow the current real-data and aircraft-type policies in AGENTS.md.
+The [public held-out experiment](../benchmarks/aircraft-category-20261114/README.md)
+now supplies an exact model bundle, window-level training recipe and all 416
+official test outcomes through the delivered inference path. Propeller-like
+precision is only 26.8%, and the unsupported rotorcraft is mislabeled jet-like.
+The annotation remains an unreliable experimental diagnostic, never an aircraft
+identity or a reason to change the confirmed non-jet search policy. Six-hour
+continuous and automatic-proposal controls are retained in the same experiment.

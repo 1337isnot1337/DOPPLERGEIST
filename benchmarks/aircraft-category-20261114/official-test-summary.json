@@ -1,0 +1,94 @@
+{
+  "records": 416,
+  "labels": [
+    "unknown",
+    "fixed_wing_propeller_like",
+    "jet_like",
+    "diagnostic_failed"
+  ],
+  "confusion": [
+    [
+      282,
+      34,
+      2,
+      0
+    ],
+    [
+      1,
+      15,
+      9,
+      0
+    ],
+    [
+      0,
+      7,
+      66,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "classification_report": {
+    "unknown": {
+      "precision": 0.9964664310954063,
+      "recall": 0.8867924528301887,
+      "f1-score": 0.9384359400998337,
+      "support": 318.0
+    },
+    "fixed_wing_propeller_like": {
+      "precision": 0.26785714285714285,
+      "recall": 0.6,
+      "f1-score": 0.37037037037037035,
+      "support": 25.0
+    },
+    "jet_like": {
+      "precision": 0.8571428571428571,
+      "recall": 0.9041095890410958,
+      "f1-score": 0.88,
+      "support": 73.0
+    },
+    "diagnostic_failed": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 0.0
+    },
+    "accuracy": 0.8725961538461539,
+    "macro avg": {
+      "precision": 0.5303666077738516,
+      "recall": 0.5977255104678212,
+      "f1-score": 0.547201577617551,
+      "support": 416.0
+    },
+    "weighted avg": {
+      "precision": 0.9282312072865296,
+      "recall": 0.8725961538461539,
+      "f1-score": 0.8940430005072268,
+      "support": 416.0
+    }
+  },
+  "failed": 0,
+  "unsupported_rotorcraft": [
+    {
+      "filename": "7C75E6_2023-05-09_12-25-09_2_1.wav",
+      "session": "24",
+      "subclass": "4",
+      "expected_class": "unsupported_rotorcraft",
+      "expected_label": "unknown",
+      "predicted_label": "jet_like",
+      "reason": "model_output",
+      "windows_scored": 23,
+      "background_score": 0.09770030820104496,
+      "propeller_score": 0.38221257957427396,
+      "turbofan_score": 0.5200871047766312,
+      "error": ""
+    }
+  ],
+  "model_sha256": "285205ef65d737ad71be2981945034d89c3e8af6c829c673af6b3354c98243bd",
+  "seconds": 108.10790002904832,
+  "scope": "All official held-out files; identical bounded interval inference to the diagnostic"
+}

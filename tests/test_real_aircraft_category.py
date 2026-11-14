@@ -126,3 +126,18 @@ def test_insufficient_audio_and_budget_do_not_invent_model_output(monkeypatch):
     for row in (short, limited):
         assert row["label"] == "unknown" and row["windows_scored"] == 0
         assert "mean_model_scores" not in row
+
+
+def test_public_trained_model_uses_the_same_real_window_path():
+    pytest.importorskip("librosa")
+    pytest.importorskip("sklearn")
+    recognizer = category.AircraftCategoryRecognizer(
+        ROOT / "benchmarks/aircraft-category-20261114/model.joblib")
+    scores = recognizer.score_window(category.decode_window(AUDIO, 0.0))
+    annotation = recognizer.classify_interval(AUDIO, 0.0, 5.0, max_windows=1)
+    assert annotation["reason"] == "model_output" and annotation["windows_scored"] == 1
+    assert annotation["experimental"] is True
+    np.testing.assert_allclose([annotation["mean_model_scores"][name] for name in recognizer.classes], scores)
+    assert annotation["label"] == category.LABELS[recognizer.classes[int(np.argmax(scores))]]
+    # This checks real inference wiring, not whether this short excerpt's label
+    # is correct. Category errors belong in the retained held-out evaluation.
