@@ -1,0 +1,134 @@
+{
+  "source": "https://zenodo.org/records/24075029",
+  "creator": "Praveen Pathak",
+  "license": "CC BY 4.0",
+  "detector_ref": "463834f5bc9b839a74593b429dd88e92c7ad5779",
+  "case_id": "P13",
+  "scope": "Actual supported default-discovery group; no location or aircraft truth",
+  "events": [
+    {
+      "event_id": "event-0006",
+      "start_s": 95.0,
+      "end_s": 110.0,
+      "band_hz": [
+        49.31977750360966,
+        76.97836598940194
+      ],
+      "ridge": [
+        {
+          "time_s": 96.0,
+          "frequency_hz": 75.97836598940194,
+          "weight": 3.0701117515563965
+        },
+        {
+          "time_s": 96.5,
+          "frequency_hz": 74.53419488668442,
+          "weight": 3.5017943382263184
+        },
+        {
+          "time_s": 97.0,
+          "frequency_hz": 74.44655971974134,
+          "weight": 3.8553545475006104
+        },
+        {
+          "time_s": 97.5,
+          "frequency_hz": 74.4287990629673,
+          "weight": 3.0501797199249268
+        },
+        {
+          "time_s": 98.0,
+          "frequency_hz": 72.20912486314774,
+          "weight": 2.7499654293060303
+        },
+        {
+          "time_s": 98.5,
+          "frequency_hz": 70.39126981049776,
+          "weight": 3.4944682121276855
+        },
+        {
+          "time_s": 99.0,
+          "frequency_hz": 68.7607342749834,
+          "weight": 3.69584059715271
+        },
+        {
+          "time_s": 99.5,
+          "frequency_hz": 68.99528168421239,
+          "weight": 4.716226100921631
+        },
+        {
+          "time_s": 100.0,
+          "frequency_hz": 67.07233236730099,
+          "weight": 4.036534786224365
+        },
+        {
+          "time_s": 100.5,
+          "frequency_hz": 66.07478345930576,
+          "weight": 3.7067604064941406
+        },
+        {
+          "time_s": 101.0,
+          "frequency_hz": 64.68713991343975,
+          "weight": 3.7696661949157715
+        },
+        {
+          "time_s": 102.5,
+          "frequency_hz": 61.001950641628355,
+          "weight": 3.637507915496826
+        },
+        {
+          "time_s": 103.0,
+          "frequency_hz": 59.58814110606909,
+          "weight": 3.499039888381958
+        },
+        {
+          "time_s": 103.5,
+          "frequency_hz": 59.25,
+          "weight": 2.7564597129821777
+        },
+        {
+          "time_s": 105.5,
+          "frequency_hz": 53.44100974500179,
+          "weight": 3.414581298828125
+        },
+        {
+          "time_s": 106.0,
+          "frequency_hz": 53.583972699940205,
+          "weight": 3.891202926635742
+        },
+        {
+          "time_s": 107.5,
+          "frequency_hz": 51.33287154138088,
+          "weight": 4.005151271820068
+        },
+        {
+          "time_s": 108.0,
+          "frequency_hz": 50.50260260864161,
+          "weight": 4.228631019592285
+        },
+        {
+          "time_s": 108.5,
+          "frequency_hz": 50.474337393417954,
+          "weight": 3.834057569503784
+        },
+        {
+          "time_s": 109.0,
+          "frequency_hz": 50.31977750360966,
+          "weight": 3.6696722507476807
+        }
+      ],
+      "quality": {
+        "median_contrast": 3.6827564239501953,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7407407407407407,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 24.059857493266463
+      },
+      "harmonic_group_id": "anchored-0549e89d903cef3c"
+    }
+  ]
+}

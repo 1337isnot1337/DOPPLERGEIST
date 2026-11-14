@@ -85,6 +85,13 @@ points. Each point has `time_s`, `frequency_hz` and an optional nonnegative `wei
 lie within its band. Times are relative to the beginning of the decoded recording,
 not to the beginning of an analysis chunk. Chunked discovery must add its offset.
 
+Contract validity and matching support are separate: matching requires at least
+ten pooled ridge samples in a group. When matching is attempted, a valid
+shorter group produces an
+`inconclusive / unreconciled_discovery_group` outcome, preserving saved discovery
+and identifying the group and sample count before data acquisition or search.
+Malformed observations remain validation failures.
+
 Optional `harmonic_group_id` is the canonical acoustic proposal key. Related
 measured components contribute once as an episode, with physical source
 multiplicity unresolved; a group does not establish a flyover or source motion.

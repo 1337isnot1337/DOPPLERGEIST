@@ -1,0 +1,75 @@
+{
+  "case_id": "P29",
+  "source": "https://zenodo.org/records/24075029",
+  "scope": "Actual default-discovery ridges; contract-valid, no location/aircraft/timing truth",
+  "events": [
+    {
+      "event_id": "event-0003",
+      "start_s": 93.5,
+      "end_s": 97.5,
+      "band_hz": [
+        106.01388029474765,
+        161.2322329133749
+      ],
+      "ridge": [
+        {
+          "time_s": 93.75,
+          "frequency_hz": 108.87978261709213,
+          "weight": 13.275672912597656
+        },
+        {
+          "time_s": 94.25,
+          "frequency_hz": 107.57627215981483,
+          "weight": 12.773338317871094
+        },
+        {
+          "time_s": 94.75,
+          "frequency_hz": 107.55661630630493,
+          "weight": 8.235198974609375
+        },
+        {
+          "time_s": 95.75,
+          "frequency_hz": 107.67355450987816,
+          "weight": 11.065681457519531
+        },
+        {
+          "time_s": 96.25,
+          "frequency_hz": 107.30506241321564,
+          "weight": 18.21259307861328
+        },
+        {
+          "time_s": 96.75,
+          "frequency_hz": 106.25529566407204,
+          "weight": 13.366714477539062
+        },
+        {
+          "time_s": 97.25,
+          "frequency_hz": 107.05427825450897,
+          "weight": 10.45782470703125
+        }
+      ],
+      "quality": {
+        "median_contrast": 2.7900290489196777,
+        "harmonic_count": 1.0,
+        "support_fraction": 0.7241379310344828,
+        "frequency_resolution_hz": 0.5,
+        "time_uncertainty_s": 1.0,
+        "frequency_uncertainty_hz": 0.5,
+        "frequency_sigma_hz": 0.5,
+        "fragment_count": 1.0,
+        "max_observed_gap_s": 2.0,
+        "frequency_drop_hz": 48.368559908121824,
+        "visible_fraction": 0.32142857142857145,
+        "independent_visible_windows": 9,
+        "median_verified_snr_db": 5.532157897949219,
+        "median_verified_dominance_db": 1.6358985900878906
+      },
+      "harmonic_group_id": "anchored-e95da9326284a9a5"
+    }
+  ],
+  "error": "Matching requires at least ten finite, nonnegative-weight ridge samples",
+  "published_audio": "raw_flight_data/V_varying_H_constant/N456CS_R38/N456CS_R38_2026-05-17T21-54-07.978Z.wav",
+  "creator": "Praveen Pathak",
+  "license": "CC BY 4.0",
+  "detector_ref": "463834f5bc9b839a74593b429dd88e92c7ad5779"
+}

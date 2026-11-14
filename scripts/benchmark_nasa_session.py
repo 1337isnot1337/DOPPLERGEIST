@@ -20,7 +20,7 @@ from scipy.io import loadmat, wavfile
 from dopplergeist.discovery import DiscoverySettings, _discover_baseline_events, discover_events
 from dopplergeist.geometry import AcousticSupportError, Track, ecef, velocity_ecef
 from dopplergeist.intake import intake_recording
-from dopplergeist.matching import RidgeTimes, UnreconciledHarmonicGroup, fit_ridge, prepare_events
+from dopplergeist.matching import InsufficientRidgeSamples, RidgeTimes, UnreconciledHarmonicGroup, fit_ridge, prepare_events
 
 SCOPE = "real_NASA_supplied_trajectory_session_clock"
 SOURCE = "https://data.nasa.gov/docs/datasets/rfk401li/small_uav_acoustics.zip"
@@ -290,8 +290,9 @@ def search(args):
             audio_timing=case["audio_timing"], gps_timing=case["gps_timing"], results=[])
         try:
             event_settings, measured = measurements(events, arrays["audio_seconds_of_day"])
-        except UnreconciledHarmonicGroup as error:
-            summary.update(status="unreconciled_discovery_group", message=str(error))
+        except (UnreconciledHarmonicGroup, InsufficientRidgeSamples) as error:
+            status = "insufficient_ridge_samples" if isinstance(error, InsufficientRidgeSamples) else "unreconciled_discovery_group"
+            summary.update(status=status, message=str(error))
             write(folder/"case-results.json", summary)
             manifest["cases"].append(summary)
             write(out/"run-manifest.json", manifest)
