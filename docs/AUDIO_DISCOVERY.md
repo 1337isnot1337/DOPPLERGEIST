@@ -12,6 +12,11 @@ can yield no supported events without a processing error. This limit describes
 the file's sampling capacity; microphone response and earlier processing remain
 separate provenance questions.
 
+Independent track verification reads the same nonoverlapping half-second spectra
+on demand. It caches at most four blocks of 128 windows, avoiding a full-recording
+spectrogram allocation. Every requested window keeps its original sample alignment
+and frequency bins; this changes memory use without changing the verification rules.
+
 `discovery/discovery.json` contains the input hash, detector settings, canonical proposal intervals and measured child tracks. Tracks belonging to a proposal share a `harmonic_group_id`; downstream association should count the group once while retaining its measured tracks. Times are relative to the first decoded sample. `--plot-summary` renders a track overview and `--plot-event-details` renders individual track plots. Use a new output directory for each run.
 
 The artifact also retains `sequence_diagnostics` for each analyzed chunk, window
