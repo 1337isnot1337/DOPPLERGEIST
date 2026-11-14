@@ -16,13 +16,17 @@ from collections import Counter
 from bisect import bisect_left, bisect_right
 
 import numpy as np
-from numba import njit
 from scipy import optimize, signal
 
 from .audio import Spectrum
 from .contracts import validate_event
 from .episodes import (Associations, DiscoveryError, Ridge, deduplicate,
                        identifier, intervals, motion, reconcile, stitch, support, uncertainty, recurrent_context, prediction_model, predict)
+
+try:
+    from ._native_ridge import peak_local_prominence as _native_prominence
+except ImportError:
+    _native_prominence = None
 
 _HARMONIC_RATIOS = sorted({a / b for a in range(2, 9) for b in range(1, a) if a / b >= 1.2})
 _NORMALIZATION_FUNCTIONS = (np.median, np.abs, np.maximum, np.clip, np.isfinite)
@@ -132,30 +136,13 @@ def _spectrum(data, sr, start, settings, *, fixed_bands=False):
     return Spectrum(t + start, f, db, contrast)
 
 
-@njit(cache=True)
 def _peak_local_prominence(column, peak, radius):
-    """The original two-sided median with bounded compiled gathering."""
-    left = max(0, peak - radius)
-    left_end = max(0, peak - 3)
-    right = min(len(column), peak + 4)
-    right_end = min(len(column), peak + radius + 1)
-    count = left_end - left + right_end - right
-    if count == 0:
-        return 0.0
-    neighbours = np.empty(count, dtype=column.dtype)
-    at = 0
-    for index in range(left, left_end):
-        neighbours[at] = column[index]
-        at += 1
-    for index in range(right, right_end):
-        neighbours[at] = column[index]
-        at += 1
-    background = np.median(neighbours)
-    # NumPy's original subtraction is float32 for float32 spectra. Preserve
-    # that rounding before returning the Python/float64 cached value.
-    if column.itemsize == 4:
-        return float(np.float32(column[peak] - np.float32(background)))
-    return float(column[peak] - background)
+    """Use the optional native helper, preserving the original NumPy fallback."""
+    if _native_prominence is not None:
+        return _native_prominence(column, peak, radius)
+    neighbours = np.r_[max(0, peak-radius):max(0, peak-3),
+                       min(len(column), peak+4):min(len(column), peak+radius+1)]
+    return float(column[peak] - np.median(column[neighbours])) if len(neighbours) else 0.0
 
 
 def _paths(spec, settings):

@@ -194,6 +194,31 @@ def test_compiled_prominence_is_exact_on_recorded_spectral_peaks():
                     assert np.float64(actual).tobytes() == np.float64(expected).tobytes()
 
 
+def test_native_prominence_views_and_fallback_on_recorded_spectrum(monkeypatch):
+    from scipy import signal
+    import dopplergeist.episode_discovery as episode
+    data = json.loads((FIXTURES/'real_discovery_normalization.json').read_text())
+    samples = np.frombuffer(base64.b64decode(data['excerpts'][0]['pcm_f32le_base64']), dtype='<f4')
+    settings = DiscoverySettings(window_s=2., hop_s=.5)
+    spectrum = _spectrum(samples, 4000, 0., settings, fixed_bands=True)
+    native = episode._native_prominence
+    for dtype in (np.float32, np.float64):
+        recorded = spectrum.db.astype(dtype)
+        for column in (recorded[:, 0], recorded[::-1, 0], recorded[::2, 0]):
+            peaks, _ = signal.find_peaks(column)
+            for peak in peaks[[0, len(peaks)//2, -1]]:
+                for radius in (4, 400):
+                    neighbours = np.r_[max(0,peak-radius):max(0,peak-3),
+                                       min(len(column),peak+4):min(len(column),peak+radius+1)]
+                    expected = float(column[peak] - np.median(column[neighbours]))
+                    # The large measured neighborhood also exercises native
+                    # heap scratch rather than the ordinary bounded stack.
+                    for backend in (native, None):
+                        monkeypatch.setattr(episode, '_native_prominence', backend)
+                        actual = episode._peak_local_prominence(column, int(peak), radius)
+                        assert np.float64(actual).tobytes() == np.float64(expected).tobytes()
+
+
 def test_recorded_context_reveals_reversals_outside_legacy_crop():
     import gzip
     with gzip.open(FIXTURES/'real_modulated_context.json.gz','rt') as stream:
