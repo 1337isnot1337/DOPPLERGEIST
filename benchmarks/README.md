@@ -254,6 +254,38 @@ and continues the fixed cohort, as the ordinary automatic pipeline already does
 for an unreconciled group. A second, separately saved repair replay uses the same
 cases and scientific settings; no detector or matching threshold changed.
 
+The repair replay at `999b1dc` completed all twelve case/arm outcomes. Production
+search took 30.73 s; historical default and short-window searches took 1.21 s and
+1.32 s. These are single-run wall times, not a controlled speed comparison.
+
+| Recording | Production ridges / matching groups | Legacy default ridges | Legacy short ridges | Production outcome |
+|---|---:|---:|---:|---|
+| Cub107 | 0 / 0 | 0 | 0 | No proposal |
+| Edge038 | 7 / unresolved | 0 | 0 | Harmonic reconciliation failed; no fit |
+| Edge065 | 20 / unresolved | 1 | 0 | Harmonic reconciliation failed; no fit |
+| Edge066 | 7 / 2 | 0 | 0 | Four conditional grids; no product decision |
+
+For Edge066, each source-drift choice assessed 60 of 168 cells for the first
+group, leaving 108 cells unsupported, and all 168 for the second group. Their
+leading conditional modes were 174.33 m and 182.13 m from the published microphone
+reference. All 17 retained local modes remain in the evaluation; several compete
+with the leaders. The corresponding leading fits have large residuals and
+outlier fractions, so these distances do not establish correct source association
+or a valid location. The legacy Edge065 grids assessed 145 of 168 cells each;
+both conditional leaders were 391.67 m from the reference, with six retained
+local modes in total. That case's background-source ambiguity remains unchanged.
+
+The complete inputs, first failed replay, repaired outputs and evaluations are
+retained locally under
+`~/.local/state/dopplergeist-public-field-20261114/nasa-uas/` in
+`replay-588c893/` and `replay-999b1dc/`. To reproduce the bounded matrix with new
+outputs, add `--grid-step-m 250` to each search above, then use distinct output
+directories for the default arm, `--discovery-mode legacy`, and
+`--discovery-mode legacy --discovery-window-s 0.5 --discovery-hop-s 0.125`.
+Evaluate each completed arm with its frozen output and the separately held
+`evaluation-truth.json`. Do not use these public development results as a sealed
+holdout or as full end-to-end upload acceptance.
+
 The single shorter-window development comparison returned zero proposals in all
 four recordings, with no fitting or truth access. It did not improve discovery.
 To reproduce that setting, use a new search directory and add these search options:

@@ -313,8 +313,7 @@ def search(args):
             raise ValueError("Grid exceeds explicit budget or is empty; no truncated search")
         summary.update(track_support=motion,
             transform_roundtrip_max_m=transform_error, sound_speed_mps=c,
-            sound_speed_basis=case["sound_speed_basis"] if args.sound_speed_mps is None else "Explicit sensitivity override",
-            )
+            sound_speed_basis=case["sound_speed_basis"] if args.sound_speed_mps is None else "Explicit sensitivity override")
         for i, (event, measured_ridge) in enumerate(zip(event_settings, measured)):
             np.savez_compressed(folder/f"ridge-{i:03d}.npz", time_s=measured_ridge[0].time,
                                 frequency_hz=measured_ridge[1], weight=measured_ridge[2])
