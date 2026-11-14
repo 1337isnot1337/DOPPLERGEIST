@@ -50,6 +50,113 @@ clip(double value, double lower, double upper)
     return value;
 }
 
+static double
+prominence_value(const Py_buffer *view, Py_ssize_t index, int single)
+{
+    const char *address = (const char *)view->buf + index * view->strides[0];
+    if (single) {
+        float value;
+        memcpy(&value, address, sizeof(value));
+        return value;
+    }
+    double value;
+    memcpy(&value, address, sizeof(value));
+    return value;
+}
+
+static double
+prominence_kth(double *values, Py_ssize_t count, Py_ssize_t selected)
+{
+    Py_ssize_t left = 0, right = count - 1;
+    while (left < right) {
+        double pivot = values[left + (right - left) / 2];
+        Py_ssize_t i = left, j = right;
+        while (i <= j) {
+            while (i <= right && values[i] < pivot) ++i;
+            while (j >= left && values[j] > pivot) --j;
+            if (i <= j) {
+                double swap = values[i]; values[i] = values[j]; values[j] = swap;
+                ++i; --j;
+            }
+        }
+        if (selected <= j) right = j;
+        else if (selected >= i) left = i;
+        else break;
+    }
+    return values[selected];
+}
+
+static PyObject *
+peak_local_prominence(PyObject *self, PyObject *args)
+{
+    PyObject *column;
+    Py_ssize_t peak, radius;
+    Py_buffer view = {0};
+    if (!PyArg_ParseTuple(args, "Onn:peak_local_prominence", &column, &peak, &radius)) return NULL;
+    if (PyObject_GetBuffer(column, &view, PyBUF_FORMAT | PyBUF_ND | PyBUF_STRIDES) < 0) return NULL;
+    int single = view.format && strcmp(view.format, "f") == 0 && view.itemsize == sizeof(float);
+    int wide = view.format && strcmp(view.format, "d") == 0 && view.itemsize == sizeof(double);
+    if (view.ndim != 1 || !view.shape || !view.strides || (!single && !wide)) {
+        PyBuffer_Release(&view);
+        PyErr_SetString(PyExc_TypeError, "expected a native float32 or float64 vector");
+        return NULL;
+    }
+    Py_ssize_t length = view.shape[0];
+    if (peak < 0 || peak >= length || radius < 4) {
+        PyBuffer_Release(&view);
+        PyErr_SetString(PyExc_ValueError, "require a valid peak and radius of at least four bins");
+        return NULL;
+    }
+    Py_ssize_t left = radius > peak ? 0 : peak - radius;
+    Py_ssize_t left_end = peak < 3 ? 0 : peak - 3;
+    Py_ssize_t right = length - peak <= 4 ? length : peak + 4;
+    Py_ssize_t right_end = radius >= length - peak - 1 ? length : peak + radius + 1;
+    Py_ssize_t count = left_end - left + right_end - right;
+    if (count == 0) {
+        PyBuffer_Release(&view);
+        return PyFloat_FromDouble(0.0);
+    }
+    double local[512], *values = local;
+    if (count > 512) {
+        if (count > PY_SSIZE_T_MAX / (Py_ssize_t)sizeof(double)) {
+            PyBuffer_Release(&view);
+            return PyErr_NoMemory();
+        }
+        values = PyMem_Malloc((size_t)count * sizeof(double));
+        if (!values) { PyBuffer_Release(&view); return PyErr_NoMemory(); }
+    }
+    Py_ssize_t destination = 0;
+    int has_nan = 0;
+    for (Py_ssize_t i = left; i < left_end; ++i) {
+        values[destination] = prominence_value(&view, i, single);
+        has_nan |= isnan(values[destination]);
+        ++destination;
+    }
+    for (Py_ssize_t i = right; i < right_end; ++i) {
+        values[destination] = prominence_value(&view, i, single);
+        has_nan |= isnan(values[destination]);
+        ++destination;
+    }
+    double result = NAN;
+    if (!has_nan) {
+        double upper = prominence_kth(values, count, count / 2);
+        double lower = count % 2 ? upper : prominence_kth(values, count, count / 2 - 1);
+        if (single) {
+            /* Match NumPy's float32 mean and subtraction rounding. */
+            volatile float sum = count % 2 ? (float)upper : (float)lower + (float)upper;
+            float middle = count % 2 ? sum : sum / 2.0f;
+            volatile float difference = (float)prominence_value(&view, peak, 1) - middle;
+            result = difference;
+        } else {
+            double middle = count % 2 ? upper : (lower + upper) / 2.0;
+            result = prominence_value(&view, peak, 0) - middle;
+        }
+    }
+    if (values != local) PyMem_Free(values);
+    PyBuffer_Release(&view);
+    return PyFloat_FromDouble(result);
+}
+
 /* Match NumPy's float64 reduction tree rather than a serial running sum. */
 static double
 pairwise_sum(const double *values, Py_ssize_t count)
@@ -578,6 +685,8 @@ valid_ridge_events(PyObject *self, PyObject *args)
 }
 
 static PyMethodDef methods[] = {
+    {"peak_local_prominence", peak_local_prominence, METH_VARARGS,
+     "Compute recorded-peak prominence with NumPy-compatible median rounding."},
     {"fit_irls", fit_irls, METH_VARARGS, "Run six robust ridge-fit iterations in C."},
     {"event_fit_reason", event_fit_reason, METH_VARARGS, "Validate canonical per-event fit evidence, or request Python fallback."},
     {"fit_irls_batch", fit_irls_batch, METH_VARARGS,

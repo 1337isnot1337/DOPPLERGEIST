@@ -284,7 +284,7 @@
       "expectation": "Environmental context control, no certified aircraft absence. Stationary or periodically modulated tones should reject; coherent moving machinery may remain an acoustic proposal. Full channel 1, unpadded.",
       "sha256": "b48a9bb1df36911454fc8b1e08716275ada694612491ce7357aabe30c3b2ab28",
       "source_archive": "SCAFE_16k.zip",
-      "processing": "Original 16 kHz channel-1 WAV extracted without padding or editing; locally identified by SHA256, upstream archive checksum not rechecked in this task"
+      "processing": "Original 48 kHz channel-1 WAV from the public SCAFE_48k.zip archive, unmodified; original input SHA256 unchanged."
     },
     {
       "id": "demand-spsquare",

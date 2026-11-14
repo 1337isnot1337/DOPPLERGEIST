@@ -1,0 +1,599 @@
+{
+  "controls": "Identical decoded samples, spectrum, normalization, peak selection, assignment and gap limit; replace prediction tolerance alone. Motion checks then applied separately to the same measured paths.",
+  "runtime_s": 2.3036537709995173,
+  "rows": [
+    {
+      "reference": "event-0001",
+      "points": 23,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 7,
+          "observations": 7,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 6.5,
+            "support_fraction": 0.15384615384615385,
+            "frequency_excursion_hz": 58.91930234264578,
+            "required_excursion_hz": 33.1425,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.9004230956078182,
+            "sustained_turns": 0,
+            "variation_ratio": 1.080178928287523,
+            "median_contrast": 3.048574209213257,
+            "direction": "falling"
+          },
+          "old_rejections": [],
+          "repaired_motion": {
+            "observed_duration_s": 3.5,
+            "independent_windows": 1.75,
+            "span_s": 6.5,
+            "support_fraction": 0.5384615384615384,
+            "frequency_excursion_hz": 58.91930234264578,
+            "required_excursion_hz": 33.1425,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 2.1929080531690426,
+            "sustained_turns": 0,
+            "variation_ratio": 1.080178928287523,
+            "median_contrast": 3.048574209213257,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.3333333333333333,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": [
+            {
+              "reason": "motion_concentrated_or_unresolved",
+              "measured": 0.3333333333333333,
+              "threshold": 0.6666666666666666,
+              "comparison": ">="
+            },
+            {
+              "reason": "discontinuous_motion",
+              "measured": 2.1929080531690426,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ]
+        },
+        "prediction_only": {
+          "matched_points": 17,
+          "observations": 19,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 14.0,
+            "support_fraction": 0.07142857142857142,
+            "frequency_excursion_hz": 156.32699997052532,
+            "required_excursion_hz": 35.028141113966704,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.7407407407407407,
+            "prediction_error_q95": 5.585181652004187,
+            "sustained_turns": 0,
+            "variation_ratio": 1.0050405170612515,
+            "median_contrast": 2.9456369876861572,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "discontinuous_motion",
+              "measured": 5.585181652004187,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 9.5,
+            "independent_windows": 4.75,
+            "span_s": 14.0,
+            "support_fraction": 0.6785714285714286,
+            "frequency_excursion_hz": 156.32699997052532,
+            "required_excursion_hz": 35.028141113966704,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.6111111111111112,
+            "prediction_error_q95": 0.7415266620510231,
+            "sustained_turns": 0,
+            "variation_ratio": 1.0050405170612515,
+            "median_contrast": 2.9456369876861572,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 1.0,
+            "shape_residual_q90": 0.017016661167144714,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        }
+      }
+    },
+    {
+      "reference": "event-0002",
+      "points": 26,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 6,
+          "observations": 7,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 7.5,
+            "support_fraction": 0.13333333333333333,
+            "frequency_excursion_hz": 28.489745287410983,
+            "required_excursion_hz": 14.776218584664166,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.9285714285714286,
+            "prediction_error_q95": 0.8429369550397259,
+            "sustained_turns": 0,
+            "variation_ratio": 1.093419683537808,
+            "median_contrast": 2.9802777767181396,
+            "direction": "falling"
+          },
+          "old_rejections": [],
+          "repaired_motion": {
+            "observed_duration_s": 3.5,
+            "independent_windows": 1.75,
+            "span_s": 7.5,
+            "support_fraction": 0.4666666666666667,
+            "frequency_excursion_hz": 28.489745287410983,
+            "required_excursion_hz": 14.776218584664166,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.8333333333333334,
+            "prediction_error_q95": 1.030799975398016,
+            "sustained_turns": 0,
+            "variation_ratio": 1.093419683537808,
+            "median_contrast": 2.9802777767181396,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.0,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": [
+            {
+              "reason": "motion_concentrated_or_unresolved",
+              "measured": 0.0,
+              "threshold": 0.6666666666666666,
+              "comparison": ">="
+            },
+            {
+              "reason": "discontinuous_motion",
+              "measured": 1.030799975398016,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ]
+        },
+        "prediction_only": {
+          "matched_points": 16,
+          "observations": 18,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 12.0,
+            "support_fraction": 0.08333333333333333,
+            "frequency_excursion_hz": 51.97373894192276,
+            "required_excursion_hz": 15.214843899719417,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.7391304347826086,
+            "prediction_error_q95": 3.480154991807327,
+            "sustained_turns": 0,
+            "variation_ratio": 1.0659427172598723,
+            "median_contrast": 2.9806309938430786,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "discontinuous_motion",
+              "measured": 3.480154991807327,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 9.0,
+            "independent_windows": 4.5,
+            "span_s": 12.0,
+            "support_fraction": 0.75,
+            "frequency_excursion_hz": 51.97373894192276,
+            "required_excursion_hz": 15.214843899719417,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.6470588235294118,
+            "prediction_error_q95": 0.5120759956567338,
+            "sustained_turns": 0,
+            "variation_ratio": 1.0659427172598723,
+            "median_contrast": 2.9806309938430786,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 1.0,
+            "shape_residual_q90": 0.3063261841423811,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        }
+      }
+    },
+    {
+      "reference": "event-0004",
+      "points": 21,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 10,
+          "observations": 15,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 8.5,
+            "support_fraction": 0.11764705882352941,
+            "frequency_excursion_hz": 91.3747716039419,
+            "required_excursion_hz": 21.221458567678926,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.7206539636627713,
+            "sustained_turns": 0,
+            "variation_ratio": 1.094062722191923,
+            "median_contrast": 2.8782291412353516,
+            "direction": "falling"
+          },
+          "old_rejections": [],
+          "repaired_motion": {
+            "observed_duration_s": 7.5,
+            "independent_windows": 3.75,
+            "span_s": 8.5,
+            "support_fraction": 0.8823529411764706,
+            "frequency_excursion_hz": 91.3747716039419,
+            "required_excursion_hz": 21.221458567678926,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.7885159130683136,
+            "sustained_turns": 0,
+            "variation_ratio": 1.094062722191923,
+            "median_contrast": 2.8782291412353516,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 1.0,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        },
+        "prediction_only": {
+          "matched_points": 6,
+          "observations": 10,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 6.0,
+            "support_fraction": 0.16666666666666666,
+            "frequency_excursion_hz": 50.69298669341947,
+            "required_excursion_hz": 21.739323040600866,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.16893292781895633,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1569371635227532,
+            "median_contrast": 2.9223923683166504,
+            "direction": "falling"
+          },
+          "old_rejections": [],
+          "repaired_motion": {
+            "observed_duration_s": 5.0,
+            "independent_windows": 2.5,
+            "span_s": 6.0,
+            "support_fraction": 0.8333333333333334,
+            "frequency_excursion_hz": 50.69298669341947,
+            "required_excursion_hz": 21.739323040600866,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.2170976922592004,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1569371635227532,
+            "median_contrast": 2.9223923683166504,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 1.0,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        }
+      }
+    },
+    {
+      "reference": "event-0009",
+      "points": 23,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 7,
+          "observations": 7,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 3.5,
+            "support_fraction": 0.2857142857142857,
+            "frequency_excursion_hz": 7.929636899009324,
+            "required_excursion_hz": 14.297397720068693,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.7401138273032246,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1839158731130324,
+            "median_contrast": 2.7529280185699463,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "unresolved_frequency_motion",
+              "measured": 7.929636899009324,
+              "threshold": 14.297397720068693,
+              "comparison": ">="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 3.5,
+            "independent_windows": 1.75,
+            "span_s": 3.5,
+            "support_fraction": 1.0,
+            "frequency_excursion_hz": 7.929636899009324,
+            "required_excursion_hz": 14.297397720068693,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 1.0,
+            "prediction_error_q95": 0.5388649052275996,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1839158731130324,
+            "median_contrast": 2.7529280185699463,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.3333333333333333,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": [
+            {
+              "reason": "unresolved_frequency_motion",
+              "measured": 7.929636899009324,
+              "threshold": 14.297397720068693,
+              "comparison": ">="
+            },
+            {
+              "reason": "motion_concentrated_or_unresolved",
+              "measured": 0.3333333333333333,
+              "threshold": 0.6666666666666666,
+              "comparison": ">="
+            }
+          ]
+        },
+        "prediction_only": {
+          "matched_points": 21,
+          "observations": 23,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 15.0,
+            "support_fraction": 0.06666666666666667,
+            "frequency_excursion_hz": 91.546414539963,
+            "required_excursion_hz": 13.332200915962456,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.896551724137931,
+            "prediction_error_q95": 2.5215315434811134,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1012820921064443,
+            "median_contrast": 2.825127363204956,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "discontinuous_motion",
+              "measured": 2.5215315434811134,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 11.5,
+            "independent_windows": 5.75,
+            "span_s": 15.0,
+            "support_fraction": 0.7666666666666667,
+            "frequency_excursion_hz": 91.546414539963,
+            "required_excursion_hz": 13.332200915962456,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.8636363636363636,
+            "prediction_error_q95": 0.582088549310627,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1012820921064443,
+            "median_contrast": 2.825127363204956,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 1.0,
+            "shape_residual_q90": 0.0,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        }
+      }
+    },
+    {
+      "reference": "event-0014",
+      "points": 25,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 13,
+          "observations": 13,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 7.5,
+            "support_fraction": 0.13333333333333333,
+            "frequency_excursion_hz": 2.7491593871265536,
+            "required_excursion_hz": 4.526575331836939,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.7142857142857143,
+            "prediction_error_q95": 0.932856791076206,
+            "sustained_turns": 0,
+            "variation_ratio": 1.5602450387871816,
+            "median_contrast": 3.141676425933838,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "unresolved_frequency_motion",
+              "measured": 2.7491593871265536,
+              "threshold": 4.526575331836939,
+              "comparison": ">="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 6.5,
+            "independent_windows": 3.25,
+            "span_s": 7.5,
+            "support_fraction": 0.8666666666666667,
+            "frequency_excursion_hz": 2.7491593871265536,
+            "required_excursion_hz": 4.526575331836939,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.6666666666666666,
+            "prediction_error_q95": 0.34648742706125396,
+            "sustained_turns": 0,
+            "variation_ratio": 1.5602450387871816,
+            "median_contrast": 3.141676425933838,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.3333333333333333,
+            "shape_residual_q90": 1.2081299375742673,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": [
+            {
+              "reason": "unresolved_frequency_motion",
+              "measured": 2.7491593871265536,
+              "threshold": 4.526575331836939,
+              "comparison": ">="
+            },
+            {
+              "reason": "motion_concentrated_or_unresolved",
+              "measured": 0.3333333333333333,
+              "threshold": 0.6666666666666666,
+              "comparison": ">="
+            }
+          ]
+        },
+        "prediction_only": {
+          "matched_points": 24,
+          "observations": 24,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 16.0,
+            "support_fraction": 0.0625,
+            "frequency_excursion_hz": 13.658683880791074,
+            "required_excursion_hz": 4.47658234664239,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.8709677419354839,
+            "prediction_error_q95": 1.0113267972754933,
+            "sustained_turns": 0,
+            "variation_ratio": 1.155253477257147,
+            "median_contrast": 3.0750333070755005,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "discontinuous_motion",
+              "measured": 1.0113267972754933,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 12.0,
+            "independent_windows": 6.0,
+            "span_s": 16.0,
+            "support_fraction": 0.75,
+            "frequency_excursion_hz": 13.658683880791074,
+            "required_excursion_hz": 4.47658234664239,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.8260869565217391,
+            "prediction_error_q95": 0.4238584449815734,
+            "sustained_turns": 0,
+            "variation_ratio": 1.155253477257147,
+            "median_contrast": 3.0750333070755005,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.6666666666666666,
+            "shape_residual_q90": 1.100563696026802,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        }
+      }
+    },
+    {
+      "reference": "event-0016",
+      "points": 28,
+      "variants": {
+        "hard_gate": {
+          "matched_points": 19,
+          "observations": 19,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 10.0,
+            "support_fraction": 0.1,
+            "frequency_excursion_hz": 11.938648532982882,
+            "required_excursion_hz": 7.446485042721033,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.5263157894736842,
+            "prediction_error_q95": 0.8351501567080692,
+            "sustained_turns": 0,
+            "variation_ratio": 1.266285337124893,
+            "median_contrast": 3.806400775909424,
+            "direction": "falling"
+          },
+          "old_rejections": [],
+          "repaired_motion": {
+            "observed_duration_s": 9.5,
+            "independent_windows": 4.75,
+            "span_s": 10.0,
+            "support_fraction": 0.95,
+            "frequency_excursion_hz": 11.938648532982882,
+            "required_excursion_hz": 7.446485042721033,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.5555555555555556,
+            "prediction_error_q95": 0.4140917176115053,
+            "sustained_turns": 0,
+            "variation_ratio": 1.266285337124893,
+            "median_contrast": 3.806400775909424,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.6666666666666666,
+            "shape_residual_q90": 0.7660135456050396,
+            "shape_direction": "falling"
+          },
+          "repaired_rejections": []
+        },
+        "prediction_only": {
+          "matched_points": 27,
+          "observations": 29,
+          "old_motion": {
+            "observed_duration_s": 1.0,
+            "span_s": 15.0,
+            "support_fraction": 0.06666666666666667,
+            "frequency_excursion_hz": 23.724337333533924,
+            "required_excursion_hz": 7.523975648134947,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.5862068965517241,
+            "prediction_error_q95": 1.270027656235823,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1118159442512228,
+            "median_contrast": 3.6885242462158203,
+            "direction": "falling"
+          },
+          "old_rejections": [
+            {
+              "reason": "discontinuous_motion",
+              "measured": 1.270027656235823,
+              "threshold": 1.0,
+              "comparison": "<="
+            }
+          ],
+          "repaired_motion": {
+            "observed_duration_s": 14.5,
+            "independent_windows": 7.25,
+            "span_s": 15.0,
+            "support_fraction": 0.9666666666666667,
+            "frequency_excursion_hz": 23.724337333533924,
+            "required_excursion_hz": 7.523975648134947,
+            "frequency_uncertainty_hz": 0.5,
+            "moving_fraction": 0.6071428571428571,
+            "prediction_error_q95": 0.524848475414227,
+            "sustained_turns": 0,
+            "variation_ratio": 1.1118159442512228,
+            "median_contrast": 3.6885242462158203,
+            "direction": "falling",
+            "resolved_regional_motion_fraction": 0.6666666666666666,
+            "shape_residual_q90": 0.5523806325470444,
+            "shape_direction": "turning"
+          },
+          "repaired_rejections": []
+        }
+      }
+    }
+  ]
+}

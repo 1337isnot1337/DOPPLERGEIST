@@ -1,0 +1,78 @@
+{
+  "intermediate_failures": [
+    {
+      "experiment": "ablation-f-reversible",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "failure": {
+        "code": "candidate_budget_exceeded",
+        "message": "Retained 8302 candidates/86672 observations; limits 8192/500000"
+      },
+      "runtime_s": 73.49205350101693,
+      "implementation_sha256": "bc5598b149abfa1a2998b50146bf7947d02168874f571bb7d792bd6a85155e98"
+    },
+    {
+      "experiment": "ablation-h-indexed",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "failure": {
+        "code": "candidate_budget_exceeded",
+        "message": "Retained 16421 candidates/175352 observations; limits 16384/500000"
+      },
+      "runtime_s": 117.30272038301337,
+      "implementation_sha256": "74993a14e897d13fe1e8310a305d7f425f9390b0b7f8bef3d9f6f815bb2f2234"
+    },
+    {
+      "experiment": "ablation-i-budgeted",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "failure": {
+        "code": "association_budget_exceeded",
+        "message": "Association work exceeded 1000000 pairs"
+      },
+      "runtime_s": 141.40867223299574,
+      "implementation_sha256": "f0d5789aa0adbdcf38bf623d188a517b2d6a2be92760a4734162d93db636948b"
+    },
+    {
+      "experiment": "ablation-q-shape-context",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "failure": {
+        "code": "association_budget_exceeded",
+        "message": "Association work exceeded 1000000 pairs"
+      },
+      "runtime_s": 242.07653736599605,
+      "implementation_sha256": "afacbea1ea03c04f5cb2b5370d4535bbb686d6e4d6307b50c487ea79876173cf"
+    },
+    {
+      "experiment": "ablation-r-indexed-shape-context",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "failure": {
+        "code": "association_budget_exceeded",
+        "message": "Association work exceeded 1000000 pairs"
+      },
+      "runtime_s": 604.1769866789982,
+      "implementation_sha256": "27ca831d9725d754dc73ebfa9cd0f0b1d8908e098bb81f1aa7469d23a257bc49"
+    },
+    {
+      "experiment": "complete-default",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "error": "Replay exceeded600s wall budget",
+      "external_watchdog_s": 600
+    },
+    {
+      "experiment": "bounded-default",
+      "case_id": "whole-reference",
+      "status": "failed",
+      "error": "Replay exceeded600s wall budget",
+      "external_watchdog_s": 600
+    }
+  ],
+  "final_default_completed": 32,
+  "final_wide_completed": 31,
+  "final_watchdog_s": 1800,
+  "final_hour_wall_s": 662.912724469963,
+  "note": "Intermediate failed runs are preserved and not counted as completed zero-proposal scans. Final hour would still exceed a600s external deployment budget."
+}
