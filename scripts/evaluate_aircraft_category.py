@@ -260,6 +260,7 @@ def proposals(root, discoveries, model, output):
     with (root / "environment_class_mappings.csv").open(newline="") as stream:
         labels = list(csv.DictReader(stream))
     rows, failures = [], []
+    recording_outcomes = []
     for index in range(1, 7):
         source = discoveries / str(index) / "discovery" / "discovery.json"
         try:
@@ -269,6 +270,8 @@ def proposals(root, discoveries, model, output):
                               max_windows=20000)
             assert source.read_bytes() == before, "The saved discovery changed"
             (output / f"{index}.json").write_text(json.dumps(report, indent=2) + "\n")
+            recording_outcomes.append({"recording": f"{index}_AUDIO.wav", "complete": report["complete"],
+                                       "events": len(report["events"]), "windows_scored": report["windows_scored"]})
             for event in report["events"]:
                 first, last = math.floor(event["start_s"] / 5), math.ceil(event["end_s"] / 5)
                 values = {row[str(index - 1)] for row in labels[max(0, first):min(len(labels), last)]}
@@ -277,6 +280,8 @@ def proposals(root, discoveries, model, output):
                              "start_s": event["start_s"], "end_s": event["end_s"],
                              "predicted_label": event["label"], "reason": event["reason"],
                              "windows_scored": event["windows_scored"],
+                             **{f"score_{name}": event.get("mean_model_scores", {}).get(name, "")
+                                for name in ("background", "propeller", "turbofan")},
                              "publisher_state": next(iter(values)) if eligible else "mixed_or_ignored",
                              "annotation_bins": ",".join(sorted(values))})
         except Exception as error:
@@ -287,6 +292,7 @@ def proposals(root, discoveries, model, output):
                      for prediction in ("unknown", "fixed_wing_propeller_like", "jet_like")}
              for truth in ("0", "1", "mixed_or_ignored")}
     summary = {"proposals": len(rows), "failed_recordings": failures,
+               "recording_outcomes": recording_outcomes,
                "publisher_states_by_prediction": table, "model_sha256": file_digest(model),
                "scope": "Actual full-recording automatic proposals; labels joined afterward. Mixed/ignore intervals are unscored. Aircraft presence labels are not category or identity truth."}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

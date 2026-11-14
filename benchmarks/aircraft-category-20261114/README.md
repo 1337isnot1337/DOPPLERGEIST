@@ -85,6 +85,41 @@ Complete predictions and aggregate counts are in `continuous-window-*`.
 The supplied mapping does not bind the six files to the official split's session
 IDs, so independence from its training recordings is not established.
 
-Whole-recording automatic discovery and the proposal-level controls are still
-running. Their complete outcomes will be appended before the PR is marked ready.
-This work supplies no geolocation, calibration or field-corpus acceptance evidence.
+## Six complete hours: automatic proposals
+
+Ordinary discovery completed all six original hours within the fixed 600-second
+per-recording limit. It produced 1,593 ridge events in 123 acoustic groups, with
+no event windows, aircraft identities, coordinates or publisher labels supplied
+to discovery. Groups do not establish independent aircraft. Per-recording results
+and elapsed times (412–565 seconds) are in `whole-recording-outcomes.csv`.
+
+The separate diagnostic completed all six saved discoveries and 10,323 actual
+five-second inference windows with a 20,000-window budget per recording. It
+retained all 1,593 events, including 120 short events that remained unknown;
+there were no failed recordings or work-limit outcomes. Each saved discovery
+was checked byte-for-byte before and after its diagnostic.
+
+| Publisher state over the entire event interval | Predicted unknown | Predicted propeller-like | Predicted jet-like |
+| --- | ---: | ---: | ---: |
+| Background only (325 events) | 205 | 98 | 22 |
+| Aircraft present throughout (949) | 71 | 427 | 451 |
+| Mixed or ignored, unscored (319) | 14 | 207 | 98 |
+
+The classifier assigns aircraft-like labels to **120/325 = 36.9%** of events
+contained entirely in publisher-background bins. Binary aircraft-presence labels
+cannot validate category accuracy, source identity or discovery recall. Overlapping
+ridges and windows are correlated. Mixed and ignored intervals stay unscored.
+`automatic-proposal-predictions.csv` retains every event, annotation-bin state,
+prediction, reason, window count and available mean model scores;
+`automatic-proposal-summary.json` retains every recording's completion status.
+No fit, threshold or selection rule was changed after viewing these outcomes.
+
+A separate CLI control on the first actual 240-event saved discovery allowed
+only one window. Its first eligible interval required more, so the global budget
+stopped inference: all 220 eligible events remained unknown without partial
+scores, and the 20 short events stayed unknown. No windows were decoded and the
+report was explicitly incomplete (`actual-work-limit-control.json`).
+
+This completes the registered category experiment, with negative results for
+reliable propeller recognition. It supplies no geolocation, calibration or
+field-corpus acceptance evidence.
