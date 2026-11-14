@@ -40,9 +40,17 @@ def guidance(result, decision=None):
             ["result.json#/reason_code", "result.json#/required_fields"])
 
     if reason in {"recording_time_required", "no_supported_events", "no_doppler_events"} and result.get("events") == []:
-        add("no_events", "No supported Doppler events were found in this recording.",
-            "If available, try more of the original recording. It may contain another usable event; this has not been assessed.",
-            ["result.json#/reason_code", "result.json#/events"])
+        review = result.get("review", {})
+        excluded = review.get("excluded_event_ids") if isinstance(review, dict) else None
+        if isinstance(review, dict) and review.get("user_assisted") is True and isinstance(excluded, list) and excluded:
+            add("excluded_events", "No acoustic events remain after the user's review exclusions.",
+                "Inspect the excluded curves in the original job. If a curve was excluded in error, correct its review label before starting another analysis.",
+                ["result.json#/reason_code", "result.json#/events",
+                 "result.json#/review/user_assisted", "result.json#/review/excluded_event_ids"])
+        else:
+            add("no_events", "No supported Doppler events were found in this recording.",
+                "If available, try more of the original recording. It may contain another usable event; this has not been assessed.",
+                ["result.json#/reason_code", "result.json#/events"])
 
     if reason == "insufficient_independent_events":
         overlap = diagnostics.get("possible_harmonic_overlap")
@@ -57,6 +65,20 @@ def guidance(result, decision=None):
             add("more_events", f"The leading hypothesis uses {count} distinct flight segment(s), below the independent-flyover requirement.",
                 "If available, try more of the original recording containing a separate flyover. Another usable event is not guaranteed.",
                 ["result.json#/reason_code", "decision.json#/diagnostics/independent_event_groups"])
+        elif count is None and "independent_event_groups" in diagnostics:
+            assessment = diagnostics.get("matched_group_overlap_assessment")
+            if isinstance(assessment, dict):
+                examined, budget = assessment.get("pairs_examined"), assessment.get("pair_budget")
+                if (assessment.get("conclusive") is False and assessment.get("exhaustive") is False
+                        and type(examined) is int and type(budget) is int
+                        and 0 <= examined == budget):
+                    base = "decision.json#/diagnostics/matched_group_overlap_assessment"
+                    add("event_assessment_limit",
+                        f"The event-independence check reached its work limit after examining {examined} acoustic-group pair(s); independence is not established.",
+                        "Ask the operator to inspect the unfinished overlap assessment and its work limit. More audio or a longer location search has not been shown to resolve this limit.",
+                        ["result.json#/reason_code", "decision.json#/diagnostics/independent_event_groups",
+                         base + "/conclusive", base + "/exhaustive",
+                         base + "/pairs_examined", base + "/pair_budget"])
 
     # Explain measured fit failures only when the saved decision still matches
     # this result and identifies the offending event and policy threshold.
