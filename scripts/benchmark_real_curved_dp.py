@@ -121,11 +121,45 @@ def benchmark(inputs, output, iterations):
     print(json.dumps({key: value for key, value in result.items() if key != "cases"}), flush=True)
 
 
+def pipeline(source, output):
+    """Compare complete discovery outputs, changing only the private kernel."""
+    from dopplergeist import advanced_discovery
+    from dopplergeist.discovery import discover_events
+    from dopplergeist.intake import intake_recording
+
+    output.mkdir(parents=True, exist_ok=False)
+    recording = intake_recording(source, output / "intake")
+    original = advanced_discovery._curved_forward
+    outputs, timings = {}, {}
+    try:
+        for name, kernel in (("reference", _curved_forward_reference), ("optimized", original)):
+            advanced_discovery._curved_forward = kernel
+            destination = output / name
+            started = time.perf_counter()
+            discover_events(recording, output_dir=destination, plot_summary=False,
+                            plot_event_details=False, event_audio=False)
+            timings[name] = time.perf_counter() - started
+            outputs[name] = json.loads((destination / "discovery.json").read_text())
+            print(f"Finished complete discovery: {name}", flush=True)
+    finally:
+        advanced_discovery._curved_forward = original
+    if outputs["reference"] != outputs["optimized"]:
+        raise AssertionError("Complete automatic discovery outputs differ")
+    result = {"source": Path(source).name, "source_seconds": recording.metadata["duration_s"],
+              "events": len(outputs["optimized"]["events"]),
+              "groups": len(outputs["optimized"]["proposals"]),
+              "exact_complete_discovery": True, "elapsed_s": timings,
+              "scope": "One complete real recording; parity check, not a pipeline speed estimate or location result"}
+    (output / "summary.json").write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(result), flush=True)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("prepare", "benchmark"))
+    parser.add_argument("command", choices=("prepare", "benchmark", "pipeline"))
     parser.add_argument("--data", type=Path)
     parser.add_argument("--inputs", type=Path)
+    parser.add_argument("--source", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--iterations", type=int, default=32)
     args = parser.parse_args()
@@ -135,6 +169,10 @@ def main():
         if args.data is None:
             parser.error("--data is required")
         prepare(args.data, args.output)
+    elif args.command == "pipeline":
+        if args.source is None:
+            parser.error("--source is required")
+        pipeline(args.source, args.output)
     else:
         if args.inputs is None:
             parser.error("--inputs is required")

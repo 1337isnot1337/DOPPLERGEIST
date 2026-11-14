@@ -443,8 +443,8 @@ def _curved_forward(image, maximum_velocity, bias):
     """Same recurrence with contiguous frequency scans and reusable state.
 
     The predecessor comparison order and floating-point subtractions are kept.
-    Explicit t/j/v tie ordering preserves the original j-major traversal's
-    maximum even though velocity is now the outer loop.
+    The maximum is reduced after each frame, then located in the original j/v
+    order. Separating this reduction leaves the frequency loop independent.
     """
     nt, nf = image.shape
     nv = 2 * maximum_velocity + 1
@@ -462,7 +462,9 @@ def _curved_forward(image, maximum_velocity, bias):
             last = max(0, min(nf, nf + velocity))
             penalty = 0.03 * abs(velocity)
             for j in range(first):
-                current[v, j] = -1000.0
+                # Invalid predecessors cannot beat the recurrence's zero
+                # restart. -inf also excludes them from the frame maximum.
+                current[v, j] = -np.inf
                 back[t, v, j] = 127
             for j in range(first, last):
                 k = j - velocity
@@ -485,15 +487,21 @@ def _curved_forward(image, maximum_velocity, bias):
                 value = np.float32(image[t, j] - bias + best)
                 current[v, j] = value
                 back[t, v, j] = choice
-                if (value > maximum or (value == maximum and t == best_t
-                        and (j < best_j or (j == best_j and v < best_v)))):
-                    maximum = value
-                    best_t = t
-                    best_j = j
-                    best_v = v
             for j in range(last, nf):
-                current[v, j] = -1000.0
+                current[v, j] = -np.inf
                 back[t, v, j] = 127
+        frame_maximum = np.nanmax(current)
+        if frame_maximum > maximum:
+            found = False
+            for j in range(nf):
+                for v in range(nv):
+                    if current[v, j] == frame_maximum:
+                        maximum = current[v, j]
+                        best_t, best_j, best_v = t, j, v
+                        found = True
+                        break
+                if found:
+                    break
         previous, current = current, previous
     return (maximum, best_t, best_j, best_v, back.transpose(0, 2, 1))
 
