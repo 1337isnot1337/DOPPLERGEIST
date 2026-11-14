@@ -47,11 +47,13 @@ different result was saved.
 | --- | --- |
 | Missing recording time and required `time_window` | Supply a defensible UTC window for the original recording start. |
 | No discovered events for a missing-time/no-events result | More of the original recording may contain a usable event. |
+| No remaining events after user review exclusions | Inspect the original job's excluded curves and correct any mistaken review labels. This is distinct from discovery finding no events. |
 | Too few matched acoustic groups | Explain the observed group count; a separate flyover may provide more evidence. |
 | Measured track support below the saved decision threshold | Identify the affected acoustic event, its support fraction and the recorded policy threshold. |
 | Measured acoustic RMSE or outlier fraction above the saved decision threshold | Identify the affected event, offending measurement and threshold. This is a failed association, not a location estimate. |
 | Recorded source-frequency drift at its bound | Identify the affected event and report the bounded fit as unresolved. |
 | Possible harmonic or reused-ridge overlap | Explain that group independence is unestablished; do not assert aircraft identity. |
+| Event-overlap check stopped at its pair budget | Report the examined pair count and ask the operator to inspect the unfinished assessment. Do not infer too few flyovers or promise that more audio/runtime will resolve it. |
 | Partial required data or explicit missing identifiers | Restore the identified flight or terrain data. |
 | Unavailable data with a recorded acquisition/configuration limit | Inspect that limit before retrying; unavailability alone does not prove an archive gap. |
 | Actual wall-time limit and incomplete search | Review runtime; resume only a compatible checkpoint, or rerun. |
@@ -70,6 +72,18 @@ proposals are confirmed aircraft. It does not perform counterfactuals, rank
 suggestions, or recommend ground-truth coordinates or known flight IDs as inputs.
 
 ## Verification and remaining work
+
+The focused software regression is:
+
+```bash
+PYTHONPATH=src python -m pytest -q tests/test_real_guidance_limits.py
+```
+
+It checks the bounded overlap diagnostic using saved measured ridges, with a zero
+pair budget, and exercises review exclusions using the actual saved missing-clock
+job's event IDs. It also checks evidence pointers, stale-decision suppression,
+invalid counters and unchanged saved bytes. These are software controls; no audio,
+tracks, location fits or positive/negative localization controls are generated.
 
 Use actual completed real-recording jobs when checking recommendations. Replay the
 command above, inspect every cited JSON pointer, and compare the saved result
