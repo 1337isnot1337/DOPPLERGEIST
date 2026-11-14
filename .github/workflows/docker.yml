@@ -125,6 +125,58 @@ jobs:
             --mount type=volume,src=dopplergeist-ci-jobs,dst=/data/jobs \
             --mount type=volume,src=dopplergeist-ci-cache,dst=/home/dopplergeist/.cache/dopplergeist \
             dopplergeist:ci -c 'from pathlib import Path; roots = [Path("/data/jobs"), Path.home()/".cache"/"dopplergeist"]; assert all((root/"container-write-check").read_text() == "persistent" for root in roots)'
+      - name: Check Fly startup, authentication and persistent storage
+        run: |
+          docker build --platform linux/amd64 --target fly --tag dopplergeist:fly-ci .
+          if docker run --rm dopplergeist:fly-ci; then
+            echo "Fly startup must fail without hosted authentication settings"
+            exit 1
+          fi
+          cleanup() {
+            docker logs dopplergeist-fly-ci 2>/dev/null || true
+            docker rm --force dopplergeist-fly-ci >/dev/null 2>&1 || true
+            docker volume rm dopplergeist-fly-ci-data >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          docker volume create dopplergeist-fly-ci-data
+          docker run --detach --name dopplergeist-fly-ci \
+            --publish 127.0.0.1:8766:8765 \
+            --mount type=volume,src=dopplergeist-fly-ci-data,dst=/data \
+            --env DOPPLERGEIST_PUBLIC_ORIGIN=https://dopplergeist.example \
+            --env DOPPLERGEIST_AUTH_PASSWORD=container-check \
+            dopplergeist:fly-ci
+          python - <<'PY'
+          import base64
+          import json
+          import time
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          url = "http://127.0.0.1:8766/api/capabilities"
+          headers = {"Host": "dopplergeist.example"}
+          for attempt in range(30):
+              try:
+                  urlopen(Request(url, headers=headers), timeout=2)
+              except HTTPError as error:
+                  assert error.code == 401
+                  break
+              except (URLError, TimeoutError, ConnectionError):
+                  if attempt == 29:
+                      raise
+                  time.sleep(1)
+              else:
+                  raise AssertionError("Hosted API must require authentication")
+          headers["Authorization"] = "Basic " + base64.b64encode(b"dopplergeist:container-check").decode()
+          with urlopen(Request(url, headers=headers), timeout=5) as response:
+              assert json.load(response)["online_enabled"] is True
+          PY
+          docker exec --user 10001:10001 dopplergeist-fly-ci python -c 'from pathlib import Path; assert "Uid:\t10001\t10001\t10001\t10001" in Path("/proc/1/status").read_text(); roots = [Path("/data/jobs"), Path("/data/.cache/dopplergeist")]; [(root/"write-check").write_text("persistent") for root in roots]'
+          docker stop --time 15 dopplergeist-fly-ci
+          docker inspect --format '{{.State.ExitCode}}' dopplergeist-fly-ci | grep -qx 0
+          docker rm dopplergeist-fly-ci
+          docker run --rm --user 10001:10001 --entrypoint python \
+            --mount type=volume,src=dopplergeist-fly-ci-data,dst=/data \
+            dopplergeist:fly-ci -c 'from pathlib import Path; assert all((Path("/data")/name/"write-check").read_text() == "persistent" for name in ("jobs", ".cache/dopplergeist"))'
       - name: Export the validated image
         id: export
         if: steps.metadata.outputs.publish == 'true'

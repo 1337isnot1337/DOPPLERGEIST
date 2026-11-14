@@ -160,7 +160,7 @@ In a constrained real-MP3 demonstration, the highest-ranked location was **476 m
 
 ### Can I upload an audio file in a browser?
 
-**Yes.** Run `dopplergeist serve` after installation and open the local interface. It is a self-hosted application, not a public cloud upload service.
+**Yes.** Run `dopplergeist serve` after installation and open the local interface. Password-protected self-hosting through an HTTPS reverse proxy or Fly.io is also supported; see [hosted setup](docs/HOSTING.md).
 
 ### Is DOPPLERGEIST free and open source?
 

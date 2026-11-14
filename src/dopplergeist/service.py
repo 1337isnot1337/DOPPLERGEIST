@@ -1,6 +1,9 @@
 """Local upload/job API, sharing the automatic CLI's persistent job manager."""
+import base64
+import hmac
 import json
 import mimetypes
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib.resources import files
 from pathlib import Path
@@ -17,12 +20,37 @@ _INLINE_SUFFIXES = {".png", ".svg", ".wav", ".mp3", ".flac", ".m4a", ".ogg"}
 _JSON_BODY_LIMIT = 64 * 1024
 
 
+def hosted_settings():
+    """Require a complete hosted configuration before opening the listener."""
+    origin = os.environ.get("DOPPLERGEIST_PUBLIC_ORIGIN")
+    username = os.environ.get("DOPPLERGEIST_AUTH_USER")
+    password = os.environ.get("DOPPLERGEIST_AUTH_PASSWORD")
+    if origin is None and username is None and password is None:
+        return None, None
+    if not origin or not password or not password.strip():
+        raise ValueError("Hosted mode requires DOPPLERGEIST_PUBLIC_ORIGIN and DOPPLERGEIST_AUTH_PASSWORD")
+    parsed = urlsplit(origin)
+    if (parsed.scheme != "https" or not parsed.hostname or parsed.username is not None
+            or parsed.password is not None or origin != "https://" + parsed.netloc
+            or any(c.isspace() or ord(c) < 32 or c == "\\" for c in origin)):
+        raise ValueError("DOPPLERGEIST_PUBLIC_ORIGIN must be an HTTPS origin without a path or credentials")
+    # Accessing port validates malformed/non-numeric/out-of-range ports too.
+    if parsed.port == 0:
+        raise ValueError("DOPPLERGEIST_PUBLIC_ORIGIN has an invalid port")
+    username = "dopplergeist" if username is None else username
+    if not username.strip() or ":" in username or any(ord(c) < 32 for c in username + password):
+        raise ValueError("Hosted credentials require a nonempty username without a colon or control characters")
+    credentials = base64.b64encode(f"{username}:{password}".encode("utf-8"))
+    return origin, credentials
+
+
 class JobServer(ThreadingHTTPServer):
     daemon_threads = True
 
     def __init__(self, address, manager):
         if address[0] not in {"127.0.0.1", "localhost", "0.0.0.0"}:
             raise ValueError("Bind host must be 127.0.0.1, localhost or 0.0.0.0")
+        self.public_origin, self.credentials = hosted_settings()
         self.manager = manager
         super().__init__(address, Handler)
 
@@ -31,23 +59,44 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
-    def _reply(self, value, code=200):
+    def _reply(self, value, code=200, *, headers=None):
         body = json.dumps(value, allow_nan=False).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        for name, value in (headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(body)
 
     def _check_origin(self):
-        allowed = {f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"}
-        if self.headers.get("Host") not in allowed:
-            raise PermissionError("Invalid local Host header")
+        if self.server.public_origin:
+            allowed = {urlsplit(self.server.public_origin).netloc}
+            origins = {self.server.public_origin}
+        else:
+            allowed = {f"127.0.0.1:{self.server.server_port}", f"localhost:{self.server.server_port}"}
+            origins = {"http://" + host for host in allowed}
+        if len(self.headers.get_all("Host", [])) != 1 or self.headers.get("Host") not in allowed:
+            raise PermissionError("Invalid Host header")
         origin = self.headers.get("Origin")
-        if origin and origin not in {"http://" + host for host in allowed}:
-            raise PermissionError("Requests must originate from this local interface")
+        if (len(self.headers.get_all("Origin", [])) > 1 or (origin and origin not in origins)
+                or self.headers.get("Sec-Fetch-Site") == "cross-site"):
+            raise PermissionError("Requests must originate from this interface")
+
+    def _authenticate(self):
+        if self.server.credentials is None:
+            return True
+        authorization = self.headers.get_all("Authorization", [])
+        if len(authorization) == 1:
+            scheme, _, token = authorization[0].partition(" ")
+            if scheme.lower() == "basic" and hmac.compare_digest(token.encode("utf-8"), self.server.credentials):
+                return True
+        self.close_connection = True
+        self._reply({"error": "Authentication required"}, 401,
+                    headers={"WWW-Authenticate": 'Basic realm="DOPPLERGEIST", charset="UTF-8"'})
+        return False
 
     def _json_body(self):
         if self.headers.get_content_type() != "application/json":
@@ -67,6 +116,8 @@ class Handler(BaseHTTPRequestHandler):
         return value
 
     def _route(self):
+        if not self._authenticate():
+            return
         self._check_origin()
         parts = [unquote(p) for p in urlsplit(self.path).path.strip("/").split("/")]
         manager = self.server.manager
@@ -159,6 +210,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", mimetypes.guess_type(str(path))[0] or "application/octet-stream")
         self.send_header("Content-Length", str(path.stat().st_size))
         self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'")
         if download:
             self.send_header("Content-Disposition", f'attachment; filename="{path.name.replace(chr(34), "")}"')
@@ -186,6 +238,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(root, config=None, *, host="127.0.0.1", port=8765, max_runtime_s=3600, max_upload_bytes=100*1024*1024):
+    hosted_settings()
     manager = JobManager(root, config, max_runtime_s=max_runtime_s, max_upload_bytes=max_upload_bytes)
     try:
         with JobServer((host, port), manager) as server:

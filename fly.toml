@@ -1,0 +1,44 @@
+# Copy to a private operator file and set your app and matching HTTPS origin.
+app = "dopplergeist-your-name"
+primary_region = "iad"
+kill_signal = "SIGINT"
+kill_timeout = "30s"
+
+[build]
+  build-target = "fly"
+
+[env]
+  DOPPLERGEIST_PUBLIC_ORIGIN = "https://dopplergeist-your-name.fly.dev"
+  DOPPLERGEIST_AUTH_USER = "dopplergeist"
+
+[[mounts]]
+  source = "dopplergeist_data"
+  destination = "/data"
+  initial_size = "50gb"
+
+[[services]]
+  internal_port = 8765
+  protocol = "tcp"
+  # Background jobs can be busy while the HTTP service is idle.
+  auto_stop_machines = "off"
+  auto_start_machines = false
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  # No unauthenticated HTTP exception or secret in a health-check configuration.
+  [[services.tcp_checks]]
+    grace_period = "30s"
+    interval = "15s"
+    timeout = "2s"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "2gb"

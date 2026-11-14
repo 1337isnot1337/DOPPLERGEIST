@@ -46,6 +46,9 @@ on loopback. Host networking is unnecessary. The unauthenticated local service's
 Host and Origin checks remain enabled. Use the loopback publication shown above.
 Normal non-container `serve` still defaults to `127.0.0.1`.
 
+For a password-protected HTTPS reverse proxy or the separate Fly build target,
+see [hosted setup](HOSTING.md).
+
 ## Enable data downloads or use existing data
 
 The default container has online acquisition disabled. Audio intake and discovery
