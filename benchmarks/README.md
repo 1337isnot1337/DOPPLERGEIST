@@ -191,10 +191,19 @@ PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py evaluate \
   --output results/nasa-new/evaluation.json
 ```
 
-Defaults use automatic discovery with a 2 s spectral window and 0.5 s hop,
+Current defaults use the ordinary 4 kHz intake and production discovery, including
+its source-backed high-rate decode. The exported mono WAV retains the original
+channel 2 pressure samples without gain normalization. Discovery's resampled time
+axis is mapped back to the original sample timestamps for trajectory fitting.
+No absolute recording date is assigned.
+
+Use `--discovery-mode legacy` to replay the historical baseline detector on the
+original 20 kHz samples. Only that explicitly historical mode accepts custom
+`--discovery-window-s` and `--discovery-hop-s` controls. The manifest and per-case
+discovery output identify the selected mode. Default spatial settings remain
 50 m grid cells, zero clock offset, and separate constant-tone and 2% drift fits.
 The [result table](nasa-session-results-20261103.csv) preserves every development
-case and both discovery settings. These are supplied-track experiments, not an
+case and both historical discovery settings. These are supplied-track experiments, not an
 automatic aircraft-association or nationwide validation corpus.
 
 | Recording | Proposals at 2 s / 0.5 s | Proposals at 0.5 s / 0.125 s | Primary result |
@@ -213,6 +222,69 @@ A competing mode is 1,899 m from truth, and similar losses extend over kilometre
 The CSV's 100/500/1,000 m fields describe only the conditional best-mode error;
 they do not indicate accepted or correctly associated locations. The high-speed
 pair's primary discovery and grid search took 6.56 s in the recorded run.
+
+### Current-discovery compatibility replay, 2026-11-14
+
+The old runner passed an in-memory 20 kHz adapter into the current production
+detector, which rejected it before analysis. The repaired default uses real intake
+from the pinned microphone's lossless pressure WAV. Historical detector controls
+call the unchanged baseline implementation explicitly.
+
+Before execution, the replay fixes all four cases in the existing manifest and
+three arms: current production defaults; legacy 2 s / 0.5 s; legacy 0.5 s / 0.125 s.
+All returned ridges are retained. Each uses the same supplied GPS, 1,000 m domain
+padding, 250 m cell grid, zero clock offset, receiver up=0 and constant/2% drift
+fits. The coarser grid bounds this compatibility check; it cannot reproduce the
+old 50 m location-error numbers or measure precision at 100 m. Each arm has a
+1,200-second process deadline; failures and partial outputs are retained without
+reruns, replacement cases, threshold changes or acoustic-output reuse.
+
+The checks are successful execution through actual intake, discovery, fitting
+and frozen post-search evaluation; retained proposal and supported/unknown grid
+counts; and unchanged historical proposal counts (0/0/1/0 at default settings,
+all zero at the shorter window). Any modes and errors remain conditional on a
+supplied trajectory, not accepted geolocations or confirmed acoustic associations.
+No historical result file is overwritten.
+
+The first replay at `588c893` reproduced the two historical control counts, but
+production stopped on the second case: Edge038 returned seven ridges whose
+group failed the consumer's harmonic reconciliation. Its complete discovery and
+exception are retained. The runner now records that explicit unsupported case
+and continues the fixed cohort, as the ordinary automatic pipeline already does
+for an unreconciled group. A second, separately saved repair replay uses the same
+cases and scientific settings; no detector or matching threshold changed.
+
+The repair replay at `999b1dc` completed all twelve case/arm outcomes. Production
+search took 30.73 s; historical default and short-window searches took 1.21 s and
+1.32 s. These are single-run wall times, not a controlled speed comparison.
+
+| Recording | Production ridges / matching groups | Legacy default ridges | Legacy short ridges | Production outcome |
+|---|---:|---:|---:|---|
+| Cub107 | 0 / 0 | 0 | 0 | No proposal |
+| Edge038 | 7 / unresolved | 0 | 0 | Harmonic reconciliation failed; no fit |
+| Edge065 | 20 / unresolved | 1 | 0 | Harmonic reconciliation failed; no fit |
+| Edge066 | 7 / 2 | 0 | 0 | Four conditional grids; no product decision |
+
+For Edge066, each source-drift choice assessed 60 of 168 cells for the first
+group, leaving 108 cells unsupported, and all 168 for the second group. Their
+leading conditional modes were 174.33 m and 182.13 m from the published microphone
+reference. All 17 retained local modes remain in the evaluation; several compete
+with the leaders. The corresponding leading fits have large residuals and
+outlier fractions, so these distances do not establish correct source association
+or a valid location. The legacy Edge065 grids assessed 145 of 168 cells each;
+both conditional leaders were 391.67 m from the reference, with six retained
+local modes in total. That case's background-source ambiguity remains unchanged.
+
+The complete inputs, first failed replay, repaired outputs and evaluations are
+retained locally under
+`~/.local/state/dopplergeist-public-field-20261114/nasa-uas/` in
+`replay-588c893/` and `replay-999b1dc/`. To reproduce the bounded matrix with new
+outputs, add `--grid-step-m 250` to each search above, then use distinct output
+directories for the default arm, `--discovery-mode legacy`, and
+`--discovery-mode legacy --discovery-window-s 0.5 --discovery-hop-s 0.125`.
+Evaluate each completed arm with its frozen output and the separately held
+`evaluation-truth.json`. Do not use these public development results as a sealed
+holdout or as full end-to-end upload acceptance.
 
 The single shorter-window development comparison returned zero proposals in all
 four recordings, with no fitting or truth access. It did not improve discovery.

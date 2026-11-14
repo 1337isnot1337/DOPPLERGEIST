@@ -1,0 +1,16 @@
+Source: Blake Downward and Jon Nordby, AeroSonicDB YPAD-0523 v1.1.2.
+https://zenodo.org/records/10215080
+License: Creative Commons Attribution-NonCommercial 4.0 International.
+https://creativecommons.org/licenses/by-nc/4.0/
+
+Derived from the original public env_audio/1_AUDIO.wav, first 120 seconds.
+Publisher archive env_audio.zip MD5: 8c042dc817f459e80ac2491ffc8dd1cd.
+No audio or artificial signal was generated for this fixture.
+
+The standard 24 kHz float32 intake representation was transformed with the
+production 0.5-second Hann spectrum / 0.125-second hop and production local
+background/log-frequency normalization. The NPZ stores the first 64 frequency
+rows and 64 time columns of the low-band and high-band images. Reproduce the
+full images with scripts/benchmark_real_curved_dp.py prepare, then take those
+submatrices. These are software recurrence checks, not source identities or
+aircraft detection/localization accuracy evidence.

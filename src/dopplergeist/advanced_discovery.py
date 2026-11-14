@@ -400,7 +400,7 @@ def best_sequence(image, hop, bins_per_octave=144, bias=1.5):
     return (float(score), np.asarray(path[::-1], dtype=int))
 
 @njit(cache=True)
-def _curved_forward(image, maximum_velocity, bias):
+def _curved_forward_reference(image, maximum_velocity, bias):
     nt, nf = image.shape
     nv = 2 * maximum_velocity + 1
     back = np.full((nt, nf, nv), 127, np.int8)
@@ -436,6 +436,75 @@ def _curved_forward(image, maximum_velocity, bias):
                     best_v = v
         previous = current
     return (maximum, best_t, best_j, best_v, back)
+
+
+@njit(cache=True)
+def _curved_forward(image, maximum_velocity, bias):
+    """Same recurrence with contiguous frequency scans and reusable state.
+
+    The predecessor comparison order and floating-point subtractions are kept.
+    The maximum is reduced after each frame, then located in the original j/v
+    order. Separating this reduction leaves the frequency loop independent.
+    """
+    nt, nf = image.shape
+    nv = 2 * maximum_velocity + 1
+    back = np.empty((nt, nv, nf), np.int8)
+    previous = np.zeros((nv, nf), np.float32)
+    current = np.empty((nv, nf), np.float32)
+    maximum = -np.inf
+    best_t = 0
+    best_j = 0
+    best_v = 0
+    for t in range(nt):
+        for v in range(nv):
+            velocity = v - maximum_velocity
+            first = min(nf, max(0, velocity))
+            last = max(0, min(nf, nf + velocity))
+            penalty = 0.03 * abs(velocity)
+            for j in range(first):
+                # Invalid predecessors cannot beat the recurrence's zero
+                # restart. -inf also excludes them from the frame maximum.
+                current[v, j] = -np.inf
+                back[t, v, j] = 127
+            for j in range(first, last):
+                k = j - velocity
+                best = 0.0
+                choice = 127
+                if v > 0:
+                    value = previous[v - 1, k] - 0.8 - penalty
+                    if value > best:
+                        best = value
+                        choice = -1
+                value = previous[v, k] - 0.0 - penalty
+                if value > best:
+                    best = value
+                    choice = 0
+                if v + 1 < nv:
+                    value = previous[v + 1, k] - 0.8 - penalty
+                    if value > best:
+                        best = value
+                        choice = 1
+                value = np.float32(image[t, j] - bias + best)
+                current[v, j] = value
+                back[t, v, j] = choice
+            for j in range(last, nf):
+                current[v, j] = -np.inf
+                back[t, v, j] = 127
+        frame_maximum = np.nanmax(current)
+        if frame_maximum > maximum:
+            found = False
+            for j in range(nf):
+                for v in range(nv):
+                    if current[v, j] == frame_maximum:
+                        maximum = current[v, j]
+                        best_t, best_j, best_v = t, j, v
+                        found = True
+                        break
+                if found:
+                    break
+        previous, current = current, previous
+    return (maximum, best_t, best_j, best_v, back.transpose(0, 2, 1))
+
 
 def best_sequence_curved(image, hop, bins_per_octave=144, bias=1.5):
     rate = 0.05 if bins_per_octave > 144 else 0.3

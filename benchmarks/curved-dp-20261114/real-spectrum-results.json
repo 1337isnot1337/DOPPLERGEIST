@@ -1,0 +1,386 @@
+{
+  "scope": "Real recorded spectra and unchanged iterative masks; no detector threshold or accuracy change",
+  "cases": [
+    {
+      "file": "00-1_AUDIO-w0.5-b0.npz",
+      "source": "1_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 16,
+      "reference_s": 1.2610236038453877,
+      "optimized_s": 1.1227052402682602,
+      "speedup": 1.1232009601594783,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "01-1_AUDIO-w0.5-b1.npz",
+      "source": "1_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 6,
+      "reference_s": 0.4856223501265049,
+      "optimized_s": 0.45643608225509524,
+      "speedup": 1.063943822598797,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "02-1_AUDIO-w2.0-b0.npz",
+      "source": "1_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 7,
+      "reference_s": 0.4696943894959986,
+      "optimized_s": 0.4361903336830437,
+      "speedup": 1.0768106333995482,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "03-2_AUDIO-w0.5-b0.npz",
+      "source": "2_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 12,
+      "reference_s": 1.0084062446840107,
+      "optimized_s": 0.8504621773026884,
+      "speedup": 1.1857155692476002,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "04-2_AUDIO-w0.5-b1.npz",
+      "source": "2_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 10,
+      "reference_s": 0.8171832654625177,
+      "optimized_s": 0.7620535753667355,
+      "speedup": 1.072343588269698,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "05-2_AUDIO-w2.0-b0.npz",
+      "source": "2_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 3,
+      "reference_s": 0.2239055810496211,
+      "optimized_s": 0.21388673363253474,
+      "speedup": 1.04684183655027,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "06-3_AUDIO-w0.5-b0.npz",
+      "source": "3_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 20,
+      "reference_s": 1.6258841310627759,
+      "optimized_s": 1.4081035051494837,
+      "speedup": 1.154662370427217,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "07-3_AUDIO-w0.5-b1.npz",
+      "source": "3_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 1,
+      "reference_s": 0.07586674019694328,
+      "optimized_s": 0.07346195820719004,
+      "speedup": 1.032735065174425,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "08-3_AUDIO-w2.0-b0.npz",
+      "source": "3_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 4,
+      "reference_s": 0.29402001528069377,
+      "optimized_s": 0.2699965378269553,
+      "speedup": 1.0889769833609328,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "09-4_AUDIO-w0.5-b0.npz",
+      "source": "4_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 5,
+      "reference_s": 0.42925297608599067,
+      "optimized_s": 0.3669982273131609,
+      "speedup": 1.169632287405322,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "10-4_AUDIO-w0.5-b1.npz",
+      "source": "4_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 3,
+      "reference_s": 0.22869242215529084,
+      "optimized_s": 0.2273380421102047,
+      "speedup": 1.0059575600832773,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "11-4_AUDIO-w2.0-b0.npz",
+      "source": "4_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 3,
+      "reference_s": 0.21015442442148924,
+      "optimized_s": 0.19391112588346004,
+      "speedup": 1.083766717685871,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "12-5_AUDIO-w0.5-b0.npz",
+      "source": "5_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 30,
+      "reference_s": 2.486177801154554,
+      "optimized_s": 2.103580434806645,
+      "speedup": 1.1818791238106738,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "13-5_AUDIO-w0.5-b1.npz",
+      "source": "5_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 5,
+      "reference_s": 0.39236902724951506,
+      "optimized_s": 0.37569676665589213,
+      "speedup": 1.0443769073181655,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "14-5_AUDIO-w2.0-b0.npz",
+      "source": "5_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 7,
+      "reference_s": 0.48016203101724386,
+      "optimized_s": 0.43962207389995456,
+      "speedup": 1.0922154721614707,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "15-6_AUDIO-w0.5-b0.npz",
+      "source": "6_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        957
+      ],
+      "calls": 4,
+      "reference_s": 0.2994045210070908,
+      "optimized_s": 0.26426410349085927,
+      "speedup": 1.132974615364084,
+      "backpointer_bytes": 14821059,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "16-6_AUDIO-w0.5-b1.npz",
+      "source": "6_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        957
+      ],
+      "calls": 1,
+      "reference_s": 0.0742141311056912,
+      "optimized_s": 0.0715511403977871,
+      "speedup": 1.037218005095366,
+      "backpointer_bytes": 16646058,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "17-6_AUDIO-w2.0-b0.npz",
+      "source": "6_AUDIO.wav",
+      "source_seconds": 120.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        237
+      ],
+      "calls": 1,
+      "reference_s": 0.06180760497227311,
+      "optimized_s": 0.05882954876869917,
+      "speedup": 1.0506217753816676,
+      "backpointer_bytes": 14033955,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "18-7C019D_2023-05-03_12-49-25_0_1-w0.5-b0.npz",
+      "source": "7C019D_2023-05-03_12-49-25_0_1.wav",
+      "source_seconds": 60.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        477
+      ],
+      "calls": 25,
+      "reference_s": 1.171015472151339,
+      "optimized_s": 0.9590202630497515,
+      "speedup": 1.2210539414750508,
+      "backpointer_bytes": 7387299,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "19-7C019D_2023-05-03_12-49-25_0_1-w0.5-b1.npz",
+      "source": "7C019D_2023-05-03_12-49-25_0_1.wav",
+      "source_seconds": 60.0,
+      "window_s": 0.5,
+      "hop_s": 0.125,
+      "bins_per_octave": 576,
+      "image_shape": [
+        1338,
+        477
+      ],
+      "calls": 4,
+      "reference_s": 0.1954570203088224,
+      "optimized_s": 0.16720061283558607,
+      "speedup": 1.1689970329296686,
+      "backpointer_bytes": 8296938,
+      "exact_scores_indices_backpointers_paths": true
+    },
+    {
+      "file": "20-7C019D_2023-05-03_12-49-25_0_1-w2.0-b0.npz",
+      "source": "7C019D_2023-05-03_12-49-25_0_1.wav",
+      "source_seconds": 60.0,
+      "window_s": 2.0,
+      "hop_s": 0.5,
+      "bins_per_octave": 144,
+      "image_shape": [
+        911,
+        117
+      ],
+      "calls": 19,
+      "reference_s": 0.7049718932248652,
+      "optimized_s": 0.6389411203563213,
+      "speedup": 1.1033440653056108,
+      "backpointer_bytes": 6928155,
+      "exact_scores_indices_backpointers_paths": true
+    }
+  ],
+  "reference_s": 12.995285646058619,
+  "optimized_s": 11.460249603260309,
+  "aggregate_speedup": 1.133944381312743
+}
