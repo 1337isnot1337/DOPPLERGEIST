@@ -246,6 +246,14 @@ all zero at the shorter window). Any modes and errors remain conditional on a
 supplied trajectory, not accepted geolocations or confirmed acoustic associations.
 No historical result file is overwritten.
 
+The first replay at `588c893` reproduced the two historical control counts, but
+production stopped on the second case: Edge038 returned seven ridges whose
+group failed the consumer's harmonic reconciliation. Its complete discovery and
+exception are retained. The runner now records that explicit unsupported case
+and continues the fixed cohort, as the ordinary automatic pipeline already does
+for an unreconciled group. A second, separately saved repair replay uses the same
+cases and scientific settings; no detector or matching threshold changed.
+
 The single shorter-window development comparison returned zero proposals in all
 four recordings, with no fitting or truth access. It did not improve discovery.
 To reproduce that setting, use a new search directory and add these search options:

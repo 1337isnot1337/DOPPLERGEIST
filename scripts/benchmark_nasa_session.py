@@ -20,7 +20,7 @@ from scipy.io import loadmat, wavfile
 from dopplergeist.discovery import DiscoverySettings, _discover_baseline_events, discover_events
 from dopplergeist.geometry import AcousticSupportError, Track, ecef, velocity_ecef
 from dopplergeist.intake import intake_recording
-from dopplergeist.matching import RidgeTimes, fit_ridge, prepare_events
+from dopplergeist.matching import RidgeTimes, UnreconciledHarmonicGroup, fit_ridge, prepare_events
 
 SCOPE = "real_NASA_supplied_trajectory_session_clock"
 SOURCE = "https://data.nasa.gov/docs/datasets/rfk401li/small_uav_acoustics.zip"
@@ -285,7 +285,18 @@ def search(args):
             discovery_mode=args.discovery_mode,
             selection="Every returned audio proposal retained; no location-based selection",
             supplied_trajectory_count=1, encounter_count=None, encounter_count_assumed=False))
-        event_settings, measured = measurements(events, arrays["audio_seconds_of_day"])
+        summary = dict(case_id=name, supplied_trajectory_count=1, encounter_count=None, encounter_count_assumed=False,
+            acoustic_proposals=len(events), source_warning=case["source_warning"],
+            audio_timing=case["audio_timing"], gps_timing=case["gps_timing"], results=[])
+        try:
+            event_settings, measured = measurements(events, arrays["audio_seconds_of_day"])
+        except UnreconciledHarmonicGroup as error:
+            summary.update(status="unreconciled_discovery_group", message=str(error))
+            write(folder/"case-results.json", summary)
+            manifest["cases"].append(summary)
+            write(out/"run-manifest.json", manifest)
+            continue
+        summary["matching_proposals"] = len(event_settings)
         track, to_xyz, transform_error = make_track(case, arrays)
         c = case["nominal_sound_speed_mps"] if args.sound_speed_mps is None else args.sound_speed_mps
         if not np.isfinite(c) or c <= 0: raise ValueError("Invalid sound speed")
@@ -300,11 +311,10 @@ def search(args):
         east, north = centers(domain["east_bounds_m"]), centers(domain["north_bounds_m"])
         if not len(east) or not len(north) or len(east)*len(north) > args.max_grid_points:
             raise ValueError("Grid exceeds explicit budget or is empty; no truncated search")
-        summary = dict(case_id=name, supplied_trajectory_count=1, encounter_count=None, encounter_count_assumed=False,
-            acoustic_proposals=len(events), track_support=motion,
+        summary.update(track_support=motion,
             transform_roundtrip_max_m=transform_error, sound_speed_mps=c,
             sound_speed_basis=case["sound_speed_basis"] if args.sound_speed_mps is None else "Explicit sensitivity override",
-            source_warning=case["source_warning"], audio_timing=case["audio_timing"], gps_timing=case["gps_timing"], results=[])
+            )
         for i, (event, measured_ridge) in enumerate(zip(event_settings, measured)):
             np.savez_compressed(folder/f"ridge-{i:03d}.npz", time_s=measured_ridge[0].time,
                                 frequency_hz=measured_ridge[1], weight=measured_ridge[2])
