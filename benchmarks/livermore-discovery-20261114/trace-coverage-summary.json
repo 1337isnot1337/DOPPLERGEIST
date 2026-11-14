@@ -1,0 +1,10 @@
+{
+  "source": "https://zenodo.org/records/24075029",
+  "cases": 40,
+  "completed_discoveries": 40,
+  "scored_cases": 40,
+  "coverage_criterion_met": 5,
+  "evaluation_failures": [],
+  "out_of_audio_points": 0,
+  "scope": "Presegmented public development recordings and publisher-traced harmonic coverage; no exhaustive false-positive labels, identity, clock calibration or geolocation acceptance"
+}
