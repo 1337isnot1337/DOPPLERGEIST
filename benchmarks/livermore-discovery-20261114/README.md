@@ -68,7 +68,7 @@ P20,P21,P23,P35. Median pointwise union coverage was **55.86%**. P02 reached
 82.1% union coverage but only57.0% best-single-ridge coverage, so it correctly
 remains a failure under the predeclared conjunction. The full outcome table is
 `trace-coverage-cases.csv`; all14,349 reference-point matches/errors are retained
-in `trace-reference-points.csv`, including every unmatched point. `population.json`
+in `trace-reference-points.csv.gz`, including every unmatched point. `population.json`
 maps opaque IDs to the original public archive paths.
 
 This is negative evidence for recovering the particular publisher-traced
@@ -126,7 +126,7 @@ warm JIT/cache order and changed outputs; this is not a controlled speedup claim
 The predeclared promotion gate failed. The conditional six-hour background
 controls were therefore **not run**, and no production method, threshold or
 acceptance rule changes. Every case, regression and reference-point outcome is
-retained in `reassignment-*`.
+retained in `reassignment-*` (point tables are gzip-compressed CSV).
 
 ## Actionable consumer failure
 
