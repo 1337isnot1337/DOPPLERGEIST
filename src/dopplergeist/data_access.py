@@ -593,21 +593,33 @@ def _build_flight_segments(flight, records, max_gap_s, namespace):
     return segments
 
 
-def _flight_inputs(db, max_flight_samples):
-    for (flight,) in db.execute("SELECT DISTINCT flight FROM samples ORDER BY flight"):
-        count = db.execute("SELECT count(*) FROM samples WHERE flight=?", (flight,)).fetchone()[0]
+def _flight_inputs(db, max_flight_samples, compressed=False):
+    table = "sample_batches" if compressed else "samples"
+    for (flight,) in db.execute(f"SELECT DISTINCT flight FROM {table} ORDER BY flight"):
+        count = db.execute(
+            "SELECT sum(sample_count) FROM sample_batches WHERE flight=?" if compressed else
+            "SELECT count(*) FROM samples WHERE flight=?", (flight,)).fetchone()[0]
         if count > max_flight_samples:
             raise DataUnavailable(f"Flight {flight} exceeds {max_flight_samples} sample memory limit")
-        records = [row[0] for row in db.execute("SELECT row FROM samples WHERE flight=? ORDER BY time,rowid", (flight,))]
+        if compressed:
+            rows = []
+            for (payload,) in db.execute("SELECT payload FROM sample_batches WHERE flight=? ORDER BY rowid", (flight,)):
+                rows.extend(json.loads(gzip.decompress(payload)))
+            # Stable ordering retains the first source observation at duplicate
+            # times, exactly as ORDER BY time,rowid in the arbitrary-order path.
+            rows.sort(key=lambda row: row[0])
+            records = [row[1] for row in rows]
+        else:
+            records = [row[0] for row in db.execute("SELECT row FROM samples WHERE flight=? ORDER BY time,rowid", (flight,))]
         yield flight, records
 
 
-def _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers):
+def _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers, compressed=False):
     # Keep source order and cap queued serialized inputs as well as task count.
     max_pending_bytes = 128 * 1024 * 1024
     with _index_pool(workers) as pool:
         pending, queued_bytes = deque(), 0
-        for flight, records in _flight_inputs(db, max_flight_samples):
+        for flight, records in _flight_inputs(db, max_flight_samples, compressed):
             size = sum(len(row.encode("utf-8")) for row in records)
             while pending and (len(pending) >= workers or queued_bytes + size > max_pending_bytes):
                 future, used = pending.popleft()
@@ -837,7 +849,7 @@ class FlightIndex:
 
     @classmethod
     def build(cls, path, frames, *, sources, coverage, max_gap_s=30.0, max_flight_samples=250000, class_map=None,
-              prepared=False, prepare_scope=None, progress_callback=None):
+              prepared=False, prepare_scope=None, progress_callback=None, compressed_staging=False):
         """Disk staging permits arbitrary source order without whole-table RAM.
 
         Explicit source coverage is required: cropped or prop-only historical
@@ -845,6 +857,8 @@ class FlightIndex:
         The optional callback reports build phases and observed counts only.
         """
         path = Path(path)
+        if compressed_staging and not prepared:
+            raise ValueError("Compressed staging requires prepared native archive batches")
         path.parent.mkdir(parents=True, exist_ok=True)
         class_map = class_map or {}
         identity = {"index_version": INDEX_VERSION, "sources": sources, "coverage": coverage,
@@ -884,10 +898,13 @@ class FlightIndex:
                 emit_progress(force=True)
                 if progress_callback:
                     db.set_progress_handler(sqlite_progress, 1_000_000)
+                staging_table = "sample_batches" if compressed_staging else "samples"
+                staging_schema = ("CREATE TABLE sample_batches(flight TEXT, sample_count INTEGER, payload BLOB);"
+                                  if compressed_staging else "CREATE TABLE samples(flight TEXT, time REAL, row TEXT);")
                 db.executescript("""
                     PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF; PRAGMA cache_size=-16384;
                     PRAGMA temp_store=FILE;
-                    CREATE TABLE samples(flight TEXT, time REAL, row TEXT);
+                    """ + staging_schema + """
                     CREATE TABLE segments(id INTEGER PRIMARY KEY, name TEXT UNIQUE, start REAL, end REAL,
                         payload BLOB, payload_hash TEXT);
                     CREATE VIRTUAL TABLE spatial USING rtree(id, west, east, south, north);
@@ -907,12 +924,23 @@ class FlightIndex:
                         count, staged = len(clean), _staging_rows(clean)
                     invalid += invalid_count
                     altitude.update(altitude_counts)
-                    db.executemany("INSERT INTO samples VALUES(?,?,?)", staged)
+                    if compressed_staging and count:
+                        flight = staged[0][0]
+                        if any(row[0] != flight for row in staged):
+                            raise DataUnavailable("Native archive batch contains multiple aircraft")
+                        if count > max_flight_samples:
+                            raise DataUnavailable(f"Flight {flight} exceeds {max_flight_samples} sample memory limit")
+                        payload = gzip.compress(json.dumps([(row[1], row[2]) for row in staged],
+                            separators=(",", ":")).encode(), compresslevel=1, mtime=0)
+                        db.execute("INSERT INTO sample_batches VALUES(?,?,?)", (flight, count, payload))
+                    elif not compressed_staging:
+                        db.executemany("INSERT INTO samples VALUES(?,?,?)", staged)
                     rows += count
                     batches += 1
                     emit_progress(phase="staging_samples", rows=rows, batches=batches, invalid_rows=invalid)
                 emit_progress(phase="creating_sample_lookup", rows=rows, batches=batches, force=True)
-                db.execute("CREATE INDEX flight_samples ON samples(flight,time)")
+                db.execute("CREATE INDEX flight_samples ON sample_batches(flight)" if compressed_staging else
+                           "CREATE INDEX flight_samples ON samples(flight,time)")
                 db.commit()
                 segments = 0
                 flights_processed = 0
@@ -921,10 +949,10 @@ class FlightIndex:
                 namespace = coverage.get("release_tag", "")
                 workers = _index_workers() if prepared else 1
                 if workers > 1:
-                    flights = _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers)
+                    flights = _parallel_flight_segments(db, max_flight_samples, max_gap_s, namespace, workers, compressed_staging)
                 else:
                     flights = (_build_flight_segments(flight, records, max_gap_s, namespace)
-                               for flight, records in _flight_inputs(db, max_flight_samples))
+                               for flight, records in _flight_inputs(db, max_flight_samples, compressed_staging))
                 for flight_segments in flights:
                     flights_processed += 1
                     for name, start, end, payload, payload_hash, bounds in flight_segments:
@@ -934,7 +962,7 @@ class FlightIndex:
                         segments += 1
                     emit_progress(phase="building_segments", rows=rows, segments=segments,
                                   flights=flights_processed)
-                db.execute("DROP TABLE samples")
+                db.execute(f"DROP TABLE {staging_table}")
                 report = dict(identity, input_hash=content_hash(identity), rows=rows, invalid_rows=invalid,
                               segments=segments, altitude_basis_counts=dict(altitude),
                               jets_excluded=coverage.get("aircraft_policy") == "confirmed_nonjet",
@@ -1190,7 +1218,7 @@ class FlightCache:
                                                         progress_callback=progress_callback),
                                  sources=sources + [type_source],
                                  coverage=coverage, class_map=class_map, prepared=True,
-                                 prepare_scope=prepare_scope, progress_callback=progress_callback)
+                                 prepare_scope=prepare_scope, progress_callback=progress_callback, compressed_staging=True)
 
 
 class CachedTerrain:

@@ -1,0 +1,16 @@
+Two unchanged, complete native aircraft traces from ADSB.lol globe_history_2026.
+Source: https://github.com/adsblol/globe_history_2026/releases/tag/v2026.05.17-planes-readsb-prod-0
+Database license: Open Database License 1.0, https://opendatacommons.org/licenses/odbl/1-0/
+Attribution: ADSB.lol and its contributing feeders and partner networks.
+
+These are the first two nonempty confirmed-nonjet traces encountered in the
+published split archive. Both complete archive assets passed the publisher's
+SHA-256 checks before extraction. Native gzip bytes have not been modified.
+They contain 807 B190 observations and 838 C72R observations, respectively.
+Type classifications (B190 turbine; C72R piston) follow the public ICAO type
+metadata at https://github.com/wiedehopf/tar1090-db/blob/master/db/icao_aircraft_types.js
+
+The fixtures are historical observations for ingestion software checks. They
+do not establish complete aircraft coverage, receiver accuracy, independent
+geolocation truth or calibrated field performance. Repeated delivery in a test
+reuses the same original observations; it is not another measured flight.

@@ -3,6 +3,11 @@
 # Listed source revisions have been checked against recorded observations;
 # unlisted edits disable the prepared-track fast path.
 PREPARED_DATA_ACCESS_EQUIVALENCE = {
+    # Native staging compression preserves normalized rows, segment payloads,
+    # bounds and prepared bytes; the arbitrary-order builder is unchanged.
+    "97950190d64494f018dec77665fe216b9784ae56381f022eaf4335dbac630263": (
+        "f732d7729b73ba50f9a40d1b381d240c6c326b90ebf060015c6e422c266d0af7",
+    ),
     # Archive intake now excludes partial .readsb_tmp members; prepared-track
     # decoding and normalization are unchanged from the prior source.
     "92ea0983dc869a815fc872ad1be56441421f7764db98d2b2a676ab5fe0c469d5": (
