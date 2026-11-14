@@ -19,6 +19,17 @@ and frequency bins; this changes memory use without changing the verification ru
 
 `discovery/discovery.json` contains the input hash, detector settings, canonical proposal intervals and measured child tracks. Tracks belonging to a proposal share a `harmonic_group_id`; downstream association should count the group once while retaining its measured tracks. Times are relative to the first decoded sample. `--plot-summary` renders a track overview and `--plot-event-details` renders individual track plots. Use a new output directory for each run.
 
+If legacy harmonic preparation rejects a previously unscaled group, export can
+carry scales from the existing shared-shape model after it accepts every original
+member. A proposal's `frequency_scale_model` records the full fit, its application
+status and the original preparation failure. Successful fits supply the existing
+numeric `quality.episode_frequency_scale` field; raw ridge measurements stay
+unchanged and the canonical group still counts once. Failed or incomplete fits
+remain unsupported, existing producer scales are preserved, and supported legacy
+groups keep their previous preparation. This uses the production joint model;
+the experimental episode detector remains separate. Shared acoustic shape does
+not establish aircraft identity, physical motion, recording UTC or a location.
+
 The artifact also retains `sequence_diagnostics` for each analyzed chunk, window
 and band: accepted-track and rejection counts, the last sequence score, the
 32-evaluation limit and `budget_reached`. A limit hit means the last allowed
