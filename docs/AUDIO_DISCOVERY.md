@@ -29,6 +29,8 @@ remain unsupported, existing producer scales are preserved, and supported legacy
 groups keep their previous preparation. This uses the production joint model;
 the experimental episode detector remains separate. Shared acoustic shape does
 not establish aircraft identity, physical motion, recording UTC or a location.
+Audio checkpoint compatibility includes the matching preparation implementation,
+so a changed preparation contract cannot reuse earlier exported scale decisions.
 
 The artifact also retains `sequence_diagnostics` for each analyzed chunk, window
 and band: accepted-track and rejection counts, the last sequence score, the

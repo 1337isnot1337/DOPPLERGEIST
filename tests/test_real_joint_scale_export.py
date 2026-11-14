@@ -2,6 +2,7 @@
 from collections import defaultdict
 import copy
 import gzip
+import hashlib
 import json
 from pathlib import Path
 
@@ -9,8 +10,10 @@ import numpy as np
 import pytest
 
 from dopplergeist import advanced_discovery
+from dopplergeist import automatic, matching
 from dopplergeist.contracts import validate_event
-from dopplergeist.discovery import _export_group_frequency_scales
+from dopplergeist.discovery import _export_group_frequency_scales, discover_events
+from dopplergeist.intake import intake_recording
 from dopplergeist.matching import prepare_events, UnreconciledHarmonicGroup
 
 
@@ -109,3 +112,31 @@ def test_subset_only_fit_cannot_annotate_a_whole_recorded_group(monkeypatch):
     assert exported == members
     assert not next(iter(evidence.values()))['applied']
     assert next(iter(evidence.values()))['reason'] == 'incomplete_or_invalid_joint_scales'
+
+
+def test_real_audio_resume_rejects_a_changed_preparation_contract(tmp_path, monkeypatch):
+    source = tmp_path / 'actual-lowrate.wav'
+    source.write_bytes(gzip.decompress((FIXTURES / 'real_lowrate_piston_1000hz.wav.gz').read_bytes()))
+    output = tmp_path / 'actual-checkpoint'
+    recording = intake_recording(source, output / 'intake')
+    events = discover_events(recording, output_dir=output / 'discovery',
+        plot_summary=False, plot_event_details=False, event_audio=False)
+    assert events
+    request = {'schema_version': 1, 'audio_path': str(source), 'search': {'coverage': 'conus'}}
+    automatic._save_audio_checkpoint(output, request, {})
+    _, resumed = automatic._load_audio_checkpoint(output, request, {})
+    assert resumed == events
+    saved = (output / 'resume.json').read_bytes()
+    preparation_path = Path(matching.__file__).resolve()
+    changed = hashlib.sha256(preparation_path.read_bytes() + b'\n# preparation contract changed\n').hexdigest()
+    original_digest = automatic._digest
+
+    def changed_preparation_digest(path):
+        return changed if Path(path).resolve() == preparation_path else original_digest(path)
+
+    # Change only the preparation dependency identity, leaving all real samples,
+    # measured ridges, request and checkpoint files untouched.
+    monkeypatch.setattr(automatic, '_digest', changed_preparation_digest)
+    with pytest.raises(ValueError, match='detector changed'):
+        automatic._load_audio_checkpoint(output, request, {})
+    assert (output / 'resume.json').read_bytes() == saved

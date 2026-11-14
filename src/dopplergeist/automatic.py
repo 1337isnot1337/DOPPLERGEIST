@@ -20,7 +20,8 @@ def _digest(path):
 
 
 def _audio_identity(request, config):
-    modules = ("intake.py", "discovery.py", "advanced_discovery.py", "audio.py", "contracts.py")
+    # Discovery's scale exporter also depends on the preparation contract.
+    modules = ("intake.py", "discovery.py", "advanced_discovery.py", "audio.py", "contracts.py", "matching.py")
     identity = {"request": request, "source_sha256": _digest(request["audio_path"]),
             "discovery_settings": config.get("discovery", {}),
             "modules": {name: _digest(Path(__file__).parent / name) for name in modules},
