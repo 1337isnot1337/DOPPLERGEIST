@@ -172,6 +172,28 @@ def test_prediction_cache_preserves_every_recorded_raw_path():
             np.testing.assert_allclose(actual_points[:,[2,3,4,5]],expected_points[:,[2,3,4,5]],rtol=1e-5,atol=1e-4)
 
 
+def test_compiled_prominence_is_exact_on_recorded_spectral_peaks():
+    from scipy import signal
+    from dopplergeist.episode_discovery import _peak_local_prominence
+    data = json.loads((FIXTURES/'real_discovery_normalization.json').read_text())
+    samples = np.frombuffer(base64.b64decode(data['excerpts'][0]['pcm_f32le_base64']), dtype='<f4')
+    for window, hop in ((2.0, .5), (.5, .125)):
+        settings = DiscoverySettings(window_s=window, hop_s=hop)
+        spec = _spectrum(samples, 4000, 0., settings, fixed_bands=True)
+        df = float(spec.frequency[1]-spec.frequency[0])
+        for dtype in (np.float32, np.float64):
+            db = spec.db.astype(dtype)
+            for column in sorted({0, len(spec.time)//2, len(spec.time)-1}):
+                peaks, _ = signal.find_peaks(db[:, column], distance=2)
+                for peak in peaks:
+                    radius = max(4, round(max(20., min(80., .04*spec.frequency[peak]))/df))
+                    neighbours = np.r_[max(0,peak-radius):max(0,peak-3),
+                                       min(len(spec.frequency),peak+4):min(len(spec.frequency),peak+radius+1)]
+                    expected = float(db[peak,column]-np.median(db[neighbours,column])) if len(neighbours) else 0.
+                    actual = _peak_local_prominence(db[:, column], int(peak), radius)
+                    assert np.float64(actual).tobytes() == np.float64(expected).tobytes()
+
+
 def test_recorded_context_reveals_reversals_outside_legacy_crop():
     import gzip
     with gzip.open(FIXTURES/'real_modulated_context.json.gz','rt') as stream:

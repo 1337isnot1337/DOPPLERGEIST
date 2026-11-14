@@ -16,6 +16,7 @@ from collections import Counter
 from bisect import bisect_left, bisect_right
 
 import numpy as np
+from numba import njit
 from scipy import optimize, signal
 
 from .audio import Spectrum
@@ -131,6 +132,32 @@ def _spectrum(data, sr, start, settings, *, fixed_bands=False):
     return Spectrum(t + start, f, db, contrast)
 
 
+@njit(cache=True)
+def _peak_local_prominence(column, peak, radius):
+    """The original two-sided median with bounded compiled gathering."""
+    left = max(0, peak - radius)
+    left_end = max(0, peak - 3)
+    right = min(len(column), peak + 4)
+    right_end = min(len(column), peak + radius + 1)
+    count = left_end - left + right_end - right
+    if count == 0:
+        return 0.0
+    neighbours = np.empty(count, dtype=column.dtype)
+    at = 0
+    for index in range(left, left_end):
+        neighbours[at] = column[index]
+        at += 1
+    for index in range(right, right_end):
+        neighbours[at] = column[index]
+        at += 1
+    background = np.median(neighbours)
+    # NumPy's original subtraction is float32 for float32 spectra. Preserve
+    # that rounding before returning the Python/float64 cached value.
+    if column.itemsize == 4:
+        return float(np.float32(column[peak] - np.float32(background)))
+    return float(column[peak] - background)
+
+
 def _paths(spec, settings):
     """Link local spectral maxima with bounded motion and short missing spans."""
     active, completed = [], []
@@ -147,13 +174,13 @@ def _paths(spec, settings):
             selected.extend(order.tolist())
         peaks=peaks[np.asarray(selected,dtype=int)]
         df = float(spec.frequency[1]-spec.frequency[0])
+        db_column = spec.db[:, column]
         prominence_cache={}
         def local_prominence(peak):
             peak=int(peak)
             if peak not in prominence_cache:
                 radius=max(4,round(max(20.,min(80.,.04*spec.frequency[peak]))/df))
-                neighbours=np.r_[max(0,peak-radius):max(0,peak-3),min(len(spec.frequency),peak+4):min(len(spec.frequency),peak+radius+1)]
-                prominence_cache[peak]=float(spec.db[peak,column]-np.median(spec.db[neighbours,column])) if len(neighbours) else 0.
+                prominence_cache[peak]=_peak_local_prominence(db_column,peak,radius)
             return prominence_cache[peak]
         raw,raw_info=signal.find_peaks(spec.db[:,column],prominence=settings.provisional_tonal_db,distance=2)
         if settings.window_s>settings.short_window_s:
