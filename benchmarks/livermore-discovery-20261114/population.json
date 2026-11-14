@@ -1,0 +1,165 @@
+{
+  "source": "https://zenodo.org/records/24075029",
+  "cases": [
+    {
+      "case_id": "P01",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N373DF_R06/N373DF_R06_2026-05-13T20-03-42.021Z.wav"
+    },
+    {
+      "case_id": "P02",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N394FX_R20/N394FX_R20_2026-05-16T20-12-24.429Z.wav"
+    },
+    {
+      "case_id": "P03",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N4040_R12/N4040_R12_2026-05-17T23-27-42.016Z.wav"
+    },
+    {
+      "case_id": "P04",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N413AK_R49/N413AK_R49_2026-05-16T21-37-52.562Z.wav"
+    },
+    {
+      "case_id": "P05",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N757AH_R41/N757AH_R41_2026-05-12T20-01-54.928Z.wav"
+    },
+    {
+      "case_id": "P06",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N784MB_R04/N784MB_R04_2026-05-14T17-41-32.238Z.wav"
+    },
+    {
+      "case_id": "P07",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N788BM_R03/N788BM_R03_2026-05-17T19-29-44.138Z.wav"
+    },
+    {
+      "case_id": "P08",
+      "published_audio": "raw_flight_data/V_constant_H_constant/N916KT_R22/N916KT_R22_2026-05-16T17-13-02.899Z.wav"
+    },
+    {
+      "case_id": "P09",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N172EL_R35/N172EL_R35_2026-05-17T18-27-56.949Z.wav"
+    },
+    {
+      "case_id": "P10",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N248LF_R14/N248LF_R14_2026-05-17T16-50-54.707Z.wav"
+    },
+    {
+      "case_id": "P11",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N310MG_R23/N310MG_R23_2026-05-16T17-04-12.370Z.wav"
+    },
+    {
+      "case_id": "P12",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N4004R_R19/N4004R_R19_2026-05-16T23-55-59.031Z.wav"
+    },
+    {
+      "case_id": "P13",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N413AK_R05/N413AK_R05_2026-05-16T20-50-54.108Z.wav"
+    },
+    {
+      "case_id": "P14",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N413AK_R16/N413AK_R16_2026-05-17T21-46-33.493Z.wav"
+    },
+    {
+      "case_id": "P15",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N500MG_R17/N500MG_R17_2026-05-17T21-01-25.226Z.wav"
+    },
+    {
+      "case_id": "P16",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N563FX_R21/N563FX_R21_2026-05-16T18-23-56.340Z.wav"
+    },
+    {
+      "case_id": "P17",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N61NG_R37/N61NG_R37_2026-05-17T20-57-38.069Z.wav"
+    },
+    {
+      "case_id": "P18",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N621KS_R18/N621KS_R18_2026-05-17T23-21-41.568Z.wav"
+    },
+    {
+      "case_id": "P19",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N67WL_R59/N67WL_R59_2026-05-17T17-01-47.838Z.wav"
+    },
+    {
+      "case_id": "P20",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N759NC_R46/N759NC_R46_2026-05-14T17-26-03.539Z.wav"
+    },
+    {
+      "case_id": "P21",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N795MM_R13/N795MM_R13_2026-05-17T21-44-35.904Z.wav"
+    },
+    {
+      "case_id": "P22",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N7PG_R60/N7PG_R60_2026-05-17T17-29-24.814Z.wav"
+    },
+    {
+      "case_id": "P23",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N7RR_R30/N7RR_R30_2026-05-16T17-19-46.927Z.wav"
+    },
+    {
+      "case_id": "P24",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N8085W_R27/N8085W_R27_2026-05-16T18-49-41.674Z.wav"
+    },
+    {
+      "case_id": "P25",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N86LP_R01/N86LP_R01_2026-05-17T22-20-09.578Z.wav"
+    },
+    {
+      "case_id": "P26",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N913TC_R15/N913TC_R15_2026-05-17T18-31-37.817Z.wav"
+    },
+    {
+      "case_id": "P27",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N9393T_R02/N9393T_R02_2026-05-17T22-03-02.336Z.wav"
+    },
+    {
+      "case_id": "P28",
+      "published_audio": "raw_flight_data/V_constant_H_varying/N958JX_R50/N958JX_R50_2026-05-16T18-31-19.748Z.wav"
+    },
+    {
+      "case_id": "P29",
+      "published_audio": "raw_flight_data/V_varying_H_constant/N456CS_R38/N456CS_R38_2026-05-17T21-54-07.978Z.wav"
+    },
+    {
+      "case_id": "P30",
+      "published_audio": "raw_flight_data/V_varying_H_constant/N60RS_R11/N60RS_R11_2026-05-17T20-46-13.866Z.wav"
+    },
+    {
+      "case_id": "P31",
+      "published_audio": "raw_flight_data/V_varying_H_constant/N748SP_R36/N748SP_R36_2026-05-17T20-06-43.690Z.wav"
+    },
+    {
+      "case_id": "P32",
+      "published_audio": "raw_flight_data/V_varying_H_constant/N814SR_R07/N814SR_R07_2026-05-12T20-22-15.291Z.wav"
+    },
+    {
+      "case_id": "P33",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N1387U_R44/N1387U_R44_2026-05-09T22-36-07.850Z.wav"
+    },
+    {
+      "case_id": "P34",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N231DT_R57/N231DT_R57_2026-05-17T17-40-00.112Z.wav"
+    },
+    {
+      "case_id": "P35",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N2933A_R08/N2933A_R08_2026-05-09T22-50-09.021Z.wav"
+    },
+    {
+      "case_id": "P36",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N3012N_R40/N3012N_R40_2026-05-16T16-38-18.331Z.wav"
+    },
+    {
+      "case_id": "P37",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N451EE_R45/N451EE_R45_2026-05-09T21-09-11.677Z.wav"
+    },
+    {
+      "case_id": "P38",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N451EE_R51/N451EE_R51_2026-05-13T20-43-21.966Z.wav"
+    },
+    {
+      "case_id": "P39",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N662EZ_R48/N662EZ_R48_2026-05-13T23-31-00.962Z.wav"
+    },
+    {
+      "case_id": "P40",
+      "published_audio": "raw_flight_data/V_varying_H_varying/N9658K_R24/N9658K_R24_2026-05-14T17-49-29.638Z.wav"
+    }
+  ]
+}
