@@ -17,8 +17,9 @@ import numpy as np
 from pyproj import Transformer
 from scipy import ndimage
 from scipy.io import loadmat, wavfile
-from dopplergeist.discovery import DiscoverySettings, discover_events
+from dopplergeist.discovery import DiscoverySettings, _discover_baseline_events, discover_events
 from dopplergeist.geometry import AcousticSupportError, Track, ecef, velocity_ecef
+from dopplergeist.intake import intake_recording
 from dopplergeist.matching import RidgeTimes, fit_ridge, prepare_events
 
 SCOPE = "real_NASA_supplied_trajectory_session_clock"
@@ -249,15 +250,18 @@ def modes(loss, east, north, separation):
 def search(args):
     source, domains = read(args.inputs), read(args.domain)
     if source.get("scope") != SCOPE or domains.get("scope") != SCOPE: raise ValueError("Wrong input scope")
-    out = newdir(args.output)
     if not np.isfinite(args.grid_step_m) or args.grid_step_m <= 0: raise ValueError("Invalid grid step")
     if not all(0 <= d <= 0.1 for d in args.drift_fractions): raise ValueError("Invalid drift domain")
     settings = DiscoverySettings(window_s=args.discovery_window_s, hop_s=args.discovery_hop_s)
+    if args.discovery_mode == "production" and settings != DiscoverySettings():
+        raise ValueError("Production discovery requires default settings; use --discovery-mode legacy for historical controls")
+    out = newdir(args.output)
     manifest = dict(scope=SCOPE, case_manifest_sha256=source.get("case_manifest_sha256"),
         case_selection=source.get("case_selection"),
         inputs_sha256=sha(args.inputs), domain_sha256=sha(args.domain), grid_step_m=args.grid_step_m,
         clock_offsets_s=args.clock_offsets_s, drift_fractions=args.drift_fractions, receiver_up_m=args.receiver_up_m,
         grid_nodes="Cell centers, with no target coordinate inserted", discovery_settings=asdict(settings),
+        discovery_mode=args.discovery_mode,
         target_truth_loaded=False, synthetic_data_generated=False, absolute_UTC_validated=False,
         historical_traffic_acquisition_validated=False, product_acceptance=None, calendar_date=None, cases=[])
     write(out/"run-manifest.json", manifest)
@@ -267,8 +271,18 @@ def search(args):
         folder.mkdir()
         arrays = load_arrays(case)
         # This phase gets no GPS or microphone position inputs.
-        events = discover_events(OriginalMono(arrays["mono_pressure"], case["source_sha256"]), settings=settings)
+        if args.discovery_mode == "production":
+            # Export the pinned, single-microphone pressure samples without
+            # normalization; do not mix microphones at distinct positions.
+            audio = folder/"mono_pressure_20000hz.wav"
+            wavfile.write(audio, 20000, arrays["mono_pressure"])
+            recording = intake_recording(audio, folder/"intake", sample_rate_hz=4000)
+            events = discover_events(recording, output_dir=folder/"discovery", plot_summary=False)
+        else:
+            events = _discover_baseline_events(
+                OriginalMono(arrays["mono_pressure"], case["source_sha256"]), settings=settings)
         write(folder/"audio-only-discovery.json", dict(events=events, settings=asdict(settings),
+            discovery_mode=args.discovery_mode,
             selection="Every returned audio proposal retained; no location-based selection",
             supplied_trajectory_count=1, encounter_count=None, encounter_count_assumed=False))
         event_settings, measured = measurements(events, arrays["audio_seconds_of_day"])
@@ -381,6 +395,8 @@ def main():
     p.add_argument("--inputs", required=True)
     p.add_argument("--domain", required=True)
     p.add_argument("--output", required=True)
+    p.add_argument("--discovery-mode", choices=("production", "legacy"), default="production",
+                   help="Current intake/discovery, or the historical baseline detector used in the 2026-11-03 report")
     p.add_argument("--discovery-window-s", type=float, default=2.0)
     p.add_argument("--discovery-hop-s", type=float, default=0.5)
     p.add_argument("--grid-step-m", type=float, default=50.0)

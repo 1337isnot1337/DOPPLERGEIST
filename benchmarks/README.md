@@ -191,10 +191,19 @@ PYTHONPATH=src .venv/bin/python scripts/benchmark_nasa_session.py evaluate \
   --output results/nasa-new/evaluation.json
 ```
 
-Defaults use automatic discovery with a 2 s spectral window and 0.5 s hop,
+Current defaults use the ordinary 4 kHz intake and production discovery, including
+its source-backed high-rate decode. The exported mono WAV retains the original
+channel 2 pressure samples without gain normalization. Discovery's resampled time
+axis is mapped back to the original sample timestamps for trajectory fitting.
+No absolute recording date is assigned.
+
+Use `--discovery-mode legacy` to replay the historical baseline detector on the
+original 20 kHz samples. Only that explicitly historical mode accepts custom
+`--discovery-window-s` and `--discovery-hop-s` controls. The manifest and per-case
+discovery output identify the selected mode. Default spatial settings remain
 50 m grid cells, zero clock offset, and separate constant-tone and 2% drift fits.
 The [result table](nasa-session-results-20261103.csv) preserves every development
-case and both discovery settings. These are supplied-track experiments, not an
+case and both historical discovery settings. These are supplied-track experiments, not an
 automatic aircraft-association or nationwide validation corpus.
 
 | Recording | Proposals at 2 s / 0.5 s | Proposals at 0.5 s / 0.125 s | Primary result |
@@ -213,6 +222,29 @@ A competing mode is 1,899 m from truth, and similar losses extend over kilometre
 The CSV's 100/500/1,000 m fields describe only the conditional best-mode error;
 they do not indicate accepted or correctly associated locations. The high-speed
 pair's primary discovery and grid search took 6.56 s in the recorded run.
+
+### Current-discovery compatibility replay, 2026-11-14
+
+The old runner passed an in-memory 20 kHz adapter into the current production
+detector, which rejected it before analysis. The repaired default uses real intake
+from the pinned microphone's lossless pressure WAV. Historical detector controls
+call the unchanged baseline implementation explicitly.
+
+Before execution, the replay fixes all four cases in the existing manifest and
+three arms: current production defaults; legacy 2 s / 0.5 s; legacy 0.5 s / 0.125 s.
+All returned ridges are retained. Each uses the same supplied GPS, 1,000 m domain
+padding, 250 m cell grid, zero clock offset, receiver up=0 and constant/2% drift
+fits. The coarser grid bounds this compatibility check; it cannot reproduce the
+old 50 m location-error numbers or measure precision at 100 m. Each arm has a
+1,200-second process deadline; failures and partial outputs are retained without
+reruns, replacement cases, threshold changes or acoustic-output reuse.
+
+The checks are successful execution through actual intake, discovery, fitting
+and frozen post-search evaluation; retained proposal and supported/unknown grid
+counts; and unchanged historical proposal counts (0/0/1/0 at default settings,
+all zero at the shorter window). Any modes and errors remain conditional on a
+supplied trajectory, not accepted geolocations or confirmed acoustic associations.
+No historical result file is overwritten.
 
 The single shorter-window development comparison returned zero proposals in all
 four recordings, with no fitting or truth access. It did not improve discovery.
