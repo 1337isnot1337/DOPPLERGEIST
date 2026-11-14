@@ -4,7 +4,7 @@ Protocol registered before waveform inspection or detector output in
 [issue341](https://github.com/1337isnot1337/DOPPLERGEIST/issues/341#issuecomment-6874158023).
 Source: Praveen Pathak, [Aeroplane data full analysis and raw files,v2](https://zenodo.org/records/24075029),
 CC BY4.0, November9,2026. All40 WAVs in the archive match all40 publisher result
-rows. The publisher archive MD5 is verified by the prepare command. No recordings
+rows. Publisher-derived reference fields retain the source [CC BY4.0 license](https://creativecommons.org/licenses/by/4.0/). The publisher archive MD5 is verified by the prepare command. No recordings
 or publisher tools are copied into Git.
 
 This source was found through AeroDoppler's public README; its previously
