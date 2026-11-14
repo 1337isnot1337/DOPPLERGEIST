@@ -96,3 +96,21 @@ counterexample needs an extraction/reference diagnosis before changing acceptanc
 These results do not establish low-SNR detection ranges, exhaustive recall or
 false-proposal rates, independent field timing or location accuracy. No supplied
 flight was searched or localized. Related #341/#13/#53 remain open.
+
+## Registered reassignment comparison
+
+After viewing the baseline, a second development comparison was registered in
+[issue341](https://github.com/1337isnot1337/DOPPLERGEIST/issues/341#issuecomment-6877956899).
+It uses the existing phase-derivative `reassigned_power` estimator in an explicit
+isolated research subprocess, changing only the spectral representation passed
+to the DP front. The same production source, all40 complete recordings, profiles,
+thresholds,120-second deadline and original trace metric remain fixed. It does
+not alter production code or feed reference traces into detection.
+
+Every outcome and regression will be retained. The candidate advances to all six
+original-hour AeroSonicDB background controls only if it strictly increases the
+number meeting the original coverage criterion and preserves all five baseline
+successes. Otherwise it is declined for promotion. This is a post-baseline
+development comparison, not an unseen-data accuracy result or a threshold fit.
+Use a new predictions/output directory and add `--spectral-mode reassigned` to
+the discovery command. Results are pending.

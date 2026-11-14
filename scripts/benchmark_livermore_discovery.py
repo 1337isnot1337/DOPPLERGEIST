@@ -72,17 +72,31 @@ def prepare(data, output):
     print(f"Prepared all {len(population)} unmodified public WAVs with opaque names", flush=True)
 
 
-def run_case(audio, output):
+def run_case(audio, output, spectral_mode="ordinary"):
+    from dopplergeist import advanced_discovery
     from dopplergeist.discovery import discover_events
     from dopplergeist.intake import intake_recording
 
-    recording = intake_recording(audio, output / "intake")
-    events = discover_events(recording, output_dir=output / "discovery",
-                             plot_summary=False, plot_event_details=False, event_audio=False)
+    ordinary_front = advanced_discovery.dp_front
+    if spectral_mode == "reassigned":
+        # This explicit, isolated research subprocess changes only the spectral
+        # estimator. The ordinary production variant still controls verification
+        # and final selection; no module source or server process is changed.
+        def reassigned_front(recording, variant):
+            if variant != "ridge_dp_accel_broad_final_v25":
+                raise ValueError("Unexpected production DP configuration")
+            return ordinary_front(recording, "ridge_dp_accel_reassigned_broad")
+        advanced_discovery.dp_front = reassigned_front
+    try:
+        recording = intake_recording(audio, output / "intake")
+        events = discover_events(recording, output_dir=output / "discovery",
+                                 plot_summary=False, plot_event_details=False, event_audio=False)
+    finally:
+        advanced_discovery.dp_front = ordinary_front
     print(f"Completed automatic discovery: {len(events)} events", flush=True)
 
 
-def discover(inputs, output, source_ref=DETECTOR_REF):
+def discover(inputs, output, source_ref=DETECTOR_REF, spectral_mode="ordinary"):
     repository = Path(__file__).resolve().parents[1]
     source_ref = subprocess.check_output(
         ["git", "rev-parse", "--verify", source_ref + "^{commit}"], cwd=repository, text=True).strip()
@@ -94,6 +108,10 @@ def discover(inputs, output, source_ref=DETECTOR_REF):
         raise ValueError("Expected all forty registered cases")
     output.mkdir(parents=True, exist_ok=False)
     write_json(output / "population.json", population)
+    settings = {"detector_ref": source_ref, "deadline_s_per_case": DEADLINE_S,
+                "runner_ref": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repository, text=True).strip(),
+                "spectral_mode": spectral_mode, "labels_loaded": False, "location_search": False}
+    write_json(output / "run-settings.json", settings)
     outcomes = []
     for case in population["cases"]:
         destination = output / case["case_id"]
@@ -101,7 +119,7 @@ def discover(inputs, output, source_ref=DETECTOR_REF):
                "elapsed_s": 0.0, "source_seconds": "", "events": "", "groups": ""}
         started = time.perf_counter()
         command = [sys.executable, str(Path(__file__).resolve()), "case", "--audio", case["input_audio"],
-                   "--output", str(destination)]
+                   "--output", str(destination), "--spectral-mode", spectral_mode]
         try:
             result = subprocess.run(command, capture_output=True, text=True, timeout=DEADLINE_S)
             row["returncode"] = result.returncode
@@ -126,9 +144,7 @@ def discover(inputs, output, source_ref=DETECTOR_REF):
         write_csv(output / "outcomes.csv", outcomes)
         print(json.dumps(row), flush=True)
     write_json(output / "frozen-predictions.json",
-               {"detector_ref": source_ref, "deadline_s_per_case": DEADLINE_S,
-                "runner_ref": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repository, text=True).strip(),
-                "cases": len(outcomes), "labels_loaded": False, "location_search": False})
+               {**settings, "cases": len(outcomes)})
 
 
 def epoch(value):
@@ -206,6 +222,7 @@ def evaluate(data, predictions, output):
     if point_rows:
         write_csv(output / "reference-points.csv", point_rows)
     summary = {"source": RECORD, "cases": len(rows),
+               "spectral_mode": frozen.get("spectral_mode", "ordinary"),
                "completed_discoveries": sum(row["status"] == "completed" for row in rows),
                "scored_cases": sum(row["reference_points"] != "" for row in rows),
                "coverage_criterion_met": sum(row["coverage_criterion_met"] is True for row in rows),
@@ -226,6 +243,8 @@ def main():
     parser.add_argument("--audio", type=Path)
     parser.add_argument("--source-ref", default=DETECTOR_REF,
                         help="Explicit production source pin for a newly registered discovery run")
+    parser.add_argument("--spectral-mode", choices=("ordinary", "reassigned"), default="ordinary",
+                        help="Explicit research-only spectral estimator; thresholds remain fixed")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     required = {"prepare": ("data",), "case": ("audio",), "discover": ("inputs",),
@@ -235,9 +254,9 @@ def main():
     if args.command == "prepare":
         prepare(args.data, args.output)
     elif args.command == "case":
-        run_case(args.audio, args.output)
+        run_case(args.audio, args.output, args.spectral_mode)
     elif args.command == "discover":
-        discover(args.inputs, args.output, args.source_ref)
+        discover(args.inputs, args.output, args.source_ref, args.spectral_mode)
     else:
         evaluate(args.data, args.predictions, args.output)
 
