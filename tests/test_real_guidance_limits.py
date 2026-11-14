@@ -1,5 +1,6 @@
 """Guidance wiring from recorded ridges; no audio, tracks or location fits generated."""
 import copy
+import gzip
 import json
 from pathlib import Path
 
@@ -11,6 +12,48 @@ from dopplergeist.guidance import explain_job, guidance
 
 ROOT = Path(__file__).resolve().parents[1]
 SAVED_JOB = ROOT / "evidence/verification/local-integration-20261103/installed-wheel-needs-clock"
+UNRECONCILED_JOB = ROOT / "tests/fixtures/real_unreconciled_guidance_result.json.gz"
+
+
+def real_unreconciled_result():
+    with gzip.open(UNRECONCILED_JOB, "rt") as stream:
+        return json.load(stream)
+
+
+def test_completed_nonjet_job_explains_acoustic_preparation_limit():
+    result = real_unreconciled_result()
+    original = copy.deepcopy(result)
+    assert result["status"] == "inconclusive" and len(result["events"]) == 27
+    items = guidance(result)
+    assert [item["code"] for item in items] == ["acoustic_preparation"]
+    assert items[0]["benefit"] == "unmeasured"
+    for reference in items[0]["evidence"]:
+        assert resolve({"result.json": result}, reference)
+    assert result == original
+
+
+@pytest.mark.parametrize("missing", ["events", "limitations"])
+def test_preparation_advice_requires_saved_observations_and_error(missing):
+    result = real_unreconciled_result()
+    if missing == "events":
+        result.pop("events")
+    else:
+        result["coverage"].pop("limitations")
+    assert guidance(result) == []
+
+
+def test_real_preparation_explanation_preserves_stored_result(tmp_path):
+    with gzip.open(UNRECONCILED_JOB, "rb") as stream:
+        original = stream.read()
+    path = tmp_path / "result.json"
+    path.write_bytes(original)
+    result = json.loads(original)
+    explanation = explain_job(tmp_path)
+    assert explanation["status"] == result["status"]
+    assert explanation["reason_code"] == result["reason_code"]
+    assert explanation["ranked"] is False
+    assert [item["code"] for item in explanation["items"]] == ["acoustic_preparation"]
+    assert path.read_bytes() == original
 
 
 def resolve(documents, reference):

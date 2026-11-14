@@ -54,6 +54,7 @@ different result was saved.
 | Recorded source-frequency drift at its bound | Identify the affected event and report the bounded fit as unresolved. |
 | Possible harmonic or reused-ridge overlap | Explain that group independence is unestablished; do not assert aircraft identity. |
 | Event-overlap check stopped at its pair budget | Report the examined pair count and ask the operator to inspect the unfinished assessment. Do not infer too few flyovers or promise that more audio/runtime will resolve it. |
+| Saved acoustic observations and an explicit group-preparation failure | Review the saved curves and preparation error with the operator. A clock, data or budget change has no measured benefit for this outcome. |
 | Partial required data or explicit missing identifiers | Restore the identified flight or terrain data. |
 | Unavailable data with a recorded acquisition/configuration limit | Inspect that limit before retrying; unavailability alone does not prove an archive gap. |
 | Actual wall-time limit and incomplete search | Review runtime; resume only a compatible checkpoint, or rerun. |
@@ -102,6 +103,18 @@ Chromium readback at desktop and mobile widths. Saved result bytes and artifact
 downloads stayed unchanged. Delayed guidance responses did not overwrite a later
 render of the same job. These checks did not publish the source jobs or modify
 their original directories.
+
+A fresh offline job on the publisher-confirmed piston recording
+`7C293D_2023-04-22_10-14-18_0_1.wav` retained 27 ridge records and ended with
+`unreconciled_discovery_group` before acquisition/search. Its explanation now
+contains one `acoustic_preparation` item citing the actual reason, observations
+and preparation limitation. The full publisher UTC calendar day is a declared
+software-control input; sample-zero error and drift are unverified. The saved
+completed result is retained as a licensed compressed fixture. Fourteen focused
+checks pass, including absence of advice when its observed/error evidence is
+missing. Actual API and Chromium readback at 1440 and 390 pixels show all three
+evidence links, no horizontal overflow or page errors, and unchanged result bytes.
+This verifies product explanation, not the benefit of changing recording inputs.
 
 The browser verifier now checks guidance on every actual upload or saved-job
 readback. `--expect-guidance-code` can require a specific observation. Additional

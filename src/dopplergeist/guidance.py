@@ -39,6 +39,15 @@ def guidance(result, decision=None):
             "Provide a defensible UTC window for the start of the original recording, then run the analysis again.",
             ["result.json#/reason_code", "result.json#/required_fields"])
 
+    if (reason == "unreconciled_discovery_group" and result.get("status") == "inconclusive"
+            and isinstance(result.get("events"), list) and result["events"]
+            and isinstance(coverage.get("limitations"), list)
+            and any(isinstance(value, str) and value.strip() for value in coverage["limitations"])):
+        add("acoustic_preparation",
+            "Detected acoustic groups could not be prepared for flight matching.",
+            "Review the saved curves and reported preparation error with the operator before repeating the analysis.",
+            ["result.json#/reason_code", "result.json#/events", "result.json#/coverage/limitations"])
+
     if reason in {"recording_time_required", "no_supported_events", "no_doppler_events"} and result.get("events") == []:
         review = result.get("review", {})
         excluded = review.get("excluded_event_ids") if isinstance(review, dict) else None
