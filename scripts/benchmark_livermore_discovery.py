@@ -78,6 +78,7 @@ def run_case(audio, output, spectral_mode="ordinary"):
     from dopplergeist.intake import intake_recording
 
     ordinary_front = advanced_discovery.dp_front
+    ordinary_image = advanced_discovery.log_image
     if spectral_mode == "reassigned":
         # This explicit, isolated research subprocess changes only the spectral
         # estimator. The ordinary production variant still controls verification
@@ -87,12 +88,32 @@ def run_case(audio, output, spectral_mode="ordinary"):
                 raise ValueError("Unexpected production DP configuration")
             return ordinary_front(recording, "ridge_dp_accel_reassigned_broad")
         advanced_discovery.dp_front = reassigned_front
+    elif spectral_mode == "harmonic-combination":
+        # Registered research-only proposal image. Raw peak measurements and
+        # every downstream evidence/acceptance check still use original audio.
+        def harmonic_image(frequency, image, low, high, bins_per_octave=144):
+            centres, direct = ordinary_image(frequency, image, low, high, bins_per_octave)
+            if low != 20.0 or high != 1600.0:
+                return centres, direct
+            weights = np.asarray([1 / np.sqrt(h) for h in range(1, 5)], dtype=np.float32)
+            combined = weights[0] * direct
+            for harmonic, weight in zip(range(2, 5), weights[1:]):
+                scaled, component = ordinary_image(
+                    frequency, image, low * harmonic, high * harmonic, bins_per_octave)
+                if (len(scaled) != len(centres)
+                        or not np.allclose(scaled, harmonic * centres, rtol=1e-12, atol=1e-9)):
+                    raise ValueError("Harmonic frequency grids do not align")
+                combined += weight * component
+            combined /= np.sqrt(np.sum(weights * weights))
+            return centres, np.clip(combined, -4.0, 8.0).astype(np.float32)
+        advanced_discovery.log_image = harmonic_image
     try:
         recording = intake_recording(audio, output / "intake")
         events = discover_events(recording, output_dir=output / "discovery",
                                  plot_summary=False, plot_event_details=False, event_audio=False)
     finally:
         advanced_discovery.dp_front = ordinary_front
+        advanced_discovery.log_image = ordinary_image
     print(f"Completed automatic discovery: {len(events)} events", flush=True)
 
 
@@ -243,8 +264,8 @@ def main():
     parser.add_argument("--audio", type=Path)
     parser.add_argument("--source-ref", default=DETECTOR_REF,
                         help="Explicit production source pin for a newly registered discovery run")
-    parser.add_argument("--spectral-mode", choices=("ordinary", "reassigned"), default="ordinary",
-                        help="Explicit research-only spectral estimator; thresholds remain fixed")
+    parser.add_argument("--spectral-mode", choices=("ordinary", "reassigned", "harmonic-combination"), default="ordinary",
+                        help="Explicit research-only proposal estimator; thresholds remain fixed")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     required = {"prepare": ("data",), "case": ("audio",), "discover": ("inputs",),
