@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 import hashlib
 import os
 import numpy as np
@@ -530,18 +530,53 @@ def best_sequence_curved(image, hop, bins_per_octave=144, bias=1.5):
         t -= 1
     return (float(score), np.asarray(path[::-1], dtype=int))
 
+class _VerificationSpectra:
+    """The same independent windows, read on demand with four bounded blocks."""
+
+    def __init__(self, recording, block_windows=128):
+        self.path = recording.samples_path
+        self.sample_rate_hz = recording.metadata['sample_rate_hz']
+        size = os.stat(self.path).st_size
+        if not size or size % 4:
+            raise ValueError('Independent verification requires nonempty float32 samples')
+        self.sample_count = size // 4
+        self.window_samples = min(round(self.sample_rate_hz * 0.5), self.sample_count)
+        self.block_windows = block_windows
+        self._cache = OrderedDict()
+        frequency = np.fft.rfftfreq(self.window_samples, 1 / self.sample_rate_hz)
+        self._keep = (frequency >= 10) & (frequency <= min(8200.0, recording.source_nyquist_hz))
+        self.frequency_hz = frequency[self._keep]
+        # Match SciPy's original window centers, including its short-input case.
+        self.time_s = np.arange(self.window_samples / 2,
+            self.sample_count - self.window_samples / 2 + 1,
+            self.window_samples) / float(self.sample_rate_hz)
+
+    def column(self, index):
+        if not 0 <= index < len(self.time_s):
+            raise IndexError('Independent spectral window is outside the recording')
+        block, column = divmod(int(index), self.block_windows)
+        if block not in self._cache:
+            first_window = block * self.block_windows
+            windows = min(self.block_windows, len(self.time_s) - first_window)
+            count = windows * self.window_samples
+            samples = np.fromfile(self.path, dtype='<f4', count=count,
+                offset=first_window * self.window_samples * 4)
+            if len(samples) != count:
+                raise ValueError('Recording samples changed during independent verification')
+            _, _, power = signal.spectrogram(samples, fs=self.sample_rate_hz,
+                nperseg=self.window_samples, noverlap=0, window='hann', scaling='density')
+            if len(self._cache) == 4:
+                self._cache.popitem(last=False)
+            self._cache[block] = 10 * np.log10(np.maximum(power[self._keep], 1e-30))
+        self._cache.move_to_end(block)
+        return self._cache[block][:, column]
+
+
 def verify_tracks(recording, events, variant):
-    sr = recording.metadata['sample_rate_hz']
-    x = np.memmap(recording.samples_path, dtype='<f4', mode='r')
     window = 0.5
-    hop = 0.5
-    n = round(sr * window)
-    f, t, p = signal.spectrogram(x, fs=sr, nperseg=n, noverlap=0, window='hann', scaling='density')
+    spectra = _VerificationSpectra(recording)
+    f, t = spectra.frequency_hz, spectra.time_s
     source_limit = recording.source_nyquist_hz
-    keep = (f >= 10) & (f <= min(8200.0, source_limit))
-    f = f[keep]
-    power = p[keep]
-    db = 10 * np.log10(np.maximum(power, 1e-30))
     accepted = []
     rejected = []
     evidence = {}
@@ -569,29 +604,30 @@ def verify_tracks(recording, events, variant):
         previous = np.maximum(0, following - 1)
         observed = np.minimum(abs(t[columns] - tt[following]), abs(t[columns] - tt[previous])) <= 0.5
         for col, predicted, rate, has_measurement in zip(columns, ft, slope, observed):
+            db = spectra.column(col)
             radius = max(4.0, abs(rate) * window * 0.6)
             radius = min(radius, max(4.0, 0.03 * predicted))
             lo = int(np.searchsorted(f, predicted - radius))
             hi = int(np.searchsorted(f, predicted + radius))
             if hi <= lo:
                 continue
-            peak = lo + int(np.argmax(db[lo:hi, col]))
-            level = float(db[peak, col])
+            peak = lo + int(np.argmax(db[lo:hi]))
+            level = float(db[peak])
             spread = max(24.0, 0.1 * predicted, 4 * radius)
             l = int(np.searchsorted(f, predicted - spread))
             r = int(np.searchsorted(f, predicted + spread))
             left = f[l:r] < predicted - radius - 2.0
             right = f[l:r] > predicted + radius + 2.0
-            reference = db[l:r, col][left | right]
+            reference = db[l:r][left | right]
             if len(reference) < 6:
                 continue
             noise = float(np.median(reference))
             upper = float(np.quantile(reference, 0.9))
             a = peak
             b = peak
-            while a > 0 and db[a - 1, col] >= level - 3.0:
+            while a > 0 and db[a - 1] >= level - 3.0:
                 a -= 1
-            while b < len(f) - 1 and db[b + 1, col] >= level - 3.0:
+            while b < len(f) - 1 and db[b + 1] >= level - 3.0:
                 b += 1
             width = float(f[b] - f[a] + 2.0)
             coherent = has_measurement and level - noise >= 8.0 and (level - upper >= (0.0 if variant.startswith('consensus') else 3.0)) and (width <= max(12.0, 2 * abs(rate) * window + 4.0))
@@ -602,7 +638,7 @@ def verify_tracks(recording, events, variant):
             widths.append(width)
             measured = float(f[peak])
             if variant.startswith(('clear', 'consensus')) and 0 < peak < len(f) - 1:
-                a0, b0, c0 = db[peak - 1:peak + 2, col]
+                a0, b0, c0 = db[peak - 1:peak + 2]
                 den = a0 - 2 * b0 + c0
                 if abs(den) > 1e-09:
                     measured += float(np.clip(0.5 * (a0 - c0) / den, -0.5, 0.5)) * 2.0
