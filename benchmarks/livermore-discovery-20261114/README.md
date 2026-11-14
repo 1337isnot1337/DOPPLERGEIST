@@ -44,8 +44,10 @@ association to its supplied flight track is performed here.
 
 Download `raw_flight_data.zip` and `final_results_40_cases.csv` from the exact
 public record above. In the recorded Python3.14.6/NumPy2.5.4/SciPy1.18.1/Numba0.68.1
-environment, from the committed runner checkout with the pinned production
-source and native extensions built:
+environment, from runner commit `d78b3a9` with the pinned production
+source and native extensions built. To register a different frozen source in a
+new experiment, pass `--source-ref FULL_COMMIT`; the runner verifies the actual
+production tree against that pin before creating outputs:
 
 ```bash
 PYTHONPATH=src python scripts/benchmark_livermore_discovery.py prepare --data /path/to/public-data --output /path/to/new-inputs
@@ -53,6 +55,44 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MPLBACKEND=Agg PYTHONPATH=src python sc
 PYTHONPATH=src python scripts/benchmark_livermore_discovery.py evaluate --data /path/to/public-data --predictions /path/to/new-predictions --output /path/to/new-evaluation
 ```
 
-Outcomes will be appended after all40 cases finish; incomplete work is not a
-successful discovery result, and a close supplied-track fit would not be an
-accepted location.
+## Registered outcomes
+
+All40 full-WAV discovery runs completed at runner `d78b3a9`, with no timeout,
+failed case, evaluation error or out-of-audio reference point. Total audio was
+3,605.33seconds; total wall time444.78seconds, with individual cases3.86–29.24s.
+The detector returned1,102 ridges in49 acoustic groups; these counts do not
+establish independent aircraft.
+
+Only **5/40** cases met the exact registered trace-coverage criterion: P06,
+P20,P21,P23,P35. Median pointwise union coverage was **55.86%**. P02 reached
+82.1% union coverage but only57.0% best-single-ridge coverage, so it correctly
+remains a failure under the predeclared conjunction. The full outcome table is
+`trace-coverage-cases.csv`; all14,349 reference-point matches/errors are retained
+in `trace-reference-points.csv`, including every unmatched point. `population.json`
+maps opaque IDs to the original public archive paths.
+
+This is negative evidence for recovering the particular publisher-traced
+harmonic, **not35 confirmed aircraft misses**. Saved outputs include other
+harmonics; the publisher trace is a selected single harmonic and is not exhaustive
+source truth. No metric, tolerance, model or discovery setting was changed after
+evaluation. A post-hoc four-case spectrogram inspection found that additional
+harmonics can remain visible while the traced one is absent or offset. That
+inspection is diagnostic, not a replacement accuracy metric.
+
+The [primary paper](https://arxiv.org/html/2611.12033v1) also makes clear that
+the recordings were selected from longer sessions using flight-tracking
+information, and examples with untraceable wind/noise were excluded. This
+reinforces the development-selection limit; the dataset is not a blind continuous
+field sample.
+
+P28 was the only zero-output case. A separately retained diagnostic replay on
+the same original audio recovered four raw DP tracks and three verified tracks,
+none overlapping the publisher trace under the registered metric. Two verified
+tracks were ascending and the third was a nearly flat descending component;
+final selection returned no group. Thus final zero output alone does not prove
+that the observed reference contour was extracted and then discarded. That
+counterexample needs an extraction/reference diagnosis before changing acceptance.
+
+These results do not establish low-SNR detection ranges, exhaustive recall or
+false-proposal rates, independent field timing or location accuracy. No supplied
+flight was searched or localized. Related #341/#13/#53 remain open.

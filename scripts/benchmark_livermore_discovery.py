@@ -82,10 +82,12 @@ def run_case(audio, output):
     print(f"Completed automatic discovery: {len(events)} events", flush=True)
 
 
-def discover(inputs, output):
+def discover(inputs, output, source_ref=DETECTOR_REF):
     repository = Path(__file__).resolve().parents[1]
+    source_ref = subprocess.check_output(
+        ["git", "rev-parse", "--verify", source_ref + "^{commit}"], cwd=repository, text=True).strip()
     # A future checkout must not silently mislabel changed production code.
-    subprocess.run(["git", "diff", "--quiet", DETECTOR_REF, "--", "src/dopplergeist"],
+    subprocess.run(["git", "diff", "--quiet", source_ref, "--", "src/dopplergeist"],
                    cwd=repository, check=True)
     population = json.loads((inputs / "population.json").read_text())
     if len(population["cases"]) != 40:
@@ -124,7 +126,7 @@ def discover(inputs, output):
         write_csv(output / "outcomes.csv", outcomes)
         print(json.dumps(row), flush=True)
     write_json(output / "frozen-predictions.json",
-               {"detector_ref": DETECTOR_REF, "deadline_s_per_case": DEADLINE_S,
+               {"detector_ref": source_ref, "deadline_s_per_case": DEADLINE_S,
                 "runner_ref": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repository, text=True).strip(),
                 "cases": len(outcomes), "labels_loaded": False, "location_search": False})
 
@@ -222,6 +224,8 @@ def main():
     parser.add_argument("--inputs", type=Path)
     parser.add_argument("--predictions", type=Path)
     parser.add_argument("--audio", type=Path)
+    parser.add_argument("--source-ref", default=DETECTOR_REF,
+                        help="Explicit production source pin for a newly registered discovery run")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     required = {"prepare": ("data",), "case": ("audio",), "discover": ("inputs",),
@@ -233,7 +237,7 @@ def main():
     elif args.command == "case":
         run_case(args.audio, args.output)
     elif args.command == "discover":
-        discover(args.inputs, args.output)
+        discover(args.inputs, args.output, args.source_ref)
     else:
         evaluate(args.data, args.predictions, args.output)
 
