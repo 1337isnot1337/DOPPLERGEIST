@@ -1,0 +1,6 @@
+Livermore recording N784MB_R04 by Praveen Pathak, licensed under Creative Commons Attribution 4.0 International.
+Dataset: https://doi.org/10.5281/zenodo.23424278
+License: https://creativecommons.org/licenses/by/4.0/
+File: Raw data_V_constant_H_constant.zip, V_constant_H_constant/N784MB_R04/audio.wav
+
+The website MP3 preserves all 85.23 seconds, with 35 dB of uniform gain for listening. The displayed 100–400 Hz spectrogram uses the original audio, a 4 kHz sample rate, a 2048-sample Hann window and a 128-sample hop. The optional trace plots the published repository measurements in evidence/results/real-feature-benchmark/N784MB_R04.csv.

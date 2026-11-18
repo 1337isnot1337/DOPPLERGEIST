@@ -151,42 +151,60 @@
     updateParameters();
   });
 
-  // The scroll sequence also offers native keyboard navigation. Only the
-  // currently displayed diagram is focusable; static layouts retain every link.
-  const method = document.querySelector('[data-moment="pinned-chapters"]');
-  if (method) {
-    const stages = Array.from(method.querySelectorAll('.mo-pc__step')).map((step, index) => {
-      const heading = step.querySelector('h3');
-      const label = heading.textContent;
-      const figure = Array.from(method.querySelectorAll('.mo-pc__visual')).find(item => item.getAttribute('aria-labelledby') === heading.id);
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'method-step';
-      button.textContent = label;
-      button.addEventListener('click', () => {
-        const start = window.scrollY + method.getBoundingClientRect().top;
-        const travel = Math.max(0, method.offsetHeight - window.innerHeight);
-        window.scrollTo({ top: start + travel * (index + 0.5) / stages.length, behavior: 'instant' });
-      });
-      return { step, heading, label, figure, button };
-    });
-    function syncMethod() {
-      const live = method.classList.contains('is-live');
-      stages.forEach(({ step, heading, label, figure, button }) => {
-        const active = step.classList.contains('is-on');
-        if (figure) figure.inert = live && !active;
-        if (live) {
-          if (heading.firstChild !== button) heading.replaceChildren(button);
-          button.setAttribute('aria-pressed', String(active));
-        } else if (heading.firstChild === button) {
-          const hadFocus = document.activeElement === button;
-          heading.textContent = label;
-          if (hadFocus && figure) figure.querySelector('a')?.focus({ preventScroll: true });
-        }
-      });
+  const recording = document.querySelector('.recording');
+  if (recording) {
+    const audio = recording.querySelector('audio');
+    const controls = recording.querySelector('.transport-controls');
+    const button = controls.querySelector('.listen');
+    const label = button.querySelector('.play-label');
+    const seek = controls.querySelector('.seek');
+    const elapsed = controls.querySelector('[data-elapsed]');
+    const playhead = recording.querySelector('.playhead');
+    const ridgeToggle = recording.querySelector('[data-ridge]');
+    const error = recording.querySelector('.audio-error');
+
+    function syncPosition() {
+      const time = audio.currentTime;
+      const duration = Number.isFinite(audio.duration) ? audio.duration : Number(seek.max);
+      elapsed.textContent = Math.floor(time / 60) + ':' + String(Math.floor(time % 60)).padStart(2, '0');
+      seek.max = duration;
+      seek.value = time;
+      seek.setAttribute('aria-valuetext', elapsed.textContent + ' of 1:25');
+      playhead.style.left = (100 * time / duration) + '%';
     }
-    new MutationObserver(syncMethod).observe(method, { attributes: true, attributeFilter: ['class'], subtree: true });
-    syncMethod();
+    function syncPlayback() {
+      label.textContent = audio.ended ? 'Replay recording' : audio.paused ? 'Play recording' : 'Pause recording';
+      button.classList.toggle('playing', !audio.paused);
+    }
+    function showError() {
+      error.hidden = false;
+      syncPlayback();
+    }
+    button.addEventListener('click', () => {
+      if (audio.paused) {
+        error.hidden = true;
+        audio.play().catch(showError);
+      } else {
+        audio.pause();
+      }
+    });
+    seek.addEventListener('input', () => {
+      if (Number.isFinite(audio.duration)) audio.currentTime = Number(seek.value);
+      syncPosition();
+    });
+    ridgeToggle.addEventListener('change', () => {
+      recording.querySelector('.ridge').toggleAttribute('hidden', !ridgeToggle.checked);
+    });
+    audio.addEventListener('error', showError);
+    audio.addEventListener('loadedmetadata', syncPosition);
+    audio.addEventListener('timeupdate', syncPosition);
+    for (const event of ['play', 'pause', 'ended']) audio.addEventListener(event, syncPlayback);
+    playhead.hidden = false;
+    ridgeToggle.parentElement.hidden = false;
+    controls.hidden = false;
+    audio.controls = false;
+    if (audio.error) showError();
+    syncPosition();
   }
 
   if (typeof HTMLDialogElement === 'undefined') return;
