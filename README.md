@@ -14,6 +14,10 @@
   <a href="https://github.com/1337isnot1337/DOPPLERGEIST/tree/main/docs"><img src="https://img.shields.io/badge/docs-read-0088CC?style=flat-square" alt="Documentation"></a>
 </p>
 
+<p align="center">
+  <a href="https://bestgithubrepositories.com/1337isnot1337/DOPPLERGEIST" target="_blank"><img src="https://bestgithubrepositories.com/badge/1337isnot1337/DOPPLERGEIST.svg" alt="1337isnot1337/DOPPLERGEIST | Best GitHub Repos: Featured Repository" width="250" height="55"/></a>
+</p>
+
 **DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and ADS-B flight data to geolocate recordings. It includes a Python CLI and a local browser interface.
 
 [Website](https://1337isnot1337.github.io/DOPPLERGEIST/) · [Examples](https://1337isnot1337.github.io/DOPPLERGEIST/examples.html) · [Install](#quickstart) · [How it works](#how-it-works) · [Results](#validation-and-results) · [Documentation](#documentation-and-references)
