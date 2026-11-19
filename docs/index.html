@@ -50,40 +50,72 @@
       content="Aircraft Doppler spectrogram and satellite map from the real Livermore recording"
     />
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "WebSite",
-            "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#website",
-            "url": "https://1337isnot1337.github.io/DOPPLERGEIST/",
-            "name": "DOPPLERGEIST"
-          },
-          {
-            "@type": "WebPage",
-            "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#page",
-            "url": "https://1337isnot1337.github.io/DOPPLERGEIST/",
-            "name": "DOPPLERGEIST — Aircraft Doppler Audio Geolocation",
-            "description": "Hear a real Livermore flyover, follow its Doppler curve and explore how DOPPLERGEIST ranks recording locations using historical flight tracks.",
-            "isPartOf": { "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#website" },
-            "primaryImageOfPage": {
-              "@type": "ImageObject",
-              "contentUrl": "https://1337isnot1337.github.io/DOPPLERGEIST/site-media/livermore-automatic-mp3.png"
-            }
-          },
-          {
-            "@type": "SoftwareSourceCode",
-            "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#software",
-            "name": "DOPPLERGEIST",
-            "description": "Audio geolocation software that matches aircraft Doppler signatures to historical ADS-B flight trajectories.",
-            "codeRepository": "https://github.com/1337isnot1337/DOPPLERGEIST",
-            "programmingLanguage": "Python",
-            "runtimePlatform": "Python 3.11 or later",
-            "license": "https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE",
-            "author": { "@type": "Person", "name": "Cinna Davis", "url": "https://github.com/1337isnot1337" }
-          }
-        ]
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#website",
+      "url": "https://1337isnot1337.github.io/DOPPLERGEIST/",
+      "name": "DOPPLERGEIST"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#page",
+      "url": "https://1337isnot1337.github.io/DOPPLERGEIST/",
+      "name": "DOPPLERGEIST — Aircraft Doppler Audio Geolocation",
+      "description": "Hear a real Livermore flyover, follow its Doppler curve and explore how DOPPLERGEIST ranks recording locations using historical flight tracks.",
+      "isPartOf": {
+        "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#website"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "contentUrl": "https://1337isnot1337.github.io/DOPPLERGEIST/site-media/livermore-automatic-mp3.png"
+      },
+      "mainEntity": {
+        "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#application"
       }
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#software",
+      "name": "DOPPLERGEIST",
+      "description": "Audio geolocation software that matches aircraft Doppler signatures to historical ADS-B flight trajectories.",
+      "codeRepository": "https://github.com/1337isnot1337/DOPPLERGEIST",
+      "programmingLanguage": "Python",
+      "runtimePlatform": "Python 3.11 or later",
+      "license": "https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE",
+      "author": {
+        "@type": "Person",
+        "name": "Cinna Davis",
+        "url": "https://github.com/1337isnot1337"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://1337isnot1337.github.io/DOPPLERGEIST/#application",
+      "name": "DOPPLERGEIST",
+      "url": "https://1337isnot1337.github.io/DOPPLERGEIST/",
+      "description": "Python CLI and local browser software for acoustic aircraft flyover discovery and location search using Doppler patterns and historical ADS-B tracks.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Linux and macOS for full geolocation; Windows for discovery only",
+      "softwareRequirements": "Python 3.11 or newer and FFmpeg for the full workflow",
+      "downloadUrl": "https://pypi.org/project/dopplergeist/",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "license": "https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE",
+      "author": {
+        "@type": "Person",
+        "name": "Cinna Davis",
+        "url": "https://1337isnot1337.github.io/about/"
+      }
+    }
+  ]
+}
     </script>
   </head>
   <body>
