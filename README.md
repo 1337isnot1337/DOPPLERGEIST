@@ -21,8 +21,8 @@
 **DOPPLERGEIST** uses aircraft Doppler signatures in audio recordings and ADS-B flight data to geolocate recordings. It includes a Python CLI and a local browser interface.
 
 <p align="center">
-  <a href="https://1337isnot1337.github.io/DOPPLERGEIST/">Website</a> &middot;
-  <a href="https://1337isnot1337.github.io/DOPPLERGEIST/examples.html">Examples</a> &middot;
+  <a href="https://itsdavis.com/DOPPLERGEIST/">Website</a> &middot;
+  <a href="https://itsdavis.com/DOPPLERGEIST/examples.html">Examples</a> &middot;
   <a href="#quickstart">Install</a> &middot;
   <a href="#how-it-works">How it works</a> &middot;
   <a href="#validation-and-results">Results</a> &middot;
