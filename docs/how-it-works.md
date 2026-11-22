@@ -96,3 +96,9 @@ Preview the local interface
 ![The local DOPPLERGEIST upload form, with inputs for the recording and its UTC time window.](https://itsdavis.com/DOPPLERGEIST/site-media/local-upload.webp)
 
 [See the field results →](https://itsdavis.com/DOPPLERGEIST/examples.html)
+
+Citation and sources
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [the method page](https://itsdavis.com/DOPPLERGEIST/how-it-works.html). For a specific experiment, please link to the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and include the version or commit used.
+
+[Software citation file](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)

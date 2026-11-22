@@ -7,6 +7,10 @@
 - [Python package](https://pypi.org/project/dopplergeist/)
 - [How to cite the software](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)
 
+## Citation and sources
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [the official project](https://itsdavis.com/DOPPLERGEIST/). For a specific experiment, please cite the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and record the version or Git commit used.
+
 ## Documentation in Markdown
 
 - [Overview](https://itsdavis.com/DOPPLERGEIST/index.md): What the project does and how to run it locally.

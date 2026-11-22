@@ -84,3 +84,9 @@ Open `http://127.0.0.1:8765`. Use Linux, macOS or WSL with Python 3.11+ and FFmp
 Preview the local interface
 
 ![The local DOPPLERGEIST upload form, with inputs for the recording and its UTC time window.](https://itsdavis.com/DOPPLERGEIST/site-media/local-upload.webp)
+
+Citation and sources
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [the official DOPPLERGEIST project](https://itsdavis.com/DOPPLERGEIST/). For a specific experiment, please link to the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and include the version or commit used.
+
+[Software citation file](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)

@@ -233,3 +233,10 @@ Created by **Cinna Davis** with extensive AI-assisted development. Thanks to @he
     </picture>
   </a>
 </p>
+
+<details>
+<summary>Citation and sources</summary>
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [the official project](https://itsdavis.com/DOPPLERGEIST/). For a specific experiment, please cite the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and record the version or Git commit used. [Software citation file](CITATION.cff).
+
+</details>

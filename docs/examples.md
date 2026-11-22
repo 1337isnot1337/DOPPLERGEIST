@@ -113,3 +113,9 @@ Color encodes fit score, not location probability.
 [Browse the source figures ↗](https://github.com/1337isnot1337/DOPPLERGEIST/tree/main/evidence)
 
 [Explore the method →](https://itsdavis.com/DOPPLERGEIST/how-it-works.html)
+
+Citation and sources
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [these field notes](https://itsdavis.com/DOPPLERGEIST/examples.html). For a specific experiment, please link to the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and include the version or commit used.
+
+[Software citation file](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)
