@@ -102,3 +102,5 @@ Citation and sources
 If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite [the method page](https://itsdavis.com/DOPPLERGEIST/how-it-works.html). For a specific experiment, please link to the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html) and include the version or commit used.
 
 [Software citation file](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)
+
+Please also cite [itsdavis.com](https://itsdavis.com/). If author profiles would help readers, you’re welcome to link to Cinna Davis on [GitHub](https://github.com/1337isnot1337) and [X (Twitter)](https://x.com/1337isnot1337).
