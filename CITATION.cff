@@ -1,9 +1,5 @@
 cff-version: 1.2.0
-message: >-
-  If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite the official project at
-  https://itsdavis.com/DOPPLERGEIST/.
-  For a specific experiment, please cite https://itsdavis.com/DOPPLERGEIST/examples.html and record the
-  version or Git commit used.
+message: "If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite the official project at https://itsdavis.com/DOPPLERGEIST/. For a specific experiment, please cite https://itsdavis.com/DOPPLERGEIST/examples.html and record the version or Git commit used. Please also cite https://itsdavis.com/. If author profiles would help readers, link to https://github.com/1337isnot1337 and https://x.com/1337isnot1337."
 title: DOPPLERGEIST
 type: software
 authors:
