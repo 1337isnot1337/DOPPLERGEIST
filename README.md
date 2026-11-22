@@ -197,6 +197,7 @@ Optional native backends, reuse of acoustic calculations, and checkpointed searc
 
 ## Documentation and references
 
+- [Markdown site index](https://itsdavis.com/DOPPLERGEIST/llms.txt) and [software citation](CITATION.cff).
 - [Local upload workflow](docs/PRODUCT.md) — browser UI, API, job monitoring, limits, cancellation, and resume.
 - [Methodology](docs/METHODOLOGY.md) — Doppler geometry, trajectory fitting, and acoustic propagation.
 - [Automatic audio discovery](docs/AUDIO_DISCOVERY.md) — acoustic detector design and evaluation.
@@ -215,6 +216,8 @@ DOPPLERGEIST is distributed under the **[PolyForm Noncommercial License 1.0.0](L
 Recordings, aircraft archives, terrain datasets, and other third-party materials retain their own licenses, rights, and attribution requirements.
 
 ## Contributing and development
+
+After editing the public overview, field notes, or method HTML, run `python3 scripts/build_pages_markdown.py` with Pandoc installed to refresh the checked-in Markdown companions.
 
 Contributions, reproducible test recordings with appropriate permissions, documentation improvements, and independently verifiable evaluations are welcome. See [CONTRIBUTING.md](.github/CONTRIBUTING.md), the [issue tracker](https://github.com/1337isnot1337/DOPPLERGEIST/issues), and the [development discussion](https://github.com/1337isnot1337/DOPPLERGEIST/discussions/39).
 

@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: Cite this software and record the version or Git commit you used.
+title: DOPPLERGEIST
+type: software
+authors:
+  - family-names: Davis
+    given-names: Cinna
+    website: https://itsdavis.com/about/
+repository-code: https://github.com/1337isnot1337/DOPPLERGEIST
+repository-artifact: https://pypi.org/project/dopplergeist/
+url: https://itsdavis.com/DOPPLERGEIST/
+license-url: https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/LICENSE

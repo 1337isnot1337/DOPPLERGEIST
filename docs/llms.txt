@@ -1,0 +1,14 @@
+# DOPPLERGEIST
+
+> Source-available Python software for comparing aircraft Doppler signatures in recordings with historical ADS-B flight paths. DOPPLERGEIST runs locally and reports inconclusive searches when the available evidence does not support a location.
+
+- [Canonical project website](https://itsdavis.com/DOPPLERGEIST/)
+- [Source code and license](https://github.com/1337isnot1337/DOPPLERGEIST)
+- [Python package](https://pypi.org/project/dopplergeist/)
+- [How to cite the software](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/CITATION.cff)
+
+## Documentation in Markdown
+
+- [Overview](https://itsdavis.com/DOPPLERGEIST/index.md): What the project does and how to run it locally.
+- [Field notes](https://itsdavis.com/DOPPLERGEIST/examples.md): Real recordings, the Livermore example, and the limits of the reported results.
+- [Method](https://itsdavis.com/DOPPLERGEIST/how-it-works.md): Acoustic discovery, propagation modeling, flight matching, and how to read the results.
