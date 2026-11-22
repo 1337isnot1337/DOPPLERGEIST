@@ -64,6 +64,12 @@ dopplergeist analyze recording.mp3 --jobs jobs \
 - [Validation and limitations](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/CONFIDENCE.md)
 - [Issues and feature requests](https://github.com/1337isnot1337/DOPPLERGEIST/issues)
 
+## Citation and sources
+
+If you use or write about DOPPLERGEIST, please credit Cinna Davis and cite the [source repository](https://github.com/1337isnot1337/DOPPLERGEIST) and [itsdavis.com](https://itsdavis.com/). Include the [package version you used](https://pypi.org/project/dopplergeist/#history). For a specific experiment, please link to the [field notes](https://itsdavis.com/DOPPLERGEIST/examples.html).
+
+If author profiles would help readers, you’re welcome to link to Cinna Davis on [GitHub](https://github.com/1337isnot1337) and [X (Twitter)](https://x.com/1337isnot1337).
+
 ## License
 
 **PolyForm Noncommercial License 1.0.0.** Noncommercial uses are permitted under the terms of that license; commercial uses that are not otherwise authorized need a separate agreement with the applicable copyright holders. Earlier MIT-licensed releases retain the permissions originally granted for those versions. [Commercial licensing details](https://github.com/1337isnot1337/DOPPLERGEIST/blob/main/docs/COMMERCIAL-LICENSING.md).
