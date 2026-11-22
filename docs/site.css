@@ -54,6 +54,7 @@ img { display: block; max-width: 100%; height: auto; }
 .brand img { width: 32px; }
 nav { gap: clamp(16px, 2.9vw, 48px); font-size: .875rem; }
 nav a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; white-space: nowrap; }
+.portfolio-home { font-weight: 700; }
 nav a[aria-current] { text-decoration: underline; text-decoration-color: var(--signal); text-decoration-thickness: 2px; text-underline-offset: .5em; }
 .nav-repo { gap: 6px; border-left: 1px solid var(--rule); padding-left: clamp(16px, 2.6vw, 38px); }
 .actions { gap: 24px; flex-wrap: wrap; margin-top: 30px; font-size: .93rem; }
@@ -229,7 +230,7 @@ body:has(.figure-viewer[open]) { overflow: hidden; }
 }
 @media (max-width: 730px) {
   .mast { flex-wrap: wrap; gap: 0 18px; padding-block: 12px 6px; }
-  .site-header nav { flex: 1 1 290px; justify-content: flex-end; gap: 20px; }
+  .site-header nav { flex: 1 1 330px; justify-content: flex-end; gap: 20px; }
   .hero, .case-heading, .split, .page-heading, .section-intro, .case-spread, .step-spread { grid-template-columns: 1fr; gap: 26px; }
   .hero { padding-block: 42px; }
   h1 { font-size: clamp(64px, 12.8vw, 90px); }
@@ -256,7 +257,7 @@ body:has(.figure-viewer[open]) { overflow: hidden; }
 @media (max-width: 530px) {
   .site-header nav { justify-content: space-between; flex-basis: 100%; gap: 8px; }
   .nav-repo { padding-left: 13px; }
-  .site-header .mast { padding-bottom: 2px; }
+  .site-header .mast { padding-bottom: 6px; row-gap: 4px; }
   .brand img { width: 27px; height: 27px; }
   .frequency-ticks, .time-ticks { font-size: 9px; }
   .record-head .mono { font-size: 10px; }
@@ -270,6 +271,9 @@ body:has(.figure-viewer[open]) { overflow: hidden; }
   .doppler-demo .demo-controls { padding-inline: 12px; }
 }
 @media (max-width: 365px) {
+  .site-header nav { font-size: .8125rem; gap: 6px; }
+  .nav-repo { padding-left: 8px; }
+  .site-header nav a:focus-visible { outline-offset: 2px; }
   .margin-note { display: block; }
   .result-list article { display: block; }
   .result-list strong { display: block; margin-block: 5px; }
